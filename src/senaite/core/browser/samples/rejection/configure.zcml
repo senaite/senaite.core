@@ -1,0 +1,20 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+    <!-- Reject Samples View -->
+    <browser:page
+      for="*"
+      name="reject_samples"
+      class=".reject_samples.RejectSamplesView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.core.interfaces.ISenaiteCore"/>
+
+    <!-- Rejection Report -->
+    <browser:page
+      for="*"
+      name="rejection_report"
+      class=".report.RejectionReport"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.core.interfaces.ISenaiteCore"/>
+
+</configure>
