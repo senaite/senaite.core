@@ -33,12 +33,16 @@ import pytz
 from bika.lims import logger
 from bika.lims.api import APIError
 from bika.lims.api import get_tool
+from bika.lims.api import to_int
 from DateTime import DateTime
 from DateTime.DateTime import DateError
 from DateTime.DateTime import DateTimeError
 from DateTime.DateTime import SyntaxError
 from DateTime.DateTime import TimeError
 from zope.i18n import translate
+
+
+_marker = object()
 
 
 def is_str(obj):
@@ -516,7 +520,7 @@ def get_relative_delta(dt1, dt2=None):
     return relativedelta(dt2, dt1)
 
 
-def timedelta_to_dict(value):
+def timedelta_to_dict(value, default=_marker):
     """Converts timedelta value to dict object
 
     {
@@ -528,12 +532,19 @@ def timedelta_to_dict(value):
 
     :param value: timedelta object for conversion
     :type value: timedelta
-    :returns converted timedelta as dict
-    :rtype: dict
+    :param value: timedelta object for conversion
+    :type value: timedelta
+    :returns converted timedelta as dict or default object
+    :rtype: dict or default object
     """
 
     if not isinstance(value, timedelta):
-        raise TypeError("%r is not supported" % type(value))
+        if default is _marker:
+            raise TypeError("%r is not supported" % type(value))
+        logger.warn(
+            "Invalid value passed to timedelta->dict conversion. "
+            "Falling back to default: %s." % default)
+        return default
 
     # Note timedelta keeps days and seconds a part!
     return {
@@ -544,7 +555,7 @@ def timedelta_to_dict(value):
     }
 
 
-def dict_to_timedelta(value):
+def to_timedelta(value, default=_marker):
     """Converts dict object w/ days, hours, minutes, seconds keys to
        timedelta format
 
@@ -553,19 +564,21 @@ def dict_to_timedelta(value):
     :returns converted timedelta
     :rtype: timedelta
     """
-    def is_str_num(str):
-        return str.lstrip('-').replace('.', '').isdigit()
 
-    def convert_to_int(val):
-        if isinstance(val, (int, float)) or (is_str(val) and is_str_num(val)):
-            return int(float(val))
-        return 0
+    if isinstance(value, timedelta):
+        return value
 
     if not isinstance(value, dict):
-        raise TypeError("%r is not supported" % type(value))
+        if default is _marker:
+            raise TypeError("%r is not supported" % type(value))
+        logger.warn(
+            "Invalid value passed to dict->timedelta conversion. "
+            "Falling back to default: %s." % default)
+        return default
 
-    return timedelta(days=convert_to_int(value.get('days', 0)),
-                     hours=convert_to_int(value.get('hours', 0)),
-                     minutes=convert_to_int(value.get('minutes', 0)),
-                     seconds=convert_to_int(value.get('seconds', 0)),
-                     )
+    return timedelta(
+        days=to_int(value.get('days', 0)),
+        hours=to_int(value.get('hours', 0)),
+        minutes=to_int(value.get('minutes', 0)),
+        seconds=to_int(value.get('seconds', 0))
+    )

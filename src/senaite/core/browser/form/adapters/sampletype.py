@@ -29,9 +29,6 @@ class EditForm(EditFormAdapterBase):
     """Edit form adapter for Sample Type
     """
 
-    def __init__(self, context, request):
-        super(EditForm, self).__init__(context, request)
-
     def initialized(self, data):
         return self.data
 

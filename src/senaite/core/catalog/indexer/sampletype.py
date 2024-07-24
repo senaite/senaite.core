@@ -26,17 +26,13 @@ from senaite.core.interfaces import ISetupCatalog
 
 @indexer(ISampleType, ISetupCatalog)
 def sampletype_title(instance):
-    """Returns a list of titles from SampleType the instance is assigned to
-    If the instance has no sample type assigned, it returns a tuple with an
-    empty value. This allows searches for `MissingValue` entries too.
+    """Returns title of SampleType
     """
-    return map(api.get_title, instance) or [""]
+    return [api.get_title(instance)]
 
 
 @indexer(ISampleType, ISetupCatalog)
 def sampletype_uid(instance):
-    """Returns a list of uids from SampleType the instance is assigned to
-    If the instance has no SampleType assigned, it returns a tuple with an
-    empty value. This allows searches for `MissingValue` entries too.
+    """Returns UID of SampleType
     """
-    return map(api.get_uid, instance) or [""]
+    return [api.get_uid(instance)]

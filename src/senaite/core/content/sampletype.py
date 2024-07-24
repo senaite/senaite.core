@@ -26,8 +26,7 @@ from datetime import timedelta
 from plone.autoform import directives
 from plone.supermodel import model
 from Products.CMFCore import permissions
-from senaite.core.api.dtime import dict_to_timedelta
-from senaite.core.api.dtime import timedelta_to_dict
+from senaite.core.api import dtime
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.interfaces import ISampleType
@@ -48,19 +47,11 @@ from zope.interface import Invalid
 STICKERS_VOCABULARY = 'senaite.core.vocabularies.stickertemplates'
 
 
-def convert_to_timedelta(value):
-    if isinstance(value, timedelta):
-        return value
-    if isinstance(value, dict):
-        return dict_to_timedelta(value)
-    return timedelta(0)
-
-
 def default_retention_period():
     """Returns the default retention period
     """
-    default = api.get_setup().getDefaultSampleLifetime()
-    return convert_to_timedelta(default)
+    period = api.get_setup().getDefaultSampleLifetime()
+    return dtime.to_timedelta(period, default=timedelta(0))
 
 
 def prefix_whitespaces_constraint(value):
@@ -306,12 +297,13 @@ class SampleType(Container):
 
     @security.protected(permissions.View)
     def getRetentionPeriod(self):
-        return timedelta_to_dict(self.getRawRetentionPeriod())
+        return dtime.timedelta_to_dict(self.getRawRetentionPeriod())
 
     @security.protected(permissions.ModifyPortalContent)
     def setRetentionPeriod(self, value):
+        default_period = default_retention_period()
         mutator = self.mutator("retention_period")
-        mutator(self, convert_to_timedelta(value))
+        mutator(self, dtime.to_timedelta(value, default=default_period))
 
     # BBB: AT schema field property
     RetentionPeriod = property(getRetentionPeriod, setRetentionPeriod)
