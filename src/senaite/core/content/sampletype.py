@@ -30,7 +30,6 @@ from senaite.core.api.dtime import dict_to_timedelta
 from senaite.core.api.dtime import timedelta_to_dict
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
-from senaite.core.content.mixins import SampleTypeAwareMixin
 from senaite.core.interfaces import ISampleType
 from senaite.core.schema import DurationField
 from senaite.core.schema import UIDReferenceField
@@ -292,7 +291,7 @@ validator.WidgetValidatorDiscriminators(
 
 
 @implementer(ISampleType, ISampleTypeSchema, IDeactivable)
-class SampleType(Container, SampleTypeAwareMixin):
+class SampleType(Container):
     """SampleType
     """
     # Catalogs where this type will be catalogued
