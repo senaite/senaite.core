@@ -59,8 +59,8 @@ def convert_to_timedelta(value):
 def default_retention_period():
     """Returns the default retention period
     """
-    def_rp = api.get_setup().getDefaultSampleLifetime()
-    return convert_to_timedelta(def_rp)
+    default = api.get_setup().getDefaultSampleLifetime()
+    return convert_to_timedelta(default)
 
 
 def prefix_whitespaces_constraint(value):

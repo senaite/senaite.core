@@ -49,11 +49,10 @@ class EditForm(EditFormAdapterBase):
             opts = map(lambda t: dict(
                 title=t.get("title"), value=t.get("id")), templates)
 
+            default_small = default_large = None
             if ISampleType.providedBy(self.context):
                 default_small = self.context.getDefaultSmallSticker()
                 default_large = self.context.getDefaultLargeSticker()
-            else:
-                default_small = default_large = None
 
             # set default small sticker
             self.add_update_field(_DGF_WIDGET_PREFIX + "small_default", {
