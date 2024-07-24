@@ -24,8 +24,6 @@ from bika.lims.interfaces import IClient
 from bika.lims.utils import chain
 from senaite.core.content.base import Container
 from senaite.core.interfaces import IClientAwareMixin
-from senaite.core.interfaces import ISampleType
-from senaite.core.interfaces import ISampleTypeAwareMixin
 from zope.interface import implementer
 
 
@@ -79,54 +77,3 @@ class ClientAwareMixin(Container):
     def getClientURL(self):
         client = self.getClient()
         return client and client.absolute_url_path() or ""
-
-
-@implementer(ISampleTypeAwareMixin)
-class SampleTypeAwareMixin(Container):
-    security = ClassSecurityInfo()
-
-    @security.public
-    def getSampleType(self):
-        """Returns the sample type(s) assigned to this object, if any
-        """
-        if ISampleType.providedBy(self):
-            return self
-
-        field = self._get_field()
-        if not field:
-            return None
-
-        sample_type = field.get(self)
-        return sample_type or None
-
-    @security.public
-    def getSampleTypeUID(self):
-        """Returns the UID(s) of the Sample Type(s) assigned to this object
-        """
-        sample_type = self.getSampleType()
-        if isinstance(sample_type, (list, tuple)):
-            return map(api.get_uid, sample_type)
-        elif sample_type:
-            return api.get_uid(sample_type)
-        return None
-
-    @security.public
-    def getSampleTypeTitle(self):
-        """Returns the title or a comma separated list of sample type titles
-        """
-        sample_type = self.getSampleType()
-        if isinstance(sample_type, (list, tuple)):
-            title = map(api.get_title, sample_type)
-            return ", ".join(title)
-        elif sample_type:
-            return api.get_title(sample_type)
-        return None
-
-    def _get_field(self):
-        """Returns the field that stores the SampleType object, if any
-        """
-        field = self.getField("SampleType", None)
-        if not field:
-            field = self.getField("SampleTypes", None)
-
-        return field

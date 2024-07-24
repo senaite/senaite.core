@@ -23,10 +23,11 @@ from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
 from datetime import timedelta
-from magnitude import mg
 from plone.autoform import directives
 from plone.supermodel import model
 from Products.CMFCore import permissions
+from senaite.core.api.dtime import dict_to_timedelta
+from senaite.core.api.dtime import timedelta_to_dict
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.content.mixins import SampleTypeAwareMixin
@@ -51,12 +52,9 @@ STICKERS_VOCABULARY = 'senaite.core.vocabularies.stickertemplates'
 def convert_to_timedelta(value):
     if isinstance(value, timedelta):
         return value
-    elif isinstance(value, dict):
-        return timedelta(days=int(value.get('days', 0)),
-                         hours=int(value.get('hours', 0)),
-                         minutes=int(value.get('minutes', 0)))
-    else:
-        return timedelta(0)
+    if isinstance(value, dict):
+        return dict_to_timedelta(value)
+    return timedelta(0)
 
 
 def default_retention_period():
@@ -157,7 +155,7 @@ class ISampleTypeSchema(model.Schema):
         required=False)
 
     directives.widget(
-        "samplematrix",
+        "sample_matrix",
         UIDReferenceWidgetFactory,
         catalog=SETUP_CATALOG,
         query={
@@ -166,7 +164,7 @@ class ISampleTypeSchema(model.Schema):
             "sort_order": "ascending",
         },
     )
-    samplematrix = UIDReferenceField(
+    sample_matrix = UIDReferenceField(
         title=_(
             u"label_sampletype_samplematrix",
             default=u"Sample Matrix"
@@ -207,7 +205,7 @@ class ISampleTypeSchema(model.Schema):
     )
 
     directives.widget(
-        "containertype",
+        "container_type",
         UIDReferenceWidgetFactory,
         catalog=SETUP_CATALOG,
         query={
@@ -216,7 +214,7 @@ class ISampleTypeSchema(model.Schema):
             "sort_order": "ascending",
         },
     )
-    containertype = UIDReferenceField(
+    container_type = UIDReferenceField(
         title=_(
             u"label_sampletype_containertype",
             default=u"Default Container Type"
@@ -265,26 +263,26 @@ class StickersFieldValidator(validator.SimpleFieldValidator):
         if value is None:
             value = []
 
-        _valid = False
-        _msg = _(u"Invalid sticker object format")
+        valid = False
+        msg = _(u"Invalid sticker object format")
 
         if len(value) == 1:
-            _valid = True
-            _errors = []
+            valid = True
+            errors = []
             if not len(value[0]['admitted']):
-                _valid = False
-                _errors.append(
+                valid = False
+                errors.append(
                     _(u'at least one admitted sticker must be chosen'))
             if not value[0]['small_default']:
-                _valid = False
-                _errors.append(_(u'select small default sticker'))
+                valid = False
+                errors.append(_(u'select small default sticker'))
             if not value[0]['large_default']:
-                _valid = False
-                _errors.append(_(u'select large default sticker'))
-            _msg = _(u"ERRORS: ") + ", ".join(_errors)
+                valid = False
+                errors.append(_(u'select large default sticker'))
+            msg = _(u"ERRORS: ") + ", ".join(errors)
 
-        if not _valid:
-            raise Invalid(_msg)
+        if not valid:
+            raise Invalid(msg)
 
 
 validator.WidgetValidatorDiscriminators(
@@ -308,16 +306,8 @@ class SampleType(Container, SampleTypeAwareMixin):
         return accessor(self)
 
     @security.protected(permissions.View)
-    def getRetentionPeriod(self, raw=False):
-        rp = self.getRawRetentionPeriod()
-        if raw:
-            return rp
-        ret_val = {
-            'days': rp.days,
-            'hours': rp.seconds // (60*60),
-            'minutes': (rp.seconds % (60*60)) // 60,
-        }
-        return ret_val
+    def getRetentionPeriod(self):
+        return timedelta_to_dict(self.getRawRetentionPeriod())
 
     @security.protected(permissions.ModifyPortalContent)
     def setRetentionPeriod(self, value):
@@ -342,19 +332,17 @@ class SampleType(Container, SampleTypeAwareMixin):
 
     @security.protected(permissions.View)
     def getRawSampleMatrix(self):
-        accessor = self.accessor("samplematrix", raw=True)
+        accessor = self.accessor("sample_matrix", raw=True)
         return accessor(self)
 
     @security.protected(permissions.View)
     def getSampleMatrix(self):
-        samplematrix = self.getRawSampleMatrix()
-        if not samplematrix:
-            return None
-        return api.get_object(samplematrix)
+        accessor = self.accessor("sample_matrix")
+        return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
     def setSampleMatrix(self, value):
-        mutator = self.mutator("samplematrix")
+        mutator = self.mutator("sample_matrix")
         mutator(self, value)
 
     # BBB: AT schema field property
@@ -388,41 +376,19 @@ class SampleType(Container, SampleTypeAwareMixin):
     # BBB: AT schema field property
     MinimumVolume = property(getMinimumVolume, setMinimumVolume)
 
-    def getJSMinimumVolume(self, **kw):
-        """Try convert the MinimumVolume to 'ml' or 'g' so that JS has an
-        easier time working with it.  If conversion fails, return raw value.
-        """
-        default = self.Schema()['MinimumVolume'].get(self)
-        try:
-            mgdefault = default.split(' ', 1)
-            mgdefault = mg(float(mgdefault[0]), mgdefault[1])
-        except Exception:
-            mgdefault = mg(0, 'ml')
-        try:
-            return str(mgdefault.ounit('ml'))
-        except Exception:
-            pass
-        try:
-            return str(mgdefault.ounit('g'))
-        except Exception:
-            pass
-        return str(default)
-
     @security.protected(permissions.View)
     def getRawContainerType(self):
-        accessor = self.accessor("containertype", raw=True)
+        accessor = self.accessor("container_type", raw=True)
         return accessor(self)
 
     @security.protected(permissions.View)
     def getContainerType(self):
-        containertype = self.getRawContainerType()
-        if not containertype:
-            return None
-        return api.get_object(containertype)
+        accessor = self.accessor("container_type")
+        return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
     def setContainerType(self, value):
-        mutator = self.mutator("containertype")
+        mutator = self.mutator("container_type")
         mutator(self, value)
 
     # BBB: AT schema field property

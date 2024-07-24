@@ -488,21 +488,3 @@ class ISampleType(Interface):
 class ISampleTypes(Interface):
     """Marker interface for Sample Types container
     """
-
-
-class ISampleTypeAwareMixin(Interface):
-    """Marker interface for objects that can be assigned to one, or multiple
-    SampleType objects through a ReferenceField
-    """
-
-    def getSampleType(self):
-        """Returns the sample type(s) assigned to this object, if any
-        """
-
-    def getSampleTypeUID(self):
-        """Returns the UID(s) of the Sample Type(s) assigned to this object
-        """
-
-    def getSampleTypeTitle(self):
-        """Returns the title or a comma separated list of sample type titles
-        """

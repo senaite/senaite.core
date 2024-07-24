@@ -23,6 +23,7 @@ import re
 import time
 from datetime import date
 from datetime import datetime
+from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from string import Template
 
@@ -513,3 +514,58 @@ def get_relative_delta(dt1, dt2=None):
         dt2 = dt2.replace(tzinfo=tzinfo)
 
     return relativedelta(dt2, dt1)
+
+
+def timedelta_to_dict(value):
+    """Converts timedelta value to dict object
+
+    {
+        "days": 10,
+        "hours": 10,
+        "minutes": 10,
+        "seconds": 10,
+    }
+
+    :param value: timedelta object for conversion
+    :type value: timedelta
+    :returns converted timedelta as dict
+    :rtype: dict
+    """
+
+    if not isinstance(value, timedelta):
+        raise TypeError("%r is not supported" % type(value))
+
+    # Note timedelta keeps days and seconds a part!
+    return {
+        "days": value.days,
+        "hours": value.seconds // 3600,  # hours within a day
+        "minutes": (value.seconds % 3600) // 60,  # minutes within an hour
+        "seconds": value.seconds % 60,  # seconds within a minute
+    }
+
+
+def dict_to_timedelta(value):
+    """Converts dict object w/ days, hours, minutes, seconds keys to
+       timedelta format
+
+    :param value: dict object for conversion
+    :type value: dict
+    :returns converted timedelta
+    :rtype: timedelta
+    """
+    def is_str_num(str):
+        return str.lstrip('-').replace('.', '').isdigit()
+
+    def convert_to_int(val):
+        if isinstance(val, (int, float)) or (is_str(val) and is_str_num(val)):
+            return int(float(val))
+        return 0
+
+    if not isinstance(value, dict):
+        raise TypeError("%r is not supported" % type(value))
+
+    return timedelta(days=convert_to_int(value.get('days', 0)),
+                     hours=convert_to_int(value.get('hours', 0)),
+                     minutes=convert_to_int(value.get('minutes', 0)),
+                     seconds=convert_to_int(value.get('seconds', 0)),
+                     )
