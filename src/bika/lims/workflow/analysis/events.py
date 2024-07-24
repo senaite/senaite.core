@@ -27,7 +27,6 @@ from bika.lims.interfaces import IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils.analysis import create_retest
 from bika.lims.workflow import doActionFor
-from bika.lims.workflow import push_reindex_to_actions_pool
 from DateTime import DateTime
 from zope.interface import alsoProvides
 
@@ -143,8 +142,8 @@ def after_submit(analysis):
     # Promote transition to worksheet
     ws = analysis.getWorksheet()
     if ws:
-        doActionFor(ws, 'submit')
-        push_reindex_to_actions_pool(ws)
+        doActionFor(ws, "submit")
+        ws.reindexObject()
 
     # Promote transition to Analysis Request
     if IRequestAnalysis.providedBy(analysis):
@@ -226,8 +225,8 @@ def after_verify(analysis):
     # Promote transition to worksheet
     ws = analysis.getWorksheet()
     if ws:
-        doActionFor(ws, 'verify')
-        push_reindex_to_actions_pool(ws)
+        doActionFor(ws, "verify")
+        ws.reindexObject()
 
     # Promote transition to Analysis Request if Sample auto-verify is enabled
     if IRequestAnalysis.providedBy(analysis):
@@ -258,7 +257,7 @@ def reindex_request(analysis, idxs=None):
     request = analysis.getRequest()
     ancestors = [request] + request.getAncestors(all_ancestors=True)
     for ancestor in ancestors:
-        push_reindex_to_actions_pool(ancestor)
+        ancestor.reindexObject()
 
 
 def remove_analysis_from_worksheet(analysis):
@@ -282,7 +281,7 @@ def remove_analysis_from_worksheet(analysis):
         doActionFor(worksheet, "rollback_to_open")
 
     # Reindex the Worksheet
-    push_reindex_to_actions_pool(worksheet)
+    worksheet.reindexObject()
 
 
 def cascade_to_dependents(analysis, transition_id):
