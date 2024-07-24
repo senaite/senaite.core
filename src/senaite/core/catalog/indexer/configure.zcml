@@ -58,8 +58,6 @@
   <adapter name="point_of_capture" factory=".senaitesetup.point_of_capture"/>
   <adapter name="price" factory=".senaitesetup.price"/>
   <adapter name="price_total" factory=".senaitesetup.price_total"/>
-  <adapter name="sampletype_title" factory=".senaitesetup.sampletype_title"/>
-  <adapter name="sampletype_uid" factory=".senaitesetup.sampletype_uid"/>
 
   <!-- Organization Indexer -->
   <adapter name="title" factory=".organisation.title"/>
