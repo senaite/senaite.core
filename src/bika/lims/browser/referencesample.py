@@ -221,9 +221,9 @@ class ReferenceAnalysesView(AnalysesView):
 
         if not item:
             return None
-        item["Category"] = obj.getCategoryTitle
-        ref_analysis = api.get_object(obj)
-        ws = ref_analysis.getWorksheet()
+        obj = api.get_object(obj)
+        item["Category"] = obj.getCategoryTitle()
+        ws = obj.getWorksheet()
         if not ws:
             logger.warn(
                 "No Worksheet found for ReferenceAnalysis {}"

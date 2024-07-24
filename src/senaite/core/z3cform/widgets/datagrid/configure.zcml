@@ -1,0 +1,60 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="z3c.form">
+
+  <!-- Allow to download files located in data grid rows -->
+  <browser:page
+      name="download"
+      for="senaite.core.schema.interfaces.IDataGridField"
+      class=".datagrid.Download"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- DataGrid Widget -->
+  <adapter
+      factory=".datagrid.DataGridWidgetFactory"
+      for="senaite.core.schema.interfaces.IDataGridField
+           senaite.core.interfaces.ISenaiteFormLayer" />
+
+  <!-- DataGridRow Widget -->
+  <adapter
+      factory=".datagrid.DataGridRowWidgetFactory"
+      for="senaite.core.schema.interfaces.IDataGridRow
+           senaite.core.interfaces.ISenaiteFormLayer" />
+
+  <!-- DataGrid input widget template -->
+  <z3c:widgetTemplate
+      mode="input"
+      widget=".datagrid.DataGridWidget"
+      template="datagrid_input.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+  <!-- DataGrid display widget template -->
+  <z3c:widgetTemplate
+      mode="display"
+      widget=".datagrid.DataGridWidget"
+      template="datagrid_display.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+  <!-- DataGridRow input widget template -->
+  <z3c:widgetTemplate
+      mode="input"
+      widget=".datagrid.DataGridRowWidget"
+      template="datagridrow_input.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+  <!-- DataGridRow display widget template -->
+  <z3c:widgetTemplate
+      mode="display"
+      widget=".datagrid.DataGridRowWidget"
+      template="datagridrow_display.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+</configure>

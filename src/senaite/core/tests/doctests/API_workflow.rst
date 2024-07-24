@@ -7,7 +7,6 @@ Running this test from the buildout directory::
 
     bin/test test_textual_doctests -t API_workflow
 
-
 Test Setup
 ..........
 
@@ -22,6 +21,14 @@ Needed Imports:
     >>> from senaite.core.permissions import TransitionReinstateAnalysisRequest
     >>> from senaite.core.workflow import BATCH_WORKFLOW
     >>> from senaite.core.workflow import SAMPLE_WORKFLOW
+
+We need certain permissions to create and access objects used in this test,
+so here we will assume the role of Lab Manager.
+
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import setRoles
+    >>> setRoles(portal, TEST_USER_ID, ["LabManager",])
+
 
 Get a workflow
 ..............
@@ -438,3 +445,35 @@ states and transitions included:
 
     >>> state.getPermissionInfo(TransitionCancelAnalysisRequest)
     {'acquired': 0, 'roles': []}
+
+
+Check if a transition is allowed
+................................
+
+It is possible to directly check if a transition can be performed against an
+object. Create a client:
+
+    >>> setRoles(portal, TEST_USER_ID, ["LabManager",])
+    >>> client = api.create(portal.clients, "Client", Name="Happy Hills")
+
+Get the workflow of this client and extract all possible transitions,
+regardless of the status of the client:
+
+    >>> wf = wapi.get_workflow(client)
+    >>> wf_transitions = wf.transitions.keys()
+    >>> sorted(wf_transitions)
+    ['activate', 'deactivate']
+
+If the client is in "active" status, "activate" is not possible, but
+"deactivate" only:
+
+    >>> wapi.is_transition_allowed(client, "activate")
+    False
+
+    >>> wapi.is_transition_allowed(client, "deactivate")
+    True
+
+Non-existing transitions are not possible neither:
+
+    >>> wapi.is_transition_allowed(client, "receive")
+    False

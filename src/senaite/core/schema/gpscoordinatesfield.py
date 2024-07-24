@@ -22,6 +22,7 @@ import copy
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
+from senaite.core.api import geo
 from senaite.core.i18n import translate as t
 from senaite.core.schema.fields import BaseField
 from senaite.core.schema.interfaces import IGPSCoordinatesField
@@ -76,8 +77,12 @@ class GPSCoordinatesField(Dict, BaseField):
         template = "{:.%df}" % self.precision
         for key in coordinates.keys():
 
+            # handle DMS-like values
+            val = geo.to_decimal_degrees(coordinates[key],
+                                         precision=self.precision,
+                                         default=coordinates[key])
+
             # skip non-floatable (eg. empties)
-            val = coordinates[key]
             if not api.is_floatable(val):
                 continue
 

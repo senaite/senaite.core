@@ -56,7 +56,7 @@ Setupitems:
     >>> clients = portal.clients
     >>> sampletypes = setup.bika_sampletypes
     >>> samplepoints = portal.setup.samplepoints
-    >>> analysiscategories = setup.bika_analysiscategories
+    >>> analysiscategories = portal.setup.analysiscategories
     >>> analysisservices = setup.bika_analysisservices
     >>> setup.setSamplingWorkflowEnabled(True)
 

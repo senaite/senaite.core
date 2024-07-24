@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-05-22 08:59+0000\n"
+"POT-Creation-Date: 2024-07-16 10:25+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Carman Hu, 2022\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/senaite/teams/87045/zh_CN/)\n"
@@ -438,6 +438,11 @@ msgstr ""
 #: senaite/core/browser/login/templates/login.pt:20
 msgid "enable_cookies_message_before_login"
 msgstr "登录前启用cookie消息"
+
+#. Default: "File already uploaded:"
+#: senaite/core/z3cform/widgets/datagrid/datagridrow_file_input.pt:19
+msgid "file_already_uploaded"
+msgstr ""
 
 #. Default: "Get help"
 #: senaite/core/browser/login/templates/login.pt:105
@@ -916,6 +921,11 @@ msgstr "列表标题用户名"
 #: senaite/core/browser/login/templates/login.pt:109
 msgid "need_an_account"
 msgstr "需要一个帐户"
+
+#. Default: "No file"
+#: senaite/core/z3cform/widgets/datagrid/datagridrow_file_display.pt:27
+msgid "no_file"
+msgstr ""
 
 #. Default: "Plain Text"
 #: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:61

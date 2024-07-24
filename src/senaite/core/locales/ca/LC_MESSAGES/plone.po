@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-05-22 08:59+0000\n"
+"POT-Creation-Date: 2024-07-16 10:25+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2024\n"
 "Language-Team: Catalan (https://app.transifex.com/senaite/teams/87045/ca/)\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: senaite/core/browser/user/templates/account-panel.pt:16
 msgid "${action/title}"
-msgstr ""
+msgstr "${action/title}"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:167
 msgid "Activated add-ons"
@@ -435,6 +435,11 @@ msgstr "Utilitzant la llista següent, podeu controlar qui pot visualitzar i edi
 #: senaite/core/browser/login/templates/login.pt:20
 msgid "enable_cookies_message_before_login"
 msgstr "Les galetes no estan habilitades. Cal que habiliteu les galetes per a poder iniciar la sessió."
+
+#. Default: "File already uploaded:"
+#: senaite/core/z3cform/widgets/datagrid/datagridrow_file_input.pt:19
+msgid "file_already_uploaded"
+msgstr "El fitxer ja s'havia pujat:"
 
 #. Default: "Get help"
 #: senaite/core/browser/login/templates/login.pt:105
@@ -913,6 +918,11 @@ msgstr "Nom d'usuari"
 #: senaite/core/browser/login/templates/login.pt:109
 msgid "need_an_account"
 msgstr "Voleu crear un compte d'usuari?"
+
+#. Default: "No file"
+#: senaite/core/z3cform/widgets/datagrid/datagridrow_file_display.pt:27
+msgid "no_file"
+msgstr "No hi ha cap fitxer"
 
 #. Default: "Plain Text"
 #: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:61

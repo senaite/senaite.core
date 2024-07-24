@@ -1,0 +1,54 @@
+<span
+    i18n:domain="plone"
+    tal:attributes="id view/id;
+                    class view/klass;
+                    style view/style;
+                    title view/title;"
+    tal:define="download_url view/download_url;
+                exists python: view.value is not None;
+                action view/action;
+                allow_nochange view/allow_nochange;
+                doc_type view/file_content_type;
+                icon view/file_icon;
+                filename view/filename;">
+
+    <!-- File Upload -->
+    <tal:if tal:define="up_id view/file_upload_id" tal:condition="up_id">
+      <input type="hidden" name="${view/name}.file_upload_id" value="${up_id}"/>
+      <span>
+        <tal:i18n i18n:translate="file_already_uploaded">File already uploaded:</tal:i18n>
+        ${view/value/filename}
+      </span>
+    </tal:if>
+
+    <!-- Existing File -->
+    <span tal:condition="python:exists and download_url and action=='nochange'">
+        <img tal:condition="icon" src="" alt=""
+             tal:attributes="src icon;
+                             alt doc_type;
+                             title filename;"/>
+        <a tal:content="filename"
+           tal:attributes="href download_url">
+          Filename
+        </a>
+        <span class="discreet"> &mdash;<tal:doc_type condition="doc_type">
+            <span tal:replace="doc_type">ContentType</span>,</tal:doc_type>
+            <span tal:define="sizekb view/file_size" tal:replace="sizekb">100</span>
+        </span>
+
+        <input type="hidden"
+               tal:condition="python:allow_nochange"
+               tal:attributes="name string:${view/name}-filedata;
+                               id string:${view/id}-filedata;
+                               value python:view.filedata"/>
+    </span>
+
+    <div tal:omit-tag="not:allow_nochange" tal:condition="python:not exists" style="padding-left: 1.5em; padding-top: 0.5em;">
+        <input
+            type="file"
+            tal:attributes="id string:${view/id}-input;
+                            name view/name;
+                            size view/size;
+                            disabled view/disabled;"/>
+    </div>
+</span>

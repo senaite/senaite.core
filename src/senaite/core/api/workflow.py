@@ -406,3 +406,21 @@ def copy_permissions(source, destination):
         acquired = info.get("acquired", 1)
         # update the roles for this permission at destination
         destination.setPermission(permission, acquired, sorted(roles))
+
+
+def is_transition_allowed(obj, transition_id):
+    """Returns whether the transition with the given id can be performed
+    against the object.
+
+    :param obj: object to evaluate the transition against
+    :type obj: ATContentType/DexterityContentType/CatalogBrain/UID
+    :param transition_id: Workflow transition id
+    :type transition_id: string
+    :returns: True if the transition with the given id can be performed
+    :rtype: bool
+    """
+    obj = api.get_object(obj)
+    wf = get_workflow(obj)
+    if wf.isActionSupported(obj, transition_id):
+        return True
+    return False

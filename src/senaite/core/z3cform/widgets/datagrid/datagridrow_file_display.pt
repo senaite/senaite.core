@@ -1,0 +1,30 @@
+<span id="" class="" i18n:domain="plone"
+      tal:attributes="id view/id;
+                      class view/klass;
+                      style view/style;
+                      title view/title; "
+        tal:define="download_url view/download_url;
+                    value view/value;
+                    exists python:value is not None;
+                    doc_type view/file_content_type;
+                    icon view/file_icon;">
+    <span tal:define="fieldname view/field/__name__ | nothing;
+                      filename view/filename;
+                      filename_encoded view/filename_encoded;"
+            tal:condition="python: exists and fieldname">
+        <img tal:condition="icon" src="" alt=""
+             tal:attributes="src icon;
+                             alt doc_type;
+                             title filename;"/>
+        <a tal:content="filename"
+           tal:attributes="href python:download_url">Filename</a>
+        <span class="discreet"> &mdash;<tal:doc_type condition="doc_type">
+            <span tal:replace="doc_type">ContentType</span>,</tal:doc_type>
+            <span tal:define="sizekb view/file_size"
+                  tal:replace="sizekb">100</span>
+        </span>
+    </span>
+    <span tal:condition="not:exists" class="discreet" i18n:translate="no_file">
+        No file
+    </span>
+</span>

@@ -35,6 +35,7 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2554
 class AttachmentType(BaseContent):
     """AttachmentType - the type of attachment
     """

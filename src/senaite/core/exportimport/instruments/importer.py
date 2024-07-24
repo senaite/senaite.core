@@ -144,10 +144,16 @@ class AnalysisResultsImporter(Logger):
         return api.get_bika_setup()
 
     @lazy_property
-    def attachment_types(self):
-        """Get the bika setup object
+    def setup(self):
+        """Get the Senaite setup object
         """
-        return self.bika_setup.bika_attachmenttypes
+        return api.get_senaite_setup()
+
+    @lazy_property
+    def attachment_types(self):
+        """Get the senaite setup object
+        """
+        return self.setup.attachmenttypes
 
     @lazy_property
     def instrument(self):
@@ -733,7 +739,7 @@ class AnalysisResultsImporter(Logger):
                        mapping={
                            "sid": sid,
                            "field": key,
-                           "value": field_value,
+                           "value": value,
                        }))
 
         return updated

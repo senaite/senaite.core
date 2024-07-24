@@ -29,25 +29,9 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IAnalysisCategories"
-      name="folder_view"
-      class=".bika_analysiscategories.AnalysisCategoriesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.ISampleTypes"
       name="folder_view"
       class=".bika_sampletypes.SampleTypesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.ISamplingDeviations"
-      name="folder_view"
-      class=".bika_samplingdeviations.SamplingDeviationsView"
       permission="senaite.core.permissions.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -77,14 +61,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IAttachmentTypes"
-      name="folder_view"
-      class=".bika_attachmenttypes.AttachmentTypesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.IAnalysisServices"
       name="folder_view"
       class=".bika_analysisservices.AnalysisServicesView"
@@ -101,14 +77,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.ILabProducts"
-      name="folder_view"
-      class=".bika_labproducts.LabProductsView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.IReferenceDefinitions"
       name="folder_view"
       class=".bika_referencedefinitions.ReferenceDefinitionsView"
@@ -117,34 +85,9 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.ISuppliers"
-      name="folder_view"
-      class=".bika_suppliers.SuppliersView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.IWorksheetTemplates"
       name="folder_view"
       class=".bika_worksheettemplates.WorksheetTemplatesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IBatchLabels"
-      name="folder_view"
-      class=".bika_batchlabels.BatchLabelsView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <!-- Dynamic Analysis Specifications -->
-    <browser:page
-      for="bika.lims.controlpanel.dynamic_analysisspecs.IDynamicAnalysisSpecs"
-      name="view"
-      class=".dynamic_analysisspecs.DynamicAnalysisSpecsView"
       permission="senaite.core.permissions.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

@@ -178,6 +178,43 @@ class IAnalysisProfiles(Interface):
     """
 
 
+class IAnalysisCategory(Interface):
+    """Marker interface for an Analysis Category
+    """
+
+
+class IAnalysisCategories(Interface):
+    """Marker interface for Analysis Categories
+    """
+
+
+class IHaveAnalysisCategory(Interface):
+    """Marker interface for objects that have AnalysisCategory(ies) assigned
+    """
+
+    def getCategory(self):
+        """Returns the category(ies) assigned to this instance
+        """
+
+    def getCategoryUID(self):
+        """Returns the UID of the category(ies) assigned to this instance
+        """
+
+    def getCategoryTitle(self):
+        """Returns the title of the category(ies) assigned to this instance
+        """
+
+
+class IAttachmentType(Interface):
+    """Marker interface for attachment type
+    """
+
+
+class IAttachmentTypes(Interface):
+    """Marker interface for attachment types setup folder
+    """
+
+
 class ISampleContainers(Interface):
     """Marker interface for sample container setup folder
     """
@@ -258,6 +295,16 @@ class ISubGroups(Interface):
     """
 
 
+class ISamplingDeviation(Interface):
+    """Sampling Deviation
+    """
+
+
+class ISamplingDeviations(Interface):
+    """Sampling Deviations
+    """
+
+
 class IContentMigrator(Interface):
     """Marker interface for content migrator
     """
@@ -275,6 +322,11 @@ class IDynamicLocalRoles(Interface):
 
 class IInterpretationTemplate(Interface):
     """Marker interface for interpretation template objects
+    """
+
+
+class IInterpretationTemplates(Interface):
+    """Marker interface for interpretation templates objects
     """
 
 
@@ -321,6 +373,16 @@ class IInstrumentTypes(Interface):
     """
 
 
+class IInstrumentLocation(Interface):
+    """Marker interface for a physical place, where instruments can be located
+    """
+
+
+class IInstrumentLocations(Interface):
+    """Marker interface for instrument locations folder
+    """
+
+
 class IStorageLocations(Interface):
     """Marker interface for storage locations setup folder
     """
@@ -328,6 +390,26 @@ class IStorageLocations(Interface):
 
 class IStorageLocation(Interface):
     """Marker interface for storage locations
+    """
+
+
+class IBatchLabel(Interface):
+    """Marker interface for Batch Label
+    """
+
+
+class IBatchLabels(Interface):
+    """Marker interface for Batch Labels container
+    """
+
+
+class ISupplier(Interface):
+    """Marker interface for a Supplier
+    """
+
+
+class ISuppliers(Interface):
+    """Marker interface for Suplliers
     """
 
 
@@ -363,3 +445,36 @@ class IContainerTypes(Interface):
 class IContainerType(Interface):
     """Marker interface for container type
     """
+
+
+class IDynamicAnalysisSpec(Interface):
+    """Marker interface for Dynamic analysis spec item
+    """
+
+
+class IDynamicAnalysisSpecs(Interface):
+    """Marker interface for Dynamic analysis specs folder
+    """
+
+
+class ILabProduct(Interface):
+    """Marker interface for lab product
+    """
+
+
+class ILabProducts(Interface):
+    """Marker interface for lab products folder
+    """
+
+
+class IHavePrice(Interface):
+    """Marker interface for objects that have a Price
+    """
+
+    def getPrice(self):
+        """Returns the price of the instance
+        """
+
+    def getTotalPrice(self):
+        """Returns the total price of the instance
+        """

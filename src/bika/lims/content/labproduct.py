@@ -28,7 +28,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
-from bika.lims.interfaces import IHavePrice
+from senaite.core.interfaces import IHavePrice
 
 schema = BikaSchema.copy() + Schema((
     StringField('Volume',

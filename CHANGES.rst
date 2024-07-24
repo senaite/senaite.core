@@ -4,6 +4,29 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2590 Fix Traceback in referencesample analyses listing
+- #2589 Fix reject report to fully conform with the ISO standard
+- #2588 Widget text extensions
+- #2586 Support multiple files for datagrid fields
+- #2581 Migrate Suppliers to Dexterity
+- #2587 Fix InvalidOperation: Invalid literal for Decimal: ''
+- #2585 Fix Progress string missing i18n
+- #2574 Migrate LabProducts to Dexterity
+- #2583 Make SampleContainer DX type inherit from core's DX Container
+- #2582 Do not override dependent values with empties
+- #2573 Move Interpretation Templates to Senaite setup folder
+- #2563 Move Dynamic Analysis Specs to Setup folder
+- #2554 Migrate AttachmentTypes to Dexterity
+- #2572 Move Sample Containers to Senaite setup folder
+- #2571 Move InstrumentLocations to Senaite setup folder
+- #2578 Fix setup DX folders are not indexed in `uid_catalog`
+- #2576 Fix analyses and services are re-indexed after modifying category
+- #2577 Fix content types typo
+- #2567 Migrate AnalysisCategories to Dexterity
+- #2570 Use reference widget API in sample add form
+- #2553 Migrate BatchLabels to Dexterity
+- #2566 Migrate SamplePoint Latitude and Longitude fields to Location
+- #2552 Migrate SamplingDeviations to Dexterity
 - #2564 Flush dependent fields in sample add form only if the current value is not allowed
 - #2565 Added GPSCoordinates widget and field
 - #2562 Increased field size and allowed input length for instrument import folder path

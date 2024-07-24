@@ -92,7 +92,7 @@ Variables:
     >>> bikasetup = api.get_bika_setup()
     >>> setup = api.get_senaite_setup()
 
-    >>> analysiscategories = bikasetup.bika_analysiscategories
+    >>> analysiscategories = setup.analysiscategories
     >>> analysisservices = bikasetup.bika_analysisservices
     >>> calculations = bikasetup.bika_calculations
     >>> departments = setup.departments
@@ -100,7 +100,7 @@ Variables:
     >>> labcontacts = bikasetup.bika_labcontacts
     >>> sampletypes = bikasetup.bika_sampletypes
     >>> referencedefinitions = bikasetup.bika_referencedefinitions
-    >>> suppliers = bikasetup.bika_suppliers
+    >>> suppliers = setup.suppliers
 
     >>> date_now = DateTime().strftime("%Y-%m-%d")
     >>> date_future = (DateTime() + 5).strftime("%Y-%m-%d")

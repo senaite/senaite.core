@@ -57,13 +57,13 @@ Variables::
     >>> calculations = setup.bika_calculations
     >>> sampletypes = setup.bika_sampletypes
     >>> samplepoints = portal.setup.samplepoints
-    >>> analysiscategories = setup.bika_analysiscategories
+    >>> analysiscategories = portal.setup.analysiscategories
     >>> analysisspecs = setup.bika_analysisspecs
     >>> analysisservices = setup.bika_analysisservices
     >>> labcontacts = setup.bika_labcontacts
     >>> worksheets = setup.worksheets
     >>> storagelocations = portal.setup.storagelocations
-    >>> samplingdeviations = setup.bika_samplingdeviations
+    >>> samplingdeviations = portal.setup.samplingdeviations
     >>> portal_url = portal.absolute_url()
     >>> setup_url = portal_url + "/bika_setup"
 
@@ -110,7 +110,7 @@ Create an Analysis Category:
 
     >>> analysiscategory = api.create(analysiscategories, "AnalysisCategory", title="Water")
     >>> analysiscategory
-    <AnalysisCategory at /plone/bika_setup/bika_analysiscategories/analysiscategory-1>
+    <AnalysisCategory at /plone/setup/analysiscategories/analysiscategory-1>
 
 Create Analysis Service for PH (Keyword: `PH`):
 

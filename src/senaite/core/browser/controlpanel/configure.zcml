@@ -20,13 +20,18 @@
       layer="senaite.core.interfaces.ISenaiteCore"/>
 
   <!-- Include controlpanel listing views -->
+  <include package=".analysiscategories" />
   <include package=".analysisprofiles" />
+  <include package=".attachmenttypes" />
+  <include package=".batchlabels" />
   <include package=".containertypes" />
   <include package=".departments" />
+  <include package=".dynamicanalysisspecs" />
   <include package=".instrumentlocations" />
   <include package=".instrumenttypes" />
   <include package=".interpretationtemplates" />
   <include package=".labels" />
+  <include package=".labproducts" />
   <include package=".manufacturers" />
   <include package=".sampleconditions" />
   <include package=".samplecontainers" />
@@ -35,6 +40,8 @@
   <include package=".samplepreservations" />
   <include package=".sampletemplates" />
   <include package=".subgroups" />
+  <include package=".suppliers" />
   <include package=".storagelocations" />
+  <include package=".samplingdeviations" />
 
 </configure>

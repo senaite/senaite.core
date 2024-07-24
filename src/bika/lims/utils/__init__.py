@@ -680,6 +680,22 @@ def get_email_link(email, value=None):
     return get_link(mailto, link_value)
 
 
+def get_phone_link(phone, value=None):
+    """
+    Returns a well-formed link to a phone number. If phone is None/empty,
+    returns an empty string
+    :param phone: phone number
+    :param value: text to be displayed. If None, the phone itself is used
+    :return: a well-formatted html anchor
+    """
+    if not phone:
+        return ""
+    number = re.sub(r"[)(\s-]", "", phone)
+    tel = "tel:{}".format(number)
+    link_value = value and value or phone
+    return get_link(tel, link_value)
+
+
 def get_image(name, **kwargs):
     """Returns a well-formed image
     :param name: file name of the image

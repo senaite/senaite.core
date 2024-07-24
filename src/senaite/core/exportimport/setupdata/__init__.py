@@ -44,10 +44,33 @@ from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.exportimport.dataimport import SetupDataSetList as SDL
+from senaite.core.schema.addressfield import BILLING_ADDRESS
+from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
+from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from zope.event import notify
 from zope.interface import implements
 
 UID_CATALOG = "uid_catalog"
+
+
+def get_addresses_from_row(row):
+    """Fills the address fields for the specified object if allowed:
+    PhysicalAddress, PostalAddress, CountryState, BillingAddress
+    """
+    types = [PHYSICAL_ADDRESS, POSTAL_ADDRESS, BILLING_ADDRESS]
+    keys = ["Address", "City", "Zip", "Country"]
+
+    address_list = []
+    for address_type in types:
+        address_item = {"type": address_type}
+        for key in keys:
+            field_name = "%s_%s" % (address_type.capitalize(), key)
+            value = str(row.get(field_name, ""))
+            if value:
+                address_item.update({key.lower(): value})
+        if len(address_item.keys()) > 1:
+            address_list.append(address_item)
+    return address_list
 
 
 def lookup(context, portal_type, **kwargs):
@@ -529,22 +552,14 @@ class Lab_Products(WorksheetImporter):
 
     def Import(self):
         # Refer to the default folder
-        folder = self.context.bika_setup.bika_labproducts
+        container = self.context.setup.labproducts
         # Iterate through the rows
         for row in self.get_rows(3):
-            # Create the LabProduct object
-            obj = _createObjectByType('LabProduct', folder, tmpID())
-            # Apply the row values
-            obj.edit(
-                title=row.get('title', 'Unknown'),
-                description=row.get('description', ''),
-                Volume=row.get('volume', 0),
-                Unit=str(row.get('unit', 0)),
-                Price=str(row.get('price', 0)),
-            )
-            # Rename the new object
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            if not title:
+                continue
+            api.create(container, "LabProduct",
+                       title=title, description=row.get("description"))
 
 
 class Clients(WorksheetImporter):
@@ -641,7 +656,7 @@ class Client_Contacts(WorksheetImporter):
 class Container_Types(WorksheetImporter):
 
     def Import(self):
-        container = self.context.setup.contenttypes
+        container = self.context.setup.containertypes
         for row in self.get_rows(3):
             title = row.get("title")
             if not title:
@@ -667,53 +682,57 @@ class Preservations(WorksheetImporter):
 class Containers(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.sample_containers
         bsc = getToolByName(self.context, SETUP_CATALOG)
+        container = self.context.setup.samplecontainers
         for row in self.get_rows(3):
-            if not row["title"]:
+            title = row.get("title")
+            if not title:
                 continue
-            obj = api.create(folder, "SampleContainer")
-            obj.setTitle(row["title"])
-            obj.setDescription(row.get("description", ""))
-            obj.setCapacity(row.get("Capacity", 0))
-            obj.setPrePreserved(self.to_bool(row["PrePreserved"]))
-            if row["ContainerType_title"]:
-                ct = self.get_object(
-                    bsc, "ContainerType", row.get("ContainerType_title", ""))
-                if ct:
-                    obj.setContainerType(ct)
-            if row["Preservation_title"]:
-                pres = self.get_object(bsc, "SamplePreservation",
-                                       row.get("Preservation_title", ""))
-                if pres:
-                    obj.setPreservation(pres)
+
+            description = row.get("description", "")
+            capacity = row.get("Capacity", 0)
+            pre_preserved = self.to_bool(row["PrePreserved"])
+            containertype = None
+            container_type_title = row.get("ContainerType_title", "")
+
+            if container_type_title:
+                containertype = self.get_object(
+                    bsc, "ContainerType", container_type_title)
+
+            api.create(container, "SampleContainer",
+                       title=title,
+                       description=description,
+                       capacity=capacity,
+                       pre_preserved=pre_preserved,
+                       containertype=containertype)
 
 
 class Suppliers(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_suppliers
+        container = self.context.setup.suppliers
         for row in self.get_rows(3):
-            obj = _createObjectByType("Supplier", folder, tmpID())
-            if row['Name']:
-                obj.edit(
-                    Name=row.get('Name', ''),
-                    TaxNumber=row.get('TaxNumber', ''),
-                    AccountType=row.get('AccountType', {}),
-                    AccountName=row.get('AccountName', {}),
-                    AccountNumber=row.get('AccountNumber', ''),
-                    BankName=row.get('BankName', ''),
-                    BankBranch=row.get('BankBranch', ''),
-                    SWIFTcode=row.get('SWIFTcode', ''),
-                    IBN=row.get('IBN', ''),
-                    NIB=row.get('NIB', ''),
-                    Website=row.get('Website', ''),
-                )
-                self.fill_contactfields(row, obj)
-                self.fill_addressfields(row, obj)
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            title = row.get("Name")
+            if not title:
+                continue
+
+            api.create(container, "Supplier",
+                       title=title,
+                       description=row.get("description"),
+                       tax_number=row.get("TaxNumber"),
+                       phone=row.get("Phone", ""),
+                       fax=row.get("Fax", ""),
+                       email=row.get("EmailAddress", ""),
+                       account_type=row.get("AccountType", {}),
+                       account_name=row.get("AccountName", {}),
+                       account_number=row.get("AccountNumber", ''),
+                       bank_name=row.get("BankName", ""),
+                       bank_branch=row.get("BankBranch", ""),
+                       swift_code=row.get("SWIFTcode", ""),
+                       iban=row.get("IBN", ""),
+                       nib=row.get("NIB", ""),
+                       website=row.get("Website", ""),
+                       address=get_addresses_from_row(row))
 
 
 class Supplier_Contacts(WorksheetImporter):
@@ -1102,14 +1121,12 @@ class Sample_Matrices(WorksheetImporter):
 class Batch_Labels(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_batchlabels
+        container = self.context.setup.batchlabels
         for row in self.get_rows(3):
-            if row['title']:
-                obj = _createObjectByType("BatchLabel", folder, tmpID())
-                obj.edit(title=row['title'])
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            if not title:
+                continue
+            api.create(container, "BatchLabel", title=title)
 
 
 class Sample_Types(WorksheetImporter):
@@ -1243,29 +1260,35 @@ class Sample_Conditions(WorksheetImporter):
 class Analysis_Categories(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_analysiscategories
-        bsc = getToolByName(self.context, SETUP_CATALOG)
+        container = self.context.setup.analysiscategories
+        setup_tool = getToolByName(self.context, SETUP_CATALOG)
         for row in self.get_rows(3):
-            department = None
-            if row.get('Department_title', None):
-                department = self.get_object(bsc, 'Department',
-                                             row.get('Department_title'))
-            if row.get('title', None) and department:
-                obj = _createObjectByType("AnalysisCategory", folder, tmpID())
-                obj.edit(
-                    title=row['title'],
-                    description=row.get('description', ''))
-                obj.setDepartment(department)
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
-            elif not row.get('title', None):
-                logger.warning("Error in in " + self.sheetname + ". Missing Title field")
-            elif not row.get('Department_title', None):
-                logger.warning("Error in " + self.sheetname + ". Department field missing.")
-            else:
-                logger.warning("Error in " + self.sheetname + ". Department "
-                               + row.get('Department_title') + "is wrong.")
+            title = row.get("title")
+            if not title:
+                logger.warning("Error in in {}. Missing Title field."
+                               .format(self.sheetname))
+                continue
+
+            department_title = row.get("Department_title", None)
+            if not department_title:
+                logger.warning("Error in {}. Department field missing."
+                               .format(self.sheetname))
+                continue
+
+            department = self.get_object(setup_tool, "Department",
+                                         title=department_title)
+            if not department:
+                logger.warning("Error in {}. Department '{}' is wrong."
+                               .format(self.sheetname, department_title))
+                continue
+
+            description = row.get("description", "")
+            comments = row.get("comments", "")
+            api.create(container, "AnalysisCategory",
+                       title=title,
+                       description=description,
+                       comments=comments,
+                       department=department)
 
 
 class Methods(WorksheetImporter):
@@ -1313,17 +1336,13 @@ class Methods(WorksheetImporter):
 class Sampling_Deviations(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_samplingdeviations
+        container = self.context.setup.samplingdeviations
         for row in self.get_rows(3):
-            if row['title']:
-                obj = _createObjectByType("SamplingDeviation", folder, tmpID())
-                obj.edit(
-                    title=row['title'],
-                    description=row.get('description', '')
-                )
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            if not title:
+                continue
+            api.create(container, "SamplingDeviation",
+                       title=title, description=row.get("description"))
 
 
 class Calculations(WorksheetImporter):
@@ -2057,21 +2076,20 @@ class ID_Prefixes(WorksheetImporter):
                              'padding': row['padding'],
                              'prefix': row['prefix'],
                              'separator': separator})
-        #self.context.bika_setup.setIDFormatting(prefixes)
+        # self.context.bika_setup.setIDFormatting(prefixes)
 
 
 class Attachment_Types(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_attachmenttypes
+        container = self.context.setup.attachmenttypes
         for row in self.get_rows(3):
-            obj = _createObjectByType("AttachmentType", folder, tmpID())
-            obj.edit(
-                title=row['title'],
-                description=row.get('description', ''))
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            if not title:
+                continue
+
+            api.create(container, "AttachmentType",
+                       title=title, description=row.get("description"))
 
 
 class Reference_Samples(WorksheetImporter):

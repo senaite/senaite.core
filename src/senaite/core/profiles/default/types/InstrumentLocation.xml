@@ -42,14 +42,13 @@
   <property name="add_permission">cmf.AddPortalContent</property>
 
   <!-- Python class for content items of this sort -->
-  <property name="schema">senaite.core.content.instrumentlocation.IInstrumentLocation</property>
+  <property name="schema">senaite.core.content.instrumentlocation.IInstrumentLocationSchema</property>
   <property name="klass">senaite.core.content.instrumentlocation.InstrumentLocation</property>
 
   <!-- Dexterity behaviours for this type -->
   <property name="behaviors">
     <element value="bika.lims.interfaces.IAutoGenerateID"/>
     <element value="bika.lims.interfaces.IMultiCatalogBehavior"/>
-    <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
     <element value="plone.app.referenceablebehavior.referenceable.IReferenceable" />
   </property>
 
@@ -83,5 +82,15 @@
           url_expr="string:${object_url}/edit" visible="True">
     <permission value="Modify portal content"/>
   </action>
+
+   <!-- Instruments -->
+   <action action_id="instruments"
+           title="Instruments"
+           category="object"
+           url_expr="string:${object_url}/instruments"
+           i18n:attributes="title"
+           visible="True">
+     <permission value="List folder contents"/>
+   </action>
 
 </object>

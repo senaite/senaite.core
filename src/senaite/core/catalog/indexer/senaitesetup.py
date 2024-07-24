@@ -20,17 +20,17 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IAnalysisService
-from bika.lims.interfaces import IHaveAnalysisCategory
 from bika.lims.interfaces import IHaveDepartment
 from bika.lims.interfaces import IHaveInstrument
-from bika.lims.interfaces import IHavePrice
 from bika.lims.interfaces import IInstrument
 from bika.lims.interfaces import ISampleTypeAwareMixin
 from plone.indexer import indexer
 from Products.CMFCore.interfaces import IContentish
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog.utils import get_searchable_text_tokens
+from senaite.core.interfaces import IHavePrice
 from senaite.core.interfaces import ISetupCatalog
+from senaite.core.interfaces import IHaveAnalysisCategory
 
 
 @indexer(ISampleTypeAwareMixin, ISetupCatalog)

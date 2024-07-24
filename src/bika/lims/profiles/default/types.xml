@@ -6,20 +6,14 @@
  <object name="ARTemplate" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ARTemplates" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Analysis" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="AnalysisCategories" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="AnalysisCategory" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisRequest" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisService" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisServices" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisSpec" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisSpecs" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Attachment" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="AttachmentType" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="AttachmentTypes" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Batch" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="BatchFolder" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="BatchLabel" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="BatchLabels" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="BikaSetup" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Calculation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Calculations" meta_type="Factory-based Type Information with dynamic views"/>
@@ -37,8 +31,6 @@
  <object name="Invoice" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="LabContact" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="LabContacts" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="LabProduct" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="LabProducts" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Laboratory" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Method" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Methods" meta_type="Factory-based Type Information with dynamic views"/>
@@ -53,18 +45,11 @@
  <object name="RejectAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleType" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleTypes" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SamplingDeviation" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SamplingDeviations" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Supplier" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Suppliers" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SupplierContact" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Worksheet" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="WorksheetFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="WorksheetTemplate" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="WorksheetTemplates" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AutoImportLog" meta_type="Factory-based Type Information with dynamic views"/>
- <!-- Dexterity -->
- <object name="DynamicAnalysisSpec" meta_type="Dexterity FTI" />
- <object name="DynamicAnalysisSpecs" meta_type="Dexterity FTI" />
- <!-- /Dexterity -->
+
 </object>

@@ -51,7 +51,7 @@ class IDynamicAnalysisSpec(model.Schema):
         required=True)
 
     @invariant
-    def validate_sepecs_file(data):
+    def validate_specs_file(data):
         """Checks the Excel file contains the required header columns
         """
         # return immediately if not changed
