@@ -114,7 +114,7 @@ class AddAnalysesView(BikaListingView):
                 "index": "getDateReceived"}),
             ("getDueDate", {
                 "title": _("Due Date"),
-                "index": "getDueDate"}),
+                "index": "sortable_due_date"}),
         ))
 
         self.review_states = [
@@ -269,13 +269,14 @@ class AddAnalysesView(BikaListingView):
             the template
         :index: current index of the item
         """
+        obj = api.get_object(obj)
+        received = obj.getDateReceived()
+        due_date = obj.getDueDate()
 
-        DueDate = obj.getDueDate
+        item["getDateReceived"] = self.ulocalized_time(received)
+        item["getDueDate"] = self.ulocalized_time(due_date)
 
-        item["getDateReceived"] = self.ulocalized_time(obj.getDateReceived)
-        item["getDueDate"] = self.ulocalized_time(DueDate)
-
-        if DueDate and DueDate < DateTime():
+        if due_date and due_date < DateTime():
             item["after"]["DueDate"] = get_image(
                 "late.png", title=t(_("Late Analysis")))
 
@@ -283,7 +284,7 @@ class AddAnalysesView(BikaListingView):
         item["getCategoryTitle"] = self.get_category_title(obj)
 
         # Add Priority column
-        priority_sort_key = obj.getPrioritySortkey
+        priority_sort_key = obj.getPrioritySortkey()
         if not priority_sort_key:
             # Default priority is Medium = 3.
             # The format of PrioritySortKey is <priority>.<created>

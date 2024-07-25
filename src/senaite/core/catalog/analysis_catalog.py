@@ -36,7 +36,6 @@ INDEXES = BASE_INDEXES + [
     ("getClientTitle", "", "FieldIndex"),
     ("getClientUID", "", "FieldIndex"),
     ("getDateReceived", "", "DateIndex"),
-    ("getDueDate", "", "DateIndex"),
     ("getInstrumentUID", "", "FieldIndex"),
     ("getKeyword", "", "FieldIndex"),
     ("getPointOfCapture", "", "FieldIndex"),
@@ -49,6 +48,7 @@ INDEXES = BASE_INDEXES + [
     ("getWorksheetUID", "", "FieldIndex"),
     ("isSampleReceived", "", "BooleanIndex"),
     ("sortable_title", "", "FieldIndex"),
+    ("sortable_due_date", "", "DateIndex"),
 ]
 
 COLUMNS = BASE_COLUMNS + [
@@ -59,7 +59,6 @@ COLUMNS = BASE_COLUMNS + [
     "getClientURL",
     "getDateReceived",
     "getDateSampled",
-    "getDueDate",
     "getKeyword",
     "getLastVerificator",
     "getMethodTitle",

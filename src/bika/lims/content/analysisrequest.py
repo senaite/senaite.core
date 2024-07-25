@@ -1713,10 +1713,21 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         return manager_list
 
     def getDueDate(self):
-        """Returns the earliest due date of the analyses this Analysis Request
-        contains."""
-        due_dates = map(lambda an: an.getDueDate, self.getAnalyses())
-        return due_dates and min(due_dates) or None
+        """Returns the due date of this sample, that is the earliest due date
+        of the analyses it contains. Returns None if the sample has not been
+        received yet
+        """
+        if not self.getDateReceived():
+            return None
+
+        analyses = self.getAnalyses(sort_on="sortable_due_date",
+                                    sort_order="ascending")
+        if not analyses:
+            return None
+
+        # return the due date of the earliest due analysis
+        analysis = api.get_object(analyses[0])
+        return analysis.getDueDate()
 
     security.declareProtected(View, 'getLate')
 

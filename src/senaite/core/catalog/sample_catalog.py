@@ -41,7 +41,6 @@ INDEXES = BASE_INDEXES + [
     ("getDateSampled", "", "DateIndex"),
     ("getDateVerified", "", "DateIndex"),
     ("getDistrict", "", "FieldIndex"),
-    ("getDueDate", "", "DateIndex"),
     ("getPrinted", "", "FieldIndex"),
     ("getPrioritySortkey", "", "FieldIndex"),
     ("getProvince", "", "FieldIndex"),
@@ -54,6 +53,7 @@ INDEXES = BASE_INDEXES + [
     ("listing_searchable_text", "", "ZCTextIndex"),
     ("modified", "", "DateIndex"),
     ("sortable_title", "", "FieldIndex"),
+    ("sortable_due_date", "", "DateIndex"),
 ]
 
 COLUMNS = BASE_COLUMNS + [
@@ -77,7 +77,6 @@ COLUMNS = BASE_COLUMNS + [
     "getDateVerified",
     "getDescendantsUIDs",
     "getDistrict",
-    "getDueDate",
     "getHazardous",
     "getInternalUse",
     "getInvoiceExclude",

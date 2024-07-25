@@ -23,9 +23,11 @@
   <adapter name="assigned_state" factory=".sample.assigned_state"/>
   <adapter name="is_received" factory=".sample.is_received"/>
   <adapter name="listing_searchable_text" factory=".sample.listing_searchable_text"/>
+  <adapter name="sortable_due_date" factory=".sample.sortable_due_date"/>
 
   <!-- Request Analysis Indexer -->
   <adapter name="getAncestorsUIDs" factory=".requestanalysis.getAncestorsUIDs"/>
+  <adapter name="sortable_due_date" factory=".requestanalysis.sortable_due_date"/>
 
   <!-- AnalysisCategory Indexer -->
   <adapter name="sortable_title" factory=".analysiscategory.sortable_title"/>

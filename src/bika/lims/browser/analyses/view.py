@@ -189,7 +189,6 @@ class AnalysesView(ListingView):
                 "sortable": False}),
             ("DueDate", {
                 "title": _("Due Date"),
-                "index": "getDueDate",
                 "sortable": False}),
             ("state_title", {
                 "title": _("Status"),
@@ -935,7 +934,8 @@ class AnalysesView(ListingView):
         # Note that if the analysis is a Reference Analysis, `getDueDate`
         # returns the date when the ReferenceSample expires. If the analysis is
         # a duplicate, `getDueDate` returns the due date of the source analysis
-        due_date = analysis_brain.getDueDate
+        obj = self.get_object(analysis_brain)
+        due_date = obj.getDueDate()
         if not due_date:
             return None
         due_date_str = self.ulocalized_time(due_date, long_format=0)

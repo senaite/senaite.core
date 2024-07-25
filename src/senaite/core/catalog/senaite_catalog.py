@@ -42,7 +42,6 @@ INDEXES = BASE_INDEXES + [
     ("getClientUID", "", "FieldIndex"),
     ("getDateReceived", "", "DateIndex"),
     ("getDateSampled", "", "DateIndex"),
-    ("getDueDate", "", "DateIndex"),
     ("getExpiryDate", "", "DateIndex"),
     ("getId", "", "FieldIndex"),
     ("getReferenceDefinitionUID", "", "FieldIndex"),

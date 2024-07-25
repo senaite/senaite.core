@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Remove getDueDate index"
+      description="Remove getDueDate index"
+      source="2644"
+      destination="2645"
+      handler=".v02_06_000.remove_get_due_date_index"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Remove CreationDate index"
       description="Remove CreationDate index"
       source="2643"

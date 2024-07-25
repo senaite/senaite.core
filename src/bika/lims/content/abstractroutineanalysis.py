@@ -200,10 +200,9 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
 
     @security.public
     def getDueDate(self):
-        """Used to populate getDueDate index and metadata.
-        This calculates the difference between the time the analysis processing
-        started and the maximum turnaround time. If the analysis has no
-        turnaround time set or is not yet ready for proces, returns None
+        """This calculates the difference between the time the analysis
+        processing started and the maximum turnaround time. If the analysis has
+        no turnaround time set or is not yet ready for process, returns None
         """
         tat = self.getMaxTimeAllowed()
         if not tat:
