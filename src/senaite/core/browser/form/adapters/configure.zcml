@@ -59,7 +59,7 @@
 
   <!-- Edit Form: WorksheetTemplate -->
   <adapter
-      for="bika.lims.interfaces.IWorksheetTemplate
+      for="senaite.core.interfaces.IWorksheetTemplate
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".worksheettemplate.EditForm"/>
 
