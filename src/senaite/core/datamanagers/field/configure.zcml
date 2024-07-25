@@ -2,6 +2,7 @@
 
   <!-- Data Manager for Sample Analyses Field -->
   <adapter
+      name="Analyses"
       for="bika.lims.interfaces.IAnalysisRequest
            zope.publisher.interfaces.browser.IBrowserRequest
            Products.Archetypes.interfaces.IField"
