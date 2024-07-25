@@ -125,7 +125,7 @@ class FolderView(BikaListingView):
                         "open",
                         "to_be_verified",
                     ],
-                    "sort_on": "CreationDate",
+                    "sort_on": "created",
                     "sort_order": "reverse"},
                 "transitions": [],
                 "custom_transitions": [],
@@ -135,7 +135,7 @@ class FolderView(BikaListingView):
                 "title": _("Open"),
                 "contentFilter": {
                     "review_state": "open",
-                    "sort_on": "CreationDate",
+                    "sort_on": "created",
                     "sort_order": "reverse"},
                 "transitions": [],
                 "custom_transitions": [],
@@ -145,7 +145,7 @@ class FolderView(BikaListingView):
                 "title": _("To be verified"),
                 "contentFilter": {
                     "review_state": "to_be_verified",
-                    "sort_on": "CreationDate",
+                    "sort_on": "created",
                     "sort_order": "reverse"},
                 "transitions": [],
                 "custom_transitions": [],
@@ -155,7 +155,7 @@ class FolderView(BikaListingView):
                 "title": _("Verified"),
                 "contentFilter": {
                     "review_state": "verified",
-                    "sort_on": "CreationDate",
+                    "sort_on": "created",
                     "sort_order": "reverse"
                 },
                 "transitions": [],
@@ -171,7 +171,7 @@ class FolderView(BikaListingView):
                         "verified",
                         "rejected",
                     ],
-                    "sort_on":"CreationDate",
+                    "sort_on":"created",
                     "sort_order": "reverse"},
                 "transitions":[],
                 "custom_transitions": [],
@@ -188,7 +188,7 @@ class FolderView(BikaListingView):
                         "verified",
                         "rejected"
                     ],
-                    "sort_on":"CreationDate",
+                    "sort_on":"created",
                     "sort_order": "reverse"},
                 "transitions":[],
                 "custom_transitions": [],

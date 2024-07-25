@@ -44,10 +44,8 @@ from bika.lims.utils import to_int
 from bika.lims.utils import to_utf8 as _c
 from bika.lims.utils.analysis import create_duplicate
 from bika.lims.utils.analysis import create_reference_analysis
-from bika.lims.workflow import ActionHandlerPool
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import isTransitionAllowed
-from bika.lims.workflow import push_reindex_to_actions_pool
 from bika.lims.workflow import skip
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import DisplayList
@@ -170,11 +168,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def addAnalyses(self, analyses):
         """Adds a collection of analyses to the Worksheet at once
         """
-        actions_pool = ActionHandlerPool.get_instance()
-        actions_pool.queue_pool()
         for analysis in analyses:
             self.addAnalysis(api.get_object(analysis))
-        actions_pool.resume()
 
     def addAnalysis(self, analysis, position=None):
         """- add the analysis to self.Analyses().
@@ -224,8 +219,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         analysis.setAnalyst(self.getAnalyst())
 
         # Transition analysis to "assigned"
-        actions_pool = ActionHandlerPool.get_instance()
-        actions_pool.queue_pool()
         doActionFor(analysis, "assign")
         self.setAnalyses(analyses + [analysis])
         self.addToLayout(analysis, position)
@@ -234,17 +227,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         doActionFor(self, "rollback_to_open")
 
         # Reindex Analysis
-        push_reindex_to_actions_pool(analysis)
+        analysis.reindexObject()
 
         # Reindex Worksheet
-        push_reindex_to_actions_pool(self)
+        self.reindexObject()
 
         # Reindex Analysis Request, if any
         if IRequestAnalysis.providedBy(analysis):
-            push_reindex_to_actions_pool(analysis.getRequest())
-
-        # Resume the actions pool
-        actions_pool.resume()
+            analysis.getRequest().reindexObject()
 
     def removeAnalysis(self, analysis):
         """ Unassigns the analysis passed in from the worksheet.
