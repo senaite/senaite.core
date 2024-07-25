@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2591 Remove CreationDate index from catalogs in favour of created
+- #2592 Remove Action Handler Pool
 - #2590 Fix Traceback in referencesample analyses listing
 - #2589 Fix reject report to fully conform with the ISO standard
 - #2588 Widget text extensions
