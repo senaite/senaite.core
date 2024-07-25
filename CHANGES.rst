@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2595 Move sample analyses field logic to data manager
 - #2594 Fix Traceback when running migration again for Suppliers
 - #2591 Remove CreationDate index from catalogs in favour of created
 - #2592 Remove Action Handler Pool
