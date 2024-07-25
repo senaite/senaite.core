@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import api
 from bika.lims.interfaces import IARAnalysesField
 from Products.Archetypes.public import Field
 from Products.Archetypes.public import ObjectField
