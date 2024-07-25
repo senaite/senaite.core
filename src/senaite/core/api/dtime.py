@@ -577,8 +577,8 @@ def to_timedelta(value, default=_marker):
         return default
 
     return timedelta(
-        days=to_int(value.get('days', 0)),
-        hours=to_int(value.get('hours', 0)),
-        minutes=to_int(value.get('minutes', 0)),
-        seconds=to_int(value.get('seconds', 0))
+        days=to_int(value.get('days', 0), 0),
+        hours=to_int(value.get('hours', 0), 0),
+        minutes=to_int(value.get('minutes', 0), 0),
+        seconds=to_int(value.get('seconds', 0), 0)
     )
