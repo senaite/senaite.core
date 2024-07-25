@@ -1,16 +1,7 @@
-<configure xmlns="http://namespaces.zope.org/zope"
-           i18n_domain="senaite.core">
+<configure xmlns="http://namespaces.zope.org/zope">
 
-  <!-- Data Manager for Analysis Services -->
-  <adapter factory=".analysisservice.AnalysisServiceDataManager" />
-
-  <!-- Data Manager for Analyses -->
-  <adapter factory=".sample.SampleDataManager" />
-
-  <!-- Data Manager for Analyses -->
-  <adapter factory=".analysis.RoutineAnalysisDataManager" />
-
-  <!-- Data Manager for Reference Analyses -->
-  <adapter factory=".analysis.ReferenceAnalysisDataManager" />
+  <!-- package includes -->
+  <include package=".field"/>
+  <include package=".content"/>
 
 </configure>
