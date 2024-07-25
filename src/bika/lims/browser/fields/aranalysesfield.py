@@ -18,6 +18,7 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import collections
 import itertools
 
 from AccessControl import ClassSecurityInfo
@@ -91,6 +92,13 @@ class ARAnalysesField(ObjectField):
             return map(api.get_object, brains)
         return brains
 
+    security.declarePrivate('getRaw')
+
+    def getRaw(self, instance, **kwargs):
+        """Returns the raw UIDs stored in the instance for this field
+        """
+        return getattr(instance, self.getName(), [])
+
     security.declarePrivate('set')
 
     def set(self, instance, items, prices=None, specs=None, hidden=None, **kw):
@@ -153,6 +161,27 @@ class ARAnalysesField(ObjectField):
 
         # Remove analyses
         map(self.remove_analysis, to_remove)
+
+        # Get the uids of the analyses we keep (from descendants included)
+        analyses_uids = []
+        skip = dict.fromkeys(to_remove, True)
+        for analysis in analyses:
+            uid = analysis.UID()
+            if skip.get(uid, False):
+                continue
+            analyses_uids.append(uid)
+
+        # Store the uids in instance's attribute for this field
+        setattr(instance, self.getName(), analyses_uids)
+
+        # Update ancestors with the analyses from this instance
+        for ancestor in instance.getAncestors():
+            uids = getattr(ancestor, self.getName(), [])
+            uids = filter(lambda uid: not skip.get(uid, False), uids)
+            uids.extend(analyses_uids)
+            # Remove duplicates while keeping the order
+            uids = list(collections.OrderedDict.fromkeys(uids))
+            setattr(ancestor, self.getName(), uids)
 
     def resolve_specs(self, instance, results_ranges):
         """Returns a dictionary where the key is the service_uid and the value
