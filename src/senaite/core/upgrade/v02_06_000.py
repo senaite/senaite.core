@@ -40,6 +40,7 @@ from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
+from senaite.core.catalog.base_catalog import BaseCatalog
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.setuphandlers import add_senaite_setup_items
@@ -1751,6 +1752,11 @@ def migrate_suppliers_to_dx(tool):
     tool.runImportStepFromProfile(profile, "workflow")
 
     origin = api.get_setup().get("bika_suppliers")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
     destination = get_setup_folder("suppliers")
 
     # un-catalog the old container
@@ -2249,3 +2255,18 @@ def migrate_labproduct_to_dx(src, destination=None):
     migrator.copy_id(src, target)
 
     logger.info("Migrated LabProduct from %s -> %s" % (src, target))
+
+
+def remove_creation_date_index(tool):
+    logger.info("Removing CreationDate index from catalogs ...")
+    index = "CreationDate"
+    portal = tool.aq_inner.aq_parent
+    for cat in portal.objectValues():
+        if not isinstance(cat, BaseCatalog):
+            continue
+        if index not in cat.indexes():
+            continue
+        logger.info("Removing CreationDate from {}".format(cat.id))
+        del_index(cat, index)
+
+    logger.info("Removing CreationDate index from catalogs [DONE]")
