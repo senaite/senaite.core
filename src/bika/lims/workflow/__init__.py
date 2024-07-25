@@ -95,8 +95,15 @@ def doActionFor(instance, action_id):
     succeed = False
     message = ""
     workflow = api.get_tool("portal_workflow")
+
     try:
+        # do not catalog objects within the workflow transition
+        #   see WorkflowTool._reindexWorkflowVariables
+        workflow._setDefaultCataloging(False)
+        # do the transition
         workflow.doActionFor(instance, action_id)
+        # always reindex the object after transition
+        instance.reindexObject()
         succeed = True
     except WorkflowException as e:
         message = str(e)
