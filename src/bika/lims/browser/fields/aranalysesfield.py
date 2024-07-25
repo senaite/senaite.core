@@ -54,14 +54,14 @@ class ARAnalysesField(ObjectField):
     def get(self, instance, **kw):
         # See `senaite.core.datamanagers.field.sample_analyses`
         dm = queryMultiAdapter((instance, instance.REQUEST, self),
-                               interface=IDataManager, name="Analyes")
+                               interface=IDataManager, name="Analyses")
         return dm.get(**kw)
 
     @security.private
     def set(self, instance, items, prices=None, specs=None, hidden=None, **kw):
         # See `senaite.core.datamanagers.field.sample_analyses`
         dm = queryMultiAdapter((instance, instance.REQUEST, self),
-                               interface=IDataManager, name="Analyes")
+                               interface=IDataManager, name="Analyses")
         return dm.set(items, prices, specs, hidden, **kw)
 
 
