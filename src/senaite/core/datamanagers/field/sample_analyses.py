@@ -32,7 +32,8 @@ class SampleAnalysesFieldDataManager(FieldDataManager):
         Return a list of catalog brains unless `full_objects=True` is passed.
         Other keyword arguments are passed to senaite_catalog_analysis
 
-        :param kw: Keyword arguments to inject in the search query
+        :param instance: Analysis Request object
+        :param kwargs: Keyword arguments to inject in the search query
         :returns: A list of Analysis Objects/Catalog Brains
         """
         # Filter out parameters from kwargs that don't match with indexes
@@ -95,15 +96,15 @@ class SampleAnalysesFieldDataManager(FieldDataManager):
         services = set(services + dependencies)
 
         # Modify existing AR specs with new form values of selected analyses
-        specs = self.resolve_specs(specs)
+        specs = self.resolve_specs(self.context, specs)
 
         # Add analyses
         params = dict(prices=prices, hidden=hidden, specs=specs)
-        map(lambda serv: self.add_analysis(serv, **params), services)
+        map(lambda serv: self.add_analysis(self.context, serv, **params), services)
 
         # Get all analyses (those from descendants included)
         analyses = self.context.objectValues("Analysis")
-        analyses.extend(self.get_analyses_from_descendants())
+        analyses.extend(self.get_analyses_from_descendants(self.context))
 
         # Bail out those not in services list or submitted
         uids = map(api.get_uid, services)
@@ -113,7 +114,7 @@ class SampleAnalysesFieldDataManager(FieldDataManager):
         # Remove analyses
         map(self.remove_analysis, to_remove)
 
-    def resolve_specs(self, results_ranges):
+    def resolve_specs(self, instance, results_ranges):
         """Returns a dictionary where the key is the service_uid and the value
         is its results range. The dictionary is made by extending the
         results_ranges passed-in with the Sample's ResultsRanges (a copy of the
@@ -122,7 +123,7 @@ class SampleAnalysesFieldDataManager(FieldDataManager):
         rrs = results_ranges or []
 
         # Sample's Results ranges
-        sample_rrs = self.context.getResultsRange()
+        sample_rrs = instance.getResultsRange()
 
         # Ensure all subfields from specification are kept and missing values
         # for subfields are filled in accordance with the specs
@@ -202,7 +203,7 @@ class SampleAnalysesFieldDataManager(FieldDataManager):
         conditions = existing + missing
         return sorted(conditions, key=lambda con: index(con))
 
-    def add_analysis(self, service, **kwargs):
+    def add_analysis(self, instance, service, **kwargs):
         service_uid = api.get_uid(service)
 
         # Ensure we have suitable parameters
@@ -223,7 +224,7 @@ class SampleAnalysesFieldDataManager(FieldDataManager):
         # Gets the analysis or creates the analysis for this service
         # Note this returns a list, because is possible to have multiple
         # partitions with same analysis
-        analyses = self.resolve_analyses(service)
+        analyses = self.resolve_analyses(instance, service)
 
         # Filter out analyses in detached states
         # This allows to re-add an analysis that was retracted or cancelled
@@ -233,7 +234,7 @@ class SampleAnalysesFieldDataManager(FieldDataManager):
 
         if not analyses:
             # Create the analysis
-            analysis = create_analysis(self.context, service)
+            analysis = create_analysis(instance, service)
             analyses.append(analysis)
 
         for analysis in analyses:
@@ -294,7 +295,7 @@ class SampleAnalysesFieldDataManager(FieldDataManager):
                 attachment_id = api.get_id(attachment)
                 api.get_parent(attachment).manage_delObjects(attachment_id)
 
-    def resolve_analyses(self, service):
+    def resolve_analyses(self, instance, service):
         """Resolves analyses for the service and instance
         It returns a list, cause for a given sample, multiple analyses for same
         service can exist due to the possibility of having multiple partitions
@@ -302,13 +303,13 @@ class SampleAnalysesFieldDataManager(FieldDataManager):
         analyses = []
 
         # Does the analysis exists in this instance already?
-        instance_analyses = self.get_from_instance(service)
+        instance_analyses = self.get_from_instance(instance, service)
 
         if instance_analyses:
             analyses.extend(instance_analyses)
 
         # Does the analysis exists in an ancestor?
-        from_ancestor = self.get_from_ancestor(service)
+        from_ancestor = self.get_from_ancestor(instance, service)
         for ancestor_analysis in from_ancestor:
             # only move non-assigned analyses
             state = api.get_workflow_status_of(ancestor_analysis)
@@ -318,47 +319,47 @@ class SampleAnalysesFieldDataManager(FieldDataManager):
             analysis_id = api.get_id(ancestor_analysis)
             logger.info("Analysis {} is from an ancestor".format(analysis_id))
             cp = ancestor_analysis.aq_parent.manage_cutObjects(analysis_id)
-            self.context.manage_pasteObjects(cp)
-            analyses.append(self.context._getOb(analysis_id))
+            instance.manage_pasteObjects(cp)
+            analyses.append(instance._getOb(analysis_id))
 
         # Does the analysis exists in descendants?
-        from_descendant = self.get_from_descendant(service)
+        from_descendant = self.get_from_descendant(instance, service)
         analyses.extend(from_descendant)
 
         return analyses
 
-    def get_analyses_from_descendants(self):
+    def get_analyses_from_descendants(self, instance):
         """Returns all the analyses from descendants
         """
         analyses = []
-        for descendant in self.context.getDescendants(all_descendants=True):
+        for descendant in instance.getDescendants(all_descendants=True):
             analyses.extend(descendant.objectValues("Analysis"))
         return analyses
 
-    def get_from_instance(self, service):
+    def get_from_instance(self, instance, service):
         """Returns analyses for the given service from the instance
         """
         service_uid = api.get_uid(service)
-        analyses = self.context.objectValues("Analysis")
+        analyses = instance.objectValues("Analysis")
         # Filter those analyses with same keyword. Note that a Sample can
         # contain more than one analysis with same keyword because of retests
         return filter(lambda an: an.getServiceUID() == service_uid, analyses)
 
-    def get_from_ancestor(self, service):
+    def get_from_ancestor(self, instance, service):
         """Returns analyses for the given service from ancestors
         """
-        ancestor = self.context.getParentAnalysisRequest()
+        ancestor = instance.getParentAnalysisRequest()
         if not ancestor:
             return []
 
         analyses = self.get_from_instance(ancestor, service)
         return analyses or self.get_from_ancestor(ancestor, service)
 
-    def get_from_descendant(self, service):
+    def get_from_descendant(self, instance, service):
         """Returns analyses for the given service from descendants
         """
         analyses = []
-        for descendant in self.context.getDescendants():
+        for descendant in instance.getDescendants():
             # Does the analysis exists in the current descendant?
             descendant_analyses = self.get_from_instance(descendant, service)
             if descendant_analyses:
