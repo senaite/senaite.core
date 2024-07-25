@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from Acquisition import aq_base
 from bika.lims import api
-from Products.CMFCore.CMFCatalogAware import CMFCatalogAware
 
 
 def _reindexWorkflowVariables(self, ob):
@@ -27,30 +25,3 @@ def _reindexWorkflowVariables(self, ob):
 
     # do a full reindex
     ob.reindexObject()
-    return
-
-    indexes = []
-
-    # Get the variables (e.g. review_state) to be indexes
-    if hasattr(aq_base(ob), 'reindexObject'):
-        mapping = self.getCatalogVariablesFor(ob) or {}
-        indexes = list(mapping)
-
-    # Reindex security of sub-objects.
-    if hasattr(aq_base(ob), 'reindexObjectSecurity'):
-        indexes.extend(CMFCatalogAware._cmf_security_indexes)
-
-    if not indexes:
-        return
-
-    # bail-out indexes that are not in the catalog
-    catalogs = api.get_catalogs_for(ob)
-    for cat in catalogs:
-        cat_indexes = cat.indexes()
-        cat_indexes = list(filter(lambda idx: idx in indexes, cat_indexes))
-        if not cat_indexes:
-            continue
-
-        # Reindex only the desired indexes, w/o metadata update
-        cat.catalog_object(ob, idxs=cat_indexes, update_metadata=0)
-
