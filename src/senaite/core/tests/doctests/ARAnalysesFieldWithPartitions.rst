@@ -110,7 +110,7 @@ Analyses retrieval
 Get the field data manager to play with:
 
     >>> field = sample.getField("Analyses")
-    >>> dm = queryMultiAdapter((sample, self.request, field), interface=IDataManager)
+    >>> dm = queryMultiAdapter((sample, self.request, field), interface=IDataManager, name="Analyses")
 
 get_from_instance
 ~~~~~~~~~~~~~~~~~
