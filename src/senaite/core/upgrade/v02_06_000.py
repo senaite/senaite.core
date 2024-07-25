@@ -1752,6 +1752,11 @@ def migrate_suppliers_to_dx(tool):
     tool.runImportStepFromProfile(profile, "workflow")
 
     origin = api.get_setup().get("bika_suppliers")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
     destination = get_setup_folder("suppliers")
 
     # un-catalog the old container
