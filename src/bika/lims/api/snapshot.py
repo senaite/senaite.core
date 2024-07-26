@@ -186,10 +186,8 @@ def get_object_data(obj):
     """
 
     try:
-        data = {}
         model = SuperModel(obj)
-        for key in model.iterkeys():
-            data[key] = model.stringify(getattr(obj, key, None))
+        data = model.to_dict()
     except Exception as exc:
         logger.error("Failed to get schema data for {}: {}"
                      .format(repr(obj), str(exc)))
