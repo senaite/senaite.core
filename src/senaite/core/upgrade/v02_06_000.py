@@ -2287,9 +2287,10 @@ def store_raw_snapshots(tool):
             continue
 
         # Store the UIDs of the analyses from the sample on it's own attr
-        analyses = sample.getAnalyses()
-        uids = [api.get_uid(an) for an in analyses]
-        setattr(sample, "Analyses", uids)
+        contained = sample.objectValues("Analysis")
+        contained_uids = [analysis.UID() for analysis in contained]
+        field = sample.getField("Analyses")
+        field.setRaw(sample, contained_uids)
         sample._p_deactivate()
 
     logger.info("Storing raw data in snapshots [DONE]")

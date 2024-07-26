@@ -125,16 +125,10 @@ class SampleAnalysesFieldDataManager(FieldDataManager):
             analyses_uids.append(uid)
 
         # Store the uids in instance's attribute for this field
-        self.field.setRaw(self.context, analyses_uids)
-
-        # Update ancestors with the analyses from this instance
-        for ancestor in self.context.getAncestors():
-            uids = getattr(ancestor, self.getName(), [])
-            uids = filter(lambda uid: not skip.get(uid, False), uids)
-            uids.extend(analyses_uids)
-            # Remove duplicates while keeping the order
-            uids = list(collections.OrderedDict.fromkeys(uids))
-            self.field.setRaw(self.context, uids)
+        # Note we only store the UIDs of the contained analyses!
+        contained = self.context.objectValues("Analysis")
+        contained_uids = [analysis.UID() for analysis in contained]
+        self.field.setRaw(self.context, contained_uids)
 
     def resolve_specs(self, instance, results_ranges):
         """Returns a dictionary where the key is the service_uid and the value
