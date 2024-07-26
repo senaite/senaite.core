@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import collections
 import itertools
 
 from AccessControl import Unauthorized
