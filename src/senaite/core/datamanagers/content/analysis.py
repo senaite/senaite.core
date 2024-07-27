@@ -24,7 +24,7 @@ from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces import IRoutineAnalysis
 from Products.Archetypes.utils import mapply
 from senaite.core import logger
-from senaite.core.datamanagers import DataManager
+from senaite.core.datamanagers.base import DataManager
 from zope.component import adapter
 
 
