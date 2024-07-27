@@ -2270,3 +2270,28 @@ def remove_creation_date_index(tool):
         del_index(cat, index)
 
     logger.info("Removing CreationDate index from catalogs [DONE]")
+
+
+def store_raw_analyses(tool):
+    logger.info("Storing analysis UIDs as raw data in samples ...")
+    query = {"portal_type": "AnalysisRequest"}
+    brains = api.search(query, SAMPLE_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Storing analysis UIDs as raw data in samples {0}/{1}"
+                        .format(num, total))
+
+        sample = api.get_object(brain)
+        if sample.getRawAnalyses():
+            # already set, skip
+            continue
+
+        # Store the UIDs of the analyses from the sample on it's own attr
+        contained = sample.objectValues("Analysis")
+        contained_uids = [analysis.UID() for analysis in contained]
+        field = sample.getField("Analyses")
+        field.setRaw(sample, contained_uids)
+        sample._p_deactivate()
+
+    logger.info("Storing analysis UIDs as raw data in samples [DONE]")
