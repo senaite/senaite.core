@@ -63,6 +63,15 @@ class ARAnalysesField(ObjectField):
                                interface=IDataManager, name="Analyses")
         return dm.set(items, prices, specs, hidden, **kw)
 
+    @security.public
+    def getRaw(self, instance, **kw):
+        return getattr(instance, self.getName())
+
+    @security.private
+    def setRaw(self, instance, uids):
+        uids = uids if uids else []
+        setattr(instance, self.getName(), uids)
+
 
 registerField(ARAnalysesField,
               title="Analyses",

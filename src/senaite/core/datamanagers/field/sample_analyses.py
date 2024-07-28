@@ -114,6 +114,21 @@ class SampleAnalysesFieldDataManager(FieldDataManager):
         # Remove analyses
         map(self.remove_analysis, to_remove)
 
+        # Get the uids of the analyses we keep (from descendants included)
+        analyses_uids = []
+        skip = dict.fromkeys(to_remove, True)
+        for analysis in analyses:
+            uid = analysis.UID()
+            if skip.get(uid, False):
+                continue
+            analyses_uids.append(uid)
+
+        # Store the uids in instance's attribute for this field
+        # Note we only store the UIDs of the contained analyses!
+        contained = self.context.objectValues("Analysis")
+        contained_uids = [analysis.UID() for analysis in contained]
+        self.field.setRaw(self.context, contained_uids)
+
     def resolve_specs(self, instance, results_ranges):
         """Returns a dictionary where the key is the service_uid and the value
         is its results range. The dictionary is made by extending the
