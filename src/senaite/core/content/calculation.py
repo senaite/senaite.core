@@ -182,6 +182,7 @@ class ICalculationSchema(model.Schema):
             "sort_on": "title",
             "sort_order": "ascending",
         },
+        visible=False,
     )
     dependent_services = UIDReferenceField(
         title=_(
@@ -193,6 +194,7 @@ class ICalculationSchema(model.Schema):
         multi_valued=True,
         required=True,
     )
+
 
 @implementer(ICalculation, ICalculationSchema, IDeactivable)
 class Calculation(Container):
