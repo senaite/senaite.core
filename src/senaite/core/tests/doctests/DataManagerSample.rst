@@ -101,7 +101,7 @@ Get the data manager:
 
     >>> dm =  IDataManager(sample)
     >>> dm
-    <senaite.core.datamanagers.sample.SampleDataManager object at 0x...>
+    <senaite.core.datamanagers.content.sample.SampleDataManager object at 0x...>
 
 Set a text field:
 

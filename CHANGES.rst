@@ -4,6 +4,10 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2593 Always do a full reindex of the object after transition
+- #2593 Store Analyses UIDs as raw data in a Sample's attr (Analyses)
+- #2593 Skip permissions update after transition when InternalUse is unchanged
+- #2595 Move sample analyses field logic to data manager
 - #2594 Fix Traceback when running migration again for Suppliers
 - #2591 Remove CreationDate index from catalogs in favour of created
 - #2592 Remove Action Handler Pool
