@@ -2324,18 +2324,26 @@ def migrate_worksheettemplates_to_dx(tool):
     # un-catalog the old container
     uncatalog_object(origin)
 
-    query = {"portal_type": "WorksheetTemplate"}
-    # search all AT based worksheet templates
-    brains = api.search(query, SETUP_CATALOG)
-    total = len(brains)
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+        "Layout": ("getLayout", "template_layout", []),
+        "Service": ("getService", "services", []),
+        "Instrument": ("getInstrument", "instrument", None),
+        "RestrictToMethod": (
+            "getRestrictToMethod", "restrict_to_method", None),
+        "EnableMultipleUseOfInstrument": (
+            "getEnableMultipleUseOfInstrument",
+            "enable_multiple_use_of_instrument", False),
+    }
 
-    # get all objects first
-    objects = map(api.get_object, brains)
-    for num, obj in enumerate(objects):
-        migrate_ws_template_to_dx(obj, destination)
+    # migrate the contents from the old AT container to the new one
+    migrate_to_dx("WorksheetTemplate", origin, destination, schema_mapping)
 
-        logger.info("Migrated WorksheetTemplate {0}/{1}: {2} -> {3}".format(
-            num, total, api.get_path(obj), api.get_path(obj)))
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
 
     if origin:
         # remove old AT folder
@@ -2345,68 +2353,3 @@ def migrate_worksheettemplates_to_dx(tool):
             logger.warn("Cannot remove {}. Is not empty".format(origin))
 
     logger.info("Convert Worksheet Templates to Dexterity [DONE]")
-
-
-def migrate_ws_template_to_dx(source, destination):
-    """Migrates a WorksheetTemplate to DX in destination folder
-
-    :param source: The source AT object
-    :param destination: The destination folder
-    """
-
-    # Create the object if it does not exist yet
-    src_id = source.getId()
-    target_id = src_id
-
-    target = destination.get(target_id)
-    if not target:
-        # Don't use the api to skip the auto-id generation
-        target = createContent("WorksheetTemplate", id=target_id)
-        destination._setObject(target_id, target)
-        target = destination._getOb(target_id)
-
-    # Manually set the fields
-    # NOTE: always convert string values to unicode for dexterity fields!
-    target.title = api.safe_unicode(source.Title() or "")
-    target.description = api.safe_unicode(source.Description() or "")
-    target.setRestrictToMethod(source.getRestrictToMethod())
-    target.setInstrument(source.getInstrument())
-    target.setEnableMultipleUseOfInstrument(
-        source.getEnableMultipleUseOfInstrument())
-    target.setServices(source.getService())
-
-    # Migrate the contents from AT to DX
-    migrator = getMultiAdapter(
-        (source, target), interface=IContentMigrator)
-
-    # copy all (raw) attributes from the source object to the target
-    migrator.copy_attributes(source, target)
-
-    # copy the UID
-    migrator.copy_uid(source, target)
-
-    # copy auditlog
-    migrator.copy_snapshots(source, target)
-
-    # copy creators
-    migrator.copy_creators(source, target)
-
-    # copy workflow history
-    migrator.copy_workflow_history(source, target)
-
-    # copy marker interfaces
-    migrator.copy_marker_interfaces(source, target)
-
-    # copy dates
-    migrator.copy_dates(source, target)
-
-    # uncatalog the source object
-    migrator.uncatalog_object(source)
-
-    # delete the old object
-    migrator.delete_object(source)
-
-    # change the ID *after* the original object was removed
-    migrator.copy_id(source, target)
-
-    return target
