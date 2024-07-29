@@ -189,17 +189,6 @@ But returns None if I ask to the partition:
     >>> dm.get_from_descendant(partition, Cu)
     []
 
-get_analyses_from_descendants
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-It returns the analyses contained by the descendants:
-
-    >>> dm.get_analyses_from_descendants(sample)
-    [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>]
-
-    >>> dm.get_analyses_from_descendants(partition)
-    []
-
 
 Resolution of analyses from the Sample lineage
 ..............................................
