@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2596 Fix attribute getter after improve system performance upgrade
 - #2593 Always do a full reindex of the object after transition
 - #2593 Retrieve and store object's raw data on snapshot creation
 - #2593 Skip permissions update after transition when InternalUse is unchanged
