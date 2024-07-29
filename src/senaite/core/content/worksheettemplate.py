@@ -375,7 +375,6 @@ class WorksheetTemplate(Container):
             elif api.is_object(v):
                 uid = api.get_uid(v)
             elif api.is_uid(v):
-                obj = api.get_object(v)
                 uid = v
             else:
                 raise TypeError(

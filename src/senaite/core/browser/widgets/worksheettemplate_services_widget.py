@@ -18,10 +18,10 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import collections
-
-from bika.lims import bikaMessageFactory as _
-from plone.memoize import view
+# import collections
+#
+# from bika.lims import bikaMessageFactory as _
+# from plone.memoize import view
 
 from .services_widget import ServicesWidget
 
