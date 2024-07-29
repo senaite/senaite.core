@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2598 Fix analyses from partitions are considered in manage analyses view
 - #2593 Always do a full reindex of the object after transition
 - #2593 Store Analyses UIDs as raw data in a Sample's attr (Analyses)
 - #2593 Skip permissions update after transition when InternalUse is unchanged

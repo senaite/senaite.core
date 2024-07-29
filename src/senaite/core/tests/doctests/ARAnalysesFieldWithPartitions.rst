@@ -189,17 +189,6 @@ But returns None if I ask to the partition:
     >>> dm.get_from_descendant(partition, Cu)
     []
 
-get_analyses_from_descendants
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-It returns the analyses contained by the descendants:
-
-    >>> dm.get_analyses_from_descendants(sample)
-    [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>]
-
-    >>> dm.get_analyses_from_descendants(partition)
-    []
-
 
 Resolution of analyses from the Sample lineage
 ..............................................
@@ -317,18 +306,22 @@ the partition:
     >>> partition.objectValues("Analysis")
     [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>, <Analysis at /plone/clients/client-1/W-0001-P01/Fe>, <Analysis at /plone/clients/client-1/W-0001-P01/Au>, <Analysis at /plone/clients/client-1/W-0001-P01/Mg>]
 
-To remove `Mg` analysis, pass the list without `Mg`:
+Nothing happens if we try to remove `Mg` analysis from the sample, cause it
+belongs to the partition:
 
     >>> field.set(sample, [Cu, Fe, Au])
-
-The analysis `Mg` has been removed, although it belonged to the partition:
-
     >>> sample.objectValues("Analysis")
     []
     >>> partition.objectValues("Analysis")
+    [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>, <Analysis at /plone/clients/client-1/W-0001-P01/Fe>, <Analysis at /plone/clients/client-1/W-0001-P01/Au>, <Analysis at /plone/clients/client-1/W-0001-P01/Mg>]
+
+We have explicitly remove the analysis from the partition instead:
+
+    >>> field.set(partition, [Cu, Fe, Au])
+    >>> partition.objectValues("Analysis")
     [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>, <Analysis at /plone/clients/client-1/W-0001-P01/Fe>, <Analysis at /plone/clients/client-1/W-0001-P01/Au>]
 
-But if I add a new analysis to the primary and I try to remove it from the
+If I add a new analysis to the primary and I try to remove it from the
 partition, nothing will happen:
 
     >>> field.set(sample, [Cu, Fe, Au, Mg])

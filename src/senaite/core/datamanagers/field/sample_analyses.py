@@ -104,7 +104,6 @@ class SampleAnalysesFieldDataManager(FieldDataManager):
 
         # Get all analyses (those from descendants included)
         analyses = self.context.objectValues("Analysis")
-        analyses.extend(self.get_analyses_from_descendants(self.context))
 
         # Bail out those not in services list or submitted
         uids = map(api.get_uid, services)
@@ -332,14 +331,6 @@ class SampleAnalysesFieldDataManager(FieldDataManager):
         from_descendant = self.get_from_descendant(instance, service)
         analyses.extend(from_descendant)
 
-        return analyses
-
-    def get_analyses_from_descendants(self, instance):
-        """Returns all the analyses from descendants
-        """
-        analyses = []
-        for descendant in instance.getDescendants(all_descendants=True):
-            analyses.extend(descendant.objectValues("Analysis"))
         return analyses
 
     def get_from_instance(self, instance, service):
