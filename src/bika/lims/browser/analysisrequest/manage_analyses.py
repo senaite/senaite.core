@@ -123,7 +123,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         """Update hook
         """
         super(AnalysisRequestAnalysesView, self).update()
-        analyses = self.context.getAnalyses(full_objects=True)
+        analyses = self.context.objectValues("Analysis")
         self.analyses = dict([(a.getServiceUID(), a) for a in analyses])
 
     @view.memoize
