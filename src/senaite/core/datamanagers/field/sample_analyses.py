@@ -113,15 +113,6 @@ class SampleAnalysesFieldDataManager(FieldDataManager):
         # Remove analyses
         map(self.remove_analysis, to_remove)
 
-        # Get the uids of the analyses we keep (from descendants included)
-        analyses_uids = []
-        skip = dict.fromkeys(to_remove, True)
-        for analysis in analyses:
-            uid = analysis.UID()
-            if skip.get(uid, False):
-                continue
-            analyses_uids.append(uid)
-
         # Store the uids in instance's attribute for this field
         # Note we only store the UIDs of the contained analyses!
         contained = self.context.objectValues("Analysis")
