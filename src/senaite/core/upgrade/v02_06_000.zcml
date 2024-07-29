@@ -6,9 +6,25 @@
    <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Move SampleType to Senaite setup"
       description="Migrate Sample Types to Senaite setup"
+      source="2645"
+      destination="2646"
+      handler=".v02_06_000.migrate_sampletypes_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Store analyses UIDs as raw data in samples"
+      description="Store analyses UIDs as raw data in samples"
+      source="2644"
+      destination="2645"
+      handler=".v02_06_000.store_raw_analyses"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Remove CreationDate index"
+      description="Remove CreationDate index"
       source="2643"
       destination="2644"
-      handler=".v02_06_000.migrate_sampletypes_to_dx"
+      handler=".v02_06_000.remove_creation_date_index"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

@@ -69,4 +69,11 @@
       replacement=".catalog.catalog_object"
       />
 
+  <!-- Ensure the full object is re-indexed after transition -->
+  <monkey:patch
+    description=""
+    class="Products.CMFCore.WorkflowTool.WorkflowTool"
+    original="_reindexWorkflowVariables"
+    replacement=".workflow._reindexWorkflowVariables"/>
+
 </configure>
