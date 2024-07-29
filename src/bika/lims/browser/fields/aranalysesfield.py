@@ -65,7 +65,7 @@ class ARAnalysesField(ObjectField):
 
     @security.public
     def getRaw(self, instance, **kw):
-        return getattr(instance, self.getName())
+        return getattr(instance, self.getName(), [])
 
     @security.private
     def setRaw(self, instance, uids):
