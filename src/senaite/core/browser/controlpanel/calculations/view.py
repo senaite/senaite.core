@@ -48,7 +48,7 @@ class CalculationsView(ListingView):
         }
 
         self.context_actions = {
-            _(u"listing_labproduct_action_add", default=u"Add"): {
+            _(u"listing_calculation_action_add", default=u"Add"): {
                 "url": "++add++Calculation",
                 "permission": AddCalculation,
                 "icon": "senaite_theme/icon/plus"
@@ -91,7 +91,7 @@ class CalculationsView(ListingView):
             {
                 "id": "default",
                 "title": _(
-                    u"listing_labproducts_state_active",
+                    u"listing_calculations_state_active",
                     default=u"Active",
                 ),
                 "contentFilter": {"is_active": True},
@@ -100,7 +100,7 @@ class CalculationsView(ListingView):
             {
                 "id": "inactive",
                 "title": _(
-                    u"listing_labproducts_state_inactive",
+                    u"listing_calculations_state_inactive",
                     default=u"Inactive",
                 ),
                 "contentFilter": {'is_active': False},
@@ -109,7 +109,7 @@ class CalculationsView(ListingView):
             {
                 "id": "all",
                 "title": _(
-                    u"listing_labproducts_state_all",
+                    u"listing_calculations_state_all",
                     default=u"All",
                 ),
                 "contentFilter": {},
