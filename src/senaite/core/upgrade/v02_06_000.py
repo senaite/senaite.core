@@ -2295,3 +2295,22 @@ def store_raw_analyses(tool):
         sample._p_deactivate()
 
     logger.info("Storing analysis UIDs as raw data in samples [DONE]")
+
+
+def del_raw_analyses(tool):
+    logger.info("Remove Analyses raw attribute from samples ...")
+    query = {"portal_type": "AnalysisRequest"}
+    brains = api.search(query, SAMPLE_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Removing Analyses raw attribute from samples {0}/{1}"
+                        .format(num, total))
+
+        sample = api.get_object(brain)
+        if hasattr(sample, "Analyses"):
+            delattr(sample, "Analyses")
+
+        sample._p_deactivate()
+
+    logger.info("Remove Analyses raw attribute from samples [DONE]")
