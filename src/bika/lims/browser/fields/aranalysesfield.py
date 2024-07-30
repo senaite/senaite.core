@@ -68,10 +68,6 @@ class ARAnalysesField(ObjectField):
         brains = self.get(instance)
         return [brain.UID for brain in brains]
 
-    @security.private
-    def setRaw(self, instance, uids):
-        return
-
 
 registerField(ARAnalysesField,
               title="Analyses",
