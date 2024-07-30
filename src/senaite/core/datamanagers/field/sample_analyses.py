@@ -50,7 +50,7 @@ class SampleAnalysesFieldDataManager(FieldDataManager):
         brains = catalog(query)
         if kw.get("full_objects", False):
             return map(api.get_object, brains)
-        return brains
+        return list(brains)
 
     def set(self, items, prices, specs, hidden, **kw):
         """Set/Assign Analyses to this AR
