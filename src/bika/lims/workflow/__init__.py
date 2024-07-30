@@ -18,28 +18,22 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import collections
-import six
 import sys
-import threading
 
+import six
 from AccessControl.SecurityInfo import ModuleSecurityInfo
 from bika.lims import PMF
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser import ulocalized_time
-from bika.lims.decorators import synchronized
-from bika.lims.interfaces import IActionHandlerPool, IGuardAdapter
+from bika.lims.interfaces import IGuardAdapter
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
-from bika.lims.utils import changeWorkflowState
-from senaite.core.i18n import translate as t
-from Products.Archetypes.config import UID_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
+from senaite.core.i18n import translate as t
 from zope.component import getAdapters
 from zope.interface import implements
-from ZPublisher.HTTPRequest import HTTPRequest
 
 security = ModuleSecurityInfo('bika.lims.workflow')
 security.declarePublic('guard_handler')
@@ -98,27 +92,9 @@ def doActionFor(instance, action_id):
 
         return doActionFor(instance=instance[0], action_id=action_id)
 
-    # Since a given transition can cascade or promote to other objects, we want
-    # to reindex all objects for which the transition succeed at once, at the
-    # end of process. Otherwise, same object will be reindexed multiple times
-    # unnecessarily.
-    # Also, ActionsHandlerPool ensures the same transition is not applied twice
-    # to the same object due to cascade/promote recursions.
-    pool = ActionHandlerPool.get_instance()
-    if pool.succeed(instance, action_id):
-        return False, "Transition {} for {} already done"\
-             .format(action_id, instance.getId())
-
-    # Return False if transition is not permitted
-    if not isTransitionAllowed(instance, action_id):
-        return False, "Transition {} for {} is not allowed"\
-            .format(action_id, instance.getId())
-
-    # Add this batch process to the queue
-    pool.queue_pool()
     succeed = False
     message = ""
-    workflow = getToolByName(instance, "portal_workflow")
+    workflow = api.get_tool("portal_workflow")
     try:
         workflow.doActionFor(instance, action_id)
         succeed = True
@@ -130,10 +106,6 @@ def doActionFor(instance, action_id):
             "Transition '{0}' not allowed: {1} '{2}' ({3})"
             .format(action_id, clazz_name, instance.getId(), curr_state))
         logger.error(message)
-
-    # Add the current object to the pool and resume
-    pool.push(instance, action_id, succeed)
-    pool.resume()
 
     return succeed, message
 
@@ -426,148 +398,3 @@ class JSONReadExtender(object):
         include_fields = get_include_fields(request)
         if not include_fields or "transitions" in include_fields:
             data['transitions'] = get_workflow_actions(self.context)
-
-
-class ActionHandlerPool(object):
-    """Singleton to handle concurrent transitions
-    """
-    implements(IActionHandlerPool)
-
-    __instance = None
-    __lock = threading.Lock()
-
-    @staticmethod
-    def get_instance():
-        """Returns the current instance of ActionHandlerPool
-
-        TODO: Refactor to global utility
-        """
-        if ActionHandlerPool.__instance is None:
-            # Thread-safe
-            with ActionHandlerPool.__lock:
-                if ActionHandlerPool.__instance is None:
-                    ActionHandlerPool()
-        return ActionHandlerPool.__instance
-
-    def __init__(self):
-        if ActionHandlerPool.__instance is not None:
-            raise Exception("Use ActionHandlerPool.get_instance()")
-        ActionHandlerPool.__instance = self
-
-    def __len__(self):
-        """Number of objects in the pool
-        """
-        return len(self.objects)
-
-    def __repr__(self):
-        """Better repr
-        """
-        return "<ActionHandlerPool for UIDs:[{}]>".format(
-            ",".join(map(api.get_uid, self.objects)))
-
-    def flush(self):
-        self.objects = collections.OrderedDict()
-        self.num_calls = 0
-
-    @property
-    def request(self):
-        request = api.get_request()
-        if not isinstance(request, HTTPRequest):
-            return None
-        return request
-
-    @property
-    def request_ahp(self):
-        data = {
-            "objects": collections.OrderedDict(),
-            "num_calls": 0
-        }
-
-        request = self.request
-        if request is None:
-            # Maybe this is called by a non-request script
-            return data
-
-        if "__action_handler_pool" not in request:
-            request["__action_handler_pool"] = data
-        return request["__action_handler_pool"]
-
-    @property
-    def objects(self):
-        return self.request_ahp["objects"]
-
-    @objects.setter
-    def objects(self, value):
-        self.request_ahp["objects"] = value
-
-    @property
-    def num_calls(self):
-        return self.request_ahp["num_calls"]
-
-    @num_calls.setter
-    def num_calls(self, value):
-        self.request_ahp["num_calls"] = value
-
-    @synchronized(max_connections=1)
-    def queue_pool(self):
-        """Notifies that a new batch of jobs is about to begin
-        """
-        self.num_calls += 1
-
-    @synchronized(max_connections=1)
-    def push(self, instance, action, success):
-        """Adds an instance into the pool, to be reindexed on resume
-        """
-        if self.request is None:
-            # This is called by a non-request script
-            instance.reindexObject()
-            return
-
-        uid = api.get_uid(instance)
-        info = self.objects.get(uid, {})
-        info[action] = {"success": success}
-        self.objects[uid] = info
-
-    def succeed(self, instance, action):
-        """Returns if the task for the instance took place successfully
-        """
-        uid = api.get_uid(instance)
-        return self.objects.get(uid, {}).get(action, {}).get("success", False)
-
-    @synchronized(max_connections=1)
-    def resume(self):
-        """Resumes the pool and reindex all objects processed
-        """
-        # do not decrease the counter below 0
-        if self.num_calls > 0:
-            self.num_calls -= 1
-
-        # postpone for pending calls
-        if self.num_calls > 0:
-            return
-
-        # return immediately if there are no objects in the queue
-        count = len(self)
-        if count == 0:
-            return
-
-        logger.info("Resume actions for {} objects".format(count))
-
-        # Fetch the objects from the pool
-        query = {"UID": self.objects.keys()}
-        brains = api.search(query, UID_CATALOG)
-        for brain in api.search(query, UID_CATALOG):
-            # Reindex the object
-            obj = api.get_object(brain)
-            obj.reindexObject()
-
-        # Cleanup the pool
-        logger.info("Objects processed: {}".format(len(brains)))
-        self.flush()
-
-
-def push_reindex_to_actions_pool(obj):
-    """Push a reindex job to the actions handler pool
-    """
-    pool = ActionHandlerPool.get_instance()
-    pool.push(obj, "reindex", success=True)

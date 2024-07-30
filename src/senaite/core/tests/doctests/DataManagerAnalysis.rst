@@ -110,7 +110,7 @@ Get the data manager:
 
     >>> cu_dm =  IDataManager(cu)
     >>> cu_dm
-    <senaite.core.datamanagers.analysis.RoutineAnalysisDataManager object at 0x...>
+    <senaite.core.datamanagers.content.analysis.RoutineAnalysisDataManager object at 0x...>
 
 Getting the value of a named attribute:
 
@@ -207,7 +207,7 @@ Get the data manager
 
     >>> drl_dm = IDataManager(drl)
     >>> drl_dm
-    <senaite.core.datamanagers.analysis.RoutineAnalysisDataManager object at 0x...>
+    <senaite.core.datamanagers.content.analysis.RoutineAnalysisDataManager object at 0x...>
 
 Set the results:
 

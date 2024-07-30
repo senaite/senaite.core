@@ -45,7 +45,6 @@ INDEXES = [
     # id, indexed attribute, type
     ("allowedRolesAndUsers", "", "KeywordIndex"),
     ("created", "", "DateIndex"),
-    ("CreationDate", "", "DateIndex"),
     ("Creator", "", "FieldIndex"),
     ("getId", "", "FieldIndex"),
     ("id", "", "FieldIndex"),

@@ -70,6 +70,10 @@ def update_internal_use_permissions(analysis_request):
     """
     if analysis_request.getInternalUse():
         # Revoke basic permissions from Owner (the client contact)
+        # TODO This is nasty!!!
+        #  We should remove the "Owner" role for this sample from users linked
+        #  to client contacts, as well as all permissions for client-specific
+        #  user groups.
         revoke_permission(View, "Owner", analysis_request)
         revoke_permission(ListFolderContents, "Owner", analysis_request)
         revoke_permission(AccessContentsInformation, "Owner", analysis_request)
@@ -77,7 +81,7 @@ def update_internal_use_permissions(analysis_request):
         # Mark the Sample for Internal use only
         alsoProvides(analysis_request, IInternalUse)
 
-    else:
+    elif IInternalUse.providedBy(analysis_request):
         # Restore basic permissions (acquired=1)
         analysis_request.manage_permission(View, [], acquire=1)
         analysis_request.manage_permission(ListFolderContents, [], acquire=1)
@@ -86,6 +90,11 @@ def update_internal_use_permissions(analysis_request):
 
         # Unmark the Sample
         noLongerProvides(analysis_request, IInternalUse)
+
+    else:
+        # The sample is not flagged for intenal use and this setting has not
+        # changed, so assume permissions are right
+        return
 
     analysis_request.reindexObjectSecurity()
     analysis_request.reindexObject(idxs="getInternalUse")
