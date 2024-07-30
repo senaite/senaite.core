@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Remove Analyses raw attribute from samples"
+      description="Remove Analyses raw attribute from samples"
+      source="2645"
+      destination="2646"
+      handler=".v02_06_000.del_raw_analyses"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Store analyses UIDs as raw data in samples"
       description="Store analyses UIDs as raw data in samples"
       source="2644"
