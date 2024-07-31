@@ -206,12 +206,9 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         turnaround time set or is not yet ready for proces, returns None
         """
         tat = self.getMaxTimeAllowed()
-        is_zero_or_none = ("0", 0, None)
         if not tat:
             return None
-        if tat.get("hours") in is_zero_or_none \
-            and tat.get("minutes") in is_zero_or_none \
-            and tat.get("days") in is_zero_or_none:
+        if api.to_minutes(**tat) == 0:
             return None
         start = self.getStartProcessDate()
         if not start:

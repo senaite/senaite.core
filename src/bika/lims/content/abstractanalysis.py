@@ -685,13 +685,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :rtype: int
         """
         maxtime = self.getMaxTimeAllowed()
-        is_zero_or_none = ("0", 0, None)
         if not maxtime:
             # No Turnaround time is set for this analysis
             return 0
-        if maxtime.get("hours") in is_zero_or_none \
-            and maxtime.get("minutes") in is_zero_or_none \
-            and maxtime.get("days") in is_zero_or_none:
+        if api.to_minutes(**maxtime) == 0:
             return 0
         return api.to_minutes(**maxtime) - self.getDuration()
 

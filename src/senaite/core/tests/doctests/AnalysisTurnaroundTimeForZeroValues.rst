@@ -11,30 +11,16 @@ Test Setup
 
 Needed Imports:
 
-    >>> import re
-    >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
-    >>> from bika.lims.api.analysis import get_formatted_interval
-    >>> from bika.lims.api.analysis import is_out_of_range
-    >>> from bika.lims.content.analysisrequest import AnalysisRequest
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
-    >>> from bika.lims.utils import tmpID
     >>> from bika.lims.workflow import doActionFor
-    >>> from bika.lims.workflow import getCurrentState
-    >>> from bika.lims.workflow import getAllowedTransitions
     >>> from DateTime import DateTime
     >>> from datetime import timedelta
     >>> from plone.app.testing import TEST_USER_ID
-    >>> from plone.app.testing import TEST_USER_PASSWORD
     >>> from plone.app.testing import setRoles
-    >>> from Products.ATContentTypes.utils import DT2dt, dt2DT
+    >>> from senaite.core.api.dtime import to_DT, to_dt
 
 Functional Helpers:
-
-    >>> def start_server():
-    ...     from Testing.ZopeTestCase.utils import startZServer
-    ...     ip, port = startZServer()
-    ...     return "http://{}:{}/{}".format(ip, port, portal.id)
 
     >>> def change_receive_date(ar, days):
     ...     prev_date = ar.getDateReceived()
@@ -44,10 +30,10 @@ Functional Helpers:
     ...         analysis.getField('creation_date').set(analysis, an_created + days)
 
     >>> def compute_due_date(analysis):
-    ...     start = DT2dt(analysis.getStartProcessDate())
+    ...     start = to_dt(analysis.getStartProcessDate())
     ...     tat = api.to_minutes(**analysis.getMaxTimeAllowed())
     ...     due_date = start + timedelta(minutes=tat)
-    ...     return dt2DT(due_date)
+    ...     return to_DT(due_date)
 
     >>> def compute_duration(date_from, date_to):
     ...     return (date_to - date_from) * 24 * 60
@@ -69,7 +55,7 @@ We need to create some basic objects for the test:
     >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
     >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
     >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
-    >>> category = api.create(bikasetup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
+    >>> category = api.create(setup.analysiscategories, "AnalysisCategory", title="Metals", Department=department)
     >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), DuplicateVariation="0.5")
     >>> service_uids = [api.get_uid(an) for an in [Cu]]
     >>> sampletype_uid = api.get_uid(sampletype)
