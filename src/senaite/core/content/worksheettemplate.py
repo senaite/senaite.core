@@ -60,11 +60,12 @@ class ILayoutRecord(Interface):
         required=True,
         default=u"1",
     )
-    type = schema.TextLine(
+    type = schema.Choice(
         title=_(
             u"title_layout_record_type",
             default=u"Analysis Type"
         ),
+        vocabulary="senaite.core.vocabularies.analysis_types",
         required=True,
         default=u"a",
     )
@@ -82,11 +83,12 @@ class ILayoutRecord(Interface):
         ),
         required=False,
     )
-    dup = schema.TextLine(
+    dup = schema.Choice(
         title=_(
             u"title_layout_record_dup",
             default=u"Duplicate Of"
         ),
+        vocabulary="senaite.core.vocabularies.duplicate",
         required=False,
     )
 

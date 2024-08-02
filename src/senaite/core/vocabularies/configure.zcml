@@ -10,4 +10,12 @@
       component=".samplepreservation.CategoriesVocabularyFactory"
       name="senaite.core.vocabularies.samplepreservation.categories" />
 
+  <utility
+      component=".analysis_types.AnalysisTypesVocabularyFactory"
+      name="senaite.core.vocabularies.analysis_types" />
+
+  <utility
+      component=".analysis_types.DuplicateVocabularyFactory"
+      name="senaite.core.vocabularies.duplicate" />
+
 </configure>
