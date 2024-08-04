@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import api
 from bika.lims.interfaces import IARAnalysesField
 from Products.Archetypes.public import Field
 from Products.Archetypes.public import ObjectField
@@ -65,12 +66,8 @@ class ARAnalysesField(ObjectField):
 
     @security.public
     def getRaw(self, instance, **kw):
-        return getattr(instance, self.getName())
-
-    @security.private
-    def setRaw(self, instance, uids):
-        uids = uids if uids else []
-        setattr(instance, self.getName(), uids)
+        brains = self.get(instance)
+        return [api.get_uid(brain) for brain in brains]
 
 
 registerField(ARAnalysesField,

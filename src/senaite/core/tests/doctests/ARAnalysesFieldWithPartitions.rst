@@ -112,6 +112,21 @@ Get the field data manager to play with:
     >>> field = sample.getField("Analyses")
     >>> dm = queryMultiAdapter((sample, self.request, field), interface=IDataManager, name="Analyses")
 
+get vs getRaw
+~~~~~~~~~~~~~
+
+`getRaw` returns the UIDs of same analyses returned by default by `get`. This
+is, analyses from partitions included:
+
+    >>> brains = field.get(sample)
+    >>> brain_uids = sorted([brain.UID for brain in brains])
+    >>> len(brain_uids)
+    2
+
+    >>> uids = field.getRaw(sample)
+    >>> brain_uids == sorted(uids)
+    True
+
 get_from_instance
 ~~~~~~~~~~~~~~~~~
 

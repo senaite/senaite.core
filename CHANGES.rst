@@ -5,8 +5,9 @@ Changelog
 ------------------
 
 - #2584 Migrate SampleTypes to Dexterity
+- #2602 Fix getAnalyses returns a LazyMap instead of a list
 - #2593 Always do a full reindex of the object after transition
-- #2593 Retrieve and store object's raw data on snapshot creation
+- #2593 Store Analyses UIDs as raw data in a Sample's attr (Analyses)
 - #2593 Skip permissions update after transition when InternalUse is unchanged
 - #2595 Move sample analyses field logic to data manager
 - #2594 Fix Traceback when running migration again for Suppliers

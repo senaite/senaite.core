@@ -2423,24 +2423,25 @@ def remove_creation_date_index(tool):
 
 def store_raw_analyses(tool):
     logger.info("Storing analysis UIDs as raw data in samples ...")
+    # Rolled back
+    # see https://github.com/senaite/senaite.core/pull/2603
+    logger.info("Storing analysis UIDs as raw data in samples [DONE]")
+
+
+def del_raw_analyses(tool):
+    logger.info("Remove Analyses raw attribute from samples ...")
     query = {"portal_type": "AnalysisRequest"}
     brains = api.search(query, SAMPLE_CATALOG)
     total = len(brains)
     for num, brain in enumerate(brains):
         if num and num % 100 == 0:
-            logger.info("Storing analysis UIDs as raw data in samples {0}/{1}"
+            logger.info("Removing Analyses raw attribute from samples {0}/{1}"
                         .format(num, total))
 
         sample = api.get_object(brain)
-        if sample.getRawAnalyses():
-            # already set, skip
-            continue
+        if hasattr(sample, "Analyses"):
+            delattr(sample, "Analyses")
 
-        # Store the UIDs of the analyses from the sample on it's own attr
-        contained = sample.objectValues("Analysis")
-        contained_uids = [analysis.UID() for analysis in contained]
-        field = sample.getField("Analyses")
-        field.setRaw(sample, contained_uids)
         sample._p_deactivate()
 
-    logger.info("Storing analysis UIDs as raw data in samples [DONE]")
+    logger.info("Remove Analyses raw attribute from samples [DONE]")
