@@ -43,8 +43,6 @@
  <object name="ReferenceSample" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSamplesFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="RejectAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SampleType" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SampleTypes" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SupplierContact" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Worksheet" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="WorksheetFolder" meta_type="Factory-based Type Information with dynamic views"/>

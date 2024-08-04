@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
+   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Move SampleType to Senaite setup"
+      description="Migrate Sample Types to Senaite setup"
+      source="2645"
+      destination="2646"
+      handler=".v02_06_000.migrate_sampletypes_to_dx"
+      profile="senaite.core:default"/>
+
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Remove Analyses raw attribute from samples"
       description="Remove Analyses raw attribute from samples"

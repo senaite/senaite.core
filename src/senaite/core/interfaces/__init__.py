@@ -478,3 +478,13 @@ class IHavePrice(Interface):
     def getTotalPrice(self):
         """Returns the total price of the instance
         """
+
+
+class ISampleType(Interface):
+    """Marker interface for Sample Type
+    """
+
+
+class ISampleTypes(Interface):
+    """Marker interface for Sample Types container
+    """
