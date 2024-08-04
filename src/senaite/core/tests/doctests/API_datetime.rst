@@ -809,3 +809,67 @@ We can compare dates without time as well:
     >>> to_date = dtime.date(2023, 5, 7)
     >>> dtime.get_relative_delta(from_date, to_date)
     relativedelta(days=+1)
+
+
+Convert timedelta to Dict Object and Back
+................................
+
+Let's try to initialize a timedelta object and convert it first:
+
+    >>> from datetime import timedelta
+    >>> td = timedelta(days=1, hours=1, minutes=1, seconds=1)
+    >>> dict_td = dtime.timedelta_to_dict(td)
+    >>> isinstance(dict_td, dict)
+    True
+    >>> dict_td.get('days')
+    1
+    >>> dict_td.get('hours')
+    1
+    >>> dict_td.get('minutes')
+    1
+    >>> dict_td.get('seconds')
+    1
+
+If the wrong type is passed, a TypeError exception will be raised:
+
+    >>> dtime.timedelta_to_dict(str("wrong parameter type"))
+    Traceback (most recent call last):
+    ...
+    TypeError: <type 'str'> is not supported
+
+A default value can be set to be returned in case the passed value has the wrong type:
+
+    >>> dtime.timedelta_to_dict(str("wrong parameter type"), default="DEFAULT IS RETURNED")
+    'DEFAULT IS RETURNED'
+
+Convert the object back to timedelta:
+
+    >>> td_dict_td = dtime.to_timedelta(dict_td)
+    >>> td_dict_td
+    datetime.timedelta(1, 3661)
+    >>> isinstance(td_dict_td, timedelta)
+    True
+    >>> td_dict_td == td
+    True
+
+Passing the wrong type raises a TypeError exception:
+
+    >>> dtime.to_timedelta(str("wrong parameter type"))
+    Traceback (most recent call last):
+    ...
+    TypeError: <type 'str'> is not supported
+
+A default value can be set to be returned in case the passed value has the wrong type:
+
+    >>> dtime.to_timedelta(str("wrong parameter type"), default="DEFAULT IS RETURNED")
+    'DEFAULT IS RETURNED'
+
+Dict keys except: ['days', 'hours', 'minutes', 'seconds'] are just ignored:
+
+    >>> dtime.to_timedelta({'love': True, 'days': 1})
+    datetime.timedelta(1)
+
+Wrong values are ignored and replaced with 0:
+
+    >>> dtime.to_timedelta({'days': 'wrong value'})
+    datetime.timedelta(0)
