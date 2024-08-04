@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2604 Fix allowable and default output type for Html field in the ARReport
 - #2584 Migrate SampleTypes to Dexterity
 - #2602 Fix getAnalyses returns a LazyMap instead of a list
 - #2593 Always do a full reindex of the object after transition
