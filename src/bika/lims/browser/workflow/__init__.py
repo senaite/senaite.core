@@ -27,7 +27,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.interfaces import IWorkflowActionAdapter
 from bika.lims.interfaces import IWorkflowActionUIDsAdapter
-from bika.lims.workflow import ActionHandlerPool
 from bika.lims.workflow import doActionFor as do_action_for
 from Products.Archetypes.config import UID_CATALOG
 from zope.component import queryMultiAdapter
@@ -178,13 +177,11 @@ class WorkflowActionGenericAdapter(RequestContextAware):
 
         start = time.time()
         transitioned = []
-        ActionHandlerPool.get_instance().queue_pool()
         for obj in objects:
             obj = api.get_object(obj)
             success, message = do_action_for(obj, action)
             if success:
                 transitioned.append(obj)
-        ActionHandlerPool.get_instance().resume()
 
         end = time.time()
         logger.info("Action '{}' for {} objects took {:.2f}s".format(

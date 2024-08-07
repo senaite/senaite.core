@@ -77,7 +77,7 @@ Setup the Lab for testing:
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
     >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
     >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
-    >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="Water")
+    >>> sampletype = api.create(setup.sampletypes, "SampleType", title="Water", Prefix="Water")
 
 
 Content Setup

@@ -155,13 +155,4 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Sample (AR) Rejection View -->
-  <browser:page
-      for="*"
-      name="reject_samples"
-      class=".reject_samples.RejectSamplesView"
-      permission="senaite.core.permissions.ManageAnalysisRequests"
-      layer="bika.lims.interfaces.IBikaLIMS"
-  />
-
 </configure>

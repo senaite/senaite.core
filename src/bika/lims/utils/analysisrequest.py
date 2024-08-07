@@ -37,17 +37,13 @@ from bika.lims.interfaces import IReceived
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import copy_field_values
-from bika.lims.utils import createPdf
 from bika.lims.utils import get_link
 from bika.lims.utils import tmpID
-from bika.lims.workflow import ActionHandlerPool
 from bika.lims.workflow import doActionFor
-from bika.lims.workflow import push_reindex_to_actions_pool
 from DateTime import DateTime
 from Products.Archetypes.config import UID_CATALOG
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFPlone.utils import _createObjectByType
-from Products.CMFPlone.utils import safe_unicode
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.idserver import renameAfterCreation
 from senaite.core.permissions.sample import can_receive
@@ -348,10 +344,6 @@ def create_retest(ar):
         # Analysis Request must be in 'invalid' state
         raise ValueError("Cannot do a retest from an invalid Analysis Request")
 
-    # Open the actions pool
-    actions_pool = ActionHandlerPool.get_instance()
-    actions_pool.queue_pool()
-
     # Create the Retest (Analysis Request)
     ignore = ['Analyses', 'DatePublished', 'Invalidated', 'Sample', 'Remarks']
     retest = _createObjectByType("AnalysisRequest", ar.aq_parent, tmpID())
@@ -391,7 +383,7 @@ def create_retest(ar):
         ignore_fieldnames = ['DataAnalysisPublished']
         copy_field_values(an, nan, ignore_fieldnames=ignore_fieldnames)
         nan.unmarkCreationFlag()
-        push_reindex_to_actions_pool(nan)
+        nan.reindexObject()
 
     # Transition the retest to "sample_received"!
     changeWorkflowState(retest, SAMPLE_WORKFLOW, 'sample_received')
@@ -404,11 +396,9 @@ def create_retest(ar):
         changeWorkflowState(analysis, ANALYSIS_WORKFLOW, "unassigned")
 
     # Reindex and other stuff
-    push_reindex_to_actions_pool(retest)
-    push_reindex_to_actions_pool(retest.aq_parent)
+    retest.reindexObject()
+    retest.aq_parent.reindexObject()
 
-    # Resume the actions pool
-    actions_pool.resume()
     return retest
 
 
@@ -584,16 +574,25 @@ def get_rejection_pdf(sample):
     """Generates a pdf with sample rejection reasons
     """
     # Avoid circular dependencies
-    from bika.lims.browser.analysisrequest.reject import \
-        AnalysisRequestRejectPdfView
+    from senaite.core.browser.samples.rejection.report import RejectionReport
 
     # Render the html's rejection document
-    tpl = AnalysisRequestRejectPdfView(sample, api.get_request())
-    html = tpl.template()
-    html = safe_unicode(html).encode("utf-8")
+    tpl = RejectionReport(sample, api.get_request())
+    return tpl.to_pdf()
 
-    # Generate the pdf
-    return createPdf(htmlreport=html)
+
+def get_rejection_email_recipients(sample):
+    """Returns a list with the email addresses to send the rejection report
+    """
+    # extract the emails from contacts
+    contacts = [sample.getContact()] + sample.getCCContact()
+    emails = map(lambda contact: contact.getEmailAddress(), contacts)
+
+    # extend with the CC emails
+    emails = list(emails) + sample.getCCEmails(as_list=True)
+    emails = filter(is_valid_email_address, emails)
+    return list(emails)
+
 
 
 def get_rejection_mail(sample, rejection_pdf=None):
@@ -626,10 +625,7 @@ def get_rejection_mail(sample, rejection_pdf=None):
         return address
 
     # Get the recipients
-    _to = [sample.getContact()] + sample.getCCContact()
-    _to = map(to_valid_email_address, _to)
-    _to = filter(None, _to)
-
+    _to = get_rejection_email_recipients(sample)
     if not _to:
         # Cannot send an e-mail without recipient!
         logger.warn("No valid recipients for {}".format(api.get_id(sample)))

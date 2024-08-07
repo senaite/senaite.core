@@ -74,7 +74,7 @@ We need to create some basic objects for the test:
     >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
     >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH", MemberDiscountApplies=True)
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
-    >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
+    >>> sampletype = api.create(setup.sampletypes, "SampleType", title="Water", Prefix="W")
     >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
     >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
     >>> category = api.create(setup.analysiscategories, "AnalysisCategory", title="Metals", Department=department)
@@ -110,7 +110,7 @@ Get the data manager:
 
     >>> cu_dm =  IDataManager(cu)
     >>> cu_dm
-    <senaite.core.datamanagers.analysis.RoutineAnalysisDataManager object at 0x...>
+    <senaite.core.datamanagers.content.analysis.RoutineAnalysisDataManager object at 0x...>
 
 Getting the value of a named attribute:
 
@@ -207,7 +207,7 @@ Get the data manager
 
     >>> drl_dm = IDataManager(drl)
     >>> drl_dm
-    <senaite.core.datamanagers.analysis.RoutineAnalysisDataManager object at 0x...>
+    <senaite.core.datamanagers.content.analysis.RoutineAnalysisDataManager object at 0x...>
 
 Set the results:
 

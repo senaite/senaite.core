@@ -1168,37 +1168,40 @@ class Batch_Labels(WorksheetImporter):
 class Sample_Types(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.bika_setup.bika_sampletypes
-        bsc = getToolByName(self.context, SETUP_CATALOG)
+        container = self.context.setup.sampletypes
+        sc = api.get_tool(SETUP_CATALOG)
+
         for row in self.get_rows(3):
-            if not row['title']:
+            title = row.get("title")
+            if not title:
                 continue
-            obj = _createObjectByType("SampleType", folder, tmpID())
-            samplematrix = self.get_object(bsc, 'SampleMatrix',
-                                           row.get('SampleMatrix_title'))
-            containertype = self.get_object(bsc, 'ContainerType',
-                                            row.get('ContainerType_title'))
-            retentionperiod = {
-                'days': row['RetentionPeriod'] if row['RetentionPeriod'] else 0,
+
+            obj = api.create(container, "SampleType", title=title,
+                             description=row.get("description"))
+
+            samplematrix = self.get_object(
+                sc, 'SampleMatrix', row.get('SampleMatrix_title'))
+            containertype = self.get_object(
+                sc, 'ContainerType', row.get('ContainerType_title'))
+
+            if samplematrix:
+                obj.setSampleMatrix(samplematrix)
+            if containertype:
+                obj.setContainerType(containertype)
+
+            obj.setHazardous(self.to_bool(row['Hazardous']))
+            obj.setPrefix(row['Prefix'])
+            obj.setMinimumVolume(row['MinimumVolume'])
+            obj.setRetentionPeriod({
+                'days': row['RetentionPeriod'] or 0,
                 'hours': 0,
-                'minutes': 0}
-            obj.edit(
-                title=row['title'],
-                description=row.get('description', ''),
-                RetentionPeriod=retentionperiod,
-                Hazardous=self.to_bool(row['Hazardous']),
-                SampleMatrix=samplematrix,
-                Prefix=row['Prefix'],
-                MinimumVolume=row['MinimumVolume'],
-                ContainerType=containertype
-            )
-            samplepoint = self.get_object(bsc, 'SamplePoint',
+                'minutes': 0})
+
+            samplepoint = self.get_object(sc, 'SamplePoint',
                                           row.get('SamplePoint_title'))
             if samplepoint:
-                samplepoint.setSampleType([obj, ])
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+                samplepoint.setSampleTypes([obj, ])
+            obj.reindexObject()
 
 
 class Sample_Points(WorksheetImporter):

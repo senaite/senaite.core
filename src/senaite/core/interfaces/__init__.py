@@ -480,6 +480,16 @@ class IHavePrice(Interface):
         """
 
 
+class ISampleType(Interface):
+    """Marker interface for Sample Type
+    """
+
+
+class ISampleTypes(Interface):
+    """Marker interface for Sample Types container
+    """
+
+
 class ICalculation(Interface):
     """Marker interface for calculation
     """

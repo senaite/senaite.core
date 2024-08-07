@@ -4,6 +4,18 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2604 Fix allowable and default output type for Html field in the ARReport
+- #2584 Migrate SampleTypes to Dexterity
+- #2602 Fix getAnalyses returns a LazyMap instead of a list
+- #2593 Always do a full reindex of the object after transition
+- #2593 Store Analyses UIDs as raw data in a Sample's attr (Analyses)
+- #2593 Skip permissions update after transition when InternalUse is unchanged
+- #2595 Move sample analyses field logic to data manager
+- #2594 Fix Traceback when running migration again for Suppliers
+- #2591 Remove CreationDate index from catalogs in favour of created
+- #2592 Remove Action Handler Pool
+- #2590 Fix Traceback in referencesample analyses listing
+- #2589 Fix reject report to fully conform with the ISO standard
 - #2588 Widget text extensions
 - #2586 Support multiple files for datagrid fields
 - #2581 Migrate Suppliers to Dexterity

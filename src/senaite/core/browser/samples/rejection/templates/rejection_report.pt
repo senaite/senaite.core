@@ -1,0 +1,264 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      i18n:domain="senaite.core"
+      tal:define="portal_state context/@@plone_portal_state;
+                  portal_url portal_state/portal_url;">
+<head tal:define="impress_css string:++plone++senaite.impress.static/css;
+                  impress_css string:${portal_url}/${impress_css}">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Impress default CSS styling -->
+  <link rel="stylesheet" type="text/css"
+        tal:attributes="href string:${impress_css}/bootstrap.min.css"/>
+  <link rel="stylesheet" type="text/css"
+        tal:attributes="href string:${impress_css}/bootstrap-print.css"/>
+  <link rel="stylesheet" type="text/css"
+        tal:attributes="href string:${impress_css}/print.css"/>
+
+  <!-- Layout/Paperformat CSS -->
+  <style type="text/css"
+         tal:content="structure python:view.layout_css"></style>
+
+  <style type="text/css">
+
+      .report { font-size: 9pt; }
+      .report h1 { font-size: 140%; }
+      .report h2 { font-size: 120%; }
+      .report h3 { font-size: 110%; }
+      .report table { font-size: 9pt; }
+      .report .section-header { text-align: center; text-transform: uppercase; }
+      .report table.noborder td, .report table.noborder th { border: none; }
+      .report .label { font-weight: bold; }
+      .report .label:after { content: ":"; }
+      .report table td { padding: 4pt 2pt; margin: 0px; }
+
+      .check {
+          font-weight: bold;
+          border: 1px solid black;
+          margin: 0 4pt;
+          padding: 0 5pt;
+          font-size: 85%;
+      }
+      .check.checked {
+          padding: 0 2pt;
+          margin: 0 2pt 0 4pt;
+      }
+
+  </style>
+</head>
+
+<body tal:define="
+    portal_url  nocall:context/portal_url;
+    portal      portal_url/getPortalObject;
+    lab         python:view.laboratory;
+    ar          python:view.context;
+    labreasons  python:view.available_reasons;
+    client      python:ar.getClient();
+    reasons     python: view.get_rejection_reasons('selected');
+    otherreas   python: view.get_rejection_reasons('other');">
+
+  <div class="report">
+
+    <div class="row section-header pb-4">
+      <div class="col-sm-12">
+        <h1 tal:content="lab/Title"></h1>
+        <h2 i18n:translate="">Samples rejection reporting form</h2>
+      </div>
+    </div>
+
+    <div class="row section-client pb-2">
+      <div class="col-sm-12">
+        <table class="table table-sm table-condensed noborder">
+          <colgroup>
+            <col style="width: 25%;">
+            <col style="width: 75%">
+          </colgroup>
+          <tr>
+            <td class="label" i18n:translate="">Client</td>
+            <td tal:content="python: client.Title()"></td>
+          </tr>
+          <tr>
+            <td class="label" i18n:translate="">Client ID</td>
+            <td tal:content="python: client.getClientID()"></td>
+          </tr>
+          <tr>
+            <td class="label" i18n:translate="">Physical address</td>
+            <td tal:define="
+                        addrkeys python:['address', 'city', 'state', 'zip', 'country'];
+                        addrs python:client.getPhysicalAddress() or client.getPostalAddress() or client.getBillingAddress();
+                        addrlist python:[addrs.get(v) for v in addrkeys if addrs.get(v)];">
+              <tal:addresslines repeat="line addrlist">
+                <span tal:replace="line"></span><br/>
+              </tal:addresslines>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="row section-sample pb-3">
+      <div class="col-sm-12">
+        <table class="table table-sm table-condensed noborder">
+          <tr>
+            <td class="label" i18n:translate="">Sample ID</td>
+            <td tal:define="csid python: ar.getClientSampleID();
+                            sid  python: ar.getId();
+                            id   python: list(filter(None, [sid, csid]));
+                            id   python: ' / '.join(id);"
+                tal:content="id"></td>
+            <td class="label" i18n:translate="">Sample type</td>
+            <td colspan="3" tal:content="python: ar.getSampleTypeTitle()"></td>
+          </tr>
+          <tr tal:define="collected python: ar.getDateSampled();
+                          received  python: ar.getDateReceived();
+                          rejected  python: view.rejection_date;">
+            <td class="label" i18n:translate="">Collected</td>
+            <td tal:content="python:view.long_date(collected)"></td>
+            <td class="label" i18n:translate="">Received</td>
+            <td tal:content="python:view.long_date(received)"></td>
+            <td class="label" i18n:translate="">Rejected</td>
+            <td tal:content="python: view.long_date(rejected)"></td>
+          </tr>
+        </table>
+
+        <table class="table table-sm table-condensed noborder pt-3">
+          <colgroup>
+            <col style="width: 25%;">
+            <col style="width: 75%">
+          </colgroup>
+          <tr>
+            <td class="label" i18n:translate="">Analyses requested</td>
+            <td tal:define="analyses python:ar.getAnalyses();
+                            analyses python:[an.getObject() for an in analyses];
+                            analyses python:[('%s (%s)' % (an.Title(), an.getKeyword())) for an in analyses];">
+              <span tal:replace="python: ', '.join(analyses)"></span>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="row section-reasons pb-3">
+      <div class="col-sm-12">
+        <h3 i18n:translate="">Reasons for rejection</h3>
+        <div class="reason mb-1" tal:repeat="reason labreasons">
+          <span
+            tal:attributes="class python: 'check checked' if reason in reasons else 'check'"
+            tal:content="python: 'X' if reason in reasons else ''"></span>
+          <span tal:replace="reason"></span>
+        </div>
+        <span
+          tal:condition="python:otherreas"
+          tal:attributes="class python: 'check checked' if otherreas else 'check'"
+          tal:content="python: 'X' if otherreas else ''">&nbsp;</span>&nbsp;<span
+        tal:replace="python: otherreas and otherreas[0] or ''"></span><br/>
+      </div>
+    </div>
+
+    <!-- SIGNATURES -->
+    <tal:render condition="python:True">
+      <div class="row section-signatures">
+        <div class="col-sm-12 pt-3">
+
+          <table class="table table-sm table-condensed noborder"
+                 tal:define="member      python:view.get_rejected_by();
+                             authorizers python:view.get_authorized_by();">
+            <tr>
+              <!-- Reviewed by -->
+              <td class="reviewed-by">
+                <span class="font-weight-bold" i18n:translate="">
+                  Reviewed by
+                </span>
+
+                <!-- Signature image -->
+                <div class="signature" tal:condition="member/signature">
+                  <img tal:attributes="src member/signature"
+                       style="height:75px"/>
+                </div>
+
+                <!-- Fullname -->
+                <div class="signature-name"
+                     tal:condition="member/fullname">
+                  <span tal:replace="member/salutation"></span>
+                  <span tal:replace="member/fullname"></span>
+                </div>
+
+                <!-- Job title -->
+                <div class="signature-job-title"
+                     tal:condition="member/job_title"
+                     tal:content="member/job_title">
+                </div>
+
+                <!-- Email -->
+                <div class="signature-email"
+                     tal:condition="member/email"
+                     tal:content="member/email">
+                </div>
+
+                <!-- Business phone -->
+                <div class="signature-phone"
+                     tal:condition="member/phone"
+                     tal:content="member/phone">
+                </div>
+
+                <!-- Department -->
+                <div class="signature-department"
+                     tal:condition="member/department"
+                     tal:content="member/department">
+                </div>
+              </td>
+
+              <!-- Authorized by -->
+              <td class="authorized-by" tal:repeat="member authorizers">
+                <span class="font-weight-bold" i18n:translate="">
+                  Authorized by
+                </span>
+
+                <!-- Signature image -->
+                <div class="signature" tal:condition="member/signature">
+                  <img tal:attributes="src member/signature"
+                       style="height:75px"/>
+                </div>
+
+                <!-- Fullname -->
+                <div class="signature-name"
+                     tal:condition="member/fullname">
+                  <span tal:replace="member/salutation"></span>
+                  <span tal:replace="member/fullname"></span>
+                </div>
+
+                <!-- Job title -->
+                <div class="signature-job-title"
+                     tal:condition="member/job_title"
+                     tal:content="member/job_title">
+                </div>
+
+                <!-- Email -->
+                <div class="signature-email"
+                     tal:condition="member/email"
+                     tal:content="member/email">
+                </div>
+
+                <!-- Business phone -->
+                <div class="signature-phone"
+                     tal:condition="member/phone"
+                     tal:content="member/phone">
+                </div>
+
+                <!-- Department -->
+                <div class="signature-department"
+                     tal:condition="member/department"
+                     tal:content="member/department">
+                </div>
+              </td>
+            </tr>
+          </table>
+
+        </div>
+      </div>
+    </tal:render>
+  </div>
+</body>
+</html>

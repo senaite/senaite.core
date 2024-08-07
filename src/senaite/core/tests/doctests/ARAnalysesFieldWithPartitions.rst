@@ -27,6 +27,8 @@ Needed imports:
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from zope.interface import alsoProvides
     >>> from zope.interface import noLongerProvides
+    >>> from senaite.core.interfaces import IDataManager
+    >>> from zope.component._api import queryMultiAdapter
 
 Functional Helpers:
 
@@ -60,7 +62,7 @@ Create some basic objects for the test:
     >>> setRoles(portal, TEST_USER_ID, ['Manager',])
     >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH", MemberDiscountApplies=True)
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
-    >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
+    >>> sampletype = api.create(setup.sampletypes, "SampleType", title="Water", Prefix="W")
     >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
     >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
     >>> category = api.create(setup.analysiscategories, "AnalysisCategory", title="Metals", Department=department)
@@ -105,9 +107,25 @@ Although is also returned by the primary:
 Analyses retrieval
 ..................
 
-Get the ARAnalysesField to play with:
+Get the field data manager to play with:
 
     >>> field = sample.getField("Analyses")
+    >>> dm = queryMultiAdapter((sample, self.request, field), interface=IDataManager, name="Analyses")
+
+get vs getRaw
+~~~~~~~~~~~~~
+
+`getRaw` returns the UIDs of same analyses returned by default by `get`. This
+is, analyses from partitions included:
+
+    >>> brains = field.get(sample)
+    >>> brain_uids = sorted([brain.UID for brain in brains])
+    >>> len(brain_uids)
+    2
+
+    >>> uids = field.getRaw(sample)
+    >>> brain_uids == sorted(uids)
+    True
 
 get_from_instance
 ~~~~~~~~~~~~~~~~~
@@ -115,26 +133,26 @@ get_from_instance
 When asked for `Fe` when the primary is given, it returns the analysis, cause
 it lives in the primary:
 
-    >>> fe = field.get_from_instance(sample, Fe)[0]
+    >>> fe = dm.get_from_instance(sample, Fe)[0]
     >>> fe.getServiceUID() == api.get_uid(Fe)
     True
 
 But when asked for `Cu` when the primary is given, it returns empty, cause it
 lives in the partition:
 
-    >>> field.get_from_instance(sample, Cu)
+    >>> dm.get_from_instance(sample, Cu)
     []
 
 While it returns the analysis when the partition is used:
 
-    >>> cu = field.get_from_instance(partition, Cu)[0]
+    >>> cu = dm.get_from_instance(partition, Cu)[0]
     >>> cu.getServiceUID() == api.get_uid(Cu)
     True
 
 But when asking the partition for `Fe` it returns empty, cause it lives in the
 ancestor:
 
-    >>> field.get_from_instance(partition, Fe)
+    >>> dm.get_from_instance(partition, Fe)
     []
 
 get_from_ancestor
@@ -143,22 +161,22 @@ get_from_ancestor
 When asked for `Fe` to primary, it returns empty because there is no ancestor
 containing `Fe`:
 
-    >>> field.get_from_ancestor(sample, Fe)
+    >>> dm.get_from_ancestor(sample, Fe)
     []
 
 But when asked for `Fe` to the partition, it returns the analysis, cause it
 it lives in an ancestor from the partition:
 
-    >>> fe = field.get_from_ancestor(partition, Fe)[0]
+    >>> fe = dm.get_from_ancestor(partition, Fe)[0]
     >>> fe.getServiceUID() == api.get_uid(Fe)
     True
 
 If I ask for `Cu`, that lives in the partition, it will return empty for both:
 
-    >>> field.get_from_ancestor(sample, Cu)
+    >>> dm.get_from_ancestor(sample, Cu)
     []
 
-    >>> field.get_from_ancestor(partition, Cu)
+    >>> dm.get_from_ancestor(partition, Cu)
     []
 
 get_from_descendant
@@ -167,23 +185,23 @@ get_from_descendant
 When asked for `Fe` to primary, it returns None because there is no descendant
 containing `Fe`:
 
-    >>> field.get_from_descendant(sample, Fe)
+    >>> dm.get_from_descendant(sample, Fe)
     []
 
 And same with partition:
 
-    >>> field.get_from_descendant(partition, Fe)
+    >>> dm.get_from_descendant(partition, Fe)
     []
 
 When asked for `Cu` to primary, it returns the analysis, because it lives in a
 descendant (partition):
 
-    >>> field.get_from_descendant(sample, Cu)
+    >>> dm.get_from_descendant(sample, Cu)
     [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>]
 
 But returns None if I ask to the partition:
 
-    >>> field.get_from_descendant(partition, Cu)
+    >>> dm.get_from_descendant(partition, Cu)
     []
 
 get_analyses_from_descendants
@@ -191,10 +209,10 @@ get_analyses_from_descendants
 
 It returns the analyses contained by the descendants:
 
-    >>> field.get_analyses_from_descendants(sample)
+    >>> dm.get_analyses_from_descendants(sample)
     [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>]
 
-    >>> field.get_analyses_from_descendants(partition)
+    >>> dm.get_analyses_from_descendants(partition)
     []
 
 
@@ -206,19 +224,19 @@ resolve_analyses
 
 Resolves the analysis from the sample lineage if exists:
 
-    >>> field.resolve_analyses(sample, Fe)
+    >>> dm.resolve_analyses(sample, Fe)
     [<Analysis at /plone/clients/client-1/W-0001/Fe>]
 
-    >>> field.resolve_analyses(sample, Cu)
+    >>> dm.resolve_analyses(sample, Cu)
     [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>]
 
-    >>> field.resolve_analyses(sample, Au)
+    >>> dm.resolve_analyses(sample, Au)
     []
 
 But when we use the partition and the analysis is found in an ancestor, it
 moves the analysis into the partition:
 
-    >>> field.resolve_analyses(partition, Fe)
+    >>> dm.resolve_analyses(partition, Fe)
     [<Analysis at /plone/clients/client-1/W-0001-P01/Fe>]
 
     >>> sample.objectValues("Analysis")
@@ -237,17 +255,17 @@ add_analysis
 If we try to add now an analysis that already exists, either in the partition or
 in the primary, the analysis won't be added:
 
-    >>> field.add_analysis(sample, Fe)
+    >>> dm.add_analysis(sample, Fe)
     >>> sample.objectValues("Analysis")
     []
 
-    >>> field.add_analysis(partition, Fe)
+    >>> dm.add_analysis(partition, Fe)
     >>> partition.objectValues("Analysis")
     [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>, <Analysis at /plone/clients/client-1/W-0001-P01/Fe>]
 
 If we add a new analysis, this will be added in the sample we are working with:
 
-    >>> field.add_analysis(sample, Au)
+    >>> dm.add_analysis(sample, Au)
     >>> sample.objectValues("Analysis")
     [<Analysis at /plone/clients/client-1/W-0001/Au>]
     >>> partition.objectValues("Analysis")
@@ -260,7 +278,7 @@ Apply the changes:
 If I try to add an analysis that exists in an ancestor, the analysis gets moved
 while the function returns None:
 
-    >>> field.add_analysis(partition, Au)
+    >>> dm.add_analysis(partition, Au)
     >>> sample.objectValues("Analysis")
     []
     >>> partition.objectValues("Analysis")

@@ -128,6 +128,8 @@ schema = BikaSchema.copy() + Schema((
 
     TextField(
         "Html",
+        allowable_content_types=("text/html",),
+        default_output_type="text/html",
         widget=TextAreaWidget(
             label=_("HTML"),
             cols=30,
