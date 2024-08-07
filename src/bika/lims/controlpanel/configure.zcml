@@ -29,14 +29,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.ISampleTypes"
-      name="folder_view"
-      class=".bika_sampletypes.SampleTypesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.IAnalysisSpecs"
       name="folder_view"
       class=".bika_analysisspecs.AnalysisSpecsView"

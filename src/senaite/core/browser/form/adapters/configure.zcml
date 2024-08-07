@@ -13,9 +13,15 @@
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".sampletemplate.EditForm"/>
 
-  <!-- Edit Form: Sample Type -->
+  <!-- Add Form: DX Sample Type -->
   <adapter
-      for="bika.lims.interfaces.ISampleType
+      name="++add++SampleType"
+      for="senaite.core.interfaces.ISampleTypes
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".sampletype.EditForm"/>
+  <!-- Edit Form: DX Sample Type -->
+  <adapter
+      for="senaite.core.interfaces.ISampleType
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".sampletype.EditForm"/>
 

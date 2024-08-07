@@ -244,6 +244,7 @@ def add_senaite_setup_items(portal):
          "InterpretationTemplates"),
         ("labproducts", "Lab Products", "LabProducts"),
         ("suppliers", "Suppliers", "Suppliers"),
+        ("sampletypes", "Sample Types", "SampleTypes"),
         ("worksheettemplates", "Worksheet Templates", "WorksheetTemplates"),
     ]
     setup = api.get_senaite_setup()

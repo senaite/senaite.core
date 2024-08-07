@@ -9,8 +9,7 @@
   <plone:static
       directory="static"
       type="plone"
-      name="senaite.core.static"
-      />
+      name="senaite.core.static"/>
 
   <!-- Package includes -->
   <include package=".attachment"/>

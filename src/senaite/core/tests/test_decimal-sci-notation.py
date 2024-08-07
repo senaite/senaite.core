@@ -321,7 +321,7 @@ class TestDecimalSciNotation(DataTestCase):
         s.setLowerDetectionLimit('-99999') # We want to test results below 0 too
         prevm = []
         an = None
-        bs = self.portal.bika_setup
+        bs = self.portal.setup
         for m in matrix:
             # Create the AR and set the values to the AS, but only if necessary
             if not an or prevm[0] != m[0] or prevm[1] != m[1]:
@@ -332,7 +332,7 @@ class TestDecimalSciNotation(DataTestCase):
                 self.assertEqual(s.getExponentialFormatPrecision(), m[1])
                 self.assertEqual(s.Schema().getField('ExponentialFormatPrecision').get(s), m[1])
                 client = self.portal.clients['client-1']
-                sampletype = bs.bika_sampletypes['sampletype-1']
+                sampletype = bs.sampletypes['sampletype-1']
                 values = {'Client': client.UID(),
                           'Contact': client.getContacts()[0].UID(),
                           'SamplingDate': '2015-01-01',
