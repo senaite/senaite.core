@@ -30,14 +30,21 @@ from zope.schema.interfaces import IVocabularyFactory
 class AnalysisTypesVocabulary(object):
 
     def __call__(self, context):
-        analysis_types = filter(lambda t: t, ANALYSIS_TYPES)
         reference_query = {
             "portal_type": "ReferenceDefinition",
             "is_active": True,
         }
         brains = api.search(reference_query, SETUP_CATALOG)
-        blank = brains
-        return to_simple_vocabulary(ANALYSIS_TYPES)
+        definitions = map(api.get_object, brains)
+        has_blanks = len([d for d in definitions if d.getBalnk()]) > 0
+        has_controls = len([d for d in definitions if not d.getBalnk()]) > 0
+
+        analysis_types = ANALYSIS_TYPES
+        if not has_blanks:
+            analysis_types = filter(lambda at: at[0] != "b", analysis_types)
+        if not has_controls:
+            analysis_types = filter(lambda at: at[0] != "c", analysis_types)
+        return to_simple_vocabulary(analysis_types)
 
 
 AnalysisTypesVocabularyFactory = AnalysisTypesVocabulary()

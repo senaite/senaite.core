@@ -35,10 +35,12 @@ class EditForm(EditFormAdapterBase):
         value = data.get("value")
 
         # Handle Methods Change
-        if name == "RestrictToMethod" and value:
+        if name == "form.widgets.restrict_to_method" and value:
             method_uid = value[0]
             options = self.get_instruments_options(method_uid)
-            self.add_update_field("Instrument", {"options": options})
+            self.add_update_field("form.widgets.instrument", {
+                "options": options
+            })
 
         return self.data
 
@@ -46,9 +48,13 @@ class EditForm(EditFormAdapterBase):
         """Returns a list of dicts that represent instrument options suitable
         for a selection list, with an empty option as first item
         """
-        options = [{"title": _("No Instrument"), "value": [""]}]
+        options = [{
+            "title": _(u"form_widget_instrument_title",
+                       default=u"No Instrument"),
+            "value": [""]
+        }]
         method = api.get_object(method, default=None)
-        instruments = method and method.getInstruments() or []
+        instruments = method.getInstruments() if method else []
         for instrument in instruments:
             option = {
                 "title": api.get_title(instrument),

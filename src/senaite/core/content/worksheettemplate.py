@@ -60,6 +60,7 @@ class ILayoutRecord(Interface):
         required=True,
         default=u"1",
     )
+
     type = schema.Choice(
         title=_(
             u"title_layout_record_type",
@@ -69,20 +70,57 @@ class ILayoutRecord(Interface):
         required=True,
         default=u"a",
     )
-    blank_ref = schema.TextLine(
+
+    directives.widget(
+        "blank_ref",
+        UIDReferenceWidgetFactory,
+        catalog=SETUP_CATALOG,
+        query={
+            "portal_type": "ReferenceDefinition",
+            "is_active": True,
+            "sort_limit": 5,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        },
+        display_template="<a href='${url}'>${title}</a>",
+        columns=get_default_columns,
+        limit=5,
+    )
+    blank_ref = UIDReferenceField(
         title=_(
             u"title_layout_record_blank_ref",
             default=u"Reference"
         ),
+        allowed_types=("ReferenceDefinition",),
+        multi_valued=False,
         required=False,
     )
-    control_ref = schema.TextLine(
+
+    directives.widget(
+        "control_ref",
+        UIDReferenceWidgetFactory,
+        catalog=SETUP_CATALOG,
+        query={
+            "portal_type": "ReferenceDefinition",
+            "is_active": True,
+            "sort_limit": 5,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        },
+        display_template="<a href='${url}'>${title}</a>",
+        columns=get_default_columns,
+        limit=5,
+    )
+    control_ref = UIDReferenceField(
         title=_(
             u"title_layout_record_control_ref",
             default=u"Reference"
         ),
+        allowed_types=("ReferenceDefinition",),
+        multi_valued=False,
         required=False,
     )
+
     dup = schema.Choice(
         title=_(
             u"title_layout_record_dup",
