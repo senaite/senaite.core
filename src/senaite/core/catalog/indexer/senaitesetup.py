@@ -23,7 +23,6 @@ from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IHaveDepartment
 from bika.lims.interfaces import IHaveInstrument
 from bika.lims.interfaces import IInstrument
-from bika.lims.interfaces import ISampleTypeAwareMixin
 from plone.indexer import indexer
 from Products.CMFCore.interfaces import IContentish
 from senaite.core.catalog import SETUP_CATALOG
@@ -31,30 +30,6 @@ from senaite.core.catalog.utils import get_searchable_text_tokens
 from senaite.core.interfaces import IHavePrice
 from senaite.core.interfaces import ISetupCatalog
 from senaite.core.interfaces import IHaveAnalysisCategory
-
-
-@indexer(ISampleTypeAwareMixin, ISetupCatalog)
-def sampletype_uid(instance):
-    """Returns the list of SampleType UIDs the instance is assigned to
-
-    This is a KeywordIndex, so it will be indexed as a list, even if only one
-    SampleType can be assigned to the instance. Moreover, if the instance has
-    no SampleType assigned, it returns a tuple with a None value. This allows
-    searches for `MissingValue` entries too.
-    """
-    sample_type = instance.getSampleType()
-    return to_keywords_list(sample_type, api.get_uid)
-
-
-@indexer(ISampleTypeAwareMixin, ISetupCatalog)
-def sampletype_title(instance):
-    """Returns a list of titles from SampleType the instance is assigned to
-
-    If the instance has no sample type assigned, it returns a tuple with
-    a None value. This allows searches for `MissingValue` entries too.
-    """
-    sample_type = instance.getSampleType()
-    return to_keywords_list(sample_type, api.get_title)
 
 
 @indexer(IAnalysisService, ISetupCatalog)

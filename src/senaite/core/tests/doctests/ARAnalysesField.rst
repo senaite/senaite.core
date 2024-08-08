@@ -55,7 +55,7 @@ Variables::
     >>> request = self.request
     >>> setup = portal.bika_setup
     >>> calculations = setup.bika_calculations
-    >>> sampletypes = setup.bika_sampletypes
+    >>> sampletypes = portal.setup.sampletypes
     >>> samplepoints = portal.setup.samplepoints
     >>> analysiscategories = portal.setup.analysiscategories
     >>> analysisspecs = setup.bika_analysisspecs
@@ -98,7 +98,7 @@ Create a Sample Type:
 
     >>> sampletype = api.create(sampletypes, "SampleType", Prefix="water", MinimumVolume="100 ml")
     >>> sampletype
-    <SampleType at /plone/bika_setup/bika_sampletypes/sampletype-1>
+    <SampleType at /plone/setup/sampletypes/sampletype-1>
 
 Create a Sample Point:
 
