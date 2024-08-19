@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
    <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Reindex getDuedate in analyses and sample catalog"
+      description="Reindex getDuedate in analyses and sample catalog"
+      source="2647"
+      destination="2648"
+      handler=".v02_06_000.reindex_getDueDate"
+      profile="senaite.core:default"/>
+
+   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Move SampleType to Senaite setup"
       description="Migrate Sample Types to Senaite setup"
       source="2646"

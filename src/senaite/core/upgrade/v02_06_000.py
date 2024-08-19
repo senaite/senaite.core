@@ -2065,6 +2065,18 @@ def migrate_sampletypes_to_dx(tool):
 
     logger.info("Convert SampleTypes to Dexterity [DONE]")
 
+@upgradestep(product, version)
+def reindex_getDueDate(tool):
+    analysis_catalog = api.get_tool(ANALYSIS_CATALOG)
+    for analysis in analysis_catalog():
+        obj = analysis.getObject()
+        obj.reindexObject()
+
+    sample_catalog = api.get_tool(SAMPLE_CATALOG)
+    for sample in sample_catalog():
+        # import pdb; pdb.set_trace()
+        obj = sample.getObject()
+        obj.reindexObject()
 
 def update_content_actions(tool):
     logger.info("Update content actions ...")
