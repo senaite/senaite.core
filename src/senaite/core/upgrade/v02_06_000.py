@@ -2454,7 +2454,7 @@ def ensure_valid_sticker_templates(tool):
     total = len(brains)
     for num, brain in enumerate(brains):
         logger.info("Ensure sample types have valid sticker templates {0}/{1}"
-                    .format(num, total))
+                    .format(num+1, total))
         obj = api.get_object(brain)
         obj.setAdmittedStickerTemplates(obj.getAdmittedStickerTemplates())
     logger.info("Ensure sample types have valid sticker templates [DONE]")
