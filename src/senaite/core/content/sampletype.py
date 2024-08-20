@@ -44,8 +44,12 @@ from zope.interface import Interface
 from zope.interface import Invalid
 from zope.interface import implementer
 
-
-STICKERS_VOCABULARY = 'senaite.core.vocabularies.stickertemplates'
+STICKERS_VOCABULARY = "senaite.core.vocabularies.stickertemplates"
+DEFAULT_ADMITTED_STICKER_TEMPLATES = [{
+    "admitted": set(),
+    "small_default": None,
+    "large_default": None
+}]
 
 
 def default_retention_period():
@@ -58,10 +62,10 @@ def default_retention_period():
 def prefix_whitespaces_constraint(value):
     """Check that the prefix does not contain whitespaces
     """
-    if ' ' in value:
+    if " " in value:
         raise Invalid(_(
             u"sampletype_prefix_whitespace_validator_message",
-            default=u'No whitespaces in prefix allowed'
+            default=u"No whitespaces in prefix allowed"
         ))
     return True
 
@@ -73,7 +77,7 @@ class IStickersRecordSchema(Interface):
     admitted = schema.Set(
         title=_(
             u"label_sampletype_admitted",
-            default=u'Admitted stickers for the sample type'
+            default=u"Admitted stickers for the sample type"
         ),
         value_type=schema.Choice(
             vocabulary=STICKERS_VOCABULARY,
@@ -84,7 +88,7 @@ class IStickersRecordSchema(Interface):
     small_default = schema.Choice(
         title=_(
             u"label_sampletype_small_default",
-            default=u'Default small sticker'
+            default=u"Default small sticker"
         ),
         vocabulary=STICKERS_VOCABULARY,
         required=False,
@@ -93,7 +97,7 @@ class IStickersRecordSchema(Interface):
     large_default = schema.Choice(
         title=_(
             u"label_sampletype_large_default",
-            default=u'Default large sticker'
+            default=u"Default large sticker"
         ),
         vocabulary=STICKERS_VOCABULARY,
         required=False,
@@ -238,11 +242,7 @@ class ISampleTypeSchema(model.Schema):
                               u"this sample type."),
         value_type=DataGridRow(schema=IStickersRecordSchema),
         required=True,
-        default=[{
-            'admitted': set(),
-            'small_default': None,
-            'large_default': None
-        }]
+        default=DEFAULT_ADMITTED_STICKER_TEMPLATES,
     )
 
 
@@ -260,16 +260,16 @@ class StickersFieldValidator(validator.SimpleFieldValidator):
         if len(value) == 1:
             valid = True
             errors = []
-            if not len(value[0]['admitted']):
+            if not len(value[0]["admitted"]):
                 valid = False
                 errors.append(
-                    _(u'at least one admitted sticker must be chosen'))
-            if not value[0]['small_default']:
+                    _(u"at least one admitted sticker must be chosen"))
+            if not value[0]["small_default"]:
                 valid = False
-                errors.append(_(u'select small default sticker'))
-            if not value[0]['large_default']:
+                errors.append(_(u"select small default sticker"))
+            if not value[0]["large_default"]:
                 valid = False
-                errors.append(_(u'select large default sticker'))
+                errors.append(_(u"select large default sticker"))
             msg = _(u"ERRORS: ") + ", ".join(errors)
 
         if not valid:
@@ -394,6 +394,10 @@ class SampleType(Container):
     @security.protected(permissions.ModifyPortalContent)
     def setAdmittedStickerTemplates(self, value):
         mutator = self.mutator("admitted_sticker_templates")
+        # ensure list and filter out empty dictionaries
+        value = filter(None, api.to_list(value))
+        if not value:
+            value = DEFAULT_ADMITTED_STICKER_TEMPLATES
         mutator(self, value)
 
     # BBB: AT schema field property
@@ -406,7 +410,7 @@ class SampleType(Container):
 
         :return: An array of sticker IDs
         """
-        admitted = self.getAdmittedStickerTemplates()[0].get('admitted')
+        admitted = self.getAdmittedStickerTemplates()[0].get("admitted")
         if admitted:
             return admitted
         return []
@@ -417,7 +421,7 @@ class SampleType(Container):
 
         :return: A string as an sticker ID
         """
-        return self.getAdmittedStickerTemplates()[0].get('small_default')
+        return self.getAdmittedStickerTemplates()[0].get("small_default")
 
     def getDefaultLargeSticker(self):
         """
@@ -425,4 +429,4 @@ class SampleType(Container):
 
         :return: A string as an sticker ID
         """
-        return self.getAdmittedStickerTemplates()[0].get('large_default')
+        return self.getAdmittedStickerTemplates()[0].get("large_default")
