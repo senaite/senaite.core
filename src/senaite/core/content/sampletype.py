@@ -18,11 +18,12 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from datetime import timedelta
+
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
-from datetime import timedelta
 from plone.autoform import directives
 from plone.supermodel import model
 from Products.CMFCore import permissions
@@ -37,11 +38,11 @@ from senaite.core.schema.fields import DataGridRow
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.duration.widget import DurationWidgetFactory
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
-from zope import schema
 from z3c.form import validator
-from zope.interface import implementer
+from zope import schema
 from zope.interface import Interface
 from zope.interface import Invalid
+from zope.interface import implementer
 
 
 STICKERS_VOCABULARY = 'senaite.core.vocabularies.stickertemplates'
