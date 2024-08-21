@@ -134,14 +134,17 @@ def create_analysisrequest(client, request, values, analyses=None,
 
     if not IReceived.providedBy(ar):
         setup = api.get_setup()
+        auto_receive = setup.getAutoreceiveSamples()
+
         if ar.getSamplingRequired():
             # sample has not been collected yet
             changeWorkflowState(ar, SAMPLE_WORKFLOW, "to_be_sampled",
                                 action="to_be_sampled")
 
-        elif setup.getAutoreceiveSamples() and can_receive(ar):
+        elif auto_receive and ar.getDateSampled() and can_receive(ar):
             # auto-receive the sample, but only if the user (that might be
-            # a client) has enough privileges. Otherwise, sample_due
+            # a client) has enough privileges and the sample has a value set
+            # for DateSampled. Otherwise, sample_due
             receive_sample(ar)
 
         else:
