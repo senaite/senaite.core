@@ -576,6 +576,23 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
     ),
     BooleanField(
+        "DateSampledRequired",
+        schemata="Sampling",
+        default=True,
+        widget=BooleanWidget(
+            label=_(
+                "label_bikasetup_date_sampled_required",
+                default="Date sampled required"
+            ),
+            description=_(
+                "description_bikasetup_date_sampled_required",
+                default="Select this to make DateSampled field required on "
+                        "sample creation. This functionality only takes "
+                        "effect when 'Sampling workflow' is not active"
+            ),
+        ),
+    ),
+    BooleanField(
         "AutoreceiveSamples",
         schemata="Sampling",
         default=False,
