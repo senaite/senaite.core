@@ -29,6 +29,20 @@ from zope.interface import implementer
 from zope.interface import Interface
 
 
+DEFAULT_EMPTY_INTERIM_ROW = {
+    "keyword": None,
+    "title": None,
+    "value": None,
+    "choices": None,
+    "result_type": None,
+    "allow_empty": False,
+    "unit": None,
+    "report": False,
+    "hidden": False,
+    "apply_wide": False,
+}
+
+
 class IInterimRow(Interface):
 
     keyword = schema.TextLine(
@@ -130,5 +144,5 @@ class InterimsField(DataGridField):
 
     def __init__(self, **kwargs):
         default = kwargs.get("default")
-        kwargs["default"] = default or [{}]
+        kwargs["default"] = default or [DEFAULT_EMPTY_INTERIM_ROW]
         super(InterimsField, self).__init__(**kwargs)

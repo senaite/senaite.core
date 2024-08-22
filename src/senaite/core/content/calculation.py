@@ -120,8 +120,8 @@ class ICalculationSchema(model.Schema):
         value_type=DataGridRow(schema=IImportRecord),
         required=False,
         default=[
-            {'module': 'math', 'function': 'ceil'},
-            {'module': 'math', 'function': 'floor'},]
+            {"module": "math", "function": "ceil"},
+            {"module": "math", "function": "floor"},]
     )
 
     formula = schema.Text(
