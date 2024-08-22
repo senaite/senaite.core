@@ -508,30 +508,27 @@ def resolve_rejection_reasons(values):
     """Resolves the rejection reasons from the submitted values to the format
     supported by Sample's Rejection Reason field
     """
-    rejection_reasons = values.get("RejectionReasons")
-    if not rejection_reasons:
+    reasons = values.get("RejectionReasons")
+    if not reasons:
+        return []
+
+    # XXX RejectionReasons returns a list with a single dict
+    reasons = reasons[0] or {}
+    if reasons.get("checkbox") != "on":
+        # reasons entry is toggled off
         return []
 
     # Predefined reasons selected?
-    selected = rejection_reasons[0] or {}
-    if selected.get("checkbox") == "on":
-        selected = selected.get("multiselection") or []
-    else:
-        selected = []
+    selected = reasons.get("multiselection") or []
 
     # Other reasons set?
-    other = values.get("RejectionReasons.textfield")
-    if other:
-        other = other[0] or {}
-        other = other.get("other", "")
-    else:
-        other = ""
+    other = reasons.get("other") or ""
 
     # If neither selected nor other reasons are set, return empty
-    if any([selected, other]):
-        return [{"selected": selected, "other": other}]
+    if not any([selected, other]):
+        return []
 
-    return []
+    return [{"selected": selected, "other": other}]
 
 
 def do_rejection(sample, notify=None):
