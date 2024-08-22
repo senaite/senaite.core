@@ -29,7 +29,7 @@ class StickerTemplatesVocabulary(object):
 
     def __call__(self, context, filter_by_type=False):
         templates = getStickerTemplates(filter_by_type=filter_by_type)
-        return to_simple_vocabulary([(t['id'], t['title']) for t in templates])
+        return to_simple_vocabulary([(t["id"], t["title"]) for t in templates])
 
 
 StickerTemplatesVocabularyFactory = StickerTemplatesVocabulary()

@@ -2449,6 +2449,19 @@ def del_raw_analyses(tool):
     logger.info("Remove Analyses raw attribute from samples [DONE]")
 
 
+def ensure_valid_sticker_templates(tool):
+    logger.info("Ensure sample types have valid sticker templates ...")
+    query = {"portal_type": "SampleType"}
+    brains = api.search(query, SETUP_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        logger.info("Ensure sample types have valid sticker templates {0}/{1}"
+                    .format(num+1, total))
+        obj = api.get_object(brain)
+        obj.setAdmittedStickerTemplates(obj.getAdmittedStickerTemplates())
+    logger.info("Ensure sample types have valid sticker templates [DONE]")
+
+
 @upgradestep(product, version)
 def migrate_calculations_to_dx(tool):
     """Converts existing calculations to Dexterity
