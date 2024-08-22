@@ -525,10 +525,10 @@ def resolve_rejection_reasons(values):
     other = reasons.get("other") or ""
 
     # If neither selected nor other reasons are set, return empty
-    if not any([selected, other]):
-        return []
+    if any([selected, other]):
+        return [{"selected": selected, "other": other}]
 
-    return [{"selected": selected, "other": other}]
+    return []
 
 
 def do_rejection(sample, notify=None):
