@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2610 Fix sample is not auto-rejected when only other reasons is submitted
 - #2608 Fix type error for admitted sticker templates widget
 - #2604 Fix allowable and default output type for Html field in the ARReport
 - #2584 Migrate SampleTypes to Dexterity
