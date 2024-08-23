@@ -2247,7 +2247,7 @@ def migrate_samplepoints_coordinates(tool):
         delattr(obj, "longitude")
 
         obj.reindexObject()
-        obj._p_deactivate() # noqa
+        obj._p_deactivate()  # noqa
 
     logger.info("Migrating coordinates from SamplePoint [DONE]")
 
@@ -2492,11 +2492,25 @@ def migrate_calculations_to_dx(tool):
     schema_mapping = {
         "title": ("Title", "title", ""),
         "description": ("Description", "description", ""),
-        "InterimFields": ("getInterimFields", "interims", []),
-        "DependentServices": ("getDependentServices", "dependent_services", {}),
-        "PythonImports": ("getImports", "imports", []),
+        "InterimFields": ("getInterimFields", "interims", [{
+            "keyword": None,
+            "title": None,
+            "value": None,
+            "choices": None,
+            "result_type": None,
+            "allow_empty": False,
+            "unit": None,
+            "report": False,
+            "hidden": False,
+            "apply_wide": False,
+        }]),
+        "DependentServices": ("getDependentServices",
+                              "dependent_services", {}),
+        "PythonImports": ("getImports", "imports", [{"module": "math",
+                                                     "function": "ceil"}]),
         "Formula": ("getFormula", "formula", ""),
-        "TestParameters": ("getTestParameters", "test_parameters", []),
+        "TestParameters": ("getTestParameters", "test_parameters",
+                           [{'keyword': None, 'value': None}]),
         "TestResult": ("getTestResults", "test_result", ""),
     }
 
