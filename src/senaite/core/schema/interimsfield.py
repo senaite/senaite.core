@@ -18,8 +18,6 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import copy
-from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
