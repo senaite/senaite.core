@@ -22,7 +22,6 @@ import importlib
 import inspect
 import math
 import re
-import cmp
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
