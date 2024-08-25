@@ -22,6 +22,7 @@ import importlib
 import inspect
 import math
 import re
+import cmp
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
@@ -43,9 +44,7 @@ from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from zope import schema
 from zope.interface import Interface
-from zope.interface import Invalid
 from zope.interface import implementer
-from zope.interface import invariant
 
 
 class IImportRecord(Interface):
