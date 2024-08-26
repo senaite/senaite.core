@@ -28,13 +28,13 @@ from zope.interface import Interface
 
 
 DEFAULT_EMPTY_INTERIM_ROW = {
-    "keyword": None,
-    "title": None,
-    "value": None,
-    "choices": None,
-    "result_type": None,
+    "keyword": u"",
+    "title": u"",
+    "value": u"",
+    "choices": u"",
+    "result_type": "numeric",
     "allow_empty": False,
-    "unit": None,
+    "unit": u"",
     "report": False,
     "hidden": False,
     "apply_wide": False,
@@ -84,9 +84,9 @@ class IInterimRow(Interface):
             u"label_interim_result_type",
             default=u"Result type"
         ),
-        values=['One', 'Two', 'Three'],
+        source="senaite.core.vocabularies.resulttypes",
+        default="numeric",
         required=True,
-        default="One"
     )
 
     allow_empty = schema.Bool(

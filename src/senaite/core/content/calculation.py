@@ -49,18 +49,20 @@ from zope.interface import implementer
 class IImportRecord(Interface):
     """Record schema for python import module
     """
-    module = schema.TextLine(_(
-        u"label_calculation_import_module_name",
-        default=u"Module"
-    ))
-    function = schema.TextLine(_(
-        u"label_calculation_import_function_name",
-        default=u"Function"
-    ))
+    module = schema.TextLine(
+        title=_(
+            u"label_calculation_import_module_name",
+            default=u"Module"
+        ))
+    function = schema.TextLine(
+        title=_(
+            u"label_calculation_import_function_name",
+            default=u"Function"
+        ))
 
 
 class ITestParameterRecord(Interface):
-    """Record schema for python import module
+    """Record schema for python test params
     """
     keyword = schema.TextLine(default=u"")
     value = schema.TextLine(default=u"0")
@@ -315,6 +317,19 @@ class Calculation(Container):
 
     # BBB: AT schema field property
     InterimFields = property(getInterimFields, setInterimFields)
+
+    @security.protected(permissions.View)
+    def getPythonImports(self):
+        accessor = self.accessor("imports")
+        return accessor(self) or []
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setPythonImports(self, value):
+        mutator = self.mutator("imports")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    PythonImports = property(getPythonImports, setPythonImports)
 
     @security.protected(permissions.View)
     def getFormula(self):

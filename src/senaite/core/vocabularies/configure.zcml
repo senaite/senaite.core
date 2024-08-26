@@ -14,4 +14,8 @@
       component=".stickertemplates.StickerTemplatesVocabularyFactory"
       name="senaite.core.vocabularies.stickertemplates" />
 
+  <utility
+      component=".resulttypes.ResultTypesVocabularyFactory"
+      name="senaite.core.vocabularies.resulttypes" />
+
 </configure>
