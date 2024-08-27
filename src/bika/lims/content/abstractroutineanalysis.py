@@ -140,7 +140,9 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         Returns the date the Sample this analysis belongs to was received
         """
         sample = self.getRequest()
-        return sample.getDateReceived()
+        if sample:
+            return sample.getDateReceived()
+        return None
 
     @security.public
     def isSampleReceived(self):
