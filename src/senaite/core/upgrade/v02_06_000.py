@@ -2462,11 +2462,6 @@ def ensure_valid_sticker_templates(tool):
 
 def remove_is_sample_received_index(tool):
     logger.info("Removing isSampleReceived index from catalogs ...")
-    portal = tool.aq_inner.aq_parent
-    for cat in portal.objectValues():
-        if not isinstance(cat, BaseCatalog):
-            continue
-        logger.info("Removing isSampleReceived index from {}".format(cat.id))
-        del_index(cat, "isSampleReceived")
-
+    cat = api.get_tool(ANALYSIS_CATALOG)
+    del_index(cat, "isSampleReceived")
     logger.info("Removing isSampleReceived index from catalogs [DONE]")
