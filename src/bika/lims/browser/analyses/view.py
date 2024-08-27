@@ -937,7 +937,9 @@ class AnalysesView(ListingView):
         obj = self.get_object(analysis_brain)
         due_date = obj.getDueDate()
         if not due_date:
+            # analysis has no TAT set or is not yet ready for process
             return None
+
         due_date_str = self.ulocalized_time(due_date, long_format=0)
         item['DueDate'] = due_date_str
 
