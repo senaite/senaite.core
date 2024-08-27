@@ -515,20 +515,17 @@ def resolve_rejection_reasons(values):
     if not rejection_reasons:
         return []
 
+    # XXX RejectionReasons returns a list with a single dict
+    reasons = rejection_reasons[0] or {}
+    if reasons.get("checkbox") != "on":
+        # reasons entry is toggled off
+        return []
+
     # Predefined reasons selected?
-    selected = rejection_reasons[0] or {}
-    if selected.get("checkbox") == "on":
-        selected = selected.get("multiselection") or []
-    else:
-        selected = []
+    selected = reasons.get("multiselection") or []
 
     # Other reasons set?
-    other = values.get("RejectionReasons.textfield")
-    if other:
-        other = other[0] or {}
-        other = other.get("other", "")
-    else:
-        other = ""
+    other = reasons.get("other") or ""
 
     # If neither selected nor other reasons are set, return empty
     if any([selected, other]):
