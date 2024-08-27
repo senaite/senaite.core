@@ -41,7 +41,7 @@ def getAncestorsUIDs(instance):
 def sortable_due_date(instance):
     """Returns the due date of the analysis, but without taking workdays into
     account. This is a hint for sorting by due date, but it's value might not
-    match with the real due date
+    match with the real due date.
     """
     tat = instance.getMaxTimeAllowed()
     if not tat:
