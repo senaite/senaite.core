@@ -101,6 +101,8 @@ REMOVE_AT_TYPES = [
     "LabProducts",
     "Supplier",
     "Suppliers",
+    "SampleType",
+    "SampleTypes",
 ]
 
 CONTENT_ACTIONS = [
@@ -1918,6 +1920,153 @@ def move_contacts(source_supplier, target_supplier):
         api.move_object(brain, target_supplier, check_constraints=False)
 
 
+def migrate_sampletype_to_dx(src, destination=None):
+    """Migrates a Sample Type to DX in destination folder
+
+    :param src: The source AT object
+    :param destination: The destination folder. If `None`, the parent folder of
+                        the source object is taken
+    """
+
+    # Create the object if it does not exist yet
+    src_id = src.getId()
+    target_id = src_id
+
+    # check if we migrate within the same folder
+    if destination is None:
+        # use a temporary ID for the migrated content
+        target_id = tmpID()
+        # set the destination to the source parent
+        destination = api.get_parent(src)
+
+    target = destination.get(target_id)
+    if not target:
+        # Don' use the api to skip the auto-id generation
+        target = createContent("SampleType", id=target_id)
+        destination._setObject(target_id, target)
+        target = destination._getOb(target_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = api.safe_unicode(src.Title() or "")
+    target.description = api.safe_unicode(src.Description() or "")
+
+    # we set the fields with our custom setters
+    target.setRetentionPeriod(src.getRetentionPeriod())
+    target.setHazardous(src.getHazardous())
+    target.setSampleMatrix(src.getSampleMatrix())
+    target.setPrefix(src.getPrefix())
+    target.setMinimumVolume(src.getMinimumVolume())
+    target.setContainerType(src.getContainerType())
+    target.setAdmittedStickerTemplates(src.getAdmittedStickerTemplates())
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter(
+        (src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID
+    migrator.copy_uid(src, target)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    return target
+
+
+@upgradestep(product, version)
+def migrate_sampletypes_to_dx(tool):
+    """Converts existing Sample Types to Dexterity
+    """
+    logger.info("Convert SampleTypes to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # ensure new indexes
+    portal = api.get_portal()
+    setup_core_catalogs(portal)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+    tool.runImportStepFromProfile(profile, "rolemap")
+
+    # update content actions
+    update_content_actions(tool)
+
+    # get the old container
+    old_setup = api.get_setup().get("bika_sampletypes")
+    if not old_setup:
+        # old container is already gone
+        return
+
+    # get the destination container
+    new_setup = get_setup_folder("sampletypes")
+
+    # NOTE: Sample Points can be created in setup and client context!
+    query = {"portal_type": "SampleType"}
+    # search all AT based sample points
+    brains = api.search(query, SETUP_CATALOG)
+    total = len(brains)
+
+    # get all objects first
+    objects = map(api.get_object, brains)
+    for num, obj in enumerate(objects):
+        if api.is_dexterity_content(obj):
+            # migrated already
+            continue
+
+        # get the current parent of the object
+        origin = api.get_parent(obj)
+
+        # get the destination container
+        if origin == new_setup:
+            # migrated already
+            continue
+
+        # migrate the object to dexterity
+        if origin == old_setup:
+            migrate_sampletype_to_dx(obj, new_setup)
+        else:
+            migrate_sampletype_to_dx(obj)
+
+        logger.info("Migrated sample type {0}/{1}: {2} -> {3}".format(
+            num, total, api.get_path(obj), api.get_path(obj)))
+
+    if old_setup:
+        # remove old AT folder
+        if len(old_setup) == 0:
+            delete_object(old_setup)
+        else:
+            logger.warn("Cannot remove {}. Is not empty".format(old_setup))
+
+    logger.info("Convert SampleTypes to Dexterity [DONE]")
+
+
 def update_content_actions(tool):
     logger.info("Update content actions ...")
     portal_types = api.get_tool("portal_types")
@@ -2275,27 +2424,41 @@ def remove_creation_date_index(tool):
 
 def store_raw_analyses(tool):
     logger.info("Storing analysis UIDs as raw data in samples ...")
+    # Rolled back
+    # see https://github.com/senaite/senaite.core/pull/2603
+    logger.info("Storing analysis UIDs as raw data in samples [DONE]")
+
+
+def del_raw_analyses(tool):
+    logger.info("Remove Analyses raw attribute from samples ...")
     query = {"portal_type": "AnalysisRequest"}
     brains = api.search(query, SAMPLE_CATALOG)
     total = len(brains)
     for num, brain in enumerate(brains):
         if num and num % 100 == 0:
-            logger.info("Storing analysis UIDs as raw data in samples {0}/{1}"
+            logger.info("Removing Analyses raw attribute from samples {0}/{1}"
                         .format(num, total))
 
         sample = api.get_object(brain)
-        if sample.getRawAnalyses():
-            # already set, skip
-            continue
+        if hasattr(sample, "Analyses"):
+            delattr(sample, "Analyses")
 
-        # Store the UIDs of the analyses from the sample on it's own attr
-        contained = sample.objectValues("Analysis")
-        contained_uids = [analysis.UID() for analysis in contained]
-        field = sample.getField("Analyses")
-        field.setRaw(sample, contained_uids)
         sample._p_deactivate()
 
-    logger.info("Storing analysis UIDs as raw data in samples [DONE]")
+    logger.info("Remove Analyses raw attribute from samples [DONE]")
+
+
+def ensure_valid_sticker_templates(tool):
+    logger.info("Ensure sample types have valid sticker templates ...")
+    query = {"portal_type": "SampleType"}
+    brains = api.search(query, SETUP_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        logger.info("Ensure sample types have valid sticker templates {0}/{1}"
+                    .format(num+1, total))
+        obj = api.get_object(brain)
+        obj.setAdmittedStickerTemplates(obj.getAdmittedStickerTemplates())
+    logger.info("Ensure sample types have valid sticker templates [DONE]")
 
 
 def remove_get_due_date_index(tool):

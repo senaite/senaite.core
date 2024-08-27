@@ -4,6 +4,11 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2610 Fix "Other reasons" for rejection are not saved on sample registration
+- #2608 Fix type error for admitted sticker templates widget
+- #2604 Fix allowable and default output type for Html field in the ARReport
+- #2584 Migrate SampleTypes to Dexterity
+- #2602 Fix getAnalyses returns a LazyMap instead of a list
 - #2593 Always do a full reindex of the object after transition
 - #2593 Store Analyses UIDs as raw data in a Sample's attr (Analyses)
 - #2593 Skip permissions update after transition when InternalUse is unchanged

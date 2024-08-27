@@ -66,7 +66,7 @@ We need to create some basic objects for the test:
     >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
     >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH", MemberDiscountApplies=True)
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
-    >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
+    >>> sampletype = api.create(setup.sampletypes, "SampleType", title="Water", Prefix="W")
     >>> samplepoint = api.create(setup.samplepoints, "SamplePoint", title="Happy Lake")
     >>> container = api.create(setup.samplecontainers, "SampleContainer", title="Glass Bottle", Capacity="500ml")
     >>> preservation = api.create(setup.samplepreservations, "SamplePreservation", title=u"Chill at 4°C")
@@ -132,7 +132,7 @@ Test get/set methods:
 
     >>> template1.setSampleType(sampletype)
     >>> template1.getSampleType()
-    <SampleType at /plone/bika_setup/bika_sampletypes/sampletype-1>
+    <SampleType at /plone/setup/sampletypes/sampletype-1>
 
 Test `getRaw` method:
 
