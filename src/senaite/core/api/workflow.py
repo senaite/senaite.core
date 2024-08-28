@@ -338,7 +338,7 @@ def update_transition(transition, **kwargs):
     }
     properties = {}
     for key, property_id in mapping.items():
-        default = getattr(transition, property_id)
+        default = getattr(transition, property_id) or ""
         value = kwargs.get(key, None)
         if value is None:
             value = default
