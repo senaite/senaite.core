@@ -191,6 +191,20 @@ class ISetupSchema(model.Schema):
         ),
         default=10
     )
+
+    date_sampled_required = schema.Bool(
+        title=_(
+            u"title_senaitesetup_date_sampled_required",
+            default=u"Date sampled required"),
+        description=_(
+            u"description_senaitesetup_date_sampled_required",
+            default=u"Select this to make DateSampled field required on "
+                    u"sample creation. This functionality only takes effect "
+                    u"when 'Sampling workflow' is not active"
+        ),
+        default=True,
+    )
+
     show_lab_name_in_login = schema.Bool(
         title=_(
             u"title_senaitesetup_show_lab_name_in_login",
@@ -211,6 +225,7 @@ class ISetupSchema(model.Schema):
         label=_("label_senaitesetup_fieldset_samples", default=u"Samples"),
         fields=[
             "max_number_of_samples_add",
+            "date_sampled_required",
         ]
     )
     model.fieldset(
@@ -421,6 +436,22 @@ class Setup(Container):
         field 'Number of samples'
         """
         mutator = self.mutator("max_number_of_samples_add")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getDateSampledRequired(self):
+        """Returns whether the DateSampled field is required on sample creation
+        when the sampling workflow is not active
+        """
+        accessor = self.accessor("date_sampled_required")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setDateSampledRequired(self, value):
+        """Sets whether the entry of a value for DateSampled field on sample
+        creation is required when the sampling workflow is not active
+        """
+        mutator = self.mutator("date_sampled_required")
         return mutator(self, value)
 
     @security.protected(permissions.View)
