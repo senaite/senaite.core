@@ -195,6 +195,10 @@ class EditForm {
    */
   set_field_readonly(field, message=null) {
     field.setAttribute("readonly", "");
+    // Only text controls can be made read-only, since for other controls (such
+    // as checkboxes and buttons) there is no useful distinction between being
+    // read-only and being disabled. We cover other controls like select here.
+    field.setAttribute("disabled", "");
     let existing_message = field.parentElement.querySelector("div.message");
     if (existing_message) {
       existing_message.innerHTML = _t(message)
@@ -211,6 +215,10 @@ class EditForm {
    */
   set_field_editable(field, message=null) {
     field.removeAttribute("readonly");
+    // Only text controls can be made read-only, since for other controls (such
+    // as checkboxes and buttons) there is no useful distinction between being
+    // read-only and being disabled. We cover other controls like select here.
+    field.removeAttribute("disabled");
     let existing_message = field.parentElement.querySelector("div.message");
     if (existing_message) {
       existing_message.innerHTML = _t(message)
