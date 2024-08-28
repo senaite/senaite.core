@@ -31,6 +31,7 @@ from plone.namedfile import NamedBlobFile
 from Products.Archetypes.utils import getRelURL
 from Products.CMFCore.permissions import View
 from senaite.core import logger
+from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
@@ -2465,3 +2466,21 @@ def remove_is_sample_received_index(tool):
     cat = api.get_tool(ANALYSIS_CATALOG)
     del_index(cat, "isSampleReceived")
     logger.info("Removing isSampleReceived index from catalogs [DONE]")
+
+
+def remove_get_due_date_index(tool):
+    logger.info("Removing getDueDate index from catalogs ...")
+    index = "getDueDate"
+    portal = tool.aq_inner.aq_parent
+    for cat in portal.objectValues():
+        if not isinstance(cat, BaseCatalog):
+            continue
+        logger.info("Removing getDueDate index from {}".format(cat.id))
+        del_index(cat, index)
+        logger.info("Removing getDueDate column from {}".format(cat.id))
+        del_column(cat, index)
+
+    # create the new indexes if necessary
+    setup_core_catalogs(portal)
+
+    logger.info("Removing getDueDate index from catalogs [DONE]")

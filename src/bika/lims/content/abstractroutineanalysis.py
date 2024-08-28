@@ -137,16 +137,11 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
     @security.public
     def getDateReceived(self):
         """Used to populate catalog values.
-        Returns the date the Analysis Request this analysis belongs to was
-        received. If the analysis was created after, then returns the date
-        the analysis was created.
+        Returns the date the Sample this analysis belongs to was received
         """
-        request = self.getRequest()
-        if request:
-            ar_date = request.getDateReceived()
-            if ar_date and self.created() > ar_date:
-                return self.created()
-            return ar_date
+        sample = self.getRequest()
+        if sample:
+            return sample.getDateReceived()
         return None
 
     @security.public
@@ -154,8 +149,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         """Returns whether if the Analysis Request this analysis comes from has
         been received or not
         """
-        sample = self.getRequest()
-        if sample.getDateReceived():
+        if self.getDateReceived():
             return True
         return False
 
@@ -185,14 +179,18 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
 
     @security.public
     def getStartProcessDate(self):
-        """Returns the date time when the analysis request the analysis belongs
-        to was received. If the analysis request hasn't yet been received,
-        returns None
-        Overrides getStartProcessDateTime from the base class
-        :return: Date time when the analysis is ready to be processed.
+        """Returns the date time when this analysis is considered ready for
+        testing. It returns the datetime when the sample the analysis belongs
+        to was received or when the analysis was created if after reception.
+        Returns None if the sample has not been received yet.
+        :return: Date time when the analysis is considered ready for testing
         :rtype: DateTime
         """
-        return self.getDateReceived()
+        received = self.getDateReceived()
+        if not received:
+            return None
+        # return the analysis creation date if is after reception
+        return max([received, self.created()])
 
     @security.public
     def getSamplePoint(self):
@@ -203,10 +201,9 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
 
     @security.public
     def getDueDate(self):
-        """Used to populate getDueDate index and metadata.
-        This calculates the difference between the time the analysis processing
-        started and the maximum turnaround time. If the analysis has no
-        turnaround time set or is not yet ready for proces, returns None
+        """This calculates the difference between the time the analysis
+        processing started and the maximum turnaround time. If the analysis has
+        no turnaround time set or is not yet ready for process, returns None
         """
         tat = self.getMaxTimeAllowed()
         if not tat:

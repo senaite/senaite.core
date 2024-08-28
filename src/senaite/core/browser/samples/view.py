@@ -450,7 +450,7 @@ class SamplesView(ListingView):
                         "to_be_verified",
                         "verified",
                     ),
-                    "getDueDate": {
+                    "sortable_due_date": {
                         "query": DateTime(),
                         "range": "max",
                     },
@@ -545,10 +545,14 @@ class SamplesView(ListingView):
         # val = obj.Schema().getField('SubGroup').get(obj)
         # item['SubGroup'] = val.Title() if val else ''
 
+        full_object = api.get_object(obj)
+
+        # due date
+        due_date = full_object.getDueDate()
         item["SamplingDate"] = self.str_date(obj.getSamplingDate)
         item["getDateSampled"] = self.str_date(obj.getDateSampled)
         item["getDateReceived"] = self.str_date(obj.getDateReceived)
-        item["getDueDate"] = self.str_date(obj.getDueDate)
+        item["getDueDate"] = self.str_date(due_date)
         item["getDatePublished"] = self.str_date(obj.getDatePublished)
         item["getDateVerified"] = self.str_date(obj.getDateVerified)
 
@@ -579,7 +583,6 @@ class SamplesView(ListingView):
             after_icons += get_image("delete.png",
                                      title=t(_("Results have been withdrawn")))
 
-        due_date = obj.getDueDate
         if due_date and due_date < (obj.getDatePublished or DateTime()):
             due_date_str = self.ulocalized_time(due_date)
             img_title = "{}: {}".format(t(_("Late Analyses")), due_date_str)
@@ -622,7 +625,6 @@ class SamplesView(ListingView):
             if item["review_state"] == "to_be_sampled":
                 # We need to get the full object in order to check
                 # the permissions
-                full_object = api.get_object(obj)
                 if check_permission(TransitionSampleSample, full_object):
                     # make fields required and editable
                     item["required"] = ["getSampler", "getDateSampled"]

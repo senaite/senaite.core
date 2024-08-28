@@ -26,6 +26,7 @@ from senaite.core import logger
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.interfaces import ISampleCatalog
 from zope.component import getAdapters
+from senaite.core.catalog.indexer import requestanalysis
 
 
 @indexer(IAnalysisRequest)
@@ -148,3 +149,18 @@ def listing_searchable_text(instance):
     entries = filter(None, entries)
 
     return u" ".join(map(api.safe_unicode, entries))
+
+
+@indexer(IAnalysisRequest)
+def sortable_due_date(instance):
+    """Returns the earliest due date of the analyses that belong to this
+    instance, but without taking workdays into account. This is a hint for
+    sorting by due date, but it's value might not match with the real due date
+    """
+    analyses = instance.getAnalyses(sort_on="sortable_due_date",
+                                    sort_order="ascending")
+    if not analyses:
+        return None
+
+    analysis = api.get_object(analyses[0])
+    return requestanalysis.sortable_due_date(analysis)()
