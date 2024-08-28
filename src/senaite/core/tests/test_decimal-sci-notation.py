@@ -335,7 +335,7 @@ class TestDecimalSciNotation(DataTestCase):
                 sampletype = bs.sampletypes['sampletype-1']
                 values = {'Client': client.UID(),
                           'Contact': client.getContacts()[0].UID(),
-                          'SamplingDate': '2015-01-01',
+                          'DateSampled': '2015-01-01',
                           'SampleType': sampletype.UID()}
                 ar = create_analysisrequest(client, {}, values, [s.UID()])
                 wf = getToolByName(ar, 'portal_workflow')

@@ -2461,6 +2461,13 @@ def ensure_valid_sticker_templates(tool):
     logger.info("Ensure sample types have valid sticker templates [DONE]")
 
 
+def remove_is_sample_received_index(tool):
+    logger.info("Removing isSampleReceived index from catalogs ...")
+    cat = api.get_tool(ANALYSIS_CATALOG)
+    del_index(cat, "isSampleReceived")
+    logger.info("Removing isSampleReceived index from catalogs [DONE]")
+
+
 def remove_get_due_date_index(tool):
     logger.info("Removing getDueDate index from catalogs ...")
     index = "getDueDate"

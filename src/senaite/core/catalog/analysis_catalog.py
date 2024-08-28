@@ -46,7 +46,6 @@ INDEXES = BASE_INDEXES + [
     ("getSampleTypeUID", "", "FieldIndex"),
     ("getServiceUID", "", "FieldIndex"),
     ("getWorksheetUID", "", "FieldIndex"),
-    ("isSampleReceived", "", "BooleanIndex"),
     ("sortable_title", "", "FieldIndex"),
     ("sortable_due_date", "", "DateIndex"),
 ]

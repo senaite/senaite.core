@@ -6,12 +6,20 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Remove getDueDate index"
       description="Remove getDueDate index"
-      source="2648"
-      destination="2649"
+      source="2649"
+      destination="2650"
       handler=".v02_06_000.remove_get_due_date_index"
       profile="senaite.core:default"/>
 
-   <genericsetup:upgradeStep
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Remove isSampleReceived index"
+      description="Remove isSampleReceived index"
+      source="2648"
+      destination="2649"
+      handler=".v02_06_000.remove_is_sample_received_index"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Ensure valid sticker templates"
       description="Ensure migrated sample types have valid sticker templates set"
       source="2647"
@@ -19,7 +27,7 @@
       handler=".v02_06_000.ensure_valid_sticker_templates"
       profile="senaite.core:default"/>
 
-   <genericsetup:upgradeStep
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Move SampleType to Senaite setup"
       description="Migrate Sample Types to Senaite setup"
       source="2646"

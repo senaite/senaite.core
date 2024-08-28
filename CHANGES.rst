@@ -4,6 +4,9 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2612 Remove isSampleReceived index from analysis catalog
+- #2611 Add readonly support for non-mutable html elements via AjaxEditForm
+- #2609 Added Date Sample required (Y/N) setting in Setup
 - #2610 Fix "Other reasons" for rejection are not saved on sample registration
 - #2608 Fix type error for admitted sticker templates widget
 - #2604 Fix allowable and default output type for Html field in the ARReport
