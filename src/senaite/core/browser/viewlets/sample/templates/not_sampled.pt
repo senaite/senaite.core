@@ -1,0 +1,18 @@
+<tal:viewlet condition="python: view.is_visible()"
+             i18n:domain="senaite.core">
+
+  <div class="visualClear"></div>
+
+  <div id="portal-alert">
+    <div class="portlet-alert-item alert alert-warning">
+      <p class="title font-weight-bold" i18n:translate="">
+        The sample cannot be received
+      <p>
+      <p class="description" i18n:translate="">
+        Please check that the sample has been physically collected and the
+        value for "Sampled Date" field has been set in accordance.
+      </p>
+    </div>
+  </div>
+
+</tal:viewlet>
