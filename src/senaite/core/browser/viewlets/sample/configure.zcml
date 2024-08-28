@@ -1,0 +1,14 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- Not Sampled viewlet -->
+  <browser:viewlet
+    for="bika.lims.interfaces.IAnalysisRequest"
+    name="senaite.core.viewlets.sample.not_sampled"
+    class=".not_sampled.NotSampledViewlet"
+    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+    permission="zope2.View"
+    layer="senaite.core.interfaces.ISenaiteCore"/>
+
+</configure>
