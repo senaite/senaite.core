@@ -844,8 +844,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             "portal_type": "Analysis",
             "getServiceUID": service_uids,
             "review_state": "unassigned",
-            "isSampleReceived": True,
-            "is_active": True,
             "sort_on": "getPrioritySortkey"
         }
         analyses = api.search(query, ANALYSIS_CATALOG)

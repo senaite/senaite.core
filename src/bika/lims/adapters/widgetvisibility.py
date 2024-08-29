@@ -23,6 +23,7 @@ from bika.lims.interfaces import IATWidgetVisibility
 from bika.lims.interfaces import IAnalysisRequestSecondary
 from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IReceived
 from bika.lims.utils import getHiddenAttributesForClass
 from zope.interface import implements
 
@@ -153,26 +154,35 @@ class SamplingFieldsVisibility(SenaiteATWidgetVisibility):
             field_names=["Sampler", "DateSampled", "SamplingDate"])
 
     def isVisible(self, field, mode="view", default="visible"):
-        # If object has been already created, get SWF statues from it.
-        swf_enabled = False
-        if hasattr(self.context, 'getSamplingWorkflowEnabled') and \
-                self.context.getSamplingWorkflowEnabled() != '':
-            swf_enabled = self.context.getSamplingWorkflowEnabled()
-        else:
-            swf_enabled = self.context.bika_setup.getSamplingWorkflowEnabled()
+        """Returns the visibility of the field involved with the sampling
+        workflow field for the given mode
+        """
+        field_name = field.getName()
+        sampling = self.context.getSamplingWorkflowEnabled()
 
-        if mode == "add":
-            if field.getName() == "DateSampled":
-                field.required = not swf_enabled
-                return swf_enabled and "invisible" or "edit"
-            elif field.getName() == "SamplingDate":
-                field.required = swf_enabled
-                return swf_enabled and "edit" or "invisible"
-            elif field.getName() == "Sampler":
-                return swf_enabled and "edit" or "invisible"
+        if field_name == "DateSampled":
+            if IReceived.providedBy(self.context):
+                # sample received already, field is required
+                field.required = True
 
-        elif not swf_enabled:
-            if field.getName() != "DateSampled":
+            elif not sampling:
+                # not received and no sampling, use setup's setting
+                setup = api.get_setup()
+                field.required = setup.getDateSampledRequired()
+
+            elif sampling and mode == "add":
+                # sampling workflow enabled, don not display in add form
+                return "invisible"
+
+        elif field_name == "SamplingDate":
+            field.required = sampling
+            if not sampling:
+                # sampling deactivated, do not display this field
+                return "invisible"
+
+        elif field_name == "Sampler":
+            if not sampling:
+                # sampling deactivated, do not display this field
                 return "invisible"
 
         return default
