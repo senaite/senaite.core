@@ -31,12 +31,33 @@ from senaite.core.schema.fields import DataGridRow
 from senaite.core.content.base import Container
 from senaite.core.config.widgets import get_default_columns
 from senaite.core.interfaces import IWorksheetTemplate
+from senaite.core.z3cform.widgets.number import NumberWidget
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from senaite.core.z3cform.widgets.listing.widget import ListingWidgetFactory
 from zope import schema
 from zope.interface import Interface
 from zope.interface import implementer
+from six.moves.urllib.parse import parse_qs
+
+
+def default_layout_positions():
+    """
+    """
+    request = api.get_request()
+    params = dict(parse_qs(request["QUERY_STRING"]))
+    values = params.get("num_positions")
+    num_positions = int(values[0]) if values else 0
+    default_value = []
+    for i in range(num_positions):
+        default_value.append({
+            "pos": i + 1,
+            "type": "a",
+            "blank_ref": "",
+            "control_ref": "",
+            "dup": 1,
+        })
+    return default_value
 
 
 class IWorksheetTemplateServiceRecord(Interface):
@@ -51,14 +72,14 @@ class ILayoutRecord(Interface):
     """Record schema for layout worksheet
     """
 
-    directives.widget("pos", style=u"width:50px!important")
-    pos = schema.TextLine(
+    directives.widget("pos", klass="field")
+    pos = schema.Int(
         title=_(
             u"title_layout_record_pos",
             default=u"Position"
         ),
         required=True,
-        default=u"1",
+        default=1,
     )
 
     type = schema.Choice(
@@ -225,14 +246,30 @@ class IWorksheetTemplateSchema(model.Schema):
             default=u"Layout"
         ),
         fields=[
+            "num_of_positions",
             "template_layout",
         ]
     )
 
     directives.widget(
+        "num_of_positions",
+        NumberWidget,
+        after_text_input="Set",
+        after_css_input="text-primary")
+    num_of_positions = schema.Int(
+        title=_(
+            u"title_worksheettemplate_num_of_positions",
+            default=u"Number of Positions"
+        ),
+        required=False,
+        min=0,
+        default=0,
+    )
+
+    directives.widget(
         "template_layout",
         DataGridWidgetFactory,
-        allow_insert=False,  # only auto append
+        allow_insert=False,
         allow_delete=True,
         allow_reorder=False,
         auto_append=True)

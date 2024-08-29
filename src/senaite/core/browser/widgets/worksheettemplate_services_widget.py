@@ -23,6 +23,7 @@ import collections
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import get_link_for
+from senaite.core.interfaces import IWorksheetTemplate
 from senaite.core.browser.widgets.services_widget import ServicesWidget
 
 
@@ -33,7 +34,10 @@ class WorksheetTemplateServicesWidget(ServicesWidget):
     def update(self):
         super(WorksheetTemplateServicesWidget, self).update()
 
-        method_uid = self.context.getRawRestrictToMethod()
+        method_uid = None
+        if IWorksheetTemplate.providedBy(self.context):
+            method_uid = self.context.getRawRestrictToMethod()
+
         if method_uid:
             self.contentFilter.update({
                 "method_available_uid": method_uid

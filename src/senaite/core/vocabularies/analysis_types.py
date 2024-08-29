@@ -36,8 +36,8 @@ class AnalysisTypesVocabulary(object):
         }
         brains = api.search(reference_query, SETUP_CATALOG)
         definitions = map(api.get_object, brains)
-        has_blanks = len([d for d in definitions if d.getBalnk()]) > 0
-        has_controls = len([d for d in definitions if not d.getBalnk()]) > 0
+        has_blanks = len([d for d in definitions if d.getBlank()]) > 0
+        has_controls = len([d for d in definitions if not d.getBlank()]) > 0
 
         analysis_types = ANALYSIS_TYPES
         if not has_blanks:
@@ -54,7 +54,7 @@ AnalysisTypesVocabularyFactory = AnalysisTypesVocabulary()
 class DuplicateVocabulary(object):
 
     def __call__(self, context):
-        return []
+        return to_simple_vocabulary(((1, 1),))
 
 
 DuplicateVocabularyFactory = DuplicateVocabulary()
