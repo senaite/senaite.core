@@ -6,12 +6,38 @@
    <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Reindex getDuedate in analyses and sample catalog"
       description="Reindex getDuedate in analyses and sample catalog"
-      source="2647"
-      destination="2648"
+      source="2650"
+      destination="2651"
       handler=".v02_06_000.reindex_getDueDate"
       profile="senaite.core:default"/>
 
    <genericsetup:upgradeStep
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Fix corrupted transitions"
+      description="Restores the value of the property `after_script_name` from
+        transitions that were created or updated with the core's workflow api"
+      source="2649"
+      destination="2650"
+      handler=".v02_06_000.fix_corrupted_transitions"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Remove isSampleReceived index"
+      description="Remove isSampleReceived index"
+      source="2648"
+      destination="2649"
+      handler=".v02_06_000.remove_is_sample_received_index"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Ensure valid sticker templates"
+      description="Ensure migrated sample types have valid sticker templates set"
+      source="2647"
+      destination="2648"
+      handler=".v02_06_000.ensure_valid_sticker_templates"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Move SampleType to Senaite setup"
       description="Migrate Sample Types to Senaite setup"
       source="2646"

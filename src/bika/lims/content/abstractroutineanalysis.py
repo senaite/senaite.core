@@ -150,11 +150,14 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         return None
 
     @security.public
-    def isSampleReceived(instance):
+    def isSampleReceived(self):
         """Returns whether if the Analysis Request this analysis comes from has
         been received or not
         """
-        return instance.getDateReceived() and True or False
+        sample = self.getRequest()
+        if sample.getDateReceived():
+            return True
+        return False
 
     @security.public
     def getDatePublished(self):

@@ -51,6 +51,15 @@ def guard_schedule_sampling(analysis_request):
     return analysis_request.bika_setup.getScheduleSamplingEnabled()
 
 
+def guard_receive(sample):
+    """Return whether the transition "receive" can be performed or not. Returns
+    True if the sample has a Date Sampled set
+    """
+    if sample.getDateSampled():
+        return True
+    return False
+
+
 def guard_create_partitions(analysis_request):
     """Returns true if partitions can be created using the analysis request
     passed in as the source.
