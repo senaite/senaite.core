@@ -4,14 +4,13 @@
     i18n_domain="senaite.core">
 
    <genericsetup:upgradeStep
-      title="SENAITE.CORE 2.6.0: Reindex getDuedate in analyses and sample catalog"
+      title="SENAITE.CORE 2.6.0: Reindex getDueDate index from analyses and setup catalog"
       description="Reindex getDuedate in analyses and sample catalog"
       source="2650"
       destination="2651"
       handler=".v02_06_000.reindex_getDueDate"
       profile="senaite.core:default"/>
 
-   <genericsetup:upgradeStep
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Fix corrupted transitions"
       description="Restores the value of the property `after_script_name` from

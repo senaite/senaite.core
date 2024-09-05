@@ -2066,18 +2066,37 @@ def migrate_sampletypes_to_dx(tool):
 
     logger.info("Convert SampleTypes to Dexterity [DONE]")
 
-@upgradestep(product, version)
 def reindex_getDueDate(tool):
-    analysis_catalog = api.get_tool(ANALYSIS_CATALOG)
-    for analysis in analysis_catalog():
-        obj = analysis.getObject()
-        obj.reindexObject()
-
-    sample_catalog = api.get_tool(SAMPLE_CATALOG)
-    for sample in sample_catalog():
-        # import pdb; pdb.set_trace()
-        obj = sample.getObject()
-        obj.reindexObject()
+    """Reindex the getDueDate index from analyses and setup catalog
+    """
+    logger.info("Reindexing getDueDate index from analyses catalog ...")
+    query = {"portal_type": "Analysis"}
+    brains = api.search(query, ANALYSIS_CATALOG)
+    total = len(brains)
+    sample_uids = []
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Reindexing getDueDate index from analyses catalog {0}/{1}"
+                        .format(num, total))
+        obj = api.get_object(brain)
+        if api.to_minutes(**obj.MaxTimeAllowed) == 0:
+            brain.reindexObject(obj, idxs=['getDueDate'], update_metadata=1)
+            sample_uid = obj.aq_parent.UID()
+            if sample_uid not in sample_uids:
+                sample_uids.append(sample_uid)
+        obj._p_deactivate()
+    logger.info("Reindexing getDueDate index from analyses catalog [DONE]")
+    logger.info("Reindexing getDueDate index from samples catalog ...")
+    total = len(sample_uids)
+    for num, sample_uid in enumerate(sample_uids):
+        if num and num % 100 == 0:
+            logger.info("Reindexing getDueDate index from samples catalog {0}/{1}"
+                        .format(num, total))
+        obj = api.get_object_by_uid(sample_uid)
+        obj.reindexObject(idxs=['getDueDate'])
+        obj._p_deactivate()
+    logger.info("Reindexing getDueDate index from samples catalog ...")
+    logger.info("Reindexing getDueDate index from samples catalog [DONE]")
 
 def update_content_actions(tool):
     logger.info("Update content actions ...")
