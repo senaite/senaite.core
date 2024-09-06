@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2615 Add control for select/deselect all attachments when send report
 - #2613 Fix AttributeError for transitions created with core's workflow api
 - #2612 Remove isSampleReceived index from analysis catalog
 - #2611 Add readonly support for non-mutable html elements via AjaxEditForm
