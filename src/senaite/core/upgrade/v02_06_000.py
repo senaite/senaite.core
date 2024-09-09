@@ -31,6 +31,7 @@ from plone.namedfile import NamedBlobFile
 from Products.Archetypes.utils import getRelURL
 from Products.CMFCore.permissions import View
 from senaite.core import logger
+from senaite.core.api import workflow as wapi
 from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
@@ -2460,6 +2461,27 @@ def ensure_valid_sticker_templates(tool):
         obj = api.get_object(brain)
         obj.setAdmittedStickerTemplates(obj.getAdmittedStickerTemplates())
     logger.info("Ensure sample types have valid sticker templates [DONE]")
+
+
+def remove_is_sample_received_index(tool):
+    logger.info("Removing isSampleReceived index from catalogs ...")
+    cat = api.get_tool(ANALYSIS_CATALOG)
+    del_index(cat, "isSampleReceived")
+    logger.info("Removing isSampleReceived index from catalogs [DONE]")
+
+
+def fix_corrupted_transitions(tool):
+    logger.info("Fixing corrupted transitions ...")
+    wf_tool = api.get_tool("portal_workflow")
+    for wf_id in wf_tool.getWorkflowIds():
+        wf = wf_tool.getWorkflowById(wf_id)
+        for transition_id, transition in wf.transitions.items():
+            after_script = getattr(transition, "after_script_name")
+            if after_script in ["None", None]:
+                logger.info("Fixing %s.%s" % (wf_id, transition_id))
+                wapi.update_transition(transition, after_script="")
+
+    logger.info("Fixing corrupted transitions [DONE]")
 
 
 def migrate_calculation_to_dx(src, destination=None):
