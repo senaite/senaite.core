@@ -76,7 +76,7 @@ class ITestParameterRecord(Interface):
         title=_(
             u"label_calculation_test_param_value",
             default=u"Value"
-         ),
+        ),
         default=u"0")
 
 
@@ -107,7 +107,20 @@ class ICalculationSchema(model.Schema):
         allow_delete=True,
         allow_reorder=True,
         auto_append=False)
-    interims = InterimsField()
+    interims = InterimsField(
+        title=_(u"label_calculation_interims",
+                default=u"Calculation Interim Fields"),
+        description=_(u"description_calculation_imports",
+                      default=u"Define interim fields such as vessel mass, "
+                      u"dilution factors, should your calculation require "
+                      u"them. The field title specified here will be used "
+                      u"as column headers and field descriptors where "
+                      u"the interim fields are displayed. If 'Apply wide' "
+                      u"is enabled the field will be shown in a selection "
+                      u"box on the top of the worksheet, allowing to "
+                      u"apply a specific value to all the corresponding "
+                      u"fields on the sheet."),
+    )
 
     directives.widget(
         "imports",
@@ -176,6 +189,7 @@ class ICalculationSchema(model.Schema):
         default=[{'keyword': None, 'value': None}]
     )
 
+    directives.mode(test_result='display')
     test_result = schema.TextLine(
         title=_(u"label_calculation_test_result",
                 default=u"Test Result"),
