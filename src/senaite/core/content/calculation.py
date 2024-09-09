@@ -64,8 +64,20 @@ class IImportRecord(Interface):
 class ITestParameterRecord(Interface):
     """Record schema for python test params
     """
-    keyword = schema.TextLine(default=u"")
-    value = schema.TextLine(default=u"0")
+
+    keyword = schema.TextLine(
+        title=_(
+            u"label_calculation_test_param_keyword",
+            default=u"Keyword"
+        ),
+        default=u"")
+
+    value = schema.TextLine(
+        title=_(
+            u"label_calculation_test_param_value",
+            default=u"Value"
+         ),
+        default=u"0")
 
 
 class ICalculationSchema(model.Schema):
@@ -166,24 +178,14 @@ class ICalculationSchema(model.Schema):
 
     test_result = schema.TextLine(
         title=_(u"label_calculation_test_result",
-                default=u"Additional Python Libraries"),
+                default=u"Test Result"),
         description=_(u"description_calculation_test_result",
                       default=u"The result after the calculation has taken "
                       u"place with test values.  You will need to save the "
                       u"calculation before this value will be calculated.")
     )
 
-    directives.widget(
-        "dependent_services",
-        UIDReferenceWidgetFactory,
-        catalog=SETUP_CATALOG,
-        query={
-            "is_active": True,
-            "sort_on": "title",
-            "sort_order": "ascending",
-        },
-        visible=False,
-    )
+    directives.mode(dependent_services='hidden')
     dependent_services = UIDReferenceField(
         title=_(
             u"label_calculation_dependent_services",
@@ -192,7 +194,7 @@ class ICalculationSchema(model.Schema):
         allowed_types=("AnalysisService", ),
         relationship="CalculationDependentServices",
         multi_valued=True,
-        required=True,
+        required=False,
     )
 
 
