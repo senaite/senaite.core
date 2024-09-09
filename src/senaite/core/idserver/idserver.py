@@ -358,10 +358,12 @@ def get_current_year():
     """
     return DateTime().strftime("%Y")[2:]
 
+
 def get_yymmdd():
     """Returns the current date in yymmdd format
     """
     return datetime.now().strftime("%y%m%d")
+
 
 def make_storage_key(portal_type, prefix=None):
     """Make a storage (dict-) key for the number generator
