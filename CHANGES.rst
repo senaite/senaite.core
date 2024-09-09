@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2614 Fix autofill for simple fields when create Sample in the add form
 - #2617 Fix cannot set/edit the name/title of InterpretationTemplate objects
 - #2616 Fix reference field flush in add sample form when sort_limit is used
 - #2613 Fix AttributeError for transitions created with core's workflow api

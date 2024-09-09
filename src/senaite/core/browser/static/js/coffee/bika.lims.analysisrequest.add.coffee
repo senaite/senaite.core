@@ -583,11 +583,6 @@ class window.AnalysisRequestAdd
     values_json = JSON.stringify values
     field = $("#" + field_name + "-#{arnum}")
 
-    controller = @get_widget_controller(field)
-    # No controller found, return immediately
-    # -> happens when the field is hidden or absent
-    return unless controller
-
     console.debug "apply_dependent_value: field_name=#{field_name} field_values=#{values_json}"
 
     # (multi-) reference fields, e.g. CC Contacts of selected Contact
