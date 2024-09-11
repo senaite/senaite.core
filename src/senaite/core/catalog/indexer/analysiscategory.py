@@ -18,10 +18,10 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.interfaces import IAnalysisCategory
 from plone.indexer import indexer
 from Products.CMFPlone.utils import safe_callable
 from senaite.core.catalog.utils import sortable_sortkey_title
+from senaite.core.interfaces import IAnalysisCategory
 
 
 @indexer(IAnalysisCategory)
