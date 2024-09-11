@@ -614,10 +614,6 @@
       me = this;
       values_json = JSON.stringify(values);
       field = $("#" + field_name + ("-" + arnum));
-      controller = this.get_widget_controller(field);
-      if (!controller) {
-        return;
-      }
       console.debug("apply_dependent_value: field_name=" + field_name + " field_values=" + values_json);
       if (this.is_reference_field(field)) {
         manually_deselected = this.deselected_uids[field_name] || [];
