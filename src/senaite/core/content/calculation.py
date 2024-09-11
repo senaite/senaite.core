@@ -40,8 +40,9 @@ from senaite.core.schema.interimsfield import InterimsField
 from senaite.core.schema.uidreferencefield import get_backrefs
 from senaite.core.schema.uidreferencefield import UIDReferenceField
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
-from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from zope import schema
+from z3c.form.interfaces import IAddForm
+from z3c.form.interfaces import IEditForm
 from zope.interface import Interface
 from zope.interface import implementer
 
@@ -53,12 +54,14 @@ class IImportRecord(Interface):
         title=_(
             u"label_calculation_import_module_name",
             default=u"Module"
-        ))
+        ),
+        required=False)
     function = schema.TextLine(
         title=_(
             u"label_calculation_import_function_name",
             default=u"Function"
-        ))
+        ),
+        required=False)
 
 
 class ITestParameterRecord(Interface):
@@ -70,6 +73,7 @@ class ITestParameterRecord(Interface):
             u"label_calculation_test_param_keyword",
             default=u"Keyword"
         ),
+        required=False,
         default=u"")
 
     value = schema.TextLine(
@@ -77,6 +81,7 @@ class ITestParameterRecord(Interface):
             u"label_calculation_test_param_value",
             default=u"Value"
         ),
+        required=False,
         default=u"0")
 
 
@@ -120,6 +125,7 @@ class ICalculationSchema(model.Schema):
                       u"box on the top of the worksheet, allowing to "
                       u"apply a specific value to all the corresponding "
                       u"fields on the sheet."),
+        required=False,
     )
 
     directives.widget(
@@ -186,10 +192,11 @@ class ICalculationSchema(model.Schema):
                       u"calculate results."),
         value_type=DataGridRow(schema=ITestParameterRecord),
         required=False,
-        default=[{'keyword': None, 'value': None}]
+        default=[{"keyword": u"", "value": u""}]
     )
 
-    directives.mode(test_result='display')
+    directives.omitted(IAddForm, 'test_result')
+    directives.omitted(IEditForm, 'test_result')
     test_result = schema.TextLine(
         title=_(u"label_calculation_test_result",
                 default=u"Test Result"),

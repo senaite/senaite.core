@@ -48,7 +48,7 @@ class IInterimRow(Interface):
             u"label_interim_keyword",
             default=u"Keyword"
         ),
-        required=True,
+        required=False,
         default=u""
     )
 
@@ -57,7 +57,7 @@ class IInterimRow(Interface):
             u"label_interim_title",
             default=u"Field title"
         ),
-        required=True,
+        required=False,
         default=u""
     )
 
@@ -66,7 +66,7 @@ class IInterimRow(Interface):
             u"label_interim_default_value",
             default=u"Default value"
         ),
-        required=True,
+        required=False,
         default=u""
     )
 
@@ -75,7 +75,7 @@ class IInterimRow(Interface):
             u"label_interim_choices",
             default=u"Choices"
         ),
-        required=True,
+        required=False,
         default=u""
     )
 
@@ -86,7 +86,7 @@ class IInterimRow(Interface):
         ),
         source="senaite.core.vocabularies.resulttypes",
         default="numeric",
-        required=True,
+        required=False,
     )
 
     allow_empty = schema.Bool(
