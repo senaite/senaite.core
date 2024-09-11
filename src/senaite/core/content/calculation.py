@@ -68,6 +68,7 @@ class ITestParameterRecord(Interface):
     """Record schema for python test params
     """
 
+    directives.widget("keyword", disabled="disabled")
     keyword = schema.TextLine(
         title=_(
             u"label_calculation_test_param_keyword",
