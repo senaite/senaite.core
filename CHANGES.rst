@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2620 Support IAddSampleObjectInfo adapter for sample's Template field
 - #2614 Fix autofill for simple fields when create Sample in the add form
 - #2617 Fix cannot set/edit the name/title of InterpretationTemplate objects
 - #2616 Fix reference field flush in add sample form when sort_limit is used
