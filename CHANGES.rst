@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2618 Fix UnicodeDecodeError when user linked to a contact with special chars
 - #2615 Add control for select/deselect all attachments when send report
 - #2614 Fix autofill for simple fields when create Sample in the add form
 - #2617 Fix cannot set/edit the name/title of InterpretationTemplate objects
