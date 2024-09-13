@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2619 Fix analysis categories are not sorted by sort key
 - #2618 Fix UnicodeDecodeError when user linked to a contact with special chars
 - #2615 Add control for select/deselect all attachments when send report
 - #2614 Fix autofill for simple fields when create Sample in the add form
