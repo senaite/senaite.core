@@ -142,13 +142,22 @@ class UserDataPanel(Base):
         """
         contact = self.get_linked_contact()
         if ILabContact.providedBy(contact):
-            self.add_status_message(
-                _("User is linked to lab contact '%s'" %
-                  contact.getFullname()))
+            self.add_status_message(_(
+                "User is linked to lab contact '${fullname}'",
+                mapping={"fullname": api.safe_unicode(contact.getFullname())}
+            ))
+
         elif IContact.providedBy(contact):
-            self.add_status_message(
-                _("User is linked to the client contact '%s' (%s)" %
-                  (contact.getFullname(), contact.aq_parent.getName())))
+            fullname = contact.getFullname()
+            client_name = contact.aq_parent.getName()
+            self.add_status_message(_(
+                "User is linked to the client contact '${fullname}' "
+                "(${client_name})",
+                mapping={
+                    "fullname": api.safe_unicode(fullname),
+                    "client_name": api.safe_unicode(client_name)
+                }
+            ))
 
     def add_status_message(self, message, level="info"):
         """Add a portal status message
