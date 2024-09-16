@@ -43,7 +43,6 @@
     <element value="AttachmentType"/>
     <element value="Batch"/>
     <element value="BikaSetup"/>
-    <element value="Calculation"/>
     <element value="Client"/>
     <element value="Container"/>
     <element value="ContainerType"/>
