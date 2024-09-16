@@ -22,32 +22,41 @@ import re
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
-from senaite.core.interfaces import IWorksheetTemplates
 from senaite.core.browser.form.adapters import EditFormAdapterBase
+from senaite.core.catalog import SETUP_CATALOG
 
 pos_regex = re.compile(r"(\d+)\.widgets\.pos$")
-type_regex = re.compile(r"([\d|A]+)\.widgets\.type$")
-layout_regex = re.compile(r"form\.widgets\.template_layout")
+type_regex = re.compile(r"(\d+)\.widgets\.type$")
+dup_proxy_regex = re.compile(r"(\d+)\.widgets\.dup_proxy$")
+ref_proxy_regex = re.compile(r"(\d+)\.widgets\.reference_proxy$")
+
+POS_PARENT_SELECTOR = "td:has(>[name='{}'])"
+POS_DIV_BLOCK = "<div style='width: 85%; text-align: center;'>{}</div>"
+FIELD_POS = "form.widgets.template_layout.{}.widgets.pos"
+FIELD_TYPE = "form.widgets.template_layout.{}.widgets.type:list"
+FIELD_BLANK  = "form.widgets.template_layout.{}.widgets.blank_ref"
+FIELD_CONTROL  = "form.widgets.template_layout.{}.widgets.control_ref"
+FIELD_DUP = "form.widgets.template_layout.{}.widgets.dup"
+FIELD_DUP_PROXY = "form.widgets.template_layout.{}.widgets.dup_proxy:list"
+FIELD_REF_PROXY = "form.widgets.template_layout.{}.widgets.reference_proxy:list"
+
 
 class EditForm(EditFormAdapterBase):
     """Edit form adapter for Worksheet Template
     """
 
     def initialized(self, data):
-        # register callbacks
-        self.add_callback("body",
-                          "datagrid:row_removed",
-                          "on_row_removed")
-        # self.toggle_duplicate_field(0, False)
+        self.modify_positions(data)
+        self.init_toggle_fields(data)
         return self.data
 
     def init_toggle_fields(self, data):
         form = data.get("form")
         count_rows = self.get_count_rows(data)
-        for i in range(count_rows):
-            field = "form.widgets.template_layout.%s.widgets.type:list" % i
-            value = form.get(field, "a")
-            self.toggle_fields(value, i)
+        for index in range(count_rows):
+            field = FIELD_TYPE.format(index)
+            analysis_type = form.get(field, "a")
+            self.toggle_fields(data, analysis_type, index)
 
     def added(self, data):
         return self.data
@@ -77,45 +86,74 @@ class EditForm(EditFormAdapterBase):
         if type_match:
             idx = type_match.group(1)
             val = value[0]
-            self.toggle_fields(val, idx)
+            self.toggle_fields(data, val, idx)
+        dup_match = dup_proxy_regex.search(name)
+        if dup_match:
+            idx = dup_match.group(1)
+            val = value[0]
+            self.add_update_field(FIELD_DUP.format(idx), val)
+        ref_match = ref_proxy_regex.search(name)
+        if ref_match:
+            idx = ref_match.group(1)
+            form = data.get("form")
+            analysis_type = form.get(FIELD_TYPE.format(idx))
+            if analysis_type == "b":
+                self.add_update_field(FIELD_BLANK.format(idx), value)
+                self.add_update_field(FIELD_CONTROL.format(idx), "")
+            elif analysis_type == "c":
+                self.add_update_field(FIELD_BLANK.format(idx), "")
+                self.add_update_field(FIELD_CONTROL.format(idx), value)
+            else:
+                self.add_update_field(FIELD_BLANK.format(idx), "")
+                self.add_update_field(FIELD_CONTROL.format(idx), "")
 
-        if name == "form.widgets.num_of_positions":
-            if self.get_count_rows(data) == int(value):
-                return self.data
-            if IWorksheetTemplates.providedBy(self.context):
-                object_url = api.get_url(self.context)
-                redirect_url = "{}?num_positions={}".format(object_url,
-                                              value)
-                return self.request.response.redirect(redirect_url)
         return self.data
 
-    def toggle_fields(self, field_type, index):
-        if field_type == "a":
-            self.toggle_duplicate_field(index, False)
-            self.toggle_blank_field(index, False)
-            self.toggle_control_field(index, False)
-        else:
-            self.toggle_duplicate_field(index, field_type == "d")
-            self.toggle_blank_field(index, field_type == "b")
-            self.toggle_control_field(index, field_type == "c")
+    def toggle_fields(self, data, field_type, index):
+        self.toggle_reference_field(index, field_type)
+        self.toggle_duplicate_field(data, index, field_type)
 
-    def toggle_duplicate_field(self, index, toggle=False):
-        field = "form.widgets.template_layout.%s.widgets.dup:list" % index
+    def toggle_duplicate_field(self, data, index, field_type):
+        field = FIELD_DUP_PROXY.format(index)
+        toggle = field_type == "d"
+        if toggle:
+            self.update_duplicate_items(data, index)
         self.toggle_field(field, toggle)
 
-    def toggle_blank_field(self, index, toggle=False):
-        field = "form.widgets.template_layout.%s.widgets.blank_ref" % index
+    def toggle_reference_field(self, index, field_type):
+        field = FIELD_REF_PROXY.format(index)
+        toggle = field_type in ["b", "c"]
         self.toggle_field(field, toggle)
-
-    def toggle_control_field(self, index, toggle=False):
-        field = "form.widgets.template_layout.%s.widgets.control_ref" % index
-        self.toggle_field(field, toggle)
+        if toggle:
+            options = self.get_reference_definitions(field_type)
+            self.add_update_field(field, {
+                "options": options
+            })
 
     def toggle_field(self, field, toggle=False):
         if toggle:
             self.add_show_field(field)
         else:
             self.add_hide_field(field)
+
+    def update_duplicate_items(self, data, index):
+        """Updating list of allowed duplicate values
+        """
+        form = data.get("form")
+        include = set()
+        exclude = set()
+        count_rows = self.get_count_rows(data)
+        for i in range(count_rows):
+            select_type = form.get(FIELD_TYPE.format(i))
+            if select_type == "a":
+                include.add(form.get(FIELD_POS.format(i)))
+            if select_type == "d":
+                exclude.add(form.get(FIELD_DUP_PROXY.format(i)))
+
+        options = [dict(value=pos, title=pos) for pos in include - exclude]
+        self.add_update_field(FIELD_DUP_PROXY.format(index), {
+            "options": options
+        })
 
     def get_instruments_options(self, method):
         """Returns a list of dicts that represent instrument options suitable
@@ -137,26 +175,33 @@ class EditForm(EditFormAdapterBase):
 
         return options
 
-    def on_row_removed(self, data):
-        """
-        """
-        self.recalculate_positions(data)
-        return self.data
-
-    def recalculate_positions(self, data):
-        """
+    def modify_positions(self, data):
+        """Replacing input control to text for positions
         """
         count_rows = self.get_count_rows(data)
         for i in range(count_rows):
-            field = "form.widgets.template_layout.%s.widgets.pos" % i
+            field = FIELD_POS.format(i)
             pos = str(i + 1)
             self.add_update_field(field, pos)
             self.add_hide_field(field)
-            selector = "td:has(>[name='%s'])" % field
-            html = "<span>%s</span>" % pos
+            selector = POS_PARENT_SELECTOR.format(field)
+            html = POS_DIV_BLOCK.format(pos)
             self.add_inner_html(selector, html, append=True)
 
     def get_count_rows(self, data):
         form = data.get("form")
         positions = [k for k in form.keys() if pos_regex.search(k)]
         return len(positions)
+
+    def get_reference_definitions(self, reference_type):
+        reference_query = {
+            "portal_type": "ReferenceDefinition",
+            "is_active": True,
+        }
+        brains = api.search(reference_query, SETUP_CATALOG)
+        definitions = map(api.get_object, brains)
+        if  reference_type == "b":
+            definitions = filter(lambda d: d.getBlank(), definitions)
+        else:
+            definitions = filter(lambda d: not d.getBlank(), definitions)
+        return [dict(value=d.UID(), title=d.Title()) for d in definitions]

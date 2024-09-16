@@ -38,6 +38,8 @@ from senaite.core.z3cform.widgets.listing.widget import ListingWidgetFactory
 from zope import schema
 from zope.interface import Interface
 from zope.interface import implementer
+from zope.schema.vocabulary import SimpleVocabulary
+from z3c.form.interfaces import IEditForm
 from six.moves.urllib.parse import parse_qs
 
 
@@ -53,9 +55,11 @@ def default_layout_positions():
         default_value.append({
             "pos": i + 1,
             "type": "a",
-            "blank_ref": "",
-            "control_ref": "",
-            "dup": 1,
+            "blank_ref": [],
+            "control_ref": [],
+            "reference_proxy": None,
+            "dup_proxy": None,
+            "dup": None,
         })
     return default_value
 
@@ -82,6 +86,7 @@ class ILayoutRecord(Interface):
         default=1,
     )
 
+    directives.widget("type", klass="field")
     type = schema.Choice(
         title=_(
             u"title_layout_record_type",
@@ -107,10 +112,11 @@ class ILayoutRecord(Interface):
         columns=get_default_columns,
         limit=5,
     )
+    directives.mode(IEditForm, blank_ref="hidden")
     blank_ref = UIDReferenceField(
         title=_(
             u"title_layout_record_blank_ref",
-            default=u"Reference"
+            default=u"Blank Reference"
         ),
         allowed_types=("ReferenceDefinition",),
         multi_valued=False,
@@ -132,23 +138,47 @@ class ILayoutRecord(Interface):
         columns=get_default_columns,
         limit=5,
     )
+    directives.mode(IEditForm, control_ref="hidden")
     control_ref = UIDReferenceField(
         title=_(
             u"title_layout_record_control_ref",
-            default=u"Reference"
+            default=u"Control Reference"
         ),
         allowed_types=("ReferenceDefinition",),
         multi_valued=False,
         required=False,
     )
 
-    dup = schema.Choice(
+    directives.widget("reference_proxy", klass="field")
+    reference_proxy = schema.Choice(
+        title=_(
+            u"title_layout_record_reference_proxy",
+            default=u"Reference"
+        ),
+        vocabulary="senaite.core.vocabularies.reference_definition",
+        required=False,
+        default=None,
+    )
+
+    directives.widget("dup_proxy", klass="field")
+    dup_proxy = schema.Choice(
+        title=_(
+            u"title_layout_record_dup_proxy",
+            default=u"Duplicate Of"
+        ),
+        source=SimpleVocabulary.fromValues([0]),
+        required=False,
+        default=None,
+    )
+
+    directives.mode(dup="hidden")
+    dup = schema.Int(
         title=_(
             u"title_layout_record_dup",
             default=u"Duplicate Of"
         ),
-        vocabulary="senaite.core.vocabularies.duplicate",
         required=False,
+        default=None,
     )
 
 
@@ -270,9 +300,9 @@ class IWorksheetTemplateSchema(model.Schema):
         "template_layout",
         DataGridWidgetFactory,
         allow_insert=False,
-        allow_delete=True,
+        allow_delete=False,
         allow_reorder=False,
-        auto_append=True)
+        auto_append=False)
     template_layout = schema.List(
         title=_(
             u"title_worksheettemplate_template_layout",
@@ -289,7 +319,7 @@ class IWorksheetTemplateSchema(model.Schema):
                     u"sample position it should be a duplicate of"
         ),
         value_type=DataGridRow(schema=ILayoutRecord),
-        default=[],
+        defaultFactory=default_layout_positions(),
         required=True,
     )
 

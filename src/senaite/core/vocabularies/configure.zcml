@@ -19,6 +19,10 @@
       name="senaite.core.vocabularies.analysis_types" />
 
   <utility
+      component=".references.ReferenceDefinitionVocabularyFactory"
+      name="senaite.core.vocabularies.reference_definition" />
+
+  <utility
       component=".analysis_types.DuplicateVocabularyFactory"
       name="senaite.core.vocabularies.duplicate" />
 
