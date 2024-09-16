@@ -47,6 +47,9 @@ def default_layout_positions():
     """
     """
     request = api.get_request()
+    if not request:
+        return []
+    
     params = dict(parse_qs(request["QUERY_STRING"]))
     values = params.get("num_positions")
     num_positions = int(values[0]) if values else 0
