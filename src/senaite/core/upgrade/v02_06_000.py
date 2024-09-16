@@ -2524,13 +2524,9 @@ def migrate_ws_template_to_dx(src, destination):
 
     # NOTE: Service -> Services
     services = []
-    for setting in src.getService():
-        uid = setting.get("service_uid")
-        if not api.is_uid(uid):
-            logger.error("Invalid UID in analysis setting: %s", setting)
-            continue
+    for service in src.getService():
         services.append({
-            "uid": uid,
+            "uid": api.get_uid(service),
         })
     target.setServices(services)
 
@@ -2544,12 +2540,16 @@ def migrate_ws_template_to_dx(src, destination):
         blank_ref = []
         control_ref = []
 
-        if analysis_type == "b":
+        if analysis_type == "a":
+            dup = None
+        elif analysis_type == "b":
             blank_ref = row.get("blank_ref", "")
             ref_proxy = blank_ref or None
+            dup = None
         elif analysis_type == "c":
             control_ref = row.get("control_ref", "")
             ref_proxy = control_ref or None
+            dup = None
 
         layout.append({
             "pos": int(row.get("pos", num + 1)),
