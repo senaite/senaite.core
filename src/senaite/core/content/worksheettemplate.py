@@ -49,7 +49,7 @@ def default_layout_positions():
     request = api.get_request()
     if not request:
         return []
-    
+
     params = dict(parse_qs(request["QUERY_STRING"]))
     values = params.get("num_positions")
     num_positions = int(values[0]) if values else 0
@@ -322,7 +322,7 @@ class IWorksheetTemplateSchema(model.Schema):
                     u"sample position it should be a duplicate of"
         ),
         value_type=DataGridRow(schema=ILayoutRecord),
-        defaultFactory=default_layout_positions(),
+        defaultFactory=default_layout_positions,
         required=True,
     )
 
