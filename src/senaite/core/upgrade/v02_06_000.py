@@ -2539,28 +2539,28 @@ def migrate_ws_template_to_dx(src, destination):
     for num, row in enumerate(src.getLayout()):
         ref_proxy = None
         dup = row.get("dup", None)
+        dup = int(dup) if dup else None
         analysis_type = row.get("type", "a")
+        blank_ref = []
+        control_ref = []
+
         if analysis_type == "b":
-            ref_proxy = row.get("blank_ref", None)
+            blank_ref = row.get("blank_ref", "")
+            ref_proxy = blank_ref or None
         elif analysis_type == "c":
-            ref_proxy = row.get("control_ref", None),
+            control_ref = row.get("control_ref", "")
+            ref_proxy = control_ref or None
+
         layout.append({
             "pos": int(row.get("pos", num + 1)),
             "type": analysis_type,
-            "blank_ref": row.get("blank_ref", []),
-            "control_ref": row.get("control_ref", []),
+            "blank_ref": blank_ref if blank_ref else [],
+            "control_ref": control_ref if control_ref else [],
             "reference_proxy": ref_proxy,
             "dup_proxy": dup,
             "dup": dup,
         })
     target.setTemplateLayout(layout)
-
-    move_reference_samples(src, target)
-
-    move_contacts(src, target)
-
-    # we set the fields with our custom setters
-    target.setRemarks(src.getRemarks())
 
     # Migrate the contents from AT to DX
     migrator = getMultiAdapter(
