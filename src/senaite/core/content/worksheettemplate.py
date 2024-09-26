@@ -470,7 +470,7 @@ class WorksheetTemplate(Container):
         mutator = self.mutator("template_layout")
         mutator(self, value)
         num_pos = len(value)
-        if num_pos != self.getNumOfPositions:
+        if num_pos != self.getNumOfPositions():
             self.setNumOfPositions(num_pos)
 
     # BBB: AT schema field property
