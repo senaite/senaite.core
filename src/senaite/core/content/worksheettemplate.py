@@ -39,24 +39,27 @@ from zope import schema
 from zope.interface import Interface
 from zope.interface import implementer
 from zope.schema.vocabulary import SimpleVocabulary
-from z3c.form.interfaces import IEditForm
+from z3c.form.interfaces import DISPLAY_MODE
 from six.moves.urllib.parse import parse_qs
 
 
-def default_layout_positions():
+def default_layout_positions(count_positions=None, start_pos=0):
     """
     """
     request = api.get_request()
-    if not request:
+    if count_positions:
+        num_positions = int(count_positions)
+    elif request:
+        params = dict(parse_qs(request["QUERY_STRING"]))
+        values = params.get("num_positions")
+        num_positions = int(values[0]) if values else 0
+    else:
         return []
 
-    params = dict(parse_qs(request["QUERY_STRING"]))
-    values = params.get("num_positions")
-    num_positions = int(values[0]) if values else 0
     default_value = []
     for i in range(num_positions):
         default_value.append({
-            "pos": i + 1,
+            "pos": start_pos + i + 1,
             "type": "a",
             "blank_ref": [],
             "control_ref": [],
@@ -65,6 +68,15 @@ def default_layout_positions():
             "dup": None,
         })
     return default_value
+
+
+def default_num_positions():
+    request = api.get_request()
+    if request:
+        params = dict(parse_qs(request["QUERY_STRING"]))
+        values = params.get("num_positions")
+        return int(values[0]) if values else 0
+    return 0
 
 
 class IWorksheetTemplateServiceRecord(Interface):
@@ -115,7 +127,7 @@ class ILayoutRecord(Interface):
         columns=get_default_columns,
         limit=5,
     )
-    directives.mode(IEditForm, blank_ref="hidden")
+    directives.mode(blank_ref="hidden")
     blank_ref = UIDReferenceField(
         title=_(
             u"title_layout_record_blank_ref",
@@ -141,7 +153,7 @@ class ILayoutRecord(Interface):
         columns=get_default_columns,
         limit=5,
     )
-    directives.mode(IEditForm, control_ref="hidden")
+    directives.mode(control_ref="hidden")
     control_ref = UIDReferenceField(
         title=_(
             u"title_layout_record_control_ref",
@@ -287,14 +299,14 @@ class IWorksheetTemplateSchema(model.Schema):
     directives.widget(
         "num_of_positions",
         NumberWidget,
-        after_text_input="Set",
-        after_css_input="text-primary")
+        klass="num-positions")
     num_of_positions = schema.Int(
         title=_(
             u"title_worksheettemplate_num_of_positions",
             default=u"Number of Positions"
         ),
         required=False,
+        defaultFactory=default_num_positions,
         min=0,
         default=0,
     )
@@ -305,7 +317,10 @@ class IWorksheetTemplateSchema(model.Schema):
         allow_insert=False,
         allow_delete=False,
         allow_reorder=False,
-        auto_append=False)
+        auto_append=False,
+        templates = {
+            DISPLAY_MODE: "ws_template_datagrid_display.pt",
+        })
     template_layout = schema.List(
         title=_(
             u"title_worksheettemplate_template_layout",
@@ -421,6 +436,31 @@ class WorksheetTemplate(Container):
                                              setEnableMultipleUseOfInstrument)
 
     @security.protected(permissions.View)
+    def getNumOfPositions(self):
+        accessor = self.accessor("num_of_positions")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setNumOfPositions(self, value):
+        mutator = self.mutator("num_of_positions")
+        mutator(self, value)
+        layout = self.getTemplateLayout()
+        len_layout = len(layout)
+        nums = int(value)
+        if nums == 0:
+            layout = []
+        elif len_layout == 0 and nums > 0:
+            layout = default_layout_positions(nums)
+        elif nums > len_layout:
+            rows = nums - len_layout
+            layout = layout + default_layout_positions(rows, len_layout)
+        elif nums < len_layout:
+            layout = layout[:nums]
+        self.setTemplateLayout(layout)
+
+    NumOfPositions = property(getNumOfPositions, setNumOfPositions)
+
+    @security.protected(permissions.View)
     def getTemplateLayout(self):
         accessor = self.accessor("template_layout")
         return accessor(self) or []
@@ -429,6 +469,9 @@ class WorksheetTemplate(Container):
     def setTemplateLayout(self, value):
         mutator = self.mutator("template_layout")
         mutator(self, value)
+        num_pos = len(value)
+        if num_pos != self.getNumOfPositions:
+            self.setNumOfPositions(num_pos)
 
     # BBB: AT schema field property
     Layout = property(getTemplateLayout, setTemplateLayout)

@@ -133,3 +133,17 @@ form[name=analysisrequest_add_form] {
     margin-bottom: 0;
   }
 }
+
+input.num-positions {
+  max-width: 100px;
+  margin-right: 10px;
+  border-radius: 0.2rem!important;
+}
+
+input.button-num-positions {
+  border:none;
+  padding: .25rem .5rem;
+  font-size: .875rem;
+  line-height: 1.5;
+  border-radius: .2rem;
+}
