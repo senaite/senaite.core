@@ -2484,6 +2484,16 @@ def fix_corrupted_transitions(tool):
     logger.info("Fixing corrupted transitions [DONE]")
 
 
+def reindex_analysis_categories(tool):
+    logger.info("Reindexing analysis categories ...")
+    cat = api.get_tool(SETUP_CATALOG)
+    for brain in cat(portal_type="AnalysisCategory"):
+        obj = brain.getObject()
+        logger.info("Reindex analysis category: %r" % obj)
+        obj.reindexObject(idxs=["sortable_title"], update_metadata=False)
+    logger.info("Reindexing analysis categories [DONE]")
+
+
 def migrate_calculation_to_dx(src, destination=None):
     """Migrate an AT profile to DX in the destination folder
 

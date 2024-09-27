@@ -6,9 +6,17 @@
    <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Move Calculations to Senaite setup"
       description="Migrate Calculations to Senaite setup"
+      source="2651"
+      destination="2652"
+      handler=".v02_06_000.migrate_calculations_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Fix categories not sorted by sort key"
+      description="Reindex sortable_title for all analysis categories"
       source="2650"
       destination="2651"
-      handler=".v02_06_000.migrate_calculations_to_dx"
+      handler=".v02_06_000.reindex_analysis_categories"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
@@ -66,14 +74,6 @@
       source="2643"
       destination="2644"
       handler=".v02_06_000.remove_creation_date_index"
-      profile="senaite.core:default"/>
-
-  <genericsetup:upgradeStep
-      title="SENAITE.CORE 2.6.0: Migrate Suppliers to DX"
-      description="Migrate Suppliers to Dexterity"
-      source="2643"
-      destination="2644"
-      handler=".v02_06_000.migrate_suppliers_to_dx"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
