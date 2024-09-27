@@ -36,7 +36,7 @@ class TestCalculations(DataTestCase):
 
         # Calculation: Total Hardness
         # Initial formula: [Ca] + [Mg]
-        calcs = self.portal.bika_setup.bika_calculations
+        calcs = self.portal.setup.calculations
         self.calculation = [calcs[k] for k in calcs
                             if calcs[k].title == 'Total Hardness'][0]
 
@@ -61,246 +61,293 @@ class TestCalculations(DataTestCase):
         # Formulas to test
         # Ca and Mg detection Limits: LDL: 10, UDL: 20
         self.formulas = [
-
-            {'formula' : '[Ca]+[Mg]',
-             'analyses': {'Ca':'10', 'Mg': '15'},
-             'interims': {},
-             'exresult': '25.0'
+            {
+                'formula': '[Ca]+[Mg]',
+                'analyses': {'Ca': '10', 'Mg': '15'},
+                'interims': {},
+                'exresult': '25.0'
             },
 
-            {'formula' : '[Ca]+[Mg]',
-             'analyses': {'Ca':'-20', 'Mg': '5'},
-             'interims': {},
-             'exresult': '-15.0'
+            {
+                'formula': '[Ca]+[Mg]',
+                'analyses': {'Ca': '-20', 'Mg': '5'},
+                'interims': {},
+                'exresult': '-15.0'
             },
 
-            {'formula' : '[Ca]+[Mg]+[IN1]',
+            {'formula': '[Ca]+[Mg]+[IN1]',
              'analyses': {'Ca': '10', 'Mg': '15'},
-             'interims': {'IN1':'2'},
+             'interims': {'IN1': '2'},
              'exresult': '27.0'
-            },
+             },
 
-            {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
+            {'formula': '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '5', 'Mg': '1'},
-             'interims': {'IN1':'5'},
+             'interims': {'IN1': '5'},
              'exresult': '15.0'
-            },
+             },
 
-            {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
+            {'formula': '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '10', 'Mg': '1'},
-             'interims': {'IN1':'5'},
+             'interims': {'IN1': '5'},
              'exresult': '16.0'
-            },
+             },
 
-            {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
+            {'formula': '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '10', 'Mg': '2'},
-             'interims': {'IN1':'5'},
+             'interims': {'IN1': '5'},
              'exresult': '17.0'
-            },
+             },
 
-            {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
+            {'formula': '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '15', 'Mg': '2'},
-             'interims': {'IN1':'5'},
+             'interims': {'IN1': '5'},
              'exresult': '22.0'
-            },
+             },
 
-            {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
+            {'formula': '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '15', 'Mg': '3'},
-             'interims': {'IN1':'5'},
+             'interims': {'IN1': '5'},
              'exresult': '23.0'
-            },
+             },
 
-            {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
+            {'formula': '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '20', 'Mg': '3'},
-             'interims': {'IN1':'5'},
+             'interims': {'IN1': '5'},
              'exresult': '28.0'
-            },
+             },
 
-            {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
+            {'formula': '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '20', 'Mg': '3'},
-             'interims': {'IN1':'10'},
+             'interims': {'IN1': '10'},
              'exresult': '33.0'
-            },
+             },
 
-            {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
+            {'formula': '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '30', 'Mg': '3'},
-             'interims': {'IN1':'10'},
+             'interims': {'IN1': '10'},
              'exresult': '50.0'
-            },
+             },
 
-            {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
+            {'formula': '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '>30', 'Mg': '5'},
-             'interims': {'IN1':'10'},
+             'interims': {'IN1': '10'},
              'exresult': '60.0'
-            },
+             },
 
-            {'formula' : '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
+            {'formula': '([Ca]+[Ca.LDL]) if [Ca.BELOWLDL] else (([Ca.UDL] + [Ca]) if [Ca.ABOVEUDL] else [Ca.RESULT] + [Mg] + [IN1])',
              'analyses': {'Ca': '<5', 'Mg': '5'},
-             'interims': {'IN1':'10'},
+             'interims': {'IN1': '10'},
              'exresult': '10.0'
-            },
+             },
 
-            {'formula' : '[Comment] if [Comment] == "uncertain" else ([Ca] + [Mg])',
+            {'formula': '[Comment] if [Comment] == "uncertain" else ([Ca] + [Mg])',
              'analyses': {'Ca': '5', 'Mg': '5'},
              'interims': {'Comment': 'uncertain'},
              'result_types': {'Comment': 'str'},
              'exresult': 'uncertain'
-            },
+             },
 
-            {'formula' : '[Comment] if [Comment] == "uncertain" else ([Ca] + [Mg])',
+            {'formula': '[Comment] if [Comment] == "uncertain" else ([Ca] + [Mg])',
              'analyses': {'Ca': '5', 'Mg': '5'},
              'interims': {'Comment': 'certain'},
              'result_types': {'Comment': 'str'},
              'exresult': '10.0'
-            },
+             },
 
-            {'formula' : '[Comment] if [Comment] == "uncertain" else ([Ca] + [Mg])',
+            {'formula': '[Comment] if [Comment] == "uncertain" else ([Ca] + [Mg])',
              'analyses': {'Ca': '5', 'Mg': '5'},
              'interims': {'Comment': '10'},
              'result_types': {'Comment': 'str'},
              'exresult': '10.0'
-            },
+             },
         ]
         # New formulas for precision testing
         self.formulas_precision = [
-            {'formula' : '[Ca]/[Mg]',
-             'analyses': {'Ca':'10', 'Mg': '15'},
+            {'formula': '[Ca]/[Mg]',
+             'analyses': {'Ca': '10', 'Mg': '15'},
              'interims': {},
              'test_fixed_precision': [
-                {'fixed_precision': 5,
-                 'expected_result': '0.66667',
-                },
-                {'fixed_precision': 2,
-                 'expected_result': '0.67'
-                },
-                {'fixed_precision': 1,
-                 'expected_result': '0.7'
-                },
-                {'fixed_precision': 0,
-                 'expected_result': '1'
-                },
-                {'fixed_precision': -1,
-                 'expected_result': '1'
-                },
-                {'fixed_precision': -5,
-                 'expected_result': '1'
-                },
-            ],
-            'test_uncertainties_precision':[
-                    {'uncertainties': [
-                        {'intercept_min': 0, 'intercept_max': 10, 'errorvalue': 0.056},
-                        ],
-                    'expected_result': '0.67'
+                 {'fixed_precision': 5,
+                  'expected_result': '0.66667',
+                  },
+                 {'fixed_precision': 2,
+                     'expected_result': '0.67'
+                  },
+                 {'fixed_precision': 1,
+                     'expected_result': '0.7'
+                  },
+                 {'fixed_precision': 0,
+                     'expected_result': '1'
+                  },
+                 {'fixed_precision': -1,
+                     'expected_result': '1'
+                  },
+                 {'fixed_precision': -5,
+                     'expected_result': '1'
+                  },
+             ],
+             'test_uncertainties_precision': [
+                 {'uncertainties': [
+                    {
+                         'intercept_min': 0,
+                         'intercept_max': 10,
+                         'errorvalue': 0.056
                     },
-                    {'uncertainties': [
-                        {'intercept_min': 0.002, 'intercept_max': 20, 'errorvalue': 0.1}
-                        ],
-                    'expected_result': '0.7'
-                    },
-                ],
-            },
-            {'formula' : '[Ca]/[Mg]*[IN1]',
-             'analyses': {'Ca':'100', 'Mg': '20'},
-             'interims': {'IN1':'0.12'},
+                 ],
+                     'expected_result': '0.67'
+                 },
+                 {'uncertainties': [
+                    {
+                        'intercept_min': 0.002,
+                        'intercept_max': 20,
+                        'errorvalue': 0.1
+                    }
+                 ],
+                     'expected_result': '0.7'
+                 },
+             ],
+             },
+            {'formula': '[Ca]/[Mg]*[IN1]',
+             'analyses': {'Ca': '100', 'Mg': '20'},
+             'interims': {'IN1': '0.12'},
              'test_fixed_precision': [
-                {'fixed_precision': 5,
-                 'expected_result': '0.60000',
-                },
-                {'fixed_precision': 2,
-                 'expected_result': '0.60'
-                },
-                {'fixed_precision': 1,
-                 'expected_result': '0.6'
-                },
-                {'fixed_precision': 0,
-                 'expected_result': '1'
-                },
-                {'fixed_precision': -1,
-                 'expected_result': '1'
-                },
-                {'fixed_precision': -5,
-                 'expected_result': '1'
-                },
-            ],
-            'test_uncertainties_precision':[
-                    {'uncertainties': [
-                        {'intercept_min': 0, 'intercept_max': 10, 'errorvalue': 0.1},
-                        {'intercept_min': 11, 'intercept_max': 20, 'errorvalue': 0.056}
-                        ],
-                    'expected_result': '0.6'
-                    },
-                    {'uncertainties': [
-                        {'intercept_min': 0.1, 'intercept_max': 0.6, 'errorvalue': 0.1},
-                        {'intercept_min': 0.66, 'intercept_max': 20, 'errorvalue': 0.056}
-                        ],
-                    'expected_result': '0.6',
+                 {
+                     'fixed_precision': 5,
+                     'expected_result': '0.60000',
+                 },
+                 {
+                     'fixed_precision': 2,
+                     'expected_result': '0.60'
+                 },
+                 {
+                     'fixed_precision': 1,
+                     'expected_result': '0.6'
+                 },
+                 {
+                     'fixed_precision': 0,
+                     'expected_result': '1'
+                 },
+                 {
+                     'fixed_precision': -1,
+                     'expected_result': '1'
+                 },
+                 {
+                     'fixed_precision': -5,
+                     'expected_result': '1'
+                 },
+             ],
+             'test_uncertainties_precision': [
+                 {'uncertainties': [
+                     {
+                         'intercept_min': 0,
+                         'intercept_max': 10,
+                         'errorvalue': 0.1
                      },
-                ],
-            },
-            {'formula' : '[Ca]/[Mg]',
-             'analyses': {'Ca':'10', 'Mg': 1},
+                     {
+                         'intercept_min': 11,
+                         'intercept_max': 20,
+                         'errorvalue': 0.056
+                     }
+                 ],
+                     'expected_result': '0.6'
+                 },
+                 {'uncertainties': [
+                     {
+                         'intercept_min': 0.1,
+                         'intercept_max': 0.6,
+                         'errorvalue': 0.1
+                     },
+                     {
+                         'intercept_min': 0.66,
+                         'intercept_max': 20,
+                         'errorvalue': 0.056
+                     }
+                 ],
+                     'expected_result': '0.6',
+                 },
+             ],
+             },
+            {'formula': '[Ca]/[Mg]',
+             'analyses': {'Ca': '10', 'Mg': 1},
              'interims': {},
              'test_fixed_precision': [
-                {'fixed_precision': 5,
-                 'expected_result': '10.00000',
-                },
-                {'fixed_precision': 2,
-                 'expected_result': '10.00'
-                },
-                {'fixed_precision': 1,
-                 'expected_result': '10.0'
-                },
-                {'fixed_precision': 0,
-                 'expected_result': '10'
-                },
-                {'fixed_precision': -1,
-                 'expected_result': '10'
-                },
-                {'fixed_precision': -5,
-                 'expected_result': '10'
-                },
-            ],
-            'test_uncertainties_precision':[
-                    {'uncertainties': [
-                        {'intercept_min': 0, 'intercept_max': 10, 'errorvalue': 0.1},
-                        {'intercept_min': 11, 'intercept_max': 20, 'errorvalue': 0.056}
-                        ],
-                    'expected_result': '10.0'
-                    },
-                ],
-            },
-            {'formula' : '[Ca]/[Mg]',
-             'analyses': {'Ca':'1', 'Mg': '20'},
+                 {'fixed_precision': 5,
+                  'expected_result': '10.00000',
+                  },
+                 {'fixed_precision': 2,
+                     'expected_result': '10.00'
+                  },
+                 {'fixed_precision': 1,
+                     'expected_result': '10.0'
+                  },
+                 {'fixed_precision': 0,
+                     'expected_result': '10'
+                  },
+                 {'fixed_precision': -1,
+                     'expected_result': '10'
+                  },
+                 {'fixed_precision': -5,
+                     'expected_result': '10'
+                  },
+             ],
+             'test_uncertainties_precision': [
+                 {'uncertainties': [
+                     {
+                         'intercept_min': 0,
+                         'intercept_max': 10,
+                         'errorvalue': 0.1
+                     },
+                     {
+                         'intercept_min': 11,
+                         'intercept_max': 20,
+                         'errorvalue': 0.056
+                     }
+                 ],
+                     'expected_result': '10.0'
+                 },
+             ],
+             },
+            {'formula': '[Ca]/[Mg]',
+             'analyses': {'Ca': '1', 'Mg': '20'},
              'interims': {},
              'test_fixed_precision': [
-                {'fixed_precision': 5,
-                 'expected_result': '0.05000',
-                },
-                {'fixed_precision': 2,
-                 'expected_result': '0.05'
-                },
-                {'fixed_precision': 1,
-                 'expected_result': '0.1'
-                },
-                {'fixed_precision': 0,
-                 'expected_result': '0'
-                },
-                {'fixed_precision': -1,
-                 'expected_result': '0'
-                },
-                {'fixed_precision': -5,
-                 'expected_result': '0'
-                },
-            ],
-            'test_uncertainties_precision':[
-                    {'uncertainties': [
-                        {'intercept_min': 0, 'intercept_max': 0.01, 'errorvalue': 0.01},
-                        {'intercept_min': 11, 'intercept_max': 20, 'errorvalue': 0.056}
-                        ],
-                    'expected_result': '0.05'
-                    },
-                ],
-            },
+                 {'fixed_precision': 5,
+                  'expected_result': '0.05000',
+                  },
+                 {'fixed_precision': 2,
+                     'expected_result': '0.05'
+                  },
+                 {'fixed_precision': 1,
+                     'expected_result': '0.1'
+                  },
+                 {'fixed_precision': 0,
+                     'expected_result': '0'
+                  },
+                 {'fixed_precision': -1,
+                     'expected_result': '0'
+                  },
+                 {'fixed_precision': -5,
+                     'expected_result': '0'
+                  },
+             ],
+             'test_uncertainties_precision': [
+                 {'uncertainties': [
+                     {
+                         'intercept_min': 0,
+                         'intercept_max': 0.01,
+                         'errorvalue': 0.01
+                     },
+                     {
+                         'intercept_min': 11,
+                         'intercept_max': 20,
+                         'errorvalue': 0.056
+                     }
+                 ],
+                     'expected_result': '0.05'
+                 },
+             ],
+             },
             {'formula': '([Ca]/[Mg])+0.000001',
              'analyses': {'Ca': '1', 'Mg': '20'},
              'interims': {},
@@ -347,7 +394,7 @@ class TestCalculations(DataTestCase):
             self.assertEqual(self.calculation.getFormula(), f['formula'])
             interims = []
             result_types = f.get("result_types") or {}
-            for k,v in f['interims'].items():
+            for k, v in f['interims'].items():
                 result_type = result_types.get(k)
                 interims.append({'keyword': k, 'title': k, 'value': v,
                                  'hidden': False,
@@ -364,7 +411,8 @@ class TestCalculations(DataTestCase):
                       'DateSampled': '2015-01-01',
                       'SampleType': sampletype.UID()}
             request = {}
-            services = [s.UID() for s in self.services] + [self.calcservice.UID()]
+            services = [s.UID() for s in self.services] + \
+                [self.calcservice.UID()]
             ar = create_analysisrequest(client, request, values, services)
             doActionFor(ar, 'receive')
             # Set results and interims
@@ -375,7 +423,7 @@ class TestCalculations(DataTestCase):
                 if key in f['analyses']:
                     an.setResult(f['analyses'][key])
                     if an.isLowerDetectionLimit() \
-                        or an.isUpperDetectionLimit():
+                            or an.isUpperDetectionLimit():
                         operator = an.getDetectionLimitOperand()
                         strres = f['analyses'][key].replace(operator, '')
                         self.assertEqual(an.getResult(), strres)
@@ -393,10 +441,10 @@ class TestCalculations(DataTestCase):
                         result_type = i.get("result_type")
                         intermap.append({'keyword': i['keyword'],
                                         'value': ival,
-                                        'title': i['title'],
-                                        'hidden': i['hidden'],
-                                        'result_type': result_type,
-                                        'unit': i['unit']})
+                                         'title': i['title'],
+                                         'hidden': i['hidden'],
+                                         'result_type': result_type,
+                                         'unit': i['unit']})
                     else:
                         intermap.append(i)
                 an.setInterimFields(intermap)
@@ -406,7 +454,7 @@ class TestCalculations(DataTestCase):
             success = calcanalysis.calculateResult(True, True)
             self.assertTrue(success, True)
             self.assertNotEqual(calcanalysis.getResult(), '',
-                'getResult returns an empty string')
+                                'getResult returns an empty string')
 
             result = calcanalysis.getResult()
             exresult = f['exresult']
@@ -423,8 +471,8 @@ class TestCalculations(DataTestCase):
             self.calculation.setFormula(f['formula'])
             self.assertEqual(self.calculation.getFormula(), f['formula'])
             interims = []
-            for k,v in f['interims'].items():
-                interims.append({'keyword': k, 'title':k, 'value': v,
+            for k, v in f['interims'].items():
+                interims.append({'keyword': k, 'title': k, 'value': v,
                                  'hidden': False, 'type': 'int',
                                  'unit': ''})
             self.calculation.setInterimFields(interims)
@@ -443,7 +491,8 @@ class TestCalculations(DataTestCase):
                           'DateSampled': '2015-01-01',
                           'SampleType': sampletype.UID()}
                 request = {}
-                services = [s.UID() for s in self.services] + [self.calcservice.UID()]
+                services = [s.UID() for s in self.services] + \
+                    [self.calcservice.UID()]
                 ar = create_analysisrequest(client, request, values, services)
                 doActionFor(ar, 'receive')
 
@@ -455,13 +504,15 @@ class TestCalculations(DataTestCase):
                     if key in f['analyses']:
                         an.setResult(f['analyses'][key])
                         if an.isLowerDetectionLimit() \
-                            or an.isUpperDetectionLimit():
+                                or an.isUpperDetectionLimit():
                             operator = an.getDetectionLimitOperand()
                             strres = f['analyses'][key].replace(operator, '')
-                            self.assertEqual(an.getResult(), str(float(strres)))
+                            self.assertEqual(
+                                an.getResult(), str(float(strres)))
                         else:
                             # The analysis' results have to be always strings
-                            self.assertEqual(an.getResult(), str(f['analyses'][key]))
+                            self.assertEqual(
+                                an.getResult(), str(f['analyses'][key]))
                     elif key == self.calcservice.getKeyword():
                         calcanalysis = an
 
@@ -484,7 +535,8 @@ class TestCalculations(DataTestCase):
 
                 # Let's go.. calculate and check result
                 calcanalysis.calculateResult(True, True)
-                self.assertEqual(calcanalysis.getFormattedResult(), case['expected_result'])
+                self.assertEqual(
+                    calcanalysis.getFormattedResult(), case['expected_result'])
 
     def test_calculation_uncertainties_precision(self):
         # Input results
@@ -519,7 +571,8 @@ class TestCalculations(DataTestCase):
                           'DateSampled': '2015-01-01',
                           'SampleType': sampletype.UID()}
                 request = {}
-                services = [s.UID() for s in self.services] + [self.calcservice.UID()]
+                services = [s.UID() for s in self.services] + \
+                    [self.calcservice.UID()]
                 ar = create_analysisrequest(client, request, values, services)
                 doActionFor(ar, 'receive')
 
@@ -531,13 +584,15 @@ class TestCalculations(DataTestCase):
                     if key in f['analyses']:
                         an.setResult(f['analyses'][key])
                         if an.isLowerDetectionLimit() \
-                            or an.isUpperDetectionLimit():
+                                or an.isUpperDetectionLimit():
                             operator = an.getDetectionLimitOperand()
                             strres = f['analyses'][key].replace(operator, '')
-                            self.assertEqual(an.getResult(), str(float(strres)))
+                            self.assertEqual(
+                                an.getResult(), str(float(strres)))
                         else:
                             # The analysis' results have to be always strings
-                            self.assertEqual(an.getResult(), str(f['analyses'][key]))
+                            self.assertEqual(
+                                an.getResult(), str(f['analyses'][key]))
                     elif key == self.calcservice.getKeyword():
                         calcanalysis = an
 

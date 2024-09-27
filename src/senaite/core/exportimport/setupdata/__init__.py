@@ -1410,26 +1410,25 @@ class Calculations(WorksheetImporter):
 
     def Import(self):
         self.get_interim_fields()
-        folder = self.context.bika_setup.bika_calculations
+        container = self.context.setup.calculations
         for row in self.get_rows(3):
-            if not row['title']:
+            calc_title = row.get("title")
+            if not calc_title:
                 continue
-            calc_title = row['title']
             calc_interims = self.interim_fields.get(calc_title, [])
-            formula = row['Formula']
+            formula = row.get('Formula')
             # scan formula for dep services
             keywords = re.compile(r"\[([^\.^\]]+)\]").findall(formula)
             # remove interims from deps
             interim_keys = [k['keyword'] for k in calc_interims]
             dep_keywords = [k for k in keywords if k not in interim_keys]
 
-            obj = _createObjectByType("Calculation", folder, tmpID())
-            obj.edit(
-                title=calc_title,
-                description=row.get('description', ''),
-                InterimFields=calc_interims,
-                Formula=str(row['Formula'])
-            )
+            obj = api.create(container, "Calculation",
+                             title=calc_title,
+                             description=row.get('description'),
+                             InterimFields=calc_interims,
+                             Formula=formula)
+
             for kw in dep_keywords:
                 self.defer(src_obj=obj,
                            src_field='DependentServices',
@@ -1437,9 +1436,6 @@ class Calculations(WorksheetImporter):
                            dest_query={'portal_type': 'AnalysisService',
                                        'getKeyword': kw}
                            )
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
 
         # Now we have the calculations registered, try to assign default calcs
         # to methods

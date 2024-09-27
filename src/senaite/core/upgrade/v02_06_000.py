@@ -103,6 +103,8 @@ REMOVE_AT_TYPES = [
     "Suppliers",
     "SampleType",
     "SampleTypes",
+    "Calculation",
+    "Calculations",
 ]
 
 CONTENT_ACTIONS = [
@@ -2246,7 +2248,7 @@ def migrate_samplepoints_coordinates(tool):
         delattr(obj, "longitude")
 
         obj.reindexObject()
-        obj._p_deactivate() # noqa
+        obj._p_deactivate()  # noqa
 
     logger.info("Migrating coordinates from SamplePoint [DONE]")
 
@@ -2490,3 +2492,125 @@ def reindex_analysis_categories(tool):
         logger.info("Reindex analysis category: %r" % obj)
         obj.reindexObject(idxs=["sortable_title"], update_metadata=False)
     logger.info("Reindexing analysis categories [DONE]")
+
+
+def migrate_calculation_to_dx(src, destination=None):
+    """Migrate an AT profile to DX in the destination folder
+
+    :param src: The source AT object
+    :param destination: The destination folder. If `None`, the parent folder of
+                        the source object is taken
+    """
+    # migrate the contents from the old AT container to the new one
+    portal_type = "Calculation"
+
+    if api.get_portal_type(src) != portal_type:
+        logger.error("Not a '{}' object: {}".format(portal_type, src))
+        return
+
+    # Create the object if it does not exist yet
+    src_id = src.getId()
+    target_id = src_id
+
+    # check if we migrate within the same folder
+    if destination is None:
+        # use a temporary ID for the migrated content
+        target_id = tmpID()
+        # set the destination to the source parent
+        destination = api.get_parent(src)
+
+    target = destination.get(target_id)
+    if not target:
+        # Don' use the api to skip the auto-id generation
+        target = createContent(portal_type, id=target_id)
+        destination._setObject(target_id, target)
+        target = destination._getOb(target_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = api.safe_unicode(src.Title() or "")
+    target.description = api.safe_unicode(src.Description() or "")
+    target.interims = src.getInterimFields() or []
+    target.imports = src.getPythonImports() or []
+    target.formula = api.safe_unicode(src.getFormula() or "")
+    target.test_parameters = src.getTestParameters() or []
+    target.test_result = api.safe_unicode(src.getTestResult() or "")
+    target.dependent_services = src.getDependentServices() or []
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter(
+        (src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID
+    migrator.copy_uid(src, target)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    logger.info("Migrated Calculation from %s -> %s" % (src, target))
+
+
+@upgradestep(product, version)
+def migrate_calculations_to_dx(tool):
+    """Converts existing calculations to Dexterity
+    """
+    logger.info("Convert Calculations to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_calculations")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("calculations")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # copy items from old -> new container
+    objects = origin.objectValues()
+    for src in objects:
+        migrate_calculation_to_dx(src, destination)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert Calculations to Dexterity [DONE]")

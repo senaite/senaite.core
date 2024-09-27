@@ -488,3 +488,13 @@ class ISampleType(Interface):
 class ISampleTypes(Interface):
     """Marker interface for Sample Types container
     """
+
+
+class ICalculation(Interface):
+    """Marker interface for calculation
+    """
+
+
+class ICalculations(Interface):
+    """Marker interface for calculations folder
+    """

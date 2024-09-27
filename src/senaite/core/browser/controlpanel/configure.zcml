@@ -24,6 +24,7 @@
   <include package=".analysisprofiles" />
   <include package=".attachmenttypes" />
   <include package=".batchlabels" />
+  <include package=".calculations" />
   <include package=".containertypes" />
   <include package=".departments" />
   <include package=".dynamicanalysisspecs" />

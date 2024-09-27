@@ -87,3 +87,8 @@ class IDurationField(ITimedelta):
 class IGPSCoordinatesField(IDict):
     """Senaite GPS Coordinated field
     """
+
+
+class IInterimsField(IList):
+    """Senaite Interims field field
+    """

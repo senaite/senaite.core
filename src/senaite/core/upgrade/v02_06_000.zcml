@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
+   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Move Calculations to Senaite setup"
+      description="Migrate Calculations to Senaite setup"
+      source="2651"
+      destination="2652"
+      handler=".v02_06_000.migrate_calculations_to_dx"
+      profile="senaite.core:default"/>
+
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Fix categories not sorted by sort key"
       description="Reindex sortable_title for all analysis categories"

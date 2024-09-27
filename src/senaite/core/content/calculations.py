@@ -18,25 +18,21 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import _
+from bika.lims.interfaces import IDoNotSupportSnapshots
+from plone.supermodel import model
+from senaite.core.content.base import Container
+from senaite.core.interfaces import IHideActionsMenu
+from senaite.core.interfaces import ICalculations
+from zope.interface import implementer
 
-SAMPLE_PRESERVATION_CATEGORIES = (
-    ("field", _(
-        u"sample_preservation_category_vocab_field",
-        default=u"Field Preservation"
-    )),
-    ("lab", _(
-        u"sample_preservation_category_vocab_lab",
-        default=u"Lab Preservation"
-    )),
-)
 
-RESULT_TYPES = (
-    ("numeric", _("Numeric")),
-    ("string", _("String")),
-    ("text", _("Text")),
-    ("select", _("Selection list")),
-    ("multiselect", _("Multiple selection")),
-    ("multiselect_duplicates", _("Multiple selection (with duplicates)")),
-    ("multichoice", _("Multiple choices")),
-)
+class ICalculationsSchema(model.Schema):
+    """Schema interface
+    """
+
+
+@implementer(ICalculations, ICalculationsSchema, IDoNotSupportSnapshots,
+             IHideActionsMenu)
+class Calculations(Container):
+    """A container for calculations
+    """

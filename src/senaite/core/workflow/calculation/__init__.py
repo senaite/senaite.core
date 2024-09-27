@@ -17,26 +17,3 @@
 #
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
-from bika.lims import _
-
-SAMPLE_PRESERVATION_CATEGORIES = (
-    ("field", _(
-        u"sample_preservation_category_vocab_field",
-        default=u"Field Preservation"
-    )),
-    ("lab", _(
-        u"sample_preservation_category_vocab_lab",
-        default=u"Lab Preservation"
-    )),
-)
-
-RESULT_TYPES = (
-    ("numeric", _("Numeric")),
-    ("string", _("String")),
-    ("text", _("Text")),
-    ("select", _("Selection list")),
-    ("multiselect", _("Multiple selection")),
-    ("multiselect_duplicates", _("Multiple selection (with duplicates)")),
-    ("multichoice", _("Multiple choices")),
-)
