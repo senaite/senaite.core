@@ -5,6 +5,13 @@ Changelog
 ------------------
 
 - #2569 Fix samples are indicated as late when Turnaround Time is zero
+- #2620 Support IAddSampleObjectInfo adapter for sample's Template field
+- #2619 Fix analysis categories are not sorted by sort key
+- #2618 Fix UnicodeDecodeError when user linked to a contact with special chars
+- #2615 Add control for select/deselect all attachments when send report
+- #2614 Fix autofill for simple fields when create Sample in the add form
+- #2617 Fix cannot set/edit the name/title of InterpretationTemplate objects
+- #2616 Fix reference field flush in add sample form when sort_limit is used
 - #2613 Fix AttributeError for transitions created with core's workflow api
 - #2612 Remove isSampleReceived index from analysis catalog
 - #2611 Add readonly support for non-mutable html elements via AjaxEditForm

@@ -12,6 +12,14 @@
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Fix categories not sorted by sort key"
+      description="Reindex sortable_title for all analysis categories"
+      source="2650"
+      destination="2651"
+      handler=".v02_06_000.reindex_analysis_categories"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Fix corrupted transitions"
       description="Restores the value of the property `after_script_name` from
         transitions that were created or updated with the core's workflow api"
