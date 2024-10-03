@@ -27,7 +27,6 @@ from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields import PartitionSetupField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.partitionsetupfield import getContainers
-from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
