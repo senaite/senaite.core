@@ -60,6 +60,7 @@ from senaite.core.schema.addressfield import BILLING_ADDRESS
 from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
 from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from zope.component import getMultiAdapter
+from bika.lims.interfaces.analysis import IRequestAnalysis
 
 version = "2.6.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -2073,29 +2074,35 @@ def reindex_getDueDate(tool):
     query = {"portal_type": "Analysis"}
     brains = api.search(query, ANALYSIS_CATALOG)
     total = len(brains)
-    sample_uids = []
+    sample_uids = set()
     for num, brain in enumerate(brains):
-        if num and num % 100 == 0:
-            logger.info("Reindexing getDueDate index from analyses catalog {0}/{1}"
-                        .format(num, total))
         obj = api.get_object(brain)
-        if api.to_minutes(**obj.MaxTimeAllowed) == 0:
-            brain.reindexObject(obj, idxs=['getDueDate'], update_metadata=1)
-            sample_uid = obj.aq_parent.UID()
+        if not IRequestAnalysis.providedBy(obj):
+            continue
+        if num and num % 100 == 0:
+            logger.info(
+                "Reindexing getDueDate index from analyses catalog {0}/{1}"
+                .format(num, total))
+        max_time = obj.MaxTimeAllowed
+        if api.to_minutes(**max_time) == 0:
+            obj.reindexObject(idxs=['getDueDate'])
+            sample = obj.getRequest()
+            sample_uid = api.get_uid(sample)
             if sample_uid not in sample_uids:
-                sample_uids.append(sample_uid)
+                sample_uids.add(sample_uid)
         obj._p_deactivate()
     logger.info("Reindexing getDueDate index from analyses catalog [DONE]")
+
     logger.info("Reindexing getDueDate index from samples catalog ...")
     total = len(sample_uids)
     for num, sample_uid in enumerate(sample_uids):
         if num and num % 100 == 0:
-            logger.info("Reindexing getDueDate index from samples catalog {0}/{1}"
-                        .format(num, total))
+            logger.info(
+                "Reindexing getDueDate index from samples catalog {0}/{1}"
+                .format(num, total))
         obj = api.get_object_by_uid(sample_uid)
         obj.reindexObject(idxs=['getDueDate'])
         obj._p_deactivate()
-    logger.info("Reindexing getDueDate index from samples catalog ...")
     logger.info("Reindexing getDueDate index from samples catalog [DONE]")
 
 def update_content_actions(tool):

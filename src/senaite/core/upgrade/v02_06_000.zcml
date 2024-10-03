@@ -6,8 +6,8 @@
    <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Reindex getDueDate index from analyses and setup catalog"
       description="Reindex getDuedate in analyses and sample catalog"
-      source="2650"
-      destination="2651"
+      source="2651"
+      destination="2652"
       handler=".v02_06_000.reindex_getDueDate"
       profile="senaite.core:default"/>
 
