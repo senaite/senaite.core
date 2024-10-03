@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Remove deactivated services from profiles"
+      description="Removes deactivated analysis services from Profiles"
+      source="2651"
+      destination="2652"
+      handler=".v02_06_000.remove_inactive_services_from_profiles"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Fix categories not sorted by sort key"
       description="Reindex sortable_title for all analysis categories"
       source="2650"

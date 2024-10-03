@@ -2490,3 +2490,20 @@ def reindex_analysis_categories(tool):
         logger.info("Reindex analysis category: %r" % obj)
         obj.reindexObject(idxs=["sortable_title"], update_metadata=False)
     logger.info("Reindexing analysis categories [DONE]")
+
+
+def remove_inactive_services_from_profiles(tool):
+    logger.info("Removing inactive services from profiles ...")
+    cat = api.get_tool(SETUP_CATALOG)
+
+    # build a list of deactivated services
+    services = cat(portal_type="AnalysisService", is_active=False)
+    inactive = [api.get_object(service) for service in services]
+
+    # remove inactive services from profiles
+    for brain in cat(portal_type="AnalysisProfile"):
+        obj = api.get_object(brain)
+        for service in inactive:
+            obj.remove_service(service)
+
+    logger.info("Removing inactive services from profiles [DONE]")
