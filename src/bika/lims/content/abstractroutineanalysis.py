@@ -211,6 +211,8 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         tat = self.getMaxTimeAllowed()
         if not tat:
             return None
+        if api.to_minutes(**tat) == 0:
+            return None
         start = self.getStartProcessDate()
         if not start:
             return None

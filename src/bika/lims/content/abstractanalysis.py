@@ -688,6 +688,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not maxtime:
             # No Turnaround time is set for this analysis
             return 0
+        if api.to_minutes(**maxtime) == 0:
+            return 0
         return api.to_minutes(**maxtime) - self.getDuration()
 
     @security.public

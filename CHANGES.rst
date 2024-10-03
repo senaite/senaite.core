@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2569 Fix samples are indicated as late when Turnaround Time is zero
 - #2620 Support IAddSampleObjectInfo adapter for sample's Template field
 - #2619 Fix analysis categories are not sorted by sort key
 - #2618 Fix UnicodeDecodeError when user linked to a contact with special chars
