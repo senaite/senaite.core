@@ -564,15 +564,15 @@ class AnalysisService(AbstractBaseAnalysis):
 
         Removes this service from all assigned Profiles and Templates.
         """
+        catalog = api.get_tool(SETUP_CATALOG)
+
         # Remove the service from profiles to which is assigned
-        uc = api.get_tool("uid_catalog")
-        uids = get_backreferences(self, "AnalysisProfileAnalysisService")
-        for brain in uc(UID=uids):
-            profile = api.get_object(brain)
+        profiles = catalog(portal_type="AnalysisProfile")
+        for profile in profiles:
+            profile = api.get_object(profile)
             profile.remove_service(self)
 
         # Remove the service from templates to which is assigned
-        catalog = api.get_tool(SETUP_CATALOG)
         templates = catalog(portal_type="SampleTemplate")
         for template in templates:
             template = api.get_object(template)
