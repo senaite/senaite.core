@@ -27,7 +27,6 @@ from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields import PartitionSetupField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.partitionsetupfield import getContainers
-from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
@@ -564,15 +563,15 @@ class AnalysisService(AbstractBaseAnalysis):
 
         Removes this service from all assigned Profiles and Templates.
         """
+        catalog = api.get_tool(SETUP_CATALOG)
+
         # Remove the service from profiles to which is assigned
-        uc = api.get_tool("uid_catalog")
-        uids = get_backreferences(self, "AnalysisProfileAnalysisService")
-        for brain in uc(UID=uids):
-            profile = api.get_object(brain)
+        profiles = catalog(portal_type="AnalysisProfile")
+        for profile in profiles:
+            profile = api.get_object(profile)
             profile.remove_service(self)
 
         # Remove the service from templates to which is assigned
-        catalog = api.get_tool(SETUP_CATALOG)
         templates = catalog(portal_type="SampleTemplate")
         for template in templates:
             template = api.get_object(template)
