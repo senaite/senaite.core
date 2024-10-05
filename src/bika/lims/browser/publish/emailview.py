@@ -515,7 +515,7 @@ class EmailView(BrowserView):
         recipients = self.email_recipients_and_responsibles
         if template_context is None:
             template_context = {
-                "recipients": "<br/>".join(map(safe_unicode, recipients)),
+                "recipients": u"<br/>".join(map(safe_unicode, recipients)),
             }
 
         email_template = Template(template).safe_substitute(
