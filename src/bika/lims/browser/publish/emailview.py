@@ -511,14 +511,14 @@ class EmailView(BrowserView):
         """
 
         # allow to add translation for initial template
-        template = self.context.translate(_(template))
+        template = self.context.translate(_(safe_unicode(template)))
         recipients = self.email_recipients_and_responsibles
         if template_context is None:
             template_context = {
-                "recipients": "<br/>".join(recipients),
+                "recipients": u"<br/>".join(map(safe_unicode, recipients)),
             }
 
-        email_template = Template(safe_unicode(template)).safe_substitute(
+        email_template = Template(template).safe_substitute(
             **template_context)
 
         return email_template
