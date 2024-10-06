@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2599 Migrate WorksheetTemplates to Dexterity
+- #2621 Fix UnicodeDecodeError when render non-latin email template
 - #2623 Fix inactive services are added via profile on sample creation/edition
 - #2620 Support IAddSampleObjectInfo adapter for sample's Template field
 - #2619 Fix analysis categories are not sorted by sort key
