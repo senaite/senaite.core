@@ -396,7 +396,9 @@ class window.AnalysisRequestAdd
         lock = $("##{uid}-#{arnum}-lockbtn")
         # service is included in a profile
         if uid of record.service_to_profiles
-          lock.show()
+          # do not display the lock button if beyond holding time
+          if uid not in record.beyond_holding_time
+            lock.show()
 
         # select the service
         me.set_service arnum, uid, yes

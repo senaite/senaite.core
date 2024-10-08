@@ -627,7 +627,10 @@
           lock = $(`#${uid}-${arnum}-lockbtn`);
           // service is included in a profile
           if (uid in record.service_to_profiles) {
-            lock.show();
+            // do not display the lock button if beyond holding time
+            if (indexOf.call(record.beyond_holding_time, uid) < 0) {
+              lock.show();
+            }
           }
           // select the service
           return me.set_service(arnum, uid, true);
