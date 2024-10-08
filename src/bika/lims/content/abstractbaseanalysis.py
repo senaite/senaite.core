@@ -372,7 +372,7 @@ MaxHoldingTime = DurationField(
     widget=DurationWidget(
         label=_(
             u"label_analysis_maxholdingtime",
-            default=u"Maximum hold time"
+            default=u"Maximum holding time"
         ),
         description=_(
             u"description_analysis_maxholdingtime",
