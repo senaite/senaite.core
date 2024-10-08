@@ -21,6 +21,7 @@
 import json
 from collections import OrderedDict
 from datetime import datetime
+from datetime import timedelta
 
 import six
 import transaction
@@ -50,7 +51,9 @@ from Products.Archetypes.interfaces import IField
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.api import dtime
 from senaite.core.catalog import CONTACT_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.p3compat import cmp
 from senaite.core.permissions import TransitionMultiResults
 from zope.annotation.interfaces import IAnnotations
@@ -908,6 +911,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "category": obj.getCategoryTitle(),
             "poc": obj.getPointOfCapture(),
             "conditions": self.get_conditions_info(obj),
+            "max_holding_time": obj.getMaxHoldingTime(),
         })
 
         dependencies = get_calculation_dependencies_for(obj).values()
@@ -1217,10 +1221,58 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             dependencies = self.get_unmet_dependencies_info(metadata)
             metadata.update(dependencies)
 
+            # services that would be conducted beyond analytical holding time
+            beyond = self.get_services_beyond_holding_time(record, metadata)
+            metadata["beyond_holding_time"] = beyond
+
             # Set the metadata for current sample number (column)
             out[num_sample] = metadata
 
         return out
+
+    def get_services_beyond_holding_time(self, record, metadata):
+        """Return a list with the uids of the services that would be conducted
+        beyond the analytical holding time
+        """
+        uids = []
+        query = {
+            "portal_type": "AnalysisService",
+            "point_of_capture": "lab",
+            "is_active": True,
+        }
+        brains = api.search(query, SETUP_CATALOG)
+        for brain in brains:
+            uid = api.get_uid(brain)
+            obj = self.get_object_by_uid(uid)
+            if self.is_beyond_holding_time(obj, record):
+                uids.append(uid)
+        return uids
+
+    def get_start_holding_date(self, record):
+        """Returns the datetime from which the analytical holding time is
+        computed. Usually, this is the sample collection date
+        """
+        sampled = record.get("DateSampled")
+        return dtime.to_dt(sampled)
+
+    def is_beyond_holding_time(self, service, record):
+        """Returns whether the date time passed-in is beyond the analytical
+        holding time of the service
+        """
+        start_date = self.get_start_holding_date(record)
+        if not start_date:
+            return False
+
+        max_holding_time = service.getMaxHoldingTime()
+        if not max_holding_time:
+            return False
+
+        # calculate the maximum analytical holding date
+        delta = timedelta(minutes=api.to_minutes(**max_holding_time))
+        max_holding_date = start_date + delta
+
+        # TypeError: can't compare offset-naive and offset-aware datetimes
+        return dtime.to_ansi(max_holding_date) < dtime.to_ansi(datetime.now())
 
     def get_record_metadata(self, record):
         """Returns the metadata for the record passed in
