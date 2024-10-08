@@ -1222,7 +1222,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             metadata.update(dependencies)
 
             # services that would be conducted beyond analytical holding time
-            beyond = self.get_services_beyond_holding_time(record, metadata)
+            beyond = self.get_services_beyond_holding_time(record)
             metadata["beyond_holding_time"] = beyond
 
             # Set the metadata for current sample number (column)
@@ -1230,11 +1230,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         return out
 
-    def get_services_beyond_holding_time(self, record, metadata):
-        """Return a list with the uids of the services that would be conducted
-        beyond the analytical holding time
+    @viewcache.memoize
+    def get_services_max_holding_time(self):
+        """Returns a dict where the key is the uid of active services and the
+        value is a dict representing the maximum holding time in days, hours
+        and minutes. The dictionary only contains uids for services that
+        have a valid maximum holding time set
         """
-        uids = []
+        services = {}
         query = {
             "portal_type": "AnalysisService",
             "point_of_capture": "lab",
@@ -1242,10 +1245,38 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         }
         brains = api.search(query, SETUP_CATALOG)
         for brain in brains:
-            uid = api.get_uid(brain)
-            obj = self.get_object_by_uid(uid)
-            if self.is_beyond_holding_time(obj, record):
+            obj = api.get_object(brain)
+            max_holding_time = obj.getMaxHoldingTime()
+            if max_holding_time:
+                uid = api.get_uid(brain)
+                services[uid] = max_holding_time.copy()
+
+        return services
+
+    def get_services_beyond_holding_time(self, record):
+        """Return a list with the uids of the services that cannot be selected
+        because would be conducted beyond the analytical holding time
+        """
+        # get the date to start count from
+        start_date = self.get_start_holding_date(record)
+        if not start_date:
+            return []
+
+        now = datetime.now()
+        uids = []
+
+        # get the max holding times grouped by service uid
+        services = self.get_services_max_holding_time()
+        for uid, max_holding_time in services.items():
+
+            # calculate the maximum analytical holding date
+            delta = timedelta(minutes=api.to_minutes(**max_holding_time))
+            max_holding_date = start_date + delta
+
+            # TypeError: can't compare offset-naive and offset-aware datetimes
+            if dtime.to_ansi(now) > dtime.to_ansi(max_holding_date):
                 uids.append(uid)
+
         return uids
 
     def get_start_holding_date(self, record):
@@ -1254,25 +1285,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """
         sampled = record.get("DateSampled")
         return dtime.to_dt(sampled)
-
-    def is_beyond_holding_time(self, service, record):
-        """Returns whether the date time passed-in is beyond the analytical
-        holding time of the service
-        """
-        start_date = self.get_start_holding_date(record)
-        if not start_date:
-            return False
-
-        max_holding_time = service.getMaxHoldingTime()
-        if not max_holding_time:
-            return False
-
-        # calculate the maximum analytical holding date
-        delta = timedelta(minutes=api.to_minutes(**max_holding_time))
-        max_holding_date = start_date + delta
-
-        # TypeError: can't compare offset-naive and offset-aware datetimes
-        return dtime.to_ansi(max_holding_date) < dtime.to_ansi(datetime.now())
 
     def get_record_metadata(self, record):
         """Returns the metadata for the record passed in
