@@ -270,6 +270,9 @@ class window.AnalysisRequestAdd
     # Analysis Profile deselected
     $("body").on "deselect", "tr[fieldname=Profiles] textarea", @on_analysis_profile_removed
 
+    # Date sampled changed
+    $("body").on "change", "tr[fieldname=DateSampled] input", @recalculate_records
+
     # Save button clicked
     $("body").on "click", "[name='save_button']", @on_form_submit
     # Save and copy button clicked

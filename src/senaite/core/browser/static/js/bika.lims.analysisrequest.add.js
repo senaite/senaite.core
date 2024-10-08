@@ -520,6 +520,8 @@
       $("body").on("select", "tr[fieldname=Profiles] textarea", this.on_analysis_profile_selected);
       // Analysis Profile deselected
       $("body").on("deselect", "tr[fieldname=Profiles] textarea", this.on_analysis_profile_removed);
+      // Date sampled changed
+      $("body").on("change", "tr[fieldname=DateSampled] input", this.recalculate_records);
       // Save button clicked
       $("body").on("click", "[name='save_button']", this.on_form_submit);
       // Save and copy button clicked
