@@ -41,7 +41,6 @@ from bika.lims.utils import get_link
 from bika.lims.utils import tmpID
 from bika.lims.workflow import doActionFor
 from DateTime import DateTime
-from Products.Archetypes.config import UID_CATALOG
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFPlone.utils import _createObjectByType
 from senaite.core.catalog import SETUP_CATALOG
