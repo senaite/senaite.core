@@ -279,14 +279,6 @@ def to_services_uids(services=None, values=None):
     # Convert them to a list of service uids
     uids = filter(None, map(to_service_uid, uids))
 
-    # Extend with service uids from profiles
-    profiles = to_list(values.get("Profiles"))
-    if profiles:
-        uid_catalog = api.get_tool(UID_CATALOG)
-        for brain in uid_catalog(UID=profiles):
-            profile = api.get_object(brain)
-            uids.extend(profile.getServiceUIDs() or [])
-
     # Get the service uids without duplicates, but preserving the order
     return list(OrderedDict.fromkeys(uids).keys())
 
