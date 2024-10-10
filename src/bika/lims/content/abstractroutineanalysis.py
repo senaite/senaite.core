@@ -21,7 +21,6 @@
 import copy
 from collections import OrderedDict
 from datetime import timedelta
-from datetime import datetime
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
@@ -201,20 +200,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         if request:
             return request.getSamplePoint()
         return None
-
-    @security.public
-    def getMaxHoldingDate(self):
-        """Returns the maximum date and time before the current analysis is
-        conducted before the analytical holding time
-        """
-        max_holding_time = self.getMaxHoldingTime()
-        if not max_holding_time:
-            return datetime.max
-
-        # calculate the maximum analytical holding date
-        sampled = self.getDateSampled()
-        delta = timedelta(minutes=api.to_minutes(**max_holding_time))
-        return dt2DT(DT2dt(sampled) + delta)
 
     @security.public
     def getDueDate(self):
