@@ -520,6 +520,8 @@
       $("body").on("select", "tr[fieldname=Profiles] textarea", this.on_analysis_profile_selected);
       // Analysis Profile deselected
       $("body").on("deselect", "tr[fieldname=Profiles] textarea", this.on_analysis_profile_removed);
+      // Date sampled changed
+      $("body").on("change", "tr[fieldname=DateSampled] input", this.recalculate_records);
       // Save button clicked
       $("body").on("click", "[name='save_button']", this.on_form_submit);
       // Save and copy button clicked
@@ -599,8 +601,14 @@
       var me;
       console.debug("*** update_form ***");
       me = this;
-      // initially hide all lock icons
+      // initially hide all service-related icons
       $(".service-lockbtn").hide();
+      // hide all holding time related icons and set checks enabled by default
+      $(".analysisservice").show();
+      $(".service-beyondholdingtime").hide();
+      $(".analysisservice-cb").prop({
+        "disabled": false
+      });
       // set all values for one record (a single column in the AR Add form)
       return $.each(records, function(arnum, record) {
         // Apply the values generically
@@ -619,7 +627,10 @@
           lock = $(`#${uid}-${arnum}-lockbtn`);
           // service is included in a profile
           if (uid in record.service_to_profiles) {
-            lock.show();
+            // do not display the lock button if beyond holding time
+            if (indexOf.call(record.beyond_holding_time, uid) < 0) {
+              lock.show();
+            }
           }
           // select the service
           return me.set_service(arnum, uid, true);
@@ -629,7 +640,7 @@
           return me.set_template(arnum, template);
         });
         // handle unmet dependencies, one at a time
-        return $.each(record.unmet_dependencies, function(uid, dependencies) {
+        $.each(record.unmet_dependencies, function(uid, dependencies) {
           var context, dialog, service;
           service = record.service_metadata[uid];
           context = {
@@ -653,6 +664,21 @@
           });
           // break the iteration after the first loop to avoid multiple dialogs.
           return false;
+        });
+        // disable (and uncheck) services that are beyond sample holding time
+        return $.each(record.beyond_holding_time, function(index, uid) {
+          var beyond_holding_time, parent, service_cb;
+          // display the alert
+          beyond_holding_time = $(`#${uid}-${arnum}-beyondholdingtime`);
+          beyond_holding_time.show();
+          // disable the service's checkbox to prevent value submit
+          service_cb = $(`#cb_${arnum}_${uid}`);
+          service_cb.prop({
+            "disabled": true
+          });
+          // hide checkbox container
+          parent = service_cb.parent("div.analysisservice");
+          return parent.hide();
         });
       });
     }
