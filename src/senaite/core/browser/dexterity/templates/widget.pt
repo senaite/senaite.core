@@ -1,6 +1,8 @@
 <div metal:define-macro="widget-wrapper"
      i18n:domain="plone"
      tal:define="widget nocall:context;
+                 widget_clazz python:widget.__class__.__name__;
+                 widget_css_class python:'input-group input-group-sm d-flex' if widget_clazz != 'ListingWidget' else '';
                  hidden python:widget.mode == 'hidden';
                  error widget/error;
                  error_class python:error and ' error' or '';
@@ -39,6 +41,7 @@
   <!-- widget insert mode -->
   <div class="input-group input-group-sm d-flex"
        style="width:auto"
+       tal:attributes="class python:widget_css_class"
        tal:define="prefix python:view.get_prepend_text();
                    appendix python:view.get_append_text()"
        tal:condition="python:view.is_input_mode()">

@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2625 Fix sizing of listing widgets
 - #2621 Fix UnicodeDecodeError when render non-latin email template
 - #2623 Fix inactive services are added via profile on sample creation/edition
 - #2620 Support IAddSampleObjectInfo adapter for sample's Template field
