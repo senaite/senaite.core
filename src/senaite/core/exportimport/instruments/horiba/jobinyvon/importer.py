@@ -18,9 +18,7 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-""" HoribaJobinYvon
-"""
-from senaite.core.exportimport.instruments.resultsimport import \
+from senaite.core.exportimport.instruments.importer import \
     AnalysisResultsImporter
 
 
