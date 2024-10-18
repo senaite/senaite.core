@@ -270,20 +270,6 @@ class IWorksheetTemplateSchema(model.Schema):
         required=False,
     )
 
-    enable_multiple_use_of_instrument = schema.Bool(
-        title=_(
-            u"label_worksheettemplate_enable_multiple_user_of_instrument",
-            default=u"Enable Multiple Use of Instrument in Worksheets",
-        ),
-        description=_(
-            u"description_worksheettemplate_multiple_user_of_instrument",
-            default=u"If unchecked, Lab Managers won't be able to assign "
-                    u"the same Instrument more than one Analyses while "
-                    u"creating a Worksheet."
-        ),
-        required=False,
-    )
-
     model.fieldset(
         "layout",
         label=_(
@@ -420,20 +406,6 @@ class WorksheetTemplate(Container):
 
     # BBB: AT schema field property
     Instrument = property(getInstrument, setInstrument)
-
-    @security.protected(permissions.View)
-    def getEnableMultipleUseOfInstrument(self):
-        accessor = self.accessor("enable_multiple_use_of_instrument")
-        return accessor(self)
-
-    @security.protected(permissions.ModifyPortalContent)
-    def setEnableMultipleUseOfInstrument(self, value):
-        mutator = self.mutator("enable_multiple_use_of_instrument")
-        mutator(self, value)
-
-    # BBB: AT schema field property
-    EnableMultipleUseOfInstrument = property(getEnableMultipleUseOfInstrument,
-                                             setEnableMultipleUseOfInstrument)
 
     @security.protected(permissions.View)
     def getNumOfPositions(self):

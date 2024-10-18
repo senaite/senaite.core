@@ -2536,8 +2536,6 @@ def migrate_ws_template_to_dx(src, destination):
     # we set the fields with our custom setters
     target.setRestrictToMethod(src.getRestrictToMethod())
     target.setInstrument(src.getInstrument())
-    target.setEnableMultipleUseOfInstrument(
-        src.getEnableMultipleUseOfInstrument())
 
     # NOTE: Service -> Services
     services = []
