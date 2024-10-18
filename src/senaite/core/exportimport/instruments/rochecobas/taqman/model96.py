@@ -18,18 +18,18 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-""" Roche Cobas Taqman 96
-"""
 import csv
-from DateTime import DateTime
-
-from senaite.core.exportimport.instruments.resultsimport import \
-    AnalysisResultsImporter, InstrumentResultsFileParser
-from bika.lims import bikaMessageFactory as _
-from senaite.core.i18n import translate as t
 import json
-import six
 import traceback
+
+import six
+from bika.lims import bikaMessageFactory as _
+from DateTime import DateTime
+from senaite.core.exportimport.instruments.importer import \
+    AnalysisResultsImporter
+from senaite.core.exportimport.instruments.parser import \
+    InstrumentResultsFileParser
+from senaite.core.i18n import translate as t
 
 title = "Roche Cobas - Taqman - 96"
 
