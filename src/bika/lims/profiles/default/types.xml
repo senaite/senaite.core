@@ -46,8 +46,6 @@
  <object name="SupplierContact" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Worksheet" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="WorksheetFolder" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="WorksheetTemplate" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="WorksheetTemplates" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AutoImportLog" meta_type="Factory-based Type Information with dynamic views"/>
 
 </object>

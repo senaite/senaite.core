@@ -28,6 +28,5 @@
   <type portal_type="Pricelist"/>
   <type portal_type="SampleType"/>
   <type portal_type="SupplierContact"/>
-  <type portal_type="WorksheetTemplate"/>
  </factorytypes>
 </object>

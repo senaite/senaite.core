@@ -63,9 +63,16 @@
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".method.EditForm"/>
 
+  <!-- Add Form: DX WorksheetTemplate -->
+  <adapter
+      name="++add++WorksheetTemplate"
+      for="senaite.core.interfaces.IWorksheetTemplates
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".worksheettemplate.EditForm"/>
+
   <!-- Edit Form: WorksheetTemplate -->
   <adapter
-      for="bika.lims.interfaces.IWorksheetTemplate
+      for="senaite.core.interfaces.IWorksheetTemplate
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".worksheettemplate.EditForm"/>
 

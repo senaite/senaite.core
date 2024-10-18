@@ -44,5 +44,6 @@
   <include package=".storagelocations" />
   <include package=".subgroups" />
   <include package=".suppliers" />
+  <include package=".worksheettemplates" />
 
 </configure>
