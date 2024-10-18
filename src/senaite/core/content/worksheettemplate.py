@@ -43,18 +43,26 @@ from z3c.form.interfaces import DISPLAY_MODE
 from six.moves.urllib.parse import parse_qs
 
 
-def default_layout_positions(count_positions=None, start_pos=0):
-    """
-    """
+def get_query_num_positions():
     request = api.get_request()
-    if count_positions:
-        num_positions = int(count_positions)
-    elif request:
+    if request:
         params = dict(parse_qs(request["QUERY_STRING"]))
         values = params.get("num_positions")
-        num_positions = int(values[0]) if values else 0
-    else:
-        return []
+        return int(values[0]) if values else 0
+    return 0
+
+
+def default_layout_positions(count_positions=None, start_pos=0):
+    """Generate preset for Template Layout for new WorksheetTemplate with query
+    string parameter 'num_positions' or generate preset from edit form
+
+    :param count_positions: number of positions for Worksheet
+    :param start_pos: Index for starting first position
+    :returns: Array of object for description layout of worksheet
+    """
+    num_positions = get_query_num_positions()
+    if count_positions:
+        num_positions = int(count_positions)
 
     default_value = []
     for i in range(num_positions):
@@ -68,15 +76,6 @@ def default_layout_positions(count_positions=None, start_pos=0):
             "dup": None,
         })
     return default_value
-
-
-def default_num_positions():
-    request = api.get_request()
-    if request:
-        params = dict(parse_qs(request["QUERY_STRING"]))
-        values = params.get("num_positions")
-        return int(values[0]) if values else 0
-    return 0
 
 
 class IWorksheetTemplateServiceRecord(Interface):
@@ -292,7 +291,7 @@ class IWorksheetTemplateSchema(model.Schema):
             default=u"Number of Positions"
         ),
         required=False,
-        defaultFactory=default_num_positions,
+        defaultFactory=get_query_num_positions,
         min=0,
         default=0,
     )
@@ -422,11 +421,15 @@ class WorksheetTemplate(Container):
         if nums == 0:
             layout = []
         elif len_layout == 0 and nums > 0:
+            # create default layout of 'nums' rows
             layout = default_layout_positions(nums)
         elif nums > len_layout:
             rows = nums - len_layout
+            # added count 'rows' rows for layout
+            # starting from index 'len_layout'
             layout = layout + default_layout_positions(rows, len_layout)
         elif nums < len_layout:
+            # save firsts of 'nums' rows
             layout = layout[:nums]
         self.setTemplateLayout(layout)
 
