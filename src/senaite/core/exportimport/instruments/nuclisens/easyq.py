@@ -18,8 +18,6 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-""" Nuclisens EasyQ
-"""
 import csv
 import json
 import traceback
@@ -28,9 +26,9 @@ import xml.etree.ElementTree as ET
 
 from bika.lims import bikaMessageFactory as _
 from openpyxl import load_workbook
-from senaite.core.exportimport.instruments.resultsimport import \
+from senaite.core.exportimport.instruments.importer import \
     AnalysisResultsImporter
-from senaite.core.exportimport.instruments.resultsimport import \
+from senaite.core.exportimport.instruments.parser import \
     InstrumentResultsFileParser
 from senaite.core.exportimport.instruments.utils import format_keyword
 from senaite.core.i18n import translate as t

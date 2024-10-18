@@ -18,14 +18,15 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-""" Shimadzu GCMS-TQ8030 GC/MS/MS
-"""
-from bika.lims import bikaMessageFactory as _
 import json
 import re
-from senaite.core.exportimport.instruments.resultsimport import \
-        InstrumentCSVResultsFileParser, AnalysisResultsImporter
 import traceback
+
+from bika.lims import bikaMessageFactory as _
+from senaite.core.exportimport.instruments.importer import \
+    AnalysisResultsImporter
+from senaite.core.exportimport.instruments.parser import \
+    InstrumentCSVResultsFileParser
 
 title = "Shimadzu GCMS-TQ8030 GC/MS/MS"
 
