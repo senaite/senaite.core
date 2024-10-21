@@ -69,11 +69,15 @@
       replacement=".catalog.catalog_object"
       />
 
+  <!-- XXX: This patch was temporary deactivated due to a side-effect that
+            catalog multiplexers, e.g. SQL Multiplexer for Analyses, were no
+            longer called!
+  -->
   <!-- Ensure the full object is re-indexed after transition -->
-  <monkey:patch
-    description=""
-    class="Products.CMFCore.WorkflowTool.WorkflowTool"
-    original="_reindexWorkflowVariables"
-    replacement=".workflow._reindexWorkflowVariables"/>
+  <!-- <monkey:patch -->
+  <!--   description="" -->
+  <!--   class="Products.CMFCore.WorkflowTool.WorkflowTool" -->
+  <!--   original="_reindexWorkflowVariables" -->
+  <!--   replacement=".workflow._reindexWorkflowVariables"/> -->
 
 </configure>
