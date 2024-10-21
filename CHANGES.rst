@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2630 Fix references from sample templates are not kept when partitioning
 - #2627 Skip workflow transition for temporary analyses
 - #2626 Change to new instrument imports that were introduced with #2555
 - #2625 Fix sizing of listing widgets
