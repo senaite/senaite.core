@@ -441,13 +441,6 @@ class WorksheetTemplate(Container):
         accessor = self.accessor("template_layout")
         return accessor(self) or []
 
-    @deprecated(comment="If you need to get the layout for worksheet, "
-                        "use getTemplateLayout",
-                replacement="getTemplateLayout")
-    @security.protected(permissions.View)
-    def getLayout(self):
-        return self.getTemplateLayout()
-
     @security.protected(permissions.ModifyPortalContent)
     def setTemplateLayout(self, value):
         mutator = self.mutator("template_layout")
