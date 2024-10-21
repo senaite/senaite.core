@@ -21,6 +21,7 @@
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore import permissions
 from bika.lims import api
+from bika.lims import deprecated
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
 from plone.supermodel import model
@@ -440,6 +441,13 @@ class WorksheetTemplate(Container):
         accessor = self.accessor("template_layout")
         return accessor(self) or []
 
+    @deprecated(comment="If you need to get the layout for worksheet, "
+                        "use getTemplateLayout",
+                replacement="getTemplateLayout")
+    @security.protected(permissions.View)
+    def getLayout(self):
+        return self.getTemplateLayout()
+
     @security.protected(permissions.ModifyPortalContent)
     def setTemplateLayout(self, value):
         mutator = self.mutator("template_layout")
@@ -465,6 +473,12 @@ class WorksheetTemplate(Container):
         if services:
             return [s.get("uid") for s in services]
         return []
+
+    @deprecated(comment="If you need to get the service, use getRawServices",
+                replacement="getRawServices")
+    @security.protected(permissions.View)
+    def getRawService(self):
+        return self.getRawServices()
 
     @security.protected(permissions.View)
     def getServices(self):
