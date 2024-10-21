@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2599 Migrate WorksheetTemplates to Dexterity
+- #2629 Fix default sticker template based on sample type is not rendered
+- #2627 Skip workflow transition for temporary analyses
 - #2626 Change to new instrument imports that were introduced with #2555
 - #2625 Fix sizing of listing widgets
 - #2621 Fix UnicodeDecodeError when render non-latin email template
