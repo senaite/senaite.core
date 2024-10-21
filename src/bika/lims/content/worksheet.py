@@ -567,7 +567,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # If there is a match with the layout defined in the Worksheet
         # Template, use that slot instead of adding a new one at the end of
         # the worksheet
-        layout = wst.getLayout()
+        layout = wst.getTemplateLayout()
         for pos in layout:
             if pos['type'] != 'd' or to_int(pos['dup']) != slot_from:
                 continue
@@ -612,7 +612,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # If there is a match with the layout defined in the Worksheet Template,
         # use that slot instead of adding a new one at the end of the worksheet
         slot_type = reference.getBlank() and 'b' or 'c'
-        layout = wst.getLayout()
+        layout = wst.getTemplateLayout()
 
         for pos in layout:
             if pos['type'] != slot_type:
@@ -795,7 +795,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             return list()
 
         ws_slots = self.get_slot_positions(type)
-        layout = worksheet_template.getLayout()
+        layout = worksheet_template.getTemplateLayout()
         slots = list()
 
         for row in layout:
@@ -832,7 +832,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         :returns: None
         """
         # Get the services from the Worksheet Template
-        service_uids = wst.getRawService()
+        service_uids = wst.getRawServices()
         if not service_uids:
             # No service uids assigned to this Worksheet Template, skip
             logger.warn("Worksheet Template {} has no services assigned"
@@ -918,7 +918,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         :param wst: worksheet template used as the layout
         :returns: None
         """
-        wst_layout = wst.getLayout()
+        wst_layout = wst.getTemplateLayout()
 
         for row in wst_layout:
             if row['type'] != 'd':
@@ -994,7 +994,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         slots_sample = list()
         available_slots = self.resolve_available_slots(wst, type)
-        wst_layout = wst.getLayout()
+        wst_layout = wst.getTemplateLayout()
         for row in wst_layout:
             slot = int(row['pos'])
             if slot not in available_slots:
@@ -1013,7 +1013,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
             # We only want the reference samples that fit better with the type
             # and with the analyses defined in the Template
-            services = wst.getService()
+            services = wst.getServices()
             services = [s.UID() for s in services]
             candidates = list()
             for sample in samples:

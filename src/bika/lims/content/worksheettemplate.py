@@ -152,6 +152,7 @@ schema["description"].widget.visible = True
 schema["description"].widget.description = ""
 
 
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2599
 class WorksheetTemplate(BaseContent):
     """Worksheet Templates
     """

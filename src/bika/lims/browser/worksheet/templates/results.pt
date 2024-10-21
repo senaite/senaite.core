@@ -252,11 +252,6 @@
       </div>
       <!-- /Remarks Widget -->
 
-      <!-- XXX: Where is this used? -->
-      <input type="hidden"
-             id="instrument_multiple_use"
-             tal:attributes="value python:context.getWorksheetTemplate().getEnableMultipleUseOfInstrument() if context.getWorksheetTemplate() else 'True';"/>
-
     </metal:content-core>
 
   </body>

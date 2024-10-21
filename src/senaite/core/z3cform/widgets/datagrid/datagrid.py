@@ -52,6 +52,7 @@ class DataGridWidget(DataGridField):
     """Senaite DataGrid Widget
     """
     display_table_css_class = "datagridwidget-table-view"
+    templates = {}
 
     def createObjectWidget(self, idx):
         """Create row widget
@@ -65,6 +66,11 @@ class DataGridWidget(DataGridField):
             widget = getMultiAdapter((valueType, self.request), IFieldWidget)
 
         return widget
+
+    def render(self):
+        if self.mode in self.templates.keys():
+            return ViewPageTemplateFile(self.templates[self.mode])(self)
+        return super(DataGridWidget, self).render()
 
 
 @adapter(IDataGridField, ISenaiteFormLayer)
