@@ -18,12 +18,17 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims import workflow as wf
 
 
 def ObjectInitializedEventHandler(analysis, event):
     """Actions to be done when an analysis is added in an Analysis Request
     """
+    # Skip temporary analyses that are constructed during new sample creation.
+    # This avoids the warning "No workflow provides the '${action_id}' action."
+    if api.is_temporary(analysis):
+        return
 
     # Initialize the analysis if it was e.g. added by Manage Analysis
     wf.doActionFor(analysis, "initialize")
