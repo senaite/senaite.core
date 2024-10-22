@@ -1965,10 +1965,14 @@ class Reference_Definitions(WorksheetImporter):
 
 class Worksheet_Templates(WorksheetImporter):
 
+    def __init__(self, context):
+        super(Worksheet_Templates, self).__init__(context)
+        self.wst_layouts = {}
+        self.wst_services = {}
+
     def load_wst_layouts(self):
         sheetname = "Worksheet Template Layouts"
         worksheet = self.workbook[sheetname]
-        self.wst_layouts = {}
         if not worksheet:
             return
         for row in self.get_rows(3, worksheet=worksheet):
@@ -2008,19 +2012,21 @@ class Worksheet_Templates(WorksheetImporter):
     def load_wst_services(self):
         sheetname = "Worksheet Template Services"
         worksheet = self.workbook[sheetname]
-        self.wst_services = {}
         if not worksheet:
             return
         bsc = getToolByName(self.context, SETUP_CATALOG)
         for row in self.get_rows(3, worksheet=worksheet):
             wst_title = row.get("WorksheetTemplate_title")
-            service = self.get_object(bsc, "AnalysisService",
-                                      row.get("service"))
             if wst_title not in self.wst_services.keys():
                 self.wst_services[wst_title] = []
-            self.wst_services[wst_title].append(service.UID())
+            service = self.get_object(bsc, "AnalysisService",
+                                      row.get("service"))
+            if service:
+                self.wst_services[wst_title].append(service.UID())
 
     def Import(self):
+        self.load_wst_services()
+        self.load_wst_layouts()
         folder = self.context.setup.worksheettemplates
         for row in self.get_rows(3):
             title = row.get("title")
@@ -2029,9 +2035,11 @@ class Worksheet_Templates(WorksheetImporter):
 
             obj = api.create(folder, "WorksheetTemplate",
                              title=title,
-                             description=row.get("description"))
-            obj.setTemplateLayout(self.wst_layouts[title])
-            obj.setServices(self.wst_services[title])
+                             description=row.get("description", ""))
+            if title in self.wst_layouts.keys():
+                obj.setTemplateLayout(self.wst_layouts[title])
+            if title in self.wst_services.keys():
+                obj.setServices(self.wst_services[title])
 
 
 class Setup(WorksheetImporter):
