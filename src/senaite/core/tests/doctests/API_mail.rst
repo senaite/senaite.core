@@ -115,7 +115,7 @@ This function converts a filename with given filedata to a MIME attachment:
     Content-Type: image/png
     MIME-Version: 1.0
     Content-Transfer-Encoding: base64
-    Content-Disposition: attachment; filename=logo.png
+    Content-Disposition: attachment; filename="logo.png"
     <BLANKLINE>
     iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAALGPC/xhBQAAACBjSFJN
     ...
@@ -133,7 +133,7 @@ It is also possible to provide the full path to a file:
     Content-Type: image/png
     MIME-Version: 1.0
     Content-Transfer-Encoding: base64
-    Content-Disposition: attachment; filename=logo.png
+    Content-Disposition: attachment; filename="logo.png"
     <BLANKLINE>
     iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAALGPC/xhBQAAACBjSFJN
     ...
@@ -225,7 +225,7 @@ This function composes a new MIME message:
     Content-Type: image/png
     MIME-Version: 1.0
     Content-Transfer-Encoding: base64
-    Content-Disposition: attachment; filename=logo.png
+    Content-Disposition: attachment; filename="logo.png"
     <BLANKLINE>
     iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAALGPC/xhBQAAACBjSFJN
     ...
