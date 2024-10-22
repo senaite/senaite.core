@@ -169,7 +169,7 @@ def to_email_attachment(filedata, filename="", **kw):
     attachment.set_payload(data)
     encoders.encode_base64(attachment)
     attachment.add_header("Content-Disposition",
-                          "attachment; filename=%s" % filename)
+                          "attachment; filename=\"%s\"" % filename)
     return attachment
 
 
