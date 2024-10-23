@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2624 Analytical holding time functionality
 - #2629 Fix default sticker template based on sample type is not rendered
 - #2627 Skip workflow transition for temporary analyses
 - #2626 Change to new instrument imports that were introduced with #2555
