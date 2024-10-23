@@ -18,10 +18,10 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-""" Seal Analytics AQ2
-"""
-from senaite.core.exportimport.instruments.resultsimport import \
-    AnalysisResultsImporter, InstrumentCSVResultsFileParser
+from senaite.core.exportimport.instruments.importer import \
+    AnalysisResultsImporter
+from senaite.core.exportimport.instruments.parser import \
+    InstrumentCSVResultsFileParser
 
 
 class SealAnalyticsAQ2CSVParser(InstrumentCSVResultsFileParser):

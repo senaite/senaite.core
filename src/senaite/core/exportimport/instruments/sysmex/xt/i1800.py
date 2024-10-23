@@ -18,13 +18,12 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-""" Sysmex XT1800i
-"""
 import json
 import traceback
 
 from bika.lims import bikaMessageFactory as _
-from senaite.core.exportimport.instruments.resultsimport import InstrumentTXTResultsFileParser
+from senaite.core.exportimport.instruments.parser import \
+    InstrumentTXTResultsFileParser
 from senaite.core.exportimport.instruments.sysmex.xt import SysmexXTImporter
 from senaite.core.i18n import translate as t
 
