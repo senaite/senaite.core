@@ -135,7 +135,7 @@ layout with 7 slots:
     ...      'control_ref': '',
     ...      'dup': ''},
     ... ]
-    >>> template = api.create(bikasetup.bika_worksheettemplates, "WorksheetTemplate", title="WS Template Test", Layout=layout, Service=service_uids)
+    >>> template = api.create(setup.worksheettemplates, "WorksheetTemplate", title="WS Template Test", Layout=layout, Services=service_uids)
 
 
 Apply Worksheet Template to a Worksheet
@@ -237,7 +237,7 @@ Modify the Worksheet Template to allow `Au` analysis and apply the template to t
 same Worksheet again:
 
     >>> service_uids = [Cu.UID(), Fe.UID(), Au.UID()]
-    >>> template.setService(service_uids)
+    >>> template.setServices(service_uids)
     >>> worksheet.applyWorksheetTemplate(template)
 
 Now, slot 2 is filled again:
@@ -367,7 +367,7 @@ Then, we create the associated Reference Samples:
 
 Apply the blank and control to the Worksheet Template layout:
 
-    >>> layout = template.getLayout()
+    >>> layout = template.getTemplateLayout()
     >>> layout[5] = {'pos': '6', 'type': 'c',
     ...              'blank_ref': '',
     ...              'control_ref': controldef.UID(),
@@ -376,7 +376,7 @@ Apply the blank and control to the Worksheet Template layout:
     ...              'blank_ref': blankdef.UID(),
     ...              'control_ref': '',
     ...              'dup': ''}
-    >>> template.setLayout(layout)
+    >>> template.setTemplateLayout(layout)
 
 Apply the worksheet template again:
 
@@ -473,7 +473,7 @@ WorksheetTemplate assignment to a non-empty Worksheet
 Worksheet Template can also be used when the worksheet is not empty.
 The template has slots available for routine analyses in positions 1, 2 and 4:
 
-    >>> layout = template.getLayout()
+    >>> layout = template.getTemplateLayout()
     >>> slots = filter(lambda p: p["type"] == "a", layout)
     >>> sorted(map(lambda p: int(p.get("pos")), slots))
     [1, 2, 4]
@@ -627,7 +627,7 @@ Create a Worksheet Template without services assigned:
     ...      'control_ref': '',
     ...      'dup': ''},
     ... ]
-    >>> empty_template = api.create(bikasetup.bika_worksheettemplates, "WorksheetTemplate", title="WS Template Empty Test", Layout=layout, Service=service_uids)
+    >>> empty_template = api.create(setup.worksheettemplates, "WorksheetTemplate", title="WS Template Empty Test", Layout=layout, Services=service_uids)
 
 Create and receive 2 samples:
 
@@ -677,12 +677,12 @@ Create a Worksheet Template and assign the instrument:
     ...      'control_ref': '',
     ...      'dup': ''},
     ... ]
-    >>> instr_template = api.create(bikasetup.bika_worksheettemplates,
+    >>> instr_template = api.create(setup.worksheettemplates,
     ...                             "WorksheetTemplate",
     ...                             title="WS Template with instrument",
     ...                             Layout=layout,
     ...                             Instrument=instrument,
-    ...                             Service=service_uids)
+    ...                             Services=service_uids)
 
 Reject any previous analyses awaiting for assignment:
 
@@ -754,12 +754,12 @@ Create a Worksheet Template and assign the method:
     ...      'control_ref': '',
     ...      'dup': ''},
     ... ]
-    >>> method_template = api.create(bikasetup.bika_worksheettemplates,
+    >>> method_template = api.create(setup.worksheettemplates,
     ...                              "WorksheetTemplate",
     ...                              title="WS Template with instrument",
     ...                              Layout=layout,
     ...                              RestrictToMethod=method,
-    ...                              Service=service_uids)
+    ...                              Services=service_uids)
 
 Create and receive 2 samples:
 

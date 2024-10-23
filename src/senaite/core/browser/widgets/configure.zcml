@@ -12,6 +12,14 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <browser:page
+      for="*"
+      name="worksheettemplate_services_widget"
+      class=".worksheettemplate_services_widget.WorksheetTemplateServicesWidget"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Listing widget for Analysis Profiles -->
   <browser:page
       for="*"

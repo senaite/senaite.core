@@ -76,12 +76,4 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <browser:page
-      for="bika.lims.interfaces.IWorksheetTemplates"
-      name="folder_view"
-      class=".bika_worksheettemplates.WorksheetTemplatesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
 </configure>

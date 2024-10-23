@@ -167,7 +167,7 @@ class AddAnalysesView(BikaListingView):
         new_states = []
         if wst:
 
-            wst_service_uids = wst.getRawService()
+            wst_service_uids = wst.getRawServices()
             # restrict to the selected template services
             if wst_service_uids:
                 new_states.append({
@@ -222,8 +222,8 @@ class AddAnalysesView(BikaListingView):
     def worksheet_template_setup_url(self):
         """Returns the Worksheet Template Setup URL
         """
-        setup = api.get_setup()
-        return "{}/{}".format(api.get_url(setup), "bika_worksheettemplates")
+        setup = api.get_senaite_setup()
+        return "{}/{}".format(api.get_url(setup), "worksheettemplates")
 
     @view.memoize
     def is_edit_allowed(self):
