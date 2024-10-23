@@ -5,6 +5,7 @@
 
   <!-- Package includes -->
   <include package=".archetypes" />
+  <include package=".catalog" />
   <include package=".dexterity" />
 
 </configure>
