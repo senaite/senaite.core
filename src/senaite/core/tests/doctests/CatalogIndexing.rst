@@ -124,7 +124,7 @@ The sample should be indexed in the `senaite_sample_catalog`:
 It should not be indexed in the other catalogs:
 
    >>> is_indexed(sample, *list(filter(lambda x: x != SAMPLE_CATALOG, ALL_SENAITE_CATALOGS)))
-   senaite_catalog_auditlog: YES (found 1)
+   senaite_catalog_auditlog: NO (found 0)
    senaite_catalog_client: NO (found 0)
    senaite_catalog_contact: NO (found 0)
    senaite_catalog_label: NO (found 0)

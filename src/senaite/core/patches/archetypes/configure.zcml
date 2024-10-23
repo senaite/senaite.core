@@ -22,6 +22,33 @@
       replacement=".base_object.isTemporary"
       />
 
+  <!-- Patch AT CatalogMultiplex.indexObject -->
+  <monkey:patch
+      description="Patch `Products.Archetypes.CatalogMultiplex.indexObject`"
+      class="Products.Archetypes.CatalogMultiplex.CatalogMultiplex"
+      original="indexObject"
+      ignoreOriginal="True"
+      replacement=".catalog_multiplex.indexObject"
+      />
+
+  <!-- Patch AT CatalogMultiplex.unindexObject -->
+  <monkey:patch
+      description="Patch `Products.Archetypes.CatalogMultiplex.unindexObject`"
+      class="Products.Archetypes.CatalogMultiplex.CatalogMultiplex"
+      original="unindexObject"
+      ignoreOriginal="True"
+      replacement=".catalog_multiplex.unindexObject"
+      />
+
+  <!-- Patch AT CatalogMultiplex.reindexObject -->
+  <monkey:patch
+      description="Patch `Products.Archetypes.CatalogMultiplex.reindexObject`"
+      class="Products.Archetypes.CatalogMultiplex.CatalogMultiplex"
+      original="reindexObject"
+      ignoreOriginal="True"
+      replacement=".catalog_multiplex.reindexObject"
+      />
+
   <!-- Patch portal_catalog queue processor indexing -->
   <!-- <monkey:patch -->
   <!--     description="Patch `Products.CMFCore.indexing.PortalCatalogProcessor.index` to avoid duplicate indexing" -->
