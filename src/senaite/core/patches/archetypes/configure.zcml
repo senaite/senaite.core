@@ -49,4 +49,22 @@
       replacement=".catalog_multiplex.reindexObject"
       />
 
+  <!-- Patch AT Referenceable._catalogUID -->
+  <monkey:patch
+      description="Patch `Products.Archetypes.Referencable._catalogUID`"
+      class="Products.Archetypes.Referenceable.Referenceable"
+      original="_catalogUID"
+      ignoreOriginal="True"
+      replacement=".referenceable._catalogUID"
+      />
+
+  <!-- Patch AT Referenceable._uncatalogUID -->
+  <monkey:patch
+      description="Patch `Products.Archetypes.Referencable._uncatalogUID`"
+      class="Products.Archetypes.Referenceable.Referenceable"
+      original="_uncatalogUID"
+      ignoreOriginal="True"
+      replacement=".referenceable._uncatalogUID"
+      />
+
 </configure>
