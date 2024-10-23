@@ -21,6 +21,7 @@ Needed Imports:
     >>> from plone.app.testing import TEST_USER_PASSWORD
     >>> from Products.CMFCore.indexing import processQueue
 
+    >>> from senaite.core.catalog import ANALYSIS_CATALOG
     >>> from senaite.core.catalog import AUDITLOG_CATALOG
     >>> from senaite.core.catalog import CLIENT_CATALOG
     >>> from senaite.core.catalog import CONTACT_CATALOG
@@ -75,6 +76,7 @@ Variables:
     >>> date_now = DateTime().strftime("%Y-%m-%d")
     >>> date_future = (DateTime() + 5).strftime("%Y-%m-%d")
     >>> ALL_SENAITE_CATALOGS = [
+    ...    ANALYSIS_CATALOG,
     ...    AUDITLOG_CATALOG,
     ...    CLIENT_CATALOG,
     ...    CONTACT_CATALOG,
@@ -128,6 +130,7 @@ The sample should be indexed in the `senaite_sample_catalog`:
 It should not be indexed in the other catalogs:
 
    >>> is_indexed(sample, *list(filter(lambda x: x != SAMPLE_CATALOG, ALL_SENAITE_CATALOGS)))
+   senaite_catalog_analysis: NO (found 0)
    senaite_catalog_auditlog: NO (found 0)
    senaite_catalog_client: NO (found 0)
    senaite_catalog_contact: NO (found 0)
@@ -146,3 +149,25 @@ But not in the `portal_catalog`:
 
    >>> is_indexed(sample, PORTAL_CATALOG)
    portal_catalog: NO (found 0)
+
+
+Test catalog indexing of Analyses
+.................................
+
+The analyses should be indexed in the `senaite_analysis_catalog`:
+
+   >>> is_indexed(sample.Cu, ANALYSIS_CATALOG)
+   senaite_catalog_analysis: YES (found 1)
+
+It should not be indexed in the other catalogs:
+
+   >>> is_indexed(sample.Cu, *list(filter(lambda x: x != ANALYSIS_CATALOG, ALL_SENAITE_CATALOGS)))
+   senaite_catalog_auditlog: NO (found 0)
+   senaite_catalog_client: NO (found 0)
+   senaite_catalog_contact: NO (found 0)
+   senaite_catalog_label: NO (found 0)
+   senaite_catalog_report: NO (found 0)
+   senaite_catalog_sample: NO (found 0)
+   senaite_catalog: NO (found 0)
+   senaite_catalog_setup: NO (found 0)
+   senaite_catalog_worksheet: NO (found 0)
