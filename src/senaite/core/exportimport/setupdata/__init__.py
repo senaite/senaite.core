@@ -118,7 +118,7 @@ class SetupDataSetList(SDL):
         return SDL.__call__(self, projectname="bika.lims")
 
 
-class WorksheetImporter:
+class WorksheetImporter(object):
 
     """Use this as a base, for normal tabular data sheet imports.
     """
@@ -1987,20 +1987,20 @@ class Worksheet_Templates(WorksheetImporter):
             blank_ref = []
             control_ref = []
 
-            if analysis_type == "b":
+            if analysis_type in ["b", "Blank"]:
                 blank_ref = row.get("blank_ref", "")
                 ref_proxy = blank_ref or None
-            elif analysis_type == "c":
+            elif analysis_type in ["c", "Control"]:
                 control_ref = row.get("control_ref", "")
                 ref_proxy = control_ref or None
                 
-            if analysis_type != "d":
+            if analysis_type not in ["d", "Duplicate"]:
                 dup = None
 
             self.wst_layouts[wst_title].append(
                 {
                     "pos": int(row["pos"]),
-                    "type": analysis_type,
+                    "type": analysis_type[0].lower(), # if 'type' is full word
                     "blank_ref": blank_ref if blank_ref else [],
                     "control_ref": control_ref if control_ref else [],
                     "reference_proxy": ref_proxy,
