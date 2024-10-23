@@ -114,7 +114,15 @@ Be sure the queue is processed:
 
 Set testmod on:
 
-    >>> os.environ["TESTMOD"] = "1"
+    >>> # os.environ["TESTMOD"] = "1"
+
+NOTE: The TESTMOD environment variable can be used to conditionally set some
+debug statements in the code, e.g.::
+
+    import os
+    if os.getenv("TESTMOD", False):
+        print "ZCatalog.Catalog.catalogObject: catalog=%s object=%s" % (
+            self.id, repr(object))
 
 Create a new sample:
 
