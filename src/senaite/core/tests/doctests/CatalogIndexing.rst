@@ -19,7 +19,7 @@ Needed Imports:
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
-
+    >>> from Products.CMFCore.indexing import processQueue
 
     >>> from senaite.core.catalog import AUDITLOG_CATALOG
     >>> from senaite.core.catalog import CLIENT_CATALOG
@@ -105,6 +105,10 @@ We need to create some basic objects for the test:
 
 Test catalog indexing of Samples
 ................................
+
+Be sure the queue is processed:
+
+    >>> processing = processQueue()
 
 Set testmod on:
 
