@@ -20,6 +20,17 @@ Needed Imports:
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
 
+
+    >>> from senaite.core.catalog import AUDITLOG_CATALOG
+    >>> from senaite.core.catalog import CLIENT_CATALOG
+    >>> from senaite.core.catalog import CONTACT_CATALOG
+    >>> from senaite.core.catalog import LABEL_CATALOG
+    >>> from senaite.core.catalog import REPORT_CATALOG
+    >>> from senaite.core.catalog import SAMPLE_CATALOG
+    >>> from senaite.core.catalog import SENAITE_CATALOG
+    >>> from senaite.core.catalog import SETUP_CATALOG
+    >>> from senaite.core.catalog import WORKSHEET_CATALOG
+
 Functional Helpers:
 
     >>> def start_server():
@@ -37,6 +48,24 @@ Functional Helpers:
     ...     sample = create_analysisrequest(client, request, values, service_uids)
     ...     return sample
 
+    >>> def is_indexed(obj, *catalogs, **kw):
+    ...     """Checks if the passed in object is indexed in the catalogs
+    ...     """
+    ...     formatted = kw.get("formatted", True)
+    ...     query = {"UID": api.get_uid(obj)}
+    ...     results = []
+    ...     summary = []
+    ...     for catalog in catalogs:
+    ...         cat = api.get_tool(catalog)
+    ...         res = cat(query)
+    ...         results.append((catalog, len(res)))
+    ...         text = "%s: %s (found %s)" % (catalog, "YES" if len(res) > 0 else "NO", len(res))
+    ...         summary.append(text)
+    ...     if formatted:
+    ...         print("\n".join(summary))
+    ...         return
+    ...     return results
+
 Variables:
 
     >>> portal = self.portal
@@ -45,6 +74,20 @@ Variables:
     >>> bikasetup = portal.bika_setup
     >>> date_now = DateTime().strftime("%Y-%m-%d")
     >>> date_future = (DateTime() + 5).strftime("%Y-%m-%d")
+    >>> ALL_SENAITE_CATALOGS = [
+    ...    AUDITLOG_CATALOG,
+    ...    CLIENT_CATALOG,
+    ...    CONTACT_CATALOG,
+    ...    LABEL_CATALOG,
+    ...    REPORT_CATALOG,
+    ...    SAMPLE_CATALOG,
+    ...    SENAITE_CATALOG,
+    ...    SETUP_CATALOG,
+    ...    WORKSHEET_CATALOG,
+    ... ]
+
+    >>> UID_CATALOG = "uid_catalog"
+    >>> PORTAL_CATALOG = "portal_catalog"
 
 We need to create some basic objects for the test:
 
@@ -60,12 +103,12 @@ We need to create some basic objects for the test:
     >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
 
 
-Test catalog indexing of new Samples
-....................................
+Test catalog indexing of Samples
+................................
 
 Set testmod on:
 
->>> os.environ["TESTMOD"] = "1"
+    >>> os.environ["TESTMOD"] = "1"
 
 Create a new sample:
 
@@ -73,8 +116,29 @@ Create a new sample:
     >>> api.get_workflow_status_of(sample)
     'sample_due'
 
-Receive the sample:
+The sample should be indexed in the `senaite_sample_catalog`:
 
-    >>> success = do_action_for(sample, "receive")
-    >>> api.get_workflow_status_of(sample)
-    'sample_received'
+   >>> is_indexed(sample, SAMPLE_CATALOG)
+   senaite_catalog_sample: YES (found 1)
+
+It should not be indexed in the other catalogs:
+
+   >>> is_indexed(sample, *list(filter(lambda x: x != SAMPLE_CATALOG, ALL_SENAITE_CATALOGS)))
+   senaite_catalog_auditlog: YES (found 1)
+   senaite_catalog_client: NO (found 0)
+   senaite_catalog_contact: NO (found 0)
+   senaite_catalog_label: NO (found 0)
+   senaite_catalog_report: NO (found 0)
+   senaite_catalog: NO (found 0)
+   senaite_catalog_setup: NO (found 0)
+   senaite_catalog_worksheet: NO (found 0)
+
+It should be indexed in the `uid_catalog`:
+
+   >>> is_indexed(sample, UID_CATALOG)
+   uid_catalog: YES (found 1)
+
+But not in the `portal_catalog`:
+
+   >>> is_indexed(sample, PORTAL_CATALOG)
+   portal_catalog: NO (found 0)
