@@ -156,7 +156,7 @@ def get_partition_count(context, default=0):
     if not parent:
         return default
 
-    # XXX: we need to count one up because the new partition will visible in
+    # XXX: we need to count one up because the new partition only shows up in
     #      parent.getDescendants() *after* it has been renamed!
     return len(parent.getDescendants()) + 1
 
