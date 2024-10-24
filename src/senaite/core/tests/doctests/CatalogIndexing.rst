@@ -130,7 +130,7 @@ Create a new sample:
     >>> api.get_workflow_status_of(sample)
     'sample_due'
 
-The sample should be indexed in the `senaite_sample_catalog`:
+The sample should be indexed in the `senaite_catalog_sample`:
 
    >>> is_indexed(sample, SAMPLE_CATALOG)
    senaite_catalog_sample: YES (found 1)
@@ -162,7 +162,7 @@ But not in the `portal_catalog`:
 Test catalog indexing of Analyses
 .................................
 
-The analyses should be indexed in the `senaite_analysis_catalog`:
+The analyses should be indexed in the `senaite_catalog_analysis`:
 
    >>> is_indexed(sample.Cu, ANALYSIS_CATALOG)
    senaite_catalog_analysis: YES (found 1)
@@ -179,3 +179,147 @@ It should not be indexed in the other catalogs:
    senaite_catalog: NO (found 0)
    senaite_catalog_setup: NO (found 0)
    senaite_catalog_worksheet: NO (found 0)
+
+It should be indexed in the `uid_catalog`:
+
+   >>> is_indexed(sample.Cu, UID_CATALOG)
+   uid_catalog: YES (found 1)
+
+But not in the `portal_catalog`:
+
+   >>> is_indexed(sample.Cu, PORTAL_CATALOG)
+   portal_catalog: NO (found 0)
+
+
+Test catalog indexing of Setup items
+....................................
+
+Setup items, e.g. `AnalysisService`, should be indexed in `senaite_catalog_setup`:
+
+   >>> is_indexed(Cu, SETUP_CATALOG)
+   senaite_catalog_setup: YES (found 1)
+
+It should not be indexed in the other catalogs:
+
+   >>> is_indexed(Cu, *list(filter(lambda x: x != SETUP_CATALOG, ALL_SENAITE_CATALOGS)))
+   senaite_catalog_analysis: NO (found 0)
+   senaite_catalog_auditlog: NO (found 0)
+   senaite_catalog_client: NO (found 0)
+   senaite_catalog_contact: NO (found 0)
+   senaite_catalog_label: NO (found 0)
+   senaite_catalog_report: NO (found 0)
+   senaite_catalog_sample: NO (found 0)
+   senaite_catalog: NO (found 0)
+   senaite_catalog_worksheet: NO (found 0)
+
+It should be indexed in the `uid_catalog`:
+
+   >>> is_indexed(Cu, UID_CATALOG)
+   uid_catalog: YES (found 1)
+
+But not in the `portal_catalog`:
+
+   >>> is_indexed(Cu, PORTAL_CATALOG)
+   portal_catalog: NO (found 0)
+
+
+Test catalog indexing of Clients
+................................
+
+Clients should be indexed in `senaite_catalog_client`:
+
+   >>> is_indexed(client, CLIENT_CATALOG)
+   senaite_catalog_client: YES (found 1)
+
+It should not be indexed in the other catalogs:
+
+   >>> is_indexed(client, *list(filter(lambda x: x != CLIENT_CATALOG, ALL_SENAITE_CATALOGS)))
+   senaite_catalog_analysis: NO (found 0)
+   senaite_catalog_auditlog: NO (found 0)
+   senaite_catalog_contact: NO (found 0)
+   senaite_catalog_label: NO (found 0)
+   senaite_catalog_report: NO (found 0)
+   senaite_catalog_sample: NO (found 0)
+   senaite_catalog: NO (found 0)
+   senaite_catalog_setup: NO (found 0)
+   senaite_catalog_worksheet: NO (found 0)
+
+It should be indexed in the `uid_catalog`:
+
+   >>> is_indexed(client, UID_CATALOG)
+   uid_catalog: YES (found 1)
+
+But not in the `portal_catalog`:
+
+   >>> is_indexed(client, PORTAL_CATALOG)
+   portal_catalog: NO (found 0)
+
+
+Test catalog indexing of Contacts
+.................................
+
+Contacts should be indexed in `senaite_catalog_contact`:
+
+   >>> is_indexed(contact, CONTACT_CATALOG)
+   senaite_catalog_contact: YES (found 1)
+
+It should not be indexed in the other catalogs:
+
+   >>> is_indexed(contact, *list(filter(lambda x: x != CONTACT_CATALOG, ALL_SENAITE_CATALOGS)))
+   senaite_catalog_analysis: NO (found 0)
+   senaite_catalog_auditlog: NO (found 0)
+   senaite_catalog_client: NO (found 0)
+   senaite_catalog_label: NO (found 0)
+   senaite_catalog_report: NO (found 0)
+   senaite_catalog_sample: NO (found 0)
+   senaite_catalog: NO (found 0)
+   senaite_catalog_setup: NO (found 0)
+   senaite_catalog_worksheet: NO (found 0)
+
+It should be indexed in the `uid_catalog`:
+
+   >>> is_indexed(contact, UID_CATALOG)
+   uid_catalog: YES (found 1)
+
+But not in the `portal_catalog`:
+
+   >>> is_indexed(contact, PORTAL_CATALOG)
+   portal_catalog: NO (found 0)
+
+
+Test catalog indexing of Worksheets
+.................................
+
+Create a new worksheet:
+
+    >>> ws = api.create(portal.worksheets, "Worksheet")
+    >>> for analysis in sample.getAnalyses(full_objects=True):
+    ...     ws.addAnalysis(analysis)
+
+Worksheets should be indexed in `senaite_catalog_worksheet`:
+
+   >>> is_indexed(ws, WORKSHEET_CATALOG)
+   senaite_catalog_worksheet: YES (found 1)
+
+It should not be indexed in the other catalogs:
+
+   >>> is_indexed(ws, *list(filter(lambda x: x != WORKSHEET_CATALOG, ALL_SENAITE_CATALOGS)))
+   senaite_catalog_analysis: NO (found 0)
+   senaite_catalog_auditlog: NO (found 0)
+   senaite_catalog_client: NO (found 0)
+   senaite_catalog_contact: NO (found 0)
+   senaite_catalog_label: NO (found 0)
+   senaite_catalog_report: NO (found 0)
+   senaite_catalog_sample: NO (found 0)
+   senaite_catalog: NO (found 0)
+   senaite_catalog_setup: NO (found 0)
+
+It should be indexed in the `uid_catalog`:
+
+   >>> is_indexed(ws, UID_CATALOG)
+   uid_catalog: YES (found 1)
+
+But not in the `portal_catalog`:
+
+   >>> is_indexed(ws, PORTAL_CATALOG)
+   portal_catalog: NO (found 0)
