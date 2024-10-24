@@ -288,7 +288,7 @@ But not in the `portal_catalog`:
 
 
 Test catalog indexing of Worksheets
-.................................
+...................................
 
 Create a new worksheet:
 
@@ -322,4 +322,40 @@ It should be indexed in the `uid_catalog`:
 But not in the `portal_catalog`:
 
    >>> is_indexed(ws, PORTAL_CATALOG)
+   portal_catalog: NO (found 0)
+
+
+Test catalog indexing of Batches
+................................
+
+Create a new batch:
+
+    >>> batch = api.create(portal.batches, "Batch", title="Test batch")
+
+Batches should be indexed in `senaite_catalog`:
+
+   >>> is_indexed(batch, SENAITE_CATALOG)
+   senaite_catalog: YES (found 1)
+
+It should not be indexed in the other catalogs:
+
+   >>> is_indexed(batch, *list(filter(lambda x: x != SENAITE_CATALOG, ALL_SENAITE_CATALOGS)))
+   senaite_catalog_analysis: NO (found 0)
+   senaite_catalog_auditlog: NO (found 0)
+   senaite_catalog_client: NO (found 0)
+   senaite_catalog_contact: NO (found 0)
+   senaite_catalog_label: NO (found 0)
+   senaite_catalog_report: NO (found 0)
+   senaite_catalog_sample: NO (found 0)
+   senaite_catalog_setup: NO (found 0)
+   senaite_catalog_worksheet: NO (found 0)
+
+It should be indexed in the `uid_catalog`:
+
+   >>> is_indexed(batch, UID_CATALOG)
+   uid_catalog: YES (found 1)
+
+But not in the `portal_catalog`:
+
+   >>> is_indexed(batch, PORTAL_CATALOG)
    portal_catalog: NO (found 0)
