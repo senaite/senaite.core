@@ -5,7 +5,7 @@
 
   <!-- Package includes -->
   <include package=".archetypes" />
-  <include package=".catalog" />
+  <include package=".cmfcore" />
   <include package=".dexterity" />
 
 </configure>
