@@ -69,3 +69,24 @@ The patches ensure that temporary objects are not indexed.
 
 As soon as we have migrated all contents to Dexterity, we should provide a
 custom `senaite_catalog_uid` to keep track of the UIDs and maybe references.
+
+
+## Base Object
+
+The module `base_objects` contains patches for the class `Products.Archetypes.BaseObject.BaseObject`,
+which is the base class for our AT based contents.
+
+### Patches
+
+The following methods are patched:
+
+- `getLabels`
+- `isTemporary`
+
+### Reason
+
+Provide a similar methods for AT contents as for DX contents.
+
+**getLabels**: Get SENAITE labels (dynamically extended fields)
+
+**isTemporary**: Checks if an object contains a temporary ID to avoid further indexing/processing
