@@ -22,10 +22,9 @@ The following methods are patched:
 The patches ensure that temporary objects are not indexed and delegate the
 operation to the respective method of the catalog itself.
 
-Due to the fact that SENAITE catalogs inherit from
-`Products.CMFPlone.CatalogTool.CatalogTool`, which is a subclass of
-`Products.CMFCore.CatalogTool.CatalogTool`, this operation uses the `IndexQueue`
-defined in `Products.CMFCore.indexing.IndexQueue` to optimize indexing.
+Due to the fact that SENAITE catalogs inherit from `Products.CMFPlone.CatalogTool.CatalogTool`,
+which is a subclass of `Products.CMFCore.CatalogTool.CatalogTool`, this operation uses the
+`IndexQueue` defined in `Products.CMFCore.indexing.IndexQueue` to optimize indexing.
 
 ### Notes
 
@@ -37,15 +36,23 @@ patching is required to avoid indexing of, e.g. Samples or Analyses there as
 they should be only indexed in their primary catalog, e.g.
 `seanite_catalog_sample` or `senaite_catalog_analysis`.
 
-Plase see `senaite.core.patches.cmfcore.portal_catalog_processor` for details.
+Please see `senaite.core.patches.cmfcore.portal_catalog_processor` for details.
+
+Furthermore, changes in `senaite.core.catalog.catalog_multiplex_processor.CatalogMultiplexProcessor` 
+were required to handle AT based contens as well.
+
+Please see https://github.com/senaite/senaite.core/pull/2632 for details.
+
+💡 It might make sense to define for each catalog its own `IIndexQueueProcessor`.
+A simple check by content type would could decide if a content should be indexed or not.
 
 
 ## UID Catalog indexing
 
-The module `referencable` contains patches for the class
-`Products.Archetypes.Referencable.Referencable`, which is a mixin for
-`BaseObject` and controls AT native referencable behavior (not used) and the
-indexing in the UID Catalog (used and needed for UID references and more).
+The module `referencable` contains patches for the class `Products.Archetypes.Referencable.Referencable`,
+which is a mixin for `BaseObject` and controls AT native referencable behavior
+(not used) and the indexing in the UID Catalog (used and needed for UID
+references and more).
 
 ### Patches
 
