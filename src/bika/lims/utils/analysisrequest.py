@@ -175,6 +175,10 @@ def reindex(obj, recursive=False):
     :param obj: The object to reindex
     :param recursive: If true, all child objects are reindexed recursively
     """
+    # reindex UID
+    uid_catalog = api.get_tool("uid_catalog")
+    uid_catalog.catalog_object(obj, obj._getURL())
+    # reindex object in all other catalogs
     obj.reindexObject()
     if recursive:
         for child in obj.objectValues():
