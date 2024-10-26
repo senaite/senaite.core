@@ -208,6 +208,26 @@ Old dates with obsolete timezones (e.g. LMT) are converted as well
     >>> old_DT.tzoffset()
     35340
 
+The function returns `None` when the conversion cannot be done:
+
+    >>> dtime.to_DT(None) is None
+    True
+
+    >>> dtime.to_DT(object) is None
+    True
+
+    >>> dtime.to_DT("Not a date") is None
+    True
+
+    >>> dtime.to_DT("2025-13-01") is None
+    True
+
+    >>> dtime.to_DT("2024-02-25 12:00 POP+2") is None
+    True
+
+    >>> dtime.to_DT("0007-02-27T00:00:00-04:24") is None
+    True
+
 Convert to datetime
 ...................
 
@@ -239,6 +259,25 @@ Timezone aware `DateTime` is converted with timezone.
     >>> dtime.to_dt(dt)
     datetime.datetime(2021, 8, 1, 13, 0, tzinfo=<StaticTzInfo 'Etc/GMT-1'>)
 
+The function returns `None` when the conversion cannot be done:
+
+    >>> dtime.to_dt(None) is None
+    True
+
+    >>> dtime.to_dt(object) is None
+    True
+
+    >>> dtime.to_dt("Not a date") is None
+    True
+
+    >>> dtime.to_dt("2025-13-01") is None
+    True
+
+    >>> dtime.to_dt("2024-02-25 12:00 POP+2") is None
+    True
+
+    >>> dtime.to_dt("0007-02-27T00:00:00-04:24") is None
+    True
 
 Get the timezone
 ................
