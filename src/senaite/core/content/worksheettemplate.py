@@ -414,11 +414,13 @@ class WorksheetTemplate(Container):
 
     @security.protected(permissions.ModifyPortalContent)
     def setNumOfPositions(self, value):
+        if value == "":
+            value = 0
+        nums = int(value)
         mutator = self.mutator("num_of_positions")
-        mutator(self, value)
+        mutator(self, nums)
         layout = self.getTemplateLayout()
         len_layout = len(layout)
-        nums = int(value)
         if nums == 0:
             layout = []
         elif len_layout == 0 and nums > 0:
