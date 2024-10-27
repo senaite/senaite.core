@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2599 Migrate WorksheetTemplates to Dexterity
+- #2631 Fix for sending email attachment if filename contain spaces 
+- #2633 Fix DateTimeError when using API's to_DT and to_dt functions
 - #2629 Fix default sticker template based on sample type is not rendered
 - #2627 Skip workflow transition for temporary analyses
 - #2626 Change to new instrument imports that were introduced with #2555
