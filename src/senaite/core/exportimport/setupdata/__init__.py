@@ -1970,7 +1970,19 @@ class Worksheet_Templates(WorksheetImporter):
         self.wst_layouts = {}
         self.wst_services = {}
 
+    def load_definitions(self):
+        reference_query = {
+            "portal_type": "ReferenceDefinition",
+            "is_active": True,
+        }
+        definitions = {}
+        brains = api.search(reference_query, SETUP_CATALOG)
+        for brain in brains:
+            definitions[api.get_title(brain)] = api.get_uid(brain)
+        return definitions
+
     def load_wst_layouts(self):
+        definitions = self.load_definitions()
         sheetname = "Worksheet Template Layouts"
         worksheet = self.workbook[sheetname]
         if not worksheet:
@@ -1984,15 +1996,24 @@ class Worksheet_Templates(WorksheetImporter):
             dup = row.get("dup", None)
             dup = int(dup) if dup else None
             analysis_type = row.get("type", "a")
-            blank_ref = []
-            control_ref = []
+            blank_uid = None
+            control_uid = None
 
+            # check control/blank fields if it 'Title' or 'UID'
             if analysis_type in ["b", "Blank"]:
                 blank_ref = row.get("blank_ref", "")
-                ref_proxy = blank_ref or None
+                if api.is_uid(blank_ref):
+                    blank_uid = blank_ref
+                else:
+                    blank_uid = definitions.get(blank_ref, None)
+                ref_proxy = blank_uid or None
             elif analysis_type in ["c", "Control"]:
                 control_ref = row.get("control_ref", "")
-                ref_proxy = control_ref or None
+                if api.is_uid(control_ref):
+                    control_uid = control_ref
+                else:
+                    control_uid = definitions.get(control_ref, None)
+                ref_proxy = control_uid or None
                 
             if analysis_type not in ["d", "Duplicate"]:
                 dup = None
@@ -2001,8 +2022,8 @@ class Worksheet_Templates(WorksheetImporter):
                 {
                     "pos": int(row["pos"]),
                     "type": analysis_type[0].lower(), # if 'type' is full word
-                    "blank_ref": blank_ref if blank_ref else [],
-                    "control_ref": control_ref if control_ref else [],
+                    "blank_ref": [blank_uid] if blank_uid else [],
+                    "control_ref": [control_uid] if blank_uid else [],
                     "reference_proxy": ref_proxy,
                     "dup": dup,
                     "dup_proxy": dup,

@@ -108,8 +108,14 @@ class EditForm(EditFormAdapterBase):
             self.toggle_fields(data, val, idx)
         elif dup_match:
             idx = dup_match.group(1)
-            val = value[0]
-            self.add_update_field(FIELD_DUP.format(idx), val)
+            if value:
+                val = value[0]
+                self.add_update_field(FIELD_DUP.format(idx), val)
+            else:
+                msg = translate(_(
+                    u"duplicate_reference_not_found",
+                    default=u"Not found Analysis position for duplicate."))
+                self.add_error_field(FIELD_DUP_PROXY.format(idx), msg)
         elif ref_match:
             idx = ref_match.group(1)
             form = data.get("form")
