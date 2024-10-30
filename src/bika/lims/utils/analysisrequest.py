@@ -158,7 +158,7 @@ def create_analysisrequest(client, request, values, analyses=None,
     # unmark the sample as temporary
     api.unmark_temporary(ar)
     # explicit reindexing after sample finalization
-    reindex(ar)
+    api.catalog_object(ar)
     # notify object initialization (also creates a snapshot)
     event.notify(ObjectInitializedEvent(ar))
 
@@ -167,22 +167,6 @@ def create_analysisrequest(client, request, values, analyses=None,
         do_rejection(ar)
 
     return ar
-
-
-def reindex(obj, recursive=False):
-    """Reindex the object
-
-    :param obj: The object to reindex
-    :param recursive: If true, all child objects are reindexed recursively
-    """
-    # reindex UID
-    uid_catalog = api.get_tool("uid_catalog")
-    uid_catalog.catalog_object(obj, obj._getURL())
-    # reindex object in all other catalogs
-    obj.reindexObject()
-    if recursive:
-        for child in obj.objectValues():
-            reindex(child)
 
 
 def receive_sample(sample, check_permission=False, date_received=None):
