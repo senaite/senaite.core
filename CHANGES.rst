@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2632 Refactor Catalog Indexing
+- #2630 Fix references from sample templates are not kept when partitioning
 - #2634 Pin et-xmlfile to a Python 2 compatible version
 - #2631 Fix for sending email attachment if filename contain spaces
 - #2633 Fix DateTimeError when using API's to_DT and to_dt functions
