@@ -228,32 +228,6 @@ class PartitionMagicView(BrowserView):
             out.append(info)
         return out
 
-    def get_partitions_info(self, template):
-        """Return a list with the partitions information of the template
-        """
-        if not template:
-            return {}
-
-        def first(records, default=""):
-            if not records:
-                return default
-            if api.is_uid(records):
-                return records
-            return records[0]
-
-        # UIDReference sub-fields are stored as a list!
-        partitions = []
-        for part in template.getPartitions():
-            partition = part.copy()
-            partition.update({
-                "sampletype": first(part.get("sampletype")),
-                "container": first(part.get("container")),
-                "preservation": first(part.get("preservation")),
-            })
-            partitions.append(partition)
-
-        return partitions
-
     def get_template_data_for(self, ar):
         """Return the Template data for this AR
         """
@@ -284,7 +258,7 @@ class PartitionMagicView(BrowserView):
             internal_use_by_partition = defaultdict(list)
 
             partitions = []
-            for part in self.get_partitions_info(template):
+            for part in template.getPartitions():
                 partition = part.get("part_id")
                 partitions.append(partition)
                 sampletype_uid = part.get('sampletype', ar_sampletype_uid)
