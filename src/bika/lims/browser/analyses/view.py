@@ -1733,8 +1733,7 @@ class AnalysesView(ListingView):
             captured = analysis.getResultCaptureDate()
             captured = dtime.to_ansi(captured)
             if captured > max_holding_date:
-                msg = _("The result was captured past the analytical holding "
-                        "time limit.")
+                msg = _("The result was captured past the holding time limit.")
                 icon = get_fas_ico("exclamation-triangle",
                                    css_class="text-danger",
                                    title=t(msg))
@@ -1745,9 +1744,9 @@ class AnalysesView(ListingView):
         dt_now = datetime.now()
         now = dtime.to_ansi(dt_now)
         if now > max_holding_date:
-            msg = _("The analytical holding time for this sample and analysis "
-                    "has expired. Proceeding with the analysis may compromise "
-                    "the reliability of the results.")
+            msg = _("The holding time for this sample and analysis has "
+                    "expired. Proceeding with the analysis may compromise the "
+                    "reliability of the results.")
             icon = get_fas_ico("exclamation-triangle",
                                css_class="text-danger",
                                title=t(msg))
@@ -1757,9 +1756,9 @@ class AnalysesView(ListingView):
         # or maybe is about to expire
         dt_ff = dt_now + timedelta(hours=8)
         if dt_ff > max_holding_date:
-            msg = _("The analytical holding time for this sample and analysis "
-                    "is about to expire. Please complete the analysis as soon "
-                    "as possible to ensure data accuracy and reliability.")
+            msg = _("The holding time for this sample and analysis is about "
+                    "to expire. Please complete the analysis as soon as "
+                    "possible to ensure data accuracy and reliability.")
             icon = get_fas_ico("exclamation-triangle",
                                css_class="text-warning",
                                title=t(msg))

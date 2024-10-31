@@ -1221,7 +1221,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             dependencies = self.get_unmet_dependencies_info(metadata)
             metadata.update(dependencies)
 
-            # services conducted beyond the analytical holding time limit
+            # services conducted beyond the holding time limit
             beyond = self.get_services_beyond_holding_time(record)
             metadata["beyond_holding_time"] = beyond
 
@@ -1233,9 +1233,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
     @viewcache.memoize
     def get_services_max_holding_time(self):
         """Returns a dict where the key is the uid of active services and the
-        value is a dict representing the maximum analytical holding time in
-        days, hours and minutes. The dictionary only contains uids for services
-        that have a valid maximum analytical holding time set
+        value is a dict representing the maximum holding time in days, hours
+        and minutes. The dictionary only contains uids for services that have
+        a valid maximum holding time set
         """
         services = {}
         query = {
@@ -1255,7 +1255,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
     def get_services_beyond_holding_time(self, record):
         """Return a list with the uids of the services that cannot be selected
-        because would be conducted beyond the analytical holding time
+        because would be conducted past the holding time limit
         """
         # get the date to start count from
         start_date = self.get_start_holding_date(record)
@@ -1280,7 +1280,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         return uids
 
     def get_start_holding_date(self, record):
-        """Returns the datetime used to calculate the analytical holding time,
+        """Returns the datetime used to calculate the holding time limit,
         typically the sample collection date.
         """
         sampled = record.get("DateSampled")
