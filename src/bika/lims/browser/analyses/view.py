@@ -793,8 +793,8 @@ class AnalysesView(ListingView):
         self._folder_item_remarks(obj, item)
         # Renders the analysis conditions
         self._folder_item_conditions(obj, item)
-        # Fill analytical holding time warnings
-        self._folder_item_analytical_holding_time(obj, item)
+        # Fill maximum holding time warnings
+        self._folder_item_holding_time(obj, item)
 
         return item
 
@@ -1703,32 +1703,32 @@ class AnalysesView(ListingView):
         service = item["replace"].get("Service") or item["Service"]
         item["replace"]["Service"] = "<br/>".join([service, conditions])
 
-    def _folder_item_analytical_holding_time(self, analysis_brain, item):
+    def _folder_item_holding_time(self, analysis_brain, item):
         """Adds an icon to the item dictionary if no result has been submitted
-        for the analysis and the analytical holding time has passed or is about
-        to expire. It also displays the icon if the result was recorded after
-        the analytical holding time limit.
+        for the analysis and the holding time has passed or is about to expire.
+        It also displays the icon if the result was recorded after the holding
+        time limit.
         """
         analysis = self.get_object(analysis_brain)
         if not IRoutineAnalysis.providedBy(analysis):
             return
 
-        # get the maximum analytical holding time for this analysis
+        # get the maximum holding time for this analysis
         max_holding_time = analysis.getMaxHoldingTime()
         if not max_holding_time:
             return
 
-        # get the datetime from which the analytical holding time is computed
+        # get the datetime from which the max holding time is computed
         start_date = analysis.getDateSampled()
         start_date = dtime.to_dt(start_date)
         if not start_date:
             return
 
-        # calculate the maximum analytical holding date
+        # calculate the maximum holding date
         delta = timedelta(minutes=api.to_minutes(**max_holding_time))
         max_holding_date = dtime.to_ansi(start_date + delta)
 
-        # maybe the result was captured past the analytical holding time
+        # maybe the result was captured past the holding time
         if ISubmitted.providedBy(analysis):
             captured = analysis.getResultCaptureDate()
             captured = dtime.to_ansi(captured)
@@ -1740,7 +1740,7 @@ class AnalysesView(ListingView):
                 self._append_html_element(item, "ResultCaptureDate", icon)
             return
 
-        # not yet submitted, maybe the analytical holding time expired
+        # not yet submitted, maybe the holding time expired
         dt_now = datetime.now()
         now = dtime.to_ansi(dt_now)
         if now > max_holding_date:

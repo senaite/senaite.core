@@ -1269,7 +1269,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         services = self.get_services_max_holding_time()
         for uid, max_holding_time in services.items():
 
-            # calculate the maximum analytical holding date
+            # calculate the maximum holding date
             delta = timedelta(minutes=api.to_minutes(**max_holding_time))
             max_holding_date = start_date + delta
 
