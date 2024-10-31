@@ -3,77 +3,9 @@
     xmlns:monkey="http://namespaces.plone.org/monkey"
     i18n_domain="senaite.core">
 
-  <!-- Patch portal_catalog queue processor indexing -->
-  <monkey:patch
-      description="Patch `Products.CMFCore.indexing.PortalCatalogProcessor.index` to avoid duplicate indexing"
-      class="Products.CMFCore.indexing.PortalCatalogProcessor"
-      original="index"
-      replacement=".catalog.portal_catalog_index"
-      />
-
-  <!-- Patch portal_catalog queue processor reindexing -->
-  <monkey:patch
-      description="Patch `Products.CMFCore.indexing.PortalCatalogProcessor.reindex` to avoid duplicate indexing"
-      class="Products.CMFCore.indexing.PortalCatalogProcessor"
-      original="reindex"
-      replacement=".catalog.portal_catalog_reindex"
-      />
-
-  <!-- Patch portal_catalog queue processor inindexing -->
-  <monkey:patch
-      description="Patch `Products.CMFCore.indexing.PortalCatalogProcessor.reindex` to avoid duplicate indexing"
-      class="Products.CMFCore.indexing.PortalCatalogProcessor"
-      original="unindex"
-      replacement=".catalog.portal_catalog_unindex"
-      />
-
-  <!-- https://github.com/senaite/senaite.core/pull/1865
-       Please also note the patch of `isFactoryContained` in ´__init__´
-  -->
-  <monkey:patch
-      description="Patch `BaseObject.isTemporary` to avoid duplicate indexing in *portal catalog* during object creation"
-      class="Products.Archetypes.BaseObject.BaseObject"
-      original="isTemporary"
-      replacement=".archetypes.isTemporary"
-      />
-
-  <monkey:patch
-      description="Patch `BaseObject.getLabels` for catalog metadata"
-      class="Products.Archetypes.BaseObject.BaseObject"
-      original="getLabels"
-      ignoreOriginal="True"
-      replacement=".archetypes.getLabels"
-      />
-
-  <!-- Port #1865 for dexterity contents to avoid duplicate catalog entries when using `api.create` -->
-  <monkey:patch
-      description="Patch `DexterityContent.isTemporary` to avoid duplicate indexing in *portal catalog* during object creation"
-      class="plone.dexterity.content.DexterityContent"
-      original="isTemporary"
-      ignoreOriginal="True"
-      replacement=".dexterity.isTemporary"
-      />
-
-  <monkey:patch
-      description="Patch `DexterityContent.getLabels` for catalog metadata"
-      class="plone.dexterity.content.DexterityContent"
-      original="getLabels"
-      ignoreOriginal="True"
-      replacement=".dexterity.getLabels"
-      />
-
-  <monkey:patch
-      description=""
-      class="Products.CMFPlone.CatalogTool.CatalogTool"
-      original="catalog_object"
-      replacement=".catalog.catalog_object"
-      />
-
-  <!-- Ensure the full object is re-indexed after transition -->
-  <monkey:patch
-    description=""
-    class="Products.CMFCore.WorkflowTool.WorkflowTool"
-    original="_reindexWorkflowVariables"
-    replacement=".workflow._reindexWorkflowVariables"/>
+  <!-- Package includes -->
+  <include package=".archetypes" />
+  <include package=".cmfcore" />
+  <include package=".dexterity" />
 
 </configure>
