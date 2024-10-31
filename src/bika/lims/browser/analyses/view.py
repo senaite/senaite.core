@@ -793,8 +793,8 @@ class AnalysesView(ListingView):
         self._folder_item_remarks(obj, item)
         # Renders the analysis conditions
         self._folder_item_conditions(obj, item)
-        # Fill beyond holding time icon
-        self._folder_item_beyond_holding_time(obj, item)
+        # Fill analytical holding time warnings
+        self._folder_item_analytical_holding_time(obj, item)
 
         return item
 
@@ -1703,17 +1703,17 @@ class AnalysesView(ListingView):
         service = item["replace"].get("Service") or item["Service"]
         item["replace"]["Service"] = "<br/>".join([service, conditions])
 
-    def _folder_item_beyond_holding_time(self, analysis_brain, item):
-        """Adds an icon to the item dictionary if no result for the analysis
-        has been submitted although the analytical holding time is due. It also
-        renders the icon if the result capture took place beyond the analytical
-        holding time
+    def _folder_item_analytical_holding_time(self, analysis_brain, item):
+        """Adds an icon to the item dictionary if no result has been submitted
+        for the analysis and the analytical holding time has passed or is about
+        to expire. It also displays the icon if the result was recorded after
+        the analytical holding time limit.
         """
         analysis = self.get_object(analysis_brain)
         if not IRoutineAnalysis.providedBy(analysis):
             return
 
-        # get the maximum holding time of the analysis
+        # get the maximum analytical holding time for this analysis
         max_holding_time = analysis.getMaxHoldingTime()
         if not max_holding_time:
             return
@@ -1728,25 +1728,43 @@ class AnalysesView(ListingView):
         delta = timedelta(minutes=api.to_minutes(**max_holding_time))
         max_holding_date = dtime.to_ansi(start_date + delta)
 
-        # maybe the result was captured beyond the analytical holding time
+        # maybe the result was captured past the analytical holding time
         if ISubmitted.providedBy(analysis):
             captured = analysis.getResultCaptureDate()
             captured = dtime.to_ansi(captured)
             if captured > max_holding_date:
-                msg = _("Result captured beyond the analytical holding time")
+                msg = _("The result was captured past the analytical holding "
+                        "time limit.")
                 icon = get_fas_ico("exclamation-triangle",
                                    css_class="text-danger",
                                    title=t(msg))
                 self._append_html_element(item, "ResultCaptureDate", icon)
             return
 
-        # not yet submitted, maybe the analytical holding time is due?
-        now = dtime.to_ansi(datetime.now())
+        # not yet submitted, maybe the analytical holding time expired
+        dt_now = datetime.now()
+        now = dtime.to_ansi(dt_now)
         if now > max_holding_date:
+            msg = _("The analytical holding time for this sample and analysis "
+                    "has expired. Proceeding with the analysis may compromise "
+                    "the reliability of the results.")
             icon = get_fas_ico("exclamation-triangle",
                                css_class="text-danger",
-                               title=t(_("Analytical holding time is due")))
+                               title=t(msg))
             self._append_html_element(item, "ResultCaptureDate", icon)
+            return
+
+        # or maybe is about to expire
+        dt_ff = dt_now + timedelta(hours=8)
+        if dt_ff > max_holding_date:
+            msg = _("The analytical holding time for this sample and analysis "
+                    "is about to expire. Please complete the analysis as soon "
+                    "as possible to ensure data accuracy and reliability.")
+            icon = get_fas_ico("exclamation-triangle",
+                               css_class="text-warning",
+                               title=t(msg))
+            self._append_html_element(item, "ResultCaptureDate", icon)
+            return
 
     def is_method_required(self, analysis):
         """Returns whether the render of the selection list with methods is

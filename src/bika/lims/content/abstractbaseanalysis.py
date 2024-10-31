@@ -372,15 +372,20 @@ MaxHoldingTime = DurationField(
     widget=DurationWidget(
         label=_(
             u"label_analysis_maxholdingtime",
-            default=u"Maximum holding time"
+            default=u"Analytical holding time limit"
         ),
         description=_(
             u"description_analysis_maxholdingtime",
-            default=u"Maximum time since the sample was collected for this "
-                    u"test to become available for selection on sample "
-                    u"creation. Note the availability of this test in 'Manage "
-                    u"analyses' view is not affected by this setting, though."
-
+            default=u"This service will not appear for selection on the "
+                    u"sample registration form if the elapsed time since "
+                    u"sample collection exceeds the maximum analytical "
+                    u"holding time. Exceeding this time limit may result in "
+                    u"unreliable or compromised data, as the integrity of the "
+                    u"sample can degrade over time. Consequently, any results "
+                    u"obtained after this period may not accurately reflect "
+                    u"the sample's true composition, impacting data validity. "
+                    u"Note: This setting does not affect the test's "
+                    u"availability in the 'Manage Analyses' view."
         )
     )
 )
