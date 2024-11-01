@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2624 Added "Maximum holding time" setting to services and analyses
+- #2599 Migrate WorksheetTemplates to Dexterity
 - #2632 Refactor Catalog Indexing
 - #2630 Fix references from sample templates are not kept when partitioning
 - #2634 Pin et-xmlfile to a Python 2 compatible version

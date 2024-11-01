@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate WorksheetTemplates to DX"
+      description="Migrate WorksheetTemplates to Dexterity"
+      source="2652"
+      destination="2653"
+      handler=".v02_06_000.migrate_worksheettemplates_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Remove deactivated services from profiles"
       description="Removes deactivated analysis services from Profiles"
       source="2651"

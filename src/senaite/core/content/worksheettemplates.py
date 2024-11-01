@@ -18,25 +18,21 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IWorksheetTemplates
-from plone.app.folder.folder import ATFolder
-from plone.app.folder.folder import ATFolderSchema
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
+from bika.lims.interfaces import IDoNotSupportSnapshots
+from plone.supermodel import model
+from senaite.core.content.base import Container
 from senaite.core.interfaces import IHideActionsMenu
-from zope.interface.declarations import implements
+from senaite.core.interfaces import IWorksheetTemplates
+from zope.interface import implementer
 
 
-schema = ATFolderSchema.copy()
+class IWorksheetTemplatesSchema(model.Schema):
+    """Schema interface
+    """
 
 
-# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2599
-class WorksheetTemplates(ATFolder):
-    implements(IWorksheetTemplates, IHideActionsMenu)
-    displayContentsTab = False
-    schema = schema
-
-
-schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
-atapi.registerType(WorksheetTemplates, PROJECTNAME)
+@implementer(IWorksheetTemplates, IWorksheetTemplatesSchema,
+             IDoNotSupportSnapshots, IHideActionsMenu)
+class WorksheetTemplates(Container):
+    """A container for worksheet templates type
+    """

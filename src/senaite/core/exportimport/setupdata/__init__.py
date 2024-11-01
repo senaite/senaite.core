@@ -118,7 +118,7 @@ class SetupDataSetList(SDL):
         return SDL.__call__(self, projectname="bika.lims")
 
 
-class WorksheetImporter:
+class WorksheetImporter(object):
 
     """Use this as a base, for normal tabular data sheet imports.
     """
@@ -1965,55 +1965,102 @@ class Reference_Definitions(WorksheetImporter):
 
 class Worksheet_Templates(WorksheetImporter):
 
-    def load_wst_layouts(self):
-        sheetname = 'Worksheet Template Layouts'
-        worksheet = self.workbook[sheetname]
+    def __init__(self, context):
+        super(Worksheet_Templates, self).__init__(context)
         self.wst_layouts = {}
+        self.wst_services = {}
+
+    def load_definitions(self):
+        reference_query = {
+            "portal_type": "ReferenceDefinition",
+            "is_active": True,
+        }
+        definitions = {}
+        brains = api.search(reference_query, SETUP_CATALOG)
+        for brain in brains:
+            definitions[api.get_title(brain)] = api.get_uid(brain)
+        return definitions
+
+    def load_wst_layouts(self):
+        definitions = self.load_definitions()
+        sheetname = "Worksheet Template Layouts"
+        worksheet = self.workbook[sheetname]
         if not worksheet:
             return
         for row in self.get_rows(3, worksheet=worksheet):
-            if row['WorksheetTemplate_title'] \
-               not in self.wst_layouts.keys():
-                self.wst_layouts[
-                    row['WorksheetTemplate_title']] = []
-            self.wst_layouts[
-                row['WorksheetTemplate_title']].append({
-                    'pos': row['pos'],
-                    'type': row['type'],
-                    'blank_ref': row['blank_ref'],
-                    'control_ref': row['control_ref'],
-                    'dup': row['dup']})
+            wst_title = row.get("WorksheetTemplate_title")
+            if wst_title not in self.wst_layouts.keys():
+                self.wst_layouts[wst_title] = []
+
+            ref_proxy = None
+            dup = row.get("dup", None)
+            dup = int(dup) if dup else None
+            analysis_type = row.get("type", "a")
+            blank_uid = None
+            control_uid = None
+
+            # check control/blank fields if it 'Title' or 'UID'
+            if analysis_type in ["b", "Blank"]:
+                blank_ref = row.get("blank_ref", "")
+                if api.is_uid(blank_ref):
+                    blank_uid = blank_ref
+                else:
+                    blank_uid = definitions.get(blank_ref, None)
+                ref_proxy = blank_uid or None
+            elif analysis_type in ["c", "Control"]:
+                control_ref = row.get("control_ref", "")
+                if api.is_uid(control_ref):
+                    control_uid = control_ref
+                else:
+                    control_uid = definitions.get(control_ref, None)
+                ref_proxy = control_uid or None
+                
+            if analysis_type not in ["d", "Duplicate"]:
+                dup = None
+
+            self.wst_layouts[wst_title].append(
+                {
+                    "pos": int(row["pos"]),
+                    "type": analysis_type[0].lower(), # if 'type' is full word
+                    "blank_ref": [blank_uid] if blank_uid else [],
+                    "control_ref": [control_uid] if blank_uid else [],
+                    "reference_proxy": ref_proxy,
+                    "dup": dup,
+                    "dup_proxy": dup,
+                }
+            )
 
     def load_wst_services(self):
-        sheetname = 'Worksheet Template Services'
+        sheetname = "Worksheet Template Services"
         worksheet = self.workbook[sheetname]
-        self.wst_services = {}
         if not worksheet:
             return
         bsc = getToolByName(self.context, SETUP_CATALOG)
         for row in self.get_rows(3, worksheet=worksheet):
-            service = self.get_object(bsc, 'AnalysisService',
-                                      row.get('service'))
-            if row['WorksheetTemplate_title'] not in self.wst_services.keys():
-                self.wst_services[row['WorksheetTemplate_title']] = []
-            self.wst_services[
-                row['WorksheetTemplate_title']].append(service.UID())
+            wst_title = row.get("WorksheetTemplate_title")
+            if wst_title not in self.wst_services.keys():
+                self.wst_services[wst_title] = []
+            service = self.get_object(bsc, "AnalysisService",
+                                      row.get("service"))
+            if service:
+                self.wst_services[wst_title].append(service.UID())
 
     def Import(self):
         self.load_wst_services()
         self.load_wst_layouts()
-        folder = self.context.bika_setup.bika_worksheettemplates
+        folder = self.context.setup.worksheettemplates
         for row in self.get_rows(3):
-            if row['title']:
-                obj = _createObjectByType("WorksheetTemplate", folder, tmpID())
-                obj.edit(
-                    title=row['title'],
-                    description=row.get('description', ''),
-                    Layout=self.wst_layouts[row['title']])
-                obj.setService(self.wst_services[row['title']])
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            title = row.get("title")
+            if not title:
+                continue
+
+            obj = api.create(folder, "WorksheetTemplate",
+                             title=title,
+                             description=row.get("description", ""))
+            if title in self.wst_layouts.keys():
+                obj.setTemplateLayout(self.wst_layouts[title])
+            if title in self.wst_services.keys():
+                obj.setServices(self.wst_services[title])
 
 
 class Setup(WorksheetImporter):
