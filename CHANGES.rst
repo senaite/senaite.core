@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2635 Remove reindexing of Analyses and Analysis Services on Category change
 - #2599 Migrate WorksheetTemplates to Dexterity
 - #2632 Refactor Catalog Indexing
 - #2630 Fix references from sample templates are not kept when partitioning
