@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
+    i18n_domain="senaite.core">
+
+  <!-- Patch `Products.CMFCore.indexing.PortalCatalogProcessor.index` -->
+  <monkey:patch
+      description="Patch `Products.CMFCore.indexing.PortalCatalogProcessor.index`"
+      class="Products.CMFCore.indexing.PortalCatalogProcessor"
+      original="index"
+      replacement=".portal_catalog_processor.index"
+      />
+
+  <!-- Patch `Products.CMFCore.indexing.PortalCatalogProcessor.unindex` -->
+  <monkey:patch
+      description="Patch `Products.CMFCore.indexing.PortalCatalogProcessor.unindex`"
+      class="Products.CMFCore.indexing.PortalCatalogProcessor"
+      original="unindex"
+      replacement=".portal_catalog_processor.unindex"
+      />
+
+  <!-- Patch `Products.CMFCore.indexing.PortalCatalogProcessor.reindex` -->
+  <monkey:patch
+      description="Patch `Products.CMFCore.indexing.PortalCatalogProcessor.reindex`"
+      class="Products.CMFCore.indexing.PortalCatalogProcessor"
+      original="reindex"
+      replacement=".portal_catalog_processor.reindex"
+      />
+
+  <!-- Patch `Products.CMFCore.WorkflowTool.WorkflowTool._reindexWorkflowVariables` -->
+  <monkey:patch
+    description="Patch `Products.CMFCore.WorkflowTool.WorkflowTool._reindexWorkflowVariables`"
+    class="Products.CMFCore.WorkflowTool.WorkflowTool"
+    original="_reindexWorkflowVariables"
+    replacement=".workflowtool._reindexWorkflowVariables"/>
+
+</configure>
