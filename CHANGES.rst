@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2624 Added "Maximum holding time" setting to services and analyses
+- #2569 Fix samples are indicated as late when Turnaround Time is zero
 - #2636 Fix JS Error in WS Template edit form
 - #2635 Remove reindexing of Analyses and Analysis Services on Category change
 - #2599 Migrate WorksheetTemplates to Dexterity
