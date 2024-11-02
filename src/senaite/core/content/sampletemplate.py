@@ -453,7 +453,7 @@ class SampleTemplate(Container, ClientAwareMixin):
         return accessor(self) or []
 
     @security.protected(permissions.View)
-    def getServices(self):
+    def getServices(self, active_only=True):
         """Returns a list of service objects
 
         >>> self.getServices()
@@ -461,9 +461,12 @@ class SampleTemplate(Container, ClientAwareMixin):
 
         :returns: List of analysis service objects
         """
-        records = self.getRawServices()
-        service_uids = map(lambda r: r.get("uid"), records)
-        return list(map(api.get_object, service_uids))
+        services = []
+        for uid in self.getServiceUIDs():
+            obj = api.get_object(uid)
+            if not active_only or api.is_active(obj):
+                services.append(obj)
+        return services
 
     @security.protected(permissions.ModifyPortalContent)
     def setServices(self, value):
@@ -508,11 +511,28 @@ class SampleTemplate(Container, ClientAwareMixin):
                 "part_id": part_id,
             })
 
+        # always keep inactive services so they come up again when reactivated
+        uids = [record.get("uid") for record in records]
+        for record in self.getRawServices():
+            uid = record.get("uid")
+            if uid in uids:
+                continue
+            obj = api.get_object_by_uid(uid)
+            if not api.is_active(obj):
+                records.append(record)
+
         mutator = self.mutator("services")
         mutator(self, records)
 
     # BBB: AT schema field property
     Services = property(getServices, setServices)
+
+    @security.protected(permissions.View)
+    def getServiceUIDs(self):
+        """Returns a list of the selected service UIDs
+        """
+        services = self.getRawServices()
+        return list(map(lambda record: record.get("uid"), services))
 
     @deprecate("deprecated since SENAITE 2.6: Use getRawServices() instead")
     @security.protected(permissions.View)
