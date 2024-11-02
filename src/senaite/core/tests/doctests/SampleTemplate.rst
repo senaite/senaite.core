@@ -328,6 +328,9 @@ Unassign a service from the template:
 
 Unassignment happens automatically if an Analysis Service was deactivated:
 
+    >>> Fe in template1.getServices()
+    True
+
     >>> api.get_uid(Fe) in template1.getAnalysisServiceUIDs()
     True
 
@@ -335,9 +338,13 @@ Unassignment happens automatically if an Analysis Service was deactivated:
     'active'
 
     >>> success = do_action_for(Fe, "deactivate")
-
     >>> api.get_workflow_status_of(Fe)
     'inactive'
 
-    >>> api.get_uid(Fe) in template1.getAnalysisServiceUIDs()
+    >>> Fe in template1.getServices()
     False
+
+But are kept as raw data, just in case we re-activate the service later:
+
+    >>> api.get_uid(Fe) in template1.getAnalysisServiceUIDs()
+    True
