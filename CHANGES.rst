@@ -4,6 +4,8 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2601 Fix samples are indicated as late when Turnaround Time is zero
+- #2601 Remove getDueDate index and metadata
 - #2636 Fix JS Error in WS Template edit form
 - #2635 Remove reindexing of Analyses and Analysis Services on Category change
 - #2599 Migrate WorksheetTemplates to Dexterity
