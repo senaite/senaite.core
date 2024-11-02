@@ -140,3 +140,36 @@ But if we activate `Ca` again:
     >>> performed = doActionFor(hardness, 'activate')
     >>> api.is_active(hardness)
     True
+
+
+Deactivated service is removed automatically from profiles
+..........................................................
+
+Create a profile:
+
+    >>> profile = api.create(setup.analysisprofiles, "AnalysisProfile")
+    >>> profile.setServices([Ca, Mg, Au])
+    >>> [service.getKeyword() for service in profile.getServices()]
+    ['Ca', 'Mg', 'Au']
+    >>> len(profile.getRawServices())
+    3
+
+If we deactivate `Au`:
+
+    >>> performed = doActionFor(Au, 'deactivate')
+    >>> api.is_active(Au)
+    False
+
+Profile does no longer contain this service:
+
+    >>> [service.getKeyword() for service in profile.getServices()]
+    ['Ca', 'Mg']
+
+    >>> len(profile.getRawServices())
+    2
+
+Re-activate `Au`:
+
+    >>> performed = doActionFor(Au, 'activate')
+    >>> api.is_active(Au)
+    True

@@ -29,7 +29,6 @@ from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IGetStickerTemplates
-from bika.lims.interfaces import ISampleType
 from bika.lims.utils import createPdf
 from bika.lims.utils import to_int
 from bika.lims.vocabularies import getStickerTemplates
@@ -38,6 +37,7 @@ from plone.resource.utils import queryResourceDirectory
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.app.supermodel import SuperModel
+from senaite.core.interfaces import ISampleType
 from zope.component import getAdapters
 from zope.component.interfaces import ComponentLookupError
 

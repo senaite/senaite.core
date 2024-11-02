@@ -371,7 +371,25 @@ class SampleTemplate(Container, ClientAwareMixin):
     @security.protected(permissions.View)
     def getPartitions(self):
         accessor = self.accessor("partitions")
-        return accessor(self) or []
+        records = accessor(self) or []
+
+        # UIDReference sub-fields are stored as a list!
+        # See https://github.com/senaite/senaite.core/pull/2630
+        def first(record, subfield):
+            items = record.get(subfield)
+            return items[0] if items else ""
+
+        partitions = []
+        for record in records:
+            partition = record.copy()
+            partition.update({
+                "sampletype": first(record, "sampletype"),
+                "container": first(record, "container"),
+                "preservation": first(record, "preservation"),
+            })
+            partitions.append(partition)
+
+        return partitions
 
     @security.protected(permissions.ModifyPortalContent)
     def setPartitions(self, value):

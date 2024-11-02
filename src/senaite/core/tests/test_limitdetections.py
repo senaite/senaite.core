@@ -332,10 +332,10 @@ class TestLimitDetections(DataTestCase):
             # Contact:      Rita Mohale
             # Analyses:     [Calcium, Copper]
             client = self.portal.clients['client-1']
-            sampletype = self.portal.bika_setup.bika_sampletypes['sampletype-1']
+            sampletype = self.portal.setup.sampletypes['sampletype-1']
             values = {'Client': client.UID(),
                       'Contact': client.getContacts()[0].UID(),
-                      'SamplingDate': '2015-01-01',
+                      'DateSampled': '2015-01-01',
                       'SampleType': sampletype.UID()}
             request = {}
             ar = create_analysisrequest(client, request, values, [s.UID()])
@@ -363,10 +363,10 @@ class TestLimitDetections(DataTestCase):
         # Contact:      Rita Mohale
         # Analyses:     [Calcium, Copper]
         client = self.portal.clients['client-1']
-        sampletype = self.portal.bika_setup.bika_sampletypes['sampletype-1']
+        sampletype = self.portal.setup.sampletypes['sampletype-1']
         values = {'Client': client.UID(),
                   'Contact': client.getContacts()[0].UID(),
-                  'SamplingDate': '2015-01-01',
+                  'DateSampled': '2015-01-01',
                   'SampleType': sampletype.UID()}
         request = {}
         services = [s.UID() for s in self.services]

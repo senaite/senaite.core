@@ -64,8 +64,8 @@
                     <div class="other-text">
                         <input type="text"
                             tal:attributes="
-                                name string:${fieldName}.textfield.other:records;
-                                id string:${fieldName}.textfield.other;"
+                              name string:${fieldName}.other:records;
+                              id string:${fieldName}.other;"
                             size="20"
                             tabindex="#"
                             class="rejectionwidget-input-other rejectionwidget-field"/>

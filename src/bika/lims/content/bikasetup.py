@@ -575,6 +575,24 @@ schema = BikaFolderSchema.copy() + Schema((
                 " when 'Sampling workflow' is active")
         ),
     ),
+    # NOTE: This is a Proxy Field which delegates to the SENAITE Registry!
+    BooleanField(
+        "DateSampledRequired",
+        schemata="Sampling",
+        default=True,
+        widget=BooleanWidget(
+            label=_(
+                "label_bikasetup_date_sampled_required",
+                default="Date sampled required"
+            ),
+            description=_(
+                "description_bikasetup_date_sampled_required",
+                default="Select this to make DateSampled field required on "
+                        "sample creation. This functionality only takes "
+                        "effect when 'Sampling workflow' is not active"
+            ),
+        ),
+    ),
     BooleanField(
         "AutoreceiveSamples",
         schemata="Sampling",
@@ -1305,6 +1323,23 @@ class BikaSetup(folder.ATFolder):
         # setup is `None` during initial site content structure installation
         if setup:
             setup.setShowLabNameInLogin(value)
+
+    def getDateSampledRequired(self):
+        """Get the value form the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getDateSampledRequired()
+        return self.getField("DateSampledRequired").default
+
+    def setDateSampledRequired(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setDateSampledRequired(value)
 
 
 registerType(BikaSetup, PROJECTNAME)

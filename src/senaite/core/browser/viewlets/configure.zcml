@@ -2,6 +2,9 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="senaite.core">
 
+  <!-- package includes -->
+  <include package=".sample" />
+
   <!-- Favicon Viewlet -->
   <browser:viewlet
       name="plone.links.favicon"

@@ -15,4 +15,12 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <browser:page
+      name="update_num_positions"
+      for="*"
+      class=".wstemplate.UpdateNumPositions"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
 </configure>

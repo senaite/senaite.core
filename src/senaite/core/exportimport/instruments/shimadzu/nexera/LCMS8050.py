@@ -18,14 +18,15 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-""" Shimadzu LC MS/MS Nexera X2 LCMS-8050
-"""
-from bika.lims import bikaMessageFactory as _
-from senaite.core.exportimport.instruments.resultsimport import \
-        InstrumentCSVResultsFileParser, AnalysisResultsImporter
-from datetime import datetime
 import json
 import traceback
+from datetime import datetime
+
+from bika.lims import bikaMessageFactory as _
+from senaite.core.exportimport.instruments.importer import \
+    AnalysisResultsImporter
+from senaite.core.exportimport.instruments.parser import \
+    InstrumentCSVResultsFileParser
 
 title = "Shimadzu LC MS/MS Nexera X2 LCMS-8050"
 

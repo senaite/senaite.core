@@ -55,8 +55,10 @@ class EmailController
     $("body").on "click", "#add-attachments", @on_add_attachments_click
 
     # Select/deselect additional attachments
-    $("body").on "change", ".attachments input[type='checkbox']", @on_attachments_select
+    $("body").on "change", ".attachment input[type='checkbox']", @on_attachments_select
 
+    # Select/deselect all additional attachments
+    $("body").on "change", "#select-all-attachments", @on_change_select_all_attachments
 
   get_base_url: ->
     ###
@@ -162,8 +164,22 @@ class EmailController
     # form_data = form.serialize()
     form_data = new FormData(form[0])
 
+    count_attachments = $("input[name='attachment_uids:list']").length
+    select_attachments = form_data.getAll("attachment_uids:list").length
+    select_all_checked = count_attachments == select_attachments;
+    $("#select-all-attachments").prop "checked", select_all_checked
+
     init =
       body: form_data
     @ajax_fetch "recalculate_size", init
     .then (data) =>
       @update_size_info data
+
+
+  on_change_select_all_attachments: (event) =>
+    console.debug "°°° Email::on_change_select_all_attachments"
+
+    checked = event.target.checked
+    $("input[name='attachment_uids:list']").each (index, element) ->
+      $(element).prop "checked", checked
+    @on_attachments_select()

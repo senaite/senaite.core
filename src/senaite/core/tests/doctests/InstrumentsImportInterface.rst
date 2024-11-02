@@ -63,7 +63,7 @@ Variables::
     >>> request = self.request
     >>> bika_setup = portal.bika_setup
     >>> bika_instruments = bika_setup.bika_instruments
-    >>> bika_sampletypes = bika_setup.bika_sampletypes
+    >>> sampletypes = portal.setup.sampletypes
     >>> analysiscategories = portal.setup.analysiscategories
     >>> bika_analysisservices = bika_setup.bika_analysisservices
     >>> bika_calculations = bika_setup.bika_calculations
@@ -92,9 +92,9 @@ a `SampleType`::
     >>> contact = api.create(client, "Contact", Firstname="Juan", Surname="Gallostra")
     >>> contact
     <Contact at /plone/clients/client-1/contact-1>
-    >>> sampletype = api.create(bika_sampletypes, "SampleType", Prefix="H2O", MinimumVolume="100 ml")
+    >>> sampletype = api.create(sampletypes, "SampleType", Prefix="H2O", MinimumVolume="100 ml")
     >>> sampletype
-    <SampleType at /plone/bika_setup/bika_sampletypes/sampletype-1>
+    <SampleType at /plone/setup/sampletypes/sampletype-1>
 
 Create an `AnalysisCategory` (which categorizes different `AnalysisServices`), and add to it an `AnalysisService`.
 This service matches the service specified in the file from which the import will be performed::

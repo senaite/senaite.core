@@ -98,7 +98,7 @@ Variables:
     >>> departments = setup.departments
     >>> instruments = bikasetup.bika_instruments
     >>> labcontacts = bikasetup.bika_labcontacts
-    >>> sampletypes = bikasetup.bika_sampletypes
+    >>> sampletypes = setup.sampletypes
     >>> referencedefinitions = bikasetup.bika_referencedefinitions
     >>> suppliers = setup.suppliers
 

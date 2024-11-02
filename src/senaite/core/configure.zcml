@@ -19,6 +19,7 @@
   <include package=".behaviors" />
   <include package=".browser" />
   <include package=".catalog" />
+  <include package=".content" />
   <include package=".datamanagers" />
   <include package=".exportimport" />
   <include package=".extender" />

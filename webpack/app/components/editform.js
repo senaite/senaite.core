@@ -195,6 +195,10 @@ class EditForm {
    */
   set_field_readonly(field, message=null) {
     field.setAttribute("readonly", "");
+    // Only text controls can be made read-only, since for other controls (such
+    // as checkboxes and buttons) there is no useful distinction between being
+    // read-only and being disabled. We cover other controls like select here.
+    field.setAttribute("disabled", "");
     let existing_message = field.parentElement.querySelector("div.message");
     if (existing_message) {
       existing_message.innerHTML = _t(message)
@@ -211,6 +215,10 @@ class EditForm {
    */
   set_field_editable(field, message=null) {
     field.removeAttribute("readonly");
+    // Only text controls can be made read-only, since for other controls (such
+    // as checkboxes and buttons) there is no useful distinction between being
+    // read-only and being disabled. We cover other controls like select here.
+    field.removeAttribute("disabled");
     let existing_message = field.parentElement.querySelector("div.message");
     if (existing_message) {
       existing_message.innerHTML = _t(message)
@@ -651,12 +659,16 @@ class EditForm {
     }
     added.forEach((el) => {
       let record = {};
-      for (let attribute of el.attributes) {
-        let name = attribute.name;
-        let value = attribute.value;
-        record[name] = value;
+      if (el.attributes && el.attributes.length > 0) {
+        for (let attribute of el.attributes) {
+          let name = attribute.name;
+          let value = attribute.value;
+          record[name] = value;
+        }
       }
-      data.added = data.added.concat(record);
+      if (Object.keys(record).length > 0) {
+        data.added.push(record);
+      }
     });
     this.ajax_send(form, data, endpoint);
   }

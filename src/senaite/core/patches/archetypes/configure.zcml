@@ -1,0 +1,70 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
+    i18n_domain="senaite.core">
+
+  <!-- SENAITE Labels for AT Contents -->
+  <monkey:patch
+      description="Patch `BaseObject.getLabels` for catalog metadata"
+      class="Products.Archetypes.BaseObject.BaseObject"
+      original="getLabels"
+      ignoreOriginal="True"
+      replacement=".base_object.getLabels"
+      />
+
+  <!-- https://github.com/senaite/senaite.core/pull/1865
+       Please also note the patch of `isFactoryContained` in ´__init__´
+  -->
+  <monkey:patch
+      description="Patch `BaseObject.isTemporary` to avoid duplicate indexing in *portal catalog* during object creation"
+      class="Products.Archetypes.BaseObject.BaseObject"
+      original="isTemporary"
+      replacement=".base_object.isTemporary"
+      />
+
+  <!-- Patch AT CatalogMultiplex.indexObject -->
+  <monkey:patch
+      description="Patch `Products.Archetypes.CatalogMultiplex.indexObject`"
+      class="Products.Archetypes.CatalogMultiplex.CatalogMultiplex"
+      original="indexObject"
+      ignoreOriginal="True"
+      replacement=".catalog_multiplex.indexObject"
+      />
+
+  <!-- Patch AT CatalogMultiplex.unindexObject -->
+  <monkey:patch
+      description="Patch `Products.Archetypes.CatalogMultiplex.unindexObject`"
+      class="Products.Archetypes.CatalogMultiplex.CatalogMultiplex"
+      original="unindexObject"
+      ignoreOriginal="True"
+      replacement=".catalog_multiplex.unindexObject"
+      />
+
+  <!-- Patch AT CatalogMultiplex.reindexObject -->
+  <monkey:patch
+      description="Patch `Products.Archetypes.CatalogMultiplex.reindexObject`"
+      class="Products.Archetypes.CatalogMultiplex.CatalogMultiplex"
+      original="reindexObject"
+      ignoreOriginal="True"
+      replacement=".catalog_multiplex.reindexObject"
+      />
+
+  <!-- Patch AT Referenceable._catalogUID -->
+  <monkey:patch
+      description="Patch `Products.Archetypes.Referencable._catalogUID`"
+      class="Products.Archetypes.Referenceable.Referenceable"
+      original="_catalogUID"
+      ignoreOriginal="True"
+      replacement=".referenceable._catalogUID"
+      />
+
+  <!-- Patch AT Referenceable._uncatalogUID -->
+  <monkey:patch
+      description="Patch `Products.Archetypes.Referencable._uncatalogUID`"
+      class="Products.Archetypes.Referenceable.Referenceable"
+      original="_uncatalogUID"
+      ignoreOriginal="True"
+      replacement=".referenceable._uncatalogUID"
+      />
+
+</configure>

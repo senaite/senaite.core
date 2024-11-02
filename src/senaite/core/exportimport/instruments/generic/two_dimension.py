@@ -25,9 +25,9 @@ import traceback
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from senaite.core.catalog import SAMPLE_CATALOG
-from senaite.core.exportimport.instruments.resultsimport import \
+from senaite.core.exportimport.instruments.importer import \
     AnalysisResultsImporter
-from senaite.core.exportimport.instruments.resultsimport import \
+from senaite.core.exportimport.instruments.parser import \
     InstrumentCSVResultsFileParser
 from senaite.core.exportimport.instruments.utils import \
     get_instrument_import_ar_allowed_states

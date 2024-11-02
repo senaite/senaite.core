@@ -55,7 +55,7 @@ Variables::
     >>> request = self.request
     >>> setup = portal.bika_setup
     >>> calculations = setup.bika_calculations
-    >>> sampletypes = setup.bika_sampletypes
+    >>> sampletypes = portal.setup.sampletypes
     >>> samplepoints = portal.setup.samplepoints
     >>> analysiscategories = portal.setup.analysiscategories
     >>> analysisspecs = setup.bika_analysisspecs
@@ -98,7 +98,7 @@ Create a Sample Type:
 
     >>> sampletype = api.create(sampletypes, "SampleType", Prefix="water", MinimumVolume="100 ml")
     >>> sampletype
-    <SampleType at /plone/bika_setup/bika_sampletypes/sampletype-1>
+    <SampleType at /plone/setup/sampletypes/sampletype-1>
 
 Create a Sample Point:
 
@@ -209,7 +209,7 @@ This field maintains `Analyses` within `AnalysesRequests`:
 Getting Analyses
 ~~~~~~~~~~~~~~~~
 
-The `get` method returns a list of assined analyses brains:
+The `get` method returns a list of assigned analyses brains:
 
     >>> field.get(ar)
     [<Products.ZCatalog.Catalog.mybrains object at ...>]
@@ -223,6 +223,11 @@ The analysis `PH` is now contained in the AR:
 
     >>> ar.objectValues("Analysis")
     [<Analysis at /plone/clients/client-1/water-0001/PH>]
+
+The `get` method does not return a `ZTUtils.Lazy.LazyMap`, but a list:
+
+    >>> type(field.get(ar))
+    <type 'list'>
 
 
 Setting Analyses

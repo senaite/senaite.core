@@ -46,7 +46,11 @@ class CatalogMultiplexProcessor(object):
         return setup.getEnableGlobalAuditlog()
 
     def get_catalogs_for(self, obj):
-        catalogs = getattr(obj, "_catalogs", [])
+        """Get a list of catalog IDs for the given object
+        """
+        # get a list of catalog IDs that are mapped to the object
+        catalogs = list(map(lambda x: x.id, api.get_catalogs_for(obj)))
+
         for rc in REQUIRED_CATALOGS:
             if rc in catalogs:
                 continue
@@ -61,9 +65,10 @@ class CatalogMultiplexProcessor(object):
     def supports_multi_catalogs(self, obj):
         """Check if the Multi Catalog Behavior is enabled
         """
-        if IMultiCatalogBehavior(obj, None) is None:
-            return False
         if api.is_temporary(obj):
+            return False
+        if api.is_dexterity_content(obj) and \
+           IMultiCatalogBehavior(obj, None) is None:
             return False
         return True
 

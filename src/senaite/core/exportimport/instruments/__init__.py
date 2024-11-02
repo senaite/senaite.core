@@ -47,7 +47,7 @@ from rochecobas.taqman import model48  # noqa: F401
 from rochecobas.taqman import model96  # noqa: F401
 from scilvet.abc import plus  # noqa: F401
 from sealanalytical.aq2 import aq2  # noqa: F401
-from senaite.core.exportimport.instruments.resultsimport import \
+from senaite.core.exportimport.instruments.importer import \
     AnalysisResultsImporter
 from shimadzu.gcms import qp2010se  # noqa: F401
 from shimadzu.gcms import tq8030  # noqa: F401

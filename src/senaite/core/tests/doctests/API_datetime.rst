@@ -208,6 +208,26 @@ Old dates with obsolete timezones (e.g. LMT) are converted as well
     >>> old_DT.tzoffset()
     35340
 
+The function returns `None` when the conversion cannot be done:
+
+    >>> dtime.to_DT(None) is None
+    True
+
+    >>> dtime.to_DT(object) is None
+    True
+
+    >>> dtime.to_DT("Not a date") is None
+    True
+
+    >>> dtime.to_DT("2025-13-01") is None
+    True
+
+    >>> dtime.to_DT("2024-02-25 12:00 POP+2") is None
+    True
+
+    >>> dtime.to_DT("0007-02-27T00:00:00-04:24") is None
+    True
+
 Convert to datetime
 ...................
 
@@ -239,6 +259,25 @@ Timezone aware `DateTime` is converted with timezone.
     >>> dtime.to_dt(dt)
     datetime.datetime(2021, 8, 1, 13, 0, tzinfo=<StaticTzInfo 'Etc/GMT-1'>)
 
+The function returns `None` when the conversion cannot be done:
+
+    >>> dtime.to_dt(None) is None
+    True
+
+    >>> dtime.to_dt(object) is None
+    True
+
+    >>> dtime.to_dt("Not a date") is None
+    True
+
+    >>> dtime.to_dt("2025-13-01") is None
+    True
+
+    >>> dtime.to_dt("2024-02-25 12:00 POP+2") is None
+    True
+
+    >>> dtime.to_dt("0007-02-27T00:00:00-04:24") is None
+    True
 
 Get the timezone
 ................
@@ -809,3 +848,67 @@ We can compare dates without time as well:
     >>> to_date = dtime.date(2023, 5, 7)
     >>> dtime.get_relative_delta(from_date, to_date)
     relativedelta(days=+1)
+
+
+Convert timedelta to Dict Object and Back
+................................
+
+Let's try to initialize a timedelta object and convert it first:
+
+    >>> from datetime import timedelta
+    >>> td = timedelta(days=1, hours=1, minutes=1, seconds=1)
+    >>> dict_td = dtime.timedelta_to_dict(td)
+    >>> isinstance(dict_td, dict)
+    True
+    >>> dict_td.get('days')
+    1
+    >>> dict_td.get('hours')
+    1
+    >>> dict_td.get('minutes')
+    1
+    >>> dict_td.get('seconds')
+    1
+
+If the wrong type is passed, a TypeError exception will be raised:
+
+    >>> dtime.timedelta_to_dict(str("wrong parameter type"))
+    Traceback (most recent call last):
+    ...
+    TypeError: <type 'str'> is not supported
+
+A default value can be set to be returned in case the passed value has the wrong type:
+
+    >>> dtime.timedelta_to_dict(str("wrong parameter type"), default="DEFAULT IS RETURNED")
+    'DEFAULT IS RETURNED'
+
+Convert the object back to timedelta:
+
+    >>> td_dict_td = dtime.to_timedelta(dict_td)
+    >>> td_dict_td
+    datetime.timedelta(1, 3661)
+    >>> isinstance(td_dict_td, timedelta)
+    True
+    >>> td_dict_td == td
+    True
+
+Passing the wrong type raises a TypeError exception:
+
+    >>> dtime.to_timedelta(str("wrong parameter type"))
+    Traceback (most recent call last):
+    ...
+    TypeError: <type 'str'> is not supported
+
+A default value can be set to be returned in case the passed value has the wrong type:
+
+    >>> dtime.to_timedelta(str("wrong parameter type"), default="DEFAULT IS RETURNED")
+    'DEFAULT IS RETURNED'
+
+Dict keys except: ['days', 'hours', 'minutes', 'seconds'] are just ignored:
+
+    >>> dtime.to_timedelta({'love': True, 'days': 1})
+    datetime.timedelta(1)
+
+Wrong values are ignored and replaced with 0:
+
+    >>> dtime.to_timedelta({'days': 'wrong value'})
+    datetime.timedelta(0)

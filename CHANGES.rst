@@ -5,6 +5,37 @@ Changelog
 ------------------
 
 - #2598 Fix analyses from partitions are considered in manage analyses view
+- #2569 Fix samples are indicated as late when Turnaround Time is zero
+- #2636 Fix JS Error in WS Template edit form
+- #2635 Remove reindexing of Analyses and Analysis Services on Category change
+- #2599 Migrate WorksheetTemplates to Dexterity
+- #2632 Refactor Catalog Indexing
+- #2630 Fix references from sample templates are not kept when partitioning
+- #2634 Pin et-xmlfile to a Python 2 compatible version
+- #2631 Fix for sending email attachment if filename contain spaces
+- #2633 Fix DateTimeError when using API's to_DT and to_dt functions
+- #2629 Fix default sticker template based on sample type is not rendered
+- #2627 Skip workflow transition for temporary analyses
+- #2626 Change to new instrument imports that were introduced with #2555
+- #2625 Fix sizing of listing widgets
+- #2621 Fix UnicodeDecodeError when render non-latin email template
+- #2623 Fix inactive services are added via profile on sample creation/edition
+- #2620 Support IAddSampleObjectInfo adapter for sample's Template field
+- #2619 Fix analysis categories are not sorted by sort key
+- #2618 Fix UnicodeDecodeError when user linked to a contact with special chars
+- #2615 Add control for select/deselect all attachments when send report
+- #2614 Fix autofill for simple fields when create Sample in the add form
+- #2617 Fix cannot set/edit the name/title of InterpretationTemplate objects
+- #2616 Fix reference field flush in add sample form when sort_limit is used
+- #2613 Fix AttributeError for transitions created with core's workflow api
+- #2612 Remove isSampleReceived index from analysis catalog
+- #2611 Add readonly support for non-mutable html elements via AjaxEditForm
+- #2609 Added Date Sample required (Y/N) setting in Setup
+- #2610 Fix "Other reasons" for rejection are not saved on sample registration
+- #2608 Fix type error for admitted sticker templates widget
+- #2604 Fix allowable and default output type for Html field in the ARReport
+- #2584 Migrate SampleTypes to Dexterity
+- #2602 Fix getAnalyses returns a LazyMap instead of a list
 - #2593 Always do a full reindex of the object after transition
 - #2593 Store Analyses UIDs as raw data in a Sample's attr (Analyses)
 - #2593 Skip permissions update after transition when InternalUse is unchanged

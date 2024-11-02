@@ -29,6 +29,7 @@ from senaite.core.content.base import Container
 from senaite.core.interfaces import IInterpretationTemplate
 from senaite.core.schema import UIDReferenceField
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
+from zope import schema
 from zope.interface import implementer
 
 
@@ -37,6 +38,22 @@ class IInterpretationTemplateSchema(model.Schema):
     """
     # The behavior IRichTextBehavior applies to this content type, so it
     # already provides the "text" field that renders the TinyMCE's Wsiwyg
+
+    title = schema.TextLine(
+        title=_(
+            u"title_interpretationtemplate_title",
+            default=u"Name"
+        ),
+        required=True,
+    )
+
+    description = schema.Text(
+        title=_(
+            u"title_interpretationtemplate_description",
+            default=u"Description"
+        ),
+        required=False,
+    )
 
     analysis_templates = UIDReferenceField(
         title=_(u"Analysis templates"),

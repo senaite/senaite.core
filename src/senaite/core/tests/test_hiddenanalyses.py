@@ -294,7 +294,7 @@ class TestHiddenAnalyses(DataTestCase):
         # Contact:      Rita Mohale
         # Analyses:     [Calcium, Copper, Iron]
         client = self.portal.clients["client-1"]
-        sampletype = self.portal.bika_setup.bika_sampletypes["sampletype-1"]
+        sampletype = self.portal.setup.sampletypes["sampletype-1"]
         request = {}
         services = [s.UID() for s in self.services]
         values = {

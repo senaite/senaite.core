@@ -1127,6 +1127,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         label = payload.get("label", "")
         field = label or name
 
+        # Remove sort_limit to prevent false negatives
+        query.pop("sort_limit", None)
+
         # Skip the catalog search if we can assume to be allowed
         white_keys = ["portal_type", "sort_on", "sort_order", "is_active"]
         if set(query.keys()).issubset(white_keys):

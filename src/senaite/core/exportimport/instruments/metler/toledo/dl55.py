@@ -18,21 +18,22 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-""" Metler Toledo DL55
-"""
 import json
 import re
-import six
 import traceback
 
+import six
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from senaite.core.exportimport.instruments.utils import \
-    (get_instrument_import_override,
-     get_instrument_import_ar_allowed_states)
-from senaite.core.exportimport.instruments.resultsimport import \
-    AnalysisResultsImporter, InstrumentResultsFileParser
 from openpyxl import load_workbook
+from senaite.core.exportimport.instruments.importer import \
+    AnalysisResultsImporter
+from senaite.core.exportimport.instruments.parser import \
+    InstrumentResultsFileParser
+from senaite.core.exportimport.instruments.utils import \
+    get_instrument_import_ar_allowed_states
+from senaite.core.exportimport.instruments.utils import \
+    get_instrument_import_override
 
 title = "Metler Toledo DL55"
 

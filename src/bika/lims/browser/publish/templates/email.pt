@@ -164,6 +164,10 @@
             <div id="additional-attachments-container"
                  class="attachments row"
                  tal:condition="python:any(attachments)">
+              <div>
+                <label i18n:translate="" for="select_all_attachments">Select all:</label>
+                <input type="checkbox" name="select_all_attachments" id="select-all-attachments" />
+              </div>
               <!-- Additional Attachments -->
               <tal:reports repeat="report view/reports_data">
                 <tal:attachments repeat="attachment report/attachments">
