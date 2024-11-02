@@ -207,15 +207,18 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         started. If no turnaround time is set or if the analysis is not yet
         ready for processing, the function returns None.
         """
-        tat = self.getMaxTimeAllowed()
-        if not tat:
+        max_tat = self.getMaxTimeAllowed() or {}
+        max_tat = api.to_minutes(**max_tat)
+        if max_tat <= 0:
+            # No maximum turnaround time set
             return None
+
         start = self.getStartProcessDate()
         if not start:
             return None
 
         # delta time when the first analysis is considered as late
-        delta = timedelta(minutes=api.to_minutes(**tat))
+        delta = timedelta(minutes=max_tat)
 
         # calculated due date
         end = dt2DT(DT2dt(start) + delta)

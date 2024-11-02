@@ -655,12 +655,17 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getDuration(self):
-        """Returns the time in minutes taken for this analysis.
-        If the analysis is not yet 'ready to process', returns 0
-        If the analysis is still in progress (not yet verified),
-            duration = date_verified - date_start_process
-        Otherwise:
+        """Returns the time, in minutes, taken for this analysis. If the
+        analysis is not 'ready to process', the function returns 0. If the
+        analysis is still in progress (not yet verified), the duration is
+        calculated as:
+
             duration = current_datetime - date_start_process
+
+        Once the analysis is verified, the duration is computed as
+
+            duration = date_verified - date_start_process.
+
         :return: time in minutes taken for this analysis
         :rtype: int
         """
@@ -676,19 +681,26 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getEarliness(self):
-        """The remaining time in minutes for this analysis to be completed.
-        Returns zero if the analysis is neither 'ready to process' nor a
-        turnaround time is set.
-            earliness = duration - max_turnaround_time
-        The analysis is late if the earliness is negative
+        """Returns the remaining time, in minutes, for this analysis to be
+        completed before the maximum turnaround time is reached. If the
+        analysis is not yet 'ready to process', the function returns the
+        maximum turnaround time in minutes. If no turnaround time is set, the
+        function returns zero.
+
+        The earliness is calculated as:
+
+          earliness = max_turnaround_time - duration
+
+        A negative earliness value indicates that the analysis is overdue.
         :return: the remaining time in minutes before the analysis reaches TAT
         :rtype: int
         """
-        maxtime = self.getMaxTimeAllowed()
-        if not maxtime:
-            # No Turnaround time is set for this analysis
+        max_tat = self.getMaxTimeAllowed() or {}
+        max_tat = api.to_minutes(**max_tat)
+        if max_tat <= 0:
+            # No maximum turnaround time set
             return 0
-        return api.to_minutes(**maxtime) - self.getDuration()
+        return max_tat - self.getDuration()
 
     @security.public
     def isLateAnalysis(self):

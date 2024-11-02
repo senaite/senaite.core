@@ -43,9 +43,10 @@ def sortable_due_date(instance):
     workdays. This provides a simplified value intended for sorting purposes,
     though it may not accurately reflect the actual due date.
     """
-    tat = instance.getMaxTimeAllowed()
-    if not tat:
-        # no TAT set, assume max date
+    max_tat = instance.getMaxTimeAllowed() or {}
+    max_tat = api.to_minutes(**max_tat)
+    if max_tat <= 0:
+        # No maximum turnaround time set, assume max date
         return dtime.to_ansi(datetime.max)
 
     start = instance.getStartProcessDate()
@@ -54,6 +55,6 @@ def sortable_due_date(instance):
         return dtime.to_ansi(datetime.max)
 
     start = dtime.to_dt(start)
-    tat = api.to_minutes(**tat)
-    due_date = start + timedelta(minutes=tat)
+    max_tat = api.to_minutes(**max_tat)
+    due_date = start + timedelta(minutes=max_tat)
     return dtime.to_ansi(due_date)
