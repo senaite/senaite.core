@@ -565,12 +565,6 @@ class AnalysisService(AbstractBaseAnalysis):
         """
         catalog = api.get_tool(SETUP_CATALOG)
 
-        # Remove the service from profiles to which is assigned
-        profiles = catalog(portal_type="AnalysisProfile")
-        for profile in profiles:
-            profile = api.get_object(profile)
-            profile.remove_service(self)
-
         # Remove the service from templates to which is assigned
         templates = catalog(portal_type="SampleTemplate")
         for template in templates:
