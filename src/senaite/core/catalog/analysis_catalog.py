@@ -47,7 +47,7 @@ INDEXES = BASE_INDEXES + [
     ("getServiceUID", "", "FieldIndex"),
     ("getWorksheetUID", "", "FieldIndex"),
     ("sortable_title", "", "FieldIndex"),
-    ("sortable_due_date", "", "DateIndex"),
+    ("sortable_due_date", "", "FieldIndex"),
 ]
 
 COLUMNS = BASE_COLUMNS + [

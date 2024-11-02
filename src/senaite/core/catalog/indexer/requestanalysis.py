@@ -39,19 +39,21 @@ def getAncestorsUIDs(instance):
 
 @indexer(IRequestAnalysis)
 def sortable_due_date(instance):
-    """Returns the due date of the analysis, but without taking workdays into
-    account. This is a hint for sorting by due date, but it's value might not
-    match with the real due date.
+    """Returns the due date of the analysis in ANSI format without considering
+    workdays. This provides a simplified value intended for sorting purposes,
+    though it may not accurately reflect the actual due date.
     """
     tat = instance.getMaxTimeAllowed()
     if not tat:
-        return dtime.to_DT(datetime.max)
+        # no TAT set, assume max date
+        return dtime.to_ansi(datetime.max)
 
     start = instance.getStartProcessDate()
     if not start:
-        return dtime.to_DT(datetime.max)
+        # sample processing not yet starting, assume max date
+        return dtime.to_ansi(datetime.max)
 
     start = dtime.to_dt(start)
     tat = api.to_minutes(**tat)
     due_date = start + timedelta(minutes=tat)
-    return dtime.to_DT(due_date)
+    return dtime.to_ansi(due_date)

@@ -53,7 +53,7 @@ INDEXES = BASE_INDEXES + [
     ("listing_searchable_text", "", "ZCTextIndex"),
     ("modified", "", "DateIndex"),
     ("sortable_title", "", "FieldIndex"),
-    ("sortable_due_date", "", "DateIndex"),
+    ("sortable_due_date", "", "FieldIndex"),
 ]
 
 COLUMNS = BASE_COLUMNS + [

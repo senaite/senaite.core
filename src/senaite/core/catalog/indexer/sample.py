@@ -153,9 +153,10 @@ def listing_searchable_text(instance):
 
 @indexer(IAnalysisRequest)
 def sortable_due_date(instance):
-    """Returns the earliest due date of the analyses that belong to this
-    instance, but without taking workdays into account. This is a hint for
-    sorting by due date, but it's value might not match with the real due date
+    """Returns the earliest due date among the analyses associated with this
+    instance in ANSI format, disregarding workdays. This serves as a simplified
+    reference for sorting by due date, though the value may differ from the
+    actual due date.
     """
     analyses = instance.getAnalyses(sort_on="sortable_due_date",
                                     sort_order="ascending")
