@@ -55,6 +55,5 @@ def sortable_due_date(instance):
         return dtime.to_ansi(datetime.max)
 
     start = dtime.to_dt(start)
-    max_tat = api.to_minutes(**max_tat)
     due_date = start + timedelta(minutes=max_tat)
     return dtime.to_ansi(due_date)
