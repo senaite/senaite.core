@@ -1713,9 +1713,9 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         return manager_list
 
     def getDueDate(self):
-        """Returns the due date of this sample, that is the earliest due date
-        of the analyses it contains. Returns None if the sample has not been
-        received yet
+        """Returns the due date for this sample, which is the earliest due
+        date among all the analyses it contains. If the sample has not been
+        received yet, the function returns None
         """
         if not self.getDateReceived():
             return None

@@ -179,10 +179,11 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
 
     @security.public
     def getStartProcessDate(self):
-        """Returns the date time when this analysis is considered ready for
-        testing. It returns the datetime when the sample the analysis belongs
-        to was received or when the analysis was created if after reception.
-        Returns None if the sample has not been received yet.
+        """Returns the datetime when this analysis is considered ready for
+        testing. This is either the datetime when the sample associated with
+        the analysis was received or, if the analysis was created after sample
+        reception, the creation datetime. If the sample has not yet been
+        received, the function returns None.
         :return: Date time when the analysis is considered ready for testing
         :rtype: DateTime
         """
@@ -201,9 +202,10 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
 
     @security.public
     def getDueDate(self):
-        """This calculates the difference between the time the analysis
-        processing started and the maximum turnaround time. If the analysis has
-        no turnaround time set or is not yet ready for process, returns None
+        """Calculates the due date for the analysis by adding the maximum
+        turnaround time to the datetime when the processing of the analysis
+        started. If no turnaround time is set or if the analysis is not yet
+        ready for processing, the function returns None.
         """
         tat = self.getMaxTimeAllowed()
         if not tat:
