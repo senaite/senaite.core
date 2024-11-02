@@ -374,12 +374,10 @@ class window.AnalysisRequestAdd
     # set all values for one record (a single column in the AR Add form)
     $.each records, (arnum, record) ->
 
-      # Apply the values generically, but those to be handled differently
-      discard = ["service_metadata", "template_metadata"]
+      # Apply the values generically
       $.each record, (name, metadata) ->
-        # Discard those fields that will be handled differently and those that
-        # do not contain explicit object metadata
-        if name in discard or !name.endsWith("_metadata")
+        # Discard those fields that do not contain explicit object metadata
+        if !name.endsWith("_metadata")
           return
         $.each metadata, (uid, obj_info) ->
           me.apply_field_value arnum, obj_info
@@ -582,11 +580,6 @@ class window.AnalysisRequestAdd
     me = this
     values_json = JSON.stringify values
     field = $("#" + field_name + "-#{arnum}")
-
-    controller = @get_widget_controller(field)
-    # No controller found, return immediately
-    # -> happens when the field is hidden or absent
-    return unless controller
 
     console.debug "apply_dependent_value: field_name=#{field_name} field_values=#{values_json}"
 

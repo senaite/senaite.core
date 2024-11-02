@@ -18,27 +18,27 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-""" Varian Vista-PRO ICP
-"""
+import json
 import logging
 import re
-
-from DateTime import DateTime
-from Products.CMFCore.utils import getToolByName
-from plone.i18n.normalizer.interfaces import IIDNormalizer
-from zope.component import getUtility
+import traceback
 
 from bika.lims import api
-from bika.lims.browser import BrowserView
-from senaite.core.exportimport.instruments.utils import \
-    (get_instrument_import_override,
-     get_instrument_import_ar_allowed_states)
-from senaite.core.exportimport.instruments.resultsimport import \
-    InstrumentCSVResultsFileParser, AnalysisResultsImporter
-from senaite.core.p3compat import cmp
 from bika.lims import bikaMessageFactory as _
-import json
-import traceback
+from bika.lims.browser import BrowserView
+from DateTime import DateTime
+from plone.i18n.normalizer.interfaces import IIDNormalizer
+from Products.CMFCore.utils import getToolByName
+from senaite.core.exportimport.instruments.importer import \
+    AnalysisResultsImporter
+from senaite.core.exportimport.instruments.parser import \
+    InstrumentCSVResultsFileParser
+from senaite.core.exportimport.instruments.utils import \
+    get_instrument_import_ar_allowed_states
+from senaite.core.exportimport.instruments.utils import \
+    get_instrument_import_override
+from senaite.core.p3compat import cmp
+from zope.component import getUtility
 
 logger = logging.getLogger(__name__)
 

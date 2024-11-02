@@ -6,9 +6,42 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Remove getDueDate index"
       description="Remove getDueDate index"
+      source="2653"
+      destination="2654"
+      handler=".v02_06_000.remove_get_due_date_index"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Migrate WorksheetTemplates to DX"
+      description="Migrate WorksheetTemplates to Dexterity"
+      source="2652"
+      destination="2653"
+      handler=".v02_06_000.migrate_worksheettemplates_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Remove deactivated services from profiles"
+      description="Removes deactivated analysis services from Profiles"
+      source="2651"
+      destination="2652"
+      handler=".v02_06_000.remove_inactive_services_from_profiles"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Fix categories not sorted by sort key"
+      description="Reindex sortable_title for all analysis categories"
+      source="2650"
+      destination="2651"
+      handler=".v02_06_000.reindex_analysis_categories"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Fix corrupted transitions"
+      description="Restores the value of the property `after_script_name` from
+        transitions that were created or updated with the core's workflow api"
       source="2649"
       destination="2650"
-      handler=".v02_06_000.remove_get_due_date_index"
+      handler=".v02_06_000.fix_corrupted_transitions"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

@@ -1,0 +1,63 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="" >
+
+  <div>
+    <table class="datagridwidget-table-view"
+           tal:condition="view/widgets"
+           tal:attributes="class string:table table-sm table-striped table-responsive ${view/display_table_css_class};
+                           id view/id_prefix;" >
+      <thead class="">
+        <tr>
+          <th class="header">
+            <span>Position</span>
+          </th>
+          <th class="header">
+            <span>Analysis Type</span>
+          </th>
+          <th class="header">
+            <span>Reference</span>
+          </th>
+          <th class="header">
+            <span>Duplicate Of</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody id="datagridwidget-tbody"
+             tal:attributes="data-name_prefix view/name_prefix;
+                 data-id_prefix view/id_prefix;">
+        <tal:block repeat="widget view/widgets">
+          <tr tal:attributes="class widget/klass;"
+              tal:define="pos python:widget.subform.widgets['pos'];
+                          type python:widget.subform.widgets['type'];
+                          blank_ref python:widget.subform.widgets['blank_ref'];
+                          control_ref python:widget.subform.widgets['control_ref'];
+                          dup python:widget.subform.widgets['dup'];">
+            <td align="center">
+              <div tal:replace="structure pos/render"></div>
+            </td>
+            <td>
+              <div tal:replace="structure type/render"></div>
+            </td>
+            <td>
+              <?python
+                blank_ref.mode = "display"
+                control_ref.mode = "display"
+              ?>
+              <div tal:replace="structure blank_ref/render"
+                   tal:condition="python:blank_ref.value and type.value[0] == 'b'"></div>
+              <div tal:replace="structure control_ref/render"
+                   tal:condition="python:control_ref.value and type.value[0] == 'c'"></div>
+            </td>
+            <td align="center">
+              <span tal:content="dup/value" tal:condition="dup/value"></span>
+            </td>
+          </tr>
+        </tal:block>
+      </tbody>
+    </table>
+    <input type="hidden" tal:replace="structure view/counterMarker"/>
+  </div>
+</html>

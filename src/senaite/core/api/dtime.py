@@ -146,7 +146,7 @@ def to_DT(dt):
             kwargs["datefmt"] = "international"
         try:
             return DateTime(dt, **kwargs)
-        except (DateError, TimeError):
+        except (DateError, DateTimeError, TimeError):
             try:
                 dt = ansi_to_dt(dt)
                 return to_DT(dt)

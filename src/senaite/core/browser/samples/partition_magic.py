@@ -256,8 +256,11 @@ class PartitionMagicView(BrowserView):
             containers_by_partition = defaultdict(list)
             preservations_by_partition = defaultdict(list)
             internal_use_by_partition = defaultdict(list)
+
+            partitions = []
             for part in template.getPartitions():
                 partition = part.get("part_id")
+                partitions.append(partition)
                 sampletype_uid = part.get('sampletype', ar_sampletype_uid)
                 sampletypes_by_partition[partition] = sampletype_uid
                 container_uid = part.get("container", ar_container_uid)
@@ -267,8 +270,6 @@ class PartitionMagicView(BrowserView):
                 internal_use = part.get("internal_use", ar.getInternalUse())
                 internal_use_by_partition[partition] = internal_use
 
-            partitions = map(lambda p: p.get("partition"),
-                             template.getPartitions())
             info.update({
                 "analyses": analyses_by_partition,
                 "partitions": partitions,

@@ -18,10 +18,11 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-""" Alere Pima
-"""
-from senaite.core.exportimport.instruments.resultsimport import \
-    AnalysisResultsImporter, InstrumentCSVResultsFileParser
+from senaite.core.exportimport.instruments.importer import \
+    AnalysisResultsImporter
+from senaite.core.exportimport.instruments.parser import \
+    InstrumentCSVResultsFileParser
+
 
 class AlerePimaSLKParser(InstrumentCSVResultsFileParser):
     #This class is made thinking in beads, but the other files

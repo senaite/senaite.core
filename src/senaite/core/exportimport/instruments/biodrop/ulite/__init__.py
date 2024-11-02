@@ -20,8 +20,11 @@
 
 """ Biodrop
 """
-from senaite.core.exportimport.instruments.resultsimport import \
-    InstrumentCSVResultsFileParser, AnalysisResultsImporter
+from senaite.core.exportimport.instruments.importer import \
+    AnalysisResultsImporter
+from senaite.core.exportimport.instruments.parser import \
+    InstrumentCSVResultsFileParser
+
 
 class BioDropCSVParser(InstrumentCSVResultsFileParser):
     """

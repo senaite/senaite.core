@@ -659,12 +659,16 @@ class EditForm {
     }
     added.forEach((el) => {
       let record = {};
-      for (let attribute of el.attributes) {
-        let name = attribute.name;
-        let value = attribute.value;
-        record[name] = value;
+      if (el.attributes && el.attributes.length > 0) {
+        for (let attribute of el.attributes) {
+          let name = attribute.name;
+          let value = attribute.value;
+          record[name] = value;
+        }
       }
-      data.added = data.added.concat(record);
+      if (Object.keys(record).length > 0) {
+        data.added.push(record);
+      }
     });
     this.ajax_send(form, data, endpoint);
   }

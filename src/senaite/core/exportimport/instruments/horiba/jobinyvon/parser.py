@@ -18,14 +18,12 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-""" HoribaJobinYvon
-"""
-from datetime import datetime
-from senaite.core.exportimport.instruments.resultsimport import \
-    InstrumentCSVResultsFileParser
-
 import csv
 import re
+from datetime import datetime
+
+from senaite.core.exportimport.instruments.parser import \
+    InstrumentCSVResultsFileParser
 
 
 class HoribaJobinYvonCSVParser(InstrumentCSVResultsFileParser):

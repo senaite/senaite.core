@@ -20,8 +20,6 @@
 
 from bika.lims import api
 from Products.CMFCore.utils import getToolByName
-from senaite.core.catalog import ANALYSIS_CATALOG
-from senaite.core.catalog import SETUP_CATALOG
 
 
 def ObjectModifiedEventHandler(obj, event):
@@ -46,22 +44,3 @@ def ObjectModifiedEventHandler(obj, event):
                               'email': contact_email,
                               'fullname': contact_fullname}
                 member.setMemberProperties(properties)
-
-    elif portal_type == 'AnalysisCategory':
-        # If the analysis category's Title is modified, we must
-        # re-index all services and analyses that refer to this title.
-        uid = obj.UID()
-
-        # re-index all analysis services
-        query = dict(category_uid=uid, portal_type="AnalysisService")
-        brains = api.search(query, SETUP_CATALOG)
-        for brain in brains:
-            ob = api.get_object(brain)
-            ob.reindexObject()
-
-        # re-index analyses
-        query = dict(getCategoryUID=uid)
-        brains = api.search(query, ANALYSIS_CATALOG)
-        for brain in brains:
-            ob = api.get_object(brain)
-            ob.reindexObject()

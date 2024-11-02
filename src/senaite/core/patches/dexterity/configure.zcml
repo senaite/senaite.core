@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
+    i18n_domain="senaite.core">
+
+  <!-- SENAITE Labels for DX Contents -->
+  <monkey:patch
+      description="Patch `DexterityContent.getLabels` for catalog metadata"
+      class="plone.dexterity.content.DexterityContent"
+      original="getLabels"
+      ignoreOriginal="True"
+      replacement=".dexterity_content.getLabels"
+      />
+
+  <!-- Port #1865 for dexterity contents to avoid duplicate catalog entries when using `api.create` -->
+  <monkey:patch
+      description="Patch `DexterityContent.isTemporary` to avoid duplicate indexing in *portal catalog* during object creation"
+      class="plone.dexterity.content.DexterityContent"
+      original="isTemporary"
+      ignoreOriginal="True"
+      replacement=".dexterity_content.isTemporary"
+      />
+
+</configure>

@@ -18,15 +18,14 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-""" GeneXpert
-"""
 import json
 import traceback
-from senaite.core.exportimport.instruments.resultsimport import \
-    AnalysisResultsImporter, InstrumentCSVResultsFileParser
 
 from bika.lims import bikaMessageFactory as _
-
+from senaite.core.exportimport.instruments.importer import \
+    AnalysisResultsImporter
+from senaite.core.exportimport.instruments.parser import \
+    InstrumentCSVResultsFileParser
 from senaite.core.i18n import translate as t
 
 title = "GeneXpert"

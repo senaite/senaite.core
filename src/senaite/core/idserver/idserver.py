@@ -156,7 +156,11 @@ def get_partition_count(context, default=0):
     if not parent:
         return default
 
-    return len(parent.getDescendants())
+    # XXX: we need to count one up because the new partition only shows up in
+    #      parent.getDescendants() *after* it has been renamed, because
+    #      temporary objects don't get indexed!
+    #      https://github.com/senaite/senaite.core/pull/2632
+    return len(parent.getDescendants()) + 1
 
 
 def get_secondary_count(context, default=0):

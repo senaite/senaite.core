@@ -31,6 +31,7 @@ from plone.namedfile import NamedBlobFile
 from Products.Archetypes.utils import getRelURL
 from Products.CMFCore.permissions import View
 from senaite.core import logger
+from senaite.core.api import workflow as wapi
 from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
@@ -103,6 +104,8 @@ REMOVE_AT_TYPES = [
     "Suppliers",
     "SampleType",
     "SampleTypes",
+    "WorksheetTemplate",
+    "WorksheetTemplates",
 ]
 
 CONTENT_ACTIONS = [
@@ -2466,6 +2469,198 @@ def remove_is_sample_received_index(tool):
     cat = api.get_tool(ANALYSIS_CATALOG)
     del_index(cat, "isSampleReceived")
     logger.info("Removing isSampleReceived index from catalogs [DONE]")
+
+
+def fix_corrupted_transitions(tool):
+    logger.info("Fixing corrupted transitions ...")
+    wf_tool = api.get_tool("portal_workflow")
+    for wf_id in wf_tool.getWorkflowIds():
+        wf = wf_tool.getWorkflowById(wf_id)
+        for transition_id, transition in wf.transitions.items():
+            after_script = getattr(transition, "after_script_name")
+            if after_script in ["None", None]:
+                logger.info("Fixing %s.%s" % (wf_id, transition_id))
+                wapi.update_transition(transition, after_script="")
+
+    logger.info("Fixing corrupted transitions [DONE]")
+
+
+def reindex_analysis_categories(tool):
+    logger.info("Reindexing analysis categories ...")
+    cat = api.get_tool(SETUP_CATALOG)
+    for brain in cat(portal_type="AnalysisCategory"):
+        obj = brain.getObject()
+        logger.info("Reindex analysis category: %r" % obj)
+        obj.reindexObject(idxs=["sortable_title"], update_metadata=False)
+    logger.info("Reindexing analysis categories [DONE]")
+
+
+def remove_inactive_services_from_profiles(tool):
+    logger.info("Removing inactive services from profiles ...")
+    cat = api.get_tool(SETUP_CATALOG)
+
+    # build a list of deactivated services
+    services = cat(portal_type="AnalysisService", is_active=False)
+    inactive = [api.get_object(service) for service in services]
+
+    # remove inactive services from profiles
+    for brain in cat(portal_type="AnalysisProfile"):
+        obj = api.get_object(brain)
+        for service in inactive:
+            obj.remove_service(service)
+
+    logger.info("Removing inactive services from profiles [DONE]")
+
+
+def migrate_ws_template_to_dx(src, destination):
+    """Migrate a WorksheetTemplate to DX in destination folder
+
+    :param src: The source AT object
+    :param destination: The destination folder
+    """
+
+    # Create the object if it does not exist yet
+    src_id = src.getId()
+    target_id = src_id
+
+    target = destination.get(target_id)
+    if not target:
+        # Don't use the api to skip the auto-id generation
+        target = createContent("WorksheetTemplate", id=target_id)
+        destination._setObject(target_id, target)
+        target = destination._getOb(target_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = api.safe_unicode(src.Title() or "")
+    target.description = api.safe_unicode(src.Description() or "")
+    # we set the fields with our custom setters
+    target.setRestrictToMethod(src.getRestrictToMethod())
+    target.setInstrument(src.getInstrument())
+
+    # NOTE: Service -> Services
+    services = []
+    for service in src.getService():
+        services.append({
+            "uid": api.get_uid(service),
+        })
+    target.setServices(services)
+
+    # NOTE: Layout -> TemplateLayout
+    layout = []
+    for num, row in enumerate(src.getLayout()):
+        ref_proxy = None
+        dup = row.get("dup", None)
+        dup = int(dup) if dup else None
+        analysis_type = row.get("type", "a")
+        blank_ref = []
+        control_ref = []
+
+        if analysis_type == "a":
+            dup = None
+        elif analysis_type == "b":
+            blank_ref = row.get("blank_ref", "")
+            ref_proxy = blank_ref or None
+            dup = None
+        elif analysis_type == "c":
+            control_ref = row.get("control_ref", "")
+            ref_proxy = control_ref or None
+            dup = None
+
+        layout.append({
+            "pos": int(row.get("pos", num + 1)),
+            "type": analysis_type,
+            "blank_ref": blank_ref if blank_ref else [],
+            "control_ref": control_ref if control_ref else [],
+            "reference_proxy": ref_proxy,
+            "dup_proxy": dup,
+            "dup": dup,
+        })
+    target.setTemplateLayout(layout)
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter(
+        (src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID
+    migrator.copy_uid(src, target)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    return target
+
+
+@upgradestep(product, version)
+def migrate_worksheettemplates_to_dx(tool):
+    """Convert existing worksheet templates to Dexterity
+    """
+    logger.info("Convert Worksheet Templates to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_worksheettemplates")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("worksheettemplates")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    query = {"portal_type": "WorksheetTemplate"}
+    # search all AT based suppliers
+    brains = api.search(query, SETUP_CATALOG)
+    total = len(brains)
+
+    # get all objects first
+    objects = map(api.get_object, brains)
+    for num, obj in enumerate(objects):
+        migrate_ws_template_to_dx(obj, destination)
+
+        logger.info("Migrated WorksheetTemplates {0}/{1}: {2} -> {3}".format(
+            num, total, api.get_path(obj), api.get_path(obj)))
+
+    if origin:
+        # remove old AT folder
+        if len(origin) == 0:
+            delete_object(origin)
+        else:
+            logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert Worksheet Templates to Dexterity [DONE]")
 
 
 def remove_get_due_date_index(tool):

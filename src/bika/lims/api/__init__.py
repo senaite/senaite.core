@@ -384,10 +384,11 @@ def move_object(obj, destination, check_constraints=True):
     return obj
 
 
-def uncatalog_object(obj):
+def uncatalog_object(obj, recursive=False):
     """Un-catalog the object from all catalogs
 
     :param obj: object to un-catalog
+    :param recursive: recursively uncatalog all child objects
     :type obj: ATContentType/DexterityContentType
     """
     # un-catalog from registered catalogs
@@ -399,11 +400,16 @@ def uncatalog_object(obj):
     url = "/".join(obj.getPhysicalPath()[2:])
     uid_catalog.uncatalog_object(url)
 
+    if recursive:
+        for child in obj.objectValues():
+            uncatalog_object(child, recursive=recursive)
 
-def catalog_object(obj):
+
+def catalog_object(obj, recursive=False):
     """Re-catalog the object
 
-    :param obj: object to un-catalog
+    :param obj: object to catalog
+    :param recursive: recursively catalog all child objects
     :type obj: ATContentType/DexterityContentType
     """
     if is_at_content(obj):
@@ -415,6 +421,10 @@ def catalog_object(obj):
         url = "/".join(obj.getPhysicalPath()[2:])
         uc.catalog_object(obj, url)
     obj.reindexObject()
+
+    if recursive:
+        for child in obj.objectValues():
+            catalog_object(child, recursive=recursive)
 
 
 def delete(obj, check_permissions=True, suppress_events=False):
