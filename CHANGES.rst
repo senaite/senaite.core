@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2639 Fix sampletype-related indexes for AnalysisSpec type are not indexed
 - #2569 Fix samples are indicated as late when Turnaround Time is zero
 - #2636 Fix JS Error in WS Template edit form
 - #2635 Remove reindexing of Analyses and Analysis Services on Category change
