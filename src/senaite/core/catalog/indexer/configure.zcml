@@ -79,4 +79,8 @@
   <adapter name="sampletype_title" factory=".sampletype.sampletype_title"/>
   <adapter name="sampletype_uid" factory=".sampletype.sampletype_uid"/>
 
+  <!-- AnalysisSpec Indexer -->
+  <adapter name="sampletype_title" factory=".analysisspec.sampletype_title"/>
+  <adapter name="sampletype_uid" factory=".analysisspec.sampletype_uid"/>
+
 </configure>

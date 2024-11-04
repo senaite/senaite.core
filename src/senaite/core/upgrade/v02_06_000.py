@@ -53,6 +53,7 @@ from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import del_metadata
 from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import permanently_allow_type_for
+from senaite.core.upgrade.utils import uncatalog_brain
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.workflow import ANALYSIS_WORKFLOW
@@ -2079,7 +2080,13 @@ def reindex_getDueDate(tool):
     total = len(brains)
     sample_uids = set()
     for num, brain in enumerate(brains):
-        obj = api.get_object(brain)
+        try:
+            obj = api.get_object(brain, default=None)
+        except AttributeError:
+            obj = None
+        if obj is None:
+            uncatalog_brain(brain)
+            continue
         if not IRequestAnalysis.providedBy(obj):
             continue
         if num and num % 100 == 0:
@@ -2699,3 +2706,16 @@ def migrate_worksheettemplates_to_dx(tool):
             logger.warn("Cannot remove {}. Is not empty".format(origin))
 
     logger.info("Convert Worksheet Templates to Dexterity [DONE]")
+
+
+def reindex_specs(tool):
+    """Reindex the sampletype_uid and sampletype_title indexes from setup
+    catalog for AnalysisSpecs types
+    """
+    logger.info("Reindexing analysis specifications ...")
+    cat = api.get_tool(SETUP_CATALOG)
+    for brain in cat(portal_type="AnalysisSpec"):
+        obj = brain.getObject()
+        logger.info("Reindex analysis spec: %r" % obj)
+        obj.reindexObject(idxs=["sampletype_uid", "sampletype_title"])
+    logger.info("Reindexing analysis specifications [DONE]")
