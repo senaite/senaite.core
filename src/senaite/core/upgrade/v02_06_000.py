@@ -2523,7 +2523,6 @@ def fix_corrupted_transitions(tool):
     logger.info("Fixing corrupted transitions [DONE]")
 
 
-
 def reindex_analysis_categories(tool):
     logger.info("Reindexing analysis categories ...")
     cat = api.get_tool(SETUP_CATALOG)
