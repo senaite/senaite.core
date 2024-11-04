@@ -26,19 +26,25 @@ from senaite.core.interfaces import ISetupCatalog
 
 @indexer(IAnalysisSpec, ISetupCatalog)
 def sampletype_title(instance):
-    """Returns a list of titles from SampleType the instance is assigned to
-    If the instance has no sample type assigned, it returns a tuple with an
-    empty value. This allows searches for `MissingValue` entries too.
+    """Returns a list containing the title of the sample type assigned to this
+    instance, as defined by the AnalysisSpec type. The function returns a list
+    because the index used is a KeywordIndex, which supports searching for
+    missing values in cases where the sample type is not a mandatory field.
     """
     sample_type = instance.getSampleType()
-    sample_type = api.get_title(sample_type)
-    return [sample_type] if sample_type else [""]
+    if not sample_type:
+        return [""]
+    return [api.get_title(sample_type)]
 
 
 @indexer(IAnalysisSpec, ISetupCatalog)
 def sampletype_uid(instance):
-    """Returns a list of uids from SampleType the instance is assigned to
-    If the instance has no SampleType assigned, it returns a tuple with an
-    empty value. This allows searches for `MissingValue` entries too.
+    """Returns a list containing the UID of the sample type assigned to this
+    instance, as defined by the AnalysisSpec type. The function returns a list
+    because the index used is a KeywordIndex, which supports searching for
+    missing values in cases where the sample type is not a mandatory field.
     """
-    return instance.getRawSampleType() or [""]
+    uid = instance.getRawSampleType()
+    if not uid:
+        return [""]
+    return [uid]
