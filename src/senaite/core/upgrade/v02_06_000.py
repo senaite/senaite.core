@@ -2523,6 +2523,7 @@ def fix_corrupted_transitions(tool):
     logger.info("Fixing corrupted transitions [DONE]")
 
 
+
 def reindex_analysis_categories(tool):
     logger.info("Reindexing analysis categories ...")
     cat = api.get_tool(SETUP_CATALOG)
@@ -2699,3 +2700,16 @@ def migrate_worksheettemplates_to_dx(tool):
             logger.warn("Cannot remove {}. Is not empty".format(origin))
 
     logger.info("Convert Worksheet Templates to Dexterity [DONE]")
+
+
+def reindex_specs(tool):
+    """Reindex the sampletype_uid and sampletype_title indexes from setup
+    catalog for AnalysisSpecs types
+    """
+    logger.info("Reindexing analysis specifications ...")
+    cat = api.get_tool(SETUP_CATALOG)
+    for brain in cat(portal_type="AnalysisSpec"):
+        obj = brain.getObject()
+        logger.info("Reindex analysis spec: %r" % obj)
+        obj.reindexObject(idxs=["sampletype_uid", "sampletype_title"])
+    logger.info("Reindexing analysis specifications [DONE]")
