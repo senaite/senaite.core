@@ -461,12 +461,11 @@ class SampleTemplate(Container, ClientAwareMixin):
 
         :returns: List of analysis service objects
         """
-        services = []
-        for uid in self.getServiceUIDs():
-            obj = api.get_object(uid)
-            if not active_only or api.is_active(obj):
-                services.append(obj)
-        return services
+        services = map(api.get_object, self.getServiceUIDs())
+        if active_only:
+            # filter out inactive services
+            services = filter(api.is_active, services)
+        return list(services)
 
     @security.protected(permissions.ModifyPortalContent)
     def setServices(self, value):
