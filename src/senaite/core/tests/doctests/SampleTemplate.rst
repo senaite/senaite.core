@@ -230,7 +230,7 @@ Test get/set methods:
 Services
 ^^^^^^^^
 
-Anbalysis Services can be assigned to the Template, so that they are
+Analysis Services can be assigned to the Template, so that they are
 automatically added when the sample is created.
 
 Each service can be configured for a specific partition and if it should be
@@ -348,3 +348,27 @@ But are kept as raw data, just in case we re-activate the service later:
 
     >>> api.get_uid(Fe) in template1.getAnalysisServiceUIDs()
     True
+
+By default, inactive services are kept as raw data when the value is set:
+
+    >>> template1.setServices([])
+    >>> Cu in template1.getServices()
+    False
+    >>> Fe in template1.getServices()
+    False
+    >>> api.get_uid(Cu) in template1.getAnalysisServiceUIDs()
+    False
+    >>> api.get_uid(Fe) in template1.getAnalysisServiceUIDs()
+    True
+
+Unless we use `keep_inactive=False`:
+
+    >>> template1.setServices([], keep_inactive=False)
+    >>> Cu in template1.getServices()
+    False
+    >>> Fe in template1.getServices()
+    False
+    >>> api.get_uid(Cu) in template1.getAnalysisServiceUIDs()
+    False
+    >>> api.get_uid(Fe) in template1.getAnalysisServiceUIDs()
+    False

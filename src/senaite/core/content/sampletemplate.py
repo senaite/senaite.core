@@ -468,7 +468,7 @@ class SampleTemplate(Container, ClientAwareMixin):
         return list(services)
 
     @security.protected(permissions.ModifyPortalContent)
-    def setServices(self, value):
+    def setServices(self, value, keep_inactive=True):
         """Set services for the template
 
         This method accepts either a list of analysis service objects, a list
@@ -510,15 +510,16 @@ class SampleTemplate(Container, ClientAwareMixin):
                 "part_id": part_id,
             })
 
-        # always keep inactive services so they come up again when reactivated
-        uids = [record.get("uid") for record in records]
-        for record in self.getRawServices():
-            uid = record.get("uid")
-            if uid in uids:
-                continue
-            obj = api.get_object_by_uid(uid)
-            if not api.is_active(obj):
-                records.append(record)
+        if keep_inactive:
+            # keep inactive services so they come up again when reactivated
+            uids = [record.get("uid") for record in records]
+            for record in self.getRawServices():
+                uid = record.get("uid")
+                if uid in uids:
+                    continue
+                obj = api.get_object(uid)
+                if not api.is_active(obj):
+                    records.append(record)
 
         mutator = self.mutator("services")
         mutator(self, records)
