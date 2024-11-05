@@ -1754,8 +1754,9 @@ class AnalysesView(ListingView):
             return
 
         # or maybe is about to expire
-        dt_ff = dt_now + timedelta(hours=8)
-        if dt_ff > max_holding_date:
+        dt_soon = dt_now + timedelta(hours=8)
+        soon = dtime.to_ansi(dt_soon)
+        if soon > max_holding_date:
             msg = _("The holding time for this sample and analysis is about "
                     "to expire. Please complete the analysis as soon as "
                     "possible to ensure data accuracy and reliability.")
