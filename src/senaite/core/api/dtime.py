@@ -211,15 +211,43 @@ def ansi_to_dt(dt):
     return datetime.strptime(dt, date_format)
 
 
-def to_ansi(dt, show_time=True):
+def to_ansi(dt, show_time=True, timezone=None):
     """Returns the date in ANSI X3.30/X4.43.3) format
     :param dt: DateTime/datetime/date
     :param show_time: if true, returns YYYYMMDDHHMMSS. YYYYMMDD otherwise
+    :param timezone: if set, converts the date to the given timezone
     :returns: str that represents the datetime in ANSI format
     """
     dt = to_dt(dt)
     if dt is None:
         return None
+
+    if timezone:
+        if is_timezone_naive(dt):
+            # XXX Localize to default TZ to overcome `to_dt` inconsistency:
+            #
+            # - if the input value is a datetime/date type, `to_dt` does not
+            #   convert to the OS's zone, even if the value is tz-naive.
+            # - if the input value is a str or DateTime, `to_dt` does  convert
+            #   to the system default zone.
+            #
+            # For instance:
+            # >>> to_dt("19891201131405")
+            # datetime.datetime(1989, 12, 1, 13, 14, 5, tzinfo=<StaticTzInfo 'Etc/GMT'>)
+            # >>> ansi_to_dt("19891201131405")
+            # datetime.datetime(1989, 12, 1, 13, 14, 5)
+            #
+            # That causes the following inconsistency:
+            # >>> to_ansi(to_dt("19891201131405"), timezone="Pacific/Fiji")
+            # 19891202011405
+            # >>> to_ansi(ansi_to_dt("19891201131405"), timezone="Pacific/Fiji")
+            # 19891201131405
+
+            default_tz = get_timezone(dt)
+            default_zone = pytz.timezone(default_tz)
+            dt = default_zone.localize(dt)
+
+        dt = to_zone(dt, timezone)
 
     ansi = "{:04d}{:02d}{:02d}".format(dt.year, dt.month, dt.day)
     if not show_time:

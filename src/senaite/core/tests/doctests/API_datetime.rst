@@ -759,6 +759,40 @@ Still, invalid dates return None:
     >>> dtime.to_ansi(dt) is None
     True
 
+We can also specify the timezone. Since `to_ansi` relies on `to_dt` to convert
+the input value to a valid datetime, naive datetime is localized to OS`s
+default timezone before the hours shift:
+
+    >>> dtime.to_ansi("1989-12-01")
+    '19891201000000'
+
+    >>> dtime.to_ansi("1989-12-01", timezone="Pacific/Fiji")
+    '19891201120000'
+
+    >>> dt = dtime.to_dt("19891201131405")
+    >>> dtime.to_ansi(dt)
+    '19891201131405'
+
+    >>> dtime.to_ansi(dt, timezone="Pacific/Fiji")
+    '19891202011405'
+
+    >>> dt = dtime.ansi_to_dt("19891201131405")
+    >>> dtime.to_ansi(dt)
+    '19891201131405'
+
+    >>> dtime.to_ansi(dt, timezone="Pacific/Fiji")
+    '19891202011405'
+
+The system does the shift if the date comes with a valid timezone:
+
+    >>> dt = dtime.ansi_to_dt("19891201131405")
+    >>> dt = dtime.to_zone(dt, "Pacific/Fiji")
+    >>> dtime.to_ansi(dt, timezone="Pacific/Fiji")
+    '19891201131405'
+
+    >>> dtime.to_ansi(dt, timezone="Etc/GMT")
+    '19891201011405'
+
 
 Relative delta between two dates
 ................................
