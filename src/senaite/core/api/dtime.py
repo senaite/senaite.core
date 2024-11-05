@@ -191,6 +191,14 @@ def to_dt(dt):
         return None
 
 
+def now():
+    """Returns a timezone-aware datetime representing current date and time
+
+    :returns: datetime object
+    """
+    return to_dt(DateTime())
+
+
 def ansi_to_dt(dt):
     """The YYYYMMDD format is defined by ANSI X3.30. Therefore, 2 December 1,
     1989 would be represented as 19891201. When times are transmitted, they

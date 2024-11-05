@@ -458,6 +458,36 @@ Convert `DateTime` objects to a timezone:
     DateTime('1970/01/01 02:00:00 GMT+1')
 
 
+Get the current datetime (with timezone)
+........................................
+
+Python’s datetime.now() returns a timezone-naive datetime object, whereas
+Zope’s DateTime() returns a timezone-aware DateTime object. This difference
+can lead to inconsistencies when converting and comparing dates if not
+carefully managed. The dtime.now(timezone) function provides the current
+datetime with the correct timezone, similar to Zope’s DateTime(), and is
+strongly recommended over datetime.now() except in cases where a timezone-naive
+object is explicitly needed.
+
+    >>> now_dt = dtime.now()
+    >>> now_dt.tzname()
+    '+01'
+
+    >>> now_DT = DateTime()
+    >>> now_DT.timezone()
+    'GMT+1'
+
+    >>> ansi = dtime.to_ansi(now_dt)
+    >>> dtime.to_ansi(now_DT) == ansi
+    True
+
+    >>> dtime.to_ansi(dtime.to_dt(now_DT)) == ansi
+    True
+
+    >>> dtime.to_ansi(dtime.to_DT(now_dt)) == ansi
+    True
+
+
 Make a POSIX timestamp
 ......................
 

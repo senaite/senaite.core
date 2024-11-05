@@ -1724,6 +1724,9 @@ class AnalysesView(ListingView):
         if not start_date:
             return
 
+        # get the timezone of the start date for correct comparisons
+        timezone = dtime.get_timezone(start_date)
+
         # calculate the maximum holding date
         delta = timedelta(minutes=api.to_minutes(**max_holding_time))
         max_holding_date = dtime.to_ansi(start_date + delta)
@@ -1731,6 +1734,7 @@ class AnalysesView(ListingView):
         # maybe the result was captured past the holding time
         if ISubmitted.providedBy(analysis):
             captured = analysis.getResultCaptureDate()
+            captured = dtime.to_zone(captured, timezone)
             captured = dtime.to_ansi(captured)
             if captured > max_holding_date:
                 msg = _("The result was captured past the holding time limit.")
@@ -1740,8 +1744,11 @@ class AnalysesView(ListingView):
                 self._append_html_element(item, "ResultCaptureDate", icon)
             return
 
+        # get current datetime and shift to same TZ as start date
+        dt_now = dtime.now()
+        dt_now = dtime.to_zone(dt_now, timezone)
+
         # not yet submitted, maybe the holding time expired
-        dt_now = datetime.now()
         now = dtime.to_ansi(dt_now)
         if now > max_holding_date:
             msg = _("The holding time for this sample and analysis has "
@@ -1754,7 +1761,7 @@ class AnalysesView(ListingView):
             return
 
         # or maybe is about to expire
-        dt_soon = dt_now + timedelta(hours=8)
+        dt_soon = dtime.to_dt(dt_now) + timedelta(hours=8)
         soon = dtime.to_ansi(dt_soon)
         if soon > max_holding_date:
             msg = _("The holding time for this sample and analysis is about "
