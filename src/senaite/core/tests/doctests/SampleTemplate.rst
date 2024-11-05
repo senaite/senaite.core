@@ -305,7 +305,7 @@ Get the partition ID for a given service:
 Get the service UIDs for all assigned services:
 
     >>> uids = [api.get_uid(Fe), api.get_uid(Cu), api.get_uid(Au)]
-    >>> all(map(lambda uid: uid in uids, template1.getAnalysisServiceUIDs()))
+    >>> all(map(lambda uid: uid in uids, template1.getServicesUIDs()))
     True
 
 Update the settings for *all* assigned services with `setAnalysisServicesSettings` (plural):
@@ -320,7 +320,7 @@ Unassign a service from the template:
     >>> template1.remove_service(Au)
     True
 
-    >>> api.get_uid(Au) in template1.getAnalysisServiceUIDs()
+    >>> api.get_uid(Au) in template1.getServicesUIDs()
     False
 
     >>> template1.remove_service(Au)
@@ -331,7 +331,7 @@ Unassignment happens automatically if an Analysis Service was deactivated:
     >>> Fe in template1.getServices()
     True
 
-    >>> api.get_uid(Fe) in template1.getAnalysisServiceUIDs()
+    >>> api.get_uid(Fe) in template1.getServicesUIDs()
     True
 
     >>> api.get_workflow_status_of(Fe)
@@ -346,7 +346,7 @@ Unassignment happens automatically if an Analysis Service was deactivated:
 
 But are kept as raw data, just in case we re-activate the service later:
 
-    >>> api.get_uid(Fe) in template1.getAnalysisServiceUIDs()
+    >>> api.get_uid(Fe) in template1.getServicesUIDs()
     True
 
 By default, inactive services are kept as raw data when the value is set:
@@ -356,9 +356,9 @@ By default, inactive services are kept as raw data when the value is set:
     False
     >>> Fe in template1.getServices()
     False
-    >>> api.get_uid(Cu) in template1.getAnalysisServiceUIDs()
+    >>> api.get_uid(Cu) in template1.getServicesUIDs()
     False
-    >>> api.get_uid(Fe) in template1.getAnalysisServiceUIDs()
+    >>> api.get_uid(Fe) in template1.getServicesUIDs()
     True
 
 Unless we use `keep_inactive=False`:
@@ -368,7 +368,7 @@ Unless we use `keep_inactive=False`:
     False
     >>> Fe in template1.getServices()
     False
-    >>> api.get_uid(Cu) in template1.getAnalysisServiceUIDs()
+    >>> api.get_uid(Cu) in template1.getServicesUIDs()
     False
-    >>> api.get_uid(Fe) in template1.getAnalysisServiceUIDs()
+    >>> api.get_uid(Fe) in template1.getServicesUIDs()
     False
