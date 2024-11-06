@@ -162,15 +162,16 @@ class AnalysesView(BaseView):
 
         # Inject custom transition for remarks
         if self.show_analysis_remarks_transition():
+            set_remarks = {
+                "id": "modal_set_analysis_remarks",
+                "title": _("Set remarks"),
+                "url": "{}/set_analysis_remarks_modal".format(
+                    api.get_url(self.context)),
+                "css_class": "btn btn-outline-secondary",
+                "help": _("Set remarks for selected analyses")
+            }
             for state in self.review_states:
-                state["custom_transitions"] = [{
-                    "id": "modal_set_analysis_remarks",
-                    "title": _("Set remarks"),
-                    "url": "{}/set_analysis_remarks_modal".format(
-                        api.get_url(self.context)),
-                    "css_class": "btn btn-outline-secondary",
-                    "help": _("Set remarks for selected analyses")
-                }]
+                state.setdefault("custom_transitions", []).append(set_remarks)
 
     @view.memoize
     def get_default_columns_order(self):
