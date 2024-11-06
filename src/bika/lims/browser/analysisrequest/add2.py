@@ -1262,7 +1262,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         if not start_date:
             return []
 
-        now = datetime.now()
+        # get the timezone of the start date for correct comparisons
+        tz = dtime.get_timezone(start_date)
+
         uids = []
 
         # get the max holding times grouped by service uid
@@ -1274,7 +1276,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             max_holding_date = start_date + delta
 
             # TypeError: can't compare offset-naive and offset-aware datetimes
-            if dtime.to_ansi(now) > dtime.to_ansi(max_holding_date):
+            max_date = dtime.to_ansi(max_holding_date)
+            now = dtime.to_ansi(dtime.now(), timezone=tz)
+            if now > max_date:
                 uids.append(uid)
 
         return uids
