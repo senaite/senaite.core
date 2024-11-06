@@ -352,6 +352,9 @@ Unassignment happens automatically if an Analysis Service was deactivated:
 
 But are kept as raw data, just in case we re-activate the service later:
 
+    >>> Fe in template1.getServices(active_only=False)
+    True
+
     >>> api.get_uid(Fe) in template1.getRawServiceUIDs()
     True
 

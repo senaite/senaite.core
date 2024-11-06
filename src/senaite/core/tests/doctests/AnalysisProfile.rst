@@ -213,7 +213,10 @@ Inactive services are not returned by default:
     >>> Fe in profile1.getServices()
     False
 
-But kept just in case we re-activate the service later:
+But kept as raw data, just in case we re-activate the service later:
+
+    >>> Fe in profile1.getServices(active_only=False)
+    True
 
     >>> api.get_uid(Fe) in profile1.getRawServiceUIDs()
     True
