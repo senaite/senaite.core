@@ -547,7 +547,7 @@
                                                arnum python:arnum;
                                                id python:'{}-{}-beyondholdingtime'.format(service_uid, arnum);
                                                class python:'service-beyondholdingtime {}-beyondholdingtime'.format(service_uid);"
-                               title="This service cannot be selected to prevent the analysis to be conducted beyond the analytical holding time."
+                               title="This service cannot be selected to prevent the analysis from being conducted beyond the analytical holding time."
                                i18n:attributes="title">
                             &#128683;
                           </div>
