@@ -622,12 +622,12 @@ class SampleTemplate(Container, ClientAwareMixin):
             return ""
         return record.get("part_id", "")
 
+    @deprecate("deprecated since SENAITE 2.6: Use getServiceUIDs() instead")
     @security.protected(permissions.View)
     def getAnalysisServiceUIDs(self):
         """Returns a list of all assigned service UIDs
         """
-        services = self.getRawServices()
-        return list(map(lambda record: record.get("uid"), services))
+        return self.getServiceUIDs()
 
     @security.protected(permissions.View)
     def get_services_by_uid(self):
