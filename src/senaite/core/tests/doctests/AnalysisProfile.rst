@@ -215,7 +215,7 @@ Inactive services are not returned by default:
 
 But kept just in case we re-activate the service later:
 
-    >>> api.get_uid(Fe) in profile1.getServiceUIDs()
+    >>> api.get_uid(Fe) in profile1.getRawServiceUIDs()
     True
 
 By default, inactive services are kept as raw data when the value is set:
@@ -228,6 +228,10 @@ By default, inactive services are kept as raw data when the value is set:
     >>> api.get_uid(Cu) in profile1.getServiceUIDs()
     False
     >>> api.get_uid(Fe) in profile1.getServiceUIDs()
+    False
+    >>> api.get_uid(Cu) in profile1.getRawServiceUIDs()
+    False
+    >>> api.get_uid(Fe) in profile1.getRawServiceUIDs()
     True
 
 Unless we use `keep_inactive=False`:
@@ -240,4 +244,8 @@ Unless we use `keep_inactive=False`:
     >>> api.get_uid(Cu) in profile1.getServiceUIDs()
     False
     >>> api.get_uid(Fe) in profile1.getServiceUIDs()
+    False
+    >>> api.get_uid(Cu) in profile1.getRawServiceUIDs()
+    False
+    >>> api.get_uid(Fe) in profile1.getRawServiceUIDs()
     False

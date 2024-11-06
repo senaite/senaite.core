@@ -334,6 +334,9 @@ Unassignment happens automatically if an Analysis Service was deactivated:
     >>> api.get_uid(Fe) in template1.getServiceUIDs()
     True
 
+    >>> api.get_uid(Fe) in template1.getRawServiceUIDs()
+    True
+
     >>> api.get_workflow_status_of(Fe)
     'active'
 
@@ -344,9 +347,12 @@ Unassignment happens automatically if an Analysis Service was deactivated:
     >>> Fe in template1.getServices()
     False
 
+    >>> api.get_uid(Fe) in template1.getServiceUIDs()
+    False
+
 But are kept as raw data, just in case we re-activate the service later:
 
-    >>> api.get_uid(Fe) in template1.getServiceUIDs()
+    >>> api.get_uid(Fe) in template1.getRawServiceUIDs()
     True
 
 By default, inactive services are kept as raw data when the value is set:
@@ -359,6 +365,10 @@ By default, inactive services are kept as raw data when the value is set:
     >>> api.get_uid(Cu) in template1.getServiceUIDs()
     False
     >>> api.get_uid(Fe) in template1.getServiceUIDs()
+    False
+    >>> api.get_uid(Cu) in template1.getRawServiceUIDs()
+    False
+    >>> api.get_uid(Fe) in template1.getRawServiceUIDs()
     True
 
 Unless we use `keep_inactive=False`:
@@ -371,4 +381,8 @@ Unless we use `keep_inactive=False`:
     >>> api.get_uid(Cu) in template1.getServiceUIDs()
     False
     >>> api.get_uid(Fe) in template1.getServiceUIDs()
+    False
+    >>> api.get_uid(Cu) in template1.getRawServiceUIDs()
+    False
+    >>> api.get_uid(Fe) in template1.getRawServiceUIDs()
     False
