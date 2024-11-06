@@ -1734,8 +1734,7 @@ class AnalysesView(ListingView):
         # maybe the result was captured past the holding time
         if ISubmitted.providedBy(analysis):
             captured = analysis.getResultCaptureDate()
-            captured = dtime.to_zone(captured, timezone)
-            captured = dtime.to_ansi(captured)
+            captured = dtime.to_ansi(captured, timezone=timezone)
             if captured > max_holding_date:
                 msg = _("The result was captured past the holding time limit.")
                 icon = get_fas_ico("exclamation-triangle",
@@ -1744,12 +1743,8 @@ class AnalysesView(ListingView):
                 self._append_html_element(item, "ResultCaptureDate", icon)
             return
 
-        # get current datetime and shift to same TZ as start date
-        dt_now = dtime.now()
-        dt_now = dtime.to_zone(dt_now, timezone)
-
         # not yet submitted, maybe the holding time expired
-        now = dtime.to_ansi(dt_now)
+        now = dtime.to_ansi(dtime.now(), timezone=timezone)
         if now > max_holding_date:
             msg = _("The holding time for this sample and analysis has "
                     "expired. Proceeding with the analysis may compromise the "
@@ -1761,8 +1756,7 @@ class AnalysesView(ListingView):
             return
 
         # or maybe is about to expire
-        dt_soon = dtime.to_dt(dt_now) + timedelta(hours=8)
-        soon = dtime.to_ansi(dt_soon)
+        soon = dtime.to_ansi(dtime.now(), timezone=timezone)
         if soon > max_holding_date:
             msg = _("The holding time for this sample and analysis is about "
                     "to expire. Please complete the analysis as soon as "
