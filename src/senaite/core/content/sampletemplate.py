@@ -461,7 +461,7 @@ class SampleTemplate(Container, ClientAwareMixin):
 
         :returns: List of analysis service objects
         """
-        services = map(api.get_object, self.getServicesUIDs())
+        services = map(api.get_object, self.getServiceUIDs())
         if active_only:
             # filter out inactive services
             services = filter(api.is_active, services)
@@ -528,7 +528,7 @@ class SampleTemplate(Container, ClientAwareMixin):
     Services = property(getServices, setServices)
 
     @security.protected(permissions.View)
-    def getServicesUIDs(self):
+    def getServiceUIDs(self):
         """Returns a list of the selected service UIDs
         """
         services = self.getRawServices()
@@ -622,12 +622,12 @@ class SampleTemplate(Container, ClientAwareMixin):
             return ""
         return record.get("part_id", "")
 
-    @deprecate("deprecated since SENAITE 2.6: Use getServicesUIDs() instead")
     @security.protected(permissions.View)
     def getAnalysisServiceUIDs(self):
         """Returns a list of all assigned service UIDs
         """
-        return self.getServicesUIDs()
+        services = self.getRawServices()
+        return list(map(lambda record: record.get("uid"), services))
 
     @security.protected(permissions.View)
     def get_services_by_uid(self):

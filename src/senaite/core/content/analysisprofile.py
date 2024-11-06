@@ -260,7 +260,7 @@ class AnalysisProfile(Container, ClientAwareMixin):
 
         :returns: List of analysis service objects
         """
-        services = map(api.get_object, self.getServicesUIDs())
+        services = map(api.get_object, self.getServiceUIDs())
         if active_only:
             # filter out inactive services
             services = filter(api.is_active, services)
@@ -316,7 +316,7 @@ class AnalysisProfile(Container, ClientAwareMixin):
     Service = Services = property(getServices, setServices)
 
     @security.protected(permissions.View)
-    def getServicesUIDs(self):
+    def getServiceUIDs(self):
         """Returns a list of the selected service UIDs
         """
         services = self.getRawServices()
