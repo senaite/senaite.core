@@ -156,7 +156,8 @@ def to_DT(dt):
             return None
     elif is_dt(dt):
         try:
-            # XXX Why do this instead of DateTime(dt)?
+            # We do this because isoformat() comes with the +/- utc offset at
+            # the end, so it becomes easier than having to rely on tzinfo stuff
             return DateTime(dt.isoformat())
         except DateTimeError:
             return DateTime(dt)
@@ -193,8 +194,9 @@ def to_dt(dt):
 
 def now():
     """Returns a timezone-aware datetime representing current date and time
+    as defined in Zope's TZ environment variable or, if not set, from OS
 
-    :returns: datetime object
+    :returns: timezone-aware datetime object
     """
     return to_dt(DateTime())
 

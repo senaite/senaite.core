@@ -461,21 +461,19 @@ Convert `DateTime` objects to a timezone:
 Get the current datetime (with timezone)
 ........................................
 
-Python’s datetime.now() returns a timezone-naive datetime object, whereas
-Zope’s DateTime() returns a timezone-aware DateTime object. This difference
+Python's `datetime.now()` returns a timezone-naive datetime object, whereas
+Zope's DateTime() returns a timezone-aware DateTime object. This difference
 can lead to inconsistencies when converting and comparing dates if not
-carefully managed. The dtime.now(timezone) function provides the current
-datetime with the correct timezone, similar to Zope’s DateTime(), and is
-strongly recommended over datetime.now() except in cases where a timezone-naive
-object is explicitly needed.
+carefully managed. The `dtime.now(timezone)` function provides the current
+datetime with the timezone defined in Zope's TZ environment variable, like
+Zope's `DateTime()` does. This function is strongly recommended over
+`datetime.now()` except in cases where a timezone-naive datetime is explicitly
+needed.
 
     >>> now_dt = dtime.now()
-    >>> now_dt.tzname()
-    '+01'
-
     >>> now_DT = DateTime()
-    >>> now_DT.timezone()
-    'GMT+1'
+    >>> now_dt.utcoffset().seconds == now_DT.tzoffset()
+    True
 
     >>> ansi = dtime.to_ansi(now_dt)
     >>> dtime.to_ansi(now_DT) == ansi
