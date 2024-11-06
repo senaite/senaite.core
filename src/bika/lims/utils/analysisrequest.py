@@ -574,6 +574,7 @@ def get_rejection_email_recipients(sample):
     """
     # extract the emails from contacts
     contacts = [sample.getContact()] + sample.getCCContact()
+    contacts = filter(None, contacts)
     emails = map(lambda contact: contact.getEmailAddress(), contacts)
 
     # extend with the CC emails
