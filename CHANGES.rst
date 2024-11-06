@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2637 Do not remove inactive services from profiles and templates
+- #2641 Fix AttributeError on rejection of samples without a contact set
+- #2640 Fix missing custom transitions via adapter in Worksheet's analyses
 - #2639 Fix sampletype-related indexes for AnalysisSpec type are not indexed
 - #2638 Fix AttributeError on upgrade step 2654 (reindex_getDueDate)
 - #2569 Fix samples are indicated as late when Turnaround Time is zero
