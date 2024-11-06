@@ -5,6 +5,10 @@ Changelog
 ------------------
 
 - #2598 Fix analyses from partitions are considered in manage analyses view
+- #2641 Fix AttributeError on rejection of samples without a contact set
+- #2640 Fix missing custom transitions via adapter in Worksheet's analyses
+- #2639 Fix sampletype-related indexes for AnalysisSpec type are not indexed
+- #2638 Fix AttributeError on upgrade step 2654 (reindex_getDueDate)
 - #2569 Fix samples are indicated as late when Turnaround Time is zero
 - #2636 Fix JS Error in WS Template edit form
 - #2635 Remove reindexing of Analyses and Analysis Services on Category change

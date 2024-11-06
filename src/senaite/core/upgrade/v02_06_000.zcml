@@ -3,7 +3,15 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
-   <genericsetup:upgradeStep
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Fix sampletype-related indexes for specs"
+      description="SampleType-specific indexes Analysis Specs are not indexed"
+      source="2654"
+      destination="2655"
+      handler=".v02_06_000.reindex_specs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Reindex getDueDate"
       description="Reindex getDueDate from analyses and sample catalogs"
       source="2653"
