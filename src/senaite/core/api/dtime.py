@@ -42,6 +42,8 @@ from DateTime.DateTime import TimeError
 from zope.i18n import translate
 
 
+GMT_REGEX = r"^GMT([+-]?)(\d{1,2})"
+
 _marker = object()
 
 
@@ -282,14 +284,24 @@ def get_timezone(dt, default="Etc/GMT"):
     if tz:
         # convert DateTime `GMT` to `Etc/GMT` timezones
         # NOTE: `GMT+1` get `Etc/GMT-1`!
-        if tz.startswith("GMT+0"):
-            tz = tz.replace("GMT+0", "Etc/GMT")
-        elif tz.startswith("GMT+"):
-            tz = tz.replace("GMT+", "Etc/GMT-")
-        elif tz.startswith("GMT-"):
-            tz = tz.replace("GMT-", "Etc/GMT+")
-        elif tz.startswith("GMT"):
-            tz = tz.replace("GMT", "Etc/GMT")
+        #
+        # The special area of "Etc" is used for some administrative zones,
+        # particularly for "Etc/UTC" which represents Coordinated Universal
+        # Time. In order to conform with the POSIX style, those zone names
+        # beginning with "Etc/GMT" have their sign reversed from the standard
+        # ISO 8601 convention. In the "Etc" area, zones west of GMT have a
+        # positive sign and those east have a negative sign in their name (e.g
+        # "Etc/GMT-14" is 14 hours ahead of GMT).
+        # --- From https://en.wikipedia.org/wiki/Tz_database#Area
+        match = re.match(GMT_REGEX, tz)
+        if match:
+            groups = match.groups()
+            hours = to_int(groups[1], 0)
+            if not hours:
+                return "Etc/GMT"
+
+            offset = "-" if groups[0] == "+" else "+"
+            tz = "Etc/GMT%s%s" % (offset, hours)
     else:
         tz = default
 

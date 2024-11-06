@@ -309,6 +309,24 @@ Get the timezone from `datetime.date` objects:
     >>> dtime.get_timezone(dt.date)
     'Etc/GMT'
 
+For consistency reasons, `GMT` timezones are always converted to `Etc/GMT`:
+
+    >>> DT = DateTime('2024/11/06 15:11:20.956914 GMT+1')
+    >>> DT.timezone()
+    'GMT+1'
+
+    >>> dtime.get_timezone(DT)
+    'Etc/GMT-1'
+
+Even for `datetime` objects:
+
+    >>> dt = DT.asdatetime()
+    >>> dt.tzname()
+    'GMT+0100'
+
+    >>> dtime.get_timezone(dt)
+    'Etc/GMT-1'
+
 We can even get the obsolete timezone that was applying to an old date:
 
     >>> old_dt = datetime(1682, 8, 16, 2, 44, 54)
