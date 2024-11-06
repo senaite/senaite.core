@@ -42,7 +42,7 @@ from DateTime.DateTime import TimeError
 from zope.i18n import translate
 
 
-GMT_REGEX = r"^GMT([+-]?)(\d{1,2})"
+RX_GMT = r"^(\bGMT\b|)([+-]?)(\d{1,2})"
 
 _marker = object()
 
@@ -293,14 +293,14 @@ def get_timezone(dt, default="Etc/GMT"):
         # positive sign and those east have a negative sign in their name (e.g
         # "Etc/GMT-14" is 14 hours ahead of GMT).
         # --- From https://en.wikipedia.org/wiki/Tz_database#Area
-        match = re.match(GMT_REGEX, tz)
+        match = re.match(RX_GMT, tz)
         if match:
             groups = match.groups()
-            hours = to_int(groups[1], 0)
+            hours = to_int(groups[2], 0)
             if not hours:
                 return "Etc/GMT"
 
-            offset = "-" if groups[0] == "+" else "+"
+            offset = "-" if groups[1] == "+" else "+"
             tz = "Etc/GMT%s%s" % (offset, hours)
     else:
         tz = default

@@ -327,6 +327,13 @@ Even for `datetime` objects:
     >>> dtime.get_timezone(dt)
     'Etc/GMT-1'
 
+    >>> dt = dtime.to_dt(DT)
+    >>> dt.tzname()
+    '+01'
+
+    >>> dtime.get_timezone(dt)
+    'Etc/GMT-1'
+
 We can even get the obsolete timezone that was applying to an old date:
 
     >>> old_dt = datetime(1682, 8, 16, 2, 44, 54)
