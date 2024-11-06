@@ -846,6 +846,14 @@ The system does the shift if the date comes with a valid timezone:
     >>> dtime.to_ansi(dt, timezone="Etc/GMT")
     '19891201011405'
 
+If the timezone is not valid, the system returns in ANSI without shifts:
+
+    >>> dtime.to_ansi(dt, timezone="+03")
+    '19891201131405'
+
+    >>> dtime.to_ansi(dt, timezone="Mars")
+    '19891201131405'
+
 
 Relative delta between two dates
 ................................

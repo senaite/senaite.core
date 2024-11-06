@@ -234,7 +234,7 @@ def to_ansi(dt, show_time=True, timezone=None):
     if dt is None:
         return None
 
-    if timezone:
+    if timezone and is_valid_timezone(timezone):
         if is_timezone_naive(dt):
             # XXX Localize to default TZ to overcome `to_dt` inconsistency:
             #
