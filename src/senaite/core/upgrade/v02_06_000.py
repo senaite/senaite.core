@@ -2191,6 +2191,7 @@ def setup_result_types(tool):
         # check if it was set as a string result
         field = obj.getField("StringResult")
         if not field:
+            # https://github.com/senaite/senaite.core/pull/2642
             logger.error("Field 'StringResult' not found on object %s (%s)"
                          % (api.get_path(obj), api.get_uid(obj)))
             continue
