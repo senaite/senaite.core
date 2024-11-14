@@ -242,7 +242,7 @@ def check_all_verified(analysis):
     """Checks if all analyses are verified
     """
     sample = analysis.getRequest()
-    analysis_uid = api.get_uid(analysis)
+    uid = api.get_uid(analysis)
 
     # get all analyses of the sample
     analyses = sample.getAnalyses()
@@ -252,8 +252,8 @@ def check_all_verified(analysis):
     # NOTE: We remove the current processed analysis from the calculation,
     #       because it is either not yet verified or processed in multi-verify
     #       scenarios
-    analysis_count = filter(lambda x: api.get_uid(x) != analysis_uid, analyses)
-    verified_count = filter(lambda x: api.get_uid(x) != analysis_uid, verified)
+    analysis_count = len(filter(lambda x: api.get_uid(x) != uid, analyses))
+    verified_count = len(filter(lambda x: api.get_uid(x) != uid, verified))
 
     return analysis_count == verified_count
 
