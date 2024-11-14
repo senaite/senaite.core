@@ -229,13 +229,23 @@ def after_verify(analysis):
         ws.reindexObject()
 
     # Promote transition to Analysis Request if Sample auto-verify is enabled
-    if IRequestAnalysis.providedBy(analysis):
+    if IRequestAnalysis.providedBy(analysis) and check_all_verified(analysis):
         setup = api.get_setup()
         if setup.getAutoVerifySamples():
             doActionFor(analysis.getRequest(), "verify")
 
         # Reindex the sample (and ancestors) this analysis belongs to
         reindex_request(analysis)
+
+
+def check_all_verified(analysis):
+    """Checks if all analyses are verified
+    """
+    sample = analysis.getRequest()
+    analyses = sample.getAnalyses()
+    verified = sample.getAnalyses(object_provides=IVerified.__identifier__)
+    # NOTE: We count the current processed analysis as verified!
+    return len(analyses) == len(verified) + 1
 
 
 def after_publish(analysis):
