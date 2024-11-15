@@ -242,6 +242,16 @@ def after_verify(analysis):
 
 def check_all_verified(analysis):
     """Checks if all analyses are verified
+
+    NOTE: This check is provided solely for performance reasons of the `verify`
+    transition, because it is a less expensive calculation than executing the
+    `doActionFor` method on the sample for each verified analysis.
+
+    The worst case that can happen is that the sample does not get
+    automatically verified and needs to be transitioned manually.
+
+    :param analysis: The current verified analysis
+    :returns: True if all other routine analyses of the sample are verified
     """
     parent = api.get_parent(analysis)
     sample = analysis.getRequest()
