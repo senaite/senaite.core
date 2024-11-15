@@ -27,6 +27,8 @@ from bika.lims.interfaces import IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils.analysis import create_retest
 from bika.lims.workflow import doActionFor
+from bika.lims.workflow.analysis import STATE_REJECTED
+from bika.lims.workflow.analysis import STATE_RETRACTED
 from DateTime import DateTime
 from zope.interface import alsoProvides
 
@@ -241,21 +243,27 @@ def after_verify(analysis):
 def check_all_verified(analysis):
     """Checks if all analyses are verified
     """
+    parent = api.get_parent(analysis)
     sample = analysis.getRequest()
     uid = api.get_uid(analysis)
 
-    # get all analyses of the sample
-    analyses = sample.getAnalyses()
-    # get all verified analyses of the sample
+    def is_valid(an):
+        state = api.get_review_status(an)
+        return state not in [STATE_REJECTED, STATE_RETRACTED]
+
+    # get all *valid* analyses of the sample
+    analyses = filter(is_valid, sample.getAnalyses())
+    # get all *verified* analyses of the sample
     verified = sample.getAnalyses(object_provides=IVerified.__identifier__)
 
-    # NOTE: We remove the current processed analysis from the calculation,
-    #       because it is either not yet verified or processed in multi-verify
-    #       scenarios
-    analysis_count = len(filter(lambda x: api.get_uid(x) != uid, analyses))
-    verified_count = len(filter(lambda x: api.get_uid(x) != uid, verified))
+    # NOTE: We remove the current processed routine analysis (if not a WS
+    #       duplicate/reference analysis), because it is either not yet
+    #       verified or processed already in multi-verify scenarios.
+    if sample == parent:
+        analyses = filter(lambda x: api.get_uid(x) != uid, analyses)
+        verified = filter(lambda x: api.get_uid(x) != uid, verified)
 
-    return analysis_count == verified_count
+    return len(analyses) == len(verified)
 
 
 def after_publish(analysis):
