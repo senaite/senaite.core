@@ -30,16 +30,7 @@ from bika.lims.workflow import doActionFor
 from bika.lims.workflow.analysis import STATE_REJECTED
 from bika.lims.workflow.analysis import STATE_RETRACTED
 from DateTime import DateTime
-from zope.annotation.interfaces import IAnnotations
-from zope.interface import Interface
 from zope.interface import alsoProvides
-
-try:
-    # https://github.com/senaite/senaite.app.listing/pull/146
-    from senaite.app.listing.interfaces import ITransitionChain
-except ImportError:
-    class ITransitionChain(Interface):
-        pass
 
 
 def after_assign(analysis):
@@ -262,15 +253,6 @@ def check_all_verified(analysis):
     :param analysis: The current verified analysis
     :returns: True if all other routine analyses of the sample are verified
     """
-
-    request = api.get_request()
-    if ITransitionChain.providedBy(request):
-        transition_chain = IAnnotations(request).get("transition_chain")
-        if api.is_list(transition_chain) and len(transition_chain) > 0:
-            # check if the current processed UID is the last
-            uid = api.get_uid(analysis)
-            # skip further processing if the current UID is not the last
-            return uid == transition_chain[-1]
 
     parent = api.get_parent(analysis)
     sample = analysis.getRequest()
