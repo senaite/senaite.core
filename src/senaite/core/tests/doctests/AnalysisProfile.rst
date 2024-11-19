@@ -196,3 +196,59 @@ Setting the profile works up to this state:
     >>> services = get_services(ar3)
     >>> set(map(api.get_uid, services)).issuperset(service_uids1 + [Au.UID()])
     True
+
+
+Inactive services
+.................
+
+Inactive services are not returned by default:
+
+    >>> Fe in profile1.getServices()
+    True
+
+    >>> success = do_action_for(Fe, "deactivate")
+    >>> api.get_workflow_status_of(Fe)
+    'inactive'
+
+    >>> Fe in profile1.getServices()
+    False
+
+But kept as raw data, just in case we re-activate the service later:
+
+    >>> Fe in profile1.getServices(active_only=False)
+    True
+
+    >>> api.get_uid(Fe) in profile1.getRawServiceUIDs()
+    True
+
+By default, inactive services are kept as raw data when the value is set:
+
+    >>> profile1.setServices([])
+    >>> Cu in profile1.getServices()
+    False
+    >>> Fe in profile1.getServices()
+    False
+    >>> api.get_uid(Cu) in profile1.getServiceUIDs()
+    False
+    >>> api.get_uid(Fe) in profile1.getServiceUIDs()
+    False
+    >>> api.get_uid(Cu) in profile1.getRawServiceUIDs()
+    False
+    >>> api.get_uid(Fe) in profile1.getRawServiceUIDs()
+    True
+
+Unless we use `keep_inactive=False`:
+
+    >>> profile1.setServices([], keep_inactive=False)
+    >>> Cu in profile1.getServices()
+    False
+    >>> Fe in profile1.getServices()
+    False
+    >>> api.get_uid(Cu) in profile1.getServiceUIDs()
+    False
+    >>> api.get_uid(Fe) in profile1.getServiceUIDs()
+    False
+    >>> api.get_uid(Cu) in profile1.getRawServiceUIDs()
+    False
+    >>> api.get_uid(Fe) in profile1.getRawServiceUIDs()
+    False

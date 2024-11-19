@@ -252,7 +252,7 @@ class AnalysisProfile(Container, ClientAwareMixin):
         return accessor(self) or []
 
     @security.protected(permissions.View)
-    def getServices(self):
+    def getServices(self, active_only=True):
         """Returns a list of service objects
 
         >>> self.getServices()
@@ -260,12 +260,14 @@ class AnalysisProfile(Container, ClientAwareMixin):
 
         :returns: List of analysis service objects
         """
-        records = self.getRawServices()
-        service_uids = map(lambda r: r.get("uid"), records)
-        return list(map(api.get_object, service_uids))
+        services = map(api.get_object, self.getRawServiceUIDs())
+        if active_only:
+            # filter out inactive services
+            services = filter(api.is_active, services)
+        return list(services)
 
     @security.protected(permissions.ModifyPortalContent)
-    def setServices(self, value):
+    def setServices(self, value, keep_inactive=True):
         """Set services for the profile
 
         This method accepts either a list of analysis service objects, a list
@@ -295,6 +297,18 @@ class AnalysisProfile(Container, ClientAwareMixin):
                 raise TypeError(
                     "Expected object, uid or record, got %r" % type(v))
             records.append({"uid": uid, "hidden": hidden})
+
+        if keep_inactive:
+            # keep inactive services so they come up again when reactivated
+            uids = [record.get("uid") for record in records]
+            for record in self.getRawServices():
+                uid = record.get("uid")
+                if uid in uids:
+                    continue
+                obj = api.get_object(uid)
+                if not api.is_active(obj):
+                    records.append(record)
+
         mutator = self.mutator("services")
         mutator(self, records)
 
@@ -302,8 +316,22 @@ class AnalysisProfile(Container, ClientAwareMixin):
     Service = Services = property(getServices, setServices)
 
     @security.protected(permissions.View)
-    def getServiceUIDs(self):
-        """Returns a list of the selected service UIDs
+    def getServiceUIDs(self, active_only=True):
+        """Returns a list of UIDs for the referenced AnalysisService objects
+
+        :param active_only: If True, only UIDs of active services are returned
+        :returns: A list of unique identifiers (UIDs)
+        """
+        if active_only:
+            services = self.getServices(active_only=active_only)
+            return list(map(api.get_uid, services))
+        return self.getRawServiceUIDs()
+
+    @security.protected(permissions.View)
+    def getRawServiceUIDs(self):
+        """Returns the list of UIDs stored as raw data in the 'Services' field
+
+        :returns: A list of UIDs extracted from the raw 'Services' data.
         """
         services = self.getRawServices()
         return list(map(lambda record: record.get("uid"), services))
