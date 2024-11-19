@@ -542,6 +542,16 @@
                             &#128274;
                           </div>
 
+                          <!-- Beyond holding time box -->
+                          <div tal:attributes="uid python:service_uid;
+                                               arnum python:arnum;
+                                               id python:'{}-{}-beyondholdingtime'.format(service_uid, arnum);
+                                               class python:'service-beyondholdingtime {}-beyondholdingtime'.format(service_uid);"
+                               title="This service cannot be selected to prevent the analysis from being conducted beyond the analytical holding time."
+                               i18n:attributes="title">
+                            &#128683;
+                          </div>
+
                           <!-- Service checkbox -->
                           <div tal:attributes="id python:'{}-{}-analysisservice'.format(service_uid, arnum);
                                                class python:'analysisservice {}-analysisservice'.format(service_uid);">

@@ -230,7 +230,7 @@ Test get/set methods:
 Services
 ^^^^^^^^
 
-Anbalysis Services can be assigned to the Template, so that they are
+Analysis Services can be assigned to the Template, so that they are
 automatically added when the sample is created.
 
 Each service can be configured for a specific partition and if it should be
@@ -305,7 +305,7 @@ Get the partition ID for a given service:
 Get the service UIDs for all assigned services:
 
     >>> uids = [api.get_uid(Fe), api.get_uid(Cu), api.get_uid(Au)]
-    >>> all(map(lambda uid: uid in uids, template1.getAnalysisServiceUIDs()))
+    >>> all(map(lambda uid: uid in uids, template1.getServiceUIDs()))
     True
 
 Update the settings for *all* assigned services with `setAnalysisServicesSettings` (plural):
@@ -320,7 +320,7 @@ Unassign a service from the template:
     >>> template1.remove_service(Au)
     True
 
-    >>> api.get_uid(Au) in template1.getAnalysisServiceUIDs()
+    >>> api.get_uid(Au) in template1.getServiceUIDs()
     False
 
     >>> template1.remove_service(Au)
@@ -328,16 +328,64 @@ Unassign a service from the template:
 
 Unassignment happens automatically if an Analysis Service was deactivated:
 
-    >>> api.get_uid(Fe) in template1.getAnalysisServiceUIDs()
+    >>> Fe in template1.getServices()
+    True
+
+    >>> api.get_uid(Fe) in template1.getServiceUIDs()
+    True
+
+    >>> api.get_uid(Fe) in template1.getRawServiceUIDs()
     True
 
     >>> api.get_workflow_status_of(Fe)
     'active'
 
     >>> success = do_action_for(Fe, "deactivate")
-
     >>> api.get_workflow_status_of(Fe)
     'inactive'
 
-    >>> api.get_uid(Fe) in template1.getAnalysisServiceUIDs()
+    >>> Fe in template1.getServices()
+    False
+
+    >>> api.get_uid(Fe) in template1.getServiceUIDs()
+    False
+
+But are kept as raw data, just in case we re-activate the service later:
+
+    >>> Fe in template1.getServices(active_only=False)
+    True
+
+    >>> api.get_uid(Fe) in template1.getRawServiceUIDs()
+    True
+
+By default, inactive services are kept as raw data when the value is set:
+
+    >>> template1.setServices([])
+    >>> Cu in template1.getServices()
+    False
+    >>> Fe in template1.getServices()
+    False
+    >>> api.get_uid(Cu) in template1.getServiceUIDs()
+    False
+    >>> api.get_uid(Fe) in template1.getServiceUIDs()
+    False
+    >>> api.get_uid(Cu) in template1.getRawServiceUIDs()
+    False
+    >>> api.get_uid(Fe) in template1.getRawServiceUIDs()
+    True
+
+Unless we use `keep_inactive=False`:
+
+    >>> template1.setServices([], keep_inactive=False)
+    >>> Cu in template1.getServices()
+    False
+    >>> Fe in template1.getServices()
+    False
+    >>> api.get_uid(Cu) in template1.getServiceUIDs()
+    False
+    >>> api.get_uid(Fe) in template1.getServiceUIDs()
+    False
+    >>> api.get_uid(Cu) in template1.getRawServiceUIDs()
+    False
+    >>> api.get_uid(Fe) in template1.getRawServiceUIDs()
     False

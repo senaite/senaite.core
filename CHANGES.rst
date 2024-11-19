@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2643 Improve performance of analysis verification
+- #2624 Added "Maximum holding time" setting to services and analyses
+- #2637 Do not remove inactive services from profiles and templates
 - #2642 Fix Attribute Error in Upgrade Step 2619
 - #2641 Fix AttributeError on rejection of samples without a contact set
 - #2640 Fix missing custom transitions via adapter in Worksheet's analyses
