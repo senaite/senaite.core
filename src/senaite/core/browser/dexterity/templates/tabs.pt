@@ -4,7 +4,7 @@
                  has_groups python:bool(groups);">
 
   <!-- navigation tabs -->
-  <ul class="nav nav-tabs" role="tablist"
+  <ul class="nav nav-tabs mb-2" role="tablist"
       tal:condition="python: has_groups and enable_form_tabbing">
 
     <!-- primary tab -->
@@ -48,7 +48,7 @@
     </div>
     <!-- Secondary fieldsets -->
     <tal:block tal:repeat="group groups" condition="has_groups">
-      <div class="tab-pane"
+      <div class="tab-pane" role="tabpanel"
            tal:define="normalizeString nocall:context/@@plone/normalizeString;
                        fieldset_label group/label;
                        fieldset_name python:getattr(group, '__name__', False) or getattr(group.label, 'default', False) or fieldset_label;
@@ -56,14 +56,9 @@
            tal:attributes="id string:${fieldset_name};
                            class python:'tab-pane' if enable_form_tabbing else 'd-block';
                            data-fieldset fieldset_name;">
-
-        <fieldset tal:repeat="group view/groups|nothing"
-                  tal:attributes="id python:''.join((group.prefix, 'groups.', group.__name__)).replace('.', '-')">
-          <tal:block tal:repeat="widget group/widgets/values">
-            <tal:widget tal:replace="structure widget/@@ploneform-render-widget"/>
-          </tal:block>
-        </fieldset>
-
+        <tal:block tal:repeat="widget group/widgets/values">
+          <tal:widget tal:replace="structure widget/@@ploneform-render-widget"/>
+        </tal:block>
       </div>
     </tal:block>
   </div>
