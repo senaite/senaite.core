@@ -32,7 +32,6 @@ from plone.app.z3cform.views import RenderWidget
 from plone.dexterity.browser.edit import DefaultEditView
 from plone.dexterity.browser.view import DefaultView
 from senaite.core.interfaces import ISenaiteFormLayer
-from Products.Five.browser import BrowserView
 from z3c.form.interfaces import INPUT_MODE
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 
