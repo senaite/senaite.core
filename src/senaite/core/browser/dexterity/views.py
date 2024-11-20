@@ -27,6 +27,7 @@ import plone.z3cform.interfaces
 import plone.z3cform.templates
 import senaite.core.browser.dexterity
 import z3c.form.interfaces
+from bika.lims import senaiteMessageFactory as _
 from plone.app.z3cform.views import Macros
 from plone.app.z3cform.views import RenderWidget
 from plone.dexterity.browser.edit import DefaultEditView
@@ -201,9 +202,10 @@ class SenaiteDefaultView(DefaultView):
         super(SenaiteDefaultView, self).__init__(context, request)
         self.context = context
         self.request = request
+        self.enable_form_tabbing = self.get_default_form_tabbing()
+        self.default_fieldset_label = _("General")
 
-    @property
-    def enable_form_tabbing(self):
+    def get_default_form_tabbing(self):
         tabbing = self.request.get("enable_form_tabbing", "1")
         if tabbing.lower() in ["0", "no"]:
             return False

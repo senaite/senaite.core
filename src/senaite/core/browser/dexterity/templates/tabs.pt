@@ -1,6 +1,6 @@
 <div tal:define="groups view/groups | nothing;
                  enable_form_tabbing view/enable_form_tabbing | python:True;
-                 default_fieldset_label view/default_fieldset_label | string:Default;
+                 default_fieldset_label view/default_fieldset_label | string:'General';
                  has_groups python:bool(groups);">
 
   <!-- navigation tabs -->
