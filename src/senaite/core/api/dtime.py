@@ -42,6 +42,8 @@ from DateTime.DateTime import TimeError
 from zope.i18n import translate
 
 
+RX_GMT = r"^(\bGMT\b|)([+-]?)(\d{1,2})"
+
 _marker = object()
 
 
@@ -156,7 +158,8 @@ def to_DT(dt):
             return None
     elif is_dt(dt):
         try:
-            # XXX Why do this instead of DateTime(dt)?
+            # We do this because isoformat() comes with the +/- utc offset at
+            # the end, so it becomes easier than having to rely on tzinfo stuff
             return DateTime(dt.isoformat())
         except DateTimeError:
             return DateTime(dt)
@@ -191,6 +194,15 @@ def to_dt(dt):
         return None
 
 
+def now():
+    """Returns a timezone-aware datetime representing current date and time
+    as defined in Zope's TZ environment variable or, if not set, from OS
+
+    :returns: timezone-aware datetime object
+    """
+    return to_dt(DateTime())
+
+
 def ansi_to_dt(dt):
     """The YYYYMMDD format is defined by ANSI X3.30. Therefore, 2 December 1,
     1989 would be represented as 19891201. When times are transmitted, they
@@ -211,15 +223,43 @@ def ansi_to_dt(dt):
     return datetime.strptime(dt, date_format)
 
 
-def to_ansi(dt, show_time=True):
+def to_ansi(dt, show_time=True, timezone=None):
     """Returns the date in ANSI X3.30/X4.43.3) format
     :param dt: DateTime/datetime/date
     :param show_time: if true, returns YYYYMMDDHHMMSS. YYYYMMDD otherwise
+    :param timezone: if set, converts the date to the given timezone
     :returns: str that represents the datetime in ANSI format
     """
     dt = to_dt(dt)
     if dt is None:
         return None
+
+    if timezone and is_valid_timezone(timezone):
+        if is_timezone_naive(dt):
+            # XXX Localize to default TZ to overcome `to_dt` inconsistency:
+            #
+            # - if the input value is a datetime/date type, `to_dt` does not
+            #   convert to the OS's zone, even if the value is tz-naive.
+            # - if the input value is a str or DateTime, `to_dt` does  convert
+            #   to the system default zone.
+            #
+            # For instance:
+            # >>> to_dt("19891201131405")
+            # datetime.datetime(1989, 12, 1, 13, 14, 5, tzinfo=<StaticTzInfo 'Etc/GMT'>)
+            # >>> ansi_to_dt("19891201131405")
+            # datetime.datetime(1989, 12, 1, 13, 14, 5)
+            #
+            # That causes the following inconsistency:
+            # >>> to_ansi(to_dt("19891201131405"), timezone="Pacific/Fiji")
+            # 19891202011405
+            # >>> to_ansi(ansi_to_dt("19891201131405"), timezone="Pacific/Fiji")
+            # 19891201131405
+
+            default_tz = get_timezone(dt)
+            default_zone = pytz.timezone(default_tz)
+            dt = default_zone.localize(dt)
+
+        dt = to_zone(dt, timezone)
 
     ansi = "{:04d}{:02d}{:02d}".format(dt.year, dt.month, dt.day)
     if not show_time:
@@ -244,14 +284,24 @@ def get_timezone(dt, default="Etc/GMT"):
     if tz:
         # convert DateTime `GMT` to `Etc/GMT` timezones
         # NOTE: `GMT+1` get `Etc/GMT-1`!
-        if tz.startswith("GMT+0"):
-            tz = tz.replace("GMT+0", "Etc/GMT")
-        elif tz.startswith("GMT+"):
-            tz = tz.replace("GMT+", "Etc/GMT-")
-        elif tz.startswith("GMT-"):
-            tz = tz.replace("GMT-", "Etc/GMT+")
-        elif tz.startswith("GMT"):
-            tz = tz.replace("GMT", "Etc/GMT")
+        #
+        # The special area of "Etc" is used for some administrative zones,
+        # particularly for "Etc/UTC" which represents Coordinated Universal
+        # Time. In order to conform with the POSIX style, those zone names
+        # beginning with "Etc/GMT" have their sign reversed from the standard
+        # ISO 8601 convention. In the "Etc" area, zones west of GMT have a
+        # positive sign and those east have a negative sign in their name (e.g
+        # "Etc/GMT-14" is 14 hours ahead of GMT).
+        # --- From https://en.wikipedia.org/wiki/Tz_database#Area
+        match = re.match(RX_GMT, tz)
+        if match:
+            groups = match.groups()
+            hours = to_int(groups[2], 0)
+            if not hours:
+                return "Etc/GMT"
+
+            offset = "-" if groups[1] == "+" else "+"
+            tz = "Etc/GMT%s%s" % (offset, hours)
     else:
         tz = default
 

@@ -309,6 +309,31 @@ Get the timezone from `datetime.date` objects:
     >>> dtime.get_timezone(dt.date)
     'Etc/GMT'
 
+For consistency reasons, `GMT` timezones are always converted to `Etc/GMT`:
+
+    >>> DT = DateTime('2024/11/06 15:11:20.956914 GMT+1')
+    >>> DT.timezone()
+    'GMT+1'
+
+    >>> dtime.get_timezone(DT)
+    'Etc/GMT-1'
+
+Even for `datetime` objects:
+
+    >>> dt = DT.asdatetime()
+    >>> dt.tzname()
+    'GMT+0100'
+
+    >>> dtime.get_timezone(dt)
+    'Etc/GMT-1'
+
+    >>> dt = dtime.to_dt(DT)
+    >>> dt.tzname()
+    '+01'
+
+    >>> dtime.get_timezone(dt)
+    'Etc/GMT-1'
+
 We can even get the obsolete timezone that was applying to an old date:
 
     >>> old_dt = datetime(1682, 8, 16, 2, 44, 54)
@@ -456,6 +481,34 @@ Convert `DateTime` objects to a timezone:
 
     >>> dtime.to_zone(DT_utc, "CET")
     DateTime('1970/01/01 02:00:00 GMT+1')
+
+
+Get the current datetime (with timezone)
+........................................
+
+Python's `datetime.now()` returns a timezone-naive datetime object, whereas
+Zope's DateTime() returns a timezone-aware DateTime object. This difference
+can lead to inconsistencies when converting and comparing dates if not
+carefully managed. The `dtime.now(timezone)` function provides the current
+datetime with the timezone defined in Zope's TZ environment variable, like
+Zope's `DateTime()` does. This function is strongly recommended over
+`datetime.now()` except in cases where a timezone-naive datetime is explicitly
+needed.
+
+    >>> now_dt = dtime.now()
+    >>> now_DT = DateTime()
+    >>> now_dt.utcoffset().seconds == now_DT.tzoffset()
+    True
+
+    >>> ansi = dtime.to_ansi(now_dt)
+    >>> dtime.to_ansi(now_DT) == ansi
+    True
+
+    >>> dtime.to_ansi(dtime.to_dt(now_DT)) == ansi
+    True
+
+    >>> dtime.to_ansi(dtime.to_DT(now_dt)) == ansi
+    True
 
 
 Make a POSIX timestamp
@@ -758,6 +811,48 @@ Still, invalid dates return None:
     >>> dt = "20030230123408"
     >>> dtime.to_ansi(dt) is None
     True
+
+We can also specify the timezone. Since `to_ansi` relies on `to_dt` to convert
+the input value to a valid datetime, naive datetime is localized to OS`s
+default timezone before the hours shift:
+
+    >>> dtime.to_ansi("1989-12-01")
+    '19891201000000'
+
+    >>> dtime.to_ansi("1989-12-01", timezone="Pacific/Fiji")
+    '19891201120000'
+
+    >>> dt = dtime.to_dt("19891201131405")
+    >>> dtime.to_ansi(dt)
+    '19891201131405'
+
+    >>> dtime.to_ansi(dt, timezone="Pacific/Fiji")
+    '19891202011405'
+
+    >>> dt = dtime.ansi_to_dt("19891201131405")
+    >>> dtime.to_ansi(dt)
+    '19891201131405'
+
+    >>> dtime.to_ansi(dt, timezone="Pacific/Fiji")
+    '19891202011405'
+
+The system does the shift if the date comes with a valid timezone:
+
+    >>> dt = dtime.ansi_to_dt("19891201131405")
+    >>> dt = dtime.to_zone(dt, "Pacific/Fiji")
+    >>> dtime.to_ansi(dt, timezone="Pacific/Fiji")
+    '19891201131405'
+
+    >>> dtime.to_ansi(dt, timezone="Etc/GMT")
+    '19891201011405'
+
+If the timezone is not valid, the system returns in ANSI without shifts:
+
+    >>> dtime.to_ansi(dt, timezone="+03")
+    '19891201131405'
+
+    >>> dtime.to_ansi(dt, timezone="Mars")
+    '19891201131405'
 
 
 Relative delta between two dates

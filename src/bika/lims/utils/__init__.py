@@ -915,3 +915,13 @@ def get_client(obj):
             return obj.getClient()
 
     return None
+
+
+def get_fas_ico(icon_id, **attrs):
+    """Returns a well-formed fontawesome (fas) icon
+    """
+    css_class = attrs.pop("css_class", "")
+    if not icon_id.startswith("fa-"):
+        icon_id = "fa-%s" % icon_id
+    attrs["css_class"] = " ".join([css_class, "fas", icon_id]).strip()
+    return "<i %s/>" % render_html_attributes(**attrs)

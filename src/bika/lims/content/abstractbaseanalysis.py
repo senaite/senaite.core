@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
@@ -362,6 +363,30 @@ MaxTimeAllowed = DurationField(
         description=_(
             "Maximum time allowed for completion of the analysis. A late "
             "analysis alert is raised when this period elapses"),
+    )
+)
+
+MaxHoldingTime = DurationField(
+    'MaxHoldingTime',
+    schemata="Analysis",
+    widget=DurationWidget(
+        label=_(
+            u"label_analysis_maxholdingtime",
+            default=u"Maximum holding time"
+        ),
+        description=_(
+            u"description_analysis_maxholdingtime",
+            default=u"This service will not appear for selection on the "
+                    u"sample registration form if the elapsed time since "
+                    u"sample collection exceeds the holding time limit. "
+                    u"Exceeding this time limit may result in unreliable or "
+                    u"compromised data, as the integrity of the sample can "
+                    u"degrade over time. Consequently, any results obtained "
+                    u"after this period may not accurately reflect the "
+                    u"sample's true composition, impacting data validity. "
+                    u"Note: This setting does not affect the test's "
+                    u"availability in the 'Manage Analyses' view."
+        )
     )
 )
 
@@ -789,6 +814,7 @@ schema = BikaSchema.copy() + Schema((
     Instrument,
     Method,
     MaxTimeAllowed,
+    MaxHoldingTime,
     DuplicateVariation,
     Accredited,
     PointOfCapture,
@@ -1078,6 +1104,20 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """
         tat = self.Schema().getField("MaxTimeAllowed").get(self)
         return tat or self.bika_setup.getDefaultTurnaroundTime()
+
+    @security.public
+    def getMaxHoldingTime(self):
+        """Returns the maximum time since it the sample was collected for this
+        test/service to become available on sample creation. Returns None if no
+        positive maximum hold time is set. Otherwise, returns a dict with the
+        keys "days", "hours" and "minutes"
+        """
+        max_hold_time = self.Schema().getField("MaxHoldingTime").get(self)
+        if not max_hold_time:
+            return {}
+        if api.to_minutes(**max_hold_time) <= 0:
+            return {}
+        return max_hold_time
 
     # TODO Remove. ResultOptionsType field was replaced by ResulType field
     def getResultOptionsType(self):
