@@ -99,7 +99,7 @@ class SelectOtherWidgetController extends React.Component{
         <select
           id={this.state.id}
           name={this.state.name}
-          className="form-control mr-sm-2"
+          className="form-control mb-2 mr-sm-2"
           onChange={this.on_option_change}>
           {this.render_options()}
         </select>
