@@ -3,6 +3,21 @@
                  default_fieldset_label view/default_fieldset_label | string:'General';
                  has_groups python:bool(groups);">
 
+  <div class="d-flex flex-row-reverse">
+    <a href="#"
+       tal:condition="python:enable_form_tabbing"
+       tal:attributes="href string:${context/absolute_url}?enable_form_tabbing=0;"
+       title="">
+      <i class="fas fa-expand"></i>
+    </a>
+    <a href="#"
+       tal:condition="python:not enable_form_tabbing"
+       tal:attributes="href string:${context/absolute_url}?enable_form_tabbing=1;"
+       title="">
+      <i class="fas fa-compress"></i>
+    </a>
+  </div>
+
   <!-- navigation tabs -->
   <ul class="nav nav-tabs mb-2" role="tablist"
       tal:condition="python: has_groups and enable_form_tabbing">
