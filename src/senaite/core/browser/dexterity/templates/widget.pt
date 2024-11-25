@@ -62,13 +62,24 @@
   <tal:view_mode condition="python:view.is_view_mode()">
 
     <table class="table table-borderless table-hover table-sm">
+      <colgroup>
+        <col style="min-width:100px;max-width:200px;">
+        <col style="width:100%">
+      </colgroup>
       <tr>
-        <td class="col-1">
+        <td>
           <div for=""
                class="horizontal font-weight-bold"
                tal:attributes="for widget/id"
                tal:condition="python: not hidden and widget.label">
-            <span i18n:translate="" tal:replace="widget/label">label</span>
+
+            <span tal:define="description python: getattr(widget, 'description', widget.field.description)"
+                  tal:attributes="title python:description"
+                  data-toggle="tooltip"
+                  data-html="true">
+                <span i18n:translate="" tal:replace="widget/label">label</span>
+            </span>
+
 
             <span class="required horizontal" title="Required"
                   tal:condition="python:widget.required and widget.mode == 'input'"
@@ -76,7 +87,7 @@
           </div>
 
         </td>
-        <td class="text-left">
+        <td>
           <div tal:define="prefix python:view.get_prepend_text();
                            appendix python:view.get_append_text()">
             <!-- field prefix -->

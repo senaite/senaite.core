@@ -4,7 +4,8 @@
                  has_groups python:bool(groups);">
 
   <!-- Tab view toggle -->
-  <div class="d-flex flex-row-reverse">
+  <div class="d-flex flex-row-reverse"
+       tal:condition="has_groups">
     <!-- shows all contents on one page -->
     <a href="#"
        tal:condition="python:enable_form_tabbing"
