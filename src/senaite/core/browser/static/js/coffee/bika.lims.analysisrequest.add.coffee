@@ -270,6 +270,9 @@ class window.AnalysisRequestAdd
     # Analysis Profile deselected
     $("body").on "deselect", "tr[fieldname=Profiles] textarea", @on_analysis_profile_removed
 
+    # Date sampled changed
+    $("body").on "change", "tr[fieldname=DateSampled] input", @recalculate_records
+
     # Save button clicked
     $("body").on "click", "[name='save_button']", @on_form_submit
     # Save and copy button clicked
@@ -368,8 +371,13 @@ class window.AnalysisRequestAdd
 
     me = this
 
-    # initially hide all lock icons
+    # initially hide all service-related icons
     $(".service-lockbtn").hide()
+
+    # hide all holding time related icons and set checks enabled by default
+    $(".analysisservice").show()
+    $(".service-beyondholdingtime").hide()
+    $(".analysisservice-cb").prop "disabled": no
 
     # set all values for one record (a single column in the AR Add form)
     $.each records, (arnum, record) ->
@@ -388,7 +396,9 @@ class window.AnalysisRequestAdd
         lock = $("##{uid}-#{arnum}-lockbtn")
         # service is included in a profile
         if uid of record.service_to_profiles
-          lock.show()
+          # do not display the lock button if beyond holding time
+          if uid not in record.beyond_holding_time
+            lock.show()
 
         # select the service
         me.set_service arnum, uid, yes
@@ -422,6 +432,19 @@ class window.AnalysisRequestAdd
         # break the iteration after the first loop to avoid multiple dialogs.
         return false
 
+      # disable (and uncheck) services that are beyond sample holding time
+      $.each record.beyond_holding_time, (index, uid) ->
+        # display the alert
+        beyond_holding_time = $("##{uid}-#{arnum}-beyondholdingtime")
+        beyond_holding_time.show()
+
+        # disable the service's checkbox to prevent value submit
+        service_cb = $("#cb_#{arnum}_#{uid}")
+        service_cb.prop "disabled": yes
+
+        # hide checkbox container
+        parent = service_cb.parent "div.analysisservice"
+        parent.hide()
 
   ###*
    * Return the portal url (calculated in code)

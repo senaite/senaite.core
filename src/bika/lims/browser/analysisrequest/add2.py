@@ -21,6 +21,7 @@
 import json
 from collections import OrderedDict
 from datetime import datetime
+from datetime import timedelta
 
 import six
 import transaction
@@ -50,7 +51,9 @@ from Products.Archetypes.interfaces import IField
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.api import dtime
 from senaite.core.catalog import CONTACT_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.p3compat import cmp
 from senaite.core.permissions import TransitionMultiResults
 from zope.annotation.interfaces import IAnnotations
@@ -908,6 +911,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "category": obj.getCategoryTitle(),
             "poc": obj.getPointOfCapture(),
             "conditions": self.get_conditions_info(obj),
+            "max_holding_time": obj.getMaxHoldingTime(),
         })
 
         dependencies = get_calculation_dependencies_for(obj).values()
@@ -1217,10 +1221,74 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             dependencies = self.get_unmet_dependencies_info(metadata)
             metadata.update(dependencies)
 
+            # services conducted beyond the holding time limit
+            beyond = self.get_services_beyond_holding_time(record)
+            metadata["beyond_holding_time"] = beyond
+
             # Set the metadata for current sample number (column)
             out[num_sample] = metadata
 
         return out
+
+    @viewcache.memoize
+    def get_services_max_holding_time(self):
+        """Returns a dict where the key is the uid of active services and the
+        value is a dict representing the maximum holding time in days, hours
+        and minutes. The dictionary only contains uids for services that have
+        a valid maximum holding time set
+        """
+        services = {}
+        query = {
+            "portal_type": "AnalysisService",
+            "point_of_capture": "lab",
+            "is_active": True,
+        }
+        brains = api.search(query, SETUP_CATALOG)
+        for brain in brains:
+            obj = api.get_object(brain)
+            max_holding_time = obj.getMaxHoldingTime()
+            if max_holding_time:
+                uid = api.get_uid(brain)
+                services[uid] = max_holding_time.copy()
+
+        return services
+
+    def get_services_beyond_holding_time(self, record):
+        """Return a list with the uids of the services that cannot be selected
+        because would be conducted past the holding time limit
+        """
+        # get the date to start count from
+        start_date = self.get_start_holding_date(record)
+        if not start_date:
+            return []
+
+        # get the timezone of the start date for correct comparisons
+        tz = dtime.get_timezone(start_date)
+
+        uids = []
+
+        # get the max holding times grouped by service uid
+        services = self.get_services_max_holding_time()
+        for uid, max_holding_time in services.items():
+
+            # calculate the maximum holding date
+            delta = timedelta(minutes=api.to_minutes(**max_holding_time))
+            max_holding_date = start_date + delta
+
+            # TypeError: can't compare offset-naive and offset-aware datetimes
+            max_date = dtime.to_ansi(max_holding_date)
+            now = dtime.to_ansi(dtime.now(), timezone=tz)
+            if now > max_date:
+                uids.append(uid)
+
+        return uids
+
+    def get_start_holding_date(self, record):
+        """Returns the datetime used to calculate the holding time limit,
+        typically the sample collection date.
+        """
+        sampled = record.get("DateSampled")
+        return dtime.to_dt(sampled)
 
     def get_record_metadata(self, record):
         """Returns the metadata for the record passed in

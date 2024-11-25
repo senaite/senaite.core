@@ -23,6 +23,7 @@ from collections import OrderedDict
 from copy import copy
 from copy import deepcopy
 from datetime import datetime
+from datetime import timedelta
 from operator import itemgetter
 
 from bika.lims import api
@@ -38,9 +39,11 @@ from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces import IRoutineAnalysis
+from bika.lims.interfaces import ISubmitted
 from bika.lims.utils import check_permission
 from bika.lims.utils import format_supsub
 from bika.lims.utils import formatDecimalMark
+from bika.lims.utils import get_fas_ico
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import get_link_for
@@ -790,6 +793,8 @@ class AnalysesView(ListingView):
         self._folder_item_remarks(obj, item)
         # Renders the analysis conditions
         self._folder_item_conditions(obj, item)
+        # Fill maximum holding time warnings
+        self._folder_item_holding_time(obj, item)
 
         return item
 
@@ -1697,6 +1702,70 @@ class AnalysesView(ListingView):
         conditions = "<br/>".join([to_str(cond) for cond in conditions])
         service = item["replace"].get("Service") or item["Service"]
         item["replace"]["Service"] = "<br/>".join([service, conditions])
+
+    def _folder_item_holding_time(self, analysis_brain, item):
+        """Adds an icon to the item dictionary if no result has been submitted
+        for the analysis and the holding time has passed or is about to expire.
+        It also displays the icon if the result was recorded after the holding
+        time limit.
+        """
+        analysis = self.get_object(analysis_brain)
+        if not IRoutineAnalysis.providedBy(analysis):
+            return
+
+        # get the maximum holding time for this analysis
+        max_holding_time = analysis.getMaxHoldingTime()
+        if not max_holding_time:
+            return
+
+        # get the datetime from which the max holding time is computed
+        start_date = analysis.getDateSampled()
+        start_date = dtime.to_dt(start_date)
+        if not start_date:
+            return
+
+        # get the timezone of the start date for correct comparisons
+        timezone = dtime.get_timezone(start_date)
+
+        # calculate the maximum holding date
+        delta = timedelta(minutes=api.to_minutes(**max_holding_time))
+        max_holding_date = dtime.to_ansi(start_date + delta)
+
+        # maybe the result was captured past the holding time
+        if ISubmitted.providedBy(analysis):
+            captured = analysis.getResultCaptureDate()
+            captured = dtime.to_ansi(captured, timezone=timezone)
+            if captured > max_holding_date:
+                msg = _("The result was captured past the holding time limit.")
+                icon = get_fas_ico("exclamation-triangle",
+                                   css_class="text-danger",
+                                   title=t(msg))
+                self._append_html_element(item, "ResultCaptureDate", icon)
+            return
+
+        # not yet submitted, maybe the holding time expired
+        now = dtime.to_ansi(dtime.now(), timezone=timezone)
+        if now > max_holding_date:
+            msg = _("The holding time for this sample and analysis has "
+                    "expired. Proceeding with the analysis may compromise the "
+                    "reliability of the results.")
+            icon = get_fas_ico("exclamation-triangle",
+                               css_class="text-danger",
+                               title=t(msg))
+            self._append_html_element(item, "ResultCaptureDate", icon)
+            return
+
+        # or maybe is about to expire
+        soon = dtime.to_ansi(dtime.now(), timezone=timezone)
+        if soon > max_holding_date:
+            msg = _("The holding time for this sample and analysis is about "
+                    "to expire. Please complete the analysis as soon as "
+                    "possible to ensure data accuracy and reliability.")
+            icon = get_fas_ico("exclamation-triangle",
+                               css_class="text-warning",
+                               title=t(msg))
+            self._append_html_element(item, "ResultCaptureDate", icon)
+            return
 
     def is_method_required(self, analysis):
         """Returns whether the render of the selection list with methods is
