@@ -42,9 +42,9 @@
 
       <div tal:define="widget_attrs python:field.widget.get_input_widget_attributes(context, field, value);"
            tal:attributes="id python:fieldName;
-                               class python: test(error_id, 'field error ' + 'Archetypes' + widget.getName(), 'field ' + 'Archetypes' + widget.getName()) + ' ' + widget.klass;
-                               data-required python:required and '1' or '0';
-                               python:widget_attrs;">
+                           class python: test(error_id, 'field error ' + 'Archetypes' + widget.getName(), 'field ' + 'Archetypes' + widget.getName()) + ' ' + widget.klass;
+                           data-required python:required and '1' or '0';
+                           python:widget_attrs;">
         <!-- ReactJS controlled component -->
       </div>
 
