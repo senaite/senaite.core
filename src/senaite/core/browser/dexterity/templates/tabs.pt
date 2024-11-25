@@ -3,13 +3,16 @@
                  default_fieldset_label view/default_fieldset_label | string:'General';
                  has_groups python:bool(groups);">
 
+  <!-- Tab view toggle -->
   <div class="d-flex flex-row-reverse">
+    <!-- shows all contents on one page -->
     <a href="#"
        tal:condition="python:enable_form_tabbing"
        tal:attributes="href string:${context/absolute_url}?enable_form_tabbing=0;"
        title="">
       <i class="fas fa-expand"></i>
     </a>
+    <!-- shows contents in tabs -->
     <a href="#"
        tal:condition="python:not enable_form_tabbing"
        tal:attributes="href string:${context/absolute_url}?enable_form_tabbing=1;"
