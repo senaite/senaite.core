@@ -1,0 +1,35 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:z3c="http://namespaces.zope.org/z3c">
+
+  <!-- SelectOther Widget -->
+  <adapter
+      factory=".widget.SelectOtherWidgetFactory"
+      for="senaite.core.schema.interfaces.ISelectOtherField
+           senaite.core.interfaces.ISenaiteFormLayer" />
+
+  <!-- SelectOther data converter -->
+  <adapter factory=".widget.SelectOtherDataConverter" />
+
+  <!-- SelectOther input widget template -->
+  <z3c:widgetTemplate
+      mode="input"
+      widget=".widget.SelectOtherWidget"
+      template="input.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer" />
+
+  <!-- SelectOther display widget template -->
+  <z3c:widgetTemplate
+      mode="display"
+      widget=".widget.SelectOtherWidget"
+      template="display.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer" />
+
+  <!-- SelectOther hidden widget template -->
+  <z3c:widgetTemplate
+      mode="hidden"
+      widget=".widget.SelectOtherWidget"
+      template="hidden.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer" />
+
+</configure>

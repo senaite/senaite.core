@@ -8,7 +8,7 @@ import "intl-tel-input/build/css/intlTelInput.css";
 // Custom ReactJS controlled widgets
 import QuerySelectWidgetController from "./queryselect/widget.js"
 import AddressWidgetController from "./addresswidget/widget.js"
-
+import SelectOtherWidgetController from "./selectother/widget.js"
 
 // Query Select Widget
 export const render_queryselect_widget = (el) => {
@@ -74,4 +74,9 @@ export const render_phone_widget = (el) => {
     });
   }
   return iti;
+}
+
+// SelectOther Widget
+export const render_selectother_widget = (el) => {
+  return ReactDOM.render(<SelectOtherWidgetController root_class="selectotherfield" root_el={el}/>, el);
 }
