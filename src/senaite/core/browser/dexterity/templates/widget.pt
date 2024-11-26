@@ -14,59 +14,94 @@
                      data-fieldname widget/name;
                      id string:formfield-${widget/id};">
 
-  <div for=""
+  <!-- EDIT MODE -->
+  <tal:edit_mode condition="python:view.is_input_mode()">
+    <div for=""
          class="horizontal font-weight-bold"
          tal:attributes="for widget/id"
          tal:condition="python: not hidden and widget.label">
-    <span i18n:translate="" tal:replace="widget/label">label</span>
+      <span i18n:translate="" tal:replace="widget/label">label</span>
 
-    <span class="required horizontal" title="Required"
-          tal:condition="python:widget.required and widget.mode == 'input'"
-          i18n:attributes="title title_required;">&nbsp;</span>
-  </div>
-
-  <div class="fieldErrorBox"
-       tal:content="structure error/render|nothing">
-    Error
-  </div>
-
-  <span class="formHelp text-secondary text-muted"
-        tal:define="description python: getattr(widget, 'description', widget.field.description)"
-        i18n:translate=""
-        tal:content="structure description"
-        tal:condition="python:description and not hidden">
-    field description
-  </span>
-
-  <!-- widget insert mode -->
-  <div class="input-group input-group-sm d-flex"
-       style="width:auto"
-       tal:attributes="class python:widget_css_class"
-       tal:define="prefix python:view.get_prepend_text();
-                   appendix python:view.get_append_text()"
-       tal:condition="python:view.is_input_mode()">
-    <div tal:condition="python:prefix" class="input-group-prepend">
-      <span class="input-group-text" tal:content="structure python:prefix"/>
+      <span class="required horizontal" title="Required"
+            tal:condition="python:widget.required and widget.mode == 'input'"
+            i18n:attributes="title title_required;">&nbsp;</span>
     </div>
-    <input type="text"
-           tal:replace="structure widget/render"
-           metal:define-slot="widget" />
-    <div tal:condition="python:appendix" class="input-group-append">
-      <span class="input-group-text" tal:content="structure python:appendix"/>
-    </div>
-  </div>
 
-  <!-- widget view mode -->
-  <div tal:define="prefix python:view.get_prepend_text();
-                   appendix python:view.get_append_text()"
-       tal:condition="python:view.is_view_mode()">
-    <!-- field prefix -->
-    <span tal:content="structure python:prefix" class="field-prefix"></span>
-    <input type="text"
-           tal:replace="structure widget/render"
-           metal:define-slot="widget" />
-    <!-- field appendix -->
-    <span tal:content="structure python:appendix" class="field-prefix"></span>
-  </div>
+    <div class="fieldErrorBox"
+         tal:content="structure error/render|nothing">
+      Error
+    </div>
+
+    <span class="formHelp text-secondary text-muted"
+          tal:define="description python: getattr(widget, 'description', widget.field.description)"
+          i18n:translate=""
+          tal:content="structure description"
+          tal:condition="python:description and not hidden">
+      field description
+    </span>
+
+    <div class="input-group input-group-sm d-flex"
+         style="width:auto"
+         tal:attributes="class python:widget_css_class"
+         tal:define="prefix python:view.get_prepend_text();
+                appendix python:view.get_append_text()">
+      <div tal:condition="python:prefix" class="input-group-prepend">
+        <span class="input-group-text" tal:content="structure python:prefix"/>
+      </div>
+      <input type="text"
+             tal:replace="structure widget/render"
+             metal:define-slot="widget" />
+      <div tal:condition="python:appendix" class="input-group-append">
+        <span class="input-group-text" tal:content="structure python:appendix"/>
+      </div>
+    </div>
+  </tal:edit_mode>
+
+
+  <!-- VIEW MODE -->
+  <tal:view_mode condition="python:view.is_view_mode()">
+
+    <table class="table table-borderless table-hover table-sm">
+      <colgroup>
+        <col style="min-width:100px;max-width:200px;">
+        <col style="width:100%">
+      </colgroup>
+      <tr>
+        <td>
+          <div for=""
+               class="horizontal font-weight-bold"
+               tal:attributes="for widget/id"
+               tal:condition="python: not hidden and widget.label">
+
+            <span tal:define="description python: getattr(widget, 'description', widget.field.description)"
+                  tal:attributes="title python:description"
+                  data-toggle="tooltip"
+                  data-html="true">
+                <span i18n:translate="" tal:replace="widget/label">label</span>
+            </span>
+
+
+            <span class="required horizontal" title="Required"
+                  tal:condition="python:widget.required and widget.mode == 'input'"
+                  i18n:attributes="title title_required;">&nbsp;</span>
+          </div>
+
+        </td>
+        <td>
+          <div tal:define="prefix python:view.get_prepend_text();
+                           appendix python:view.get_append_text()">
+            <!-- field prefix -->
+            <span tal:content="structure python:prefix" class="field-prefix"></span>
+            <input type="text"
+                   tal:replace="structure widget/render"
+                   metal:define-slot="widget" />
+            <!-- field appendix -->
+            <span tal:content="structure python:appendix" class="field-prefix"></span>
+          </div>
+
+        </td>
+      </tr>
+    </table>
+  </tal:view_mode>
 
 </div>

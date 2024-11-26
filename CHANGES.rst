@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2643 Improve performance of analysis verification
+- #2645 Tabbed content view
 - #2624 Added "Maximum holding time" setting to services and analyses
 - #2637 Do not remove inactive services from profiles and templates
 - #2642 Fix Attribute Error in Upgrade Step 2619
