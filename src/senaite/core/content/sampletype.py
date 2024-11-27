@@ -33,6 +33,7 @@ from senaite.core.content.base import Container
 from senaite.core.interfaces import ISampleType
 from senaite.core.schema import DurationField
 from senaite.core.schema import UIDReferenceField
+from senaite.core.schema import SelectOtherField
 from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
@@ -122,6 +123,10 @@ class ISampleTypeSchema(model.Schema):
             default=u"Description"
         ),
         required=False,
+    )
+    my_field = SelectOtherField(
+        title=_("My select other field"),
+        vocabulary="senaite.core.vocabularies.analysis_types",
     )
 
     directives.widget("retention_period", DurationWidgetFactory)

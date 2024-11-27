@@ -107,7 +107,7 @@ class SelectOtherWidgetController extends React.Component{
         <input type="text"
           id={this.state.id}
           name={this.state.name}
-          className="form-control"
+          className="form-control mb-2"
           value={this.state.other}
           onChange={this.on_other_change} />}
         </div>
