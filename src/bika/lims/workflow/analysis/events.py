@@ -27,6 +27,8 @@ from bika.lims.interfaces import IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils.analysis import create_retest
 from bika.lims.workflow import doActionFor
+from bika.lims.workflow.analysis import STATE_REJECTED
+from bika.lims.workflow.analysis import STATE_RETRACTED
 from DateTime import DateTime
 from zope.interface import alsoProvides
 
@@ -229,13 +231,50 @@ def after_verify(analysis):
         ws.reindexObject()
 
     # Promote transition to Analysis Request if Sample auto-verify is enabled
-    if IRequestAnalysis.providedBy(analysis):
+    if IRequestAnalysis.providedBy(analysis) and check_all_verified(analysis):
         setup = api.get_setup()
         if setup.getAutoVerifySamples():
             doActionFor(analysis.getRequest(), "verify")
 
         # Reindex the sample (and ancestors) this analysis belongs to
         reindex_request(analysis)
+
+
+def check_all_verified(analysis):
+    """Checks if all analyses are verified
+
+    NOTE: This check is provided solely for performance reasons of the `verify`
+    transition, because it is a less expensive calculation than executing the
+    `doActionFor` method on the sample for each verified analysis.
+
+    The worst case that can happen is that the sample does not get
+    automatically verified and needs to be transitioned manually.
+
+    :param analysis: The current verified analysis
+    :returns: True if all other routine analyses of the sample are verified
+    """
+
+    parent = api.get_parent(analysis)
+    sample = analysis.getRequest()
+    uid = api.get_uid(analysis)
+
+    def is_valid(an):
+        state = api.get_review_status(an)
+        return state not in [STATE_REJECTED, STATE_RETRACTED]
+
+    # get all *valid* analyses of the sample
+    analyses = filter(is_valid, sample.getAnalyses())
+    # get all *verified* analyses of the sample
+    verified = sample.getAnalyses(object_provides=IVerified.__identifier__)
+
+    # NOTE: We remove the current processed routine analysis (if not a WS
+    #       duplicate/reference analysis), because it is either not yet
+    #       verified or processed already in multi-verify scenarios.
+    if sample == parent:
+        analyses = filter(lambda x: api.get_uid(x) != uid, analyses)
+        verified = filter(lambda x: api.get_uid(x) != uid, verified)
+
+    return len(analyses) == len(verified)
 
 
 def after_publish(analysis):

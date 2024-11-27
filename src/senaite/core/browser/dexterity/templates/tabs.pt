@@ -1,0 +1,84 @@
+<div tal:define="groups view/groups | nothing;
+                 enable_form_tabbing view/enable_form_tabbing | python:True;
+                 default_fieldset_label view/default_fieldset_label | string:'General';
+                 has_groups python:bool(groups);">
+
+  <!-- Tab view toggle -->
+  <div class="d-flex flex-row-reverse"
+       tal:condition="has_groups">
+    <!-- shows all contents on one page -->
+    <a href="#"
+       tal:condition="python:enable_form_tabbing"
+       tal:attributes="href string:${context/absolute_url}?enable_form_tabbing=0;"
+       title="">
+      <i class="fas fa-expand"></i>
+    </a>
+    <!-- shows contents in tabs -->
+    <a href="#"
+       tal:condition="python:not enable_form_tabbing"
+       tal:attributes="href string:${context/absolute_url}?enable_form_tabbing=1;"
+       title="">
+      <i class="fas fa-compress"></i>
+    </a>
+  </div>
+
+  <!-- navigation tabs -->
+  <ul class="nav nav-tabs mb-2" role="tablist"
+      tal:condition="python: has_groups and enable_form_tabbing">
+
+    <!-- primary tab -->
+    <li class="nav-item" role="presentation">
+      <a tal:content="default_fieldset_label"
+         tal:attributes="class python:'nav-link active'"
+         id="default-tab"
+         href="#default"
+         data-toggle="tab"
+         role="tab">
+        Label
+      </a>
+    </li>
+    <!-- secondary tabs -->
+    <li tal:repeat="group groups" class="nav-item" role="presentation">
+      <a tal:define="normalizeString nocall:context/@@plone/normalizeString;
+                     fieldset_label group/label;
+                     fieldset_name python:getattr(group, '__name__', False) or getattr(group.label, 'default', False) or fieldset_label;
+                     fieldset_name python:normalizeString(fieldset_name);
+                     has_errors group/widgets/errors|nothing"
+         tal:attributes="id string:${fieldset_name}-tab;
+                         href string:#${fieldset_name};
+                         class python:has_errors and 'nav-link text-danger' or 'nav-link'"
+         tal:content="fieldset_label"
+         data-toggle="tab"
+         role="tab">
+        Label
+      </a>
+    </li>
+  </ul>
+
+  <!-- tab content -->
+  <div class="tab-content">
+    <!-- Primary fieldsets -->
+    <div class="tab-pane active" id="default" role="tabpanel">
+      <tal:block repeat="widget view/widgets/values|nothing">
+        <tal:block tal:condition="python:widget.__name__ not in ('IBasic.title', 'IBasic.description', 'title', 'description',)">
+          <tal:widget tal:replace="structure widget/@@ploneform-render-widget"/>
+        </tal:block>
+      </tal:block>
+    </div>
+    <!-- Secondary fieldsets -->
+    <tal:block tal:repeat="group groups" condition="has_groups">
+      <div class="tab-pane" role="tabpanel"
+           tal:define="normalizeString nocall:context/@@plone/normalizeString;
+                       fieldset_label group/label;
+                       fieldset_name python:getattr(group, '__name__', False) or getattr(group.label, 'default', False) or fieldset_label;
+                       fieldset_name python:normalizeString(fieldset_name);"
+           tal:attributes="id string:${fieldset_name};
+                           class python:'tab-pane' if enable_form_tabbing else 'd-block';
+                           data-fieldset fieldset_name;">
+        <tal:block tal:repeat="widget group/widgets/values">
+          <tal:widget tal:replace="structure widget/@@ploneform-render-widget"/>
+        </tal:block>
+      </div>
+    </tal:block>
+  </div>
+</div>
