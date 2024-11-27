@@ -3,7 +3,7 @@
       tal:omit-tag="">
 
   <div tal:attributes="python:view.get_input_widget_attributes();
-                       class python:'{}-input'.format(view.klass)">
+                       class python:view.klass">
 
     <!-- ReactJS controlled component -->
 
