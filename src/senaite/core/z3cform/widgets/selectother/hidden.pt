@@ -5,6 +5,6 @@
     <input type="hidden"
            tal:attributes="name python:view.name;
                            name python:view.id;
-                           value view.value;"/>
+                           value python:view.value;"/>
 
 </html>
