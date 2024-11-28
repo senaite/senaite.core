@@ -63,7 +63,7 @@
 
     <table class="table table-borderless table-hover table-sm">
       <colgroup>
-        <col style="min-width:100px;max-width:200px;">
+        <col style="min-width:150px;max-width:200px;">
         <col style="width:100%">
       </colgroup>
       <tr>
