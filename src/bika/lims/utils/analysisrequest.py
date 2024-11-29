@@ -194,8 +194,7 @@ def receive_sample(sample, check_permission=False, date_received=None):
     for obj in sample.objectValues():
         if obj.portal_type != "Analysis":
             continue
-        changeWorkflowState(obj, ANALYSIS_WORKFLOW, "unassigned",
-                            action="initialize")
+        doActionFor(obj, "initialize")
 
     return True
 
