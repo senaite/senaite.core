@@ -314,6 +314,8 @@ def changeWorkflowState(content, wf_id, state_id, **kw):
                                 .format(state_id))
 
     # Notify the *before* transition event
+    # NOTE: We pass `None` for the transition object, which causes no further
+    # workflow event handling! (see bika.lims.workflow.call_workflow_event)
     notify(BeforeTransitionEvent(
         content, workflow, old_state, new_state, None, wf_state, None))
 
@@ -326,6 +328,8 @@ def changeWorkflowState(content, wf_id, state_id, **kw):
     content.reindexObject(idxs=indexes)
 
     # Notify the *after* transition event
+    # NOTE: We pass `None` for the transition object, which causes no further
+    # workflow event handling! (see bika.lims.workflow.call_workflow_event)
     notify(AfterTransitionEvent(
         content, workflow, old_state, new_state, None, wf_state, None))
 
