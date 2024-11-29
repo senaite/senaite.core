@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2650 Fix AttributeError on analysis update with interim values via jsonapi
 - #2648 Increase the default width for field labels to min 150px
 - #2647 Fix analysis instrument is not auto-assigned on change in worksheet
 - #2643 Improve performance of analysis verification
