@@ -194,6 +194,9 @@ def receive_sample(sample, check_permission=False, date_received=None):
     for obj in sample.objectValues():
         if obj.portal_type != "Analysis":
             continue
+        # NOTE: we use `doActionFor` instead of `changeWorkflowState` to keep
+        # the behavior consistent with the manual "receive" transition,
+        # especially for our WF event handlers.
         doActionFor(obj, "initialize")
 
     return True
