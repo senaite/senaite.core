@@ -281,7 +281,7 @@ def logged_in_client(context, member=None):
     return api.get_current_client()
 
 
-def changeWorkflowState(content, wf_id, state_id, **kw):
+def changeWorkflowState(content, wf_id, state_id, trigger_events=False, **kw):
     """Change the workflow state of an object
     @param content: Content obj which state will be changed
     @param state_id: name of the state to put on content
@@ -295,6 +295,7 @@ def changeWorkflowState(content, wf_id, state_id, **kw):
         return False
 
     action = kw.get("action")
+    tdef = workflow.transitions.get(action)
     actor = kw.get("actor", api.user.get_user_id())
     now = DateTime()
 
@@ -313,11 +314,10 @@ def changeWorkflowState(content, wf_id, state_id, **kw):
         raise WorkflowException("Destination state undefined: {}"
                                 .format(state_id))
 
-    # Notify the *before* transition event
-    # NOTE: We pass `None` for the transition object, which causes no further
-    # workflow event handling! (see bika.lims.workflow.call_workflow_event)
-    notify(BeforeTransitionEvent(
-        content, workflow, old_state, new_state, None, wf_state, None))
+    if trigger_events:
+        # Notify the *before* transition event
+        notify(BeforeTransitionEvent(
+            content, workflow, old_state, new_state, tdef, wf_state, None))
 
     # Change status and update permissions
     portal_workflow.setStatusOf(wf_id, content, wf_state)
@@ -327,11 +327,10 @@ def changeWorkflowState(content, wf_id, state_id, **kw):
     indexes = ["allowedRolesAndUsers", "review_state", "is_active"]
     content.reindexObject(idxs=indexes)
 
-    # Notify the *after* transition event
-    # NOTE: We pass `None` for the transition object, which causes no further
-    # workflow event handling! (see bika.lims.workflow.call_workflow_event)
-    notify(AfterTransitionEvent(
-        content, workflow, old_state, new_state, None, wf_state, None))
+    if trigger_events:
+        # Notify the *after* transition event
+        notify(AfterTransitionEvent(
+            content, workflow, old_state, new_state, tdef, wf_state, None))
 
     return True
 
