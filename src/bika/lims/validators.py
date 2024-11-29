@@ -295,7 +295,8 @@ class InterimFieldsValidator:
     def __call__(self, value, *args, **kwargs):
         instance = kwargs['instance']
         fieldname = kwargs['field'].getName()
-        request = kwargs.get('REQUEST', {})
+        # do not rely on kwargs's REQUEST, cause it might be None!
+        request = instance.REQUEST
         form = request.form
         interim_fields = form.get(fieldname, [])
 
@@ -306,7 +307,7 @@ class InterimFieldsValidator:
         # values
         # this value in request prevents running once per subfield value.
         key = instance.id + fieldname
-        if instance.REQUEST.get(key, False):
+        if request.get(key, False):
             return True
 
         for x in range(len(interim_fields)):
