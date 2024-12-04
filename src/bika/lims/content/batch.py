@@ -160,6 +160,12 @@ class Batch(ATFolder, ClientAwareMixin):
         from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
 
+    def Title(self):
+        """Returns the Title or ID
+        """
+        title = self.getField("title").get(self)
+        return title or self.getId()
+
     def getClient(self):
         """Retrieves the Client the current Batch is assigned to
         """
