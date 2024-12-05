@@ -194,8 +194,11 @@ def receive_sample(sample, check_permission=False, date_received=None):
     for obj in sample.objectValues():
         if obj.portal_type != "Analysis":
             continue
+        # https://github.com/senaite/senaite.core/pull/2650
+        # NOTE: We trigger event handlers for analyses to keep it consistent
+        # with the behavior when manually received.
         changeWorkflowState(obj, ANALYSIS_WORKFLOW, "unassigned",
-                            action="initialize")
+                            action="initialize", trigger_events=True)
 
     return True
 
