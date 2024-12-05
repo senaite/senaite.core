@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2654 Show Batch title or ID in Sample reference field
+- #2649 Fix event subscribers are not triggered on analysis initialization
 - #2650 Fix AttributeError on analysis update with interim values via jsonapi
 - #2648 Increase the default width for field labels to min 150px
 - #2647 Fix analysis instrument is not auto-assigned on change in worksheet
