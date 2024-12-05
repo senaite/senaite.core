@@ -66,6 +66,7 @@ from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.exportimport import instruments
 from senaite.core.p3compat import cmp
+from zope.deprecation import deprecate
 from zope.interface import implements
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
@@ -160,15 +161,21 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
-        'Methods',
-        vocabulary='_getAvailableMethods',
-        allowed_types=('Method',),
-        relationship='InstrumentMethods',
+        "Methods",
+        vocabulary="_getAvailableMethods",
+        allowed_types=("Method",),
+        relationship="InstrumentMethods",
         required=0,
         multiValued=1,
         widget=PicklistWidget(
             size=10,
-            label=_("Methods"),
+            label=_(u"label_instrument_methods",
+                    default=u"Supported methods"),
+            description=_(
+                u"description_instrument_methods",
+                default=u"Methods that are supported by this analytical "
+                        u"instrument"
+            )
         ),
     ),
 
@@ -414,11 +421,16 @@ class Instrument(ATFolder):
     def getCalibrationAgentsList(self):
         return getCalibrationAgents(self)
 
+    def getRawMethods(self):
+        """Returns the UIDs of the methods supported by this instrument
+
+        :returns: Method UIDs
+        """
+        return self.getField("Methods").getRaw(self)
+
+    @deprecate("Use getRawMethods instead")
     def getMethodUIDs(self):
-        uids = []
-        if self.getMethods():
-            uids = [m.UID() for m in self.getMethods()]
-        return uids
+        return self.getRawMethods()
 
     def _getAvailableMethods(self):
         """ Returns the available (active) methods.
