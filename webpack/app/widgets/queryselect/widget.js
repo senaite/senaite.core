@@ -277,6 +277,26 @@ class QuerySelectWidgetController extends React.Component {
 
 
   /*
+   * Check if the passed object is an array
+   *
+   * @returns {Boolean} true/false if object is an Array
+   */
+  is_array(obj) {
+    return Object.prototype.toString.call(obj) === '[object Array]';
+  }
+
+
+  /*
+   * Check if the passed object is an object
+   *
+   * @returns {Boolean} true/false if object is an Object
+   */
+  is_object(obj) {
+    return Object.prototype.toString.call(obj) === '[object Object]'
+  }
+
+
+  /*
    * Returns if the field accepts single values only
    *
    * @returns {Boolean} true/false if  values are allowed
@@ -297,6 +317,16 @@ class QuerySelectWidgetController extends React.Component {
 
 
   /*
+   * Check if the field has a value set
+   *
+   * @returns {Boolean} true/false if a value is set or not
+   */
+  has_value() {
+    return this.state.values.length > 0;
+  }
+
+
+  /*
    * Checks if the field should be rendered as disabled
    *
    * @returns {Boolean} true/false if the widget is disabled
@@ -308,7 +338,7 @@ class QuerySelectWidgetController extends React.Component {
     if (this.state.readonly) {
       return true;
     }
-    if (this.is_single_valued() && this.state.values.length > 0) {
+    if (this.is_single_valued() && this.has_value()) {
       return true;
     }
     return false;
@@ -327,7 +357,7 @@ class QuerySelectWidgetController extends React.Component {
     if (this.state.readonly) {
       return false;
     }
-    if (this.is_single_valued() && this.state.values.length > 0) {
+    if (this.is_single_valued() && this.has_value()) {
       return false;
     }
     return true;
@@ -351,6 +381,16 @@ class QuerySelectWidgetController extends React.Component {
    */
   get_query() {
     return this.state.query;
+  }
+
+
+  /*
+   * Returns the item value key
+   *
+   * @returns {String} name
+   */
+  get_item_value_key() {
+    return this.state.value_key;
   }
 
 
@@ -591,12 +631,12 @@ class QuerySelectWidgetController extends React.Component {
    * Add/remove the focused result
    *
    */
-  select_focused(searchvalue) {
+  select_focused() {
     console.debug("QuerySelectWidgetController::select_focused");
     let focused = this.state.focused;
     let result = this.state.results.at(focused);
     if (result) {
-      let value = result[this.state.value_key];
+      let value = result[this.get_item_value_key()];
       if (this.state.values.indexOf(value) == -1) {
         this.select(value);
       } else {
@@ -778,7 +818,7 @@ class QuerySelectWidgetController extends React.Component {
     //       for stored UIDs when the edit form is initially rendered
     let records = Object.assign(this.state.records, {})
     for (let item of items) {
-      let value = item[this.state.value_key];
+      let value = item[this.get_item_value_key()];
       records[value] = item;
     }
 
@@ -832,7 +872,7 @@ class QuerySelectWidgetController extends React.Component {
     promise.then((data) => {
       let items = data.items || [];
       for (let item of items) {
-        let value = item[this.state.value_key];
+        let value = item[this.get_item_value_key()];
         records[value] = item;
       }
       this.toggle_loading(false);
@@ -892,7 +932,7 @@ class QuerySelectWidgetController extends React.Component {
    */
   on_sync(event) {
     let values = event.detail.values || [];
-    let is_array = {}.toString.call( values ) === '[object Array]';
+    let is_array = this.is_array(values)
     if (!is_array) {
       values = values.split("/n");
     }
@@ -929,7 +969,7 @@ class QuerySelectWidgetController extends React.Component {
             className="queryselectwidget-results-container position-fixed shadow-lg border border-light rounded-lg bg-white mt-2 p-1"
             columns={this.get_columns()}
             values={this.state.values}
-            value_key={this.state.value_key}
+            value_key={this.get_item_value_key()}
             searchterm={this.state.searchterm}
             width={this.state.results_table_width}
             results={this.state.results}
