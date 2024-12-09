@@ -590,6 +590,18 @@ class QuerySelectWidgetController extends React.Component {
       return;
     }
     console.debug("QuerySelectWidgetController::select:value:", value);
+    // clear any previous result for single value fields
+    if (this.is_single_valued() && this.has_value()) {
+      this.state.values = [];
+    }
+    // handle object values
+    if (this.is_object(value)) {
+      return this.select(value[this.get_item_value_key()]);
+    }
+    // handle array values
+    if (this.is_array(value)) {
+      return value.forEach((item) => { this.select(item) })
+    }
     // create a copy of the selected values
     let values = [].concat(this.state.values);
     // Add the new value if it is not selected yet
