@@ -24,6 +24,18 @@
 
       <!-- Handlebars JS Templates -->
 
+      <!-- Add row paste popup -->
+      <script id="paste-template" type="text/x-handlebars-template">
+        <div tal:attributes="title string:Paste {{fieldLabel}} fields" i18n:attributes="title">
+          <div class="paste-container">
+            <div class="line-numbers"><tal:block tal:repeat="arnum python:range(view.ar_count)"><span tal:replace="python: arnum + 1"/>
+              </tal:block>
+            </div>
+            <textarea class="paste-editor"></textarea>
+          </div>
+        </div>
+      </script>
+
       <!-- Add dependent services popup -->
       <script id="dependency-add-template" type="text/x-handlebars-template">
         <div title="Service dependencies" i18n:attributes="title">
@@ -386,19 +398,20 @@
 
           <!-- All edit fields with fields with add=visible -->
           <tal:field tal:repeat="field python:view.get_fields_with_visibility('edit')">
-            <tal:def define="fieldName python:field.getName();
+            <tal:def define="widget python:field.widget;
+                             fieldName python:field.getName();
+                             fieldLabel python:view.context.translate(widget.Label(here));
                              required python:bool(field.required);
-                             widget python:field.widget;
                              errors python:{};
                              mode python:'edit';">
               <tr class="ar-table-row"
                   tal:attributes="fieldName python:fieldName;
-                                  fieldLabel python:widget.Label(context)">
+                                  fieldLabel python:fieldLabel">
                 <td class="field-label">
                   <label class="formQuestion">
                     <span
                       tal:attributes="class python:required and 'text-primary' or ''"
-                      tal:content="python:view.context.translate(widget.Label(here))">
+                      tal:content="python:fieldLabel">
                       Label
                     </span>
                     <span class="fieldRequired"
@@ -412,11 +425,24 @@
                   </label>
                 </td>
                 <td>
+                  <div tal:condition="python:view.ar_count > 1">
                   <!-- Copy Button -->
                   <img class="copybutton btn-link"
+                       title="Click to copy the value of the first column to the others"
+                       data_toggle="tooltip"
                        width="16"
-                       tal:condition="python:view.ar_count > 1"
-                       tal:attributes="src senaite_theme/icon_url/copy;"/>
+                       tal:attributes="src senaite_theme/icon_url/copy;
+                                       fieldName python:fieldName;
+                                       fieldLabel python:fieldLabel"/>
+                  <!-- Paste Button -->
+                  <img class="pastebutton btn-link"
+                       title="Click to paste multiple values to the fields"
+                       data_toggle="tooltip"
+                       width="16"
+                       tal:attributes="src senaite_theme/icon_url/clipboard;
+                                       fieldName python:fieldName;
+                                       fieldLabel python:fieldLabel"/>
+                  </div>
                 </td>
 
                 <tal:columns tal:repeat="arnum python:range(view.ar_count)">
