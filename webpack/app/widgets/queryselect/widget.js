@@ -119,18 +119,53 @@ class QuerySelectWidgetController extends React.Component {
 
   /*
    * Throttle wrapper
+   *
+   * @returns {Promise}
    */
   debounce(func) {
-    let timer;
+    let timer = null;
+    const context = this;
+    let deferred = null;
+
     return function (...args) {
-      const context = this;
-      if (timer) clearTimeout(timer);
+      // clear the timer
+      if (timer) {
+        clearTimeout(timer);
+      }
+
+      // deferred promise that is returned to the caller
+      deferred = this.create_deferred()
+
       timer = setTimeout(() => {
+        // resolve the promise
+        Promise.resolve(func.apply(context, args))
+               .then(deferred.resolve)
+               .catch(deferred.reject)
+        // reset timer and promise
         timer = null;
-        func.apply(context, args);
+        deferred = null;
       }, 500);
+
+      return deferred.promise;
     };
   };
+
+
+  /*
+   * Helper method to create a deferred object
+   *
+   * @returns {Object} of promise, resolve, reject
+   */
+  create_deferred() {
+    let resolve;
+    let reject;
+    const promise = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+    return { promise, resolve, reject };
+  }
+
 
   /*
    * Fix overflow at the bottom or at the right of the container
