@@ -432,23 +432,21 @@
                   </label>
                 </td>
                 <td>
-                  <div tal:condition="python:view.show_copy_button_for(field)">
+                  <div class="text-center" tal:condition="python:view.show_copy_button_for(field)">
                     <!-- Copy Button -->
-                    <a class="copy"
+                    <a class="copy d-block"
                        href="#"
                        title="Copy the value of the first sample to the others"
                        data_toggle="tooltip"
-                       width="16"
                        tal:attributes="fieldName python:fieldName;
                                        fieldLabel python:fieldLabel">
                       <i class="fas fa-angle-double-right"></i>
                     </a>
                     <!-- Paste Button -->
-                    <a class="paste"
+                    <a class="paste d-block"
                        href="#"
                        title="Enter individual values ​​for this field per sample"
                        data_toggle="tooltip"
-                       width="16"
                        tal:attributes="fieldName python:fieldName;
                                        fieldLabel python:fieldLabel">
                       <i class="fas fa-list-ol"></i>
@@ -557,20 +555,27 @@
                         </div>
                       </td>
                       <td>
-                        <img class="copybutton btn-link"
-                             width="16"
-                             tal:condition="python:view.ar_count > 1"
-                             tal:attributes="src python:senaite_theme.icon_url('copy');"/>
+                        <div class="text-center" tal:condition="python:view.show_copy_button_for()">
+                          <!-- Copy Button -->
+                          <a class="copy d-block"
+                            title="Copy the value of the first sample to the others"
+                            data_toggle="tooltip">
+                            <i class="fas fa-angle-double-right"></i>
+                          </a>
+                        </div>
                       </td>
 
                       <tal:columns tal:repeat="arnum python:range(ar_count)">
                         <td tal:define="fieldname python:'Analyses-{}'.format(arnum);
                                         analyses python:view.fieldvalues.get(fieldname) or [];
                                         service_uids python:map(view.get_service_uid_from, analyses);
-                                        checked python:service_uid in service_uids;"
+                                        checked python:service_uid in service_uids;
+                                        cls python:'{}-column service-column'.format(service_uid);
+                                        cls string: ${cls} sample-column sample-column-${arnum};
+                                        cls python:cls + ' d-none' if arnum > 0 else cls;"
                             tal:attributes="fieldname python:'Analyses-{}'.format(arnum);
                                             uid python:service_uid;
-                                            class python:'{}-column service-column'.format(service_uid);
+                                            class python:cls;
                                             arnum python:arnum;">
 
                           <!-- Service locked button -->

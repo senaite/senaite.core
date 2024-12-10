@@ -564,12 +564,12 @@ class AnalysisRequestAddView(BrowserView):
                 return True
         return False
 
-    def show_copy_button_for(self, field):
+    def show_copy_button_for(self, field=None):
         """ Show copy/paste button for field
         """
         if self.ar_count <= 1:
             return False
-        if field.getName() in NO_COPY_FIELDS:
+        if field and field.getName() in NO_COPY_FIELDS:
             return False
         return True
 
