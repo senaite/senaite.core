@@ -256,6 +256,7 @@ class window.AnalysisRequestAdd
     $("body").on "click", ".service-infobtn", @on_analysis_details_click
     # Copy button clicked
     $("body").on "click", "img.copybutton", @on_copy_button_click
+    $("body").on "click", "img.pastebutton", @on_paste_button_click
 
     # Generic select/deselect event handler for reference fields
     $("body").on "select deselect" , "div.uidreferencefield textarea", @on_referencefield_value_changed
@@ -951,6 +952,64 @@ class window.AnalysisRequestAdd
         conditions.append template
         conditions.show()
 
+  ###*
+   * Paste values to all fields of a row
+   *
+   * @param field_name {String} name of the field
+   * @param values {Array} string values to set
+  ###
+  paste_values: (field_name, values) =>
+    for num, record of @records_snapshot
+      # check if we have a value for this field
+      value = values[num]
+      # skip empties
+      continue unless value
+      field1 = document.querySelector("##{field_name}-#{num}")
+      field2 = document.querySelector("[data-fieldname=#{field_name}-#{num}]")
+      @paste_value(field1 or field2, value)
+
+
+  ###*
+   * Paste value to a field
+   *
+   * @param field {Object} field element
+   * @param value {String} value to set
+  ###
+  paste_value: (field, value) =>
+    # handle reference field
+    controller = @get_widget_controller(field)
+    if controller
+      # NOTE: We use here the search API to find the entered text and set it
+      # only when we find exactly one result
+      promise = controller.search value
+      promise.then (data) ->
+        # only set the value if we get exactly 1 search result
+        if data["count"] != 1
+          return
+        # select the result
+        items = data["items"]
+        controller.select(items)
+    # set all other fields
+    else if @is_text(field) or @is_textarea(field)
+      field.value = value
+    else if @is_radio(field) or @is_checkbox(field)
+      try
+        checked = Boolean(JSON.parse(value))
+      catch
+        checked = no
+      field.checked = checked
+    # date field
+    else if @is_date_widget(field)
+      # we need to fetch the date and time input fields
+      date_input = field.querySelector("input[type='date']")
+      time_input = field.querySelector("input[type='time']")
+      date = new Date(value)
+      date_input.value = date.toISOString().split("T")[0]
+      time_input.value = date.toTimeString().split(" ")[0]
+
+    # trigger form:changed event
+    $(this).trigger "form:changed"
+
 
   ###*
    * Copies the service conditions values from those set for the service with
@@ -1079,6 +1138,85 @@ class window.AnalysisRequestAdd
     # Render the template with the given context
     content = template(context)
     return content
+
+  ###*
+   * Checks if the element is a div field
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_div: (el) =>
+    return el.tagName is "DIV"
+
+
+  ###*
+   * Checks if the element is an input field
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_input: (el) =>
+    return el.tagName is "INPUT"
+
+
+  ###*
+   * Checks if the element is an input[type='text'] field
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_text: (el) =>
+    return this.is_input(el) and el.type is "text"
+
+
+  ###*
+   * Checks if the element is a textarea field
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_textarea: (el) =>
+    return el.tagName is "TEXTAREA"
+
+
+  ###*
+   * Checks if the element is a radio field
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_radio: (el) =>
+    return this.is_input(el) and el.type is "radio"
+
+
+  ###*
+   * Checks if the element is a checkbox field
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_checkbox: (el) =>
+    return this.is_input(el) and el.type is "checkbox"
+
+
+  ###*
+   * Checks if the element is a date field
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_time: (el) =>
+    return this.is_input(el) and el.type is "time"
+
+  ###*
+   * Checks if the element is a time field
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_time: (el) =>
+    return this.is_input(el) and el.type is "time"
+
+
+  ###*
+   * Checks if the element is a
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_date_widget: (el) =>
+    return this.is_div(el) and el.classList.contains("ArchetypesDateTimeWidget")
 
 
   ######################
@@ -1379,6 +1517,37 @@ class window.AnalysisRequestAdd
       $el.addClass "expanded"
       services.addClass "visible"
       services.addClass "expanded"
+
+
+  ###*
+   * Event handler for the field copy button per row.
+   *
+   * Displays a lines field popup to paste field values as lines
+   *
+   * @param event {Object} The event object
+  ###
+  on_paste_button_click: (event) =>
+    console.debug "°°° on_paste_button_click °°°"
+    el = event.target
+    me = this
+
+    fieldName = el.getAttribute("fieldName")
+    fieldLabel = el.getAttribute("fieldLabel")
+
+    context = {
+      "fieldLabel":fieldLabel
+      "fieldName": fieldName
+    }
+    buttons =
+      Cancel: ->
+        $(@).dialog "close"
+      Paste: ->
+        textarea = this.querySelector("textarea")
+        values = textarea.value.split "\n"
+        me.paste_values(fieldName, values)
+        $(@).dialog "close"
+
+    dialog = @template_dialog "paste-template", context, buttons
 
 
   ###*
