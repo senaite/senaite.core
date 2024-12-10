@@ -38,6 +38,8 @@ from .interfaces import IRichTextField
 from .phonefield import IPhoneField
 from .phonefield import PhoneField
 from .richtextfield import RichTextField
+from .selectotherfield import ISelectOtherField
+from .selectotherfield import SelectOtherField
 from .uidreferencefield import IUIDReferenceField
 from .uidreferencefield import UIDReferenceField
 
@@ -49,4 +51,5 @@ classImplementsFirst(GPSCoordinatesField, IGPSCoordinatesField)
 classImplementsFirst(IntField, IIntField)
 classImplementsFirst(PhoneField, IPhoneField)
 classImplementsFirst(RichTextField, IRichTextField)
+classImplementsFirst(SelectOtherField, ISelectOtherField)
 classImplementsFirst(UIDReferenceField, IUIDReferenceField)

@@ -1194,35 +1194,46 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         return len(set(samples))
 
     def setInstrument(self, instrument, override_analyses=False):
-        """ Sets the specified instrument to the Analysis from the
-            Worksheet. Only sets the instrument if the Analysis
-            allows it, according to its Analysis Service and Method.
-            If an analysis has already assigned an instrument, it won't
-            be overriden.
-            The Analyses that don't allow the instrument specified will
-            not be modified.
-            Returns the number of analyses affected
+        """Assigns the specified analytical instrument to the analyses in this
+        worksheet that are compatible with the instrument. The system will
+        attempt to assign the first method supported by the instrument that is
+        also compatible with each analysis.
+
+        By default, the instrument and method assigned to the analysis won't be
+        replaced unless the analysis does not have an instrument assigned yet
+        or the parameter override_analyses is set to True. Analyses that are
+        incompatible with the specified instrument will remain unchanged.
         """
-        analyses = [an for an in self.getAnalyses()
-                    if (not an.getInstrument() or override_analyses) and
-                    an.isInstrumentAllowed(instrument)]
+        analyses = self.getAnalyses()
+        instrument = api.get_object(instrument, default=None)
+
+        # find out the methods supported by the instrument, if any
+        supported_methods = instrument.getRawMethods() if instrument else []
+
         total = 0
         for an in analyses:
-            # An analysis can be done using differents Methods.
-            # Un method can be supported by more than one Instrument,
-            # but not all instruments support one method.
-            # We must force to set the instrument's method too. Otherwise,
-            # the WS manage results view will display the an's default
-            # method and its instruments displaying, only the instruments
-            # for the default method in the picklist.
-            instr_methods = instrument.getMethods()
-            meth = instr_methods[0] if instr_methods else None
-            if meth and an.isMethodAllowed(meth):
-                if an.getMethod() not in instr_methods:
-                    an.setMethod(meth)
 
+            if not override_analyses and an.getRawInstrument():
+                # skip, no overwrite analysis if an instrument is set
+                continue
+
+            if not an.isInstrumentAllowed(instrument):
+                # skip, instrument cannot run this analysis
+                continue
+
+            # assign the instrument
             an.setInstrument(instrument)
             total += 1
+
+            if an.getRawMethod() in supported_methods:
+                # the analysis method is supported by this instrument
+                continue
+
+            # reset and try to assign the first supported method
+            allowed = an.getRawAllowedMethods()
+            methods = list(filter(lambda m: m in allowed, supported_methods))
+            method = methods[0] if methods else None
+            an.setMethod(method)
 
         self.getField('Instrument').set(self, instrument)
         return total
