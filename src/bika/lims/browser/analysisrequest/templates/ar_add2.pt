@@ -425,23 +425,23 @@
                   </label>
                 </td>
                 <td>
-                  <div tal:condition="python:view.ar_count > 1">
-                  <!-- Copy Button -->
-                  <img class="copybutton btn-link"
-                       title="Click to copy the value of the first column to the others"
-                       data_toggle="tooltip"
-                       width="16"
-                       tal:attributes="src senaite_theme/icon_url/copy;
-                                       fieldName python:fieldName;
-                                       fieldLabel python:fieldLabel"/>
-                  <!-- Paste Button -->
-                  <img class="pastebutton btn-link"
-                       title="Click to paste multiple values to the fields"
-                       data_toggle="tooltip"
-                       width="16"
-                       tal:attributes="src senaite_theme/icon_url/clipboard;
-                                       fieldName python:fieldName;
-                                       fieldLabel python:fieldLabel"/>
+                  <div tal:condition="python:view.show_copy_button_for(field)">
+                    <!-- Copy Button -->
+                    <img class="copybutton btn-link"
+                         title="Click to copy the value of the first column to the others"
+                         data_toggle="tooltip"
+                         width="16"
+                         tal:attributes="src senaite_theme/icon_url/copy;
+                                         fieldName python:fieldName;
+                                         fieldLabel python:fieldLabel"/>
+                    <!-- Paste Button -->
+                    <img class="pastebutton btn-link"
+                         title="Click to paste multiple values to the fields"
+                         data_toggle="tooltip"
+                         width="16"
+                         tal:attributes="src senaite_theme/icon_url/clipboard;
+                                         fieldName python:fieldName;
+                                         fieldLabel python:fieldLabel"/>
                   </div>
                 </td>
 

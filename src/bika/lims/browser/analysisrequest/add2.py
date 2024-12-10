@@ -68,6 +68,7 @@ from zope.publisher.interfaces import IPublishTraverse
 AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
 SKIP_FIELD_ON_COPY = ["Sample", "PrimaryAnalysisRequest", "Remarks",
                       "NumSamples", "_ARAttachment"]
+NO_COPY_FIELDS = ["_ARAttachment"]
 
 
 def cache_key(method, self, obj):
@@ -562,6 +563,15 @@ class AnalysisRequestAddView(BrowserView):
             if service_uid in service_uids:
                 return True
         return False
+
+    def show_copy_button_for(self, field):
+        """ Show copy/paste button for field
+        """
+        if self.ar_count <= 1:
+            return False
+        if field.getName() in NO_COPY_FIELDS:
+            return False
+        return True
 
 
 class AnalysisRequestManageView(BrowserView):
