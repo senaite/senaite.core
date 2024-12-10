@@ -1062,7 +1062,7 @@
     set_reference_field(field, values) {
       var controller, fieldname;
       if (!this.is_array(values)) {
-        values = [values];
+        values = values.split("\n");
       }
       // filter out invalid UIDs
       // NOTE: UIDs have always a length of 32
@@ -1276,7 +1276,8 @@
           }
           // select the result
           items = data["items"];
-          return controller.select(items);
+          controller.select(items);
+          return controller.clear_results();
         });
       // set all other fields
       } else if (this.is_text(field) || this.is_textarea(field)) {

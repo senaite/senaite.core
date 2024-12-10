@@ -753,7 +753,7 @@ class window.AnalysisRequestAdd
   ###
   set_reference_field: (field, values) ->
     if not @is_array(values)
-      values = [values]
+      values = values.split("\n")
 
     # filter out invalid UIDs
     # NOTE: UIDs have always a length of 32
@@ -992,6 +992,7 @@ class window.AnalysisRequestAdd
         # select the result
         items = data["items"]
         controller.select(items)
+        controller.clear_results()
     # set all other fields
     else if @is_text(field) or @is_textarea(field)
       field.value = value
