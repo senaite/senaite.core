@@ -388,7 +388,7 @@
               <span i18n:translate="">Show all</span>
             </a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" tal:condition="python:user.has_role('LabManager') or user.has_role('Manager')">
             <a class="nav-link"
                data-target="manage-form-fields"
                i18n:attributes="title"
