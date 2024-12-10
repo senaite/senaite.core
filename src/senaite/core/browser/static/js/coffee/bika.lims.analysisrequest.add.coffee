@@ -1007,9 +1007,13 @@ class window.AnalysisRequestAdd
       # we need to fetch the date and time input fields
       date_input = field.querySelector("input[type='date']")
       time_input = field.querySelector("input[type='time']")
-      date = new Date(value)
-      date_input.value = date.toISOString().split("T")[0]
-      time_input.value = date.toTimeString().split(" ")[0]
+      try
+        date = new Date(value)
+        date_input.value = date.toISOString().split("T")[0]
+        time_input.value = date.toTimeString().split(" ")[0]
+      catch error
+        console.warn error
+        site.add_notification("Invalid date format", "Please use the format yyyy-mm-dd MM:HH")
 
     # trigger form:changed event
     $(this).trigger "form:changed"

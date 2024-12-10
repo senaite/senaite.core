@@ -1261,7 +1261,7 @@
     }
 
     paste_value(field, value) {
-      var checked, controller, date, date_input, promise, time_input;
+      var checked, controller, date, date_input, error, promise, time_input;
       // handle reference field
       controller = this.get_widget_controller(field);
       if (controller) {
@@ -1294,9 +1294,15 @@
         // we need to fetch the date and time input fields
         date_input = field.querySelector("input[type='date']");
         time_input = field.querySelector("input[type='time']");
-        date = new Date(value);
-        date_input.value = date.toISOString().split("T")[0];
-        time_input.value = date.toTimeString().split(" ")[0];
+        try {
+          date = new Date(value);
+          date_input.value = date.toISOString().split("T")[0];
+          time_input.value = date.toTimeString().split(" ")[0];
+        } catch (error1) {
+          error = error1;
+          console.warn(error);
+          site.add_notification("Invalid date format", "Please use the format yyyy-mm-dd MM:HH");
+        }
       }
       // trigger form:changed event
       return $(this).trigger("form:changed");
