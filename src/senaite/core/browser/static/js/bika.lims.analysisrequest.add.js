@@ -164,6 +164,20 @@
        */
       this.set_service_conditions = this.set_service_conditions.bind(this);
       /**
+       * Paste values to all fields of a row
+       *
+       * @param field_name {String} name of the field
+       * @param values {Array} string values to set
+       */
+      this.paste_values = this.paste_values.bind(this);
+      /**
+       * Paste value to a field
+       *
+       * @param field {Object} field element
+       * @param value {String} value to set
+       */
+      this.paste_value = this.paste_value.bind(this);
+      /**
        * Copies the service conditions values from those set for the service with
        * the specified uid and arnum_from column to the same analysis from the
        * arnum_to column
@@ -191,9 +205,69 @@
        * @returns {String} Rendered content
        */
       this.render_template = this.render_template.bind(this);
+      /**
+       * Checks if the element is a div field
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_div = this.is_div.bind(this);
+      /**
+       * Checks if the element is an input field
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_input = this.is_input.bind(this);
+      /**
+       * Checks if the element is an input[type='text'] field
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_text = this.is_text.bind(this);
+      /**
+       * Checks if the element is a textarea field
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_textarea = this.is_textarea.bind(this);
+      /**
+       * Checks if the element is a radio field
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_radio = this.is_radio.bind(this);
+      /**
+       * Checks if the element is a checkbox field
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_checkbox = this.is_checkbox.bind(this);
+      /**
+       * Checks if the element is a date field
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_time = this.is_time.bind(this);
+      /**
+       * Checks if the element is a time field
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_time = this.is_time.bind(this);
+      /**
+       * Checks if the element is a
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_date_widget = this.is_date_widget.bind(this);
       //#####################
       /* EVENT HANDLERS */
       //#####################
+      /**
+       * Handle sample column navigation
+       *
+       * @param event {Object} The event object
+       */
+      this.on_sample_nav = this.on_sample_nav.bind(this);
       /**
        * Generic event handler for when a reference field value changed
        *
@@ -259,6 +333,14 @@
        * @param event {Object} The event object
        */
       this.on_service_category_click = this.on_service_category_click.bind(this);
+      /**
+       * Event handler for the field copy button per row.
+       *
+       * Displays a lines field popup to paste field values as lines
+       *
+       * @param event {Object} The event object
+       */
+      this.on_paste_button_click = this.on_paste_button_click.bind(this);
       /**
        * Event handler for the field copy button per row.
        *
@@ -510,6 +592,7 @@
       $("body").on("click", ".service-infobtn", this.on_analysis_details_click);
       // Copy button clicked
       $("body").on("click", "img.copybutton", this.on_copy_button_click);
+      $("body").on("click", "img.pastebutton", this.on_paste_button_click);
       // Generic select/deselect event handler for reference fields
       $("body").on("select deselect", "div.uidreferencefield textarea", this.on_referencefield_value_changed);
       // Analysis Template selected
@@ -528,6 +611,8 @@
       $("body").on("click", "[name='save_and_copy_button']", this.on_form_submit);
       // Cancel button clicked
       $("body").on("click", "[name='cancel_button']", this.on_cancel);
+      // Handle sample navigation
+      $("body").on("click", "ul#sample-tabs a.nav-link", this.on_sample_nav);
       /* internal events */
       // handle value changes in the form
       $(this).on("form:changed", this.debounce(this.recalculate_records, 1000));
@@ -1156,6 +1241,66 @@
       }
     }
 
+    paste_values(field_name, values) {
+      var field1, field2, num, record, ref, results, value;
+      ref = this.records_snapshot;
+      results = [];
+      for (num in ref) {
+        record = ref[num];
+        // check if we have a value for this field
+        value = values[num];
+        if (!value) {
+          // skip empties
+          continue;
+        }
+        field1 = document.querySelector(`#${field_name}-${num}`);
+        field2 = document.querySelector(`[data-fieldname=${field_name}-${num}]`);
+        results.push(this.paste_value(field1 || field2, value));
+      }
+      return results;
+    }
+
+    paste_value(field, value) {
+      var checked, controller, date, date_input, promise, time_input;
+      // handle reference field
+      controller = this.get_widget_controller(field);
+      if (controller) {
+        // NOTE: We use here the search API to find the entered text and set it
+        // only when we find exactly one result
+        promise = controller.search(value);
+        promise.then(function(data) {
+          var items;
+          // only set the value if we get exactly 1 search result
+          if (data["count"] !== 1) {
+            return;
+          }
+          // select the result
+          items = data["items"];
+          return controller.select(items);
+        });
+      // set all other fields
+      } else if (this.is_text(field) || this.is_textarea(field)) {
+        field.value = value;
+      } else if (this.is_radio(field) || this.is_checkbox(field)) {
+        try {
+          checked = Boolean(JSON.parse(value));
+        } catch (error1) {
+          checked = false;
+        }
+        field.checked = checked;
+      // date field
+      } else if (this.is_date_widget(field)) {
+        // we need to fetch the date and time input fields
+        date_input = field.querySelector("input[type='date']");
+        time_input = field.querySelector("input[type='time']");
+        date = new Date(value);
+        date_input.value = date.toISOString().split("T")[0];
+        time_input.value = date.toTimeString().split(" ")[0];
+      }
+      // trigger form:changed event
+      return $(this).trigger("form:changed");
+    }
+
     copy_service_conditions(from, to, uid) {
       var me, source;
       console.debug(`*** copy_service_conditions::from=${from} to=${to} UID=${uid}`);
@@ -1269,6 +1414,64 @@
       // Render the template with the given context
       content = template(context);
       return content;
+    }
+
+    is_div(el) {
+      return el.tagName === "DIV";
+    }
+
+    is_input(el) {
+      return el.tagName === "INPUT";
+    }
+
+    is_text(el) {
+      return this.is_input(el) && el.type === "text";
+    }
+
+    is_textarea(el) {
+      return el.tagName === "TEXTAREA";
+    }
+
+    is_radio(el) {
+      return this.is_input(el) && el.type === "radio";
+    }
+
+    is_checkbox(el) {
+      return this.is_input(el) && el.type === "checkbox";
+    }
+
+    is_time(el) {
+      return this.is_input(el) && el.type === "time";
+    }
+
+    is_time(el) {
+      return this.is_input(el) && el.type === "time";
+    }
+
+    is_date_widget(el) {
+      return this.is_div(el) && el.classList.contains("ArchetypesDateTimeWidget");
+    }
+
+    on_sample_nav(event) {
+      var $el, el, target;
+      el = event.currentTarget;
+      $el = $(el);
+      target = $el.data("target");
+      // manage form fields opens a new window
+      if (target === "manage-form-fields") {
+        return;
+      }
+      // handle other navigation tabs
+      event.preventDefault();
+      // make link active
+      $(".nav-link").removeClass("active");
+      $el.addClass("active");
+      if (target === "show-all") {
+        return $("td.sample-column").removeClass("d-none");
+      } else {
+        $("td.sample-column").addClass("d-none");
+        return $(`td.${target}`).removeClass("d-none");
+      }
     }
 
     on_referencefield_value_changed(event) {
@@ -1514,6 +1717,32 @@
         services.addClass("visible");
         return services.addClass("expanded");
       }
+    }
+
+    on_paste_button_click(event) {
+      var buttons, context, dialog, el, fieldLabel, fieldName, me;
+      console.debug("°°° on_paste_button_click °°°");
+      el = event.target;
+      me = this;
+      fieldName = el.getAttribute("fieldName");
+      fieldLabel = el.getAttribute("fieldLabel");
+      context = {
+        "fieldLabel": fieldLabel,
+        "fieldName": fieldName
+      };
+      buttons = {
+        Cancel: function() {
+          return $(this).dialog("close");
+        },
+        Paste: function() {
+          var textarea, values;
+          textarea = this.querySelector("textarea");
+          values = textarea.value.split("\n");
+          me.paste_values(fieldName, values);
+          return $(this).dialog("close");
+        }
+      };
+      return dialog = this.template_dialog("paste-template", context, buttons);
     }
 
     on_copy_button_click(event) {

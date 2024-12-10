@@ -281,6 +281,9 @@ class window.AnalysisRequestAdd
     # Cancel button clicked
     $("body").on "click", "[name='cancel_button']", @on_cancel
 
+    # Handle sample navigation
+    $("body").on "click", "ul#sample-tabs a.nav-link", @on_sample_nav
+
     ### internal events ###
 
     # handle value changes in the form
@@ -1222,6 +1225,34 @@ class window.AnalysisRequestAdd
   ######################
   ### EVENT HANDLERS ###
   ######################
+
+  ###*
+   * Handle sample column navigation
+   *
+   * @param event {Object} The event object
+  ###
+  on_sample_nav: (event) =>
+    el = event.currentTarget
+    $el = $(el)
+    target = $el.data("target")
+
+    # manage form fields opens a new window
+    if target is "manage-form-fields"
+      return
+
+    # handle other navigation tabs
+    event.preventDefault()
+
+    # make link active
+    $(".nav-link").removeClass("active")
+    $el.addClass("active")
+
+    if target is "show-all"
+      $("td.sample-column").removeClass("d-none");
+    else
+      $("td.sample-column").addClass("d-none");
+      $("td.#{target}").removeClass("d-none");
+
 
   ###*
    * Generic event handler for when a reference field value changed
