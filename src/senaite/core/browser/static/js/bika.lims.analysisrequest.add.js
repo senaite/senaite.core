@@ -340,7 +340,7 @@
        *
        * @param event {Object} The event object
        */
-      this.on_paste_button_click = this.on_paste_button_click.bind(this);
+      this.on_paste_click = this.on_paste_click.bind(this);
       /**
        * Event handler for the field copy button per row.
        *
@@ -350,7 +350,7 @@
        *
        * @param event {Object} The event object
        */
-      this.on_copy_button_click = this.on_copy_button_click.bind(this);
+      this.on_copy_click = this.on_copy_click.bind(this);
       /**
        * Event handler when Ajax request started
        *
@@ -591,8 +591,8 @@
       // Analysis info button clicked
       $("body").on("click", ".service-infobtn", this.on_analysis_details_click);
       // Copy button clicked
-      $("body").on("click", "img.copybutton", this.on_copy_button_click);
-      $("body").on("click", "img.pastebutton", this.on_paste_button_click);
+      $("body").on("click", "a.copy", this.on_copy_click);
+      $("body").on("click", "a.paste", this.on_paste_click);
       // Generic select/deselect event handler for reference fields
       $("body").on("select deselect", "div.uidreferencefield textarea", this.on_referencefield_value_changed);
       // Analysis Template selected
@@ -1719,10 +1719,11 @@
       }
     }
 
-    on_paste_button_click(event) {
+    on_paste_click(event) {
       var buttons, context, dialog, el, fieldLabel, fieldName, me;
-      console.debug("°°° on_paste_button_click °°°");
-      el = event.target;
+      console.debug("°°° on_paste_click °°°");
+      event.preventDefault();
+      el = event.currentTarget;
       me = this;
       fieldName = el.getAttribute("fieldName");
       fieldLabel = el.getAttribute("fieldLabel");
@@ -1745,11 +1746,12 @@
       return dialog = this.template_dialog("paste-template", context, buttons);
     }
 
-    on_copy_button_click(event) {
+    on_copy_click(event) {
       var $el, $td1, $tr, ar_count, el, me, record_one, records, td1, tr, value;
-      console.debug("°°° on_copy_button_click °°°");
+      console.debug("°°° on_copy_click °°°");
+      event.preventDefault();
       me = this;
-      el = event.target;
+      el = event.currentTarget;
       $el = $(el);
       tr = $el.closest('tr')[0];
       $tr = $(tr);

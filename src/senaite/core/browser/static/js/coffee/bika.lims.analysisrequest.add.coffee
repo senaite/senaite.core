@@ -255,8 +255,8 @@ class window.AnalysisRequestAdd
     # Analysis info button clicked
     $("body").on "click", ".service-infobtn", @on_analysis_details_click
     # Copy button clicked
-    $("body").on "click", "img.copybutton", @on_copy_button_click
-    $("body").on "click", "img.pastebutton", @on_paste_button_click
+    $("body").on "click", "a.copy", @on_copy_click
+    $("body").on "click", "a.paste", @on_paste_click
 
     # Generic select/deselect event handler for reference fields
     $("body").on "select deselect" , "div.uidreferencefield textarea", @on_referencefield_value_changed
@@ -1557,16 +1557,18 @@ class window.AnalysisRequestAdd
    *
    * @param event {Object} The event object
   ###
-  on_paste_button_click: (event) =>
-    console.debug "°°° on_paste_button_click °°°"
-    el = event.target
+  on_paste_click: (event) =>
+    console.debug "°°° on_paste_click °°°"
+    event.preventDefault()
+
+    el = event.currentTarget
     me = this
 
     fieldName = el.getAttribute("fieldName")
     fieldLabel = el.getAttribute("fieldLabel")
 
     context = {
-      "fieldLabel":fieldLabel
+      "fieldLabel": fieldLabel
       "fieldName": fieldName
     }
     buttons =
@@ -1590,12 +1592,13 @@ class window.AnalysisRequestAdd
    *
    * @param event {Object} The event object
   ###
-  on_copy_button_click: (event) =>
-    console.debug "°°° on_copy_button_click °°°"
+  on_copy_click: (event) =>
+    console.debug "°°° on_copy_click °°°"
+    event.preventDefault()
 
     me = this
 
-    el = event.target
+    el = event.currentTarget
     $el = $(el)
 
     tr = $el.closest('tr')[0]

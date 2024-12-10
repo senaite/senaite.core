@@ -26,7 +26,7 @@
 
       <!-- Add row paste popup -->
       <script id="paste-template" type="text/x-handlebars-template">
-        <div tal:attributes="title string:Paste {{fieldLabel}} fields" i18n:attributes="title">
+        <div tal:attributes="title string:Enter {{fieldLabel}} fields" i18n:attributes="title">
           <div class="paste-container">
             <div class="line-numbers"><tal:block tal:repeat="arnum python:range(view.ar_count)"><span tal:replace="python: arnum + 1"/>
               </tal:block>
@@ -434,21 +434,25 @@
                 <td>
                   <div tal:condition="python:view.show_copy_button_for(field)">
                     <!-- Copy Button -->
-                    <img class="copybutton btn-link"
-                         title="Copy the value of the first sample to the others"
-                         data_toggle="tooltip"
-                         width="16"
-                         tal:attributes="src senaite_theme/icon_url/copy;
-                                         fieldName python:fieldName;
-                                         fieldLabel python:fieldLabel"/>
+                    <a class="copy"
+                       href="#"
+                       title="Copy the value of the first sample to the others"
+                       data_toggle="tooltip"
+                       width="16"
+                       tal:attributes="fieldName python:fieldName;
+                                       fieldLabel python:fieldLabel">
+                      <i class="fas fa-angle-double-right"></i>
+                    </a>
                     <!-- Paste Button -->
-                    <img class="pastebutton btn-link"
-                         title="Enter individual values ​​for this field per sample"
-                         data_toggle="tooltip"
-                         width="16"
-                         tal:attributes="src senaite_theme/icon_url/clipboard;
-                                         fieldName python:fieldName;
-                                         fieldLabel python:fieldLabel"/>
+                    <a class="paste"
+                       href="#"
+                       title="Enter individual values ​​for this field per sample"
+                       data_toggle="tooltip"
+                       width="16"
+                       tal:attributes="fieldName python:fieldName;
+                                       fieldLabel python:fieldLabel">
+                      <i class="fas fa-list-ol"></i>
+                    </a>
                   </div>
                 </td>
 
