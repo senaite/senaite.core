@@ -372,8 +372,9 @@
 
         <ul class="nav nav-tabs float-right" id="sample-tabs" style="margin-bottom:-1px;">
           <tal:columns tal:repeat="arnum python:range(view.ar_count)">
-            <li class="nav-item">
+            <li class="nav-item" tal:attributes="class string:nav-item nav-item-${arnum}">
               <a tal:attributes="class python:'nav-link active' if arnum == 0 else 'nav-link';
+                                 data-primary-sample-index string:${arnum};
                                  data-target string:sample-column-${arnum}"
                  href="#">
                 <span i18n:translate="">Sample</span>
@@ -384,6 +385,7 @@
           <li class="nav-item">
             <a class="nav-link"
                data-target="show-all"
+               data-primary-sample-index="0"
                href="#">
               <span i18n:translate="">Show all</span>
             </a>
@@ -558,8 +560,8 @@
                         <div class="text-center" tal:condition="python:view.show_copy_button_for()">
                           <!-- Copy Button -->
                           <a class="copy d-block"
-                            title="Copy the value of the first sample to the others"
-                            data_toggle="tooltip">
+                             title="Copy the currently displayed column value to the other columns on the right"
+                             data_toggle="tooltip">
                             <i class="fas fa-angle-double-right"></i>
                           </a>
                         </div>

@@ -259,6 +259,10 @@
        * @returns {Boolean} true/false
        */
       this.is_date_widget = this.is_date_widget.bind(this);
+      /**
+       * Visually highlight the navigation tab
+       */
+      this.flash_nav_tab = this.flash_nav_tab.bind(this);
       //#####################
       /* EVENT HANDLERS */
       //#####################
@@ -384,6 +388,7 @@
       console.debug("AnalysisRequestAdd::load");
       // disable browser autocomplete
       $('input[type=text]').prop('autocomplete', 'off');
+      this.primary_sample_index = 0;
       // storage for global Bika settings
       this.global_settings = {};
       // storage for mapping of fields to flush on_change
@@ -1459,8 +1464,15 @@
       return this.is_div(el) && el.classList.contains("ArchetypesDateTimeWidget");
     }
 
+    flash_nav_tab(tab, duration = 500) {
+      tab.classList.add("bg-light", "text-secondary");
+      return setTimeout(() => {
+        return tab.classList.remove("bg-light", "text-secondary");
+      }, duration);
+    }
+
     on_sample_nav(event) {
-      var $el, el, target;
+      var $el, el, primary, target;
       el = event.currentTarget;
       $el = $(el);
       target = $el.data("target");
@@ -1474,11 +1486,15 @@
       $(".nav-link").removeClass("active");
       $el.addClass("active");
       if (target === "show-all") {
-        return $("td.sample-column").removeClass("d-none");
+        $("td.sample-column").removeClass("d-none");
       } else {
         $("td.sample-column").addClass("d-none");
-        return $(`td.${target}`).removeClass("d-none");
+        $(`td.${target}`).removeClass("d-none");
       }
+      // remember the displayed column
+      primary = parseInt($el.data("primary-sample-index"), 10);
+      this.primary_sample_index = isNaN(primary) ? 0 : primary;
+      return console.log(`PRIMARY sample index is ${this.primary_sample_index}`);
     }
 
     on_referencefield_value_changed(event) {
@@ -1754,7 +1770,7 @@
     }
 
     on_copy_click(event) {
-      var $el, $td1, $tr, ar_count, el, me, record_one, records, td1, tr, value;
+      var $el, $td1, $tr, ar_count, el, me, record_one, records, start_index, td1, tr, value;
       console.debug("°°° on_copy_click °°°");
       event.preventDefault();
       me = this;
@@ -1762,7 +1778,8 @@
       $el = $(el);
       tr = $el.closest('tr')[0];
       $tr = $(tr);
-      td1 = $(tr).find('td[arnum="0"]').first();
+      start_index = this.primary_sample_index;
+      td1 = $(tr).find(`td[arnum=${start_index}]`).first();
       $td1 = $(td1);
       ar_count = parseInt($('input[id="ar_count"]').val(), 10);
       if (!(ar_count > 1)) {
@@ -1783,7 +1800,7 @@
         }).apply(this), function(arnum) {
           var _el, _field_name, _td;
           // skip the first (source) column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           // find the reference widget of the next column
@@ -1802,7 +1819,6 @@
         });
         // trigger form:changed event
         $(me).trigger("form:changed");
-        return;
       }
       // Copy <input type="checkbox"> fields
       $td1.find("input[type=checkbox]").each(function(index, el) {
@@ -1819,7 +1835,7 @@
         }).apply(this), function(arnum) {
           var _el, _td, uid;
           // skip the first column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           _td = $tr.find(`td[arnum=${arnum}]`);
@@ -1850,7 +1866,7 @@
         }).apply(this), function(arnum) {
           var _el, _td;
           // skip the first column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           _td = $tr.find(`td[arnum=${arnum}]`);
@@ -1870,7 +1886,7 @@
         }).apply(this), function(arnum) {
           var _el, _td;
           // skip the first column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           _td = $tr.find(`td[arnum=${arnum}]`);
@@ -1890,7 +1906,7 @@
         }).apply(this), function(arnum) {
           var _el, _td;
           // skip the first column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           _td = $tr.find(`td[arnum=${arnum}]`);
@@ -1910,7 +1926,7 @@
         }).apply(this), function(arnum) {
           var _el, _td;
           // skip the first column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           _td = $tr.find(`td[arnum=${arnum}]`);
@@ -1931,7 +1947,7 @@
         }).apply(this), function(arnum) {
           var _el, _td;
           // skip the first column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           _td = $tr.find(`td[arnum=${arnum}]`);
@@ -1951,7 +1967,7 @@
         }).apply(this), function(arnum) {
           var _el, _td;
           // skip the first column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           _td = $tr.find(`td[arnum=${arnum}]`);
@@ -1971,7 +1987,7 @@
         }).apply(this), function(arnum) {
           var _el, _td;
           // skip the first column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           _td = $tr.find(`td[arnum=${arnum}]`);
@@ -1991,13 +2007,28 @@
         }).apply(this), function(arnum) {
           var _el, _td;
           // skip the first column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           _td = $tr.find(`td[arnum=${arnum}]`);
           _el = $(_td).find("input[type='hidden']")[index];
           return $(_el).val(value);
         });
+      });
+      // highlight changed columns
+      $.each((function() {
+        var results = [];
+        for (var i = 1; 1 <= ar_count ? i <= ar_count : i >= ar_count; 1 <= ar_count ? i++ : i--){ results.push(i); }
+        return results;
+      }).apply(this), function(arnum) {
+        var tab;
+        // skip the first (source) column
+        if (!(arnum > start_index)) {
+          return;
+        }
+        console.log(`Copy ${value} to column ${arnum}`);
+        tab = document.querySelector(`.nav-item-${arnum} a`);
+        return me.flash_nav_tab(tab);
       });
       // trigger form:changed event
       return $(me).trigger("form:changed");

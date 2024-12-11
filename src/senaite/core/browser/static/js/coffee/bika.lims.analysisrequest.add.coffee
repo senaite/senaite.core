@@ -11,6 +11,8 @@ class window.AnalysisRequestAdd
     # disable browser autocomplete
     $('input[type=text]').prop 'autocomplete', 'off'
 
+    @primary_sample_index = 0
+
     # storage for global Bika settings
     @global_settings = {}
 
@@ -1227,6 +1229,16 @@ class window.AnalysisRequestAdd
     return this.is_div(el) and el.classList.contains("ArchetypesDateTimeWidget")
 
 
+  ###*
+   * Visually highlight the navigation tab
+  ###
+  flash_nav_tab: (tab, duration=500) =>
+    tab.classList.add("bg-light", "text-secondary")
+    setTimeout () =>
+      tab.classList.remove("bg-light", "text-secondary")
+    , duration
+
+
   ######################
   ### EVENT HANDLERS ###
   ######################
@@ -1257,6 +1269,11 @@ class window.AnalysisRequestAdd
     else
       $("td.sample-column").addClass("d-none");
       $("td.#{target}").removeClass("d-none");
+
+    # remember the displayed column
+    primary = parseInt($el.data("primary-sample-index"), 10)
+    @primary_sample_index = if isNaN(primary) then 0 else primary
+    console.log("PRIMARY sample index is #{@primary_sample_index}")
 
 
   ###*
@@ -1609,7 +1626,9 @@ class window.AnalysisRequestAdd
     tr = $el.closest('tr')[0]
     $tr = $(tr)
 
-    td1 = $(tr).find('td[arnum="0"]').first()
+    start_index = @primary_sample_index
+
+    td1 = $(tr).find("td[arnum=#{start_index}]").first()
     $td1 = $(td1)
 
     ar_count = parseInt($('input[id="ar_count"]').val(), 10)
@@ -1628,7 +1647,7 @@ class window.AnalysisRequestAdd
 
       $.each [1..ar_count], (arnum) ->
         # skip the first (source) column
-        return unless arnum > 0
+        return unless arnum > start_index
 
         # find the reference widget of the next column
         _td = $tr.find("td[arnum=#{arnum}]")
@@ -1649,7 +1668,6 @@ class window.AnalysisRequestAdd
 
       # trigger form:changed event
       $(me).trigger "form:changed"
-      return
 
     # Copy <input type="checkbox"> fields
     $td1.find("input[type=checkbox]").each (index, el) ->
@@ -1660,7 +1678,7 @@ class window.AnalysisRequestAdd
       # iterate over columns, starting from column 2
       $.each [1..ar_count], (arnum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless arnum > start_index
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type=checkbox]")[index]
         $(_el).prop "checked", checked
@@ -1682,7 +1700,7 @@ class window.AnalysisRequestAdd
       value = $el.val()
       $.each [1..ar_count], (arnum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless arnum > start_index
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("select")[index]
         $(_el).val value
@@ -1694,7 +1712,7 @@ class window.AnalysisRequestAdd
       value = $el.val()
       $.each [1..ar_count], (arnum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless arnum > start_index
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type=text]")[index]
         $(_el).val value
@@ -1706,7 +1724,7 @@ class window.AnalysisRequestAdd
       value = $el.val()
       $.each [1..ar_count], (arnum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless arnum > start_index
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type=number]")[index]
         $(_el).val value
@@ -1718,7 +1736,7 @@ class window.AnalysisRequestAdd
       value = $el.val()
       $.each [1..ar_count], (arnum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless arnum > start_index
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("textarea")[index]
         me.native_set_value(_el, value)
@@ -1730,7 +1748,7 @@ class window.AnalysisRequestAdd
       checked = $(el).is ":checked"
       $.each [1..ar_count], (arnum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless arnum > start_index
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type=radio]")[index]
         $(_el).prop "checked", checked
@@ -1742,7 +1760,7 @@ class window.AnalysisRequestAdd
       value = $el.val()
       $.each [1..ar_count], (arnum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless arnum > start_index
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type='date']")[index]
         $(_el).val value
@@ -1754,7 +1772,7 @@ class window.AnalysisRequestAdd
       value = $el.val()
       $.each [1..ar_count], (arnum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless arnum > start_index
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type='time']")[index]
         $(_el).val value
@@ -1766,10 +1784,20 @@ class window.AnalysisRequestAdd
       value = $el.val()
       $.each [1..ar_count], (arnum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless arnum > start_index
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type='hidden']")[index]
         $(_el).val value
+
+
+    # highlight changed columns
+    $.each [1..ar_count], (arnum) ->
+      # skip the first (source) column
+      return unless arnum > start_index
+
+      console.log "Copy #{value} to column #{arnum}"
+      tab = document.querySelector(".nav-item-#{arnum} a")
+      me.flash_nav_tab(tab)
 
     # trigger form:changed event
     $(me).trigger "form:changed"
