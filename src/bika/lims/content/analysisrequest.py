@@ -331,7 +331,7 @@ schema = BikaSchema.copy() + Schema((
                 {"name": "getClientBatchID", "label": _("CBID")},
                 {"name": "getClientTitle", "label": _("Client")},
             ],
-            ui_item="getId",
+            ui_item="Title",
         )
     ),
 
