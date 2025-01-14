@@ -1,0 +1,10 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+
+    <input type="hidden"
+           tal:attributes="name python:view.name;
+                           name python:view.id;
+                           value python:view.value;"/>
+
+</html>

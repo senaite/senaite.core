@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-07-16 10:25+0000\n"
+"POT-Creation-Date: 2025-01-03 13:43+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Spanish (Argentina) (https://app.transifex.com/senaite/teams/87045/es_AR/)\n"
@@ -46,10 +46,6 @@ msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:35
 msgid "Content rule settings updated."
-msgstr ""
-
-#: senaite/core/browser/dexterity/templates/container.pt:29
-msgid "Contents"
 msgstr ""
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:52

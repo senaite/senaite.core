@@ -27,6 +27,7 @@ import plone.z3cform.interfaces
 import plone.z3cform.templates
 import senaite.core.browser.dexterity
 import z3c.form.interfaces
+from bika.lims import senaiteMessageFactory as _
 from plone.app.z3cform.views import Macros
 from plone.app.z3cform.views import RenderWidget
 from plone.dexterity.browser.edit import DefaultEditView
@@ -195,11 +196,23 @@ class SenaiteDefaultView(DefaultView):
     """The default view for Dexterity content.
     This uses a WidgetsView and renders all widgets in display mode.
     """
+    tabs_template = ViewPageTemplateFile("templates/tabs.pt")
 
     def __init__(self, context, request):
         super(SenaiteDefaultView, self).__init__(context, request)
         self.context = context
         self.request = request
+        self.enable_form_tabbing = self.get_default_form_tabbing()
+        self.default_fieldset_label = _("General")
+
+    def get_default_form_tabbing(self):
+        tabbing = self.request.get("enable_form_tabbing", "1")
+        if tabbing.lower() in ["0", "no"]:
+            return False
+        return True
+
+    def render_widget_tabs(self):
+        return self.tabs_template()
 
 
 class SenaiteDefaultEditView(DefaultEditView):

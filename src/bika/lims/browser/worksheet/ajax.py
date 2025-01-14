@@ -20,7 +20,8 @@
 
 import plone
 import plone.protect
-from Products.Archetypes.config import REFERENCE_CATALOG
+
+from bika.lims import api
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 
@@ -54,13 +55,15 @@ class SetInstrument(BrowserView):
         self.request = request
 
     def __call__(self):
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
         plone.protect.CheckAuthenticator(self.request)
         plone.protect.PostOnly(self.request)
         value = self.request.get('value', '')
         if not value:
             raise Exception("Invalid instrument")
-        instrument = rc.lookupObject(value)
+
+        instrument = api.get_object_by_uid(value, None)
         if not instrument:
             raise Exception("Unable to lookup instrument")
-        self.context.setInstrument(instrument)
+
+        # set the instrument to the worksheet and analyses
+        self.context.setInstrument(instrument, override_analyses=True)

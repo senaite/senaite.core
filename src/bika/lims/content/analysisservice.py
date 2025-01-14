@@ -558,25 +558,6 @@ class AnalysisService(AbstractBaseAnalysis):
         dlist.add("", _("None"))
         return dlist
 
-    def after_deactivate_transition_event(self):
-        """Method triggered after a 'deactivate' transition
-
-        Removes this service from all assigned Profiles and Templates.
-        """
-        catalog = api.get_tool(SETUP_CATALOG)
-
-        # Remove the service from profiles to which is assigned
-        profiles = catalog(portal_type="AnalysisProfile")
-        for profile in profiles:
-            profile = api.get_object(profile)
-            profile.remove_service(self)
-
-        # Remove the service from templates to which is assigned
-        templates = catalog(portal_type="SampleTemplate")
-        for template in templates:
-            template = api.get_object(template)
-            template.remove_service(self)
-
     # XXX DECIDE IF NEEDED
     # --------------------
 

@@ -5,6 +5,18 @@ Changelog
 ------------------
 
 - #2598 Fix analyses from partitions are considered in manage analyses view
+- #2654 Show Batch title or ID in Sample reference field
+- #2657 Methods from analyses are not updated on instrument change in worksheet
+- #2656 Fix AnalysisProfile keyword validator fail with non-ascii value 
+- #2646 Add SelectOtherField and SelectOtherWidget
+- #2649 Fix event subscribers are not triggered on analysis initialization
+- #2650 Fix AttributeError on analysis update with interim values via jsonapi
+- #2648 Increase the default width for field labels to min 150px
+- #2647 Fix analysis instrument is not auto-assigned on change in worksheet
+- #2643 Improve performance of analysis verification
+- #2645 Tabbed content view
+- #2624 Added "Maximum holding time" setting to services and analyses
+- #2637 Do not remove inactive services from profiles and templates
 - #2642 Fix Attribute Error in Upgrade Step 2619
 - #2641 Fix AttributeError on rejection of samples without a contact set
 - #2640 Fix missing custom transitions via adapter in Worksheet's analyses

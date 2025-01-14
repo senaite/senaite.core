@@ -142,8 +142,8 @@ But if we activate `Ca` again:
     True
 
 
-Deactivated service is removed automatically from profiles
-..........................................................
+Deactivated service is kept in profiles, but not returned
+.........................................................
 
 Create a profile:
 
@@ -162,14 +162,77 @@ If we deactivate `Au`:
 
 Profile does no longer contain this service:
 
-    >>> [service.getKeyword() for service in profile.getServices()]
+    >>> services = profile.getServices()
+    >>> [service.getKeyword() for service in services]
     ['Ca', 'Mg']
 
-    >>> len(profile.getRawServices())
-    2
+Unless we explicitly ask to include inactive ones:
 
-Re-activate `Au`:
+    >>> services = profile.getServices(active_only=False)
+    >>> [service.getKeyword() for service in services]
+    ['Ca', 'Mg', 'Au']
+
+So the reference to inactive services is kept as a raw value:
+
+    >>> len(profile.getRawServices())
+    3
+
+And if we re-activate `Au`:
 
     >>> performed = doActionFor(Au, 'activate')
     >>> api.is_active(Au)
     True
+
+The profile returns the service again:
+
+    >>> services = profile.getServices()
+    >>> [service.getKeyword() for service in services]
+    ['Ca', 'Mg', 'Au']
+
+
+Deactivated service is kept in templates, but not returned
+..........................................................
+
+Create a sample template:
+
+    >>> template = api.create(setup.sampletemplates, "SampleTemplate")
+    >>> template.setServices([Ca, Mg, Au])
+    >>> [service.getKeyword() for service in template.getServices()]
+    ['Ca', 'Mg', 'Au']
+    >>> len(template.getRawServices())
+    3
+
+If we deactivate `Au`:
+
+    >>> performed = doActionFor(Au, 'deactivate')
+    >>> api.is_active(Au)
+    False
+
+Template does no longer contain this service:
+
+    >>> services = template.getServices()
+    >>> [service.getKeyword() for service in services]
+    ['Ca', 'Mg']
+
+Unless we explicitly ask to include inactive ones:
+
+    >>> services = template.getServices(active_only=False)
+    >>> [service.getKeyword() for service in services]
+    ['Ca', 'Mg', 'Au']
+
+So the reference to inactive services is kept as a raw value:
+
+    >>> len(profile.getRawServices())
+    3
+
+And if we re-activate `Au`:
+
+    >>> performed = doActionFor(Au, 'activate')
+    >>> api.is_active(Au)
+    True
+
+The template returns the service again:
+
+    >>> services = template.getServices()
+    >>> [service.getKeyword() for service in services]
+    ['Ca', 'Mg', 'Au']

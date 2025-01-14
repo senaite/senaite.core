@@ -23,3 +23,4 @@ from .durationwidget import DurationWidget  # noqa F401
 from .queryselect import QuerySelectWidget  # noqa F401
 from .recordswidget import RecordsWidget  # noqa F401
 from .referencewidget import ReferenceWidget  # noqa F401
+from .selectotherwidget import SelectOtherWidget  # noqa F401

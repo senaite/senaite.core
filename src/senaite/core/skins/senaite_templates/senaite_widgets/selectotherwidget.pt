@@ -1,0 +1,63 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+<body>
+
+  <!-- VIEW MACRO -->
+  <metal:view_macro define-macro="view">
+  </metal:view_macro>
+
+  <!-- EDIT MACRO -->
+  <metal:edit_macro define-macro="edit">
+    <tal:values define="value python:field.getEditAccessor(here)() or [];
+                        session_value python:here.session_restore_value(fieldName, value);
+                        cached_value python:request.get(fieldName, session_value);
+                        value python:cached_value or value;
+                        required field/required|nothing;
+                        required python: required and 'required' or None;
+                        error_id python:errors.get(fieldName);
+                        i18n_domain field/widget/i18n_domain|context/i18n_domain|string:plone;">
+
+      <tal:ifLabel tal:condition="not: widget/render_own_label | nothing">
+        <label class="formQuestion"
+               tal:attributes="for python:fieldName">
+              <span tal:replace="python:widget.Label(here)"
+                    i18n:translate=""></span>
+          <span class="required"
+                tal:condition="field/required"
+                title="Required"
+                i18n:attributes="title title_required;">&nbsp;</span>
+          <span class="formHelp"
+                tal:define="description python:widget.Description(here)"
+                tal:content="structure description"
+                tal:attributes="id string:${fieldName}_help"
+                i18n:translate="">
+                Help
+              </span>
+        </label>
+      </tal:ifLabel>
+
+      <div tal:define="widget_attrs python:field.widget.get_input_widget_attributes(context, field, value);"
+           tal:attributes="id python:fieldName;
+                           class python: test(error_id, 'field error ' + 'Archetypes' + widget.getName(), 'field ' + 'Archetypes' + widget.getName()) + ' ' + widget.klass;
+                           data-required python:required and '1' or '0';
+                           python:widget_attrs;">
+        <!-- ReactJS controlled component -->
+      </div>
+
+      <div class="fieldErrorBox" tal:condition="required"></div>
+      <div class="fieldErrorBox" tal:content="error_id" i18n:translate=""></div>
+    </tal:values>
+
+  </metal:edit_macro>
+
+  <metal:search_macro define-macro="search">
+    <div metal:use-macro="context/widgets/string/macros/edit"></div>
+  </metal:search_macro>
+
+</body>
+
+</html>

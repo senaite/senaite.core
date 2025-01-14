@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-07-16 10:25+0000\n"
+"POT-Creation-Date: 2025-01-03 13:43+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Albion Shala, 2023\n"
 "Language-Team: Albanian (Albania) (https://app.transifex.com/senaite/teams/87045/sq_AL/)\n"
@@ -50,10 +50,6 @@ msgstr "Rregulli i konfigurimit"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:35
 msgid "Content rule settings updated."
 msgstr "Cilësimet e rregullave të përmbajtjes u përditësuan."
-
-#: senaite/core/browser/dexterity/templates/container.pt:29
-msgid "Contents"
-msgstr "Përmbajtja"
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:52
 msgid "Disable globally"

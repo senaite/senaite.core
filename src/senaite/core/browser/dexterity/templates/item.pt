@@ -10,19 +10,8 @@
     <metal:main fill-slot="content-core">
       <metal:content-core define-macro="content-core">
 
-        <tal:block repeat="widget view/widgets/values|nothing">
-          <tal:block tal:condition="python:widget.__name__ not in ('IBasic.title', 'IBasic.description', 'title', 'description',)">
-            <tal:widget tal:replace="structure widget/@@ploneform-render-widget"/>
-          </tal:block>
-        </tal:block>
-
-        <div tal:repeat="group view/groups|nothing"
-             tal:attributes="id python:''.join((group.prefix, 'groups.', group.__name__)).replace('.', '-')">
-          <legend class="mt-2 border-top border-bottom" tal:content="group/label" />
-          <tal:block tal:repeat="widget group/widgets/values|nothing">
-            <tal:widget tal:replace="structure widget/@@ploneform-render-widget"/>
-          </tal:block>
-        </div>
+        <!-- Render widgets in tabs -->
+        <tal:tabs tal:replace="structure view/render_widget_tabs"/>
 
       </metal:content-core>
     </metal:main>

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2024-07-16 10:25+0000\n"
+"POT-Creation-Date: 2025-01-03 13:43+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Carman Hu, 2022\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/senaite/teams/87045/zh_CN/)\n"
@@ -24,7 +24,7 @@ msgstr ""
 
 #: senaite/core/browser/user/templates/account-panel.pt:16
 msgid "${action/title}"
-msgstr ""
+msgstr "${action/title}"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:167
 msgid "Activated add-ons"
@@ -53,10 +53,6 @@ msgstr "配置规则"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:35
 msgid "Content rule settings updated."
 msgstr "内容规则设置已更新。"
-
-#: senaite/core/browser/dexterity/templates/container.pt:29
-msgid "Contents"
-msgstr "内容"
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:52
 msgid "Disable globally"
@@ -137,7 +133,7 @@ msgstr "SENAITE工具栏标志的相关URL"
 
 #: senaite/core/browser/sharing/templates/client_sharing.pt:67
 msgid "Search for user or group"
-msgstr ""
+msgstr "搜索用户或用户组"
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Select which formats are available for users as alternative to the default format. Note that if new formats are installed, they will be enabled for text fields by default unless explicitly turned off here or by the relevant installer."
@@ -187,11 +183,11 @@ msgstr "保存内容规则时出错."
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:69
 msgid "This addon has been upgraded."
-msgstr "这个插件已升级"
+msgstr "这个插件已升级."
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:23
 msgid "This is the Add-on configuration section, you can activate and deactivate add-ons in the lists below."
-msgstr "这是插件配置部分，您可以在下面的列表中激活或者取消激活插件"
+msgstr "这是插件配置部分，您可以在下面的列表中激活或者取消激活插件."
 
 #: senaite/core/profiles/default/registry.xml
 msgid "This must be a URL relative to the site root."
@@ -199,7 +195,7 @@ msgstr "这必须是相对于网站根目录的URL."
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:154
 msgid "This product cannot be uninstalled!"
-msgstr "该产品不能卸载"
+msgstr "该产品不能卸载！"
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:215
 msgid "This rule is not assigned to any location"
@@ -219,7 +215,7 @@ msgstr "卸载"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:105
 msgid "Upgrade them ALL!"
-msgstr "全部升级"
+msgstr "全部升级！"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:36
 msgid "Upgrades"
@@ -240,7 +236,7 @@ msgstr "是否应全局禁用内容规则。 如果选择此选项，则不会�
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:40
 msgid "You are up to date. High fives."
-msgstr "恭喜，你已是最新的！"
+msgstr "恭喜，你已是最新的。"
 
 #. convert them to new-style portlets."
 #. Default: "There are legacy portlets defined here. Click the button to convert them to new-style portlets."
@@ -251,12 +247,12 @@ msgstr "操作转换旧门户组件"
 #. Default: "Next ${number} items"
 #: senaite/core/browser/batching/templates/batchnavigation.pt:85
 msgid "batch_next_x_items"
-msgstr ""
+msgstr "下一批 X 项目"
 
 #. Default: "Previous ${number} items"
 #: senaite/core/browser/batching/templates/batchnavigation.pt:19
 msgid "batch_previous_x_items"
-msgstr ""
+msgstr "上一批 X 项目"
 
 #. Default: "Add action"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:183
@@ -431,7 +427,7 @@ msgstr "描述生产模式"
 #. Default: "Grant access for users or groups <div class=\"font-italic\"> Access should be granted only to the client group below. <br /> Client contacts which are linked to a user account will be automatically added to this group and have therefore the same roles granted immediately. <br /> Other granted access to users or groups will only affect new created contents. </div>"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:43
 msgid "description_sharing_control"
-msgstr ""
+msgstr "描述共享控制"
 
 #. log in."
 #. Default: "Cookies are not enabled. You must enable cookies before you can log in."
@@ -442,7 +438,7 @@ msgstr "登录前启用cookie消息"
 #. Default: "File already uploaded:"
 #: senaite/core/z3cform/widgets/datagrid/datagridrow_file_input.pt:19
 msgid "file_already_uploaded"
-msgstr ""
+msgstr "已上传的文件"
 
 #. Default: "Get help"
 #: senaite/core/browser/login/templates/login.pt:105
@@ -487,7 +483,7 @@ msgstr "条目 创建组"
 #. Default: "Manage access for ${folder}"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:37
 msgid "heading_currently_assigned_shares"
-msgstr ""
+msgstr "标题_当前已分配的份额"
 
 #. Default: "Group: ${groupname}"
 #: senaite/core/browser/usergroup/templates/usergroups_groupdetails.pt:58
@@ -559,18 +555,18 @@ msgstr "帮助 组名称"
 #. Default: "By default, permissions from the container of this item are inherited. If you disable this, only the explicitly defined sharing permissions will be valid. In the overview, the symbol ${image_confirm_icon} indicates an inherited value. Similarly, the symbol ${image_link_icon} indicates a global role, which is managed by the site administrator."
 #: senaite/core/browser/sharing/templates/client_sharing.pt:191
 msgid "help_inherit_local_roles"
-msgstr ""
+msgstr "帮助继承本地角色"
 
 #. Default: "go here"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:28
 msgid "help_sharing_go_here"
-msgstr ""
+msgstr "帮助共享到这里"
 
 #. container. To adjust them for the entire container, ${go_here}."
 #. Default: "You are adjusting the sharing privileges for a default view in a container. To adjust them for the entire container, ${go_here}."
 #: senaite/core/browser/sharing/templates/client_sharing.pt:28
 msgid "help_sharing_page_default_page"
-msgstr ""
+msgstr "帮助共享页面的默认页面"
 
 #. Default: "HTML"
 #: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:52
@@ -619,7 +615,7 @@ msgstr "标签 将用户添加到组"
 #. Default: "Add selected groups and users to this group"
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:339
 msgid "label_add_users_to_group"
-msgstr " 标签 将用户添加到组"
+msgstr "标签 将用户添加到组"
 
 #. Default: "Cancel"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:198
@@ -740,7 +736,7 @@ msgstr "标签 隐藏项"
 #. Default: "Inherit permissions from higher levels"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:180
 msgid "label_inherit_local_roles"
-msgstr ""
+msgstr "标签继承本地角色"
 
 #. If you wanted to manage the portlets of the container itself, ${go_here}."
 #. Default: "You are managing the portlets of the default view of a container. If you wanted to manage the portlets of the container itself, ${go_here}."
@@ -925,7 +921,7 @@ msgstr "需要一个帐户"
 #. Default: "No file"
 #: senaite/core/z3cform/widgets/datagrid/datagridrow_file_display.pt:27
 msgid "no_file"
-msgstr ""
+msgstr "没有文件"
 
 #. Default: "Plain Text"
 #: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:61
@@ -945,7 +941,7 @@ msgstr "结构化文本"
 #. Default: "Current sharing permissions"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:92
 msgid "summary_assigned_roles"
-msgstr ""
+msgstr "分配任务摘要"
 
 #. Default: "Select roles for each group"
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:139
