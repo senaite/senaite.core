@@ -248,6 +248,24 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Viewlet manager in sample view inside the title macro -->
+  <browser:viewletManager
+      name="senaite.sampletitle"
+      provides=".interfaces.ISampleTitle"
+      class="plone.app.viewletmanager.manager.OrderedViewletManager"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Viewlet manager in sample view inside the title macro below the title -->
+  <browser:viewletManager
+      name="senaite.sampledescription"
+      provides=".interfaces.ISampleDescription"
+      class="plone.app.viewletmanager.manager.OrderedViewletManager"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Viewlet manager in sample view above all sections -->
   <browser:viewletManager
       name="senaite.sampleheader"
@@ -292,6 +310,24 @@
       permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore"
       />
+
+  <!-- Sample title viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="senaite.core.sampletitle"
+      manager=".interfaces.ISampleTitle"
+      class=".sampletitle.SampleTitleViewlet"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      permission="zope2.View" />
+
+  <!-- Sample description viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="senaite.core.sampledescription"
+      manager=".interfaces.ISampleDescription"
+      class=".sampledescription.SampleDescriptionViewlet"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      permission="zope2.View" />
 
   <!-- Sample header viewlet -->
   <browser:viewlet
