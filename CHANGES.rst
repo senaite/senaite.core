@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2659 Refactor sample title + decsription into viewlets
+- #2654 Show Batch title or ID in Sample reference field
 - #2657 Methods from analyses are not updated on instrument change in worksheet
 - #2656 Fix AnalysisProfile keyword validator fail with non-ascii value 
 - #2646 Add SelectOtherField and SelectOtherWidget
