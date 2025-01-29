@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:zcml="http://namespaces.zope.org/zcml">
+
+  <configure zcml:condition="installed senaite.app.listing">
+
+    <!-- Custom listing adapter for sample transition "receive" -->
+    <adapter
+        for="senaite.app.listing.interfaces.IAjaxListingView
+             bika.lims.interfaces.IAnalysisRequest
+             senaite.core.interfaces.ISenaiteCore"
+        factory=".sample.SampleReceiveWorkflowTransition"
+        name="receive"/>
+
+    <!-- Custom listing adapter for analysis transition "retract" -->
+    <adapter
+        name="retract"
+        for="senaite.app.listing.interfaces.IAjaxListingView
+             bika.lims.interfaces.analysis.IRequestAnalysis
+             senaite.core.interfaces.ISenaiteCore"
+        provides="senaite.app.listing.interfaces.IListingWorkflowTransition"
+        factory=".analysis.AnalysisRetractAdapter" />
+
+    <!-- Custom listing adapter for analysis transition "retest" -->
+    <adapter
+        name="retest"
+        for="senaite.app.listing.interfaces.IAjaxListingView
+             bika.lims.interfaces.analysis.IRequestAnalysis
+             senaite.core.interfaces.ISenaiteCore"
+        provides="senaite.app.listing.interfaces.IListingWorkflowTransition"
+        factory=".analysis.AnalysisRetestAdapter" />
+
+  </configure>
+</configure>
