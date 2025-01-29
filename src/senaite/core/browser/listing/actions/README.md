@@ -9,6 +9,7 @@ Therefore, it must return a JSON message with the following contents:
 {
   "message": "Return message of the action",
   "success": true/false
+  "title": "Action title"
 }
 ```
 
