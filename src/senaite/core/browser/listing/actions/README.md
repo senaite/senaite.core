@@ -3,4 +3,12 @@
 A listing action is basically a browser view that get asynchornously executed
 from a listing view.
 
-Therefore, it returns just a plain message that can be displayed to the user after execution.
+Therefore, it must return a JSON message with the following contents:
+
+``` json
+{
+  "message": "Return message of the action",
+  "success": true/false
+}
+```
+
