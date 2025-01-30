@@ -120,11 +120,11 @@ def get_catalogs_by_type(portal_type):
     catalogs = mapping.get(portal_type) or []
 
     # extend with catalogs from registry
-    registry_mapping = get_registry_record("catalog_mappings", default={})
-    additional = registry_mapping.get(portal_type) or []
-    catalogs.extend(additional)
-
-    # remove duplicates while keeping the order
-    catalogs = list(OrderedDict.fromkeys(catalogs))
+    registry_mapping = get_registry_record("catalog_mappings")
+    if registry_mapping:
+        additional = registry_mapping.get(portal_type) or []
+        catalogs.extend(additional)
+        # remove duplicates while keeping the order
+        catalogs = list(OrderedDict.fromkeys(catalogs))
 
     return catalogs
