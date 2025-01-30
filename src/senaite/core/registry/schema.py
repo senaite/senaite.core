@@ -319,3 +319,32 @@ class IGenericSetupRegistry(ISenaiteRegistry):
             "Worksheet",
         ]
     )
+
+
+class ICatalogRegistry(ISenaiteRegistry):
+    """Registry settings for Catalog settings
+    """
+
+    model.fieldset(
+        "catalogs",
+        label=_(u"Catalogs"),
+        fields=[
+            "catalog_mappings",
+        ],
+    )
+    catalog_mappings = schema.Dict(
+        title=_(u"Catalog mappings"),
+        description=_(
+            u"Define the relationship between portal types and the additional "
+            u"catalogs in which these portal types should be indexed, beyond "
+            u"the default catalogs."
+        ),
+        key_type=schema.Choice(
+            title=_(u"Portal type"),
+            vocabulary="plone.app.vocabularies.PortalTypes",
+        ),
+        value_type=schema.List(
+            title=_(u"Catalogs"),
+            value_type=schema.ASCIILine(),
+        ),
+    )

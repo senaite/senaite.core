@@ -104,6 +104,7 @@ CATALOG_MAPPINGS = (
     ("WorksheetTemplate", [SETUP_CATALOG]),
 )
 
+
 def get_catalogs_by_type(portal_type):
     """Return the mapped catalogs by type
 
