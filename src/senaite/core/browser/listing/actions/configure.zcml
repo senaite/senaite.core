@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:page
+      name="action"
+      for="bika.lims.interfaces.IAnalysis"
+      permission="zope2.View"
+      class=".analysis.ActionView"
+      allowed_attributes="recalculate"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+</configure>
