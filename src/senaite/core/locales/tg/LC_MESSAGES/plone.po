@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2025-01-03 13:43+0000\n"
+"POT-Creation-Date: 2025-01-17 19:35+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Bakhtiyor Barotov, 2023\n"
 "Language-Team: Tajik (https://app.transifex.com/senaite/teams/87045/tg/)\n"
@@ -235,7 +235,6 @@ msgstr "Оё қоидаҳои мундариҷа бояд дар пурра ға
 msgid "You are up to date. High fives."
 msgstr "Шумо азнавсози шудед. Кандата зан!"
 
-#. convert them to new-style portlets."
 #. Default: "There are legacy portlets defined here. Click the button to convert them to new-style portlets."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:69
 msgid "action_convert_legacy_portlets"
@@ -276,8 +275,6 @@ msgstr "contentrules_description_cascading"
 msgid "contentrules_description_description"
 msgstr "contentrules_description_description"
 
-#. only be invoked if all the rule's conditions are met. You can add new
-#. actions and conditions using the buttons below."
 #. Default: "Rules execute when a triggering event occurs. Rule actions will only be invoked if all the rule's conditions are met. You can add new actions and conditions using the buttons below."
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:23
 msgid "contentrules_description_execution"
@@ -307,9 +304,6 @@ msgstr "Азнавсозиро идома диҳед"
 msgid "decription_no_members_assigned"
 msgstr "decription_no_members_assigned"
 
-#. Rules will automatically perform actions on content when certain triggers
-#. take place. After defining rules, you may want to go to a folder to assign
-#. them, using the \"rules\" item in the actions menu."
 #. Default: "Use the form below to define, change or remove content rules. Rules will automatically perform actions on content when certain triggers take place. After defining rules, you may want to go to a folder to assign them, using the \"rules\" item in the actions menu."
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:24
 msgid "description-contentrules-controlpanel"
@@ -340,46 +334,31 @@ msgstr "description_control_panel"
 msgid "description_cookie_manual_override"
 msgstr "description_cookie_manual_override"
 
-#. sites that are under development. This allows many configuration changes to
-#. be immediately visible, but will make your site run more slowly. To turn
-#. off debug mode, stop the server, set 'debug-mode=off' in your buildout.cfg,
-#. re-run bin/buildout and then restart the server process."
 #. Default: "You are running in \"debug mode\". This mode is intended for sites that are under development. This allows many configuration changes to be immediately visible, but will make your site run more slowly. To turn off debug mode, stop the server, set 'debug-mode=off' in your buildout.cfg, re-run bin/buildout and then restart the server process."
 #: senaite/core/browser/controlpanel/templates/overview.pt:167
 msgid "description_debug_mode"
 msgstr "description_debug_mode"
 
-#. here. Note that this doesn't actually delete the group or user, it is only
-#. removed from this group."
 #. Default: "You can add or remove groups and users from this particular group here. Note that this doesn't actually delete the group or user, it is only removed from this group."
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:78
 msgid "description_group_members_of"
 msgstr "description_group_members_of"
 
-#. business units. Groups are not directly related to permissions on a global
-#. level, you normally use Roles for that - and let certain Groups have a
-#. particular role."
 #. Default: "Groups are logical collections of users, such as departments and business units. Groups are not directly related to permissions on a global level, you normally use Roles for that - and let certain Groups have a particular role."
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:55
 msgid "description_groups_management"
 msgstr "description_groups_management"
 
-#. membership in another group."
 #. Default: "The symbol ${image_link_icon} indicates a role inherited from membership in another group."
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:66
 msgid "description_groups_management2"
 msgstr "description_groups_management2"
 
-#. assigned in this context. Use the buttons on each portlet to move them up
-#. or down, delete or edit them. To add a new portlet, use the drop-down list
-#. at the top of the column."
 #. Default: "The portlet columns will first display portlets explicitly assigned in this context. Use the buttons on each portlet to move them up or down, delete or edit them. To add a new portlet, use the drop-down list at the top of the column."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:52
 msgid "description_manage_contextual_portlets"
 msgstr "description_manage_contextual_portlets"
 
-#. listing of groups, so you may not see the groups defined by those plugins
-#. unless doing a specific search."
 #. Default: "Note: Some or all of your PAS groups source plugins do not allow listing of groups, so you may not see the groups defined by those plugins unless doing a specific search."
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:72
 msgid "description_pas_group_listing"
@@ -392,41 +371,26 @@ msgstr "description_pas_group_listing"
 msgid "description_pas_show_all_search_results"
 msgstr "description_pas_show_all_search_results"
 
-#. of users, so you may not see the users defined by those plugins unless
-#. doing a specific search."
 #. Default: "Some or all of your PAS user source plugins do not allow listing of users, so you may not see the users defined by those plugins unless doing a specific search."
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:57
 msgid "description_pas_users_listing"
 msgstr "description_pas_users_listing"
 
-#. you can do so using the drop-down boxes. Portlets that are included by
-#. these categories are shown below the selection box."
 #. Default: "If you wish to block or unblock certain categories of portlets, you can do so using the drop-down boxes. Portlets that are included by these categories are shown below the selection box."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:59
 msgid "description_portlets_block_unblock"
 msgstr "description_portlets_block_unblock"
 
-#. mode of operation for a live Plone site, but means that some configuration
-#. changes will not take effect until your server is restarted or a product
-#. refreshed. If this is a development instance, and you want to enable debug
-#. mode, stop the server, set 'debug-mode=on' in your buildout.cfg, re-run
-#. bin/buildout and then restart the server process."
 #. Default: "You are running in \"production mode\". This is the preferred mode of operation for a live Plone site, but means that some configuration changes will not take effect until your server is restarted or a product refreshed. If this is a development instance, and you want to enable debug mode, stop the server, set 'debug-mode=on' in your buildout.cfg, re-run bin/buildout and then restart the server process."
 #: senaite/core/browser/controlpanel/templates/overview.pt:155
 msgid "description_production_mode"
 msgstr "description_production_mode"
 
-#. Access should be granted only to the client group below. <br /> Client
-#. contacts which are linked to a user account will be automatically added to
-#. this group and have therefore the same roles granted immediately. <br />
-#. Other granted access to users or groups will only affect new created
-#. contents. </div>"
 #. Default: "Grant access for users or groups <div class=\"font-italic\"> Access should be granted only to the client group below. <br /> Client contacts which are linked to a user account will be automatically added to this group and have therefore the same roles granted immediately. <br /> Other granted access to users or groups will only affect new created contents. </div>"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:43
 msgid "description_sharing_control"
 msgstr "description_sharing_control"
 
-#. log in."
 #. Default: "Cookies are not enabled. You must enable cookies before you can log in."
 #: senaite/core/browser/login/templates/login.pt:20
 msgid "enable_cookies_message_before_login"
@@ -532,23 +496,16 @@ msgstr "heading_search_newmembers"
 msgid "heading_version_overview"
 msgstr "heading_version_overview"
 
-#. and type the document as you usually do."
 #. Default: "If you are unsure of which format to use, just select Plain Text and type the document as you usually do."
 #: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:31
 msgid "help_format_wysiwyg"
 msgstr "help_format_wysiwyg"
 
-#. creation."
 #. Default: "A unique identifier for the group. Can not be changed after creation."
 #: senaite/core/browser/usergroup/templates/usergroups_groupdetails.pt:34
 msgid "help_groupname"
 msgstr "help_groupname"
 
-#. inherited. If you disable this, only the explicitly defined sharing
-#. permissions will be valid. In the overview, the symbol
-#. ${image_confirm_icon} indicates an inherited value. Similarly, the symbol
-#. ${image_link_icon} indicates a global role, which is managed by the site
-#. administrator."
 #. Default: "By default, permissions from the container of this item are inherited. If you disable this, only the explicitly defined sharing permissions will be valid. In the overview, the symbol ${image_confirm_icon} indicates an inherited value. Similarly, the symbol ${image_link_icon} indicates a global role, which is managed by the site administrator."
 #: senaite/core/browser/sharing/templates/client_sharing.pt:191
 msgid "help_inherit_local_roles"
@@ -559,7 +516,6 @@ msgstr "help_inherit_local_roles"
 msgid "help_sharing_go_here"
 msgstr "help_sharing_go_here"
 
-#. container. To adjust them for the entire container, ${go_here}."
 #. Default: "You are adjusting the sharing privileges for a default view in a container. To adjust them for the entire container, ${go_here}."
 #: senaite/core/browser/sharing/templates/client_sharing.pt:28
 msgid "help_sharing_page_default_page"
@@ -670,7 +626,6 @@ msgstr "label_disable"
 msgid "label_edit"
 msgstr "label_edit"
 
-#. edit the container itself, ${go_here}."
 #. Default: "You are editing the default view of a container. If you wanted to edit the container itself, ${go_here}."
 #: senaite/core/skins/senaite_templates/edit_macros.pt:49
 msgid "label_edit_default_view_container"
@@ -735,7 +690,6 @@ msgstr "label_hide_item"
 msgid "label_inherit_local_roles"
 msgstr "label_inherit_local_roles"
 
-#. If you wanted to manage the portlets of the container itself, ${go_here}."
 #. Default: "You are managing the portlets of the default view of a container. If you wanted to manage the portlets of the container itself, ${go_here}."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:45
 msgid "label_manage_portlets_default_view_container"
@@ -945,9 +899,6 @@ msgstr "summary_assigned_roles"
 msgid "summary_roles_for_groups"
 msgstr "summary_roles_for_groups"
 
-#. various features including contact forms, email notification and password
-#. reset will not work. Go to the ${label_mail_control_panel_link} to fix
-#. this."
 #. Default: "You have not configured a mail host or a site 'From' address, various features including contact forms, email notification and password reset will not work. Go to the ${label_mail_control_panel_link} to fix this."
 #: senaite/core/browser/controlpanel/templates/overview.pt:53
 msgid "text_no_mailhost_configured"
@@ -973,8 +924,6 @@ msgstr "text_no_searchstring"
 msgid "text_no_searchstring_large"
 msgstr "text_no_searchstring_large"
 
-#. work properly for timezone aware date/time values. Go to the
-#. ${label_mail_event_settings_link} to fix this."
 #. Default: "You have not set the portal timezone. Date/Time handling will not work properly for timezone aware date/time values. Go to the ${label_mail_event_settings_link} to fix this."
 #: senaite/core/browser/controlpanel/templates/overview.pt:74
 msgid "text_no_timezone_configured"
@@ -1047,7 +996,6 @@ msgstr "trouble_logging_in"
 msgid "unassigned"
 msgstr "таъиннашуда"
 
-#. ${image_link_icon} indicates a role inherited from membership in a group."
 #. Default: "Note that roles set here apply directly to a user. The symbol ${image_link_icon} indicates a role inherited from membership in a group."
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:52
 msgid "user_roles_note"

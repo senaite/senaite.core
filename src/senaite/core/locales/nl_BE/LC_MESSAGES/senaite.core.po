@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2025-01-03 13:43+0000\n"
+"POT-Creation-Date: 2025-01-17 19:35+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Dutch (Belgium) (https://app.transifex.com/senaite/teams/87045/nl_BE/)\n"
@@ -2222,7 +2222,6 @@ msgstr ""
 msgid "Exponential format threshold"
 msgstr ""
 
-# senaite.app.listing: Export
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Export"
 msgstr ""
@@ -6642,7 +6641,6 @@ msgstr ""
 msgid "description_analysis_unitchoices"
 msgstr ""
 
-#. reports."
 #. Default: "To be displayed below each Analysis Category section on results reports."
 #: senaite/core/content/analysiscategory.py:64
 msgid "description_analysiscategory_comments"
@@ -6653,7 +6651,6 @@ msgstr ""
 msgid "description_analysiscategory_department"
 msgstr ""
 
-#. Duplicate values are ordered alphabetically."
 #. Default: "Float value from 0.0 - 1000.0 indicating the sort order. Duplicate values are ordered alphabetically."
 #: senaite/core/content/analysiscategory.py:99
 msgid "description_analysiscategory_sort_key"
@@ -6674,16 +6671,11 @@ msgstr ""
 msgid "description_analysisprofile_profile_price"
 msgstr ""
 
-#. price"
 #. Default: "Please provide the VAT in percent that is added to the profile price"
 #: senaite/core/content/analysisprofile.py:161
 msgid "description_analysisprofile_profile_vat"
 msgstr ""
 
-#. profile won't be available for selection in sample creation and edit forms
-#. unless the selected sample type is one of these. If no sample type is set
-#. here, this profile will always be available for selection, regardless of
-#. the sample type of the sample."
 #. Default: "Sample types for which this analysis profile is supported. This profile won't be available for selection in sample creation and edit forms unless the selected sample type is one of these. If no sample type is set here, this profile will always be available for selection, regardless of the sample type of the sample."
 #: senaite/core/content/analysisprofile.py:184
 msgid "description_analysisprofile_sampletypes"
@@ -6854,8 +6846,6 @@ msgstr ""
 msgid "description_department_id"
 msgstr ""
 
-#. the 'lab contacts' setup item. Departmental managers are referenced on
-#. analysis results reports containing analyses by their department."
 #. Default: "Select a manager from the available personnel configured under the 'lab contacts' setup item. Departmental managers are referenced on analysis results reports containing analyses by their department."
 #: senaite/core/content/department.py:105
 msgid "description_department_manager"
@@ -6936,7 +6926,6 @@ msgstr ""
 msgid "description_labproduct_price"
 msgstr ""
 
-#. price"
 #. Default: "Please provide the VAT in percent that is added to the labproduct price"
 #: senaite/core/content/labproduct.py:102
 msgid "description_labproduct_vat"
@@ -6967,14 +6956,11 @@ msgstr ""
 msgid "description_referencesample_referencedefinition"
 msgstr ""
 
-#. logs into the system, or when a client is selected from the client folder
-#. listing"
 #. Default: "Select the default landing page. This is used when a Client user logs into the system, or when a client is selected from the client folder listing"
 #: senaite/core/registry/schema.py:66
 msgid "description_registry_client_landing_page"
 msgstr ""
 
-#. structure of the site via Generic Setup"
 #. Default: "List of portal types to be skipped when exporting the content structure of the site via Generic Setup"
 #: senaite/core/registry/schema.py:303
 msgid "description_registry_generic_setup_skip_export_types"
@@ -7095,9 +7081,6 @@ msgstr ""
 msgid "description_sample_template"
 msgstr ""
 
-#. and put together from more than one sub sample, e.g. several surface
-#. samples from a dam mixed together to be a representative sample for the
-#. dam. The default, unchecked, indicates 'grab' samples"
 #. Default: "Check this box if the samples taken at this point are 'composite' and put together from more than one sub sample, e.g. several surface samples from a dam mixed together to be a representative sample for the dam. The default, unchecked, indicates 'grab' samples"
 #: senaite/core/content/samplepoint.py:147
 msgid "description_samplepoint_composite"
@@ -7108,8 +7091,6 @@ msgstr ""
 msgid "description_samplepoint_elevation"
 msgstr ""
 
-#. further analysis. It plays a pivotal role in research as it can
-#. significantly influence the results and conclusions drawn from the study."
 #. Default: "The geographical point or area from which samples are taken for further analysis. It plays a pivotal role in research as it can significantly influence the results and conclusions drawn from the study."
 #: senaite/core/content/samplepoint.py:76
 msgid "description_samplepoint_location"
@@ -7120,22 +7101,16 @@ msgstr ""
 msgid "description_samplepoint_sampletypes"
 msgstr ""
 
-#. frequency here, e.g. weekly"
 #. Default: "If a sample is taken periodically at this sample point, enter frequency here, e.g. weekly"
 #: senaite/core/content/samplepoint.py:103
 msgid "description_samplepoint_sampling_frequency"
 msgstr ""
 
-#. point. The field for the selection of a sample point in sample creation and
-#. edit forms will be filtered in accordance. Still, sample points that do not
-#. have any sample type assigned will always be available for selection,
-#. regardless of the type."
 #. Default: "The list of sample types that can be collected at this sample point. The field for the selection of a sample point in sample creation and edit forms will be filtered in accordance. Still, sample points that do not have any sample type assigned will always be available for selection, regardless of the type."
 #: senaite/core/content/samplepoint.py:126
 msgid "description_samplepoint_sampling_sample_types"
 msgstr ""
 
-#. sample is received"
 #. Default: "Automatically redirect the user to the partitions view when the sample is received"
 #: senaite/core/content/sampletemplate.py:258
 msgid "description_sampletemplate_auto_partition"
@@ -7146,7 +7121,6 @@ msgstr ""
 msgid "description_sampletemplate_composite"
 msgstr ""
 
-#. ID'"
 #. Default: "Each line defines a new partition identified by the 'Partition ID'"
 #: senaite/core/content/sampletemplate.py:245
 msgid "description_sampletemplate_partitions"
@@ -7177,14 +7151,11 @@ msgstr ""
 msgid "description_sampletype_admitted_stickers_templates"
 msgstr ""
 
-#. automatically assigned a container of this type, unless it has been
-#. specified in more details per analysis service"
 #. Default: "The default container type. New sample partitions are automatically assigned a container of this type, unless it has been specified in more details per analysis service"
 #: senaite/core/content/sampletype.py:217
 msgid "description_sampletype_containertype"
 msgstr ""
 
-#. before they expire and cannot be analysed any further"
 #. Default: "The period for which unpreserved samples of this type can be kept before they expire and cannot be analysed any further"
 #: senaite/core/content/sampletype.py:133
 msgid "description_sampletype_duration_period"
@@ -7195,7 +7166,6 @@ msgstr ""
 msgid "description_sampletype_hazardous"
 msgstr ""
 
-#. kg'."
 #. Default: "The minimum sample volume required for analysis eg. '10 ml' or '1 kg'."
 #: senaite/core/content/sampletype.py:194
 msgid "description_sampletype_min_volume"
@@ -7211,13 +7181,11 @@ msgstr ""
 msgid "description_sampletype_samplematrix"
 msgstr ""
 
-#. entered manually for analyses"
 #. Default: "If this option is activated, the result capture date can be entered manually for analyses"
 #: senaite/core/content/senaitesetup.py:174
 msgid "description_senaitesetup_allow_manual_result_capture_date"
 msgstr ""
 
-#. departments will receive publication emails."
 #. Default: "When selected, the responsible persons of all involved lab departments will receive publication emails."
 #: senaite/core/content/senaitesetup.py:101
 msgid "description_senaitesetup_always_cc_responsibles_in_report_emails"
@@ -7228,36 +7196,26 @@ msgstr ""
 msgid "description_senaitesetup_categorizesampleanalyses"
 msgstr ""
 
-#. creation. This functionality only takes effect when 'Sampling workflow' is
-#. not active"
 #. Default: "Select this to make DateSampled field required on sample creation. This functionality only takes effect when 'Sampling workflow' is not active"
 #: senaite/core/content/senaitesetup.py:199
 msgid "description_senaitesetup_date_sampled_required"
 msgstr ""
 
-#. publishing results reports. This address overrides the value set at
-#. portal's 'Mail settings'."
 #. Default: "E-mail to use as the 'From' address for outgoing e-mails when publishing results reports. This address overrides the value set at portal's 'Mail settings'."
 #: senaite/core/content/senaitesetup.py:73
 msgid "description_senaitesetup_email_from_sample_publication"
 msgstr ""
 
-#. e.g. to enter field results immediately, or lab results, when the automatic
-#. sample reception is activated."
 #. Default: "Allow the user to directly enter results after sample creation, e.g. to enter field results immediately, or lab results, when the automatic sample reception is activated."
 #: senaite/core/content/senaitesetup.py:142
 msgid "description_senaitesetup_immediateresultsentry"
 msgstr ""
 
-#. the value set for the field 'Number of samples' on the sample registration
-#. form"
 #. Default: "Maximum number of samples that can be created in accordance with the value set for the field 'Number of samples' on the sample registration form"
 #: senaite/core/content/senaitesetup.py:186
 msgid "description_senaitesetup_maxnumberofsamplesadd"
 msgstr ""
 
-#. result reports to the selected recipients. You can use reserved keywords:
-#. $client_name, $recipients, $lab_name, $lab_address"
 #. Default: "Set the email body text to be used by default when sending out result reports to the selected recipients. You can use reserved keywords: $client_name, $recipients, $lab_name, $lab_address"
 #: senaite/core/content/senaitesetup.py:87
 msgid "description_senaitesetup_publication_email_text"
@@ -7268,7 +7226,6 @@ msgstr ""
 msgid "description_senaitesetup_sampleanalysesrequired"
 msgstr ""
 
-#. page, above the access credentials."
 #. Default: "When selected, the laboratory name will be displayedin the login page, above the access credentials."
 #: senaite/core/content/senaitesetup.py:212
 msgid "description_senaitesetup_show_lab_name_in_login"
@@ -7339,7 +7296,6 @@ msgstr ""
 msgid "description_supplier_nib"
 msgstr ""
 
-#. contact profile."
 #. Default: "User is linked to a contact. Please change your settings in the contact profile."
 #: senaite/core/browser/user/userdatapanel.py:46
 msgid "description_user_contact"
@@ -7350,8 +7306,6 @@ msgstr ""
 msgid "description_worksheettemplate_instrument"
 msgstr ""
 
-#. with the selected method.<br/>In order to apply this change to the services
-#. list, you should save the change first."
 #. Default: "Restrict the available analysis services and instruments to those with the selected method.<br/>In order to apply this change to the services list, you should save the change first."
 #: senaite/core/content/worksheettemplate.py:240
 msgid "description_worksheettemplate_restrict_to_method"
@@ -7362,10 +7316,6 @@ msgstr ""
 msgid "description_worksheettemplate_services"
 msgstr ""
 
-#. specific instrument's tray size. Then select an Analysis 'type' per
-#. Worksheet position. Where QC samples are selected, also select which
-#. Reference Sample should be used. If a duplicate analysis is selected,
-#. indicate which sample position it should be a duplicate of"
 #. Default: "Specify the size of the Worksheet, e.g. corresponding to a specific instrument's tray size. Then select an Analysis 'type' per Worksheet position. Where QC samples are selected, also select which Reference Sample should be used. If a duplicate analysis is selected, indicate which sample position it should be a duplicate of"
 #: senaite/core/content/worksheettemplate.py:315
 msgid "description_worksheettemplate_template_layout"
@@ -7376,7 +7326,6 @@ msgstr ""
 msgid "duplicate_reference_not_found"
 msgstr ""
 
-#. routine analysis."
 #. Default: "Duplicate in position ${dup} references this, so it must be a routine analysis."
 #: senaite/core/browser/form/adapters/worksheettemplate.py:165
 msgid "duplicate_reference_this_position"

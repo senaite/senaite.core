@@ -1,17 +1,17 @@
 #
 # Translators:
 # Marc Jedrzejas <marc.jedr@gmail.com>, 2018
-# Jordi Puiggené <jpuiggene@naralabs.com>, 2022
 # Winnie, 2022
 # Stefan Gruber <s.gruber@liscon.de>, 2023
 # Ramon Bartl <rb@ridingbytes.com>, 2023
+# Jordi Puiggené <jpuiggene@naralabs.com>, 2025
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2025-01-03 13:43+0000\n"
+"POT-Creation-Date: 2025-01-17 19:35+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
-"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2023\n"
+"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2025\n"
 "Language-Team: German (https://app.transifex.com/senaite/teams/87045/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -6603,7 +6603,8 @@ msgstr "${d}.${m}.${y}"
 
 #. Date format used with the datepicker jqueryui plugin.
 #. Please only use 'dd', 'mm', 'yy', '-', '/', '.' in this string.
-#. Default: "yy-mm-dd"
+#. Default: "mm/dd/yy"
+#, fuzzy
 msgid "date_format_short_datepicker"
 msgstr "dd.mm.yy"
 
@@ -6635,36 +6636,21 @@ msgstr "Wählen Sie die zuständige Abteilung aus"
 msgid "description_analysis_maxholdingtime"
 msgstr ""
 
-#. in results entry listings. Note this only applies to the options displayed
-#. in the selection list. It does not have any effect to the order in which
-#. results are displayed after being submitted"
 #. Default: "Criteria to use when result options are displayed for selection in results entry listings. Note this only applies to the options displayed in the selection list. It does not have any effect to the order in which results are displayed after being submitted"
 #: bika/lims/content/abstractbaseanalysis.py:688
 msgid "description_analysis_results_options_sorting"
 msgstr "Zu verwendende Kriterien, wenn Ergebnisoptionen in Ergebniseintragslisten zur Auswahl angezeigt werden. Beachten Sie, dass dies nur für die in der Auswahlliste angezeigten Optionen gilt. Es hat keinen Einfluss auf die Reihenfolge, in der die Ergebnisse nach der Übermittlung angezeigt werden"
 
-#. in a range with minimum of 0 and maximum of 10, where the uncertainty value
-#. is 0.5 - a result of 6.67 will be reported as 6.67 ± 0.5.<br/>You can also
-#. specify the uncertainty value as a percentage of the result value, by
-#. adding a '%' to the value entered in the 'Uncertainty Value' column, e.g.
-#. for results in a range with minimum of 10.01 and a maximum of 100, where
-#. the uncertainty value is 2%, a result of 100 will be reported as 100 ±
-#. 2.<br/>If you don't want uncertainty to be displayed for a given range, set
-#. 0 (or a value below 0) as the Uncertainty value.<br/>Please ensure
-#. successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 -
-#. 20.00, 20.01 - 30.00 etc."
 #. Default: "Specify the uncertainty value for a given range, e.g. for results in a range with minimum of 0 and maximum of 10, where the uncertainty value is 0.5 - a result of 6.67 will be reported as 6.67 ± 0.5.<br/>You can also specify the uncertainty value as a percentage of the result value, by adding a '%' to the value entered in the 'Uncertainty Value' column, e.g. for results in a range with minimum of 10.01 and a maximum of 100, where the uncertainty value is 2%, a result of 100 will be reported as 100 ± 2.<br/>If you don't want uncertainty to be displayed for a given range, set 0 (or a value below 0) as the Uncertainty value.<br/>Please ensure successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, 20.01 - 30.00 etc."
 #: bika/lims/content/abstractbaseanalysis.py:550
 msgid "description_analysis_uncertainty"
 msgstr "Geben Sie den Unsicherheitswert für einen bestimmten Bereich an, z. B. für Ergebnisse in einem Bereich mit einem Minimum von 0 und einem Maximum von 10, wobei der Unsicherheitswert 0,5 beträgt – ein Ergebnis von 6,67 wird als 6,67 ± 0,5 gemeldet.<br/>Sie können den Unsicherheitswert auch als Prozentsatz des Ergebnisses angeben Wert, indem Sie ein „%“ zum in der Spalte „Unsicherheitswert“ eingegebenen Wert hinzufügen, z. B. Für Ergebnisse in einem Bereich mit einem Minimum von 10,01 und einem Maximum von 100, wobei der Unsicherheitswert 2 % beträgt, wird ein Ergebnis von 100 als 100 ± 2 gemeldet.<br/>Wenn Sie nicht möchten, dass die Unsicherheit angezeigt wird Legen Sie für einen bestimmten Bereich 0 (oder einen Wert unter 0) als Unsicherheitswert fest.<br/>Bitte stellen Sie sicher, dass aufeinanderfolgende Bereiche kontinuierlich sind, z. B. Auf 0,00 - 10,00 folgen 10,01 - 20,00, 20,01 - 30,00 usw."
 
-#. mg/l, ppm, dB, mV, etc."
 #. Default: "The measurement units for this analysis service' results, e.g. mg/l, ppm, dB, mV, etc."
 #: bika/lims/content/abstractbaseanalysis.py:110
 msgid "description_analysis_unit"
 msgstr "Die Maßeinheiten für die Ergebnisse dieser Analysenleistung, z.B. mg/l, ppm, dB, mV usw."
 
-#. Ensure to include the default unit in this list"
 #. Default: "Provide a list of units that are suitable for the analysis. Ensure to include the default unit in this list"
 #: bika/lims/content/abstractbaseanalysis.py:143
 msgid "description_analysis_unitchoices"
@@ -6700,16 +6686,11 @@ msgstr ""
 msgid "description_analysisprofile_profile_price"
 msgstr ""
 
-#. price"
 #. Default: "Please provide the VAT in percent that is added to the profile price"
 #: senaite/core/content/analysisprofile.py:161
 msgid "description_analysisprofile_profile_vat"
 msgstr ""
 
-#. profile won't be available for selection in sample creation and edit forms
-#. unless the selected sample type is one of these. If no sample type is set
-#. here, this profile will always be available for selection, regardless of
-#. the sample type of the sample."
 #. Default: "Sample types for which this analysis profile is supported. This profile won't be available for selection in sample creation and edit forms unless the selected sample type is one of these. If no sample type is set here, this profile will always be available for selection, regardless of the sample type of the sample."
 #: senaite/core/content/analysisprofile.py:184
 msgid "description_analysisprofile_sampletypes"
@@ -6735,13 +6716,6 @@ msgstr "Anzahl der Proben, die mit den bereitgestellten Informationen erstellt w
 msgid "description_analysisspec_dynamicspec"
 msgstr "Dynamische Analyespezifikation verknüpfen"
 
-#. outside this results range will raise an alert.<br/>'Min warn' and 'Max
-#. warn' values indicate a shoulder range. Any result outside the results
-#. range but within the shoulder range will raise a less severe alert.<br/>If
-#. the result is out of range, the value set for '&lt; Min' or '&gt; Max' will
-#. be displayed in lists and results reports instead of the real result. In
-#. such case, the value set for 'Out of range comment' will be displayed in
-#. results report as well"
 #. Default: "'Min' and 'Max' values indicate a valid results range. Any result outside this results range will raise an alert.<br/>'Min warn' and 'Max warn' values indicate a shoulder range. Any result outside the results range but within the shoulder range will raise a less severe alert.<br/>If the result is out of range, the value set for '&lt; Min' or '&gt; Max' will be displayed in lists and results reports instead of the real result. In such case, the value set for 'Out of range comment' will be displayed in results report as well"
 #: bika/lims/content/analysisspec.py:91
 msgid "description_analysisspec_resultsrange"
@@ -6802,13 +6776,11 @@ msgstr "Die protokollierten Ergebnisse"
 msgid "description_batch_client"
 msgstr "Wählen Sie den Kunden dieses Batches aus"
 
-#. entered manually for analyses"
 #. Default: "If this option is activated, the result capture date can be entered manually for analyses"
 #: bika/lims/content/bikasetup.py:346
 msgid "description_bikasetup_allow_manual_result_capture_date"
 msgstr ""
 
-#. departments will receive publication emails."
 #. Default: "When selected, the responsible persons of all involved lab departments will receive publication emails."
 #: bika/lims/content/bikasetup.py:726
 msgid "description_bikasetup_always_cc_responsibles_in_report_emails"
@@ -6824,22 +6796,16 @@ msgstr "Analysen in Proben nach Kategorie gruppieren"
 msgid "description_bikasetup_date_sampled_required"
 msgstr ""
 
-#. result reports to the selected recipients. You can use reserved keywords:
-#. $client_name, $recipients, $lab_name, $lab_address"
 #. Default: "Set the email body text to be used by default when sending out result reports to the selected recipients. You can use reserved keywords: $client_name, $recipients, $lab_name, $lab_address"
 #: bika/lims/content/bikasetup.py:705
 msgid "description_bikasetup_email_body_sample_publication"
 msgstr "Legen Sie den E-Mail-Text fest, der standardmäßig verwendet werden soll, wenn Ergebnisberichte an die ausgewählten Empfänger gesendet werden. Sie können reservierte Schlüsselwörter verwenden: $client_name, $recipients, $lab_name, $lab_address"
 
-#. publishing results reports. This address overrides the value set at
-#. portal's 'Mail settings'."
 #. Default: "E-mail to use as the 'From' address for outgoing e-mails when publishing results reports. This address overrides the value set at portal's 'Mail settings'."
 #: bika/lims/content/bikasetup.py:683
 msgid "description_bikasetup_email_from_sample_publication"
 msgstr ""
 
-#. e.g. to enter field results immediately, or lab results, when the automatic
-#. sample reception is activated."
 #. Default: "Allow the user to directly enter results after sample creation, e.g. to enter field results immediately, or lab results, when the automatic sample reception is activated."
 #: bika/lims/content/bikasetup.py:384
 msgid "description_bikasetup_immediateresultsentry"
@@ -6875,7 +6841,6 @@ msgstr "Nur ausgewählte Kategorien anzeigen"
 msgid "description_contact_cccontact"
 msgstr "Kontakte in Kopie für neue Proben"
 
-#. could be selected here."
 #. Default: "If this container is pre-preserved, then the preservation method could be selected here."
 #: bika/lims/content/container.py:99
 msgid "description_container_preservation"
@@ -6896,8 +6861,6 @@ msgstr "${copyright} 2017-${current_year} ${senaitelims}"
 msgid "description_department_id"
 msgstr ""
 
-#. the 'lab contacts' setup item. Departmental managers are referenced on
-#. analysis results reports containing analyses by their department."
 #. Default: "Select a manager from the available personnel configured under the 'lab contacts' setup item. Departmental managers are referenced on analysis results reports containing analyses by their department."
 #: senaite/core/content/department.py:105
 msgid "description_department_manager"
@@ -6928,11 +6891,6 @@ msgstr "Wählen Sie den Hersteller dieses Prüfgeräts aus"
 msgid "description_instrument_methods"
 msgstr ""
 
-#. where the system should look for the results files while automatically
-#. importing results. Having a folder for each Instrument and inside that
-#. folder creating different folders for each of its Interfaces can be a good
-#. approach. You can use Interface codes to be sure that folder names are
-#. unique."
 #. Default: "For each interface of this instrument, you can define a folder where the system should look for the results files while automatically importing results. Having a folder for each Instrument and inside that folder creating different folders for each of its Interfaces can be a good approach. You can use Interface codes to be sure that folder names are unique."
 #: bika/lims/content/instrument.py:267
 msgid "description_instrument_result_file_folder"
@@ -6963,7 +6921,6 @@ msgstr "Die Person beim Lieferanten, die das Zertifikat genehmigt hat"
 msgid "description_instrumentvalidation_worker"
 msgstr "Die Person, die die Aufgabe ausgeführt hat"
 
-#. selected departments."
 #. Default: "Select a default department for this contact from one of the selected departments."
 #: bika/lims/content/labcontact.py:89
 msgid "description_labcontact_default_department"
@@ -6999,12 +6956,6 @@ msgstr "Referenzprobenwerte sind Null oder 'leer'."
 msgid "description_referencedefinition_hazardous"
 msgstr "Proben dieser Art sollten als gefährlich behandelt werden"
 
-#. category. Enter minimum and maximum values to indicate a valid results
-#. range. Any result outside this range will raise an alert. The % Error field
-#. allows for an % uncertainty to be considered when evaluating results
-#. against minimum and maximum values. A result out of range but still in
-#. range if the % error is taken into consideration, will raise a less severe
-#. alert."
 #. Default: "Click on Analysis Categories to see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
 #: bika/lims/content/referencedefinition.py:48
 msgid "description_referencedefinition_referencevalues"
@@ -7020,14 +6971,11 @@ msgstr "Wählen Sie den Hersteller für diese Referenzprobe aus"
 msgid "description_referencesample_referencedefinition"
 msgstr "Wählen Sie die Referenzdefinition für diese Probe aus"
 
-#. logs into the system, or when a client is selected from the client folder
-#. listing"
 #. Default: "Select the default landing page. This is used when a Client user logs into the system, or when a client is selected from the client folder listing"
 #: senaite/core/registry/schema.py:66
 msgid "description_registry_client_landing_page"
 msgstr ""
 
-#. structure of the site via Generic Setup"
 #. Default: "List of portal types to be skipped when exporting the content structure of the site via Generic Setup"
 #: senaite/core/registry/schema.py:303
 msgid "description_registry_generic_setup_skip_export_types"
@@ -7093,7 +7041,6 @@ msgstr "Wählen Sie eine Probe aus, um ein Sekundärprobe zu erstellen"
 msgid "description_sample_profiles"
 msgstr "Wählen Sie ein Analyseprofil für diese Probe aus"
 
-#. sample publication report"
 #. Default: "Select an analysis specification that should be used in the sample publication report"
 #: bika/lims/content/analysisrequest.py:720
 msgid "description_sample_publicationspecification"
@@ -7149,9 +7096,6 @@ msgstr "Die zugewiesene Batch-Untergruppe dieser Anfrage"
 msgid "description_sample_template"
 msgstr "Wählen Sie eine Analysenvorlage für diese Probe aus"
 
-#. and put together from more than one sub sample, e.g. several surface
-#. samples from a dam mixed together to be a representative sample for the
-#. dam. The default, unchecked, indicates 'grab' samples"
 #. Default: "Check this box if the samples taken at this point are 'composite' and put together from more than one sub sample, e.g. several surface samples from a dam mixed together to be a representative sample for the dam. The default, unchecked, indicates 'grab' samples"
 #: senaite/core/content/samplepoint.py:147
 msgid "description_samplepoint_composite"
@@ -7162,38 +7106,26 @@ msgstr ""
 msgid "description_samplepoint_elevation"
 msgstr ""
 
-#. further analysis. It plays a pivotal role in research as it can
-#. significantly influence the results and conclusions drawn from the study."
 #. Default: "The geographical point or area from which samples are taken for further analysis. It plays a pivotal role in research as it can significantly influence the results and conclusions drawn from the study."
 #: senaite/core/content/samplepoint.py:76
 msgid "description_samplepoint_location"
 msgstr ""
 
-#. point. The field for the selection of a sample point in sample creation and
-#. edit forms will be filtered in accordance. Still, sample points that do not
-#. have any sample type assigned will always be available for selection,
-#. regardless of the type."
 #. Default: "The list of sample types that can be collected at this sample point. The field for the selection of a sample point in sample creation and edit forms will be filtered in accordance. Still, sample points that do not have any sample type assigned will always be available for selection, regardless of the type."
 #: bika/lims/content/samplepoint.py:98
 msgid "description_samplepoint_sampletypes"
 msgstr "Die Liste der Probenarten die an dieser Probenahmestelle gesammelt werden können. Wenn keine Probenarten ausgewählt sind, sind alle Probenarten verfügbar."
 
-#. frequency here, e.g. weekly"
 #. Default: "If a sample is taken periodically at this sample point, enter frequency here, e.g. weekly"
 #: senaite/core/content/samplepoint.py:103
 msgid "description_samplepoint_sampling_frequency"
 msgstr ""
 
-#. point. The field for the selection of a sample point in sample creation and
-#. edit forms will be filtered in accordance. Still, sample points that do not
-#. have any sample type assigned will always be available for selection,
-#. regardless of the type."
 #. Default: "The list of sample types that can be collected at this sample point. The field for the selection of a sample point in sample creation and edit forms will be filtered in accordance. Still, sample points that do not have any sample type assigned will always be available for selection, regardless of the type."
 #: senaite/core/content/samplepoint.py:126
 msgid "description_samplepoint_sampling_sample_types"
 msgstr ""
 
-#. sample is received"
 #. Default: "Automatically redirect the user to the partitions view when the sample is received"
 #: senaite/core/content/sampletemplate.py:258
 msgid "description_sampletemplate_auto_partition"
@@ -7204,7 +7136,6 @@ msgstr ""
 msgid "description_sampletemplate_composite"
 msgstr ""
 
-#. ID'"
 #. Default: "Each line defines a new partition identified by the 'Partition ID'"
 #: senaite/core/content/sampletemplate.py:245
 msgid "description_sampletemplate_partitions"
@@ -7235,8 +7166,6 @@ msgstr ""
 msgid "description_sampletype_admitted_stickers_templates"
 msgstr ""
 
-#. automatically assigned a container of this type, unless it has been
-#. specified in more details per analysis service"
 #. Default: "The default container type. New sample partitions are automatically assigned a container of this type, unless it has been specified in more details per analysis service"
 #: senaite/core/content/sampletype.py:217
 msgid "description_sampletype_containertype"
@@ -7267,13 +7196,11 @@ msgstr ""
 msgid "description_sampletype_samplematrix"
 msgstr "Wählen Sie die Probenmatrix für diese Probenart aus"
 
-#. entered manually for analyses"
 #. Default: "If this option is activated, the result capture date can be entered manually for analyses"
 #: senaite/core/content/senaitesetup.py:174
 msgid "description_senaitesetup_allow_manual_result_capture_date"
 msgstr ""
 
-#. departments will receive publication emails."
 #. Default: "When selected, the responsible persons of all involved lab departments will receive publication emails."
 #: senaite/core/content/senaitesetup.py:101
 msgid "description_senaitesetup_always_cc_responsibles_in_report_emails"
@@ -7289,29 +7216,21 @@ msgstr "Analysen in Proben nach Kategorie gruppieren"
 msgid "description_senaitesetup_date_sampled_required"
 msgstr ""
 
-#. publishing results reports. This address overrides the value set at
-#. portal's 'Mail settings'."
 #. Default: "E-mail to use as the 'From' address for outgoing e-mails when publishing results reports. This address overrides the value set at portal's 'Mail settings'."
 #: senaite/core/content/senaitesetup.py:73
 msgid "description_senaitesetup_email_from_sample_publication"
 msgstr ""
 
-#. e.g. to enter field results immediately, or lab results, when the automatic
-#. sample reception is activated."
 #. Default: "Allow the user to directly enter results after sample creation, e.g. to enter field results immediately, or lab results, when the automatic sample reception is activated."
 #: senaite/core/content/senaitesetup.py:142
 msgid "description_senaitesetup_immediateresultsentry"
 msgstr "Ermöglichen Sie dem Benutzer die direkte Eingabe von Ergebnissen nach der Probenerstellung, z.B. zur sofortigen Eingabe von Feldergebnissen oder Laborergebnissen, wenn der automatische Probenempfang aktiviert ist."
 
-#. the value set for the field 'Number of samples' on the sample registration
-#. form"
 #. Default: "Maximum number of samples that can be created in accordance with the value set for the field 'Number of samples' on the sample registration form"
 #: senaite/core/content/senaitesetup.py:186
 msgid "description_senaitesetup_maxnumberofsamplesadd"
 msgstr "Maximale Anzahl an Proben, die gemäß dem im Probenregistrierungsformular für das Feld „Anzahl der Proben“ festgelegten Wert erstellt werden können"
 
-#. result reports to the selected recipients. You can use reserved keywords:
-#. $client_name, $recipients, $lab_name, $lab_address"
 #. Default: "Set the email body text to be used by default when sending out result reports to the selected recipients. You can use reserved keywords: $client_name, $recipients, $lab_name, $lab_address"
 #: senaite/core/content/senaitesetup.py:87
 msgid "description_senaitesetup_publication_email_text"
@@ -7322,14 +7241,11 @@ msgstr "Legen Sie den E-Mail-Text fest, der standardmäßig verwendet werden sol
 msgid "description_senaitesetup_sampleanalysesrequired"
 msgstr "Für die Probenregistrierung sind Analysen erforderlich"
 
-#. page, above the access credentials."
 #. Default: "When selected, the laboratory name will be displayedin the login page, above the access credentials."
 #: senaite/core/content/senaitesetup.py:212
 msgid "description_senaitesetup_show_lab_name_in_login"
 msgstr ""
 
-#. Dashboard is not selected as the default front page. If no landing page is
-#. selected, the default frontpage is displayed."
 #. Default: "The landing page is shown for non-authenticated users if the Dashboard is not selected as the default front page. If no landing page is selected, the default frontpage is displayed."
 #: bika/lims/content/bikasetup.py:527
 msgid "description_setup_landingpage"
@@ -7395,7 +7311,6 @@ msgstr ""
 msgid "description_supplier_nib"
 msgstr ""
 
-#. contact profile."
 #. Default: "User is linked to a contact. Please change your settings in the contact profile."
 #: senaite/core/browser/user/userdatapanel.py:46
 msgid "description_user_contact"
@@ -7406,8 +7321,6 @@ msgstr ""
 msgid "description_worksheettemplate_instrument"
 msgstr "Wählen Sie das gewünschte Prüfgerät aus"
 
-#. with the selected method. <br/>In order to apply this change to the
-#. services list, you should save the change first."
 #. Default: "Restrict the available analysis services and instruments to those with the selected method.<br/>In order to apply this change to the services list, you should save the change first."
 #: senaite/core/content/worksheettemplate.py:240
 msgid "description_worksheettemplate_restrict_to_method"
@@ -7438,7 +7351,6 @@ msgstr ""
 msgid "dynamic_analysisspec_description"
 msgstr ""
 
-#. ${record_index}' (${num_samples}) is above ${max_num_samples}"
 #. Default: "The number of samples to create for the record 'Sample ${record_index}' (${num_samples}) is above ${max_num_samples}"
 #: bika/lims/browser/analysisrequest/add2.py:1797
 msgid "error_analyssirequest_numsamples_above_max"

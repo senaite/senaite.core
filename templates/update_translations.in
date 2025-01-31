@@ -58,6 +58,16 @@ find $LOCALES -name "*.mo" -delete
 # Pull Transifex
 tx_pull
 
+# Remove lines from po files starting with '#.' (Default key)
+# Files pulled from transifex always come with a wrapped value for "Default".
+# However, i18ndude does not wrap the value for "Default" (even using --wrap
+# parameter), which originates stale lines after merge.
+for po_file in $(find $LOCALES -name "*.po")
+do
+    grep -v "#\. " $po_file > $po_file.tmp
+    mv $po_file.tmp $po_file
+done
+
 # Generate the senaite.core Domain
 echo "Processing domain: senaite.core"
 # Flush the english (transifex source language) po files
