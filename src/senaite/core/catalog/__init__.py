@@ -19,7 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 # flake8:noqa:F401
-from collections import OrderedDict
+from plone.memoize import forever
 
 from senaite.core.catalog.analysis_catalog import \
     CATALOG_ID as ANALYSIS_CATALOG
@@ -108,6 +108,7 @@ CATALOG_MAPPINGS = (
 )
 
 
+@forever.memoize
 def get_catalogs_by_type(portal_type):
     """Returns the predefined catalogs by type, along with the catalogs that
     are assigned to the given portal type in "catalog_mappings" registry key
@@ -119,12 +120,15 @@ def get_catalogs_by_type(portal_type):
     mapping = dict(CATALOG_MAPPINGS)
     catalogs = mapping.get(portal_type) or []
 
-    # extend with catalogs from registry
     registry_mapping = get_registry_record("catalog_mappings")
-    if registry_mapping:
-        additional = registry_mapping.get(portal_type) or []
-        catalogs.extend(additional)
-        # remove duplicates while keeping the order
-        catalogs = list(OrderedDict.fromkeys(catalogs))
+    if not registry_mapping:
+        return catalogs
+
+    # extend with additional catalogs from registry
+    additional = registry_mapping.get(portal_type, [])
+    for catalog in additional:
+        if catalog in catalogs:
+            continue
+        catalogs.append(catalog)
 
     return catalogs
