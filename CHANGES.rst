@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2658 Batched sample registration form with Paste capabilities
+- #2659 Refactor sample title + decsription into viewlets
+- #2660 Add logging if external calculation module import failed
 - #2654 Show Batch title or ID in Sample reference field
 - #2657 Methods from analyses are not updated on instrument change in worksheet
 - #2656 Fix AnalysisProfile keyword validator fail with non-ascii value 
