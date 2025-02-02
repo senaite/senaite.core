@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2662 Custom catalogs support for default portal types via registry
+- #2661 Allow to recalculate an analysis result
 - #2659 Refactor sample title + decsription into viewlets
 - #2660 Add logging if external calculation module import failed
 - #2654 Show Batch title or ID in Sample reference field
