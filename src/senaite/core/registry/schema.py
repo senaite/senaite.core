@@ -361,4 +361,5 @@ class ICatalogRegistry(ISenaiteRegistry):
             ),
             value_type=schema.ASCIILine(),
         ),
+        required=False,
     )
