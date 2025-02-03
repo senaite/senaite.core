@@ -341,7 +341,7 @@ class ICatalogRegistry(ISenaiteRegistry):
             default=u"Catalog mappings"
         ),
         description=_(
-            u"description_registry_generic_setup_skip_export_types",
+            u"description_registry_catalog_mappings",
             default=u"Define the relationship between portal types and the "
                     u"additional catalogs in which these portal types should "
                     u"be indexed, beyond the default catalogs. A restart is "
