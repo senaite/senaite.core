@@ -74,7 +74,7 @@ class ISubGroupSchema(model.Schema):
 
         try:
             value = float(data.sort_key)
-        except Exception:
+        except (TypeError, ValueError):
             msg = _("Validation failed: value must be float")
             raise Invalid(msg)
 

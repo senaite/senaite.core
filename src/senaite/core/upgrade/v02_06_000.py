@@ -2734,6 +2734,6 @@ def reindex_sub_groups(tool):
         obj = brain.getObject()
         logger.info("Reindex sub group: %r" % obj)
         if obj.sort_key:
-            obj.sort_key = api.to_float(obj.sort_key)
+            obj.sort_key = api.to_float(obj.sort_key, 0.0)
         obj.reindexObject(idxs=["sortable_title"], update_metadata=False)
     logger.info("Reindexing sub groups [DONE]")
