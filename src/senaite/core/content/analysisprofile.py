@@ -209,7 +209,7 @@ class IAnalysisProfileSchema(model.Schema):
             return
         query = {
             "portal_type": "AnalysisProfile",
-            "profile_key": profile_key,
+            "profile_key": api.to_utf8(profile_key),
         }
         results = api.search(query, catalog=SETUP_CATALOG)
         if len(results) > 0:

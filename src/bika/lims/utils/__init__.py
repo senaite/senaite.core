@@ -23,7 +23,6 @@ import os
 import re
 import tempfile
 from email import Encoders
-
 from email.MIMEBase import MIMEBase
 from time import time
 
@@ -48,6 +47,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
 from Products.DCWorkflow.events import AfterTransitionEvent
+from Products.DCWorkflow.events import BeforeTransitionEvent
 from senaite.core.p3compat import cmp
 from six.moves.urllib.request import urlopen
 from weasyprint import CSS
@@ -275,11 +275,13 @@ def sortable_title(portal, title):
             break
     return sortabletitle
 
+
 # TODO Remove this function
 def logged_in_client(context, member=None):
     return api.get_current_client()
 
-def changeWorkflowState(content, wf_id, state_id, **kw):
+
+def changeWorkflowState(content, wf_id, state_id, trigger_events=False, **kw):
     """Change the workflow state of an object
     @param content: Content obj which state will be changed
     @param state_id: name of the state to put on content
@@ -292,12 +294,17 @@ def changeWorkflowState(content, wf_id, state_id, **kw):
         logger.error("%s: Cannot find workflow id %s" % (content, wf_id))
         return False
 
+    action = kw.get("action")
+    tdef = workflow.transitions.get(action)
+    actor = kw.get("actor", api.user.get_user_id())
+    now = DateTime()
+
     wf_state = {
-        'action': kw.get("action", None),
-        'actor': kw.get("actor", api.get_current_user().id),
-        'comments': "Setting state to %s" % state_id,
-        'review_state': state_id,
-        'time': DateTime()
+        "action": action,
+        "actor": actor,
+        "comments": "Setting state to %s" % state_id,
+        "review_state": state_id,
+        "time": now,
     }
 
     # Get old and new state info
@@ -307,17 +314,24 @@ def changeWorkflowState(content, wf_id, state_id, **kw):
         raise WorkflowException("Destination state undefined: {}"
                                 .format(state_id))
 
+    if trigger_events:
+        # Notify the *before* transition event
+        notify(BeforeTransitionEvent(
+            content, workflow, old_state, new_state, tdef, wf_state, None))
+
     # Change status and update permissions
     portal_workflow.setStatusOf(wf_id, content, wf_state)
     workflow.updateRoleMappingsFor(content)
 
-    # Notify the object has been transitioned
-    notify(AfterTransitionEvent(content, workflow, old_state, new_state, None,
-                                wf_state, None))
-
     # Map changes to catalog
     indexes = ["allowedRolesAndUsers", "review_state", "is_active"]
     content.reindexObject(idxs=indexes)
+
+    if trigger_events:
+        # Notify the *after* transition event
+        notify(AfterTransitionEvent(
+            content, workflow, old_state, new_state, tdef, wf_state, None))
+
     return True
 
 

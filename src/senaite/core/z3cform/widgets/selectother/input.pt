@@ -1,0 +1,12 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+
+  <div tal:attributes="python:view.get_input_widget_attributes();
+                       class python:view.klass">
+
+    <!-- ReactJS controlled component -->
+
+  </div>
+
+</html>

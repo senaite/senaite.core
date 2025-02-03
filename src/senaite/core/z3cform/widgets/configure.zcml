@@ -9,6 +9,7 @@
   <include package=".gpscoordinates" />
   <include package=".listing" />
   <include package=".queryselect" />
+  <include package=".selectother" />
   <include package=".uidreference" />
 
   <include file="address.zcml" />

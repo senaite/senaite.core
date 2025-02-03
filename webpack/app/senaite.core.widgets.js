@@ -2,6 +2,7 @@ import {
   render_address_widget,
   render_phone_widget,
   render_queryselect_widget,
+  render_selectother_widget,
   render_tinymce_widget,
   render_uidreference_widget,
 } from "./widgets/renderer.js"
@@ -47,6 +48,13 @@ const WIDGETS = [
     selector: "textarea.mce_editable,div.ArchetypesRichWidget textarea,textarea[name='form.widgets.IRichTextBehavior.text'],textarea.richTextWidget",
     renderer: (el) => {
       return render_tinymce_widget(el);
+    },
+  },
+  // SelectOther Widget
+  {
+    selector: ".senaite-selectother-widget-input",
+    renderer: (el) => {
+      return render_selectother_widget(el);
     },
   }
 ]
