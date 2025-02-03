@@ -11,29 +11,14 @@
   <body>
 
     <metal:content-title fill-slot="content-title">
-      <h1>
-        <!-- Sample icon -->
-        <i class="sample-icon" title="Sample" i18n:attributes="title">
-          <svg tal:replace="structure senaite_theme/icon_data/sample" />
-        </i>
-        <!-- Title -->
-        <span class="documentFirstHeading" tal:content="context/id"></span>
-        <!-- Hazardous icon -->
-        <i class="hazardous-icon" title="Hazardous" i18n:attributes="title"
-           tal:condition="python:view.is_hazardous()">
-          <svg tal:replace="structure senaite_theme/icon_data/hazardous" />
-        </i>
-        <!-- Exclude Invoice Icon -->
-        <i class="exclude-from-invoice-icon" title="Exclude from invoice" i18n:attributes="title"
-           tal:condition="python:view.exclude_invoice()">
-          <svg tal:replace="structure senaite_theme/icon_data/invoice_exclude" />
-        </i>
-        <!-- Retest Icon -->
-        <i class="retest-icon" title="Results have been withdrawn" i18n:attributes="title"
-           tal:condition="python:view.is_retest()">
-          <svg tal:replace="structure senaite_theme/icon_data/retest" />
-        </i>
-      </h1>
+      <div class="row">
+        <div class="col-sm-12">
+          <!-- Viewlet manager: sample title -->
+          <div tal:replace="structure provider:senaite.sampletitle"></div>
+          <!-- Viewlet manager: sample description -->
+          <div tal:replace="structure provider:senaite.sampledescription"></div>
+        </div>
+      </div>
     </metal:content-title>
 
     <metal:content-description fill-slot="content-description">
