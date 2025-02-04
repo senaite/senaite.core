@@ -449,6 +449,7 @@
                        href="#"
                        title="Enter individual values ​​for this field per sample"
                        data_toggle="tooltip"
+                       tal:condition="python:view.show_paste_button_for(field)"
                        tal:attributes="fieldName python:fieldName;
                                        fieldLabel python:fieldLabel">
                       <i class="fas fa-list-ol"></i>

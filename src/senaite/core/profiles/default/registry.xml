@@ -25,6 +25,9 @@
   <!-- Registry for additional catalog mappings configuration -->
   <records interface="senaite.core.registry.schema.ICatalogRegistry" />
 
+  <!-- Registry for the configuration of the samples -->
+  <records interface="senaite.core.registry.schema.ISampleRegistry" />
+
   <!-- Site Title -->
   <record name="plone.site_title" interface="Products.CMFPlone.interfaces.controlpanel.ISiteSchema" field="site_title">
     <field type="plone.registry.field.TextLine">

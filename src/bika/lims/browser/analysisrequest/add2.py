@@ -56,6 +56,7 @@ from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.p3compat import cmp
 from senaite.core.permissions import TransitionMultiResults
+from senaite.core.registry import get_registry_record
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getAdapters
 from zope.component import queryAdapter
@@ -69,6 +70,13 @@ AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
 SKIP_FIELD_ON_COPY = ["Sample", "PrimaryAnalysisRequest", "Remarks",
                       "NumSamples", "_ARAttachment"]
 NO_COPY_FIELDS = ["_ARAttachment"]
+ALLOW_MULTI_PASTE_WIDGET_TYPES = [
+    "senaite.core.browser.widgets.datetimewidget.DateTimeWidget",
+    "senaite.core.browser.widgets.referencewidget.ReferenceWidget",
+    "Products.Archetypes.Widget.StringWidget",
+    "Products.Archetypes.Widget.BooleanWidget",
+    "bika.lims.browser.widgets.remarkswidget.RemarksWidget",
+]
 
 
 def cache_key(method, self, obj):
@@ -572,6 +580,33 @@ class AnalysisRequestAddView(BrowserView):
         if field and field.getName() in NO_COPY_FIELDS:
             return False
         return True
+
+    def show_paste_button_for(self, field=None):
+        """ Show paste button for field
+        """
+        allowed = self.get_allowed_multi_paste_fields()
+        if allowed:
+            field_name = field.getName()
+            return field_name in allowed
+
+        # fallback to widget type based lookup
+        try:
+            widget_type = field.widget.getType()
+        except AttributeError:
+            widget_type = None
+        if widget_type not in ALLOW_MULTI_PASTE_WIDGET_TYPES:
+            return False
+        return True
+
+    @viewcache.memoize
+    def get_allowed_multi_paste_fields(self):
+        """Returns a list of fields that allow multi paste
+        """
+        key = "sample_add_form_allow_multi_paste"
+        record = get_registry_record(key)
+        if not record:
+            return []
+        return record
 
 
 class AnalysisRequestManageView(BrowserView):
