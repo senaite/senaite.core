@@ -19,6 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 # flake8:noqa:F401
+from plone.memoize import forever
+
 from senaite.core.catalog.analysis_catalog import \
     CATALOG_ID as ANALYSIS_CATALOG
 from senaite.core.catalog.analysis_catalog import AnalysisCatalog
@@ -45,6 +47,7 @@ from senaite.core.catalog.setup_catalog import SetupCatalog
 from senaite.core.catalog.worksheet_catalog import \
     CATALOG_ID as WORKSHEET_CATALOG
 from senaite.core.catalog.worksheet_catalog import WorksheetCatalog
+from senaite.core.registry import get_registry_record
 
 CATALOG_MAPPINGS = (
     # portal_type, catalog_ids
@@ -104,17 +107,28 @@ CATALOG_MAPPINGS = (
     ("WorksheetTemplate", [SETUP_CATALOG]),
 )
 
-def get_catalogs_by_type(portal_type):
-    """Return the mapped catalogs by type
 
-    TODO: Provide registry setting for this mapping lookup
+@forever.memoize
+def get_catalogs_by_type(portal_type):
+    """Returns the predefined catalogs by type, along with the catalogs that
+    are assigned to the given portal type in "catalog_mappings" registry key
 
     :param portal_type: The portal type to look up
     """
     if not isinstance(portal_type, str):
         raise TypeError("Expected string type, got <%s>" % type(portal_type))
     mapping = dict(CATALOG_MAPPINGS)
-    catalogs = mapping.get(portal_type)
-    if not catalogs:
-        return []
+    catalogs = mapping.get(portal_type) or []
+
+    registry_mapping = get_registry_record("catalog_mappings")
+    if not registry_mapping:
+        return catalogs
+
+    # extend with additional catalogs from registry
+    additional = registry_mapping.get(portal_type, [])
+    for catalog in additional:
+        if catalog in catalogs:
+            continue
+        catalogs.append(catalog)
+
     return catalogs

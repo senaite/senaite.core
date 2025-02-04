@@ -27,7 +27,9 @@ from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.interfaces import ISubGroup
 from zope import schema
+from zope.interface import Invalid
 from zope.interface import implementer
+from zope.interface import invariant
 
 
 class ISubGroupSchema(model.Schema):
@@ -50,13 +52,35 @@ class ISubGroupSchema(model.Schema):
         required=False,
     )
 
-    sort_key = schema.TextLine(
+    sort_key = schema.Float(
         title=_(
-            "title_subgroup_sortkey",
+            "title_subgroup_sort_key",
             default="Sort Key"
         ),
+        description=_(
+            u"description_subgroup_sort_key",
+            default=u"Float value from 0.0 - 1000.0 indicating the sort order."
+                    " Duplicate values are ordered alphabetically."),
         required=False,
     )
+
+    @invariant
+    def validate_sort_key(data):
+        """Checks sort_key field for float value if exist
+        """
+        sort_key = getattr(data, "sort_key", None)
+        if sort_key is None:
+            return
+
+        try:
+            value = float(data.sort_key)
+        except (TypeError, ValueError):
+            msg = _("Validation failed: value must be float")
+            raise Invalid(msg)
+
+        if value < 0 or value > 1000:
+            msg = _("Validation failed: value must be between 0 and 1000")
+            raise Invalid(msg)
 
 
 @implementer(ISubGroup, ISubGroupSchema, IDeactivable)

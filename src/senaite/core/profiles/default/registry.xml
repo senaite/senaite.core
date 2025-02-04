@@ -22,6 +22,9 @@
   <!-- Registry for generic setup configuration -->
   <records interface="senaite.core.registry.schema.IGenericSetupRegistry" />
 
+  <!-- Registry for additional catalog mappings configuration -->
+  <records interface="senaite.core.registry.schema.ICatalogRegistry" />
+
   <!-- Site Title -->
   <record name="plone.site_title" interface="Products.CMFPlone.interfaces.controlpanel.ISiteSchema" field="site_title">
     <field type="plone.registry.field.TextLine">

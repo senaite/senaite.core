@@ -30,6 +30,9 @@
   <!-- AnalysisCategory Indexer -->
   <adapter name="sortable_title" factory=".analysiscategory.sortable_title"/>
 
+  <!-- SubGroup Indexer -->
+  <adapter name="sortable_title" factory=".subgroup.sortable_title"/>
+
   <!-- ARReport Indexer -->
   <adapter name="sample_uid" factory=".arreport.sample_uid"/>
   <adapter name="arreport_searchable_text" factory=".arreport.arreport_searchable_text"/>

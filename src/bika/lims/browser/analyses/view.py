@@ -1089,6 +1089,14 @@ class AnalysesView(ListingView):
         item["Calculation"] = calculation_title
         item["replace"]["Calculation"] = calculation_link or _("Manual")
 
+        if is_editable and calculation:
+            url = analysis_brain.getURL()
+            item["after"]["Result"] = item["after"].get("Result") or ""
+            item["after"]["Result"] += get_link(
+                "{}/action/recalculate".format(url),
+                value="<i class='small text-secondary fas fa-sync'></i>",
+                title=t(_("Recalculate")), css_class="listing-ajax-action")
+
         # Set interim fields. Note we add the key 'formatted_value' to the list
         # of interims the analysis has already assigned.
         analysis_obj = self.get_object(analysis_brain)
