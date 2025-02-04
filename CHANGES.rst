@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2662 Custom catalogs support for default portal types via registry
+- #2652 Fix Subgroups sort by Sort Key
 - #2663 CSS for some add-on based forms
 - #2661 Allow to recalculate an analysis result
 - #2659 Refactor sample title + decsription into viewlets

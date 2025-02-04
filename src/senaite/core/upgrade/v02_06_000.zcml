@@ -6,9 +6,17 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Update registry settings"
       description="Import additional catalog mappings registry"
+      source="2656"
+      destination="2657"
+      handler=".v02_06_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Fix subgroups not sorted by sort key"
+      description="Reindex sortable_title for all sub groups"
       source="2655"
       destination="2656"
-      handler=".v02_06_000.import_registry"
+      handler=".v02_06_000.reindex_sub_groups"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

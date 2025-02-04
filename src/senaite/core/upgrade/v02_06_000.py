@@ -2725,3 +2725,15 @@ def reindex_specs(tool):
         logger.info("Reindex analysis spec: %r" % obj)
         obj.reindexObject(idxs=["sampletype_uid", "sampletype_title"])
     logger.info("Reindexing analysis specifications [DONE]")
+
+
+def reindex_sub_groups(tool):
+    logger.info("Reindexing sub group ...")
+    cat = api.get_tool(SETUP_CATALOG)
+    for brain in cat(portal_type="SubGroup"):
+        obj = brain.getObject()
+        logger.info("Reindex sub group: %r" % obj)
+        if obj.sort_key:
+            obj.sort_key = api.to_float(obj.sort_key, 0.0)
+        obj.reindexObject(idxs=["sortable_title"], update_metadata=False)
+    logger.info("Reindexing sub groups [DONE]")
