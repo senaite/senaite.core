@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2665 Do not show "Receive Sample Statusmessage" if sample is already received
 - #2662 Custom catalogs support for default portal types via registry
 - #2652 Fix Subgroups sort by Sort Key
 - #2663 CSS for some add-on based forms
