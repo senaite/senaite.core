@@ -1239,6 +1239,17 @@ class window.AnalysisRequestAdd
     , duration
 
 
+  ###*
+   * Highlight a line number in the paste panel
+  ###
+  highlight_paster_line: (idx) =>
+    lines = $(".paste-container .line")
+    return unless lines
+    cls = "text-warning"
+    lines.removeClass(cls)
+    if lines[idx] then $(lines[idx]).addClass(cls)
+
+
   ######################
   ### EVENT HANDLERS ###
   ######################
@@ -1269,6 +1280,9 @@ class window.AnalysisRequestAdd
     else
       $("td.sample-column").addClass("d-none");
       $("td.#{target}").removeClass("d-none");
+      # highlight the line number in the paster if the tab changed while the panel is open
+      idx = $el.data("primary-sample-index")
+      @highlight_paster_line(idx)
 
     # remember the displayed column
     primary = parseInt($el.data("primary-sample-index"), 10)
@@ -1603,6 +1617,11 @@ class window.AnalysisRequestAdd
         $(@).dialog "close"
 
     dialog = @template_dialog "paste-template", context, buttons
+
+    active_tab = $("ul#sample-tabs a.nav-link.active")
+    if active_tab
+      idx = active_tab.data("primary-sample-index")
+      @highlight_paster_line idx
 
 
   ###*

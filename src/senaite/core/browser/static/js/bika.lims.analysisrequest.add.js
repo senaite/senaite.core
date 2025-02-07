@@ -263,6 +263,10 @@
        * Visually highlight the navigation tab
        */
       this.flash_nav_tab = this.flash_nav_tab.bind(this);
+      /**
+       * Highlight a line number in the paste panel
+       */
+      this.highlight_paster_line = this.highlight_paster_line.bind(this);
       //#####################
       /* EVENT HANDLERS */
       //#####################
@@ -1471,8 +1475,21 @@
       }, duration);
     }
 
+    highlight_paster_line(idx) {
+      var cls, lines;
+      lines = $(".paste-container .line");
+      if (!lines) {
+        return;
+      }
+      cls = "text-warning";
+      lines.removeClass(cls);
+      if (lines[idx]) {
+        return $(lines[idx]).addClass(cls);
+      }
+    }
+
     on_sample_nav(event) {
-      var $el, el, primary, target;
+      var $el, el, idx, primary, target;
       el = event.currentTarget;
       $el = $(el);
       target = $el.data("target");
@@ -1490,6 +1507,8 @@
       } else {
         $("td.sample-column").addClass("d-none");
         $(`td.${target}`).removeClass("d-none");
+        idx = $el.data("primary-sample-index");
+        this.highlight_paster_line(idx);
       }
       // remember the displayed column
       primary = parseInt($el.data("primary-sample-index"), 10);
@@ -1743,7 +1762,7 @@
     }
 
     on_paste_click(event) {
-      var buttons, context, dialog, el, fieldLabel, fieldName, me;
+      var active_tab, buttons, context, dialog, el, fieldLabel, fieldName, idx, me;
       console.debug("°°° on_paste_click °°°");
       event.preventDefault();
       el = event.currentTarget;
@@ -1766,7 +1785,12 @@
           return $(this).dialog("close");
         }
       };
-      return dialog = this.template_dialog("paste-template", context, buttons);
+      dialog = this.template_dialog("paste-template", context, buttons);
+      active_tab = $("ul#sample-tabs a.nav-link.active");
+      if (active_tab) {
+        idx = active_tab.data("primary-sample-index");
+        return this.highlight_paster_line(idx);
+      }
     }
 
     on_copy_click(event) {

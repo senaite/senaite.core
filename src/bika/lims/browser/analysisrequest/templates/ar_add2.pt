@@ -28,7 +28,7 @@
       <script id="paste-template" type="text/x-handlebars-template">
         <div tal:attributes="title string:Enter {{fieldLabel}} fields" i18n:attributes="title">
           <div class="paste-container">
-            <div class="line-numbers"><tal:block tal:repeat="arnum python:range(view.ar_count)"><span tal:replace="python: arnum + 1"/>
+            <div class="line-numbers"><tal:block tal:repeat="arnum python:range(view.ar_count)"><span class="line" tal:content="python: arnum + 1"/>
               </tal:block>
             </div>
             <textarea class="paste-editor"></textarea>
