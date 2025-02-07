@@ -1277,6 +1277,7 @@ class window.AnalysisRequestAdd
 
     if target is "show-all"
       $("td.sample-column").removeClass("d-none");
+      @highlight_paster_line(-1)
     else
       $("td.sample-column").addClass("d-none");
       $("td.#{target}").removeClass("d-none");

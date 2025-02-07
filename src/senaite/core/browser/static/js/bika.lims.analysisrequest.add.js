@@ -1504,6 +1504,7 @@
       $el.addClass("active");
       if (target === "show-all") {
         $("td.sample-column").removeClass("d-none");
+        this.highlight_paster_line(-1);
       } else {
         $("td.sample-column").addClass("d-none");
         $(`td.${target}`).removeClass("d-none");
