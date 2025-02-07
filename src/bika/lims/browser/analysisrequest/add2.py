@@ -71,7 +71,9 @@ SKIP_FIELD_ON_COPY = ["Sample", "PrimaryAnalysisRequest", "Remarks",
                       "NumSamples", "_ARAttachment"]
 NO_COPY_FIELDS = ["_ARAttachment"]
 ALLOW_MULTI_PASTE_WIDGET_TYPES = [
-    "senaite.core.browser.widgets.datetimewidget.DateTimeWidget",
+    # disable paste functionality for date fields, see:
+    # https://github.com/senaite/senaite.core/pull/2658#discussion_r1946229751
+    # "senaite.core.browser.widgets.datetimewidget.DateTimeWidget",
     "senaite.core.browser.widgets.referencewidget.ReferenceWidget",
     "Products.Archetypes.Widget.StringWidget",
     "Products.Archetypes.Widget.BooleanWidget",
