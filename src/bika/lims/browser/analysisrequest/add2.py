@@ -596,9 +596,7 @@ class AnalysisRequestAddView(BrowserView):
             widget_type = field.widget.getType()
         except AttributeError:
             widget_type = None
-        if widget_type not in ALLOW_MULTI_PASTE_WIDGET_TYPES:
-            return False
-        return True
+        return widget_type in ALLOW_MULTI_PASTE_WIDGET_TYPES
 
     @viewcache.memoize
     def get_allowed_multi_paste_fields(self):
