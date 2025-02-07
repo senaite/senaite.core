@@ -439,6 +439,7 @@
                     <a class="copy d-block"
                        href="#"
                        title="Copy the value of the first sample to the others"
+                       i18n:attributes="title"
                        data_toggle="tooltip"
                        tal:attributes="fieldName python:fieldName;
                                        fieldLabel python:fieldLabel">
@@ -448,6 +449,7 @@
                     <a class="paste d-block"
                        href="#"
                        title="Enter individual values ​​for this field per sample"
+                       i18n:attributes="title"
                        data_toggle="tooltip"
                        tal:condition="python:view.show_paste_button_for(field)"
                        tal:attributes="fieldName python:fieldName;
@@ -562,6 +564,7 @@
                           <!-- Copy Button -->
                           <a class="copy d-block"
                              title="Copy the currently displayed column value to the other columns on the right"
+                             i18n:attributes="title"
                              data_toggle="tooltip">
                             <i class="fas fa-angle-double-right"></i>
                           </a>
