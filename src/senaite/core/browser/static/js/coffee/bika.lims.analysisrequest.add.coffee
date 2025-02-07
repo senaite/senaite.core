@@ -1114,11 +1114,11 @@ class window.AnalysisRequestAdd
       buttons[_t("Yes")] = ->
         # trigger 'yes' event
         $(@).trigger "yes"
-        $(@).dialog "close"
+        $(@).dialog "destroy"
       buttons[_t("No")] = ->
         # trigger 'no' event
         $(@).trigger "no"
-        $(@).dialog "close"
+        $(@).dialog "destroy"
 
     # render the Handlebars template
     content = @render_template template_id, context
@@ -1431,7 +1431,7 @@ class window.AnalysisRequestAdd
 
     buttons =
       OK: ->
-        $(@).dialog "close"
+        $(@).dialog "destroy"
 
     dialog = @template_dialog "service-dependant-template", context, buttons
 
@@ -1610,12 +1610,12 @@ class window.AnalysisRequestAdd
     }
     buttons =
       Cancel: ->
-        $(@).dialog "close"
+        $(@).dialog "destroy"
       Paste: ->
         textarea = this.querySelector("textarea")
         values = textarea.value.split "\n"
         me.paste_values(fieldName, values)
-        $(@).dialog "close"
+        $(@).dialog "destroy"
 
     dialog = @template_dialog "paste-template", context, buttons
 

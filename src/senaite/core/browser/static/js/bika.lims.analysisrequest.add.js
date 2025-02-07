@@ -1395,12 +1395,12 @@
         buttons[_t("Yes")] = function() {
           // trigger 'yes' event
           $(this).trigger("yes");
-          return $(this).dialog("close");
+          return $(this).dialog("destroy");
         };
         buttons[_t("No")] = function() {
           // trigger 'no' event
           $(this).trigger("no");
-          return $(this).dialog("close");
+          return $(this).dialog("destroy");
         };
       }
       // render the Handlebars template
@@ -1648,7 +1648,7 @@
       }
       buttons = {
         OK: function() {
-          return $(this).dialog("close");
+          return $(this).dialog("destroy");
         }
       };
       return dialog = this.template_dialog("service-dependant-template", context, buttons);
@@ -1776,14 +1776,14 @@
       };
       buttons = {
         Cancel: function() {
-          return $(this).dialog("close");
+          return $(this).dialog("destroy");
         },
         Paste: function() {
           var textarea, values;
           textarea = this.querySelector("textarea");
           values = textarea.value.split("\n");
           me.paste_values(fieldName, values);
-          return $(this).dialog("close");
+          return $(this).dialog("destroy");
         }
       };
       dialog = this.template_dialog("paste-template", context, buttons);
