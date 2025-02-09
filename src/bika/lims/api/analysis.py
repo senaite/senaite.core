@@ -87,9 +87,27 @@ def is_out_of_range(brain_or_object, result=_marker):
             return out_of_range, out_of_range
 
     elif not api.is_floatable(result):
-        # A non-duplicate with non-floatable result. There is no chance to know
-        # if the result is out-of-range
-        return False, False
+        results = api.parse_json(result)
+        if not results:
+            # Single, non-duplicate, non-floatable result. There is no chance
+            # to know if the result is out-of-range
+            return False, False
+
+        # Multiselect result, remove empty and non-floatable 'sub' results
+        results = filter(api.is_floatable, results)
+        if not results:
+            # No values set yet, we cannot know if out-of-range yet
+            return False, False
+
+        # Out of range only when none of the 'sub' results are within range
+        for sub_result in results:
+            out_range, out_shoulders = is_out_of_range(analysis, sub_result)
+            if not out_range:
+                # sub result within range
+                return False, False
+
+        # None of the 'sub' results are within range
+        return True, True
 
     # Convert result to a float
     result = api.to_float(result)
