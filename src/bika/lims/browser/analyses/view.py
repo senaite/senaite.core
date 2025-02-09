@@ -1417,9 +1417,16 @@ class AnalysesView(ListingView):
         analysis = self.get_object(analysis_brain)
         results_range = analysis.getResultsRange()
 
-        item["Specification"] = ""
-        if results_range:
-            item["Specification"] = get_formatted_interval(results_range, "")
+        # get the results range interval properly formatted
+        value = get_formatted_interval(results_range, "")
+
+        # for non-floatable analyses, display the comment instead
+        result_type = analysis.getResultType()
+        if result_type not in ["numeric", "string"]:
+            comment = results_range.get("rangecomment")
+            value = comment if comment else value
+
+        item["Specification"] = value
 
     def _folder_item_out_of_range(self, analysis_brain, item):
         """Displays an icon if result is out of range
