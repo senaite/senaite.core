@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2668 Paste support for select components in sample add form
 - #2658 Batched sample registration form with Paste capabilities
 - #2666 Allow to delete SENAITE site in ZMI
 - #2665 Do not show "Receive Sample Statusmessage" if sample is already received
