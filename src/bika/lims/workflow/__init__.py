@@ -29,6 +29,7 @@ from bika.lims.browser import ulocalized_time
 from bika.lims.interfaces import IGuardAdapter
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
+from plone.api.exc import CannotGetPortalError
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from senaite.core.i18n import translate as t
@@ -94,7 +95,11 @@ def doActionFor(instance, action_id):
 
     succeed = False
     message = ""
-    workflow = api.get_tool("portal_workflow")
+    try:
+        workflow = api.get_tool("portal_workflow")
+    except CannotGetPortalError as e:
+        # handle complete site removal gracefully
+        return False, str(e)
     try:
         workflow.doActionFor(instance, action_id)
         succeed = True
