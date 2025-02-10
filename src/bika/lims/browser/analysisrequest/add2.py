@@ -78,6 +78,7 @@ ALLOW_MULTI_PASTE_WIDGET_TYPES = [
     "Products.Archetypes.Widget.StringWidget",
     "Products.Archetypes.Widget.BooleanWidget",
     "bika.lims.browser.widgets.remarkswidget.RemarksWidget",
+    "bika.lims.browser.widgets.selectionwidget.SelectionWidget",
 ]
 
 

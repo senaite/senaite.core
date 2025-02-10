@@ -236,6 +236,12 @@
        */
       this.is_radio = this.is_radio.bind(this);
       /**
+       * Checks if the element is a select field
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_select = this.is_select.bind(this);
+      /**
        * Checks if the element is a checkbox field
        *
        * @returns {Boolean} true/false
@@ -1298,6 +1304,13 @@
           checked = false;
         }
         field.checked = checked;
+      // select field
+      } else if (this.is_select(field)) {
+        $.each(field.children, function(index, option) {
+          var selected;
+          selected = option.innerHTML === value;
+          return $(option).prop("selected", selected);
+        });
       // date field
       } else if (this.is_date_widget(field)) {
         // we need to fetch the date and time input fields
@@ -1450,6 +1463,10 @@
 
     is_radio(el) {
       return this.is_input(el) && el.type === "radio";
+    }
+
+    is_select(el) {
+      return el.tagName === "SELECT";
     }
 
     is_checkbox(el) {

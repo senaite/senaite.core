@@ -1004,6 +1004,13 @@ class window.AnalysisRequestAdd
       catch
         checked = no
       field.checked = checked
+
+    # select field
+    else if @is_select(field)
+      $.each field.children, (index, option) ->
+        selected = option.innerHTML == value
+        $(option).prop "selected", selected
+
     # date field
     else if @is_date_widget(field)
       # we need to fetch the date and time input fields
@@ -1192,6 +1199,15 @@ class window.AnalysisRequestAdd
   ###
   is_radio: (el) =>
     return this.is_input(el) and el.type is "radio"
+
+
+  ###*
+   * Checks if the element is a select field
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_select: (el) =>
+    return el.tagName is "SELECT"
 
 
   ###*
