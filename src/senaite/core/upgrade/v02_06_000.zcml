@@ -5,6 +5,14 @@
 
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Update registry settings"
+      description="Import samples registry"
+      source="2657"
+      destination="2658"
+      handler=".v02_06_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Update registry settings"
       description="Import additional catalog mappings registry"
       source="2656"
       destination="2657"

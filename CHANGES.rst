@@ -5,6 +5,9 @@ Changelog
 ------------------
 
 - #2667 Specifications support for multi-result analyses
+- #2668 Paste support for select components in sample add form
+- #2658 Batched sample registration form with Paste capabilities
+- #2666 Allow to delete SENAITE site in ZMI
 - #2665 Do not show "Receive Sample Statusmessage" if sample is already received
 - #2662 Custom catalogs support for default portal types via registry
 - #2652 Fix Subgroups sort by Sort Key

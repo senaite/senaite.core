@@ -24,6 +24,18 @@
 
       <!-- Handlebars JS Templates -->
 
+      <!-- Add row paste popup -->
+      <script id="paste-template" type="text/x-handlebars-template">
+        <div tal:attributes="title string:Enter {{fieldLabel}} fields" i18n:attributes="title">
+          <div class="paste-container">
+            <div class="line-numbers"><tal:block tal:repeat="arnum python:range(view.ar_count)"><span class="line" tal:content="python: arnum + 1"/>
+              </tal:block>
+            </div>
+            <textarea class="paste-editor"></textarea>
+          </div>
+        </div>
+      </script>
+
       <!-- Add dependent services popup -->
       <script id="dependency-add-template" type="text/x-handlebars-template">
         <div title="Service dependencies" i18n:attributes="title">
@@ -358,47 +370,57 @@
         <input type="hidden" id="ar_count" name="ar_count"
                tal:attributes="value view/ar_count"/>
 
+        <ul class="nav nav-tabs float-right" id="sample-tabs" style="margin-bottom:-1px;">
+          <tal:columns tal:repeat="arnum python:range(view.ar_count)">
+            <li class="nav-item" tal:attributes="class string:nav-item nav-item-${arnum}">
+              <a tal:attributes="class python:'nav-link active' if arnum == 0 else 'nav-link';
+                                 data-primary-sample-index string:${arnum};
+                                 data-target string:sample-column-${arnum}"
+                 href="#">
+                <span i18n:translate="">Sample</span>
+                <span tal:content="python: arnum + 1"></span>
+              </a>
+            </li>
+          </tal:columns>
+          <li class="nav-item">
+            <a class="nav-link"
+               data-target="show-all"
+               data-primary-sample-index="0"
+               href="#">
+              <span i18n:translate="">Show all</span>
+            </a>
+          </li>
+          <li class="nav-item" tal:condition="python:user.has_role('LabManager') or user.has_role('Manager')">
+            <a class="nav-link"
+               data-target="manage-form-fields"
+               i18n:attributes="title"
+               title="Manage Form Fields"
+               target="_blank"
+               tal:attributes="href python:context.absolute_url() + '/ar_add_manage'">
+              <i class="fas fa-tasks"></i>
+            </a>
+          </li>
+        </ul>
+
         <!-- ADD Form -->
         <table class="ar-table table table-sm table-bordered">
 
-          <tr class="ar-table-row">
-            <td>
-              <div id="manage-ar-fields"
-                  tal:condition="python:user.has_role('LabManager') or user.has_role('Manager')">
-                <a id="manage-ar-fields-link"
-                  href=""
-                  class="btn btn-link"
-                  target="_blank"
-                  tal:attributes="href python:context.absolute_url() + '/ar_add_manage'">
-                  &#9998;
-                  <span i18n:translate="">Manage Form Fields</span>
-                </a>
-              </div>
-            </td>
-            <td></td>
-            <tal:columns tal:repeat="arnum python:range(view.ar_count)">
-              <td class="ar-column-header">
-                <span i18n:translate="">Sample</span>
-                <span tal:content="python: arnum + 1"></span>
-              </td>
-            </tal:columns>
-          </tr>
-
           <!-- All edit fields with fields with add=visible -->
           <tal:field tal:repeat="field python:view.get_fields_with_visibility('edit')">
-            <tal:def define="fieldName python:field.getName();
+            <tal:def define="widget python:field.widget;
+                             fieldName python:field.getName();
+                             fieldLabel python:view.context.translate(widget.Label(here));
                              required python:bool(field.required);
-                             widget python:field.widget;
                              errors python:{};
                              mode python:'edit';">
               <tr class="ar-table-row"
                   tal:attributes="fieldName python:fieldName;
-                                  fieldLabel python:widget.Label(context)">
+                                  fieldLabel python:fieldLabel">
                 <td class="field-label">
                   <label class="formQuestion">
                     <span
                       tal:attributes="class python:required and 'text-primary' or ''"
-                      tal:content="python:view.context.translate(widget.Label(here))">
+                      tal:content="python:fieldLabel">
                       Label
                     </span>
                     <span class="fieldRequired"
@@ -412,16 +434,38 @@
                   </label>
                 </td>
                 <td>
-                  <!-- Copy Button -->
-                  <img class="copybutton btn-link"
-                       width="16"
-                       tal:condition="python:view.ar_count > 1"
-                       tal:attributes="src senaite_theme/icon_url/copy;"/>
+                  <div class="text-center" tal:condition="python:view.show_copy_button_for(field)">
+                    <!-- Copy Button -->
+                    <a class="copy d-block"
+                       href="#"
+                       title="Copy the value of the first sample to the others"
+                       i18n:attributes="title"
+                       data_toggle="tooltip"
+                       tal:attributes="fieldName python:fieldName;
+                                       fieldLabel python:fieldLabel">
+                      <i class="fas fa-angle-double-right"></i>
+                    </a>
+                    <!-- Paste Button -->
+                    <a class="paste d-block"
+                       href="#"
+                       title="Enter individual values ​​for this field per sample"
+                       i18n:attributes="title"
+                       data_toggle="tooltip"
+                       tal:condition="python:view.show_paste_button_for(field)"
+                       tal:attributes="fieldName python:fieldName;
+                                       fieldLabel python:fieldLabel">
+                      <i class="fas fa-list-ol"></i>
+                    </a>
+                  </div>
                 </td>
 
                 <tal:columns tal:repeat="arnum python:range(view.ar_count)">
-                  <td tal:define="newFieldName python:view.get_fieldname(field, arnum)"
-                      tal:attributes="arnum arnum; fieldName newFieldName">
+                  <td tal:define="newFieldName python:view.get_fieldname(field, arnum);
+                                  cls string: sample-column sample-column-${arnum};
+                                  cls python:cls + ' d-none' if arnum > 0 else cls;"
+                      tal:attributes="class python:cls;
+                                      arnum arnum;
+                                      fieldName newFieldName">
                     <!-- The input field is rendered here -->
                     <metal:field use-macro="python:view.get_input_widget(fieldName, arnum, mode='edit')"/>
                   </td>
@@ -516,20 +560,28 @@
                         </div>
                       </td>
                       <td>
-                        <img class="copybutton btn-link"
-                             width="16"
-                             tal:condition="python:view.ar_count > 1"
-                             tal:attributes="src python:senaite_theme.icon_url('copy');"/>
+                        <div class="text-center" tal:condition="python:view.show_copy_button_for()">
+                          <!-- Copy Button -->
+                          <a class="copy d-block"
+                             title="Copy the currently displayed column value to the other columns on the right"
+                             i18n:attributes="title"
+                             data_toggle="tooltip">
+                            <i class="fas fa-angle-double-right"></i>
+                          </a>
+                        </div>
                       </td>
 
                       <tal:columns tal:repeat="arnum python:range(ar_count)">
                         <td tal:define="fieldname python:'Analyses-{}'.format(arnum);
                                         analyses python:view.fieldvalues.get(fieldname) or [];
                                         service_uids python:map(view.get_service_uid_from, analyses);
-                                        checked python:service_uid in service_uids;"
+                                        checked python:service_uid in service_uids;
+                                        cls python:'{}-column service-column'.format(service_uid);
+                                        cls string: ${cls} sample-column sample-column-${arnum};
+                                        cls python:cls + ' d-none' if arnum > 0 else cls;"
                             tal:attributes="fieldname python:'Analyses-{}'.format(arnum);
                                             uid python:service_uid;
-                                            class python:'{}-column service-column'.format(service_uid);
+                                            class python:cls;
                                             arnum python:arnum;">
 
                           <!-- Service locked button -->
