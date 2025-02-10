@@ -77,6 +77,7 @@ ALLOW_MULTI_PASTE_WIDGET_TYPES = [
     "senaite.core.browser.widgets.referencewidget.ReferenceWidget",
     "Products.Archetypes.Widget.StringWidget",
     "Products.Archetypes.Widget.BooleanWidget",
+    "bika.lims.browser.widgets.priorityselectionwidget.PrioritySelectionWidget",  # noqa
     "bika.lims.browser.widgets.remarkswidget.RemarksWidget",
     "bika.lims.browser.widgets.selectionwidget.SelectionWidget",
 ]
