@@ -4,9 +4,10 @@ on:
   - pull_request
 env:
   PLONE_VERSION: "5.2"
+
 jobs:
   build-and-test:
-    runs-on: 'ubuntu-latest'
+    runs-on: ubuntu-latest
     steps:
 
       - name: Checkout code
@@ -14,8 +15,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt update
-          apt install -y make build-essential libssl-dev \
+          sudo apt update
+          sudo apt install -y make build-essential libssl-dev \
               zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev \
               wget curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev \
               libxmlsec1-dev libffi-dev liblzma-dev
@@ -26,7 +27,6 @@ jobs:
           echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.bashrc
           echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> $HOME/.bashrc
           echo 'eval "$(pyenv init --path)"' >> $HOME/.bashrc
-          source $HOME/.bashrc
 
       - name: Install Python 2.7 with pyenv
         run: |
@@ -37,35 +37,45 @@ jobs:
           pyenv global 2.7.18
 
       - name: Verify Python Version
-        run: python --version  # Should output Python 2.7.18
+        run: |
+          export PYENV_ROOT="$HOME/.pyenv"
+          export PATH="$PYENV_ROOT/bin:$PATH"
+          eval "$(pyenv init --path)"
+          python --version  # Should output Python 2.7.18
 
       - name: Install pip for Python 2.7
         run: |
+          export PYENV_ROOT="$HOME/.pyenv"
+          export PATH="$PYENV_ROOT/bin:$PATH"
+          eval "$(pyenv init --path)"
           wget https://bootstrap.pypa.io/pip/2.7/get-pip.py
           python get-pip.py
 
-      - name: cache eggs
+      - name: Cache eggs
         uses: actions/cache@v4
         with:
           key: eggs-cache-${{ hashFiles('buildout.cfg', 'requirements.txt') }}
           path: |
             eggs/
 
-      - name: install
+      - name: Install dependencies and setup virtualenv
         run: |
+          export PYENV_ROOT="$HOME/.pyenv"
+          export PATH="$PYENV_ROOT/bin:$PATH"
+          eval "$(pyenv init --path)"
           pip install virtualenv
           virtualenv -p `which python` .
-          bin/pip install --upgrade pip
-          bin/pip install -r requirements.txt
-          bin/buildout -N -t 3 annotate
-          bin/buildout -N -t 3
+          ./bin/pip install --upgrade pip
+          ./bin/pip install -r requirements.txt
+          ./bin/buildout -N -t 3 annotate
+          ./bin/buildout -N -t 3
 
-      - name: lint
+      - name: Lint
         run: |
-          bin/pip install flake8
-          bin/flake8 --config ci_flake8.cfg src/bika/
-          bin/flake8 --config ci_flake8.cfg src/senaite/
+          ./bin/pip install flake8
+          ./bin/flake8 --config ci_flake8.cfg src/bika/
+          ./bin/flake8 --config ci_flake8.cfg src/senaite/
 
-      - name: test
+      - name: Run tests
         run: |
-          bin/test -s senaite.core.tests
+          ./bin/test -s senaite.core.tests
