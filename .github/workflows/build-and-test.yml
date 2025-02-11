@@ -7,8 +7,6 @@ env:
 jobs:
   build-and-test:
     runs-on: 'ubuntu-latest'
-    container:
-      image: python:2.7.18-buster
     steps:
 
       - name: Checkout code
@@ -16,8 +14,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt update
-          sudo apt install -y make build-essential libssl-dev \
+          apt update
+          apt install -y make build-essential libssl-dev \
               zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev \
               wget curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev \
               libxmlsec1-dev libffi-dev liblzma-dev
@@ -47,7 +45,7 @@ jobs:
           python get-pip.py
 
       - name: cache eggs
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           key: eggs-cache-${{ hashFiles('buildout.cfg', 'requirements.txt') }}
           path: |
