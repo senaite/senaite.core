@@ -581,14 +581,13 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             # check if the dependency is a string result
             str_result = dependency.getStringResult()
             keyword = dependency.getKeyword()
-            if not result:
-                # Dependency without results found
-                if cascade:
-                    # Try to calculate the dependency result
-                    dependency.calculateResult(override, cascade)
-                    result = dependency.getResult()
-                else:
-                    return False
+
+            # Dependency without results found
+            if not result and cascade:
+                # Try to calculate the dependency result
+                dependency.calculateResult(override, cascade)
+                result = dependency.getResult()
+
             if result:
                 try:
                     # we need to quote a string result because of the `eval` below
@@ -611,6 +610,13 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 # https://docs.python.org/2.7/library/stdtypes.html?highlight=built#string-formatting-operations
                 converter = "s" if str_result else "f"
                 formula = formula.replace("[" + keyword + "]", "%(" + keyword + ")" + converter)
+            else:
+                # flush eventual previously set result
+                if self.getResult():
+                    self.setResult("")
+                    return True
+
+                return False
 
         # convert any remaining placeholders, e.g. from interims etc.
         # NOTE: we assume remaining values are all floatable!
