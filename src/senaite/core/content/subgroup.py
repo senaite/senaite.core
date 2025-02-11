@@ -95,7 +95,19 @@ class SubGroup(Container):
     @security.protected(permissions.View)
     def getSortKey(self):
         accessor = self.accessor("sort_key")
-        return accessor(self)
+        # XXX: Temporary, remove after 2.6.0
+        # sort_key moved from string to float and might cause the traceback:
+        #   ValueError: Unknown format code 'f' for object of type 'unicode'
+        # if a previous upgrade step reindexes this value.
+        #
+        # https://github.com/senaite/senaite.core/pull/2652
+        # https://github.com/senaite/senaite.core/pull/2664
+        sort_key = accessor(self)
+        try:
+            sort_key = float(sort_key)
+        except (ValueError, TypeError):
+            sort_key = None
+        return sort_key
 
     @security.protected(permissions.ModifyPortalContent)
     def setSortKey(self, value):
