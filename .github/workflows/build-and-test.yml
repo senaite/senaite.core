@@ -35,27 +35,20 @@ jobs:
             curl https://pyenv.run | bash
           fi
 
-      - name: Set up pyenv environment variables
-        run: |
-          echo "PYENV_ROOT=$HOME/.pyenv" >> $GITHUB_ENV
-          echo "$PYENV_ROOT/bin" >> $GITHUB_PATH
-
       - name: Install Python 2.7 with pyenv (if not cached)
         run: |
-          eval "$(pyenv init - bash)"  # Correctly initializes pyenv
+          export PYENV_ROOT="$HOME/.pyenv"
+          export PATH="$PYENV_ROOT/bin:$PATH"
+          eval "$(pyenv init --path)"
           pyenv install 2.7.18 || true  # Avoid reinstalling if already cached
           pyenv global 2.7.18
 
       - name: Verify Python Version
         run: |
-          eval "$(pyenv init - bash)"
+          export PYENV_ROOT="$HOME/.pyenv"
+          export PATH="$PYENV_ROOT/bin:$PATH"
+          eval "$(pyenv init --path)"
           python --version  # Should output Python 2.7.18
-
-      - name: Install pip for Python 2.7
-        run: |
-          eval "$(pyenv init - bash)"
-          wget https://bootstrap.pypa.io/pip/2.7/get-pip.py
-          python get-pip.py
 
       - name: Cache eggs
         uses: actions/cache@v4
@@ -66,7 +59,9 @@ jobs:
 
       - name: Install dependencies and setup virtualenv
         run: |
-          eval "$(pyenv init - bash)"
+          export PYENV_ROOT="$HOME/.pyenv"
+          export PATH="$PYENV_ROOT/bin:$PATH"
+          eval "$(pyenv init --path)"
           pip install virtualenv
           virtualenv -p `which python` .
           ./bin/pip install --upgrade pip
@@ -76,12 +71,10 @@ jobs:
 
       - name: Lint
         run: |
-          eval "$(pyenv init - bash)"
           ./bin/pip install flake8
           ./bin/flake8 --config ci_flake8.cfg src/bika/
           ./bin/flake8 --config ci_flake8.cfg src/senaite/
 
       - name: Run tests
         run: |
-          eval "$(pyenv init - bash)"
           ./bin/test -s senaite.core.tests
