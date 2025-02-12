@@ -1516,7 +1516,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
         # Don't add analyses from profiles during sample creation.
         # In this case the required analyses are added afterwards explicitly.
-        if not api.is_temporary(self):
+        if value and not api.is_temporary(self):
             # get the profiles
             profiles = map(api.get_object_by_uid, uids)
             # get the current set of analyses/services
