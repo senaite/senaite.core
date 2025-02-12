@@ -28,6 +28,10 @@ from senaite.core.datamanagers.base import DataManager
 from zope.component import adapter
 
 
+# Fields that cause a recalculation of dependants
+TRIGGER_RECALCULATE_FIELDS = ["Result", "Uncertainty"]
+
+
 @adapter(IRoutineAnalysis)
 class RoutineAnalysisDataManager(DataManager):
     """Data Manager for Routine Analyses
@@ -107,7 +111,7 @@ class RoutineAnalysisDataManager(DataManager):
             self.context.setInterimValue(name, value)
 
         # recalculate dependent results for result and interim fields
-        if name == "Result" or name in interim_keys:
+        if name in TRIGGER_RECALCULATE_FIELDS or name in interim_keys:
             updated_objects.add(self.context)
             updated_objects.update(self.recalculate_results(self.context))
 
