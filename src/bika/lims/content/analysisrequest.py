@@ -1516,6 +1516,9 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
         # Don't add analyses from profiles during sample creation.
         # In this case the required analyses are added afterwards explicitly.
+        #
+        # Also only add analyses if a profile (value) is selected:
+        # https://github.com/senaite/senaite.core/pull/2672
         if value and not api.is_temporary(self):
             # get the profiles
             profiles = map(api.get_object_by_uid, uids)
