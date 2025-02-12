@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2672 Fix rejected sample analyses are re-added on profile removal
+- #2670 Flush calculated result if dependency is flushed
 - #2667 Specifications support for multi-result analyses
 - #2668 Paste support for select components in sample add form
 - #2658 Batched sample registration form with Paste capabilities
