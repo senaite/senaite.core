@@ -1697,7 +1697,6 @@
         return services.push(record.service_metadata[uid]);
       });
       this.applied_templates[arnum] = null;
-      me = this;
       dialog = this.template_dialog("template-remove-template", context);
       dialog.on("yes", function() {
         // deselect the services

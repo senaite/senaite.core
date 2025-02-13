@@ -1493,7 +1493,6 @@ class window.AnalysisRequestAdd
 
     @applied_templates[arnum] = null
 
-    me = this
     dialog = @template_dialog "template-remove-template", context
     dialog.on "yes", ->
       # deselect the services
