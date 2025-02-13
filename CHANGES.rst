@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2675 Fix services are not deselected on template removal in sample add form
 - #2673 Trigger recalculation of dependants if uncertainty changes
 - #2674 Fix partitions not displayed correctly in batch samples listing
 - #2672 Fix rejected sample analyses are re-added on profile removal
