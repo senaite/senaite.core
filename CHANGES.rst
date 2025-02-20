@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2676 Allow to set the uncertainty to 0
 - #2672 Fix rejected sample analyses are re-added on profile removal
 - #2670 Flush calculated result if dependency is flushed
 - #2667 Specifications support for multi-result analyses
