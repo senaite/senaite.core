@@ -53,7 +53,7 @@ from zope.interface import noLongerProvides
 Uncertainty = StringField(
     'Uncertainty',
     read_permission=View,
-    write_permission="Field: Edit Result",
+    write_permission="senaite.core: Field: Edit Analysis Result",
     precision=10,
     widget=DecimalWidget(
         label=_("Uncertainty")
