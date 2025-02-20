@@ -243,8 +243,8 @@ def format_uncertainty(analysis, decimalmark=".", sciformat=1):
         pass
 
     uncertainty = analysis.getUncertainty()
-    if api.to_float(uncertainty, default=0) <= 0:
-        # uncertainty is not defined or not above 0
+    if api.to_float(uncertainty, default=-1) < 0:
+        # uncertainty is not defined or below 0
         return ""
 
     # always convert exponential notation to decimal
