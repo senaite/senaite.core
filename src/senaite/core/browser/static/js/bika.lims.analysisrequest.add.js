@@ -1678,14 +1678,38 @@
     }
 
     on_analysis_template_removed(event) {
-      var $el, arnum, el;
+      var $el, arnum, context, dialog, el, me, metadata, record, services, template_uid;
       console.debug("°°° on_analysis_template_removed °°°");
+      me = this;
       el = event.currentTarget;
       $el = $(el);
       arnum = $el.closest("[arnum]").attr("arnum");
+      // Get the template UID that has been deselected
+      template_uid = event.detail.value;
+      record = this.records_snapshot[arnum];
+      metadata = record.template_metadata[template_uid];
+      services = [];
+      context = {};
+      context["template"] = metadata;
+      context["services"] = services;
+      // get the list of services assigned to the template
+      $.each(record.template_to_services[template_uid], function(index, uid) {
+        return services.push(record.service_metadata[uid]);
+      });
       this.applied_templates[arnum] = null;
-      // trigger form:changed event
-      return $(this).trigger("form:changed");
+      dialog = this.template_dialog("template-remove-template", context);
+      dialog.on("yes", function() {
+        // deselect the services
+        $.each(services, function(index, service) {
+          return me.set_service(arnum, service.uid, false);
+        });
+        // trigger form:changed event
+        return $(me).trigger("form:changed");
+      });
+      return dialog.on("no", function() {
+        // trigger form:changed event
+        return $(me).trigger("form:changed");
+      });
     }
 
     on_analysis_profile_selected(event) {

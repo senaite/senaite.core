@@ -18,15 +18,10 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import api
-from bika.lims.browser.analysisrequest import AnalysisRequestsView as BaseView
+# flake8: noqa
 
+from senaite.core.browser.batches.samples import \
+    SamplesView as AnalysisRequestsView
+from zope import deprecation
 
-class AnalysisRequestsView(BaseView):
-
-    def __init__(self, context, request):
-        super(AnalysisRequestsView, self).__init__(context, request)
-        self.contentFilter = {"portal_type": "AnalysisRequest",
-                              "getBatchUID": api.get_uid(self.context),
-                              "sort_on": "created",
-                              "sort_order": "reverse"}
+deprecation.deprecated("AnalysisRequestsView", "Moved to senaite.core.browser.batches.samples.SamplesView")
