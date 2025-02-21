@@ -18,7 +18,6 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-
 def on_contact_modified(contact, event):
     """Event handler when a Contact was modified
     """

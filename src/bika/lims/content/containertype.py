@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 
+
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from bika.lims.config import PROJECTNAME

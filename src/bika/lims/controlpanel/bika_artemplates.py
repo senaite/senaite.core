@@ -18,7 +18,6 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IARTemplates
 from plone.app.folder.folder import ATFolder
