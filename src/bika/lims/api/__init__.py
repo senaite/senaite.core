@@ -43,6 +43,7 @@ from plone import api as ploneapi
 from plone.api.exc import InvalidParameterError
 from plone.app.layout.viewlets.content import ContentHistoryView
 from plone.behavior.interfaces import IBehaviorAssignable
+from plone.behavior.registration import lookup_behavior_registration
 from plone.dexterity.interfaces import IDexterityContent
 from plone.dexterity.schema import SchemaInvalidatedEvent
 from plone.dexterity.utils import addContentToContainer
@@ -75,12 +76,17 @@ from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.container.contained import notifyContainerModified
 from zope.event import notify
+from zope.i18n import translate
+from zope.i18nmessageid import Message
 from zope.interface import alsoProvides
 from zope.interface import directlyProvides
 from zope.interface import noLongerProvides
+from zope.interface import Invalid
 from zope.lifecycleevent import ObjectMovedEvent
 from zope.publisher.browser import TestRequest
 from zope.schema import getFieldsInOrder
+from zope.schema.interfaces import RequiredMissing
+from zope.schema.interfaces import WrongType
 from zope.security.interfaces import Unauthorized
 
 """SENAITE LIMS Framework API
@@ -2058,3 +2064,50 @@ def to_list(value):
     if not isinstance(value, (list, tuple, set)):
         value = [value]
     return list(value)
+
+
+def validate(obj, invariants=True):
+    """Validates the full object
+
+    :param obj: the object to validate the data against
+    :type obj: ATContentType/DexterityContentType
+    :returns: a dict with field names as keys and errors as values
+    """
+    if is_at_content(obj):
+        return obj.validate(data=True)
+
+    if not is_dexterity_content(obj):
+        raise TypeError("%r is not supported" % type(obj))
+
+    errors = {}
+
+    # iterate through object fields and validate each
+    fields = get_fields(obj)
+    for field_name, field in fields.items():
+        value = getattr(obj, field_name, None)
+        value = safe_unicode(value)
+        try:
+            field.validate(value)
+        except RequiredMissing:
+            errors[field_name] = "required field"
+        except WrongType:
+            errors[field_name] = "wrong type"
+        except Invalid as ex:
+            errors[field_name] = translate(ex.message)
+
+    # validate invariants from schema
+    sch = get_schema(obj)
+    try:
+        sch.validateInvariants(obj)
+    except Invalid as ex:
+        errors[sch.getName()] = translate(ex.message)
+
+    # validate invariants from behaviors
+    for behavior_id in get_behaviors(obj):
+        behavior = lookup_behavior_registration(behavior_id)
+        try:
+            behavior.interface.validateInvariants(obj)
+        except Invalid as ex:
+            errors[behavior_id] = translate(ex.message)
+
+    return errors
