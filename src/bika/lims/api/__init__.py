@@ -77,7 +77,6 @@ from zope.component import queryMultiAdapter
 from zope.container.contained import notifyContainerModified
 from zope.event import notify
 from zope.i18n import translate
-from zope.i18nmessageid import Message
 from zope.interface import alsoProvides
 from zope.interface import directlyProvides
 from zope.interface import noLongerProvides
