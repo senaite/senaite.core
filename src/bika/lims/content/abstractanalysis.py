@@ -23,7 +23,6 @@ import copy
 import json
 import math
 from decimal import Decimal
-from six import string_types
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
@@ -41,20 +40,21 @@ from bika.lims.config import UDL
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.interfaces import IDuplicateAnalysis
-from senaite.core.permissions import FieldEditAnalysisResult
-from senaite.core.permissions import ViewResults
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils.analysis import format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
 from bika.lims.workflow import getTransitionActor
 from bika.lims.workflow import getTransitionDate
 from DateTime import DateTime
-from senaite.core.browser.fields.datetime import DateTimeField
 from Products.Archetypes.Field import IntegerField
 from Products.Archetypes.Field import StringField
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.Schema import Schema
 from Products.CMFCore.permissions import View
+from senaite.core.browser.fields.datetime import DateTimeField
+from senaite.core.permissions import FieldEditAnalysisResult
+from senaite.core.permissions import ViewResults
+from six import string_types
 
 # A link directly to the AnalysisService object used to create the analysis
 AnalysisService = UIDReferenceField(
@@ -111,9 +111,9 @@ Analyst = StringField(
 # The actual uncertainty for this analysis' result, populated from the ranges
 # specified in the analysis service when the result is submitted.
 Uncertainty = StringField(
-    'Uncertainty',
+    "Uncertainty",
     read_permission=View,
-    write_permission="Field: Edit Result",
+    write_permission=FieldEditAnalysisResult,
     precision=10,
 )
 

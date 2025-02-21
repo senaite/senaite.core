@@ -44,6 +44,7 @@ from Products.ATContentTypes.utils import DT2dt
 from Products.ATContentTypes.utils import dt2DT
 from Products.CMFCore.permissions import View
 from senaite.core.catalog.indexer.baseanalysis import sortable_title
+from senaite.core.permissions import FieldEditAnalysisResult
 from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.interface import noLongerProvides
@@ -51,9 +52,9 @@ from zope.interface import noLongerProvides
 # The actual uncertainty for this analysis' result, populated when the result
 # is submitted.
 Uncertainty = StringField(
-    'Uncertainty',
+    "Uncertainty",
     read_permission=View,
-    write_permission="Field: Edit Result",
+    write_permission=FieldEditAnalysisResult,
     precision=10,
     widget=DecimalWidget(
         label=_("Uncertainty")

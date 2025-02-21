@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2678 Add validate function in API
+- #2677 Fix permission for Uncertainty field
 - #2675 Fix services are not deselected on template removal in sample add form
 - #2673 Trigger recalculation of dependants if uncertainty changes
 - #2674 Fix partitions not displayed correctly in batch samples listing
