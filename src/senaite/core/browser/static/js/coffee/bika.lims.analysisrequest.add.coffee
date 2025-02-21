@@ -1471,13 +1471,38 @@ class window.AnalysisRequestAdd
   on_analysis_template_removed: (event) =>
     console.debug "°°° on_analysis_template_removed °°°"
 
+    me = this
     el = event.currentTarget
     $el = $(el)
     arnum = $el.closest("[arnum]").attr "arnum"
+
+    # Get the template UID that has been deselected
+    template_uid = event.detail.value
+
+    record = @records_snapshot[arnum]
+    metadata = record.template_metadata[template_uid]
+    services = []
+
+    context = {}
+    context["template"] = metadata
+    context["services"] = services
+
+    # get the list of services assigned to the template
+    $.each record.template_to_services[template_uid], (index, uid) ->
+      services.push record.service_metadata[uid]
+
     @applied_templates[arnum] = null
 
-    # trigger form:changed event
-    $(this).trigger "form:changed"
+    dialog = @template_dialog "template-remove-template", context
+    dialog.on "yes", ->
+      # deselect the services
+      $.each services, (index, service) ->
+        me.set_service arnum, service.uid, no
+      # trigger form:changed event
+      $(me).trigger "form:changed"
+    dialog.on "no", ->
+      # trigger form:changed event
+      $(me).trigger "form:changed"
 
 
   ###*
