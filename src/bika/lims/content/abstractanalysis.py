@@ -961,6 +961,14 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             fdm = formatDecimalMark('> %s' % hidemax, decimalmark)
             return fdm.replace('> ', '&gt; ', 1) if html else fdm
 
+        # If below QL, return '< QL'
+        ql = self.getQuantificationLimit()
+        ql = api.to_float(ql, 0.0)
+        if result < ql:
+            ql = api.float_to_string(ql)
+            fdm = formatDecimalMark('< %s' % ql, decimalmark)
+            return fdm.replace('< ', '&lt; ', 1) if html else fdm
+
         # If below LDL, return '< LDL'
         ldl = self.getLowerDetectionLimit()
         ldl = api.to_float(ldl, 0.0)
