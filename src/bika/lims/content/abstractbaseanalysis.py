@@ -175,6 +175,24 @@ ExponentialFormatPrecision = IntegerField(
     )
 )
 
+QuantificationLimit = StringField(
+    "QuantificationLimit",
+    schemata="Analysis",
+    default="0.0",
+    widget=DecimalWidget(
+        label=_("Quantification Limit (QL)"),
+        description=_(
+            "The Quantification Limit (QL) is the lowest concentration of a "
+            "parameter that can be reliably and accurately measured using the "
+            "specified testing methodology, with acceptable levels of "
+            "precision and accuracy. Results below this value cannot be "
+            "quantified with confidence and are typically reported as '< QL,' "
+            "indicating that while the parameter may be present, its exact "
+            "concentration cannot be determined reliably."
+        )
+    )
+)
+
 LowerDetectionLimit = StringField(
     "LowerDetectionLimit",
     schemata="Analysis",
@@ -256,24 +274,6 @@ AllowManualDetectionLimit = BooleanField(
         description=_(
             "Allow the analyst to manually replace the default Detection "
             "Limits (LDL and UDL) on results entry views"),
-    )
-)
-
-QuantificationLimit = StringField(
-    "QuantificationLimit",
-    schemata="Analysis",
-    default="0.0",
-    widget=DecimalWidget(
-        label=_("Quantification Limit (QL)"),
-        description=_(
-            "The Quantification Limit (QL) is the lowest concentration of a "
-            "parameter that can be reliably and accurately measured using the "
-            "specified testing methodology, with acceptable levels of "
-            "precision and accuracy. Results below this value cannot be "
-            "quantified with confidence and are typically reported as '< QL,' "
-            "indicating that while the parameter may be present, its exact "
-            "concentration cannot be determined reliably."
-        )
     )
 )
 
@@ -821,11 +821,11 @@ schema = BikaSchema.copy() + Schema((
     UnitChoices,
     Precision,
     ExponentialFormatPrecision,
+    QuantificationLimit,
     LowerDetectionLimit,
     UpperDetectionLimit,
     DetectionLimitSelector,
     AllowManualDetectionLimit,
-    QuantificationLimit,
     AttachmentRequired,
     Keyword,
     ManualEntryOfResults,
