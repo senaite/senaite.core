@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2681 Add function to make the assignment of custom catalogs easier
+- #2676 Allow to set the uncertainty to 0
 - #2678 Add validate function in API
 - #2677 Fix permission for Uncertainty field
 - #2675 Fix services are not deselected on template removal in sample add form
