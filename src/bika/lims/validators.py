@@ -1456,3 +1456,63 @@ class ServiceConditionsValidator(object):
 
 
 validation.register(ServiceConditionsValidator())
+
+
+class LowerDetectionLimitValidator(object):
+    """Validates the Lower detection limit
+    """
+    implements(IValidator)
+    name = "lower_detection_limit_validator"
+
+    def __call__(self, value, **kwargs):
+        instance = kwargs["instance"]
+        field_name = kwargs["field"].getName()
+
+        # get the value (or fallback to field's default)
+        default = instance.getField(field_name).getDefault(instance)
+        ldl = api.to_float(value, default)
+
+        # Lower Detection Limit must be equal or below Quantification Limit
+        form = kwargs["REQUEST"].form
+        ql = form.get("QuantificationLimit", None)
+        ql = api.to_float(ql, ldl)
+        if ldl > ql:
+            return _t(_(
+                u"validator_ldl_above_ql",
+                default=u"Validation failed: Lower Detection Limit (LDL) "
+                        u"cannot be greater than Quantification Limit (QL)."
+            ))
+
+
+validation.register(LowerDetectionLimitValidator())
+
+
+class QuantificationLimitValidator(object):
+    """Validates the Quantification limit
+    """
+    implements(IValidator)
+    name = "quantification_limit_validator"
+
+    def __call__(self, value, **kwargs):
+        instance = kwargs["instance"]
+        field_name = kwargs["field"].getName()
+
+        # get the value (or fallback to field's default)
+        default = instance.getField(field_name).getDefault(instance)
+        ql = api.to_float(value, default)
+
+        # Lower Detection Limit must be equal or below Quantification Limit
+        form = kwargs["REQUEST"].form
+        ldl = form.get("LowerDetectionLimit", None)
+        ldl = api.to_float(ldl, ql)
+        if ql < ldl:
+            return _t(_(
+                u"validator_ql_below_ldl",
+                default=u"Validation failed: the Quantification Limit (QL) "
+                        u"cannot be below the Lower Detection Limit (LDL), "
+                        u"since reliable quantification is possible only "
+                        u"after reliable detection."
+            ))
+
+
+validation.register(QuantificationLimitValidator())
