@@ -88,17 +88,19 @@ Analyses should be registered in the analysis catalog:
 Get catalogs by type
 ....................
 
-Since `archetype_tool` only gives us the catalogs for `Archetype`-based types,
-one can easily get catalogs from a given type, regardless of its nature.
+The `archetype_tool` only gives us the catalogs for `Archetype`-based types.
+The function `get_catalogs_by_type` allows us to overcome this problem, but
+with the following considerations:
 
-However, `auditlog_catalog` is skipped, cause the cataloguing of objects into
-that catalog is automatically handled by the catalog multiplexer functionality.
+- `auditlog_catalog` is skipped, cause the cataloguing of objects into
+  that catalog is automatically handled by the multiplexer functionality.
 
-Likewise `uid_catalog` is a special catalog where all AT contents, plus those
-DX contents implementing the `Referenceable` behavior are catalogued.
+- Likewise, `uid_catalog` is a special catalog where all AT contents, plus those
+  DX contents implementing the `Referenceable` behavior are catalogued.
 
-As a result, `get_catalogs_by_type` only returns the catalogs that are specific
-for the given portal type. Nothing less, nothing more:
+As a result, `get_catalogs_by_type` returns the catalogs despite the *nature*
+of the type (`Archetype` or `Dexterity`) but only those that are specific for
+the given portal type. Nothing less, nothing more:
 
     >>> get_catalogs_by_type("Analysis")
     ['senaite_catalog_analysis']
