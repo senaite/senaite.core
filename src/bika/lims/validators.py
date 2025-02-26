@@ -1483,8 +1483,59 @@ class LowerDetectionLimitValidator(object):
                         u"cannot be greater than Quantification Limit (QL)."
             ))
 
+        # Lower Detection Limit must be below Upper Detection Limit
+        udl = form.get("UpperDetectionLimit", None)
+        udl = api.to_float(udl, ldl)
+        if ldl >= udl:
+            return _t(_(
+                u"validator_ldl_above_udl",
+                default=u"Validation failed: Lower Detection Limit (LDL) "
+                        u"cannot be greater than or equal to the Upper "
+                        u"Detection Limit (UDL)."
+            ))
+
 
 validation.register(LowerDetectionLimitValidator())
+
+
+class UpperDetectionLimitValidator(object):
+    """Validates the Lower detection limit
+    """
+    implements(IValidator)
+    name = "upper_detection_limit_validator"
+
+    def __call__(self, value, **kwargs):
+        instance = kwargs["instance"]
+        field_name = kwargs["field"].getName()
+
+        # get the value (or fallback to field's default)
+        default = instance.getField(field_name).getDefault(instance)
+        udl = api.to_float(value, default)
+
+        # Upper Detection Limit must be greater than Lower Detection Limit
+        form = kwargs["REQUEST"].form
+        ldl = form.get("LowerDetectionLimit", None)
+        ldl = api.to_float(ldl, udl)
+        if udl <= ldl:
+            return _t(_(
+                u"validator_udl_above_ldl",
+                default=u"Validation failed: Upper Detection Limit (UDL) "
+                        u"cannot be lower than or equal to the Lower "
+                        u"Detection Limit (LDL)."
+            ))
+
+        # Upper Detection Limit must be equal or below Quantification Limit
+        ql = form.get("QuantificationLimit", None)
+        ql = api.to_float(ql, udl)
+        if udl < ql:
+            return _t(_(
+                u"validator_udl_below_ql",
+                default=u"Validation failed: Upper Detection Limit (UDL) "
+                        u"cannot be below the Quantification Limit (QL)."
+            ))
+
+
+validation.register(UpperDetectionLimitValidator())
 
 
 class QuantificationLimitValidator(object):
@@ -1501,7 +1552,7 @@ class QuantificationLimitValidator(object):
         default = instance.getField(field_name).getDefault(instance)
         ql = api.to_float(value, default)
 
-        # Lower Detection Limit must be equal or below Quantification Limit
+        # Quantification Limit must be greater than Lower Detection Limit
         form = kwargs["REQUEST"].form
         ldl = form.get("LowerDetectionLimit", None)
         ldl = api.to_float(ldl, ql)
@@ -1512,6 +1563,16 @@ class QuantificationLimitValidator(object):
                         u"cannot be below the Lower Detection Limit (LDL), "
                         u"since reliable quantification is possible only "
                         u"after reliable detection."
+            ))
+
+        # Quantification Limit must be equal or below Upper Detection Limit
+        udl = form.get("UpperDetectionLimit", None)
+        udl = api.to_float(udl, ql)
+        if ql > udl:
+            return _t(_(
+                u"validator_ql_above_udl",
+                default=u"Validation failed: Quantification Limit (QL) cannot "
+                        u"be greater than the Upper Detection Limit (UDL)."
             ))
 
 

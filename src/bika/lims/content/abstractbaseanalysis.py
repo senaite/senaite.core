@@ -196,6 +196,7 @@ UpperDetectionLimit = StringField(
     "UpperDetectionLimit",
     schemata="Analysis",
     default="1000000000.0",
+    validators=("upper_detection_limit_validator",),
     widget=DecimalWidget(
         label=_("Upper Detection Limit (UDL)"),
         description=_(
