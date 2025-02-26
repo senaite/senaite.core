@@ -21,6 +21,7 @@
 import copy
 import math
 
+from bika.lims import _
 from bika.lims import api
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IBaseAnalysis
@@ -28,6 +29,7 @@ from bika.lims.interfaces import IReferenceSample
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import format_supsub
+from senaite.core.i18n import translate as t
 
 
 def create_analysis(context, source, **kwargs):
@@ -240,7 +242,36 @@ def format_uncertainty(analysis, decimalmark=".", sciformat=1):
     try:
         result = float(analysis.getResult())
     except (ValueError, TypeError):
-        pass
+        return ""
+
+    na = _(u"uncertainty_not_applicable", default=u"Not applicable")
+    if analysis.isAboveUpperDetectionLimit():
+        # displaying uncertainty for results above the Upper Detection Limit
+        # (UDL) does not make sense because the UDL defines the highest level
+        # at which the analyte can be reliably detected. Results above the UDL
+        # often exceed the instrument's capability or calibration range,
+        # leading to potential saturation or nonlinear responses. As such, any
+        # numeric result beyond the UDL lacks scientific validity and cannot be
+        # reported with confidence.
+        return t(na)
+
+    if analysis.isBelowLowerDetectionLimit():
+        # displaying uncertainty for results below the Lower Detection Limit
+        # (LDL) does not make sense because the LDL defines the lowest level at
+        # which the analyte can be reliably detected. Results below the DL are
+        # typically indistinguishable from background noise or method
+        # variability, meaning any numeric result lacks scientific validity.
+        return t(na)
+
+    if analysis.isBelowQuantificationLimit():
+        # displaying uncertainty for results below the Quantification Limit
+        # (QL) does not make sense because the QL defines the lowest
+        # concentration at which the analyte can be reliably and accurately
+        # measured. Results below the QL are subject to significant variability
+        # and may be indistinguishable from background noise or method
+        # imprecision. Therefore, any numeric result below the QL lacks the
+        # reliability needed for meaningful quantification.
+        return t(na)
 
     uncertainty = analysis.getUncertainty()
     if api.to_float(uncertainty, default=-1) < 0:

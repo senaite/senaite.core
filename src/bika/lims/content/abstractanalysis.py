@@ -273,16 +273,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         the option 'Allow manual uncertainty'.
         Otherwise, do a callback to getDefaultUncertainty().
 
-        Returns empty string if no result specified and the current result for this
-        analysis is below or above detections limits.
+        Returns empty string if no result specified and the current result for
+        this analysis is below or above detections limits.
         """
         uncertainty = self.getField("Uncertainty").get(self)
-        if result is None:
-            if self.isAboveUpperDetectionLimit():
-                return None
-            if self.isBelowLowerDetectionLimit():
-                return None
-
         if uncertainty and self.getAllowManualUncertainty():
             return api.float_to_string(uncertainty, default=None)
 
@@ -300,6 +294,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if self.isAboveUpperDetectionLimit():
             unc = None
         if self.isBelowLowerDetectionLimit():
+            unc = None
+        if self.isBelowQuantificationLimit():
             unc = None
 
         field = self.getField("Uncertainty")
@@ -413,6 +409,16 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return api.to_float(result) > api.to_float(udl, 0.0)
 
         return False
+
+    def isBelowQuantificationLimit(self):
+        """Returns whether the result is below the Quantification Limit
+        """
+        result = self.getResult()
+        if not api.is_floatable(result):
+            return False
+
+        ql = self.getQuantificationLimit()
+        return api.to_float(result) < api.to_float(ql, 0.0)
 
     # TODO: REMOVE:  nowhere used
     @deprecated("This Method will be removed in version 2.5")
@@ -595,14 +601,18 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                     key = dependency.getKeyword()
                     ldl = dependency.getLowerDetectionLimit()
                     udl = dependency.getUpperDetectionLimit()
+                    ql = dependency.getQuantificationLimit()
                     bdl = dependency.isBelowLowerDetectionLimit()
                     adl = dependency.isAboveUpperDetectionLimit()
+                    bql = dependency.isBelowQuantificationLimit()
                     mapping[key] = result
                     mapping['%s.%s' % (key, 'RESULT')] = result
                     mapping['%s.%s' % (key, 'LDL')] = api.to_float(ldl, 0.0)
                     mapping['%s.%s' % (key, 'UDL')] = api.to_float(udl, 0.0)
+                    mapping['%s.%s' % (key, 'QL')] = api.to_float(ql, 0.0)
                     mapping['%s.%s' % (key, 'BELOWLDL')] = int(bdl)
                     mapping['%s.%s' % (key, 'ABOVEUDL')] = int(adl)
+                    mapping['%s.%s' % (key, 'BELOWQL')] = int(bql)
                 except (TypeError, ValueError):
                     return False
 

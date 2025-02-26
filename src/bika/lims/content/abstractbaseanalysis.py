@@ -175,9 +175,6 @@ ExponentialFormatPrecision = IntegerField(
     )
 )
 
-# If the value is below this limit, it means that the measurement lacks
-# accuracy and this will be shown in manage_results and also on the final
-# report.
 LowerDetectionLimit = StringField(
     "LowerDetectionLimit",
     schemata="Analysis",
@@ -185,16 +182,15 @@ LowerDetectionLimit = StringField(
     widget=DecimalWidget(
         label=_("Lower Detection Limit (LDL)"),
         description=_(
-            "The Lower Detection Limit is the lowest value to which the "
-            "measured parameter can be measured using the specified testing "
-            "methodology. Results entered which are less than this value will "
-            "be reported as < LDL")
+            "The Lower Detection Limit (LDL) is the lowest concentration of a "
+            "parameter that can be reliably detected using the specified "
+            "testing methodology, but it cannot be quantified with "
+            "confidence. Results below this threshold are reported as '< LDL',"
+            "indicating that the parameter is present at levels below the"
+            "reliable detection capability of the method.")
     )
 )
 
-# If the value is above this limit, it means that the measurement lacks
-# accuracy and this will be shown in manage_results and also on the final
-# report.
 UpperDetectionLimit = StringField(
     "UpperDetectionLimit",
     schemata="Analysis",
@@ -202,10 +198,14 @@ UpperDetectionLimit = StringField(
     widget=DecimalWidget(
         label=_("Upper Detection Limit (UDL)"),
         description=_(
-            "The Upper Detection Limit is the highest value to which the "
-            "measured parameter can be measured using the specified testing "
-            "methodology. Results entered which are greater than this value "
-            "will be reported as > UDL")
+            "The Upper Detection Limit (UDL) is the highest concentration of "
+            "a parameter that can be reliably detected using the specified "
+            "testing methodology, beyond which the results may no longer be "
+            "accurate or valid due to instrument saturation or limitations. "
+            "Results exceeding this threshold are typically reported as "
+            "'> UDL,' indicating that the parameter's concentration is above "
+            "the reliable detection range of the method."
+        )
     )
 )
 
@@ -256,6 +256,24 @@ AllowManualDetectionLimit = BooleanField(
         description=_(
             "Allow the analyst to manually replace the default Detection "
             "Limits (LDL and UDL) on results entry views"),
+    )
+)
+
+QuantificationLimit = StringField(
+    "QuantificationLimit",
+    schemata="Analysis",
+    default="0.0",
+    widget=DecimalWidget(
+        label=_("Quantification Limit (QL)"),
+        description=_(
+            "The Quantification Limit (QL) is the lowest concentration of a "
+            "parameter that can be reliably and accurately measured using the "
+            "specified testing methodology, with acceptable levels of "
+            "precision and accuracy. Results below this value cannot be "
+            "quantified with confidence and are typically reported as '< QL,' "
+            "indicating that while the parameter may be present, its exact "
+            "concentration cannot be determined reliably."
+        )
     )
 )
 
@@ -807,6 +825,7 @@ schema = BikaSchema.copy() + Schema((
     UpperDetectionLimit,
     DetectionLimitSelector,
     AllowManualDetectionLimit,
+    QuantificationLimit,
     AttachmentRequired,
     Keyword,
     ManualEntryOfResults,
@@ -956,6 +975,17 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """Get the upper detection limit
         """
         field = self.getField("UpperDetectionLimit")
+        value = field.get(self)
+        # cut off trailing zeros
+        if "." in value:
+            value = value.rstrip("0").rstrip(".")
+        return value
+
+    @security.public
+    def getQuantificationLimit(self):
+        """Get the quantification limit
+        """
+        field = self.getField("QuantificationLimit")
         value = field.get(self)
         # cut off trailing zeros
         if "." in value:
