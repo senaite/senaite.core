@@ -501,8 +501,8 @@ class FormulaValidator:
                     })
                 return to_utf8(translate(msg))
 
-        # Allow to use Wildcards, LDL and UDL values in calculations
-        allowedwds = ["LDL", "UDL", "BELOWLDL", "ABOVEUDL"]
+        # Allow to use Wildcards, LDL, UDL and QL values in calculations
+        allowedwds = ["LDL", "UDL", "BELOWLDL", "ABOVEUDL", "QL", "BELOWQL"]
         keysandwildcards = re.compile(r"\[([^\]]+)\]").findall(value)
         keysandwildcards = [k for k in keysandwildcards if "." in k]
         keysandwildcards = [k.split(".", 1) for k in keysandwildcards]
