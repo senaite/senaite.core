@@ -19,8 +19,11 @@
 # Some rights reserved, see README and LICENSE.
 
 # flake8:noqa:F401
+import copy
+
 from plone.memoize import forever
 
+from senaite.core import logger
 from senaite.core.catalog.analysis_catalog import \
     CATALOG_ID as ANALYSIS_CATALOG
 from senaite.core.catalog.analysis_catalog import AnalysisCatalog
@@ -48,6 +51,9 @@ from senaite.core.catalog.worksheet_catalog import \
     CATALOG_ID as WORKSHEET_CATALOG
 from senaite.core.catalog.worksheet_catalog import WorksheetCatalog
 from senaite.core.registry import get_registry_record
+from senaite.core.registry import set_registry_record
+
+CATALOG_MAPPINGS_REGISTRY_KEY = "catalog_mappings"
 
 CATALOG_MAPPINGS = (
     # portal_type, catalog_ids
@@ -120,7 +126,10 @@ def get_catalogs_by_type(portal_type):
     mapping = dict(CATALOG_MAPPINGS)
     catalogs = mapping.get(portal_type) or []
 
-    registry_mapping = get_registry_record("catalog_mappings")
+    # copy to prevent persistent changes
+    catalogs = copy.deepcopy(catalogs)
+
+    registry_mapping = get_registry_record(CATALOG_MAPPINGS_REGISTRY_KEY)
     if not registry_mapping:
         return catalogs
 
@@ -132,3 +141,58 @@ def get_catalogs_by_type(portal_type):
         catalogs.append(catalog)
 
     return catalogs
+
+
+def set_catalogs(portal_type, catalogs):
+    """Update the catalog mappings for the given portal type
+
+    IMPORTANT: This only takes effect on the current process, so be sure to
+               restart the zeoclients for the changes to take effect.
+
+    :param portal_type: The portal type to update its catalog mappings
+    :param catalogs: list (to extend) or tuple (to replace) of catalog ids
+    """
+    mapping = get_registry_record(CATALOG_MAPPINGS_REGISTRY_KEY) or {}
+    if catalogs is None:
+        catalogs = []
+
+    # list extends, tuple replaces
+    existing = mapping.pop(portal_type, [])
+    if isinstance(catalogs, list):
+        catalogs.extend(existing)
+
+    # remove duplicates
+    catalogs = list(set(catalogs))
+    if catalogs:
+        mapping[portal_type] = catalogs
+
+    # update the registry record
+    set_registry_record(CATALOG_MAPPINGS_REGISTRY_KEY, mapping)
+
+    # flush the catalogs mapping cache, if any
+    flush_catalogs_cache(portal_type)
+
+    # restart the instance for the changes to take effect!
+    logger.warn("*----------------------------------------------------------*")
+    logger.warn("*    Catalogs for %s updated" % portal_type)
+    logger.warn("*    RESTART THE CLIENTS for the changes to take effect")
+    logger.warn("*----------------------------------------------------------*")
+
+
+def flush_catalogs_cache(portal_type):
+    """Flushes the cache storing the catalog mappings for the given portal type
+
+    IMPORTANT: This only takes effect on the current process, so be sure to
+               restart the zeoclients for the changes to take effect.
+
+    :param portal_type: The portal type to update its catalog mappings
+    """
+    # emulate forever.memoize get_key
+    key = ((portal_type, ), frozenset([]))
+    # build the key from volatile.cache
+    fun = get_catalogs_by_type
+    key = "%s.%s:%s" % (fun.__module__, fun.__name__, key)
+    # delete the portal_type from the forever._memos cache
+    cache = forever._memos  # noqa
+    if key in cache:
+        del(cache[key])
