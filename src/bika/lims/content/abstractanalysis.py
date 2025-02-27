@@ -52,6 +52,7 @@ from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.Schema import Schema
 from Products.CMFCore.permissions import View
 from senaite.core.browser.fields.datetime import DateTimeField
+from senaite.core.i18n import translate as t
 from senaite.core.permissions import FieldEditAnalysisResult
 from senaite.core.permissions import ViewResults
 from six import string_types
@@ -961,14 +962,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             fdm = formatDecimalMark('> %s' % hidemax, decimalmark)
             return fdm.replace('> ', '&gt; ', 1) if html else fdm
 
-        # If below QL, return '< QL'
-        ql = self.getQuantificationLimit()
-        ql = api.to_float(ql, 0.0)
-        if result < ql:
-            ql = api.float_to_string(ql)
-            fdm = formatDecimalMark('< %s' % ql, decimalmark)
-            return fdm.replace('< ', '&lt; ', 1) if html else fdm
-
         # If below LDL, return '< LDL'
         ldl = self.getLowerDetectionLimit()
         ldl = api.to_float(ldl, 0.0)
@@ -976,7 +969,16 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             # LDL must not be formatted according to precision, etc.
             ldl = api.float_to_string(ldl)
             fdm = formatDecimalMark('< %s' % ldl, decimalmark)
-            return fdm.replace('< ', '&lt; ', 1) if html else fdm
+            return cgi.escape(fdm) if html else fdm
+
+        # If below QL, return '< QL'
+        ql = self.getQuantificationLimit()
+        ql = api.to_float(ql, 0.0)
+        if result < ql:
+            ql = api.float_to_string(ql)
+            ql = formatDecimalMark(ql, decimalmark)
+            msg = t(_("Detected but < ${LOQ}", mapping={"LOQ": ql}))
+            return cgi.escape(msg) if html else msg
 
         # If above UDL, return '< UDL'
         udl = self.getUpperDetectionLimit()
