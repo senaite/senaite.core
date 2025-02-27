@@ -318,7 +318,11 @@ class TestDecimalSciNotation(DataTestCase):
             [2,        4,       5, '-12340.0123', '-1.234001·10<sup>4</sup>'],
         ]
         s = self.service
-        s.setLowerDetectionLimit('-99999') # We want to test results below 0 too
+
+        # Set negative values for LDL and QL to test results below 0
+        s.setLowerDetectionLimit('-99999')
+        s.setQuantificationLimit('-99999')
+
         prevm = []
         an = None
         bs = self.portal.setup

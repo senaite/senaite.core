@@ -326,6 +326,10 @@ class TestLimitDetections(DataTestCase):
             s.setLowerDetectionLimit(case['min'])
             s.setUpperDetectionLimit(case['max'])
 
+            # Set same Quantification Limit (QL) as LDL. Otherwise, negative
+            # results will be formatted as `&gt; QL` instead.
+            s.setQuantificationLimit(case['min'])
+
             # Input results
             # Client:       Happy Hills
             # SampleType:   Apple Pulp
