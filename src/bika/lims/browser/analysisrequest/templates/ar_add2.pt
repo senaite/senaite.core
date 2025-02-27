@@ -448,7 +448,7 @@
                     <!-- Paste Button -->
                     <a class="paste d-block"
                        href="#"
-                       title="Enter individual values ​​for this field per sample"
+                       title="Enter individual values for this field per sample"
                        i18n:attributes="title"
                        data_toggle="tooltip"
                        tal:condition="python:view.show_paste_button_for(field)"
