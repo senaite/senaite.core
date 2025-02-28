@@ -4,7 +4,7 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
-      title="SENAITE.CORE 2.6.0: Set the Lower Limit of Quantification (LLOQ)"
+      title="SENAITE.CORE 2.6.0: Initialize the Limit of Quantification (LO=Q)"
       description="Initializes the value for LowerLimitOfQuantification field"
       source="2658"
       destination="2659"

@@ -421,7 +421,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         llod = self.getLowerDetectionLimit()
         lloq = AbstractBaseAnalysis.getLowerLimitOfQuantification(self)
 
-        # comparison betwen LLOD and LLOQ
+        # comparison between LLOD and LLOQ
         llod = api.to_float(llod)
         lloq = api.to_float(lloq, llod)
         if lloq < llod:
@@ -429,6 +429,26 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         return api.float_to_string(lloq)
 
+    @security.public
+    def getUpperLimitOfQuantification(self):
+        """Returns the Upper Limit of Quantification (ULOQ) for the current
+        analysis. If no ULOQ value is defined, or if the defined ULOQ is
+        greater than the Upper Limit of Detection (ULOD), the function returns
+        the ULOD instead. This ensures the result respects the detection
+        threshold
+        """
+        ulod = self.getUpperDetectionLimit()
+        uloq = AbstractBaseAnalysis.getUpperLimitOfQuantification(self)
+
+        # comparison between ULOQ and ULOD
+        uloq = api.to_float(uloq)
+        ulod = api.to_float(uloq, ulod)
+        if uloq > ulod:
+            return api.float_to_string(ulod)
+
+        return api.float_to_string(uloq)
+
+    @security.public
     def isBelowLimitOfQuantification(self):
         """Returns whether the result is below the Limit of Quantification LOQ
         """
@@ -437,7 +457,18 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return False
 
         lloq = self.getLowerLimitOfQuantification()
-        return api.to_float(result) < api.to_float(lloq, 0.0)
+        return api.to_float(result, lloq) < api.to_float(lloq)
+
+    @security.public
+    def isAboveLimitOfQuantification(self):
+        """Returns whether the result is above the Limit of Quantification LOQ
+        """
+        result = self.getResult()
+        if not api.is_floatable(result):
+            return False
+
+        uloq = self.getUpperLimitOfQuantification()
+        return api.to_float(result) > api.to_float(uloq)
 
     # TODO: REMOVE:  nowhere used
     @deprecated("This Method will be removed in version 2.5")

@@ -28,13 +28,13 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import APIError
 from bika.lims.catalog import SETUP_CATALOG
-from senaite.core.i18n import translate as _t
 from bika.lims.utils import to_utf8
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.validation import validation
 from Products.validation.interfaces.IValidator import IValidator
 from Products.ZCTextIndex.ParseTree import ParseError
+from senaite.core.i18n import translate as _t
 from zope.interface import implements
 
 
@@ -1463,7 +1463,8 @@ validation.register(ServiceConditionsValidator())
 
 
 class LowerLimitOfDetectionValidator(object):
-    """Validates the Lower Limit of Detection (LLOD)
+    """Validates that the Lower Limit of Detection (LLOD) is lower than or
+    equal to the Lower Limit of Quantification (LLOQ)
     """
     implements(IValidator)
     name = "lower_limit_of_detection_validator"
@@ -1476,7 +1477,6 @@ class LowerLimitOfDetectionValidator(object):
         default = instance.getField(field_name).getDefault(instance)
         llod = api.to_float(value, default)
 
-        # compare with the limit of quantification
         form = kwargs["REQUEST"].form
         lloq = form.get("LowerLimitOfQuantification", None)
         lloq = api.to_float(lloq, llod)
@@ -1488,63 +1488,10 @@ class LowerLimitOfDetectionValidator(object):
                         u"(LLOQ)."
             ))
 
-        # compare with the upper limit of detection
-        ulod = form.get("UpperDetectionLimit", None)
-        ulod = api.to_float(ulod, llod)
-        if llod >= ulod:
-            return _t(_(
-                u"validator_llod_above_ulod",
-                default=u"The Lower Limit of Detection (LLOD) cannot be "
-                        u"greater than or equal to the Upper Limit of "
-                        u"Detection (ULOD)."
-            ))
-
-
-validation.register(LowerLimitOfDetectionValidator())
-
-
-class UpperLimitOfDetectionValidator(object):
-    """Validates the Upper Limit of Detection (ULOD)
-    """
-    implements(IValidator)
-    name = "upper_limit_of_detection_validator"
-
-    def __call__(self, value, **kwargs):
-        instance = kwargs["instance"]
-        field_name = kwargs["field"].getName()
-
-        # get the value (or fallback to field's default)
-        default = instance.getField(field_name).getDefault(instance)
-        ulod = api.to_float(value, default)
-
-        # compare with the lower limit of detection
-        form = kwargs["REQUEST"].form
-        llod = form.get("LowerDetectionLimit", None)
-        llod = api.to_float(llod, ulod)
-        if ulod <= llod:
-            return _t(_(
-                u"validator_ulod_below_llod",
-                default=u"The Upper Limit of Detection (ULOD) cannot be lower "
-                        u"than or equal to the Lower Limit of Detection "
-                        u"(LLOD)."
-            ))
-
-        # compare with the limit of quantification
-        lloq = form.get("LowerLimitOfQuantification", None)
-        lloq = api.to_float(lloq, ulod)
-        if ulod < lloq:
-            return _t(_(
-                u"validator_ulod_below_lloq",
-                default=u"The Upper Limit of Detection (ULOD) cannot be lower "
-                        u"than the Lower Limit of Quantification (LLOQ)."
-            ))
-
-
-validation.register(UpperLimitOfDetectionValidator())
-
 
 class LowerLimitOfQuantificationValidator(object):
-    """Validates the Lower Limit of Quantification (LLOQ)
+    """Validates that the Lower Limit of Quantification (LLOQ) is lower than
+    the Upper Limit of Quantification (ULOQ)
     """
     implements(IValidator)
     name = "lower_limit_of_quantification_validator"
@@ -1559,26 +1506,44 @@ class LowerLimitOfQuantificationValidator(object):
 
         # compare with the lower limit of detection
         form = kwargs["REQUEST"].form
-        llod = form.get("LowerDetectionLimit", None)
-        llod = api.to_float(llod, lloq)
-        if lloq < llod:
+        uloq = form.get("UpperLimitOfQuantification", None)
+        uloq = api.to_float(uloq, lloq)
+        if lloq >= uloq:
             return _t(_(
-                u"validator_lloq_below_llod",
+                u"validator_lloq_above_uloq",
                 default=u"The Lower Limit of Quantification (LLOQ) cannot be "
-                        u"lower than the Lower Limit of Detection (LLOD), "
-                        u"since reliable quantification is possible only "
-                        u"after reliable detection."
+                        u"greater than or equal to the Upper Limit of "
+                        u"Quantification (ULOQ)."
             ))
 
-        # compare witht the upper limit of detection
+
+class UpperLimitOfQuantificationValidator(object):
+    """Validates that the Upper Limit of Quantification (ULOD) is lower than
+    or equal to the Upper Limit of Detection (ULOD)
+    """
+    implements(IValidator)
+    name = "upper_limit_of_quantification_validator"
+
+    def __call__(self, value, **kwargs):
+        instance = kwargs["instance"]
+        field_name = kwargs["field"].getName()
+
+        # get the value (or fallback to field's default)
+        default = instance.getField(field_name).getDefault(instance)
+        uloq = api.to_float(value, default)
+
+        # compare with the lower limit of detection
+        form = kwargs["REQUEST"].form
         ulod = form.get("UpperDetectionLimit", None)
-        ulod = api.to_float(ulod, lloq)
-        if lloq > ulod:
+        ulod = api.to_float(ulod, uloq)
+        if uloq > ulod:
             return _t(_(
-                u"validator_lloq_above_ulod",
-                default=u"The Lower Limit of Quantification (LLOQ) cannot be "
+                u"validator_uloq_above_ulod",
+                default=u"The Upper Limit of Quantification (LLOQ) cannot be "
                         u"greater than the Upper Limit of Detection (ULOD)."
             ))
 
 
+validation.register(LowerLimitOfDetectionValidator())
 validation.register(LowerLimitOfQuantificationValidator())
+validation.register(UpperLimitOfQuantificationValidator())

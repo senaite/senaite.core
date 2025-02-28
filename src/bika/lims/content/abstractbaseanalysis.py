@@ -183,12 +183,14 @@ LowerDetectionLimit = StringField(
     widget=DecimalWidget(
         label=_("Lower Detection Limit (LDL)"),
         description=_(
-            "The Lower Detection Limit (LDL) is the lowest concentration of a "
-            "parameter that can be reliably detected using the specified "
-            "testing methodology, but it cannot be quantified with "
-            "confidence. Results below this threshold are reported as '< LDL',"
-            "indicating that the parameter is present at levels below the"
-            "reliable detection capability of the method.")
+            "The Lower Limit of Detection (LLOD) is the lowest concentration "
+            "of a parameter that can be reliably detected by a specified "
+            "testing methodology with a defined level of confidence. Results "
+            "below this threshold are typically reported as '< LLOD' (or 'Not "
+            "Detected'), indicating that the parameter's concentration, if "
+            "present, is below the detection capability of the method at a "
+            "reliable level."
+        )
     )
 )
 
@@ -205,8 +207,28 @@ LowerLimitOfQuantification = StringField(
             "measured using the specified testing methodology, with "
             "acceptable levels of precision and accuracy. Results below this "
             "value cannot be quantified with confidence and are typically "
-            "reported as '< LOQ', indicating that while the parameter may be "
-            "present, its exact concentration cannot be determined reliably."
+            "reported as '< LOQ' (or 'Detected but < LOQ'), indicating that "
+            "while the parameter may be present, its exact concentration "
+            "cannot be determined reliably."
+        )
+    )
+)
+
+UpperLimitOfQuantification = StringField(
+    "UpperLimitOfQuantification",
+    schemata="Limits",
+    default="1000000000.0",
+    validators=("upper_limit_of_quantification_validator",),
+    widget=DecimalWidget(
+        label=_("Upper Limit Of Quantification (ULOQ)"),
+        description=_(
+            "The Upper Limit of Quantification (ULOQ) is the highest "
+            "concentration of a parameter that can be reliably and accurately "
+            "measured using the specified testing methodology, with "
+            "acceptable levels of precision and accuracy. Results above "
+            "this value cannot be quantified with confidence and are "
+            "typically reported as '> ULOQ', indicating that its exact "
+            "concentration cannot be determined reliably."
         )
     )
 )
@@ -215,17 +237,17 @@ UpperDetectionLimit = StringField(
     "UpperDetectionLimit",
     schemata="Limits",
     default="1000000000.0",
-    validators=("upper_limit_of_detection_validator",),
     widget=DecimalWidget(
         label=_("Upper Detection Limit (UDL)"),
         description=_(
-            "The Upper Detection Limit (UDL) is the highest concentration of "
-            "a parameter that can be reliably detected using the specified "
-            "testing methodology, beyond which the results may no longer be "
-            "accurate or valid due to instrument saturation or limitations. "
-            "Results exceeding this threshold are typically reported as "
-            "'> UDL,' indicating that the parameter's concentration is above "
-            "the reliable detection range of the method."
+            "The Upper Limit of Detection (ULOD) is the highest concentration "
+            "of a parameter that can be reliably measured using a specified "
+            "testing methodology. Beyond this limit, results may no longer be "
+            "accurate or valid due to instrument saturation or methodological "
+            "limitations. Results exceeding this threshold are typically "
+            "reported as '> ULOD', indicating that the parameter's "
+            "concentration is above the reliable detection range of the "
+            "method."
         )
     )
 )
@@ -826,6 +848,7 @@ schema = BikaSchema.copy() + Schema((
     ExponentialFormatPrecision,
     LowerDetectionLimit,
     LowerLimitOfQuantification,
+    UpperLimitOfQuantification,
     UpperDetectionLimit,
     DetectionLimitSelector,
     AllowManualDetectionLimit,
@@ -998,6 +1021,22 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """Returns the Lower Limit of Quantification (LLOQ)
         """
         value = self.getField("LowerLimitOfQuantification").get(self)
+        return api.float_to_string(value)
+
+    @security.public
+    def setUpperLimitOfQuantification(self, value):
+        """Sets the Upper Limit of Quantification (ULOW) and ensures its value
+        is stored as a string without exponential notation and with whole
+        fraction preserved
+        """
+        value = api.float_to_string(value)
+        self.getField("UpperLimitOfQuantification").set(self, value)
+
+    @security.public
+    def getUpperLimitOfQuantification(self):
+        """Returns the Upper Limit of Quantification (ULOQ)
+        """
+        value = self.getField("UpperLimitOfQuantification").get(self)
         return api.float_to_string(value)
 
     @security.public
