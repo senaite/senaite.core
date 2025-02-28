@@ -177,7 +177,7 @@ ExponentialFormatPrecision = IntegerField(
 
 LowerDetectionLimit = StringField(
     "LowerDetectionLimit",
-    schemata="Analysis",
+    schemata="Limits",
     default="0.0",
     validators=("lower_limit_of_detection_validator",),
     widget=DecimalWidget(
@@ -192,9 +192,28 @@ LowerDetectionLimit = StringField(
     )
 )
 
+LimitOfQuantification = StringField(
+    "LimitOfQuantification",
+    schemata="Limits",
+    default="0.0",
+    validators=("limit_of_quantification_validator",),
+    widget=DecimalWidget(
+        label=_("Limit Of Quantification (LOQ)"),
+        description=_(
+            "The Limit of Quantification (LOQ) is the lowest concentration of "
+            "a parameter that can be reliably and accurately measured using "
+            "the specified testing methodology, with acceptable levels of "
+            "precision and accuracy. Results below this value cannot be "
+            "quantified with confidence and are typically reported as "
+            "'< LOQ', indicating that while the parameter may be present, its "
+            "exact concentration cannot be determined reliably."
+        )
+    )
+)
+
 UpperDetectionLimit = StringField(
     "UpperDetectionLimit",
-    schemata="Analysis",
+    schemata="Limits",
     default="1000000000.0",
     validators=("upper_limit_of_detection_validator",),
     widget=DecimalWidget(
@@ -232,7 +251,7 @@ UpperDetectionLimit = StringField(
 # displayed in the results table.
 DetectionLimitSelector = BooleanField(
     'DetectionLimitSelector',
-    schemata="Analysis",
+    schemata="Limits",
     default=False,
     widget=BooleanWidget(
         label=_("Display a Detection Limit selector"),
@@ -251,32 +270,13 @@ DetectionLimitSelector = BooleanField(
 # further information.
 AllowManualDetectionLimit = BooleanField(
     'AllowManualDetectionLimit',
-    schemata="Analysis",
+    schemata="Limits",
     default=False,
     widget=BooleanWidget(
         label=_("Allow Manual Detection Limit input"),
         description=_(
             "Allow the analyst to manually replace the default Detection "
             "Limits (LDL and UDL) on results entry views"),
-    )
-)
-
-LimitOfQuantification = StringField(
-    "LimitOfQuantification",
-    schemata="Analysis",
-    default="0.0",
-    validators=("limit_of_quantification_validator",),
-    widget=DecimalWidget(
-        label=_("Limit Of Quantification (LOQ)"),
-        description=_(
-            "The Limit of Quantification (LOQ) is the lowest concentration of "
-            "a parameter that can be reliably and accurately measured using "
-            "the specified testing methodology, with acceptable levels of "
-            "precision and accuracy. Results below this value cannot be "
-            "quantified with confidence and are typically reported as "
-            "'< LOQ', indicating that while the parameter may be present, its "
-            "exact concentration cannot be determined reliably."
-        )
     )
 )
 
@@ -825,10 +825,10 @@ schema = BikaSchema.copy() + Schema((
     Precision,
     ExponentialFormatPrecision,
     LowerDetectionLimit,
+    LimitOfQuantification,
     UpperDetectionLimit,
     DetectionLimitSelector,
     AllowManualDetectionLimit,
-    LimitOfQuantification,
     AttachmentRequired,
     Keyword,
     ManualEntryOfResults,
