@@ -321,7 +321,7 @@ class TestDecimalSciNotation(DataTestCase):
 
         # Set negative values for LLOD and LOQ to test results below 0
         s.setLowerDetectionLimit('-99999')
-        s.setLimitOfQuantification('-99999')
+        s.setLowerLimitOfQuantification('-99999')
 
         prevm = []
         an = None

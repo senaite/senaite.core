@@ -501,8 +501,12 @@ class FormulaValidator:
                     })
                 return to_utf8(translate(msg))
 
-        # Allow to use Wildcards, LDL, UDL and LOQ values in calculations
-        allowedwds = ["LDL", "UDL", "BELOWLDL", "ABOVEUDL", "LOQ", "BELOWLOQ"]
+        # Allow to use Wildcards, LDL, UDL and LLOQ values in calculations
+        allowedwds = [
+            "LDL", "BELOWLDL",
+            "UDL", "ABOVEUDL",
+            "LOQ", "LLOQ", "BELOWLOQ", "BELOWLLOQ",
+        ]
         keysandwildcards = re.compile(r"\[([^\]]+)\]").findall(value)
         keysandwildcards = [k for k in keysandwildcards if "." in k]
         keysandwildcards = [k.split(".", 1) for k in keysandwildcards]
@@ -1474,13 +1478,14 @@ class LowerLimitOfDetectionValidator(object):
 
         # compare with the limit of quantification
         form = kwargs["REQUEST"].form
-        loq = form.get("LimitOfQuantification", None)
-        loq = api.to_float(loq, llod)
-        if llod > loq:
+        lloq = form.get("LowerLimitOfQuantification", None)
+        lloq = api.to_float(lloq, llod)
+        if llod > lloq:
             return _t(_(
-                u"validator_llod_above_loq",
+                u"validator_llod_above_lloq",
                 default=u"The Lower Limit of Detection (LLOD) cannot be "
-                        u"greater than the Limit of Quantification (LOQ)."
+                        u"greater than the Lower Limit of Quantification "
+                        u"(LLOQ)."
             ))
 
         # compare with the upper limit of detection
@@ -1525,24 +1530,24 @@ class UpperLimitOfDetectionValidator(object):
             ))
 
         # compare with the limit of quantification
-        loq = form.get("LimitOfQuantification", None)
-        loq = api.to_float(loq, ulod)
-        if ulod < loq:
+        lloq = form.get("LowerLimitOfQuantification", None)
+        lloq = api.to_float(lloq, ulod)
+        if ulod < lloq:
             return _t(_(
-                u"validator_ulod_below_loq",
+                u"validator_ulod_below_lloq",
                 default=u"The Upper Limit of Detection (ULOD) cannot be lower "
-                        u"than the Limit of Quantification (LOQ)."
+                        u"than the Lower Limit of Quantification (LLOQ)."
             ))
 
 
 validation.register(UpperLimitOfDetectionValidator())
 
 
-class LimitOfQuantificationValidator(object):
-    """Validates the Limit of Quantification (LOQ)
+class LowerLimitOfQuantificationValidator(object):
+    """Validates the Lower Limit of Quantification (LLOQ)
     """
     implements(IValidator)
-    name = "limit_of_quantification_validator"
+    name = "lower_limit_of_quantification_validator"
 
     def __call__(self, value, **kwargs):
         instance = kwargs["instance"]
@@ -1550,30 +1555,30 @@ class LimitOfQuantificationValidator(object):
 
         # get the value (or fallback to field's default)
         default = instance.getField(field_name).getDefault(instance)
-        loq = api.to_float(value, default)
+        lloq = api.to_float(value, default)
 
         # compare with the lower limit of detection
         form = kwargs["REQUEST"].form
         llod = form.get("LowerDetectionLimit", None)
-        llod = api.to_float(llod, loq)
-        if loq < llod:
+        llod = api.to_float(llod, lloq)
+        if lloq < llod:
             return _t(_(
-                u"validator_loq_below_llod",
-                default=u"The Limit of Quantification (LOQ) cannot be lower "
-                        u"than the Lower Limit of Detection (LLOD), since "
-                        u"reliable quantification is possible only after "
-                        u"reliable detection."
+                u"validator_lloq_below_llod",
+                default=u"The Lower Limit of Quantification (LLOQ) cannot be "
+                        u"lower than the Lower Limit of Detection (LLOD), "
+                        u"since reliable quantification is possible only "
+                        u"after reliable detection."
             ))
 
         # compare witht the upper limit of detection
         ulod = form.get("UpperDetectionLimit", None)
-        ulod = api.to_float(ulod, loq)
-        if loq > ulod:
+        ulod = api.to_float(ulod, lloq)
+        if lloq > ulod:
             return _t(_(
-                u"validator_loq_above_ulod",
-                default=u"The Limit of Quantification (LOQ) cannot be greater "
-                        u"than the Upper Limit of Detection (ULOD)."
+                u"validator_lloq_above_ulod",
+                default=u"The Lower Limit of Quantification (LLOQ) cannot be "
+                        u"greater than the Upper Limit of Detection (ULOD)."
             ))
 
 
-validation.register(LimitOfQuantificationValidator())
+validation.register(LowerLimitOfQuantificationValidator())

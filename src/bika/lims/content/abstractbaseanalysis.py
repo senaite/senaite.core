@@ -192,21 +192,21 @@ LowerDetectionLimit = StringField(
     )
 )
 
-LimitOfQuantification = StringField(
-    "LimitOfQuantification",
+LowerLimitOfQuantification = StringField(
+    "LowerLimitOfQuantification",
     schemata="Limits",
     default="0.0",
-    validators=("limit_of_quantification_validator",),
+    validators=("lower_limit_of_quantification_validator",),
     widget=DecimalWidget(
-        label=_("Limit Of Quantification (LOQ)"),
+        label=_("Lower Limit Of Quantification (LLOQ)"),
         description=_(
-            "The Limit of Quantification (LOQ) is the lowest concentration of "
-            "a parameter that can be reliably and accurately measured using "
-            "the specified testing methodology, with acceptable levels of "
-            "precision and accuracy. Results below this value cannot be "
-            "quantified with confidence and are typically reported as "
-            "'< LOQ', indicating that while the parameter may be present, its "
-            "exact concentration cannot be determined reliably."
+            "The Lower Limit of Quantification (LLOQ) is the lowest "
+            "concentration of a parameter that can be reliably and accurately "
+            "measured using the specified testing methodology, with "
+            "acceptable levels of precision and accuracy. Results below this "
+            "value cannot be quantified with confidence and are typically "
+            "reported as '< LOQ', indicating that while the parameter may be "
+            "present, its exact concentration cannot be determined reliably."
         )
     )
 )
@@ -825,7 +825,7 @@ schema = BikaSchema.copy() + Schema((
     Precision,
     ExponentialFormatPrecision,
     LowerDetectionLimit,
-    LimitOfQuantification,
+    LowerLimitOfQuantification,
     UpperDetectionLimit,
     DetectionLimitSelector,
     AllowManualDetectionLimit,
@@ -985,18 +985,19 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         return value
 
     @security.public
-    def setLimitOfQuantification(self, value):
-        """Sets the Limit of Quantification and ensures its value is stored as
-        a string without exponential notation and with whole fraction preserved
+    def setLowerLimitOfQuantification(self, value):
+        """Sets the Lower Limit of Quantification (LLOQ) and ensures its value
+        is stored as a string without exponential notation and with whole
+        fraction preserved
         """
         value = api.float_to_string(value)
-        self.getField("LimitOfQuantification").set(self, value)
+        self.getField("LowerLimitOfQuantification").set(self, value)
 
     @security.public
-    def getLimitOfQuantification(self):
-        """Returns the Limit of Quantification (LOQ)
+    def getLowerLimitOfQuantification(self):
+        """Returns the Lower Limit of Quantification (LLOQ)
         """
-        value = self.getField("LimitOfQuantification").get(self)
+        value = self.getField("LowerLimitOfQuantification").get(self)
         return api.float_to_string(value)
 
     @security.public

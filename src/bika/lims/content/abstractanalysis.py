@@ -376,24 +376,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return AbstractBaseAnalysis.getUpperDetectionLimit(self)
 
     @security.public
-    def getLimitOfQuantification(self):
-        """Returns the Limit of Quantification (LOQ) for the current analysis.
-        If no LOQ value is defined, or if the defined LOQ is lower than the
-        Lower Limit of Detection (LLOD/LDL), the function returns the LLOD/LDL
-        instead. This ensures the result respects the detection threshold
-        """
-        llod = self.getLowerDetectionLimit()
-        loq = AbstractBaseAnalysis.getLimitOfQuantification(self)
-
-        # comparison betwen LLOD and LOQ
-        llod = api.to_float(llod)
-        loq = api.to_float(loq, llod)
-        if loq < llod:
-            return api.float_to_string(llod)
-
-        return api.float_to_string(loq)
-
-    @security.public
     def isBelowLowerDetectionLimit(self):
         """Returns True if the result is below the Lower Detection Limit or
         if Lower Detection Limit has been manually set
@@ -429,15 +411,33 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         return False
 
+    @security.public
+    def getLowerLimitOfQuantification(self):
+        """Returns the Lower Limit of Quantification (LLOQ) for the current
+        analysis. If no LLOQ value is defined, or if the defined LLOQ is lower
+        than the Lower Limit of Detection (LLOD), the function returns the LLOD
+        instead. This ensures the result respects the detection threshold
+        """
+        llod = self.getLowerDetectionLimit()
+        lloq = AbstractBaseAnalysis.getLowerLimitOfQuantification(self)
+
+        # comparison betwen LLOD and LLOQ
+        llod = api.to_float(llod)
+        lloq = api.to_float(lloq, llod)
+        if lloq < llod:
+            return api.float_to_string(llod)
+
+        return api.float_to_string(lloq)
+
     def isBelowLimitOfQuantification(self):
-        """Returns whether the result is below the Limit of Quantification
+        """Returns whether the result is below the Limit of Quantification LOQ
         """
         result = self.getResult()
         if not api.is_floatable(result):
             return False
 
-        loq = self.getLimitOfQuantification()
-        return api.to_float(result) < api.to_float(loq, 0.0)
+        lloq = self.getLowerLimitOfQuantification()
+        return api.to_float(result) < api.to_float(lloq, 0.0)
 
     # TODO: REMOVE:  nowhere used
     @deprecated("This Method will be removed in version 2.5")
@@ -620,18 +620,20 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                     key = dependency.getKeyword()
                     ldl = dependency.getLowerDetectionLimit()
                     udl = dependency.getUpperDetectionLimit()
-                    loq = dependency.getLimitOfQuantification()
+                    lloq = dependency.getLowerLimitOfQuantification()
                     bdl = dependency.isBelowLowerDetectionLimit()
                     adl = dependency.isAboveUpperDetectionLimit()
-                    bql = dependency.isBelowLimitOfQuantification()
+                    bloq = dependency.isBelowLimitOfQuantification()
                     mapping[key] = result
                     mapping['%s.%s' % (key, 'RESULT')] = result
                     mapping['%s.%s' % (key, 'LDL')] = api.to_float(ldl, 0.0)
                     mapping['%s.%s' % (key, 'UDL')] = api.to_float(udl, 0.0)
-                    mapping['%s.%s' % (key, 'LOQ')] = api.to_float(loq, 0.0)
+                    mapping['%s.%s' % (key, 'LOQ')] = api.to_float(lloq, 0.0)
+                    mapping['%s.%s' % (key, 'LLOQ')] = api.to_float(lloq, 0.0)
                     mapping['%s.%s' % (key, 'BELOWLDL')] = int(bdl)
                     mapping['%s.%s' % (key, 'ABOVEUDL')] = int(adl)
-                    mapping['%s.%s' % (key, 'BELOWLOQ')] = int(bql)
+                    mapping['%s.%s' % (key, 'BELOWLOQ')] = int(bloq)
+                    mapping['%s.%s' % (key, 'BELOWLLOQ')] = int(bloq)
                 except (TypeError, ValueError):
                     return False
 
@@ -980,17 +982,17 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             fdm = formatDecimalMark('> %s' % hidemax, decimalmark)
             return fdm.replace('> ', '&gt; ', 1) if html else fdm
 
-        # Limit of Quantification (LOQ)
-        loq = self.getLimitOfQuantification()
-        loq = api.to_float(loq, 0.0)
+        # Lower Limit of Quantification (LLOQ)
+        lloq = self.getLowerLimitOfQuantification()
+        lloq = api.to_float(lloq, 0.0)
 
         # If below LDL, return 'Not detected' or '< LDL'
         ldl = self.getLowerDetectionLimit()
         ldl = api.to_float(ldl, 0.0)
         if result < ldl:
-            if ldl != loq:
-                # LOQ set, display "Not detected"
-                result = t(_("result_not_detected", default="Not detected"))
+            if ldl != lloq:
+                # LLOQ set, display "Not detected"
+                result = t(_("result_below_llod", default="Not detected"))
                 return cgi.escape(result) if html else result
 
             # Display < LDL
@@ -998,12 +1000,13 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             result = formatDecimalMark('< %s' % ldl, decimalmark)
             return cgi.escape(result) if html else result
 
-        # If below LOQ, return '< LOQ'
-        if result < loq:
-            loq = api.float_to_string(loq)
-            loq = formatDecimalMark(loq, decimalmark)
-            msg = t(_("Detected but < ${LOQ}", mapping={"LOQ": loq}))
-            return cgi.escape(msg) if html else msg
+        # If below LLOQ, return '< LLOQ'
+        if result < lloq:
+            lloq = api.float_to_string(lloq)
+            lloq = formatDecimalMark(lloq, decimalmark)
+            result = t(_("result_below_lloq", default="Detected but < ${LLOQ}",
+                         mapping={"LLOQ": lloq}))
+            return cgi.escape(result) if html else result
 
         # If above UDL, return '< UDL'
         udl = self.getUpperDetectionLimit()
@@ -1011,8 +1014,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if result > udl:
             # UDL must not be formatted according to precision, etc.
             udl = api.float_to_string(udl)
-            fdm = formatDecimalMark('> %s' % udl, decimalmark)
-            return fdm.replace('> ', '&gt; ', 1) if html else fdm
+            result = formatDecimalMark('> %s' % udl, decimalmark)
+            return cgi.escape(result) if html else result
 
         # Render numerical values
         return format_numeric_result(self, self.getResult(),
