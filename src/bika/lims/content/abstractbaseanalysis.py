@@ -985,15 +985,19 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         return value
 
     @security.public
+    def setLimitOfQuantification(self, value):
+        """Sets the Limit of Quantification and ensures its value is stored as
+        a string without exponential notation and with whole fraction preserved
+        """
+        value = api.float_to_string(value)
+        self.getField("LimitOfQuantification").set(self, value)
+
+    @security.public
     def getLimitOfQuantification(self):
         """Returns the Limit of Quantification (LOQ)
         """
-        field = self.getField("LimitOfQuantification")
-        value = field.get(self)
-        # cut off trailing zeros
-        if "." in value:
-            value = value.rstrip("0").rstrip(".")
-        return value
+        value = self.getField("LimitOfQuantification").get(self)
+        return api.float_to_string(value)
 
     @security.public
     def isSelfVerificationEnabled(self):

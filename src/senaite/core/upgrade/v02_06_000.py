@@ -2747,3 +2747,35 @@ def reindex_sub_groups(tool):
             obj.sort_key = api.to_float(obj.sort_key, 0.0)
         obj.reindexObject(idxs=["sortable_title"], update_metadata=False)
     logger.info("Reindexing sub groups [DONE]")
+
+
+def init_loq(tool):
+    """Initializes the value of the field LimitOfQuantification with the value
+    of the Lower Limit of Detection (LLOD or LDL) to ensure LOQ is greater or
+    equal than LLOD
+    """
+    logger.info("Initializing Limit of Quantification (LOQ) ...")
+
+    # Note there is no need to update analyses, cause on them, the function
+    # `abstractanalysis.getLimitOfQuantification` returns the LLOD if the
+    # value set for LOQ is not set or lower than LLOD.
+
+    cat = api.get_tool(SETUP_CATALOG)
+    for brain in cat(portal_type="AnalysisService"):
+        obj = brain.getObject()
+
+        # get the raw values of LLOD and LOQ
+        llod = obj.getField("LowerDetectionLimit").getRaw(obj)
+        loq = obj.getField("LimitOfQuantification").getRaw(obj)
+
+        # convert values to float
+        llod = api.to_float(llod, 0)
+        loq = api.to_float(loq, -1)
+
+        if llod > loq:
+            obj.setLimitOfQuantification(llod)
+            obj.reindexObject()
+
+        obj._p_deactivate()
+
+    logger.info("Initializing Limit of Quantification (LOQ) [DONE]")

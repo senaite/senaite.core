@@ -376,6 +376,19 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return AbstractBaseAnalysis.getUpperDetectionLimit(self)
 
     @security.public
+    def getLimitOfQuantification(self):
+        """Returns the Limit of Quantification (LOQ) for the current analysis.
+        If no LOQ value is defined, or if the defined LOQ is lower than the
+        Lower Limit of Detection (LLOD/LDL), the function returns the LLOD/LDL
+        instead. This ensures the result respects the detection threshold
+        """
+        llod = self.getLowerDetectionLimit()
+        loq = AbstractBaseAnalysis.getLimitOfQuantification(self)
+        if api.to_float(loq, default=llod) < api.to_float(llod):
+            return llod
+        return loq
+
+    @security.public
     def isBelowLowerDetectionLimit(self):
         """Returns True if the result is below the Lower Detection Limit or
         if Lower Detection Limit has been manually set
