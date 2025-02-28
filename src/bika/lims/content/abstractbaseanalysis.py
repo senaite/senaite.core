@@ -179,7 +179,7 @@ LowerDetectionLimit = StringField(
     "LowerDetectionLimit",
     schemata="Analysis",
     default="0.0",
-    validators=("lower_detection_limit_validator",),
+    validators=("lower_limit_of_detection_validator",),
     widget=DecimalWidget(
         label=_("Lower Detection Limit (LDL)"),
         description=_(
@@ -196,7 +196,7 @@ UpperDetectionLimit = StringField(
     "UpperDetectionLimit",
     schemata="Analysis",
     default="1000000000.0",
-    validators=("upper_detection_limit_validator",),
+    validators=("upper_limit_of_detection_validator",),
     widget=DecimalWidget(
         label=_("Upper Detection Limit (UDL)"),
         description=_(
@@ -261,21 +261,21 @@ AllowManualDetectionLimit = BooleanField(
     )
 )
 
-QuantificationLimit = StringField(
-    "QuantificationLimit",
+LimitOfQuantification = StringField(
+    "LimitOfQuantification",
     schemata="Analysis",
     default="0.0",
-    validators=("quantification_limit_validator",),
+    validators=("limit_of_quantification_validator",),
     widget=DecimalWidget(
-        label=_("Quantification Limit (QL)"),
+        label=_("Limit Of Quantification (LOQ)"),
         description=_(
-            "The Quantification Limit (QL) is the lowest concentration of a "
-            "parameter that can be reliably and accurately measured using the "
-            "specified testing methodology, with acceptable levels of "
+            "The Limit of Quantification (LOQ) is the lowest concentration of "
+            "a parameter that can be reliably and accurately measured using "
+            "the specified testing methodology, with acceptable levels of "
             "precision and accuracy. Results below this value cannot be "
-            "quantified with confidence and are typically reported as '< QL,' "
-            "indicating that while the parameter may be present, its exact "
-            "concentration cannot be determined reliably."
+            "quantified with confidence and are typically reported as "
+            "'< LOQ', indicating that while the parameter may be present, its "
+            "exact concentration cannot be determined reliably."
         )
     )
 )
@@ -828,7 +828,7 @@ schema = BikaSchema.copy() + Schema((
     UpperDetectionLimit,
     DetectionLimitSelector,
     AllowManualDetectionLimit,
-    QuantificationLimit,
+    LimitOfQuantification,
     AttachmentRequired,
     Keyword,
     ManualEntryOfResults,
@@ -985,10 +985,10 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         return value
 
     @security.public
-    def getQuantificationLimit(self):
-        """Get the quantification limit
+    def getLimitOfQuantification(self):
+        """Returns the Limit of Quantification (LOQ)
         """
-        field = self.getField("QuantificationLimit")
+        field = self.getField("LimitOfQuantification")
         value = field.get(self)
         # cut off trailing zeros
         if "." in value:

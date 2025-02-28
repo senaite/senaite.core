@@ -296,7 +296,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             unc = None
         if self.isBelowLowerDetectionLimit():
             unc = None
-        if self.isBelowQuantificationLimit():
+        if self.isBelowLimitOfQuantification():
             unc = None
 
         field = self.getField("Uncertainty")
@@ -411,15 +411,15 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         return False
 
-    def isBelowQuantificationLimit(self):
-        """Returns whether the result is below the Quantification Limit
+    def isBelowLimitOfQuantification(self):
+        """Returns whether the result is below the Limit of Quantification
         """
         result = self.getResult()
         if not api.is_floatable(result):
             return False
 
-        ql = self.getQuantificationLimit()
-        return api.to_float(result) < api.to_float(ql, 0.0)
+        loq = self.getLimitOfQuantification()
+        return api.to_float(result) < api.to_float(loq, 0.0)
 
     # TODO: REMOVE:  nowhere used
     @deprecated("This Method will be removed in version 2.5")
@@ -602,18 +602,18 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                     key = dependency.getKeyword()
                     ldl = dependency.getLowerDetectionLimit()
                     udl = dependency.getUpperDetectionLimit()
-                    ql = dependency.getQuantificationLimit()
+                    loq = dependency.getLimitOfQuantification()
                     bdl = dependency.isBelowLowerDetectionLimit()
                     adl = dependency.isAboveUpperDetectionLimit()
-                    bql = dependency.isBelowQuantificationLimit()
+                    bql = dependency.isBelowLimitOfQuantification()
                     mapping[key] = result
                     mapping['%s.%s' % (key, 'RESULT')] = result
                     mapping['%s.%s' % (key, 'LDL')] = api.to_float(ldl, 0.0)
                     mapping['%s.%s' % (key, 'UDL')] = api.to_float(udl, 0.0)
-                    mapping['%s.%s' % (key, 'QL')] = api.to_float(ql, 0.0)
+                    mapping['%s.%s' % (key, 'LOQ')] = api.to_float(loq, 0.0)
                     mapping['%s.%s' % (key, 'BELOWLDL')] = int(bdl)
                     mapping['%s.%s' % (key, 'ABOVEUDL')] = int(adl)
-                    mapping['%s.%s' % (key, 'BELOWQL')] = int(bql)
+                    mapping['%s.%s' % (key, 'BELOWLOQ')] = int(bql)
                 except (TypeError, ValueError):
                     return False
 
@@ -971,13 +971,13 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             fdm = formatDecimalMark('< %s' % ldl, decimalmark)
             return cgi.escape(fdm) if html else fdm
 
-        # If below QL, return '< QL'
-        ql = self.getQuantificationLimit()
-        ql = api.to_float(ql, 0.0)
-        if result < ql:
-            ql = api.float_to_string(ql)
-            ql = formatDecimalMark(ql, decimalmark)
-            msg = t(_("Detected but < ${LOQ}", mapping={"LOQ": ql}))
+        # If below LOQ, return '< LOQ'
+        loq = self.getLimitOfQuantification()
+        loq = api.to_float(loq, 0.0)
+        if result < loq:
+            loq = api.float_to_string(loq)
+            loq = formatDecimalMark(loq, decimalmark)
+            msg = t(_("Detected but < ${LOQ}", mapping={"LOQ": loq}))
             return cgi.escape(msg) if html else msg
 
         # If above UDL, return '< UDL'

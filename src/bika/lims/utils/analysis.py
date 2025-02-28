@@ -260,14 +260,14 @@ def format_uncertainty(analysis, decimalmark=".", sciformat=1):
         # variability, meaning any numeric result lacks scientific validity.
         return ""
 
-    if analysis.isBelowQuantificationLimit():
-        # displaying uncertainty for results below the Quantification Limit
-        # (QL) does not make sense because the QL defines the lowest
+    if analysis.isBelowLimitOfQuantification():
+        # displaying uncertainty for results below the Limit of Quantification
+        # (LOW) does not make sense because the LOQ defines the lowest
         # concentration at which the analyte can be reliably and accurately
-        # measured. Results below the QL are subject to significant variability
-        # and may be indistinguishable from background noise or method
-        # imprecision. Therefore, any numeric result below the QL lacks the
-        # reliability needed for meaningful quantification.
+        # measured. Results below the LOQ are subject to significant
+        # variability and may be indistinguishable from background noise or
+        # method imprecision. Therefore, any numeric result below the LOQ lacks
+        # the reliability needed for meaningful quantification.
         return ""
 
     uncertainty = analysis.getUncertainty()

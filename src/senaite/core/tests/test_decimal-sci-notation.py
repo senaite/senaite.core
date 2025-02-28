@@ -319,9 +319,9 @@ class TestDecimalSciNotation(DataTestCase):
         ]
         s = self.service
 
-        # Set negative values for LDL and QL to test results below 0
+        # Set negative values for LLOD and LOQ to test results below 0
         s.setLowerDetectionLimit('-99999')
-        s.setQuantificationLimit('-99999')
+        s.setLimitOfQuantification('-99999')
 
         prevm = []
         an = None
