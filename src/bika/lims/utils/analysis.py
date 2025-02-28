@@ -242,32 +242,18 @@ def format_uncertainty(analysis, decimalmark=".", sciformat=1):
     except (ValueError, TypeError):
         return ""
 
-    if analysis.isAboveUpperDetectionLimit():
-        # displaying uncertainty for results above the Upper Detection Limit
-        # (UDL) does not make sense because the UDL defines the highest level
-        # at which the analyte can be reliably detected. Results above the UDL
-        # often exceed the instrument's capability or calibration range,
-        # leading to potential saturation or nonlinear responses. As such, any
-        # numeric result beyond the UDL lacks scientific validity and cannot be
-        # reported with confidence.
-        return ""
-
-    if analysis.isBelowLowerDetectionLimit():
-        # displaying uncertainty for results below the Lower Detection Limit
-        # (LDL) does not make sense because the LDL defines the lowest level at
-        # which the analyte can be reliably detected. Results below the DL are
-        # typically indistinguishable from background noise or method
-        # variability, meaning any numeric result lacks scientific validity.
-        return ""
-
-    if analysis.isBelowLimitOfQuantification():
-        # displaying uncertainty for results below the Limit of Quantification
-        # (LOQ) does not make sense because the LOQ defines the lowest
-        # concentration at which the analyte can be reliably and accurately
-        # measured. Results below the LOQ are subject to significant
-        # variability and may be indistinguishable from background noise or
-        # method imprecision. Therefore, any numeric result below the LOQ lacks
-        # the reliability needed for meaningful quantification.
+    if analysis.isOutsideTheQuantifiableRange():
+        # Displaying uncertainty for results outside the quantifiable range is
+        # not meaningful because the Lower Limit of Quantification (LLOQ) and
+        # Upper Limit of Quantification (ULOQ) define the range within which
+        # a parameter can be reliably and accurately measured. Results outside
+        # this range are prone to significant variability and may be
+        # indistinguishable from background noise or method imprecision.
+        # As such, any numeric value reported outside the quantifiable range
+        # lacks the reliability required for meaningful interpretation.
+        # It is important to note that the quantifiable range is always nested
+        # within the detection range, which is defined by the Lower Limit of
+        # Detection (LLOD) and Upper Limit of Detection (ULOD).
         return ""
 
     uncertainty = analysis.getUncertainty()

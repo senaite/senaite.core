@@ -506,6 +506,7 @@ class FormulaValidator:
             "LDL", "BELOWLDL",
             "UDL", "ABOVEUDL",
             "LOQ", "LLOQ", "BELOWLOQ", "BELOWLLOQ",
+            "ULOQ", "ABOVEULOQ",
         ]
         keysandwildcards = re.compile(r"\[([^\]]+)\]").findall(value)
         keysandwildcards = [k for k in keysandwildcards if "." in k]

@@ -181,15 +181,20 @@ LowerDetectionLimit = StringField(
     default="0.0",
     validators=("lower_limit_of_detection_validator",),
     widget=DecimalWidget(
-        label=_("Lower Detection Limit (LDL)"),
+        label=_(
+            u"label_analysis_lower_limit_of_detection_title",
+            default=u"Lower Limit of Detection (LLOD)"
+        ),
         description=_(
-            "The Lower Limit of Detection (LLOD) is the lowest concentration "
-            "of a parameter that can be reliably detected by a specified "
-            "testing methodology with a defined level of confidence. Results "
-            "below this threshold are typically reported as '< LLOD' (or 'Not "
-            "Detected'), indicating that the parameter's concentration, if "
-            "present, is below the detection capability of the method at a "
-            "reliable level."
+            u"label_analysis_lower_limit_of_detection_description",
+            default=u"The Lower Limit of Detection (LLOD) is the lowest "
+                    u"concentration of a parameter that can be reliably "
+                    u"detected by a specified testing methodology with a "
+                    u"defined level of confidence. Results below this "
+                    u"threshold are typically reported as '< LLOD' (or 'Not "
+                    u"Detected'), indicating that the parameter's "
+                    u"concentration, if present, is below the detection "
+                    u"capability of the method at a reliable level."
         )
     )
 )
@@ -200,16 +205,21 @@ LowerLimitOfQuantification = StringField(
     default="0.0",
     validators=("lower_limit_of_quantification_validator",),
     widget=DecimalWidget(
-        label=_("Lower Limit Of Quantification (LLOQ)"),
+        label=_(
+            u"label_analysis_lower_limit_of_quantification_title",
+            default=u"Lower Limit Of Quantification (LLOQ)"
+        ),
         description=_(
-            "The Lower Limit of Quantification (LLOQ) is the lowest "
-            "concentration of a parameter that can be reliably and accurately "
-            "measured using the specified testing methodology, with "
-            "acceptable levels of precision and accuracy. Results below this "
-            "value cannot be quantified with confidence and are typically "
-            "reported as '< LOQ' (or 'Detected but < LOQ'), indicating that "
-            "while the parameter may be present, its exact concentration "
-            "cannot be determined reliably."
+            u"label_analysis_lower_limit_of_quantification_description",
+            default=u"The Lower Limit of Quantification (LLOQ) is the lowest "
+                    u"concentration of a parameter that can be reliably and "
+                    u"accurately measured using the specified testing "
+                    u"methodology, with acceptable levels of precision and "
+                    u"accuracy. Results below this value cannot be quantified "
+                    u"with confidence and are typically reported as '< LOQ' "
+                    u"(or 'Detected but < LOQ'), indicating that while the "
+                    u"parameter may be present, its exact concentration "
+                    u"cannot be determined reliably."
         )
     )
 )
@@ -220,15 +230,19 @@ UpperLimitOfQuantification = StringField(
     default="1000000000.0",
     validators=("upper_limit_of_quantification_validator",),
     widget=DecimalWidget(
-        label=_("Upper Limit Of Quantification (ULOQ)"),
+        label=_(
+            u"label_analysis_upper_limit_of_quantification_title",
+            default=u"Upper Limit Of Quantification (ULOQ)"),
         description=_(
-            "The Upper Limit of Quantification (ULOQ) is the highest "
-            "concentration of a parameter that can be reliably and accurately "
-            "measured using the specified testing methodology, with "
-            "acceptable levels of precision and accuracy. Results above "
-            "this value cannot be quantified with confidence and are "
-            "typically reported as '> ULOQ', indicating that its exact "
-            "concentration cannot be determined reliably."
+            u"label_analysis_upper_limit_of_quantification_description",
+            default=u"The Upper Limit of Quantification (ULOQ) is the highest "
+                    u"concentration of a parameter that can be reliably and "
+                    u"accurately measured using the specified testing "
+                    u"methodology, with acceptable levels of precision and "
+                    u"accuracy. Results above this value cannot be quantified "
+                    u"with confidence and are typically reported as '> ULOQ', "
+                    u"indicating that its exact concentration cannot be "
+                    u"determined reliably."
         )
     )
 )
@@ -238,16 +252,20 @@ UpperDetectionLimit = StringField(
     schemata="Limits",
     default="1000000000.0",
     widget=DecimalWidget(
-        label=_("Upper Detection Limit (UDL)"),
+        label=_(
+            u"label_analysis_upper_limit_of_detection_title",
+            default=u"Upper Limit of Detection (ULOD)"),
         description=_(
-            "The Upper Limit of Detection (ULOD) is the highest concentration "
-            "of a parameter that can be reliably measured using a specified "
-            "testing methodology. Beyond this limit, results may no longer be "
-            "accurate or valid due to instrument saturation or methodological "
-            "limitations. Results exceeding this threshold are typically "
-            "reported as '> ULOD', indicating that the parameter's "
-            "concentration is above the reliable detection range of the "
-            "method."
+            u"label_analysis_upper_limit_of_detection_description",
+            default=u"The Upper Limit of Detection (ULOD) is the highest "
+                    u"concentration of a parameter that can be reliably "
+                    u"measured using a specified testing methodology. Beyond "
+                    u"this limit, results may no longer be accurate or valid "
+                    u"due to instrument saturation or methodological "
+                    u"limitations. Results exceeding this threshold are "
+                    u"typically reported as '> ULOD', indicating that the "
+                    u"parameter's concentration is above the reliable "
+                    u"detection range of the method."
         )
     )
 )
@@ -1021,7 +1039,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """Returns the Lower Limit of Quantification (LLOQ)
         """
         value = self.getField("LowerLimitOfQuantification").get(self)
-        return api.float_to_string(value)
+        return api.to_float(value)
 
     @security.public
     def setUpperLimitOfQuantification(self, value):
@@ -1037,7 +1055,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """Returns the Upper Limit of Quantification (ULOQ)
         """
         value = self.getField("UpperLimitOfQuantification").get(self)
-        return api.float_to_string(value)
+        return api.to_float(value)
 
     @security.public
     def isSelfVerificationEnabled(self):
