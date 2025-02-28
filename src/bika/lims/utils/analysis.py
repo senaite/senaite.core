@@ -262,7 +262,7 @@ def format_uncertainty(analysis, decimalmark=".", sciformat=1):
 
     if analysis.isBelowLimitOfQuantification():
         # displaying uncertainty for results below the Limit of Quantification
-        # (LOW) does not make sense because the LOQ defines the lowest
+        # (LOQ) does not make sense because the LOQ defines the lowest
         # concentration at which the analyte can be reliably and accurately
         # measured. Results below the LOQ are subject to significant
         # variability and may be indistinguishable from background noise or
