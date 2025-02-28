@@ -384,9 +384,14 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         llod = self.getLowerDetectionLimit()
         loq = AbstractBaseAnalysis.getLimitOfQuantification(self)
-        if api.to_float(loq, default=llod) < api.to_float(llod):
-            return llod
-        return loq
+
+        # comparison betwen LLOD and LOQ
+        llod = api.to_float(llod)
+        loq = api.to_float(loq, llod)
+        if loq < llod:
+            return api.float_to_string(llod)
+
+        return api.float_to_string(loq)
 
     @security.public
     def isBelowLowerDetectionLimit(self):
@@ -975,18 +980,25 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             fdm = formatDecimalMark('> %s' % hidemax, decimalmark)
             return fdm.replace('> ', '&gt; ', 1) if html else fdm
 
-        # If below LDL, return '< LDL'
+        # Limit of Quantification (LOQ)
+        loq = self.getLimitOfQuantification()
+        loq = api.to_float(loq, 0.0)
+
+        # If below LDL, return 'Not detected' or '< LDL'
         ldl = self.getLowerDetectionLimit()
         ldl = api.to_float(ldl, 0.0)
         if result < ldl:
-            # LDL must not be formatted according to precision, etc.
+            if ldl != loq:
+                # LOQ set, display "Not detected"
+                result = t(_("result_not_detected", default="Not detected"))
+                return cgi.escape(result) if html else result
+
+            # Display < LDL
             ldl = api.float_to_string(ldl)
-            fdm = formatDecimalMark('< %s' % ldl, decimalmark)
-            return cgi.escape(fdm) if html else fdm
+            result = formatDecimalMark('< %s' % ldl, decimalmark)
+            return cgi.escape(result) if html else result
 
         # If below LOQ, return '< LOQ'
-        loq = self.getLimitOfQuantification()
-        loq = api.to_float(loq, 0.0)
         if result < loq:
             loq = api.float_to_string(loq)
             loq = formatDecimalMark(loq, decimalmark)
