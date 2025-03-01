@@ -237,9 +237,8 @@ def format_uncertainty(analysis, decimalmark=".", sciformat=1):
                   By default 1
     :returns: the formatted uncertainty
     """
-    try:
-        result = float(analysis.getResult())
-    except (ValueError, TypeError):
+    if not api.is_floatable(analysis.getResult()):
+        # do not display uncertainty, result is not floatable
         return ""
 
     if analysis.isOutsideTheQuantifiableRange():
