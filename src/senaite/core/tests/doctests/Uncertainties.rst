@@ -329,6 +329,105 @@ Check uncertainty when the result is exactly on a detection limit:
     '0.001'
 
 
+Test uncertainty for results above/below quantifiable range
+...........................................................
+
+Setup uncertainty settings in the service:
+
+    >>> Cu.setAllowManualUncertainty(True)
+    >>> Cu.setUncertainties(uncertainties)
+    >>> Cu.setPrecisionFromUncertainty(True)
+    >>> Cu.setLowerDetectionLimit("10")
+    >>> Cu.setLowerLimitOfQuantification("15")
+    >>> Cu.setUpperLimitOfQuantification("25")
+    >>> Cu.setUpperDetectionLimit("30")
+
+Create the sample with the analysis:
+
+    >>> sample = new_sample([Cu])
+    >>> cu = get_analysis(sample, Cu)
+
+Test with a result below both LLOQ and LLOD:
+
+    >>> cu.setResult("9")
+    >>> cu.isOutsideTheQuantifiableRange()
+    True
+    >>> cu.isBelowLowerDetectionLimit()
+    True
+    >>> cu.isBelowLimitOfQuantification()
+    True
+    >>> cu.isAboveLimitOfQuantification()
+    False
+    >>> cu.isAboveUpperDetectionLimit()
+    False
+    >>> cu.getUncertainty() is None
+    True
+
+Test with a result that equals LLOD:
+
+    >>> cu.setResult("10")
+    >>> cu.isOutsideTheQuantifiableRange()
+    True
+    >>> cu.getUncertainty() is None
+    True
+
+Test with a result above LLOD, but below LLOQ:
+
+    >>> cu.setResult("12.5")
+    >>> cu.isOutsideTheQuantifiableRange()
+    True
+    >>> cu.getUncertainty() is None
+    True
+
+Test with a result that equals to LLOQ:
+
+    >>> cu.setResult("15")
+    >>> cu.isOutsideTheQuantifiableRange()
+    False
+    >>> cu.getUncertainty()
+    '0.4'
+
+Test with a result above LLOQ, but below ULOQ:
+
+    >>> cu.setResult("20")
+    >>> cu.isOutsideTheQuantifiableRange()
+    False
+    >>> cu.getUncertainty()
+    '0.4'
+
+Test with a result that equals ULOQ:
+
+    >>> cu.setResult("25")
+    >>> cu.isOutsideTheQuantifiableRange()
+    False
+    >>> cu.getUncertainty() is None
+    True
+
+Test with a result above ULOQ, but below ULOD:
+
+    >>> cu.setResult("27.5")
+    >>> cu.isOutsideTheQuantifiableRange()
+    True
+    >>> cu.getUncertainty() is None
+    True
+
+Test with a result that equals ULOD:
+
+    >>> cu.setResult("30")
+    >>> cu.isOutsideTheQuantifiableRange()
+    True
+    >>> cu.getUncertainty() is None
+    True
+
+Test with a result above both ULLOQ and ULOD:
+
+    >>> cu.setResult("35")
+    >>> cu.isOutsideTheQuantifiableRange()
+    True
+    >>> cu.getUncertainty() is None
+    True
+
+
 Test uncertainty formatting
 ...........................
 

@@ -274,7 +274,7 @@ def format_uncertainty(analysis, decimalmark=".", sciformat=1):
         precision = uncertainty[::-1].find(".")
 
     if precision == -1:
-        precision = analysis.getPrecision(result)
+        precision = analysis.getPrecision()
 
     # Scientific notation?
     # Get the default precision for scientific notation
@@ -290,7 +290,7 @@ def format_uncertainty(analysis, decimalmark=".", sciformat=1):
     return formatDecimalMark(formatted, decimalmark)
 
 
-def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
+def format_numeric_result(analysis, decimalmark='.', sciformat=1):
     """
     Returns the formatted number part of a results value.  This is
     responsible for deciding the precision, and notation of numeric
@@ -346,6 +346,7 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
     :result: should be a string to preserve the decimal precision.
     :returns: the formatted result as string
     """
+    result = analysis.getResult()
     try:
         result = float(result)
     except ValueError:
@@ -358,7 +359,7 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
     # Scientific notation?
     # Get the default precision for scientific notation
     threshold = analysis.getExponentialFormatPrecision()
-    precision = analysis.getPrecision(result)
+    precision = analysis.getPrecision()
     formatted = _format_decimal_or_sci(result, precision, threshold, sciformat)
     return formatDecimalMark(formatted, decimalmark)
 
