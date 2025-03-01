@@ -368,6 +368,14 @@ Test with a result that equals LLOD:
     >>> cu.setResult("10")
     >>> cu.isOutsideTheQuantifiableRange()
     True
+    >>> cu.isBelowLowerDetectionLimit()
+    False
+    >>> cu.isBelowLimitOfQuantification()
+    True
+    >>> cu.isAboveLimitOfQuantification()
+    False
+    >>> cu.isAboveUpperDetectionLimit()
+    False
     >>> cu.getUncertainty() is None
     True
 
@@ -384,6 +392,14 @@ Test with a result that equals to LLOQ:
     >>> cu.setResult("15")
     >>> cu.isOutsideTheQuantifiableRange()
     False
+    >>> cu.isBelowLowerDetectionLimit()
+    False
+    >>> cu.isBelowLimitOfQuantification()
+    False
+    >>> cu.isAboveLimitOfQuantification()
+    False
+    >>> cu.isAboveUpperDetectionLimit()
+    False
     >>> cu.getUncertainty()
     '0.4'
 
@@ -391,6 +407,14 @@ Test with a result above LLOQ, but below ULOQ:
 
     >>> cu.setResult("20")
     >>> cu.isOutsideTheQuantifiableRange()
+    False
+    >>> cu.isBelowLowerDetectionLimit()
+    False
+    >>> cu.isBelowLimitOfQuantification()
+    False
+    >>> cu.isAboveLimitOfQuantification()
+    False
+    >>> cu.isAboveUpperDetectionLimit()
     False
     >>> cu.getUncertainty()
     '0.4'
@@ -400,6 +424,14 @@ Test with a result that equals ULOQ:
     >>> cu.setResult("25")
     >>> cu.isOutsideTheQuantifiableRange()
     False
+    >>> cu.isBelowLowerDetectionLimit()
+    False
+    >>> cu.isBelowLimitOfQuantification()
+    False
+    >>> cu.isAboveLimitOfQuantification()
+    False
+    >>> cu.isAboveUpperDetectionLimit()
+    False
     >>> cu.getUncertainty() is None
     True
 
@@ -408,6 +440,14 @@ Test with a result above ULOQ, but below ULOD:
     >>> cu.setResult("27.5")
     >>> cu.isOutsideTheQuantifiableRange()
     True
+    >>> cu.isBelowLowerDetectionLimit()
+    False
+    >>> cu.isBelowLimitOfQuantification()
+    False
+    >>> cu.isAboveLimitOfQuantification()
+    True
+    >>> cu.isAboveUpperDetectionLimit()
+    False
     >>> cu.getUncertainty() is None
     True
 
@@ -416,6 +456,14 @@ Test with a result that equals ULOD:
     >>> cu.setResult("30")
     >>> cu.isOutsideTheQuantifiableRange()
     True
+    >>> cu.isBelowLowerDetectionLimit()
+    False
+    >>> cu.isBelowLimitOfQuantification()
+    False
+    >>> cu.isAboveLimitOfQuantification()
+    True
+    >>> cu.isAboveUpperDetectionLimit()
+    False
     >>> cu.getUncertainty() is None
     True
 
@@ -423,6 +471,14 @@ Test with a result above both ULLOQ and ULOD:
 
     >>> cu.setResult("35")
     >>> cu.isOutsideTheQuantifiableRange()
+    True
+    >>> cu.isBelowLowerDetectionLimit()
+    False
+    >>> cu.isBelowLimitOfQuantification()
+    False
+    >>> cu.isAboveLimitOfQuantification()
+    True
+    >>> cu.isAboveUpperDetectionLimit()
     True
     >>> cu.getUncertainty() is None
     True
