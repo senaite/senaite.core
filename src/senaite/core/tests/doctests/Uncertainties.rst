@@ -692,3 +692,88 @@ Change to a higher precision threshold:
     >>> au.setExponentialFormatPrecision(30)
     >>> format_uncertainty(au)
     '0.000000000000000000001'
+
+
+Test formatting with detection and quantification limits
+........................................................
+
+Displaying uncertainty for results outside the quantifiable range is not
+meaningful because the Lower Limit of Quantification (LLOQ) and Upper Limit of
+Quantification (ULOQ) define the range within which a parameter can be reliably
+and accurately measured. Results outside this range are prone to significant
+variability and may be indistinguishable from background noise or method
+imprecision. As such, any numeric value reported outside the quantifiable rang
+lacks the reliability required for meaningful interpretation.
+
+It is important to note that the quantifiable range is always nested within the
+detection range, which is defined by the Lower Limit of Detection (LLOD) and
+Upper Limit of Detection (ULOD).
+
+Create a new sample:
+
+    >>> sample = new_sample([Cu])
+    >>> cu = get_analysis(sample, Cu)
+    >>> cu.setAllowManualUncertainty(True)
+    >>> cu.setPrecisionFromUncertainty(False)
+
+Manually set the limit of quantification, limit of detection, and uncertainty:
+
+    >>> cu.setUncertainty("0.00000123")
+    >>> cu.setLowerDetectionLimit("10")
+    >>> cu.setLowerLimitOfQuantification("15")
+    >>> cu.setUpperLimitOfQuantification("25")
+    >>> cu.setUpperDetectionLimit("30")
+
+Set a result below the Lower Limit of Detection (LLOD):
+
+    >>> cu.setResult(5)
+    >>> format_uncertainty(cu)
+    ''
+
+Set a result that equals to the LLOD:
+
+    >>> cu.setResult(10)
+    >>> format_uncertainty(cu)
+    ''
+
+Set a result below the Lower Limit of Quantification (LLOQ) but above LLOD:
+
+    >>> cu.setResult(12)
+    >>> format_uncertainty(cu)
+    ''
+
+Set a result that equals to the LLOQ:
+
+    >>> cu.setResult(15)
+    >>> format_uncertainty(cu)
+    '0.00000123'
+
+Set a result within the quantifiable range:
+
+    >>> cu.setResult(20)
+    >>> format_uncertainty(cu)
+    '0.00000123'
+
+Set a result that equals to the ULOQ:
+
+    >>> cu.setResult(25)
+    >>> format_uncertainty(cu)
+    '0.00000123'
+
+Set a result above ULOQ and below the Upper Limit of Detection (ULOD):
+
+    >>> cu.setResult(28)
+    >>> format_uncertainty(cu)
+    ''
+
+Set a result that equals to ULOD:
+
+    >>> cu.setResult(30)
+    >>> format_uncertainty(cu)
+    ''
+
+Set a result above ULOD:
+
+    >>> cu.setResult(35)
+    >>> format_uncertainty(cu)
+    ''
