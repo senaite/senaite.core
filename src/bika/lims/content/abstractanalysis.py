@@ -419,9 +419,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         Detection (LLOD), the function returns the LLOD instead. This ensures
         the result respects the detection threshold
         """
-        llod = api.to_float(self.getLowerDetectionLimit())
-        lloq = AbstractBaseAnalysis.getLowerLimitOfQuantification(self)
-        return llod if lloq < llod else lloq
+        llod = self.getLowerDetectionLimit()
+        lloq = self.getField("LowerLimitOfQuantification").get(self)
+        return llod if api.to_float(lloq) < api.to_float(llod) else lloq
 
     @security.public
     def getUpperLimitOfQuantification(self):
@@ -430,9 +430,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         Detection (ULOD), the function returns the ULOD instead. This ensures
         the result respects the detection threshold
         """
-        ulod = api.to_float(self.getUpperDetectionLimit())
-        uloq = AbstractBaseAnalysis.getUpperLimitOfQuantification(self)
-        return ulod if uloq > ulod else uloq
+        ulod = self.getUpperDetectionLimit()
+        uloq = self.getField("UpperLimitOfQuantification").get(self)
+        return ulod if api.to_float(uloq) > api.to_float(ulod) else uloq
 
     @security.public
     def isBelowLimitOfQuantification(self):
@@ -957,7 +957,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # Lower Limits of Detection and Quantification (LLOD and LLOQ)
         llod = api.to_float(self.getLowerDetectionLimit())
-        lloq = self.getLowerLimitOfQuantification()
+        lloq = api.to_float(self.getLowerLimitOfQuantification())
         if result < llod:
             if llod != lloq:
                 # Display "Not detected"
@@ -977,7 +977,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return cgi.escape(result) if html else result
 
         # Upper Limit of Quantification (ULOQ)
-        uloq = self.getUpperLimitOfQuantification()
+        uloq = api.to_float(self.getUpperLimitOfQuantification())
         if result > uloq:
             uloq = api.float_to_string(uloq)
             result = formatDecimalMark('> %s' % uloq, decimalmark)

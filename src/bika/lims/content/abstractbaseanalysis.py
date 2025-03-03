@@ -1035,13 +1035,6 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         self.getField("LowerLimitOfQuantification").set(self, value)
 
     @security.public
-    def getLowerLimitOfQuantification(self):
-        """Returns the Lower Limit of Quantification (LLOQ)
-        """
-        value = self.getField("LowerLimitOfQuantification").get(self)
-        return api.to_float(value)
-
-    @security.public
     def setUpperLimitOfQuantification(self, value):
         """Sets the Upper Limit of Quantification (ULOW) and ensures its value
         is stored as a string without exponential notation and with whole
@@ -1049,13 +1042,6 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """
         value = api.float_to_string(value)
         self.getField("UpperLimitOfQuantification").set(self, value)
-
-    @security.public
-    def getUpperLimitOfQuantification(self):
-        """Returns the Upper Limit of Quantification (ULOQ)
-        """
-        value = self.getField("UpperLimitOfQuantification").get(self)
-        return api.to_float(value)
 
     @security.public
     def isSelfVerificationEnabled(self):

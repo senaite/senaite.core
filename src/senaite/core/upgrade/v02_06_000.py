@@ -2771,14 +2771,14 @@ def init_loq(tool):
         ulod = obj.getField("UpperDetectionLimit").getRaw(obj)
 
         # convert values to float
-        llod = api.to_float(llod)
-        lloq = api.to_float(lloq)
-        uloq = api.to_float(uloq)
-        ulod = api.to_float(ulod)
+        fllod = api.to_float(llod)
+        flloq = api.to_float(lloq)
+        fuloq = api.to_float(uloq)
+        fulod = api.to_float(ulod)
 
         # ·······|-------|=======|-------|·······
         #       LLOD    LLOQ    ULOQ    ULOD
-        if llod <= lloq < uloq <= ulod:
+        if fllod <= flloq < fuloq <= fulod:
             obj._p_deactivate()
             continue
 
