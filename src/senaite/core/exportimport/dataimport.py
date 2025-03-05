@@ -22,6 +22,7 @@ import json
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
+from bika.lims.api import safe_unicode as u
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import ISetupDataSetList
 from pkg_resources import resource_listdir
@@ -132,6 +133,7 @@ class ImportView(BrowserView):
             if not len(interfaces) > 0:
                 # skip instruments w/o import interface
                 continue
-            items.append((instrument.UID(), instrument.Title()))
+            items.append((instrument.UID(), u(instrument.Title())))
+
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
