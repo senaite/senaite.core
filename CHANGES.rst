@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2685 Fix missing default instrument import template
+- #2684 Fix Traceback for unicode titled instruments
+- #2683 Fix temporary batch title
 - #2681 Add function to make the assignment of custom catalogs easier
 - #2676 Allow to set the uncertainty to 0
 - #2678 Add validate function in API
