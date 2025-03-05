@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2682 Added Limit of Quantification (LOQ) for services and analyses
 - #2681 Add function to make the assignment of custom catalogs easier
 - #2676 Allow to set the uncertainty to 0
 - #2678 Add validate function in API
