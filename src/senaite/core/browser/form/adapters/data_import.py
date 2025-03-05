@@ -205,8 +205,7 @@ class EditForm(EditFormAdapterBase):
         """
         import senaite.core.exportimport.instruments
         path = os.path.dirname(senaite.core.exportimport.instruments.__file__)
-        template = "instrument.pt"
-        return os.path.join(path, template)
+        return os.path.join(path, "templates", "default.pt")
 
     def get_default_import_results_template(self):
         """Returns the path of the default import template
