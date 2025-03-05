@@ -163,6 +163,8 @@ class Batch(ATFolder, ClientAwareMixin):
     def Title(self):
         """Returns the Title or ID
         """
+        if self.isTemporary():
+            return ""
         title = self.getField("title").get(self)
         return title or self.getId()
 
