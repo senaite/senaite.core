@@ -66,14 +66,10 @@ window.bika.lims.controllers =  {
     // Analysis Requests
     ".portaltype-analysisrequest":
         ['AnalysisRequestView'],
-     // Analysis request, but not in ARAdd view
-     ".portaltype-analysisrequest:not(.template-ar_add)":
-        ['RejectionKickOff',],
 
     ".portaltype-analysisrequest.template-base_view":
         ['WorksheetManageResultsView',
-         'AnalysisRequestViewView',
-         'RejectionKickOff',],
+         'AnalysisRequestViewView',],
 
     ".portaltype-analysisrequest.template-analyses":
         ['AnalysisRequestAnalysesView'],
