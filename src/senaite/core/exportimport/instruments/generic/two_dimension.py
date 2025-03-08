@@ -18,7 +18,6 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import csv
 import json
 import re
 import traceback
@@ -151,15 +150,6 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
         self._end_header = False
         self._keywords = []
         self._numline = 0
-
-    def splitline(self, line):
-        """Parse a single CSV line
-        """
-        # use CSV library to correctly split quoted values
-        fb = StringIO(line)
-        reader = csv.reader(fb, delimiter=",")
-        parsed_line = next(reader)
-        return [token.strip() for token in parsed_line]
 
     def _parseline(self, line):
         if self._end_header:
