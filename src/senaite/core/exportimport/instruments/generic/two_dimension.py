@@ -18,6 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import csv
 import json
 import re
 import traceback
@@ -33,6 +34,7 @@ from senaite.core.exportimport.instruments.utils import \
     get_instrument_import_ar_allowed_states
 from senaite.core.exportimport.instruments.utils import \
     get_instrument_import_override
+from six.moves import StringIO
 
 title = "2-Dimensional-CSV"
 
@@ -153,6 +155,15 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
         self._quantitationresultsheader = []
         self._numline = 0
 
+    def splitline(self, line):
+        """Parse a single CSV line
+        """
+        # use CSV library to correctly split quoted values
+        fb = StringIO(line)
+        reader = csv.reader(fb, delimiter=",")
+        parsed_line = next(reader)
+        return [token.strip() for token in parsed_line]
+
     def _parseline(self, line):
         if self._end_header:
             return self.parse_resultsline(line)
@@ -168,8 +179,8 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
             # Header already processed
             return 0
 
-        splitted = [token.strip() for token in line.split(',')]
-        if splitted[-1] == 'end':
+        splitted = self.splitline(line)
+        if splitted[-1] == "end":
             self._keywords = splitted[1:-1]  # exclude the word end
             self._end_header = True
         return 0
@@ -177,9 +188,9 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
     def parse_resultsline(self, line):
         """ Parses result lines
         """
-        splitted = [token.strip() for token in line.split(',')]
+        splitted = self.splitline(line)
 
-        if splitted[0] == 'end':
+        if splitted[0] == "end":
             return 0
 
         blank_line = [i for i in splitted if i != '']
