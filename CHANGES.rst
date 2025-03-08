@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2688 Fix JS events from legacy controllers are bound multiple times
 - #2687 Remove legacy and obsolete rejection.js
 - #2685 Fix missing default instrument import template
 - #2684 Fix Traceback for unicode titled instruments
