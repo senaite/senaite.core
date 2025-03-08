@@ -190,7 +190,7 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
         if splitted[0] == "end":
             return 0
 
-        blank_line = [i for i in splitted if i != '']
+        blank_line = [i for i in splitted if i != ""]
         if len(blank_line) == 0:
             return 0
 
@@ -278,7 +278,6 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
                           "column_name": column_name},
                  numline=self._numline, line=line)
         return
-
 
 
 class TwoDimensionImporter(AnalysisResultsImporter):

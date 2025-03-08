@@ -19,8 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 import codecs
+import csv
 
 from senaite.core.exportimport.instruments.logger import Logger
+from six.moves import StringIO
 from zope.deprecation import deprecate
 
 
@@ -232,6 +234,7 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
             f = infile
         except IOError:
             f = infile.file
+
         for line in f.readlines():
             self._numline += 1
             if jump == -1:
@@ -261,8 +264,16 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
         return True
 
     def splitLine(self, line):
-        sline = line.split(',')
-        return [token.strip() for token in sline]
+        return self.splitline(line)
+
+    def splitline(self, line):
+        """Parse a single CSV line
+        """
+        # use CSV library to correctly split quoted values
+        fb = StringIO(line)
+        reader = csv.reader(fb, delimiter=",")
+        parsed_line = next(reader)
+        return [token.strip() for token in parsed_line]
 
     def _parseline(self, line):
         """ Parses a line from the input CSV file and populates rawresults
