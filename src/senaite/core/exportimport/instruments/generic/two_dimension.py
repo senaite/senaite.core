@@ -143,16 +143,13 @@ def find_kw(ar_or_sample, kw):
 
 
 class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
-
-    QUANTITATIONRESULTS_NUMERICHEADERS = ('Title8', 'Title9', 'Title31',
-                                          'Title32', 'Title41', 'Title42',
-                                          'Title43',)
+    """Generic CSV parser
+    """
 
     def __init__(self, csv):
         InstrumentCSVResultsFileParser.__init__(self, csv)
         self._end_header = False
         self._keywords = []
-        self._quantitationresultsheader = []
         self._numline = 0
 
     def splitline(self, line):
