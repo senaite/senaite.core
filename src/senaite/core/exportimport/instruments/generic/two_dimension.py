@@ -19,8 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
-import re
 import traceback
+from collections import defaultdict
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
@@ -33,7 +33,6 @@ from senaite.core.exportimport.instruments.utils import \
     get_instrument_import_ar_allowed_states
 from senaite.core.exportimport.instruments.utils import \
     get_instrument_import_override
-from six.moves import StringIO
 
 title = "2-Dimensional-CSV"
 
@@ -42,240 +41,211 @@ def Import(context, request):
     """Read Dimensional-CSV analysis results
     """
     form = request.form
-    # TODO form['file'] sometimes returns a list
-    infile = form['instrument_results_file'][0] if \
-        isinstance(form['instrument_results_file'], list) else \
-        form['instrument_results_file']
-    artoapply = form['artoapply']
-    override = form['results_override']
+    infile = form["instrument_results_file"]
+    if isinstance(infile, list):
+        infile = infile[0]
+    artoapply = form["artoapply"]
+    results_override = form["results_override"]
+    instrument_uid = form.get("instrument", None)
 
-    instrument = form.get('instrument', None)
     errors = []
     logs = []
 
-    # Load the most suitable parser according to file extension/options/etc...
-    parser = None
-    if not hasattr(infile, 'filename'):
+    if not hasattr(infile, "filename"):
         errors.append(_("No file selected"))
     parser = TwoDimensionCSVParser(infile)
-    status = get_instrument_import_ar_allowed_states(artoapply)
-    over = get_instrument_import_override(override)
-    importer = TwoDimensionImporter(parser=parser,
-                                    context=context,
-                                    allowed_ar_states=status,
-                                    allowed_analysis_states=None,
-                                    override=over,
-                                    instrument_uid=instrument,
-                                    form=form)
-    tbex = ''
+    allowed_sample_states = get_instrument_import_ar_allowed_states(artoapply)
+    override = get_instrument_import_override(results_override)
+    importer = AnalysisResultsImporter(
+        parser=parser, context=context,
+        override=override, allowed_sample_states=allowed_sample_states,
+        allowed_analysis_states=None, instrument_uid=instrument_uid)
+
+    tbex = ""
+
     try:
         importer.process()
     except Exception:
         tbex = traceback.format_exc()
+
     errors = importer.errors
     logs = importer.logs
     warns = importer.warns
+
     if tbex:
         errors.append(tbex)
 
-    results = {'errors': errors, 'log': logs, 'warns': warns}
-
+    results = {"errors": errors, "log": logs, "warns": warns}
     return json.dumps(results)
 
 
-def is_keyword(kw):
-    bsc = api.get_tool('senaite_catalog_setup')
-    return len(bsc(getKeyword=kw))
-
-
-def find_analyses(ar_or_sample):
-    """ This function is used to find keywords that are not on the analysis
-        but keywords that are on the interim fields.
-
-        This function and is is_keyword function should probably be in
-        resultsimport.py or somewhere central where it can be used by other
-        instrument interfaces.
-    """
-    bc = api.get_tool(SAMPLE_CATALOG)
-    ar = bc(portal_type='AnalysisRequest', id=ar_or_sample)
-    if len(ar) == 0:
-        ar = bc(portal_type='AnalysisRequest', getClientSampleID=ar_or_sample)
-    if len(ar) == 1:
-        obj = ar[0].getObject()
-        analyses = obj.getAnalyses(full_objects=True)
-        return analyses
-    return []
-
-
-def get_interims_keywords(analysis):
-    interims = api.safe_getattr(analysis, 'getInterimFields')
-    return map(lambda item: item['keyword'], interims)
-
-
-def find_analysis_interims(ar_or_sample):
-    """ This function is used to find keywords that are not on the analysis
-        but keywords that are on the interim fields.
-
-        This function and is is_keyword function should probably be in
-        resultsimport.py or somewhere central where it can be used by other
-        instrument interfaces.
-    """
-    interim_fields = list()
-    for analysis in find_analyses(ar_or_sample):
-        keywords = get_interims_keywords(analysis)
-        interim_fields.extend(keywords)
-    return list(set(interim_fields))
-
-
-def find_kw(ar_or_sample, kw):
-    """ This function is used to find keywords that are not on the analysis
-        but keywords that are on the interim fields.
-
-        This function and is is_keyword function should probably be in
-        resultsimport.py or somewhere central where it can be used by other
-        instrument interfaces.
-    """
-    for analysis in find_analyses(ar_or_sample):
-        if kw in get_interims_keywords(analysis):
-            return analysis.getKeyword()
-    return None
-
-
 class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
-    """Generic CSV parser
+    """Generic 2-Dimensional CSV parser
     """
-
     def __init__(self, csv):
-        InstrumentCSVResultsFileParser.__init__(self, csv)
-        self._end_header = False
+        super(TwoDimensionCSVParser, self).__init__(csv)
         self._keywords = []
-        self._numline = 0
 
     def _parseline(self, line):
-        if self._end_header:
-            return self.parse_resultsline(line)
-        return self.parse_headerline(line)
+        """Parse a line from the input CSV
+
+        :param line: CSV text line
+        :returns: number of lines to be jumped or -1 if an error occured
+        """
+        if self._numline == 1:
+            return self.parse_headerline(line)
+        return self.parse_resultsline(line)
+
+    def splitline(self, line):
+        """Split the line into a list of tokens
+
+        Additionally, this method removes all obsolete "end" markers
+
+        :param line: CSV text line
+        :returns: List of tokens
+        """
+        splitted = super(TwoDimensionCSVParser, self).splitline(line)
+        # BBB: wipe off any "end" markers from the end
+        if splitted and splitted[-1] == "end":
+            return splitted[0:-1]
+        # BBB: Treat lines starting with "end" as empty
+        elif splitted and splitted[0] == "end":
+            return []
+        return splitted
 
     def parse_headerline(self, line):
-        """ Parses header lines
-
-            Keywords example:
-            Keyword1, Keyword2, Keyword3, ..., end
+        """Parses header lines
         """
-        if self._end_header is True:
-            # Header already processed
-            return 0
-
         splitted = self.splitline(line)
-        if splitted[-1] == "end":
-            self._keywords = splitted[1:-1]  # exclude the word end
-            self._end_header = True
+
+        # always treat the first line as the header line
+        if self._numline == 1:
+            # keywords begin by convention after the ID column
+            self._keywords = splitted[1:]
         return 0
 
     def parse_resultsline(self, line):
-        """ Parses result lines
+        """Parse a single result line from the CSV
+
+        Example:
+        'S-001,,"0,95","<0,80","<0,40","<0,40", ...'
+
+        NOTE: We might get analysis and interim results mixed!
+
+        Furthermore, interim results might appear *before* an analysis result.
+
+        Therefore, this parser must unfortunately do more than simple parsing.
+        It must find an wakup the sample of the line, check the contained
+        analyses and group interims to their analysis keyword.
+
+        The final structure shoud be a dictionary that maps the analysis
+        keyword to a results dictionary that contains both, analysis and
+        interim results:
+
+        {
+            'Ca': {
+                'DefaultResult': 'resultValue',
+                'resultValue':   '0.95',
+                'interim1':      '<0.8',
+                'interim2':      '<0.4',
+                ...
+            },
+        }
+
+        The importer will then set the analysis result, interim results and any
+        additional key that matches a field, e.g. "Remarks" to the analysis
+        object.
+
+        However, setting any other value besides the analysis or interim
+        results might be ambiguous, e.g. setting a Remarks in the CSV applies
+        to all analyses.
         """
         splitted = self.splitline(line)
 
-        if splitted[0] == "end":
-            return 0
-
+        # Ignore empty lines
         blank_line = [i for i in splitted if i != ""]
         if len(blank_line) == 0:
             return 0
 
-        quantitation = {}
-        list_of_interim_results = []
-        # list_of_interim_results is a list that will have interim fields on
-        # the current line so that we don't have to call self._addRawResult
-        # for the same interim fields, ultimately we want a dict that looks
-        # like quantitation = {'AR': 'AP-0001-R01', 'interim1': 83.12, 'interim2': 22.3}
-        # self._addRawResult(quantitation['AR'],
-        #                    values={kw: quantitation},
-        #                    override=False)
-        # We use will one of the interims to find the analysis in this case new_kw which becomes kw
-        # kw is the analysis keyword which sometimes we have to find using the interim field
-        # because we have the result of the interim field and not of the analysis
+        # sample identifier should be always on first position
+        sid = splitted[0]
 
-        found = False  # This is just a flag used to check values in list_of_interim_results
-        clean_splitted = splitted[1:-1]  # First value on the line is AR
-        for i in range(len(clean_splitted)):
-            token = clean_splitted[i]
-            if i < len(self._keywords):
-                quantitation['AR'] = splitted[0]
-                # quantitation['AN'] = self._keywords[i]
-                quantitation['DefaultResult'] = 'resultValue'
-                quantitation['resultValue'] = token
-            elif token:
-                self.err("Orphan value in column ${index} (${token})",
-                         mapping={"index": str(i + 1),
-                                  "token": token},
+        sample = self.query_sample(sid)
+        if not sample:
+            self.err("No sample could be found for '${sid}'",
+                     mapping={"sid": sid},
+                     numline=self._numline, line=line)
+            return 0
+
+        # fetch all analyses of this sample
+        analyses = sample.getAnalyses()
+        # get interim mapping for the analyses
+        interim_mapping = self.get_interim_mapping(analyses)
+        # extract the analysis keywords
+        analysis_keywords = map(lambda x: x.getKeyword, analyses)
+        # dictionary with the known analysis keywords that hold the results
+        values = defaultdict(dict)
+        map(lambda x: values[x], analysis_keywords)
+        # combine the splitted line with the header columns
+        pairs = zip(self._keywords, splitted[1:])
+
+        for num, pair in enumerate(pairs):
+            keyword, value = pair
+            # handle additional columns that are not assigned to a keyword
+            if num >= len(self._keywords):
+                self.err("Orphan value in column ${index} (${value})",
+                         mapping={"index": str(num + 1),
+                                  "value": value},
                          numline=self._numline, line=line)
                 continue
 
-            result = quantitation[quantitation['DefaultResult']]
-            column_name = quantitation['DefaultResult']
-            result = self.get_result(column_name, result, line)
-            quantitation[quantitation['DefaultResult']] = result
+            if keyword in analysis_keywords:
+                # we found an analysis keyword result
+                values[keyword]["DefaultResult"] = "resultValue"
+                values[keyword]["resultValue"] = value
+            elif keyword in interim_mapping.keys():
+                # keyword is an analysis interim
+                for k in interim_mapping[keyword]:
+                    values[k][keyword] = value
+            else:
+                # Keyword belongs neither to an analysis nor to an interim
+                self.err("Keyword '${keyword}' with value '${value}' "
+                         "(column ${index}) belongs neither to an analysis "
+                         "nor to an interim",
+                         mapping={"index": str(num + 1),
+                                  "keyword": keyword,
+                                  "value": value},
+                         numline=self._numline, line=line)
 
-            # remove all non alphanumeric words, except `-+.`
-            kw = re.sub(r"[^a-zA-Z0-9_\-\+\.]", "", self._keywords[i])
-            if not is_keyword(kw):
-                new_kw = find_kw(quantitation['AR'], kw)
-                if new_kw:
-                    quantitation[kw] = quantitation['resultValue']
-                    del quantitation['resultValue']
-                    for interim_res in list_of_interim_results:
-                        if kw in interim_res:
-                            # Interim field already in quantitation dict
-                            found = True
-                            break
-                    if found:
-                        continue
-                    interims = find_analysis_interims(quantitation['AR'])
-                    # pairing headers(keywords) and their values(results) per line
-                    keyword_value_dict = dict(zip(self._keywords, clean_splitted))
-                    for interim in interims:
-                        if interim in keyword_value_dict:
-                            quantitation[interim] = keyword_value_dict[interim]
-                            list_of_interim_results.append(quantitation)
-                    kw = new_kw
-                    kw = re.sub(r"\W", "", kw)
+        self._addRawResult(sid, values=values, override=False)
 
-            self._addRawResult(quantitation['AR'],
-                               values={kw: quantitation},
-                               override=False)
-            quantitation = {}
-            found = False
+    def query_sample(self, identifier):
+        """Query a sample by identifier
 
-    def get_result(self, column_name, result, line):
-        result = str(result)
+        :param identifier: Sample Identifier
+        :returns: Sample object or None
+        """
+        catalog = api.get_tool(SAMPLE_CATALOG)
+        id_query = {"getId": identifier}
+        csid_query = {"getClientSampleID": identifier}
+        results = catalog(id_query) or catalog(csid_query)
+        if len(results) != 1:
+            return None
+        return api.get_object(results[0])
 
-        # allow empty values
-        if len(result) == 0:
-            return
+    def get_interim_keywords_for(self, analysis):
+        """Return all interim keywords for the given analysis
+        """
+        interims = analysis.getInterimFields()
+        return list(map(lambda x: x.get("keyword"), interims))
 
-        # XXX: Probably this does not belong to here either
-        if result.startswith("--") or result == "ND":
-            return 0.0
-
-        if api.is_floatable(result):
-            result = api.to_float(result)
-            return result > 0.0 and result or 0.0
-
-        self.err("No valid number ${result} in column (${column_name})",
-                 mapping={"result": result,
-                          "column_name": column_name},
-                 numline=self._numline, line=line)
-        return
-
-
-class TwoDimensionImporter(AnalysisResultsImporter):
-
-    def __init__(self, parser, context, override,
-                 allowed_ar_states=None, allowed_analysis_states=None,
-                 instrument_uid='', form=None):
-        AnalysisResultsImporter.__init__(self, parser, context,
-                                         override, allowed_ar_states,
-                                         allowed_analysis_states,
-                                         instrument_uid)
+    def get_interim_mapping(self, analyses):
+        """Create a mapping of interim -> analysis keywords
+        """
+        mapping = defaultdict(list)
+        for analysis in analyses:
+            analysis = api.get_object(analysis)
+            keyword = analysis.getKeyword()
+            for interim in self.get_interim_keywords_for(analysis):
+                mapping[interim].append(keyword)
+        return mapping

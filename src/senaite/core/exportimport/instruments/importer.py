@@ -661,7 +661,7 @@ class AnalysisResultsImporter(Logger):
                        "selected override option",
                        mapping={
                            "sid": sid,
-                           "result": result,
+                           "result": analysis.getResult(),
                            "keyword": keyword,
                        }))
             return False

@@ -263,9 +263,6 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
         )
         return True
 
-    def splitLine(self, line):
-        return self.splitline(line)
-
     def splitline(self, line):
         """Parse a single CSV line
         """
@@ -274,6 +271,11 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
         reader = csv.reader(fb, delimiter=",")
         parsed_line = next(reader)
         return [token.strip() for token in parsed_line]
+
+    def splitLine(self, line):
+        """Obsolete: use self.splitline instead
+        """
+        return self.splitline(line)
 
     def _parseline(self, line):
         """ Parses a line from the input CSV file and populates rawresults
