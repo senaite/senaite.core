@@ -135,7 +135,7 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
         Furthermore, interim results might appear *before* an analysis result.
 
         Therefore, this parser must unfortunately do more than simple parsing.
-        It must find an wakup the sample of the line, check the contained
+        It must find and wakup the sample of the line, check the contained
         analyses and group interims to their analysis keyword.
 
         The final structure shoud be a dictionary that maps the analysis
