@@ -21,6 +21,7 @@
 import codecs
 import csv
 
+from bika.lims import deprecated
 from senaite.core.exportimport.instruments.logger import Logger
 from six.moves import StringIO
 from zope.deprecation import deprecate
@@ -272,6 +273,8 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
         parsed_line = next(reader)
         return [token.strip() for token in parsed_line]
 
+    @deprecated(comment="Please use splitline instead",
+                replacement="splitline")
     def splitLine(self, line):
         """Obsolete: use self.splitline instead
         """

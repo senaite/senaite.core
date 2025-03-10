@@ -256,32 +256,26 @@ class AnalysisResultsImporter(Logger):
         :returns: Converted analysis result
         """
 
-        result_options = analysis.getResultOptions()
-        result_type = analysis.getResultType()
-
-        if result_type == "numeric":
-            if not api.is_floatable(result):
-                return ""
+        if api.is_floatable(result):
             # ensure we have always a string result with a decimal point
-            result = str(result).replace(",", ".")
+            result = str(result)
             if "." not in result:
                 result = "{}.0".format(result)
 
+        result_options = analysis.getResultOptions()
+        result_type = analysis.getResultType()
+
         if result_options:
-            # Handle result options as integer values
+            # NOTE: Result options can be set as integer or float values!
             result_values = map(
                 lambda r: r.get("ResultValue"), result_options)
-
-            # NOTE: The method `setResult` converts numeric result to a float.
-            # However, result options can be set as integer or float values.
-            # Even if we import the result from as an integer, e.g. `1`, the
-            # result is set as `1.0`.
-            if result_type == "select":
-                # check if an integer result value is set in the result options
-                if "{:.0f}".format(result) in result_values:
-                    # convert the result to an integer value to avoid further
-                    # processing in `setResult`
-                    return int(result)
+            if result_type == "select" and api.is_floatable(result):
+                # check if the integer result matches a result option
+                selection = str(int(float(result)))
+                if selection in result_values:
+                    # XXX: Results like e.g. "1.1" or 1.2 match result options
+                    # with the value set to "1" as well!
+                    return selection
 
         return result
 

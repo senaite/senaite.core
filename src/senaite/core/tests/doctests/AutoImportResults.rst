@@ -123,11 +123,11 @@ Run the import view again:
     'to_be_verified'
 
     >>> sample.Au.getResult()
-    '1'
+    '1.0'
     >>> sample.Cu.getResult()
-    '2'
+    '2.0'
     >>> sample.Fe.getResult()
-    '3'
+    '3.0'
 
 Autologs should be created:
 
@@ -138,9 +138,9 @@ Autologs should be created:
     2... [INFO] Allowed sample states: sample_received, to_be_verified
     2... [INFO] Allowed analysis states: unassigned, assigned, to_be_verified
     2... [INFO] Don't override analysis results
-    2... [INFO] W-0001 result for 'Au': '1'
-    2... [INFO] W-0001 result for 'Cu': '2'
-    2... [INFO] W-0001 result for 'Fe': '3'
+    2... [INFO] W-0001 result for 'Au': '1.0'
+    2... [INFO] W-0001 result for 'Cu': '2.0'
+    2... [INFO] W-0001 result for 'Fe': '3.0'
     2... [INFO] W-0001: Analysis Au, Cu, Fe imported sucessfully
     2... [INFO] Import finished successfully: 1 Samples and 3 results updated
 
@@ -181,7 +181,7 @@ Run the import view again:
     >>> log = view()
 
     >>> sample2.Au.getResult()
-    '10'
+    '10.0'
 
 Check if the interims were imported correctly:
 
@@ -201,7 +201,7 @@ Autologs should be created:
     2... [INFO] Don't override analysis results
     2... [INFO] W-0002 result for 'Au:interim_1': '100'
     2... [INFO] W-0002 result for 'Au:interim_2': '1000'
-    2... [INFO] W-0002 result for 'Au': '10'
+    2... [INFO] W-0002 result for 'Au': '10.0'
     2... [INFO] W-0002: Analysis Au imported sucessfully
     2... [INFO] Import finished successfully: 1 Samples and 1 results updated
 
@@ -259,3 +259,63 @@ Autologs should be created:
     2... [INFO] W-0003 result for 'Fe': '>2'
     2... [INFO] W-0003: Analysis Au, Cu, Fe imported sucessfully
     2... [INFO] Import finished successfully: 1 Samples and 3 results updated
+
+
+Test import of result options
+.............................
+
+Let's add some results options to service `Fe`:
+
+    >>> results_options = [
+    ...     {"ResultValue": "1", "ResultText": "Number 1"},
+    ...     {"ResultValue": "2", "ResultText": "Number 2"},
+    ...     {"ResultValue": "3", "ResultText": "Number 3"}]
+
+    >>> Cu.setResultOptions(results_options)
+    >>> Cu.setResultType("select")
+
+    >>> Fe.setResultOptions(results_options)
+    >>> Fe.setResultType("select")
+
+
+Create a new sample for results import:
+
+    >>> sample4 = new_sample([Cu, Fe, Au])
+    >>> sample4
+    <AnalysisRequest at /plone/clients/client-1/W-0004>
+
+    >>> api.get_workflow_status_of(sample3)
+    'sample_received'
+
+Create a new instrument results file:
+
+    >>> with open(os.path.join(resultsfolder, "import4.csv"), "w") as f:
+    ...     f.write("SampleID,Au,Cu,Fe\n")
+    ...     f.write('%s,"Found",1,2.0\n' % sample4.getId())
+
+Run the import view again:
+
+    >>> view = api.get_view("auto_import_results")
+    >>> log = view()
+
+    >>> sample4.Au.getFormattedResult()
+    'Found'
+    >>> sample4.Cu.getFormattedResult()
+    'Number 1'
+    >>> sample4.Fe.getFormattedResult()
+    'Number 2'
+
+Autologs should be created:
+
+    >>> autolog = instrument.objectValues("AutoImportLog")[3]
+    >>> print autolog.getResults()
+    2... Parsing file .../results/import4.csv
+    2... End of file reached successfully: 1 objects, 3 analyses, 3 results
+    2... Allowed sample states: sample_received, to_be_verified
+    2... Allowed analysis states: unassigned, assigned, to_be_verified
+    2... Don't override analysis results
+    2... W-0004 result for 'Au': 'Found'
+    2... W-0004 result for 'Cu': '1'
+    2... W-0004 result for 'Fe': '2'
+    2... W-0004: Analysis Au, Cu, Fe imported sucessfully
+    2... Import finished successfully: 1 Samples and 3 results updated
