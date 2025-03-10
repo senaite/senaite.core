@@ -263,12 +263,12 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
         )
         return True
 
-    def splitline(self, line):
+    def splitline(self, line, delimiter=","):
         """Parse a single CSV line
         """
         # use CSV library to correctly split quoted values
         fb = StringIO(line)
-        reader = csv.reader(fb, delimiter=",")
+        reader = csv.reader(fb, delimiter=delimiter)
         parsed_line = next(reader)
         return [token.strip() for token in parsed_line]
 
