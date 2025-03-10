@@ -20,6 +20,7 @@
 
 import json
 import traceback
+from collections import OrderedDict
 from collections import defaultdict
 
 from bika.lims import api
@@ -105,8 +106,11 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
         :returns: List of tokens
         """
         splitted = super(TwoDimensionCSVParser, self).splitline(line)
+        # handle empty lines
+        if not filter(None, splitted):
+            return []
         # BBB: wipe off any "end" markers from the end
-        if splitted and splitted[-1] == "end":
+        elif splitted and splitted[-1] == "end":
             return splitted[0:-1]
         # BBB: Treat lines starting with "end" as empty
         elif splitted and splitted[0] == "end":
@@ -117,6 +121,9 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
         """Parses header lines
         """
         splitted = self.splitline(line)
+
+        if not splitted:
+            return -1
 
         # always treat the first line as the header line
         if self._numline == 1:
@@ -162,9 +169,8 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
         """
         splitted = self.splitline(line)
 
-        # Ignore empty lines
-        blank_line = [i for i in splitted if i != ""]
-        if len(blank_line) == 0:
+        # skip empty result lines
+        if not splitted:
             return 0
 
         # sample identifier should be always on first position
@@ -177,47 +183,45 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
                      numline=self._numline, line=line)
             return 0
 
-        # fetch all analyses of this sample
+        # fetch all analyses of the sample
         analyses = sample.getAnalyses()
         # get interim mapping for the analyses
         interim_mapping = self.get_interim_mapping(analyses)
         # extract the analysis keywords
         analysis_keywords = map(lambda x: x.getKeyword, analyses)
-        # dictionary with the known analysis keywords that hold the results
-        values = defaultdict(dict)
-        map(lambda x: values[x], analysis_keywords)
+        # create a mapping from analysis keyword -> results dict
+        results = OrderedDict([(x, {}) for x in analysis_keywords])
         # combine the splitted line with the header columns
+        # but excluding the sample ID in the first column
         pairs = zip(self._keywords, splitted[1:])
 
         for num, pair in enumerate(pairs):
-            keyword, value = pair
-            # handle additional columns that are not assigned to a keyword
-            if num >= len(self._keywords):
-                self.err("Orphan value in column ${index} (${value})",
-                         mapping={"index": str(num + 1),
-                                  "value": value},
-                         numline=self._numline, line=line)
-                continue
+            keyword, result = pair
 
             if keyword in analysis_keywords:
                 # we found an analysis keyword result
-                values[keyword]["DefaultResult"] = "resultValue"
-                values[keyword]["resultValue"] = value
+                results[keyword]["DefaultResult"] = "resultValue"
+                results[keyword]["resultValue"] = result
             elif keyword in interim_mapping.keys():
                 # keyword is an analysis interim
+                # -> add it to the results dict of it belonging analysis
                 for k in interim_mapping[keyword]:
-                    values[k][keyword] = value
+                    results[k][keyword] = result
             else:
                 # Keyword belongs neither to an analysis nor to an interim
-                self.err("Keyword '${keyword}' with value '${value}' "
+                self.err("Keyword '${keyword}' with result '${result}' "
                          "(column ${index}) belongs neither to an analysis "
                          "nor to an interim",
                          mapping={"index": str(num + 1),
                                   "keyword": keyword,
-                                  "value": value},
+                                  "result": result},
                          numline=self._numline, line=line)
 
-        self._addRawResult(sid, values=values, override=False)
+        for kw, result in results.items():
+            # skip empty result sets
+            if not result:
+                continue
+            self._addRawResult(sid, values={kw: result}, override=False)
 
     def query_sample(self, identifier):
         """Query a sample by identifier
