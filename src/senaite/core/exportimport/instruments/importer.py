@@ -259,6 +259,14 @@ class AnalysisResultsImporter(Logger):
         result_options = analysis.getResultOptions()
         result_type = analysis.getResultType()
 
+        if result_type == "numeric":
+            if not api.is_floatable(result):
+                return ""
+            # ensure we have always a string result with a decimal point
+            result = str(result).replace(",", ".")
+            if "." not in result:
+                result = "{}.0".format(result)
+
         if result_options:
             # Handle result options as integer values
             result_values = map(
