@@ -154,7 +154,6 @@ Autologs should be created:
 Test import with interims
 .........................
 
-
 Set interims to the analysis `Au`:
 
     >>> Au.setInterimFields([
@@ -205,3 +204,58 @@ Autologs should be created:
     2... [INFO] W-0002 result for 'Au': '10'
     2... [INFO] W-0002: Analysis Au imported sucessfully
     2... [INFO] Import finished successfully: 1 Samples and 1 results updated
+
+
+Test import of string restuls
+.............................
+
+Set analysis `Au` as string result:
+
+    >>> Au.setStringResult(True)
+
+Allow manual detection limit to enter "<" and ">" results:
+
+    >>> Cu.setAllowManualDetectionLimit(True)
+    >>> Fe.setAllowManualDetectionLimit(True)
+
+Create a new sample for results import:
+
+    >>> sample3 = new_sample([Cu, Fe, Au])
+    >>> sample3
+    <AnalysisRequest at /plone/clients/client-1/W-0003>
+
+    >>> api.get_workflow_status_of(sample3)
+    'sample_received'
+
+Create a new instrument results file:
+
+    >>> with open(os.path.join(resultsfolder, "import3.csv"), "w") as f:
+    ...     f.write("SampleID,Au,Cu,Fe\n")
+    ...     f.write('%s,"Found","<1",">2"\n' % sample3.getId())
+
+Run the import view again:
+
+    >>> view = api.get_view("auto_import_results")
+    >>> log = view()
+
+    >>> sample3.Au.getFormattedResult()
+    'Found'
+    >>> sample3.Cu.getFormattedResult()
+    '&lt; 1'
+    >>> sample3.Fe.getFormattedResult()
+    '&gt; 2'
+
+Autologs should be created:
+
+    >>> autolog = instrument.objectValues("AutoImportLog")[2]
+    >>> print autolog.getResults()
+    2... [INFO] Parsing file .../results/import3.csv
+    2... [INFO] End of file reached successfully: 1 objects, 3 analyses, 3 results
+    2... [INFO] Allowed sample states: sample_received, to_be_verified
+    2... [INFO] Allowed analysis states: unassigned, assigned, to_be_verified
+    2... [INFO] Don't override analysis results
+    2... [INFO] W-0003 result for 'Au': 'Found'
+    2... [INFO] W-0003 result for 'Cu': '<1'
+    2... [INFO] W-0003 result for 'Fe': '>2'
+    2... [INFO] W-0003: Analysis Au, Cu, Fe imported sucessfully
+    2... [INFO] Import finished successfully: 1 Samples and 3 results updated
