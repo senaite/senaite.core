@@ -176,12 +176,23 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
         # sample identifier should be always on first position
         sid = splitted[0]
 
+        # combine the splitted line with the header columns
+        # but excluding the sample ID in the first column
+        pairs = zip(self._keywords, splitted[1:])
+
         sample = self.query_sample(sid)
         if not sample:
-            self.err("No sample could be found for '${sid}'",
-                     mapping={"sid": sid},
-                     numline=self._numline, line=line)
+            # might be a reference sample or any other custom type
+            # -> just take the raw result w/o further sample specific handling
+            for kw, result in pairs:
+                res = {"DefaultResult": "resultValue", "resultValue": result}
+                self._addRawResult(sid, values={kw: res}, override=False)
             return 0
+
+        # NOTE: the code is sample specific and only exists to group interim
+        # fields into the result dicts of their corresponding analyses.
+        # It might make sense to shift that logic into the importer, but this
+        # requires some additional refactoring of the logic.
 
         # fetch all analyses of the sample
         analyses = sample.getAnalyses()
@@ -191,9 +202,6 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
         analysis_keywords = map(lambda x: x.getKeyword, analyses)
         # create a mapping from analysis keyword -> results dict
         results = OrderedDict([(x, {}) for x in analysis_keywords])
-        # combine the splitted line with the header columns
-        # but excluding the sample ID in the first column
-        pairs = zip(self._keywords, splitted[1:])
 
         for num, pair in enumerate(pairs):
             keyword, result = pair
