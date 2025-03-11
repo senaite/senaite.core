@@ -256,8 +256,8 @@ class AnalysisResultsImporter(Logger):
         :returns: Converted analysis result
         """
 
-        if api.is_floatable(result):
-            # ensure we have always a string result with a decimal point
+        if api.is_floatable(result) and not analysis.getStringResult():
+            # ensure floatable string result containing a decimal point
             result = str(result)
             if "." not in result:
                 result = "{}.0".format(result)
