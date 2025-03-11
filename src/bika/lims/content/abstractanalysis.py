@@ -443,7 +443,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return False
 
         lloq = self.getLowerLimitOfQuantification()
-        return api.to_float(result, lloq) < api.to_float(lloq)
+        return api.to_float(result) < api.to_float(lloq)
 
     @security.public
     def isAboveLimitOfQuantification(self):
