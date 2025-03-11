@@ -52,6 +52,7 @@ from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.Schema import Schema
 from Products.CMFCore.permissions import View
 from senaite.core.browser.fields.datetime import DateTimeField
+from senaite.core.i18n import translate as t
 from senaite.core.permissions import FieldEditAnalysisResult
 from senaite.core.permissions import ViewResults
 from six import string_types
@@ -227,66 +228,67 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return verifiers
 
     @security.public
-    def getDefaultUncertainty(self, result=None):
+    def getDefaultUncertainty(self):
         """Return the uncertainty value, if the result falls within
         specified ranges for the service from which this analysis was derived.
         """
-
-        if result is None:
-            result = self.getResult()
+        result = self.getResult()
+        if not api.is_floatable(result):
+            return None
 
         uncertainties = self.getUncertainties()
-        if uncertainties:
-            try:
-                res = float(result)
-            except (TypeError, ValueError):
-                # if analysis result is not a number, then we assume in range
-                return None
+        if not uncertainties:
+            return None
 
-            for d in uncertainties:
+        result = api.to_float(result)
+        for record in uncertainties:
 
-                # convert to min/max
-                unc_min = api.to_float(d["intercept_min"], default=0)
-                unc_max = api.to_float(d["intercept_max"], default=0)
+            # convert to min/max
+            unc_min = api.to_float(record["intercept_min"], default=0)
+            unc_max = api.to_float(record["intercept_max"], default=0)
 
-                if unc_min <= res and res <= unc_max:
-                    _err = str(d["errorvalue"]).strip()
-                    if _err.endswith("%"):
-                        try:
-                            percvalue = float(_err.replace("%", ""))
-                        except ValueError:
-                            return None
-                        # calculate uncertainty from result
-                        uncertainty = res / 100 * percvalue
-                    else:
-                        uncertainty = api.to_float(_err, default=0)
+            if unc_min <= result <= unc_max:
+                # result is within the range defined for this uncertainty
+                uncertainty = str(record["errorvalue"]).strip()
+                if uncertainty.endswith("%"):
+                    # uncertainty expressed as a percentage of the result
+                    try:
+                        percentage = float(uncertainty.replace("%", ""))
+                        uncertainty = result / 100 * percentage
+                    except ValueError:
+                        return None
+                else:
+                    uncertainty = api.to_float(uncertainty, default=0)
 
-                    # convert back to string value
-                    return api.float_to_string(uncertainty, default=None)
+                # convert back to string value
+                return api.float_to_string(uncertainty, default=None)
+
         return None
 
     @security.public
-    def getUncertainty(self, result=None):
-        """Returns the uncertainty for this analysis and result.
+    def getUncertainty(self):
+        """Returns the uncertainty for this analysis.
 
         Returns the value from Schema's Uncertainty field if the Service has
         the option 'Allow manual uncertainty'.
         Otherwise, do a callback to getDefaultUncertainty().
 
-        Returns empty string if no result specified and the current result for this
-        analysis is below or above detections limits.
+        Returns None if no result specified and the current result for this
+        analysis is outside of the quantifiable range.
         """
-        uncertainty = self.getField("Uncertainty").get(self)
-        if result is None:
-            if self.isAboveUpperDetectionLimit():
-                return None
-            if self.isBelowLowerDetectionLimit():
-                return None
+        if self.isOutsideTheQuantifiableRange():
+            # does not make sense to display uncertainty if the result is
+            # outside of the quantifiable because the measurement is not
+            # reliable or accurate enough to confidently quantify the analyte
+            return None
 
+        uncertainty = self.getField("Uncertainty").get(self)
         if uncertainty and self.getAllowManualUncertainty():
+            # the uncertainty has been manually set on results introduction
             return api.float_to_string(uncertainty, default=None)
 
-        return self.getDefaultUncertainty(result)
+        # fallback to the default uncertainty for this analysis
+        return self.getDefaultUncertainty()
 
     @security.public
     def setUncertainty(self, unc):
@@ -295,11 +297,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         If the result is a Detection Limit or the value is below LDL or upper
         UDL, set the uncertainty to None``
         """
-        # Uncertainty calculation on DL
-        # https://jira.bikalabs.com/browse/LIMS-1808
-        if self.isAboveUpperDetectionLimit():
-            unc = None
-        if self.isBelowLowerDetectionLimit():
+        if self.isOutsideTheQuantifiableRange():
             unc = None
 
         field = self.getField("Uncertainty")
@@ -412,6 +410,62 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             udl = self.getUpperDetectionLimit()
             return api.to_float(result) > api.to_float(udl, 0.0)
 
+        return False
+
+    @security.public
+    def getLowerLimitOfQuantification(self):
+        """Returns the Lower Limit of Quantification (LLOQ) for the current
+        analysis. If the defined LLOQ is lower than the Lower Limit of
+        Detection (LLOD), the function returns the LLOD instead. This ensures
+        the result respects the detection threshold
+        """
+        llod = self.getLowerDetectionLimit()
+        lloq = self.getField("LowerLimitOfQuantification").get(self)
+        return llod if api.to_float(lloq) < api.to_float(llod) else lloq
+
+    @security.public
+    def getUpperLimitOfQuantification(self):
+        """Returns the Upper Limit of Quantification (ULOQ) for the current
+        analysis. If the defined ULOQ is greater than the Upper Limit of
+        Detection (ULOD), the function returns the ULOD instead. This ensures
+        the result respects the detection threshold
+        """
+        ulod = self.getUpperDetectionLimit()
+        uloq = self.getField("UpperLimitOfQuantification").get(self)
+        return ulod if api.to_float(uloq) > api.to_float(ulod) else uloq
+
+    @security.public
+    def isBelowLimitOfQuantification(self):
+        """Returns whether the result is below the Limit of Quantification LOQ
+        """
+        result = self.getResult()
+        if not api.is_floatable(result):
+            return False
+
+        lloq = self.getLowerLimitOfQuantification()
+        return api.to_float(result) < api.to_float(lloq)
+
+    @security.public
+    def isAboveLimitOfQuantification(self):
+        """Returns whether the result is above the Limit of Quantification LOQ
+        """
+        result = self.getResult()
+        if not api.is_floatable(result):
+            return False
+
+        uloq = self.getUpperLimitOfQuantification()
+        return api.to_float(result) > api.to_float(uloq)
+
+    @security.public
+    def isOutsideTheQuantifiableRange(self):
+        """Returns whether the result falls outside the quantifiable range
+        specified by the Lower Limit of Quantification (LLOQ) and Upper Limit
+        of Quantification (ULOQ).
+        """
+        if self.isBelowLimitOfQuantification():
+            return True
+        if self.isAboveLimitOfQuantification():
+            return True
         return False
 
     # TODO: REMOVE:  nowhere used
@@ -595,14 +649,24 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                     key = dependency.getKeyword()
                     ldl = dependency.getLowerDetectionLimit()
                     udl = dependency.getUpperDetectionLimit()
+                    lloq = dependency.getLowerLimitOfQuantification()
+                    uloq = dependency.getUpperLimitOfQuantification()
                     bdl = dependency.isBelowLowerDetectionLimit()
                     adl = dependency.isAboveUpperDetectionLimit()
+                    bloq = dependency.isBelowLimitOfQuantification()
+                    aloq = dependency.isAboveLimitOfQuantification()
                     mapping[key] = result
                     mapping['%s.%s' % (key, 'RESULT')] = result
                     mapping['%s.%s' % (key, 'LDL')] = api.to_float(ldl, 0.0)
                     mapping['%s.%s' % (key, 'UDL')] = api.to_float(udl, 0.0)
+                    mapping['%s.%s' % (key, 'LOQ')] = api.to_float(lloq, 0.0)
+                    mapping['%s.%s' % (key, 'LLOQ')] = api.to_float(lloq, 0.0)
+                    mapping['%s.%s' % (key, 'ULOQ')] = api.to_float(uloq, 0.0)
                     mapping['%s.%s' % (key, 'BELOWLDL')] = int(bdl)
                     mapping['%s.%s' % (key, 'ABOVEUDL')] = int(adl)
+                    mapping['%s.%s' % (key, 'BELOWLOQ')] = int(bloq)
+                    mapping['%s.%s' % (key, 'BELOWLLOQ')] = int(bloq)
+                    mapping['%s.%s' % (key, 'ABOVEULOQ')] = int(aloq)
                 except (TypeError, ValueError):
                     return False
 
@@ -788,66 +852,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return service.getRawInstruments()
 
     @security.public
-    def getExponentialFormatPrecision(self, result=None):
-        """ Returns the precision for the Analysis Service and result
-        provided. Results with a precision value above this exponential
-        format precision should be formatted as scientific notation.
-
-        If the Calculate Precision according to Uncertainty is not set,
-        the method will return the exponential precision value set in the
-        Schema. Otherwise, will calculate the precision value according to
-        the Uncertainty and the result.
-
-        If Calculate Precision from the Uncertainty is set but no result
-        provided neither uncertainty values are set, returns the fixed
-        exponential precision.
-
-        Will return positive values if the result is below 0 and will return
-        0 or positive values if the result is above 0.
-
-        Given an analysis service with fixed exponential format
-        precision of 4:
-        Result      Uncertainty     Returns
-        5.234           0.22           0
-        13.5            1.34           1
-        0.0077          0.008         -3
-        32092           0.81           4
-        456021          423            5
-
-        For further details, visit https://jira.bikalabs.com/browse/LIMS-1334
-
-        :param result: if provided and "Calculate Precision according to the
-        Uncertainty" is set, the result will be used to retrieve the
-        uncertainty from which the precision must be calculated. Otherwise,
-        the fixed-precision will be used.
-        :returns: the precision
-        """
-        if not result or self.getPrecisionFromUncertainty() is False:
-            return self._getExponentialFormatPrecision()
-        else:
-            uncertainty = self.getUncertainty(result)
-            if uncertainty is None:
-                return self._getExponentialFormatPrecision()
-
-            try:
-                float(result)
-            except ValueError:
-                # if analysis result is not a number, then we assume in range
-                return self._getExponentialFormatPrecision()
-
-            return get_significant_digits(uncertainty)
-
-    def _getExponentialFormatPrecision(self):
-        field = self.getField('ExponentialFormatPrecision')
-        value = field.get(self)
-        if value is None:
-            # https://github.com/bikalims/bika.lims/issues/2004
-            # We require the field, because None values make no sense at all.
-            value = self.Schema().getField(
-                'ExponentialFormatPrecision').getDefault(self)
-        return value
-
-    @security.public
     def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1,
                            html=True):
         """Formatted result:
@@ -951,31 +955,40 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             fdm = formatDecimalMark('> %s' % hidemax, decimalmark)
             return fdm.replace('> ', '&gt; ', 1) if html else fdm
 
-        # If below LDL, return '< LDL'
-        ldl = self.getLowerDetectionLimit()
-        ldl = api.to_float(ldl, 0.0)
-        if result < ldl:
-            # LDL must not be formatted according to precision, etc.
-            ldl = api.float_to_string(ldl)
-            fdm = formatDecimalMark('< %s' % ldl, decimalmark)
-            return fdm.replace('< ', '&lt; ', 1) if html else fdm
+        # Lower Limits of Detection and Quantification (LLOD and LLOQ)
+        llod = api.to_float(self.getLowerDetectionLimit())
+        lloq = api.to_float(self.getLowerLimitOfQuantification())
+        if result < llod:
+            if llod != lloq:
+                # Display "Not detected"
+                result = t(_("result_below_llod", default="Not detected"))
+                return cgi.escape(result) if html else result
 
-        # If above UDL, return '< UDL'
-        udl = self.getUpperDetectionLimit()
-        udl = api.to_float(udl, 0.0)
-        if result > udl:
-            # UDL must not be formatted according to precision, etc.
-            udl = api.float_to_string(udl)
-            fdm = formatDecimalMark('> %s' % udl, decimalmark)
-            return fdm.replace('> ', '&gt; ', 1) if html else fdm
+            # Display < LLOD
+            ldl = api.float_to_string(llod)
+            result = formatDecimalMark("< %s" % ldl, decimalmark)
+            return cgi.escape(result) if html else result
+
+        if result < lloq:
+            lloq = api.float_to_string(lloq)
+            lloq = formatDecimalMark(lloq, decimalmark)
+            result = t(_("result_below_lloq", default="Detected but < ${LLOQ}",
+                         mapping={"LLOQ": lloq}))
+            return cgi.escape(result) if html else result
+
+        # Upper Limit of Quantification (ULOQ)
+        uloq = api.to_float(self.getUpperLimitOfQuantification())
+        if result > uloq:
+            uloq = api.float_to_string(uloq)
+            result = formatDecimalMark('> %s' % uloq, decimalmark)
+            return cgi.escape(result) if html else result
 
         # Render numerical values
-        return format_numeric_result(self, self.getResult(),
-                                     decimalmark=decimalmark,
+        return format_numeric_result(self, decimalmark=decimalmark,
                                      sciformat=sciformat)
 
     @security.public
-    def getPrecision(self, result=None):
+    def getPrecision(self):
         """Returns the precision for the Analysis.
 
         - If ManualUncertainty is set, calculates the precision of the result
@@ -997,20 +1010,27 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         Further information at AbstractBaseAnalysis.getPrecision()
         """
+        precision = self.getField("Precision").get(self)
         allow_manual = self.getAllowManualUncertainty()
         precision_unc = self.getPrecisionFromUncertainty()
         if allow_manual or precision_unc:
-            uncertainty = self.getUncertainty(result)
-            if uncertainty is None:
-                return self.getField("Precision").get(self)
-            if api.to_float(uncertainty) == 0 and result is None:
-                return self.getField("Precision").get(self)
-            if api.to_float(uncertainty) == 0:
-                strres = str(result)
-                numdecimals = strres[::-1].find('.')
-                return numdecimals
+
+            # if no uncertainty rely on the fixed precision
+            uncertainty = self.getUncertainty()
+            if not api.is_floatable(uncertainty):
+                return precision
 
             uncertainty = api.to_float(uncertainty)
+            if uncertainty == 0:
+                # calculate the precision from the result
+                try:
+                    result = str(float(self.getResult()))
+                    num_decimals = result[::-1].find('.')
+                    return num_decimals
+                except ValueError:
+                    # result not floatable, return the fixed precision
+                    return precision
+
             # Get the 'raw' significant digits from uncertainty
             sig_digits = get_significant_digits(uncertainty)
             # Round the uncertainty to its significant digit.
@@ -1026,7 +1046,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             # Return the significant digit to apply
             return get_significant_digits(uncertainty)
 
-        return self.getField('Precision').get(self)
+        return precision
 
     @security.public
     def getAnalyst(self):

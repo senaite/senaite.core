@@ -4,6 +4,14 @@
     i18n_domain="senaite.core">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.6.0: Initialize the Limit of Quantification (LOQ)"
+      description="Set the values for Lower and Upper Limit of Quantification"
+      source="2658"
+      destination="2659"
+      handler=".v02_06_000.init_loq"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.6.0: Update registry settings"
       description="Import samples registry"
       source="2657"

@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2688 Fix JS events from legacy controllers are bound multiple times
+- #2682 Added Limit of Quantification (LOQ) for services and analyses
 - #2687 Remove legacy and obsolete rejection.js
 - #2685 Fix missing default instrument import template
 - #2684 Fix Traceback for unicode titled instruments
