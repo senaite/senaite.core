@@ -103,7 +103,11 @@ class TestDecimalMarkWithSciNotation(DataTestCase):
             [4,        3,      5, '-1234.5678',    '-1,2345678·10<sup>3</sup>'],
         ]
         s = self.service
-        s.setLowerDetectionLimit('-99999') # We want to test results below 0 too
+
+        # Set negative values for LLOD and LOQ to test results below 0
+        s.setLowerDetectionLimit('-99999')
+        s.setLowerLimitOfQuantification('-99999')
+
         prevm = []
         an = None
         bs = self.portal.bika_setup

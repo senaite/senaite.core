@@ -326,6 +326,11 @@ class TestLimitDetections(DataTestCase):
             s.setLowerDetectionLimit(case['min'])
             s.setUpperDetectionLimit(case['max'])
 
+            # Set same Limit of Quantification (LOQ) as the Lower Limit of
+            # Detection (LLOD/LDL). Otherwise, negative results will be
+            # formatted as `&gt; LOQ` instead.
+            s.setLowerLimitOfQuantification(case['min'])
+
             # Input results
             # Client:       Happy Hills
             # SampleType:   Apple Pulp
