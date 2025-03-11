@@ -1,9 +1,30 @@
 <!-- SENAITE TinyMCE editor support
 
-   - Customized class to richTextWidget for tinyMCE initializatio
-     see senaite.core.js in webpack/app folder
+     - Customized class to richTextWidget for tinyMCE initialization
+       see senaite.core.js in webpack/app folder
 
-   - NOTE: This macro is used by plone.app.textfield.widget_input.pt
+     - NOTE: This macro is used by plone.app.textfield.widget_input.pt
+
+
+      IMPORTANT:
+
+      This template is **only** rendered for RichTextFieldWidgets coming from `plone.app.textfield.widget`, e.g:
+
+          from plone.app.textfield.widget import RichTextFieldWidget
+
+          class IInterpretationTemplateSchema(model.Schema):
+              directives.widget("foo", RichTextFieldWidget)
+              foo = RichTextField(
+                  title=_(u'Text'),
+                  description=u'',
+                  required=False,
+              )
+
+     This means it is **not** rendered if the IRichTextBehavior is used!
+
+     In this case, the widget HTML is generated dynamically by this code (mpte the self.el):
+
+     plone.app.widgets.base.BaseWidget
 
 -->
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
