@@ -228,9 +228,9 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
         # We test in import functions if the file was uploaded
         try:
             if self._encoding:
-                f = codecs.open(infile.name, 'r', encoding=self._encoding)
+                f = codecs.open(infile.name, "r", encoding=self._encoding)
             else:
-                f = open(infile.name, 'rU')
+                f = open(infile.name, "rU")
         except AttributeError:
             f = infile
         except IOError:
