@@ -217,13 +217,9 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
                     results[k][keyword] = result
             else:
                 # Keyword belongs neither to an analysis nor to an interim
-                self.err("Keyword '${keyword}' with result '${result}' "
-                         "(column ${index}) belongs neither to an analysis "
-                         "nor to an interim",
-                         mapping={"index": str(num + 1),
-                                  "keyword": keyword,
-                                  "result": result},
-                         numline=self._numline, line=line)
+                # -> we add it below all known analysis keywords as raw value
+                for k, v in results.items():
+                    results[k][keyword] = result
 
         for kw, result in results.items():
             # skip empty result sets
