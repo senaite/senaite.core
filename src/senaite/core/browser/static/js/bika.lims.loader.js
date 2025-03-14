@@ -44,10 +44,6 @@ window.bika.lims.controllers =  {
     ".portaltype-instrument.template-base_edit":
             ['InstrumentEditView'],
 
-    // Editing a calculation
-    ".portaltype-calculation":
-        ['CalculationEditView'],
-
     // Bika Setup
     ".portaltype-bikasetup.template-base_edit":
         ['BikaSetupEditView'],
