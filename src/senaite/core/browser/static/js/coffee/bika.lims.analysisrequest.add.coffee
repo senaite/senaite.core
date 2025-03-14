@@ -11,6 +11,8 @@ class window.AnalysisRequestAdd
     # disable browser autocomplete
     $('input[type=text]').prop 'autocomplete', 'off'
 
+    @primary_sample_index = 0
+
     # storage for global Bika settings
     @global_settings = {}
 
@@ -255,7 +257,8 @@ class window.AnalysisRequestAdd
     # Analysis info button clicked
     $("body").on "click", ".service-infobtn", @on_analysis_details_click
     # Copy button clicked
-    $("body").on "click", "img.copybutton", @on_copy_button_click
+    $("body").on "click", "a.copy", @on_copy_click
+    $("body").on "click", "a.paste", @on_paste_click
 
     # Generic select/deselect event handler for reference fields
     $("body").on "select deselect" , "div.uidreferencefield textarea", @on_referencefield_value_changed
@@ -279,6 +282,9 @@ class window.AnalysisRequestAdd
     $("body").on "click", "[name='save_and_copy_button']", @on_form_submit
     # Cancel button clicked
     $("body").on "click", "[name='cancel_button']", @on_cancel
+
+    # Handle sample navigation
+    $("body").on "click", "ul#sample-tabs a.nav-link", @on_sample_nav
 
     ### internal events ###
 
@@ -749,7 +755,7 @@ class window.AnalysisRequestAdd
   ###
   set_reference_field: (field, values) ->
     if not @is_array(values)
-      values = [values]
+      values = values.split("\n")
 
     # filter out invalid UIDs
     # NOTE: UIDs have always a length of 32
@@ -951,6 +957,76 @@ class window.AnalysisRequestAdd
         conditions.append template
         conditions.show()
 
+  ###*
+   * Paste values to all fields of a row
+   *
+   * @param field_name {String} name of the field
+   * @param values {Array} string values to set
+  ###
+  paste_values: (field_name, values) =>
+    for num, record of @records_snapshot
+      # check if we have a value for this field
+      value = values[num]
+      # skip empties
+      continue unless value
+      field1 = document.querySelector("##{field_name}-#{num}")
+      field2 = document.querySelector("[data-fieldname=#{field_name}-#{num}]")
+      @paste_value(field1 or field2, value)
+
+
+  ###*
+   * Paste value to a field
+   *
+   * @param field {Object} field element
+   * @param value {String} value to set
+  ###
+  paste_value: (field, value) =>
+    # handle reference field
+    controller = @get_widget_controller(field)
+    if controller
+      # NOTE: We use here the search API to find the entered text and set it
+      # only when we find exactly one result
+      promise = controller.search value
+      promise.then (data) ->
+        # only set the value if we get exactly 1 search result
+        if data["count"] != 1
+          return
+        # select the result
+        items = data["items"]
+        controller.select(items)
+        controller.clear_results()
+    # set all other fields
+    else if @is_text(field) or @is_textarea(field)
+      field.value = value
+    else if @is_radio(field) or @is_checkbox(field)
+      try
+        checked = Boolean(JSON.parse(value))
+      catch
+        checked = no
+      field.checked = checked
+
+    # select field
+    else if @is_select(field)
+      $.each field.children, (index, option) ->
+        selected = option.innerHTML == value
+        $(option).prop "selected", selected
+
+    # date field
+    else if @is_date_widget(field)
+      # we need to fetch the date and time input fields
+      date_input = field.querySelector("input[type='date']")
+      time_input = field.querySelector("input[type='time']")
+      try
+        date = new Date(value)
+        date_input.value = date.toISOString().split("T")[0]
+        time_input.value = date.toTimeString().split(" ")[0]
+      catch error
+        console.warn error
+        site.add_notification("Invalid date format", "Please use the format yyyy-mm-dd MM:HH")
+
+    # trigger form:changed event
+    $(this).trigger "form:changed"
+
 
   ###*
    * Copies the service conditions values from those set for the service with
@@ -1045,11 +1121,11 @@ class window.AnalysisRequestAdd
       buttons[_t("Yes")] = ->
         # trigger 'yes' event
         $(@).trigger "yes"
-        $(@).dialog "close"
+        $(@).dialog "destroy"
       buttons[_t("No")] = ->
         # trigger 'no' event
         $(@).trigger "no"
-        $(@).dialog "close"
+        $(@).dialog "destroy"
 
     # render the Handlebars template
     content = @render_template template_id, context
@@ -1080,10 +1156,156 @@ class window.AnalysisRequestAdd
     content = template(context)
     return content
 
+  ###*
+   * Checks if the element is a div field
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_div: (el) =>
+    return el.tagName is "DIV"
+
+
+  ###*
+   * Checks if the element is an input field
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_input: (el) =>
+    return el.tagName is "INPUT"
+
+
+  ###*
+   * Checks if the element is an input[type='text'] field
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_text: (el) =>
+    return this.is_input(el) and el.type is "text"
+
+
+  ###*
+   * Checks if the element is a textarea field
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_textarea: (el) =>
+    return el.tagName is "TEXTAREA"
+
+
+  ###*
+   * Checks if the element is a radio field
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_radio: (el) =>
+    return this.is_input(el) and el.type is "radio"
+
+
+  ###*
+   * Checks if the element is a select field
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_select: (el) =>
+    return el.tagName is "SELECT"
+
+
+  ###*
+   * Checks if the element is a checkbox field
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_checkbox: (el) =>
+    return this.is_input(el) and el.type is "checkbox"
+
+
+  ###*
+   * Checks if the element is a date field
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_time: (el) =>
+    return this.is_input(el) and el.type is "time"
+
+  ###*
+   * Checks if the element is a time field
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_time: (el) =>
+    return this.is_input(el) and el.type is "time"
+
+
+  ###*
+   * Checks if the element is a
+   *
+   * @returns {Boolean} true/false
+  ###
+  is_date_widget: (el) =>
+    return this.is_div(el) and el.classList.contains("ArchetypesDateTimeWidget")
+
+
+  ###*
+   * Visually highlight the navigation tab
+  ###
+  flash_nav_tab: (tab, duration=500) =>
+    tab.classList.add("bg-light", "text-secondary")
+    setTimeout () =>
+      tab.classList.remove("bg-light", "text-secondary")
+    , duration
+
+
+  ###*
+   * Highlight a line number in the paste panel
+  ###
+  highlight_paster_line: (idx) =>
+    lines = $(".paste-container .line")
+    return unless lines
+    cls = "text-warning"
+    lines.removeClass(cls)
+    if lines[idx] then $(lines[idx]).addClass(cls)
+
 
   ######################
   ### EVENT HANDLERS ###
   ######################
+
+  ###*
+   * Handle sample column navigation
+   *
+   * @param event {Object} The event object
+  ###
+  on_sample_nav: (event) =>
+    el = event.currentTarget
+    $el = $(el)
+    target = $el.data("target")
+
+    # manage form fields opens a new window
+    if target is "manage-form-fields"
+      return
+
+    # handle other navigation tabs
+    event.preventDefault()
+
+    # make link active
+    $(".nav-link").removeClass("active")
+    $el.addClass("active")
+
+    if target is "show-all"
+      $("td.sample-column").removeClass("d-none");
+      @highlight_paster_line(-1)
+    else
+      $("td.sample-column").addClass("d-none");
+      $("td.#{target}").removeClass("d-none");
+      # highlight the line number in the paster if the tab changed while the panel is open
+      idx = $el.data("primary-sample-index")
+      @highlight_paster_line(idx)
+
+    # remember the displayed column
+    primary = parseInt($el.data("primary-sample-index"), 10)
+    @primary_sample_index = if isNaN(primary) then 0 else primary
+    console.log("PRIMARY sample index is #{@primary_sample_index}")
+
 
   ###*
    * Generic event handler for when a reference field value changed
@@ -1225,7 +1447,7 @@ class window.AnalysisRequestAdd
 
     buttons =
       OK: ->
-        $(@).dialog "close"
+        $(@).dialog "destroy"
 
     dialog = @template_dialog "service-dependant-template", context, buttons
 
@@ -1249,13 +1471,38 @@ class window.AnalysisRequestAdd
   on_analysis_template_removed: (event) =>
     console.debug "°°° on_analysis_template_removed °°°"
 
+    me = this
     el = event.currentTarget
     $el = $(el)
     arnum = $el.closest("[arnum]").attr "arnum"
+
+    # Get the template UID that has been deselected
+    template_uid = event.detail.value
+
+    record = @records_snapshot[arnum]
+    metadata = record.template_metadata[template_uid]
+    services = []
+
+    context = {}
+    context["template"] = metadata
+    context["services"] = services
+
+    # get the list of services assigned to the template
+    $.each record.template_to_services[template_uid], (index, uid) ->
+      services.push record.service_metadata[uid]
+
     @applied_templates[arnum] = null
 
-    # trigger form:changed event
-    $(this).trigger "form:changed"
+    dialog = @template_dialog "template-remove-template", context
+    dialog.on "yes", ->
+      # deselect the services
+      $.each services, (index, service) ->
+        me.set_service arnum, service.uid, no
+      # trigger form:changed event
+      $(me).trigger "form:changed"
+    dialog.on "no", ->
+      # trigger form:changed event
+      $(me).trigger "form:changed"
 
 
   ###*
@@ -1384,24 +1631,65 @@ class window.AnalysisRequestAdd
   ###*
    * Event handler for the field copy button per row.
    *
+   * Displays a lines field popup to paste field values as lines
+   *
+   * @param event {Object} The event object
+  ###
+  on_paste_click: (event) =>
+    console.debug "°°° on_paste_click °°°"
+    event.preventDefault()
+
+    el = event.currentTarget
+    me = this
+
+    fieldName = el.getAttribute("fieldName")
+    fieldLabel = el.getAttribute("fieldLabel")
+
+    context = {
+      "fieldLabel": fieldLabel
+      "fieldName": fieldName
+    }
+    buttons =
+      Cancel: ->
+        $(@).dialog "destroy"
+      Paste: ->
+        textarea = this.querySelector("textarea")
+        values = textarea.value.split "\n"
+        me.paste_values(fieldName, values)
+        $(@).dialog "destroy"
+
+    dialog = @template_dialog "paste-template", context, buttons
+
+    active_tab = $("ul#sample-tabs a.nav-link.active")
+    if active_tab
+      idx = active_tab.data("primary-sample-index")
+      @highlight_paster_line idx
+
+
+  ###*
+   * Event handler for the field copy button per row.
+   *
    * Copies the value of the first field in this row to the remaining.
    *
    * XXX: Refactor this method, it is way too long
    *
    * @param event {Object} The event object
   ###
-  on_copy_button_click: (event) =>
-    console.debug "°°° on_copy_button_click °°°"
+  on_copy_click: (event) =>
+    console.debug "°°° on_copy_click °°°"
+    event.preventDefault()
 
     me = this
 
-    el = event.target
+    el = event.currentTarget
     $el = $(el)
 
     tr = $el.closest('tr')[0]
     $tr = $(tr)
 
-    td1 = $(tr).find('td[arnum="0"]').first()
+    start_index = @primary_sample_index
+
+    td1 = $(tr).find("td[arnum=#{start_index}]").first()
     $td1 = $(td1)
 
     ar_count = parseInt($('input[id="ar_count"]').val(), 10)
@@ -1420,7 +1708,7 @@ class window.AnalysisRequestAdd
 
       $.each [1..ar_count], (arnum) ->
         # skip the first (source) column
-        return unless arnum > 0
+        return unless arnum > start_index
 
         # find the reference widget of the next column
         _td = $tr.find("td[arnum=#{arnum}]")
@@ -1441,7 +1729,6 @@ class window.AnalysisRequestAdd
 
       # trigger form:changed event
       $(me).trigger "form:changed"
-      return
 
     # Copy <input type="checkbox"> fields
     $td1.find("input[type=checkbox]").each (index, el) ->
@@ -1452,7 +1739,7 @@ class window.AnalysisRequestAdd
       # iterate over columns, starting from column 2
       $.each [1..ar_count], (arnum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless arnum > start_index
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type=checkbox]")[index]
         $(_el).prop "checked", checked
@@ -1474,7 +1761,7 @@ class window.AnalysisRequestAdd
       value = $el.val()
       $.each [1..ar_count], (arnum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless arnum > start_index
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("select")[index]
         $(_el).val value
@@ -1486,7 +1773,7 @@ class window.AnalysisRequestAdd
       value = $el.val()
       $.each [1..ar_count], (arnum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless arnum > start_index
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type=text]")[index]
         $(_el).val value
@@ -1498,7 +1785,7 @@ class window.AnalysisRequestAdd
       value = $el.val()
       $.each [1..ar_count], (arnum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless arnum > start_index
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type=number]")[index]
         $(_el).val value
@@ -1510,7 +1797,7 @@ class window.AnalysisRequestAdd
       value = $el.val()
       $.each [1..ar_count], (arnum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless arnum > start_index
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("textarea")[index]
         me.native_set_value(_el, value)
@@ -1522,7 +1809,7 @@ class window.AnalysisRequestAdd
       checked = $(el).is ":checked"
       $.each [1..ar_count], (arnum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless arnum > start_index
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type=radio]")[index]
         $(_el).prop "checked", checked
@@ -1534,7 +1821,7 @@ class window.AnalysisRequestAdd
       value = $el.val()
       $.each [1..ar_count], (arnum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless arnum > start_index
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type='date']")[index]
         $(_el).val value
@@ -1546,7 +1833,7 @@ class window.AnalysisRequestAdd
       value = $el.val()
       $.each [1..ar_count], (arnum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless arnum > start_index
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type='time']")[index]
         $(_el).val value
@@ -1558,10 +1845,20 @@ class window.AnalysisRequestAdd
       value = $el.val()
       $.each [1..ar_count], (arnum) ->
         # skip the first column
-        return unless arnum > 0
+        return unless arnum > start_index
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type='hidden']")[index]
         $(_el).val value
+
+
+    # highlight changed columns
+    $.each [1..ar_count], (arnum) ->
+      # skip the first (source) column
+      return unless arnum > start_index
+
+      console.log "Copy #{value} to column #{arnum}"
+      tab = document.querySelector(".nav-item-#{arnum} a")
+      me.flash_nav_tab(tab)
 
     # trigger form:changed event
     $(me).trigger "form:changed"

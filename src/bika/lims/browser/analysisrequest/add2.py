@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2024 by it's authors.
+# Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import json
@@ -56,6 +56,7 @@ from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.p3compat import cmp
 from senaite.core.permissions import TransitionMultiResults
+from senaite.core.registry import get_registry_record
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getAdapters
 from zope.component import queryAdapter
@@ -68,6 +69,18 @@ from zope.publisher.interfaces import IPublishTraverse
 AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
 SKIP_FIELD_ON_COPY = ["Sample", "PrimaryAnalysisRequest", "Remarks",
                       "NumSamples", "_ARAttachment"]
+NO_COPY_FIELDS = ["_ARAttachment"]
+ALLOW_MULTI_PASTE_WIDGET_TYPES = [
+    # disable paste functionality for date fields, see:
+    # https://github.com/senaite/senaite.core/pull/2658#discussion_r1946229751
+    # "senaite.core.browser.widgets.datetimewidget.DateTimeWidget",
+    "senaite.core.browser.widgets.referencewidget.ReferenceWidget",
+    "Products.Archetypes.Widget.StringWidget",
+    "Products.Archetypes.Widget.BooleanWidget",
+    "bika.lims.browser.widgets.priorityselectionwidget.PrioritySelectionWidget",  # noqa
+    "bika.lims.browser.widgets.remarkswidget.RemarksWidget",
+    "bika.lims.browser.widgets.selectionwidget.SelectionWidget",
+]
 
 
 def cache_key(method, self, obj):
@@ -562,6 +575,40 @@ class AnalysisRequestAddView(BrowserView):
             if service_uid in service_uids:
                 return True
         return False
+
+    def show_copy_button_for(self, field=None):
+        """ Show copy/paste button for field
+        """
+        if self.ar_count <= 1:
+            return False
+        if field and field.getName() in NO_COPY_FIELDS:
+            return False
+        return True
+
+    def show_paste_button_for(self, field=None):
+        """ Show paste button for field
+        """
+        allowed = self.get_allowed_multi_paste_fields()
+        if allowed:
+            field_name = field.getName()
+            return field_name in allowed
+
+        # fallback to widget type based lookup
+        try:
+            widget_type = field.widget.getType()
+        except AttributeError:
+            widget_type = None
+        return widget_type in ALLOW_MULTI_PASTE_WIDGET_TYPES
+
+    @viewcache.memoize
+    def get_allowed_multi_paste_fields(self):
+        """Returns a list of fields that allow multi paste
+        """
+        key = "sample_add_form_allow_multi_paste"
+        record = get_registry_record(key)
+        if not record:
+            return []
+        return record
 
 
 class AnalysisRequestManageView(BrowserView):

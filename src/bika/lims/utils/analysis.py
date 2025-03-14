@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2024 by it's authors.
+# Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import copy
@@ -237,14 +237,27 @@ def format_uncertainty(analysis, decimalmark=".", sciformat=1):
                   By default 1
     :returns: the formatted uncertainty
     """
-    try:
-        result = float(analysis.getResult())
-    except (ValueError, TypeError):
-        pass
+    if not api.is_floatable(analysis.getResult()):
+        # do not display uncertainty, result is not floatable
+        return ""
+
+    if analysis.isOutsideTheQuantifiableRange():
+        # Displaying uncertainty for results outside the quantifiable range is
+        # not meaningful because the Lower Limit of Quantification (LLOQ) and
+        # Upper Limit of Quantification (ULOQ) define the range within which
+        # a parameter can be reliably and accurately measured. Results outside
+        # this range are prone to significant variability and may be
+        # indistinguishable from background noise or method imprecision.
+        # As such, any numeric value reported outside the quantifiable range
+        # lacks the reliability required for meaningful interpretation.
+        # It is important to note that the quantifiable range is always nested
+        # within the detection range, which is defined by the Lower Limit of
+        # Detection (LLOD) and Upper Limit of Detection (ULOD).
+        return ""
 
     uncertainty = analysis.getUncertainty()
-    if api.to_float(uncertainty, default=0) <= 0:
-        # uncertainty is not defined or not above 0
+    if api.to_float(uncertainty, default=-1) < 0:
+        # uncertainty is not defined or below 0
         return ""
 
     # always convert exponential notation to decimal
@@ -260,7 +273,7 @@ def format_uncertainty(analysis, decimalmark=".", sciformat=1):
         precision = uncertainty[::-1].find(".")
 
     if precision == -1:
-        precision = analysis.getPrecision(result)
+        precision = analysis.getPrecision()
 
     # Scientific notation?
     # Get the default precision for scientific notation
@@ -276,7 +289,7 @@ def format_uncertainty(analysis, decimalmark=".", sciformat=1):
     return formatDecimalMark(formatted, decimalmark)
 
 
-def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
+def format_numeric_result(analysis, decimalmark='.', sciformat=1):
     """
     Returns the formatted number part of a results value.  This is
     responsible for deciding the precision, and notation of numeric
@@ -332,6 +345,7 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
     :result: should be a string to preserve the decimal precision.
     :returns: the formatted result as string
     """
+    result = analysis.getResult()
     try:
         result = float(result)
     except ValueError:
@@ -344,7 +358,7 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
     # Scientific notation?
     # Get the default precision for scientific notation
     threshold = analysis.getExponentialFormatPrecision()
-    precision = analysis.getPrecision(result)
+    precision = analysis.getPrecision()
     formatted = _format_decimal_or_sci(result, precision, threshold, sciformat)
     return formatDecimalMark(formatted, decimalmark)
 

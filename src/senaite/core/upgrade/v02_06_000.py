@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2024 by it's authors.
+# Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from datetime import timedelta
@@ -2847,6 +2847,48 @@ def migrate_calculation_to_dx(src, destination=None):
     migrator.copy_id(src, target)
 
     logger.info("Migrated Calculation from %s -> %s" % (src, target))
+
+
+def init_loq(tool):
+    """Initializes the value of the field LowerLimitOfQuantification with the
+    value of the Lower Limit of Detection (LLOD or LDL) to ensure LLOQ is
+    greater than or equal to LLOD
+    """
+    logger.info("Initializing the Limit of Quantification (LOQ) ...")
+
+    # Note there is no need to update analyses, cause on them, the function
+    # `abstractanalysis.getLowerLimitOfQuantification` returns the LLOD if the
+    # value set for LLOQ is not set or lower than LLOD.
+
+    cat = api.get_tool(SETUP_CATALOG)
+    for brain in cat(portal_type="AnalysisService"):
+        obj = brain.getObject()
+
+        # get the raw values
+        llod = obj.getField("LowerDetectionLimit").getRaw(obj)
+        lloq = obj.getField("LowerLimitOfQuantification").getRaw(obj)
+        uloq = obj.getField("UpperLimitOfQuantification").getRaw(obj)
+        ulod = obj.getField("UpperDetectionLimit").getRaw(obj)
+
+        # convert values to float
+        fllod = api.to_float(llod)
+        flloq = api.to_float(lloq)
+        fuloq = api.to_float(uloq)
+        fulod = api.to_float(ulod)
+
+        # ·······|-------|=======|-------|·······
+        #       LLOD    LLOQ    ULOQ    ULOD
+        if fllod <= flloq < fuloq <= fulod:
+            obj._p_deactivate()
+            continue
+
+        # assign defaults
+        obj.setLowerLimitOfQuantification(llod)
+        obj.setUpperLimitOfQuantification(ulod)
+        obj.reindexObject()
+        obj._p_deactivate()
+
+    logger.info("Initializing the Limit of Quantification (LOQ) [DONE]")
 
 
 @upgradestep(product, version)

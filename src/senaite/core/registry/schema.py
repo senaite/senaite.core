@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2024 by it's authors.
+# Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import senaiteMessageFactory as _
@@ -361,5 +361,37 @@ class ICatalogRegistry(ISenaiteRegistry):
             ),
             value_type=schema.ASCIILine(),
         ),
+        required=False,
+    )
+
+
+class ISampleRegistry(ISenaiteRegistry):
+    """Registry settings for Samples
+    """
+
+    model.fieldset(
+        "samples",
+        label=_(
+            u"label_registry_samples",
+            default=u"Samples"
+        ),
+        fields=[
+            "sample_add_form_allow_multi_paste",
+        ],
+    )
+
+    sample_add_form_allow_multi_paste = schema.List(
+        title=_(
+            u"label_registry_sample_add_allow_multi_paste_fields",
+            default=u"Allow multi paste"
+        ),
+        description=_(
+            u"description_registry_allow_multi_paste",
+            default=u"Add all field names that support to enter multiple "
+                    u"values using the paste popup in the sample add form. "
+                    u"Please note that the paste button will only show for "
+                    u"the fields listed here."
+        ),
+        value_type=schema.ASCIILine(),
         required=False,
     )

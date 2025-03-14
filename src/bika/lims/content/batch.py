@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2024 by it's authors.
+# Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
@@ -163,6 +163,8 @@ class Batch(ATFolder, ClientAwareMixin):
     def Title(self):
         """Returns the Title or ID
         """
+        if self.isTemporary():
+            return ""
         title = self.getField("title").get(self)
         return title or self.getId()
 

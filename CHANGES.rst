@@ -4,6 +4,26 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2688 Fix JS events from legacy controllers are bound multiple times
+- #2682 Added Limit of Quantification (LOQ) for services and analyses
+- #2687 Remove legacy and obsolete rejection.js
+- #2685 Fix missing default instrument import template
+- #2684 Fix Traceback for unicode titled instruments
+- #2683 Fix temporary batch title
+- #2681 Add function to make the assignment of custom catalogs easier
+- #2676 Allow to set the uncertainty to 0
+- #2678 Add validate function in API
+- #2677 Fix permission for Uncertainty field
+- #2675 Fix services are not deselected on template removal in sample add form
+- #2673 Trigger recalculation of dependants if uncertainty changes
+- #2674 Fix partitions not displayed correctly in batch samples listing
+- #2672 Fix rejected sample analyses are re-added on profile removal
+- #2670 Flush calculated result if dependency is flushed
+- #2667 Specifications support for multi-result analyses
+- #2668 Paste support for select components in sample add form
+- #2658 Batched sample registration form with Paste capabilities
+- #2666 Allow to delete SENAITE site in ZMI
+- #2665 Do not show "Receive Sample Statusmessage" if sample is already received
 - #2662 Custom catalogs support for default portal types via registry
 - #2652 Fix Subgroups sort by Sort Key
 - #2663 CSS for some add-on based forms

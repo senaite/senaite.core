@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2024 by it's authors.
+# Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import Unauthorized
@@ -26,6 +26,10 @@ from Products.Archetypes.utils import mapply
 from senaite.core import logger
 from senaite.core.datamanagers.base import DataManager
 from zope.component import adapter
+
+
+# Fields that cause a recalculation of dependants
+TRIGGER_RECALCULATE_FIELDS = ["Result", "Uncertainty"]
 
 
 @adapter(IRoutineAnalysis)
@@ -107,7 +111,7 @@ class RoutineAnalysisDataManager(DataManager):
             self.context.setInterimValue(name, value)
 
         # recalculate dependent results for result and interim fields
-        if name == "Result" or name in interim_keys:
+        if name in TRIGGER_RECALCULATE_FIELDS or name in interim_keys:
             updated_objects.add(self.context)
             updated_objects.update(self.recalculate_results(self.context))
 

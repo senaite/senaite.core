@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2024 by it's authors.
+# Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import unittest2 as unittest
@@ -325,6 +325,11 @@ class TestLimitDetections(DataTestCase):
             s.setAllowManualDetectionLimit(case['manual'])
             s.setLowerDetectionLimit(case['min'])
             s.setUpperDetectionLimit(case['max'])
+
+            # Set same Limit of Quantification (LOQ) as the Lower Limit of
+            # Detection (LLOD/LDL). Otherwise, negative results will be
+            # formatted as `&gt; LOQ` instead.
+            s.setLowerLimitOfQuantification(case['min'])
 
             # Input results
             # Client:       Happy Hills

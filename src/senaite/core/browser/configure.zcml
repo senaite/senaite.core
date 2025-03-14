@@ -13,6 +13,7 @@
 
   <!-- Package includes -->
   <include package=".attachment"/>
+  <include package=".batches"/>
   <include package=".batching"/>
   <include package=".bootstrap"/>
   <include package=".clients"/>

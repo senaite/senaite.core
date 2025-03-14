@@ -164,6 +164,20 @@
        */
       this.set_service_conditions = this.set_service_conditions.bind(this);
       /**
+       * Paste values to all fields of a row
+       *
+       * @param field_name {String} name of the field
+       * @param values {Array} string values to set
+       */
+      this.paste_values = this.paste_values.bind(this);
+      /**
+       * Paste value to a field
+       *
+       * @param field {Object} field element
+       * @param value {String} value to set
+       */
+      this.paste_value = this.paste_value.bind(this);
+      /**
        * Copies the service conditions values from those set for the service with
        * the specified uid and arnum_from column to the same analysis from the
        * arnum_to column
@@ -191,9 +205,83 @@
        * @returns {String} Rendered content
        */
       this.render_template = this.render_template.bind(this);
+      /**
+       * Checks if the element is a div field
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_div = this.is_div.bind(this);
+      /**
+       * Checks if the element is an input field
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_input = this.is_input.bind(this);
+      /**
+       * Checks if the element is an input[type='text'] field
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_text = this.is_text.bind(this);
+      /**
+       * Checks if the element is a textarea field
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_textarea = this.is_textarea.bind(this);
+      /**
+       * Checks if the element is a radio field
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_radio = this.is_radio.bind(this);
+      /**
+       * Checks if the element is a select field
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_select = this.is_select.bind(this);
+      /**
+       * Checks if the element is a checkbox field
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_checkbox = this.is_checkbox.bind(this);
+      /**
+       * Checks if the element is a date field
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_time = this.is_time.bind(this);
+      /**
+       * Checks if the element is a time field
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_time = this.is_time.bind(this);
+      /**
+       * Checks if the element is a
+       *
+       * @returns {Boolean} true/false
+       */
+      this.is_date_widget = this.is_date_widget.bind(this);
+      /**
+       * Visually highlight the navigation tab
+       */
+      this.flash_nav_tab = this.flash_nav_tab.bind(this);
+      /**
+       * Highlight a line number in the paste panel
+       */
+      this.highlight_paster_line = this.highlight_paster_line.bind(this);
       //#####################
       /* EVENT HANDLERS */
       //#####################
+      /**
+       * Handle sample column navigation
+       *
+       * @param event {Object} The event object
+       */
+      this.on_sample_nav = this.on_sample_nav.bind(this);
       /**
        * Generic event handler for when a reference field value changed
        *
@@ -262,13 +350,21 @@
       /**
        * Event handler for the field copy button per row.
        *
+       * Displays a lines field popup to paste field values as lines
+       *
+       * @param event {Object} The event object
+       */
+      this.on_paste_click = this.on_paste_click.bind(this);
+      /**
+       * Event handler for the field copy button per row.
+       *
        * Copies the value of the first field in this row to the remaining.
        *
        * XXX: Refactor this method, it is way too long
        *
        * @param event {Object} The event object
        */
-      this.on_copy_button_click = this.on_copy_button_click.bind(this);
+      this.on_copy_click = this.on_copy_click.bind(this);
       /**
        * Event handler when Ajax request started
        *
@@ -302,6 +398,7 @@
       console.debug("AnalysisRequestAdd::load");
       // disable browser autocomplete
       $('input[type=text]').prop('autocomplete', 'off');
+      this.primary_sample_index = 0;
       // storage for global Bika settings
       this.global_settings = {};
       // storage for mapping of fields to flush on_change
@@ -509,7 +606,8 @@
       // Analysis info button clicked
       $("body").on("click", ".service-infobtn", this.on_analysis_details_click);
       // Copy button clicked
-      $("body").on("click", "img.copybutton", this.on_copy_button_click);
+      $("body").on("click", "a.copy", this.on_copy_click);
+      $("body").on("click", "a.paste", this.on_paste_click);
       // Generic select/deselect event handler for reference fields
       $("body").on("select deselect", "div.uidreferencefield textarea", this.on_referencefield_value_changed);
       // Analysis Template selected
@@ -528,6 +626,8 @@
       $("body").on("click", "[name='save_and_copy_button']", this.on_form_submit);
       // Cancel button clicked
       $("body").on("click", "[name='cancel_button']", this.on_cancel);
+      // Handle sample navigation
+      $("body").on("click", "ul#sample-tabs a.nav-link", this.on_sample_nav);
       /* internal events */
       // handle value changes in the form
       $(this).on("form:changed", this.debounce(this.recalculate_records, 1000));
@@ -977,7 +1077,7 @@
     set_reference_field(field, values) {
       var controller, fieldname;
       if (!this.is_array(values)) {
-        values = [values];
+        values = values.split("\n");
       }
       // filter out invalid UIDs
       // NOTE: UIDs have always a length of 32
@@ -1156,6 +1256,80 @@
       }
     }
 
+    paste_values(field_name, values) {
+      var field1, field2, num, record, ref, results, value;
+      ref = this.records_snapshot;
+      results = [];
+      for (num in ref) {
+        record = ref[num];
+        // check if we have a value for this field
+        value = values[num];
+        if (!value) {
+          // skip empties
+          continue;
+        }
+        field1 = document.querySelector(`#${field_name}-${num}`);
+        field2 = document.querySelector(`[data-fieldname=${field_name}-${num}]`);
+        results.push(this.paste_value(field1 || field2, value));
+      }
+      return results;
+    }
+
+    paste_value(field, value) {
+      var checked, controller, date, date_input, error, promise, time_input;
+      // handle reference field
+      controller = this.get_widget_controller(field);
+      if (controller) {
+        // NOTE: We use here the search API to find the entered text and set it
+        // only when we find exactly one result
+        promise = controller.search(value);
+        promise.then(function(data) {
+          var items;
+          // only set the value if we get exactly 1 search result
+          if (data["count"] !== 1) {
+            return;
+          }
+          // select the result
+          items = data["items"];
+          controller.select(items);
+          return controller.clear_results();
+        });
+      // set all other fields
+      } else if (this.is_text(field) || this.is_textarea(field)) {
+        field.value = value;
+      } else if (this.is_radio(field) || this.is_checkbox(field)) {
+        try {
+          checked = Boolean(JSON.parse(value));
+        } catch (error1) {
+          checked = false;
+        }
+        field.checked = checked;
+      // select field
+      } else if (this.is_select(field)) {
+        $.each(field.children, function(index, option) {
+          var selected;
+          selected = option.innerHTML === value;
+          return $(option).prop("selected", selected);
+        });
+      // date field
+      } else if (this.is_date_widget(field)) {
+        // we need to fetch the date and time input fields
+        date_input = field.querySelector("input[type='date']");
+        time_input = field.querySelector("input[type='time']");
+        try {
+          date = new Date(value);
+          date_input.value = date.toISOString().split("T")[0];
+          time_input.value = date.toTimeString().split(" ")[0];
+        } catch (error1) {
+          error = error1;
+          console.warn(error);
+          site.add_notification("Invalid date format", "Please use the format yyyy-mm-dd MM:HH");
+        }
+      }
+      // trigger form:changed event
+      return $(this).trigger("form:changed");
+    }
+
     copy_service_conditions(from, to, uid) {
       var me, source;
       console.debug(`*** copy_service_conditions::from=${from} to=${to} UID=${uid}`);
@@ -1234,12 +1408,12 @@
         buttons[_t("Yes")] = function() {
           // trigger 'yes' event
           $(this).trigger("yes");
-          return $(this).dialog("close");
+          return $(this).dialog("destroy");
         };
         buttons[_t("No")] = function() {
           // trigger 'no' event
           $(this).trigger("no");
-          return $(this).dialog("close");
+          return $(this).dialog("destroy");
         };
       }
       // render the Handlebars template
@@ -1269,6 +1443,95 @@
       // Render the template with the given context
       content = template(context);
       return content;
+    }
+
+    is_div(el) {
+      return el.tagName === "DIV";
+    }
+
+    is_input(el) {
+      return el.tagName === "INPUT";
+    }
+
+    is_text(el) {
+      return this.is_input(el) && el.type === "text";
+    }
+
+    is_textarea(el) {
+      return el.tagName === "TEXTAREA";
+    }
+
+    is_radio(el) {
+      return this.is_input(el) && el.type === "radio";
+    }
+
+    is_select(el) {
+      return el.tagName === "SELECT";
+    }
+
+    is_checkbox(el) {
+      return this.is_input(el) && el.type === "checkbox";
+    }
+
+    is_time(el) {
+      return this.is_input(el) && el.type === "time";
+    }
+
+    is_time(el) {
+      return this.is_input(el) && el.type === "time";
+    }
+
+    is_date_widget(el) {
+      return this.is_div(el) && el.classList.contains("ArchetypesDateTimeWidget");
+    }
+
+    flash_nav_tab(tab, duration = 500) {
+      tab.classList.add("bg-light", "text-secondary");
+      return setTimeout(() => {
+        return tab.classList.remove("bg-light", "text-secondary");
+      }, duration);
+    }
+
+    highlight_paster_line(idx) {
+      var cls, lines;
+      lines = $(".paste-container .line");
+      if (!lines) {
+        return;
+      }
+      cls = "text-warning";
+      lines.removeClass(cls);
+      if (lines[idx]) {
+        return $(lines[idx]).addClass(cls);
+      }
+    }
+
+    on_sample_nav(event) {
+      var $el, el, idx, primary, target;
+      el = event.currentTarget;
+      $el = $(el);
+      target = $el.data("target");
+      // manage form fields opens a new window
+      if (target === "manage-form-fields") {
+        return;
+      }
+      // handle other navigation tabs
+      event.preventDefault();
+      // make link active
+      $(".nav-link").removeClass("active");
+      $el.addClass("active");
+      if (target === "show-all") {
+        $("td.sample-column").removeClass("d-none");
+        this.highlight_paster_line(-1);
+      } else {
+        $("td.sample-column").addClass("d-none");
+        $(`td.${target}`).removeClass("d-none");
+        idx = $el.data("primary-sample-index");
+        this.highlight_paster_line(idx);
+      }
+      // remember the displayed column
+      primary = parseInt($el.data("primary-sample-index"), 10);
+      this.primary_sample_index = isNaN(primary) ? 0 : primary;
+      return console.log(`PRIMARY sample index is ${this.primary_sample_index}`);
     }
 
     on_referencefield_value_changed(event) {
@@ -1402,7 +1665,7 @@
       }
       buttons = {
         OK: function() {
-          return $(this).dialog("close");
+          return $(this).dialog("destroy");
         }
       };
       return dialog = this.template_dialog("service-dependant-template", context, buttons);
@@ -1415,14 +1678,38 @@
     }
 
     on_analysis_template_removed(event) {
-      var $el, arnum, el;
+      var $el, arnum, context, dialog, el, me, metadata, record, services, template_uid;
       console.debug("°°° on_analysis_template_removed °°°");
+      me = this;
       el = event.currentTarget;
       $el = $(el);
       arnum = $el.closest("[arnum]").attr("arnum");
+      // Get the template UID that has been deselected
+      template_uid = event.detail.value;
+      record = this.records_snapshot[arnum];
+      metadata = record.template_metadata[template_uid];
+      services = [];
+      context = {};
+      context["template"] = metadata;
+      context["services"] = services;
+      // get the list of services assigned to the template
+      $.each(record.template_to_services[template_uid], function(index, uid) {
+        return services.push(record.service_metadata[uid]);
+      });
       this.applied_templates[arnum] = null;
-      // trigger form:changed event
-      return $(this).trigger("form:changed");
+      dialog = this.template_dialog("template-remove-template", context);
+      dialog.on("yes", function() {
+        // deselect the services
+        $.each(services, function(index, service) {
+          return me.set_service(arnum, service.uid, false);
+        });
+        // trigger form:changed event
+        return $(me).trigger("form:changed");
+      });
+      return dialog.on("no", function() {
+        // trigger form:changed event
+        return $(me).trigger("form:changed");
+      });
     }
 
     on_analysis_profile_selected(event) {
@@ -1516,15 +1803,49 @@
       }
     }
 
-    on_copy_button_click(event) {
-      var $el, $td1, $tr, ar_count, el, me, record_one, records, td1, tr, value;
-      console.debug("°°° on_copy_button_click °°°");
+    on_paste_click(event) {
+      var active_tab, buttons, context, dialog, el, fieldLabel, fieldName, idx, me;
+      console.debug("°°° on_paste_click °°°");
+      event.preventDefault();
+      el = event.currentTarget;
       me = this;
-      el = event.target;
+      fieldName = el.getAttribute("fieldName");
+      fieldLabel = el.getAttribute("fieldLabel");
+      context = {
+        "fieldLabel": fieldLabel,
+        "fieldName": fieldName
+      };
+      buttons = {
+        Cancel: function() {
+          return $(this).dialog("destroy");
+        },
+        Paste: function() {
+          var textarea, values;
+          textarea = this.querySelector("textarea");
+          values = textarea.value.split("\n");
+          me.paste_values(fieldName, values);
+          return $(this).dialog("destroy");
+        }
+      };
+      dialog = this.template_dialog("paste-template", context, buttons);
+      active_tab = $("ul#sample-tabs a.nav-link.active");
+      if (active_tab) {
+        idx = active_tab.data("primary-sample-index");
+        return this.highlight_paster_line(idx);
+      }
+    }
+
+    on_copy_click(event) {
+      var $el, $td1, $tr, ar_count, el, me, record_one, records, start_index, td1, tr, value;
+      console.debug("°°° on_copy_click °°°");
+      event.preventDefault();
+      me = this;
+      el = event.currentTarget;
       $el = $(el);
       tr = $el.closest('tr')[0];
       $tr = $(tr);
-      td1 = $(tr).find('td[arnum="0"]').first();
+      start_index = this.primary_sample_index;
+      td1 = $(tr).find(`td[arnum=${start_index}]`).first();
       $td1 = $(td1);
       ar_count = parseInt($('input[id="ar_count"]').val(), 10);
       if (!(ar_count > 1)) {
@@ -1545,7 +1866,7 @@
         }).apply(this), function(arnum) {
           var _el, _field_name, _td;
           // skip the first (source) column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           // find the reference widget of the next column
@@ -1564,7 +1885,6 @@
         });
         // trigger form:changed event
         $(me).trigger("form:changed");
-        return;
       }
       // Copy <input type="checkbox"> fields
       $td1.find("input[type=checkbox]").each(function(index, el) {
@@ -1581,7 +1901,7 @@
         }).apply(this), function(arnum) {
           var _el, _td, uid;
           // skip the first column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           _td = $tr.find(`td[arnum=${arnum}]`);
@@ -1612,7 +1932,7 @@
         }).apply(this), function(arnum) {
           var _el, _td;
           // skip the first column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           _td = $tr.find(`td[arnum=${arnum}]`);
@@ -1632,7 +1952,7 @@
         }).apply(this), function(arnum) {
           var _el, _td;
           // skip the first column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           _td = $tr.find(`td[arnum=${arnum}]`);
@@ -1652,7 +1972,7 @@
         }).apply(this), function(arnum) {
           var _el, _td;
           // skip the first column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           _td = $tr.find(`td[arnum=${arnum}]`);
@@ -1672,7 +1992,7 @@
         }).apply(this), function(arnum) {
           var _el, _td;
           // skip the first column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           _td = $tr.find(`td[arnum=${arnum}]`);
@@ -1693,7 +2013,7 @@
         }).apply(this), function(arnum) {
           var _el, _td;
           // skip the first column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           _td = $tr.find(`td[arnum=${arnum}]`);
@@ -1713,7 +2033,7 @@
         }).apply(this), function(arnum) {
           var _el, _td;
           // skip the first column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           _td = $tr.find(`td[arnum=${arnum}]`);
@@ -1733,7 +2053,7 @@
         }).apply(this), function(arnum) {
           var _el, _td;
           // skip the first column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           _td = $tr.find(`td[arnum=${arnum}]`);
@@ -1753,13 +2073,28 @@
         }).apply(this), function(arnum) {
           var _el, _td;
           // skip the first column
-          if (!(arnum > 0)) {
+          if (!(arnum > start_index)) {
             return;
           }
           _td = $tr.find(`td[arnum=${arnum}]`);
           _el = $(_td).find("input[type='hidden']")[index];
           return $(_el).val(value);
         });
+      });
+      // highlight changed columns
+      $.each((function() {
+        var results = [];
+        for (var i = 1; 1 <= ar_count ? i <= ar_count : i >= ar_count; 1 <= ar_count ? i++ : i--){ results.push(i); }
+        return results;
+      }).apply(this), function(arnum) {
+        var tab;
+        // skip the first (source) column
+        if (!(arnum > start_index)) {
+          return;
+        }
+        console.log(`Copy ${value} to column ${arnum}`);
+        tab = document.querySelector(`.nav-item-${arnum} a`);
+        return me.flash_nav_tab(tab);
       });
       // trigger form:changed event
       return $(me).trigger("form:changed");

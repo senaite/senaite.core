@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2024 by it's authors.
+# Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 import unittest2 as unittest
@@ -318,7 +318,11 @@ class TestDecimalSciNotation(DataTestCase):
             [2,        4,       5, '-12340.0123', '-1.234001·10<sup>4</sup>'],
         ]
         s = self.service
-        s.setLowerDetectionLimit('-99999') # We want to test results below 0 too
+
+        # Set negative values for LLOD and LOQ to test results below 0
+        s.setLowerDetectionLimit('-99999')
+        s.setLowerLimitOfQuantification('-99999')
+
         prevm = []
         an = None
         bs = self.portal.setup

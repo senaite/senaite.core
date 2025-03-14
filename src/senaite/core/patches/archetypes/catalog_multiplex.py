@@ -15,13 +15,15 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2024 by it's authors.
+# Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from plone.api.exc import CannotGetPortalError
 from Products.Archetypes.Referenceable import Referenceable
 from Products.Archetypes.utils import shasattr
 from senaite.core.catalog import AUDITLOG_CATALOG
+from zope.interface.interfaces import ComponentLookupError
 
 
 def is_auditlog_enabled():
@@ -57,7 +59,10 @@ def unindexObject(self):
         return
 
     # get all registered catalogs
-    catalogs = api.get_catalogs_for(self)
+    try:
+        catalogs = api.get_catalogs_for(self)
+    except (CannotGetPortalError, ComponentLookupError):
+        return
 
     for catalog in catalogs:
         # skip auditlog_catalog if global auditlogging is deactivated

@@ -15,10 +15,11 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2024 by it's authors.
+# Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from plone.api.exc import CannotGetPortalError
 from Products.Archetypes.config import UID_CATALOG
 
 
@@ -37,7 +38,12 @@ def _uncatalogUID(self, aq, uc=None):
     if api.is_temporary(self):
         return
     if not uc:
-        uc = api.get_tool(UID_CATALOG)
+        try:
+            uc = api.get_tool(UID_CATALOG)
+        except CannotGetPortalError:
+            # handle site deletion gracefully
+            return
+
     url = self._getURL()
     # XXX This is an ugly workaround. This method shouldn't be called
     # twice for an object in the first place, so we don't have to check

@@ -700,3 +700,62 @@ And change the operators
     >>> res_range['min_operator'] = 'geq'
     >>> get_formatted_interval(res_range)
     '>=-5'
+
+
+Specification for analyses with multi-result
+............................................
+
+Create a service with multiple options and type multiselect:
+
+    >>> services_folder = bikasetup.bika_analysisservices
+    >>> Fec = api.create(services_folder, "AnalysisService",
+    ...                  title="Feces Consistency", Keyword="FEC",
+    ...                  Category=category)
+    >>> Fec.setResultType("multiselect")
+    >>> Fec.setResultOptions([{"ResultValue": "0", "ResultText": "Formed"},
+    ...                       {"ResultValue": "1", "ResultText": "Blood stained"},
+    ...                       {"ResultValue": "2", "ResultText": "Mucoid"},
+    ...                       {"ResultValue": "3", "ResultText": "Soft"},
+    ...                       {"ResultValue": "4", "ResultText": "Watery/Fluid"},
+    ...                       {"ResultValue": "5", "ResultText": "Loose"},
+    ...                       {"ResultValue": "6", "ResultText": "Semi-formed"}])
+
+Create a specification with this service:
+
+    >>> rr = [{"uid": api.get_uid(Fec), "min": 2, "max": 4}]
+    >>> specs_folder = bikasetup.bika_analysisspecs
+    >>> feces_spec = api.create(specs_folder, "AnalysisSpec", title="Feces",
+    ...                         SampleType=sampletype, ResultsRange=rr)
+
+Create and receive sample with this analysis and specs:
+
+    >>> values = {
+    ...     "Client": api.get_uid(client),
+    ...     "Contact": api.get_uid(contact),
+    ...     "DateSampled": date_now,
+    ...     "SampleType": sampletype_uid,
+    ...     "Specification": feces_spec,
+    ...     "Priority": "1",
+    ... }
+
+    >>> sample = create_analysisrequest(client, request, values, [Fec])
+    >>> success = doActionFor(sample, 'receive')
+
+Result is within range only if at least one of the options is within range:
+
+    >>> fec = sample.getAnalyses(full_objects=True)[0]
+    >>> fec.setResult(["0", "1"])
+    >>> is_out_of_range(fec)
+    (True, True)
+
+    >>> fec.setResult(["2", "3"])
+    >>> is_out_of_range(fec)
+    (False, False)
+
+    >>> fec.setResult(["4", "5"])
+    >>> is_out_of_range(fec)
+    (False, False)
+
+    >>> fec.setResult(["6"])
+    >>> is_out_of_range(fec)
+    (True, True)

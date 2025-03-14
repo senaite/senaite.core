@@ -2449,3 +2449,75 @@ Still, destination container must allow the object's type:
     Traceback (most recent call last):
     [...]
     ValueError: Disallowed subobject type: Contact
+
+
+Validate an object
+..................
+
+This function validates the object.
+
+System complains when validating an object with required, but not set, fields:
+
+    >>> sample_types = self.portal.setup.sampletypes
+    >>> data = {
+    ...     "title": "My Sample Type",
+    ...     "Prefix": "MyPrefix",
+    ... }
+    >>> sample_type = api.create(sample_types, "SampleType", **data)
+    >>> api.validate(sample_type)
+    {'min_volume': 'required field'}
+
+    >>> sample_type.setMinimumVolume("10 mL")
+    >>> api.validate(sample_type)
+    {}
+
+It also reports multiple validation errors at a time:
+
+    >>> departments = self.portal.setup.departments
+    >>> department = api.create(departments, "Department", title="My dept")
+    >>> errors = api.validate(department)
+    >>> [(key, errors[key]) for key in sorted(errors.keys())]
+    [('department_id', 'required field'), ('manager', 'required field')]
+
+The validator assigned to the field is also considered:
+
+    >>> sample_type.setPrefix("My Prefix With Whitespaces")
+    >>> api.validate(sample_type)
+    {'prefix': u'No whitespaces in prefix allowed'}
+
+    >>> sample_type.setPrefix("MyPrefix")
+    >>> api.validate(sample_type)
+    {}
+
+    >>> sample_type.setMinimumVolume("10 mL")
+    >>> api.validate(sample_type)
+    {}
+
+System complains if the value has the wrong type:
+
+    >>> sample_type.admitted_sticker_templates = "dummy"
+    >>> api.validate(sample_type)
+    {'admitted_sticker_templates': 'wrong type'}
+
+It also takes invariants into consideration:
+
+    >>> categories = self.portal.setup.analysiscategories
+    >>> data = {
+    ...     "title": "My cat",
+    ...     "Department": department,
+    ... }
+    >>> category = api.create(categories, "AnalysisCategory", **data)
+    >>> api.validate(category)
+    {}
+
+    >>> category.setSortKey(-1.0)
+    >>> api.validate(category)
+    {'IAnalysisCategorySchema': u'Validation failed: value must be between 0 and 1000'}
+
+    >>> category.setSortKey(10)
+    >>> api.validate(category)
+    {'sort_key': 'wrong type'}
+
+    >>> category.setSortKey(10.0)
+    >>> api.validate(category)
+    {}

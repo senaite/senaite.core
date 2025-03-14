@@ -148,3 +148,38 @@
   display:none;
 }
 /* /Service conditions */
+
+
+/* Paste popup */
+.paste-container {
+    display: flex;
+    border: 1px solid #ccc;
+    font-family: monospace;
+    height: 300px;
+    overflow: hidden;
+}
+
+.line-numbers {
+    background-color: #f4f4f4;
+    border-right: 1px solid #ccc;
+    text-align: right;
+    color: #666;
+    overflow: hidden;
+    line-height: 1.5;
+    padding: 0 .5em;
+}
+
+.paste-editor {
+    flex: 1;
+    border: none;
+    outline: none;
+    resize: both;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.paste-container .line-numbers,
+.paste-container .paste-editor {
+    white-space: pre-line;
+    line-height: 1.5;
+}
