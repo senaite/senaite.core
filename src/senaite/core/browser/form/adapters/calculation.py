@@ -19,12 +19,13 @@
 # Some rights reserved, see README and LICENSE.
 
 import re
+from collections import OrderedDict
 
 from bika.lims import api
 from bika.lims.api.analysisservice import get_by_keyword
 from senaite.core.browser.form.adapters import EditFormAdapterBase
-from senaite.core.content.calculation import calculate_formula
 from senaite.core.content.calculation import ICalculationSchema
+from senaite.core.content.calculation import calculate_formula
 from senaite.core.validators.formula import FormulaValidator
 
 FORMULA_RX = re.compile(r"\[[^\]]*\]")
@@ -100,7 +101,8 @@ class EditForm(EditFormAdapterBase):
         formula = data.get("form").get(FIELD_FORMULA, "")
         keywords = map(lambda kw: kw.strip("[]"),
                        FORMULA_RX.findall(formula))
-        return list(set(keywords))
+        # ensure keywords are unique and in the right order
+        return OrderedDict.fromkeys(keywords).keys()
 
     def update_test_parameters(self, data):
         formula = data.get("form").get(FIELD_FORMULA, "")
