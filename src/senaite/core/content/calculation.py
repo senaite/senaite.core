@@ -39,18 +39,19 @@ from senaite.core.interfaces import ICalculation
 from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
 from senaite.core.schema.interimfields import InterimFields
-from senaite.core.validators.formula import FormulaValidator
-from senaite.core.validators.interimfields import InterimFieldsValidator
-from senaite.core.validators.interimfields import InterimFieldsValidationErrorView
 from senaite.core.schema.uidreferencefield import UIDReferenceField
+from senaite.core.validators.formula import FormulaValidator
+from senaite.core.validators.interimfields import \
+    InterimFieldsValidationErrorView
+from senaite.core.validators.interimfields import InterimFieldsValidator
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
+from z3c.form import error
+from z3c.form import util
+from z3c.form import validator
 from zope import component
 from zope import schema
-from z3c.form import error
-from z3c.form import validator
-from z3c.form import util
-from zope.interface import implementer
 from zope.interface import Interface
+from zope.interface import implementer
 
 
 def getGlobals(imports=None, **kwargs):
