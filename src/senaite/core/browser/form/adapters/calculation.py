@@ -58,6 +58,10 @@ class EditForm(EditFormAdapterBase):
         self.add_callback("body",
                           "datagrid:row_removed",
                           "update_form")
+
+        # required to update the test parameters for interims on load
+        self.update_form(data)
+        self.update_test_parameters(data)
         return self.data
 
     def modified(self, data):
