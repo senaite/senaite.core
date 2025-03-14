@@ -125,15 +125,17 @@ def getModuleMember(dotted_name, member):
 
 
 class FormulaFormatter(string.Formatter):
-    """ Helper class to remove spaces, tabs and etc., replace sqare brackets 
-        and correctly substitute dotted parameters (e.g. AnalysisService wildcards)
+    """Helper class to remove spaces, tabs and etc.
+
+    Replaces square brackets and correctly substitute dotted parameters (e.g.
+    AnalysisService wildcards)
     """
 
     def __init__(self):
         super(FormulaFormatter, self).__init__()
         self.trans = {ord(s): api.safe_unicode(d) for s, d in zip("[]", "{}")}
-        for c in ' \n\t\r':
-            self.trans[ord(c)] = u''
+        for c in " \n\t\r":
+            self.trans[ord(c)] = u""
 
     def format(self, formula, params):
         formula = formula.translate(self.trans)
@@ -273,8 +275,8 @@ class ICalculationSchema(model.Schema):
         value_type=DataGridRow(schema=IImportRecord),
         required=False,
         default=[
-            {"module": "math", "function": "ceil"},
-            {"module": "math", "function": "floor"},]
+            {"module": "math", "function": "round"},
+        ]
     )
 
     formula = schema.Text(
@@ -341,7 +343,7 @@ class ICalculationSchema(model.Schema):
                       u"place with test values.")
     )
 
-    directives.mode(dependent_services='hidden')
+    directives.mode(dependent_services="hidden")
     dependent_services = UIDReferenceField(
         title=_(
             u"label_calculation_dependent_services",
@@ -381,8 +383,8 @@ class Calculation(Container):
         for x in range(len(value)):
             row = dict(value[x])
             keys = row.keys()
-            if 'value' not in keys:
-                row['value'] = 0
+            if "value" not in keys:
+                row["value"] = 0
             new_value.append(row)
 
         # extract the keywords from the new calculation interims
