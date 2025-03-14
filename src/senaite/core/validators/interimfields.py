@@ -128,17 +128,19 @@ def calcs_interims_validator(calcs):
     any duplicated interimfield keywords must share the same title
     """
     def validate(row):
-        keyword = row['keyword']
-        title = row['title']
+        keyword = api.safe_unicode(row.get("keyword", ""))
+        title = api.safe_unicode(row.get("title"))
         dup_keyword_title = dup_title_keyword = None
         for calc in calcs:
             calc_interims = calc.getInterimFields()
-            for c in calc_interims:
-                if c['keyword'] == keyword and c['title'] != title:
-                    dup_keyword_title = c['title']
+            for i in calc_interims:
+                int_keyword = api.safe_unicode(i.get("keyword", ""))
+                int_title = api.safe_unicode(i.get("title", ""))
+                if int_keyword == keyword and int_title != title:
+                    dup_keyword_title = int_title
                     break
-                if c['title'] == title and c['keyword'] != keyword:
-                    dup_title_keyword = c['keyword']
+                if int_title == title and int_keyword != keyword:
+                    dup_title_keyword = int_keyword
                     break
             else:
                 continue
@@ -299,12 +301,13 @@ class InterimErrorViewSnippet(ErrorViewSnippet):
     def __init__(self, error, request, widget, field, form, content):
         super(InterimErrorViewSnippet, self).__init__(
             error, request, widget, field, form, content)
-        self.message = translate(_(u"interim_field_error",
-                                   default=u"Interim field-${row_num}: ${message}",
-                                   mapping={
-                                       "row_num": self.content[0],
-                                       "message": self.content[2]
-                                   }))
+        self.message = translate(
+            _(u"interim_field_error",
+              default=u"Interim field ${row_num}: ${message}",
+              mapping={
+                  "row_num": self.content[0],
+                  "message": api.safe_unicode(self.content[2])
+              }))
 
     def update(self):
         pass
