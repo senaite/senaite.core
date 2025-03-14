@@ -51,6 +51,7 @@ from Products.Archetypes.Field import StringField
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.Schema import Schema
 from Products.CMFCore.permissions import View
+from senaite.core.api import dtime
 from senaite.core.browser.fields.datetime import DateTimeField
 from senaite.core.i18n import translate as t
 from senaite.core.permissions import FieldEditAnalysisResult
@@ -529,6 +530,14 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # Ensure result integrity regards to None, empty and 0 values
         val = str("" if not value and value != 0 else value).strip()
 
+        # Check if a date/time result
+        result_type = self.getResultType()
+        if result_type in ["date", "datetime"]:
+            # store as ISO YYYY-MM-DD HH:MM:SS
+            val = dtime.to_iso_format(val) or ""
+            self.getField("Result").set(self, val)
+            return
+
         # Check if an string result is expected
         string_result = self.getStringResult()
 
@@ -905,8 +914,18 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             except (ValueError, TypeError):
                 pass
 
-        # If string result, return without any formatting
-        if self.getStringResult():
+        result_type = self.getResultType()
+
+        # If date result, return the localized date
+        if result_type == "date":
+            return dtime.to_localized_time(result, long_format=False)
+
+        # If date result, return the localized date
+        if result_type == "datetime":
+            return dtime.to_localized_time(result, long_format=True)
+
+        # If string-like result, return without any formatting
+        if result_type in ["string", "text"]:
             if html:
                 result = cgi.escape(result)
                 result = result.replace("\n", "<br/>")
