@@ -60,7 +60,9 @@ def invalid_wildcards_check():
             filter(
                 lambda k: "." in k,
                 re.compile(r"\[([^\]]+)\]").findall(data['formula'])))
-        allowedwds = ("LDL", "UDL", "BELOWLDL", "ABOVEUDL")
+        allowedwds = ("LDL", "UDL", "BELOWLDL", "ABOVEUDL",
+                      "LOQ", "LLOQ", "BELOWLOQ", "BELOWLLOQ",
+                      "ULOQ", "ABOVEULOQ",)
         wildcards = [k[1] for k in keysandwildcards if k[0]
                      not in interim_keywords and k[1] not in allowedwds]
         if len(wildcards) > 0:
