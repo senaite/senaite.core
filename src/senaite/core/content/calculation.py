@@ -275,7 +275,8 @@ class ICalculationSchema(model.Schema):
         value_type=DataGridRow(schema=IImportRecord),
         required=False,
         default=[
-            {"module": "math", "function": "round"},
+            {"module": "math", "function": "floor"},
+            {"module": "math", "function": "ceil"},
         ]
     )
 
