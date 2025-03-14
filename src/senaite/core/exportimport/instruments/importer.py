@@ -441,8 +441,9 @@ class AnalysisResultsImporter(Logger):
             for result in results:
 
                 for keyword, values in result.items():
+
+                    # keyword might be excluded
                     if keyword not in self.keywords:
-                        # Analysis keyword doesn't exist
                         continue
 
                     ans = [a for a in analyses if a.getKeyword() == keyword
@@ -503,7 +504,7 @@ class AnalysisResultsImporter(Logger):
                         else:
                             ar = analysis.portal_type == "Analysis" \
                                 and analysis.aq_parent or None
-                            if ar and ar.UID:
+                            if ar is not None:
                                 importedar = ar.getId() in importedars.keys() \
                                             and importedars[ar.getId()] or []
                                 if keyword not in importedar:
