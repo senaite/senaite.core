@@ -113,27 +113,26 @@ window.bika.lims.controllers =  {
  */
 window.bika.lims.loadControllers = function(all, controllerKeys) {
     var controllers = window.bika.lims.controllers;
-    var _bika_lims_loaded_js = new Array();
+    var _bika_lims_loaded_js = window.bika.lims._loaded || [];  // Track loaded controllers globally
     var prev = _bika_lims_loaded_js.length;
     for (var key in controllers) {
-        // Check if the key have value. Also check if this key exists in the controllerKeys array.
-        // If controllerKeys contains the key, the JS controllers defined inside window.bika.lims.controllers
-        // and indexed with that key will be reloaded/loaded (wherever you are.)
         if ($(key).length || $.inArray(key, controllerKeys) >= 0) {
             controllers[key].forEach(function(js) {
-                if (all == true || $.inArray(key, controllerKeys) >= 0 || $.inArray(js, _bika_lims_loaded_js) < 0) {
-                    console.debug('[bika.lims.loader] Loading '+js);
-                    obj = new window[js]();
-                    obj.load();
-                    // Register the object for further access
-                    window.bika.lims[js]=obj;
-                    _bika_lims_loaded_js.push(js);
+                if (all || $.inArray(key, controllerKeys) >= 0 || $.inArray(js, _bika_lims_loaded_js) < 0) {
+                    console.debug("[senaite.loader] Loading " + js);
+                    if (!window.bika.lims[js]) { // Ensure it's not already initialized
+                        obj = new window[js]();
+                        obj.load();
+                        window.bika.lims[js] = obj;
+                        _bika_lims_loaded_js.push(js);
+                    }
                 }
             });
         }
     }
-    return _bika_lims_loaded_js.length - prev;
 
+    window.bika.lims._loaded = _bika_lims_loaded_js;  // Store the updated list globally
+    return _bika_lims_loaded_js.length - prev;
 };
 
 document.addEventListener("DOMContentLoaded", function(event) {
