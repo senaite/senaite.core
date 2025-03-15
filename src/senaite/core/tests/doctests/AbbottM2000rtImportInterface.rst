@@ -225,7 +225,7 @@ And finally check if indeed the analysis has the imported results:
     >>> analyses = ar.getAnalyses()
     >>> an = [analysis.getObject() for analysis in analyses if analysis.Title == 'HIV06ml'][0]
     >>> an.getResult()
-    '18'
+    '18.0'
     >>> an = [analysis.getObject() for analysis in analyses if analysis.Title == 'Test Total Results'][0]
     >>> an.getResult()
     '1800.0'
