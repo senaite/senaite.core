@@ -39,10 +39,6 @@ from DateTime.DateTime import DateError
 from DateTime.DateTime import DateTimeError
 from DateTime.DateTime import SyntaxError
 from DateTime.DateTime import TimeError
-from Products.CMFPlone.i18nl10n import monthname_msgid
-from Products.CMFPlone.i18nl10n import monthname_msgid_abbr
-from Products.CMFPlone.i18nl10n import weekdayname_msgid
-from Products.CMFPlone.i18nl10n import weekdayname_msgid_abbr
 from senaite.core.i18n import get_month_name
 from senaite.core.i18n import get_weekday_name
 from zope.i18n import translate
