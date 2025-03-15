@@ -1088,3 +1088,30 @@ Wrong values are ignored and replaced with 0:
 
     >>> dtime.to_timedelta({'days': 'wrong value'})
     datetime.timedelta(0)
+
+
+Date and time format conversions
+................................
+
+We can easily convert formats expressed in C standard (1989 version) to msgids
+used by the TranslationServiceTool:
+
+    >>> dtime.to_msgstr("%Y-%m-%d %I:%M %p")
+    '${Y}-${m}-${d} ${I}:${M} ${p}'
+
+    >>> dtime.to_msgstr("%Y-%m-%d %H:%M")
+    '${Y}-${m}-${d} ${H}:${M}'
+
+    >>> dtime.to_msgstr("%A %d. %B %Y, %H:%M %Z")
+    '${A} ${d}. ${B} ${Y}, ${H}:${M} ${Z}'
+
+And the other way round:
+
+    >>> dtime.to_C1989("${Y}-${m}-${d} ${I}:${M} ${p}")
+    '%Y-%m-%d %I:%M %p'
+
+    >>> dtime.to_C1989("${Y}-${m}-${d} ${H}:${M}")
+    '%Y-%m-%d %H:%M'
+
+    >>> dtime.to_C1989("${A} ${d}. ${B} ${Y}, ${H}:${M} ${Z}")
+    '%A %d. %B %Y, %H:%M %Z'
