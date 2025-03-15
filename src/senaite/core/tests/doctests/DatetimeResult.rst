@@ -16,6 +16,7 @@ Needed Imports:
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
+    >>> from datetime import date
     >>> from datetime import datetime
     >>> from DateTime import DateTime
 
@@ -98,6 +99,10 @@ When a result is captured and the analysis has the value 'datetime' as
     >>> inc.getResult()
     '2025-03-14 12:56:04'
 
+    >>> inc.setResult(date(2025, 3, 14))
+    >>> inc.getResult()
+    '2025-03-14 00:00:00'
+
     >>> inc.setResult("20250314125605")
     >>> inc.getResult()
     '2025-03-14 12:56:05'
@@ -165,6 +170,10 @@ When a result is captured and the analysis has the value 'date' as
     '2025-03-14'
 
     >>> inc.setResult(datetime(2025, 3, 14, 12, 56, 4))
+    >>> inc.getResult()
+    '2025-03-14'
+
+    >>> inc.setResult(date(2025, 3, 14))
     >>> inc.getResult()
     '2025-03-14'
 
