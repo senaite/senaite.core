@@ -20,6 +20,9 @@
 
 from bika.lims import api
 from zope.i18n import translate as ztranslate
+from zope.i18nmessageid import MessageFactory
+
+_pl = MessageFactory("plonelocales")
 
 
 def translate(msgid, to_utf8=True, **kwargs):
@@ -69,3 +72,23 @@ def get_dt_format(msgid):
     if not fmt or fmt == msgid:
         return defaults.get(msgid)
     return fmt
+
+
+def get_weekday_name(day, abbr=False, to_utf8=True):
+    """Returns the name of the day of the week for the current locale, starting
+    with Sunday == 0
+    """
+    ids = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"]
+    msgid = "weekday_%s_abbr" if abbr else "weekday_%s"
+    msgid = msgid % ids[day]
+    return translate(_pl(msgid), to_utf8=to_utf8)
+
+
+def get_month_name(month, abbr=False, to_utf8=True):
+    """Returns the name of the month for the current locale, starting with
+    """
+    ids = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep",
+           "oct", "nov", "dec"]
+    msgid = "month_%s_abbr" if abbr else "month_%s"
+    msgid = msgid % ids[month-1]
+    return translate(_pl(msgid), to_utf8=to_utf8)

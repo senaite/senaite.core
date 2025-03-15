@@ -39,6 +39,12 @@ from DateTime.DateTime import DateError
 from DateTime.DateTime import DateTimeError
 from DateTime.DateTime import SyntaxError
 from DateTime.DateTime import TimeError
+from Products.CMFPlone.i18nl10n import monthname_msgid
+from Products.CMFPlone.i18nl10n import monthname_msgid_abbr
+from Products.CMFPlone.i18nl10n import weekdayname_msgid
+from Products.CMFPlone.i18nl10n import weekdayname_msgid_abbr
+from senaite.core.i18n import get_month_name
+from senaite.core.i18n import get_weekday_name
 from zope.i18n import translate
 
 
@@ -481,7 +487,21 @@ def date_to_string(dt, fmt="%Y-%m-%d", default=""):
             "M": "{:0>2}".format(dt.minute()),
             "p": dt.ampm().upper(),
             "S": "{:0>2}".format(dt.second()),
+            "Z": get_timezone(dt),
+            "b": get_month_name(dt.month(), abbr=True),
+            "B": get_month_name(dt.month()),
         }
+
+        if "${w}" in new_fmt:
+            data["w"] = int(dt.strftime("%w"))
+
+        if "${a}" in new_fmt.lower():
+            # Weekday name ${A} or abbreviation (${a})
+            weekday = int(dt.strftime("%w"))
+            data.update({
+                "a": get_weekday_name(weekday, abbr=True),
+                "A": get_weekday_name(weekday),
+            })
 
         return Template(new_fmt).safe_substitute(data) or default
 
