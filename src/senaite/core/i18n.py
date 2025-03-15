@@ -46,3 +46,26 @@ def translate(msgid, to_utf8=True, **kwargs):
 
     message = ztranslate(msgid, **params)
     return api.to_utf8(message) if to_utf8 else message
+
+
+def get_dt_format(msgid):
+    """Returns the date/time msgstr format for the current locale
+    :param id: locale msgid or "date"/"time"/"datetime"
+    """
+    mapping = {
+        "date": "date_format_short",
+        "datetime": "date_format_long",
+        "time": "time_format",
+    }
+    defaults = {
+        "time_format": "${H}:${M}",
+        "date_format_short": "${Y}-${m}-${d}",
+        "date_format_long": "${Y}-${m}-${d} ${H}:${M}",
+    }
+
+    # extract the current locale for the given msgid from TranslationService
+    msgid = mapping.get(msgid, msgid)
+    fmt = translate(msgid, to_utf8=False)
+    if not fmt or fmt == msgid:
+        return defaults.get(msgid)
+    return fmt

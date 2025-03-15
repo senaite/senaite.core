@@ -54,6 +54,7 @@ from Products.CMFCore.permissions import View
 from senaite.core.api import dtime
 from senaite.core.browser.fields.datetime import DateTimeField
 from senaite.core.i18n import translate as t
+from senaite.core.i18n import get_dt_format
 from senaite.core.permissions import FieldEditAnalysisResult
 from senaite.core.permissions import ViewResults
 from six import string_types
@@ -533,8 +534,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # Check if a date/time result
         result_type = self.getResultType()
         if result_type in ["date", "datetime"]:
-            # store as ISO YYYY-MM-DD HH:MM:SS
-            val = dtime.to_iso_format(val) or ""
+            # convert to datetime
+            dt = dtime.to_dt(val)
+            # make it TZ-naive to prevent undesired shifts
+            dt = dt.replace(tzinfo=None) if dt else None
+            # store as ISO format for easy handling
+            val = dtime.date_to_string(dt, fmt="%Y-%m-%d %H:%M:%S")
             self.getField("Result").set(self, val)
             return
 
@@ -916,13 +921,16 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         result_type = self.getResultType()
 
-        # If date result, return the localized date
-        if result_type == "date":
-            return dtime.to_localized_time(result, long_format=False)
-
-        # If date result, return the localized date
-        if result_type == "datetime":
-            return dtime.to_localized_time(result, long_format=True)
+        # If date result, apply the format for current locale, without TZ
+        if result_type in ["date", "datetime"]:
+            # convert to datetime
+            dt = dtime.to_dt(result)
+            # make TZ-naive to prevent undesired shifts
+            dt = dt.replace(tzinfo=None) if dt else None
+            # apply format set for current locale, but without localizing
+            fmt = get_dt_format(result_type)
+            result = dtime.date_to_string(dt, fmt)
+            return cgi.escape(result) if html else result
 
         # If string-like result, return without any formatting
         if result_type in ["string", "text"]:
