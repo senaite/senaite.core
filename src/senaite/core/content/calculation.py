@@ -554,18 +554,18 @@ class Calculation(Container):
 
         # Set default/existing values for InterimField keywords
         for interim in self.getInterimFields():
-            keyword = interim.get('keyword')
-            ex = [x.get('value') for x in value if
-                  x.get('keyword') == keyword]
-            params.append({'keyword': keyword,
-                           'value': ex[0] if ex else interim.get('value')})
+            keyword = interim.get("keyword")
+            ex = [x.get("value") for x in value if
+                  x.get("keyword") == keyword]
+            params.append({"keyword": keyword,
+                           "value": ex[0] if ex else interim.get("value")})
         # Set existing/blank values for service keywords
         for service in self.getDependentServices():
             keyword = service.getKeyword()
-            ex = [x.get('value') for x in value if
-                  x.get('keyword') == keyword]
-            params.append({'keyword': keyword,
-                           'value': ex[0] if ex else ''})
+            ex = [x.get("value") for x in value if
+                  x.get("keyword") == keyword]
+            params.append({"keyword": keyword,
+                           "value": ex[0] if ex else ""})
 
         mutator = self.mutator("test_parameters")
         mutator(self, params)
