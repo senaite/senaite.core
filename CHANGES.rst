@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2691 Fix APIError on upgrade step 2659 (init_loq)
 - #2688 Fix JS events from legacy controllers are bound multiple times
 - #2682 Added Limit of Quantification (LOQ) for services and analyses
 - #2687 Remove legacy and obsolete rejection.js
