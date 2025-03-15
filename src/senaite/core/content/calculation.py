@@ -134,7 +134,7 @@ class FormulaFormatter(string.Formatter):
     def __init__(self):
         super(FormulaFormatter, self).__init__()
         self.trans = {ord(s): api.safe_unicode(d) for s, d in zip("[]", "{}")}
-        for c in " \n\t\r":
+        for c in "\n\t\r":
             self.trans[ord(c)] = u""
 
     def format(self, formula, params):
