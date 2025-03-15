@@ -138,6 +138,7 @@ class FormulaFormatter(string.Formatter):
             self.trans[ord(c)] = u""
 
     def format(self, formula, params):
+        formula = api.safe_unicode(formula)
         formula = formula.translate(self.trans)
         return self.vformat(formula, [], params)
 
