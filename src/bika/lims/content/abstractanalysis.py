@@ -539,7 +539,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             # make it TZ-naive to prevent undesired shifts
             dt = dt.replace(tzinfo=None) if dt else None
             # store as ISO format for easy handling
-            val = dtime.date_to_string(dt, fmt="%Y-%m-%d %H:%M:%S")
+            with_time = result_type == "datetime"
+            fmt = "%Y-%m-%d %H:%M:%S" if with_time else "%Y-%m-%d"
+            val = dtime.date_to_string(dt, fmt=fmt)
             self.getField("Result").set(self, val)
             return
 
