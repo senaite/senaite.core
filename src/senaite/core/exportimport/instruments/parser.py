@@ -19,8 +19,11 @@
 # Some rights reserved, see README and LICENSE.
 
 import codecs
+import csv
 
+from bika.lims import deprecated
 from senaite.core.exportimport.instruments.logger import Logger
+from six.moves import StringIO
 from zope.deprecation import deprecate
 
 
@@ -225,13 +228,14 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
         # We test in import functions if the file was uploaded
         try:
             if self._encoding:
-                f = codecs.open(infile.name, 'r', encoding=self._encoding)
+                f = codecs.open(infile.name, "r", encoding=self._encoding)
             else:
-                f = open(infile.name, 'rU')
+                f = open(infile.name, "rU")
         except AttributeError:
             f = infile
         except IOError:
             f = infile.file
+
         for line in f.readlines():
             self._numline += 1
             if jump == -1:
@@ -260,9 +264,21 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
         )
         return True
 
+    def splitline(self, line, delimiter=","):
+        """Parse a single CSV line
+        """
+        # use CSV library to correctly split quoted values
+        fb = StringIO(line)
+        reader = csv.reader(fb, delimiter=delimiter)
+        parsed_line = next(reader)
+        return [token.strip() for token in parsed_line]
+
+    @deprecated(comment="Please use splitline instead",
+                replacement="splitline")
     def splitLine(self, line):
-        sline = line.split(',')
-        return [token.strip() for token in sline]
+        """Obsolete: use self.splitline instead
+        """
+        return self.splitline(line)
 
     def _parseline(self, line):
         """ Parses a line from the input CSV file and populates rawresults
