@@ -1090,38 +1090,21 @@ for the passed in object::
 
 
 
-Checking if an Object is Versionable
-....................................
-
-NOTE: Versioning is outdated!
-      This code will be removed as soon as we drop the `HistoryAwareReferenceField`
-      reference between Calculation and Analysis.
-
-Instruments are not versionable::
-
-    >>> api.is_versionable(instrument1)
-    False
-
-Calculations are versionable::
-
-    >>> calculations = senaite_setup.calculations
-    >>> calc = api.create(calculations, "Calculation", title="Calculation 1")
-
-    >>> api.is_versionable(calc)
-    True
-
-
 Getting the Version of an Object
 ................................
 
 This function returns the version as an integer::
 
+    >>> calc = api.create(portal.setup.calculations, "Calculation", title="Test Calculation")
+
     >>> api.get_version(calc)
     0
 
-Calling `processForm` bumps the version::
+Calling the modified event will create a new version::
 
-    >>> calc.processForm()
+    >>> from zope.lifecycleevent import modified
+
+    >>> modified(calc)
     >>> api.get_version(calc)
     1
 

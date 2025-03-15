@@ -1362,20 +1362,6 @@ def get_roles_for_permission(permission, brain_or_object):
     return sorted(allowed)
 
 
-def is_versionable(brain_or_object, policy='at_edit_autoversion'):
-    """Checks if the passed in object is versionable.
-
-    :param brain_or_object: A single catalog brain or content object
-    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
-    :returns: True if the object is versionable
-    :rtype: bool
-    """
-    pr = get_tool("portal_repository")
-    obj = get_object(brain_or_object)
-    return pr.supportsPolicy(obj, 'at_edit_autoversion') \
-        and pr.isVersionable(obj)
-
-
 def get_version(brain_or_object):
     """Get the version of the current object
 
@@ -1384,10 +1370,8 @@ def get_version(brain_or_object):
     :returns: The current version of the object, or None if not available
     :rtype: int or None
     """
-    obj = get_object(brain_or_object)
-    if not is_versionable(obj):
-        return None
-    return getattr(aq_base(obj), "version_id", 0)
+    from bika.lims.api.snapshot import get_version
+    return get_version(get_object(brain_or_object))
 
 
 def get_view(name, context=None, request=None, default=None):
