@@ -24,8 +24,8 @@ import tempfile
 import traceback
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims import senaiteMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IGetStickerTemplates
@@ -42,7 +42,7 @@ from zope.component import getAdapters
 from zope.component.interfaces import ComponentLookupError
 
 
-class Sticker(BrowserView):
+class StickerView(BrowserView):
     """Invoked via URL on an object or list of objects from the types
        AnalysisRequest, Sample or ReferenceSample.
 
@@ -82,7 +82,7 @@ class Sticker(BrowserView):
     template = ViewPageTemplateFile("templates/stickers_preview.pt")
 
     def __init__(self, context, request):
-        super(Sticker, self).__init__(context, request)
+        super(StickerView, self).__init__(context, request)
         self.context = context
         self.request = request
         self.current_item = None
