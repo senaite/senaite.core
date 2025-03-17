@@ -202,6 +202,8 @@ class StickerView(BrowserView):
             # A template from another add-on
             prefix, template = template.split(":")
             templates_dir = self._getStickersTemplatesDirectory(prefix)
+            if not os.path.exists(templates_dir):
+                return
             css = "{0}.css".format(template[:-3])
             if css in os.listdir(templates_dir):
                 path = "%s/%s.css" % (templates_dir, template[:-3])
@@ -244,6 +246,8 @@ class StickerView(BrowserView):
         if embedt.find(":") >= 0:
             prefix, embedt = embedt.split(":")
             templates_dir = self._getStickersTemplatesDirectory(prefix)
+            if not os.path.exists(templates_dir):
+                return
         elif self.filter_by_type:
             templates_dir = "/".join([templates_dir, self.filter_by_type])
         fullpath = os.path.join(templates_dir, embedt)
