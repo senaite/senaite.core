@@ -1,0 +1,83 @@
+#sticker-rule {
+  color: #333;
+  height: 10mm;
+  margin: 0 auto;
+  overflow: hidden;
+  display: none;
+}
+
+.sticker-rule-tick,
+.sticker-rule-tick-odd {
+  display: table-cell;
+  width: 10mm;
+  min-width:10mm;
+  max-width:10mm;
+  font-size: 6pt;
+}
+
+.sticker-rule-tick {
+  border-top: 2px solid #666;
+}
+
+.sticker-rule-tick-odd {
+  border-top: 1px dotted #666;
+}
+
+.sticker {
+  margin: 0 auto;
+  background-color: #fff;
+  border-bottom: 1px dotted #cdcdcd;
+  box-shadow: 1px 2px 5px #cdcdcd;
+}
+
+.barcode-hri {
+  clear: both;
+  width: 100%;
+  background-color: #fff;
+  color: #000;
+  text-align: center;
+  font-size: 10px;
+}
+
+@media print {
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: #fff !important;
+  }
+
+  #sticker-preview-header {
+    display: none !important;
+  }
+
+  #stickers-wrapper {
+    margin: 0;
+  }
+
+  .sticker {
+    margin: 0;
+    border: none;
+    box-shadow: none;
+  }
+
+  .page-break, .page-break-after, .page-break-before {
+    display: block !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background-color: transparent !important;
+  }
+
+  div.page-break,
+  div.page-break-after {
+    page-break-after: always;
+  }
+
+  div.page-break-before {
+    page-break-before: always;
+  }
+
+  #sticker-rule {
+    display: none !important;
+  }
+}
