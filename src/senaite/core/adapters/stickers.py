@@ -20,8 +20,8 @@
 
 from zope.interface import implements
 
-from bika.lims import logger
-from bika.lims.interfaces import IGetStickerTemplates
+from senaite.core import logger
+from senaite.core.interfaces import IGetStickerTemplates
 from bika.lims.vocabularies import getStickerTemplates
 
 

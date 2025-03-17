@@ -51,4 +51,11 @@
       factory=".localroles.ClientShareableLocalRoles"
       name="senaite.core.adapter.localroles.clientshareable" />
 
+  <!-- Sticker adapters -->
+  <adapter
+      factory="senaite.core.adapters.stickers.GetSampleStickers"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      provides="senaite.core.interfaces.IGetStickerTemplates"
+      />
+
 </configure>
