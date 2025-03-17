@@ -1,0 +1,7 @@
+<div class="stickers">
+  <style id="stickers-style" type="text/css" tal:content="structure python:view.getSelectedTemplateCSS()"></style>
+  <tal:stickers repeat="item view/items">
+    <div class="sticker"
+         tal:content="structure python:view.render_sticker(item)"></div>
+  </tal:stickers>
+</div>

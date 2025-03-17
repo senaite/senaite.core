@@ -80,6 +80,7 @@ class StickerView(BrowserView):
            -- other_worksheet_stickers_...
     """
     template = ViewPageTemplateFile("templates/stickers_preview.pt")
+    stickers_template = ViewPageTemplateFile("templates/stickers.pt")
 
     def __init__(self, context, request):
         super(StickerView, self).__init__(context, request)
@@ -217,7 +218,15 @@ class StickerView(BrowserView):
                     content = content_file.read()
         return content
 
-    def renderItem(self, item):
+    def render_stickers(self):
+        """Render the outer stickers template
+
+        NOTE: We wrapped the outer sticker template into a separate template to
+              allow subclasses easier overrides.
+        """
+        return self.stickers_template()
+
+    def render_sticker(self, item):
         """Renders the next available sticker.
 
         Uses the template specified in the request ('template' parameter) by

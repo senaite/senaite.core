@@ -216,20 +216,18 @@
       </div>
 
       <div id="stickers-wrapper">
-        <style id='stickers-style' type="text/css" tal:content="structure python:view.getSelectedTemplateCSS()"></style>
+        <!-- RULER -->
         <div id="sticker-rule">
           <div style="font-size:6pt">mm</div>
-          <tal:tick repeat="mm python:[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,210]">
+          <tal:tick repeat="mm python:range(0, 310, 10)">
             <div tal:define="odd repeat/mm/odd;
                              css python:'sticker-rule-tick-odd' if odd else 'sticker-rule-tick';"
                  tal:attributes="class css"
                  tal:content="mm"></div>
           </tal:tick>
         </div>
-        <tal:stickers repeat="item view/items">
-          <div class='sticker'
-               tal:content='structure python:view.renderItem(item)'></div>
-        </tal:stickers>
+        <!-- STICKERS -->
+        <tal:t replace="structure python:view.render_stickers()" />
       </div>
     </div>
 
