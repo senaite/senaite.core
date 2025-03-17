@@ -118,7 +118,7 @@ class StickerView(BrowserView):
         """
         url = api.get_url(self.context)
         portal_type = api.get_portal_type(self.context)
-        redirect_contexts = ['Client', 'AnalysisRequest', 'Samples', 'Batch']
+        redirect_contexts = ["Client", "AnalysisRequest", "Samples", "Batch"]
         if portal_type not in redirect_contexts:
             parent = api.get_parent(self.context)
             url = api.get_url(parent)
@@ -145,13 +145,15 @@ class StickerView(BrowserView):
         return uids
 
     def get_available_templates(self):
-        """Returns an array with the templates of stickers available.
+        """Returns a list of available sticker templates
 
-        Each array item is a dictionary with the following structure:
+        Each list item is a dictionary with the following structure:
 
-            {'id': <template_id>,
-            'title': <teamplate_title>,
-            'selected: True/False'}
+            {
+                'id': <template_id>,
+                'title': <teamplate_title>,
+                'selected: True/False',
+            }
         """
         # Getting adapters for current context. those adapters will return
         # the desired sticker templates for the current context:
