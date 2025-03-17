@@ -53,9 +53,9 @@
 
   <!-- Sticker adapter for Samples -->
   <adapter
-      factory="senaite.core.adapters.stickers.GetSampleStickers"
+      factory=".stickers.GetSampleStickers"
       for="bika.lims.interfaces.IAnalysisRequest"
-      provides="senaite.core.interfaces.IGetStickerTemplates"
+      provides="senaite.core.interfaces.stickers.IGetStickerTemplates"
       />
 
 </configure>
