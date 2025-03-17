@@ -338,7 +338,8 @@ class StickerView(BrowserView):
         and selected items
         """
         if self.filter_by_type:
-            templates = getStickerTemplates(filter_by_type=self.filter_by_type)
+            templates = get_sticker_templates(
+                filter_by_type=self.filter_by_type)
             template_id = templates[0].get("id", "") if templates else ""
             if template_id:
                 return template_id
