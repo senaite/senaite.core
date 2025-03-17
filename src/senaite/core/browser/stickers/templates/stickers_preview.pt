@@ -19,18 +19,15 @@
       <div id="sticker-preview-header" class="row bg-light">
         <div id="options-handler" class="col-sm-3 m-auto no-gutters py-3">
 
-          <!-- Template -->
+          <!-- Templates selection -->
           <div id="sticker-template" class="mb-2">
             <label for="template" class="mr-4" i18n:translate="">Template</label>
             <select id="template" name="template" class="form-control">
               <tal:formats tal:repeat="tpl python:view.get_available_templates()">
-                <option selected
-                        tal:attributes="value tpl/id"
-                        tal:content="tpl/title"
-                        tal:condition="tpl/selected"></option>
-                <option tal:attributes="value tpl/id"
-                        tal:content="tpl/title"
-                        tal:condition="not:tpl/selected"></option>
+                <option tal:attributes="value tpl/id;
+                                        selected tpl/selected|nothing;"
+                        tal:content="tpl/title">
+                </option>
               </tal:formats>
             </select>
           </div>
@@ -38,49 +35,34 @@
           <!-- Number of copies -->
           <div id="sticker-copies" class="mb-2">
             <label for="copies_count" class="mr-4" i18n:translate="">Number of copies</label>
-            <input name="copies_count"
-                   id="copies_count"
-                   class="form-control"
-                   type="number"
-                   min="1"
-                   step="1"
-                   i18n:attributes="value"
-                   tal:attributes="value view/get_copies_count"/>
+            <input name="copies_count" id="copies_count" class="form-control" type="number" min="1" step="1"
+                   tal:attributes="value view/get_copies_count" />
           </div>
-          <!-- Buttons -->
+
+        <!-- Back/Print Button -->
           <div id="sticker-buttons">
-            <!-- go back -->
-            <input type="button"
-                  id="cancel-button"
-                  value="Back"
-                  class="btn btn-secondary btn-sm"
-                  i18n:attributes="value"
-                  tal:attributes="data-url goback_url;" />
-            <!-- print -->
-            <input type="button"
-                  id="print-button"
-                  value="Print"
-                  class="btn btn-primary btn-sm"
-                  i18n:attributes="value" />
+            <input type="button" id="cancel-button" value="Back" class="btn btn-secondary btn-sm"
+                   i18n:attributes="value" tal:attributes="data-url python:view.get_back_url();" />
+            <input type="button" id="print-button" value="Print" class="btn btn-primary btn-sm" i18n:attributes="value" />
           </div>
+
         </div>
       </div>
 
       <div id="stickers-wrapper">
-        <!-- RULER -->
+        <!-- Ruler -->
         <div id="sticker-rule">
           <div style="font-size:6pt">mm</div>
           <tal:tick repeat="mm python:range(0, 310, 10)">
             <div tal:define="odd repeat/mm/odd;
                              css python:'sticker-rule-tick-odd' if odd else 'sticker-rule-tick';"
-                 tal:attributes="class css"
-                 tal:content="mm"></div>
+                 tal:attributes="class css" tal:content="mm"></div>
           </tal:tick>
         </div>
-        <!-- STICKERS -->
+        <!-- Stickers -->
         <tal:t replace="structure python:view.render_stickers()" />
       </div>
     </div>
-
   </body>
+
 </html>
