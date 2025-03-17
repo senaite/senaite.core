@@ -172,7 +172,7 @@
           <div id="sticker-template" class="mb-2">
             <label for="template" class="mr-4" i18n:translate="">Template</label>
             <select id="template" name="template" class="form-control">
-              <tal:formats tal:repeat="tpl python:view.getAvailableTemplates()">
+              <tal:formats tal:repeat="tpl python:view.get_available_templates()">
                 <option selected
                         tal:attributes="value tpl/id"
                         tal:content="tpl/title"

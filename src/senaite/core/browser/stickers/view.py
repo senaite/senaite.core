@@ -143,7 +143,7 @@ class StickerView(BrowserView):
             return [api.get_uid(self.context)]
         return uids
 
-    def getAvailableTemplates(self):
+    def get_available_templates(self):
         """Returns an array with the templates of stickers available.
 
         Each array item is a dictionary with the following structure:
