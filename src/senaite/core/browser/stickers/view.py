@@ -28,7 +28,7 @@ from bika.lims import logger
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IAnalysisRequest
-from bika.lims.interfaces import IGetStickerTemplates
+from senaite.core.interfaces import IGetStickerTemplates
 from bika.lims.utils import createPdf
 from bika.lims.utils import to_int
 from bika.lims.vocabularies import getStickerTemplates
