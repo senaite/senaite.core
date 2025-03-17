@@ -25,8 +25,6 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget
-from Products.Archetypes.Widget import StringWidget
-from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.widgets import RejectionSetupWidget
 from bika.lims.browser.worksheet.tools import getWorksheetLayouts
 from bika.lims.config import CURRENCIES
@@ -38,7 +36,6 @@ from bika.lims.config import SCINOTATION_OPTIONS
 from bika.lims.config import WEEKDAYS
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBikaSetup
-from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from plone.app.folder import folder
 from Products.Archetypes.atapi import BooleanField
 from Products.Archetypes.atapi import BooleanWidget
@@ -57,12 +54,15 @@ from Products.Archetypes.Field import TextField
 from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.utils import IntDisplayList
 from Products.Archetypes.Widget import RichWidget
+from Products.Archetypes.Widget import StringWidget
 from Products.CMFCore.utils import getToolByName
 from senaite.core.api import geo
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.interfaces import IHideActionsMenu
 from senaite.core.interfaces import INumberGenerator
 from senaite.core.p3compat import cmp
+from senaite.core.vocabularies.stickers import get_sticker_templates
 from zope.component import getUtility
 from zope.interface import implements
 
@@ -1084,7 +1084,7 @@ class BikaSetup(folder.ATFolder):
     def getStickerTemplates(self):
         """Get the sticker templates
         """
-        out = [[t['id'], t['title']] for t in _getStickerTemplates()]
+        out = [[t["id"], t["title"]] for t in get_sticker_templates()]
         return DisplayList(out)
 
     def getAnalysisServicesVocabulary(self):

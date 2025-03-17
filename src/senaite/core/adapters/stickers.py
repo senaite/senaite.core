@@ -18,21 +18,22 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from zope.interface import implements
-
 from senaite.core import logger
 from senaite.core.interfaces import IGetStickerTemplates
-from bika.lims.vocabularies import getStickerTemplates
+from senaite.core.vocabularies.stickers import get_sticker_templates
+from zope.interface import implements
 
 
 class GetSampleStickers(object):
-    """
-    Returns an array with the templates of stickers available for Sample
-    object in context.
-    Each array item is a dictionary with the following structure:
-        [{'id': <template_id>,
-         'title': <teamplate_title>,
-         'selected: True/False'}, ]
+    """Returns a list with of sticker templates for the sample
+
+    Each item in the list is a dictionary with the following structure:
+
+        {
+            "id": <template_id>,
+            "title": <teamplate_title>,
+            "selected: True/False",
+        }
     """
 
     implements(IGetStickerTemplates)
@@ -45,7 +46,7 @@ class GetSampleStickers(object):
     def __call__(self, request):
         self.request = request
         # Stickers admittance are saved in sample type
-        if not hasattr(self.context, 'getSampleType'):
+        if not hasattr(self.context, "getSampleType"):
             logger.warning(
                 "{} has no attribute 'getSampleType', so no sticker will be "
                 "returned.". format(self.context.getId())
@@ -56,12 +57,12 @@ class GetSampleStickers(object):
         default_sticker_id = self.get_default_sticker_id()
         result = []
         # Getting only existing templates and its info
-        stickers = getStickerTemplates()
+        stickers = get_sticker_templates()
         for sticker in stickers:
-            if sticker.get('id') in sticker_ids:
+            if sticker.get("id") in sticker_ids:
                 sticker_info = sticker.copy()
-                sticker_info['selected'] = \
-                    default_sticker_id == sticker.get('id')
+                sticker_info["selected"] = \
+                    default_sticker_id == sticker.get("id")
                 result.append(sticker_info)
         return result
 
@@ -72,7 +73,7 @@ class GetSampleStickers(object):
 
         :return: An sticker ID as string
         """
-        size = self.request.get('size', '')
-        if size == 'small':
+        size = self.request.get("size", "")
+        if size == "small":
             return self.sample_type.getDefaultSmallSticker()
         return self.sample_type.getDefaultLargeSticker()

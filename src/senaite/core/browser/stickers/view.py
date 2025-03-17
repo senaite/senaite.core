@@ -28,16 +28,16 @@ from bika.lims import logger
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IAnalysisRequest
-from senaite.core.interfaces import IGetStickerTemplates
 from bika.lims.utils import createPdf
 from bika.lims.utils import to_int
-from bika.lims.vocabularies import getStickerTemplates
 from plone.memoize.view import memoize
 from plone.resource.utils import queryResourceDirectory
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.app.supermodel import SuperModel
+from senaite.core.interfaces import IGetStickerTemplates
 from senaite.core.interfaces import ISampleType
+from senaite.core.vocabularies.stickers import get_sticker_templates
 from zope.component import getAdapters
 from zope.component.interfaces import ComponentLookupError
 
@@ -168,7 +168,7 @@ class StickerView(BrowserView):
             return templates
         # If there are no adapters, get all sticker templates in the system
         seltemplate = self.getSelectedTemplate()
-        for temp in getStickerTemplates(filter_by_type=self.filter_by_type):
+        for temp in get_sticker_templates(filter_by_type=self.filter_by_type):
             out = temp
             out["selected"] = temp.get("id", "") == seltemplate
             templates.append(out)

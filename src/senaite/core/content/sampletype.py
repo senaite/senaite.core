@@ -44,7 +44,7 @@ from zope.interface import Interface
 from zope.interface import Invalid
 from zope.interface import implementer
 
-STICKERS_VOCABULARY = "senaite.core.vocabularies.stickertemplates"
+STICKERS_VOCABULARY = "senaite.core.vocabularies.stickers"
 DEFAULT_ADMITTED_STICKER_TEMPLATES = [{
     "admitted": set(),
     "small_default": None,
