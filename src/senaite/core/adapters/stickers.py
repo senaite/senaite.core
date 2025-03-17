@@ -21,9 +21,10 @@
 from senaite.core import logger
 from senaite.core.interfaces import IGetStickerTemplates
 from senaite.core.vocabularies.stickers import get_sticker_templates
-from zope.interface import implements
+from zope.interface import implementer
 
 
+@implementer(IGetStickerTemplates)
 class GetSampleStickers(object):
     """Returns a list with of sticker templates for the sample
 
@@ -35,8 +36,6 @@ class GetSampleStickers(object):
             "selected: True/False",
         }
     """
-
-    implements(IGetStickerTemplates)
 
     def __init__(self, context):
         self.context = context
