@@ -27,16 +27,13 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.browser import BrowserView
-from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.utils import createPdf
 from bika.lims.utils import to_int
-from plone.memoize.view import memoize
 from plone.resource.utils import queryResourceDirectory
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.app.supermodel import SuperModel
 from senaite.core.interfaces import IGetStickerTemplates
-from senaite.core.interfaces import ISampleType
 from senaite.core.vocabularies.stickers import get_sticker_templates
 from zope.component import getAdapters
 from zope.component.interfaces import ComponentLookupError
@@ -106,7 +103,7 @@ class StickerView(BrowserView):
         self.filter_by_type = self.request.get("filter_by_type", False)
 
         # fetch the default template
-        self.selected_template = self.get_default_template()
+        self.selected_template = self.get_selected_template()
 
         self.items = self.get_items()
         if not self.items:
@@ -166,35 +163,23 @@ class StickerView(BrowserView):
         except ComponentLookupError:
             logger.info("No IGetStickerTemplates adapters found.")
             adapters = None
+
         templates = []
         if adapters is not None:
             # Gather all templates
             for name, adapter in adapters:
                 templates += adapter(self.request)
-                # XXX: this might get inconsistent for multiple adapters!
-                self.selected_template = adapter.default_template
         if templates:
             return templates
+
         # If there are no adapters, get all sticker templates in the system
-        seltemplate = self.getSelectedTemplate()
+        selected_template = self.selected_template
         for temp in get_sticker_templates(filter_by_type=self.filter_by_type):
             out = temp
-            out["selected"] = temp.get("id", "") == seltemplate
+            out["selected"] = temp.get("id", "") == selected_template
             templates.append(out)
+
         return templates
-
-    def getSelectedTemplate(self):
-        """Returns the id of the sticker template selected in the request.
-
-        If no template has been selected, returns default's depending on the
-        selected items and setup settings
-
-        :returns: Sticker ID
-        """
-        template_id = self.request.get("template")
-        if not template_id:
-            template_id = self.get_default_template()
-        return template_id
 
     def getSelectedTemplateCSS(self):
         """Looks for the CSS file from the selected template and return its
@@ -331,11 +316,13 @@ class StickerView(BrowserView):
         request_num = self.request.form.get("copies_count")
         return to_int(request_num, default_num)
 
-    @memoize
-    def get_default_template(self):
-        """Returns the default sticker template to use for the given context
-        and selected items
+    def get_selected_template(self):
+        """Return the selected template
         """
+        template_id = self.request.get("template")
+        if template_id:
+            return template_id
+
         if self.filter_by_type:
             templates = get_sticker_templates(
                 filter_by_type=self.filter_by_type)
