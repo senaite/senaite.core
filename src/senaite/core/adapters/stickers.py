@@ -40,11 +40,9 @@ class GetSampleStickers(object):
 
     def __init__(self, context):
         self.context = context
-        self.request = None
-        self.sample_type = None
+        self.sample_type = self.context.getSampleType()
 
     def __call__(self, request):
-        self.request = request
         # Stickers admittance are saved in sample type
         if not hasattr(self.context, "getSampleType"):
             logger.warning(
@@ -53,7 +51,6 @@ class GetSampleStickers(object):
             )
             return []
 
-        self.sample_type = self.context.getSampleType()
         sticker_ids = self.sample_type.getAdmittedStickers()
         default_template = self.default_template
         setup_default_sticker = self.get_setup_default_sticker()
@@ -79,7 +76,8 @@ class GetSampleStickers(object):
 
         :return: An sticker ID as string
         """
-        size = self.request.get("size", "")
+        request = api.get_request()
+        size = request.get("size", "")
         if size == "small":
             return self.sample_type.getDefaultSmallSticker()
         elif size == "large":
