@@ -87,6 +87,7 @@ class StickerView(BrowserView):
         self.context = context
         self.request = request
         self.current_item = None
+        self.selected_template = None
 
     def __call__(self):
         # Need to generate a PDF with the stickers?
@@ -103,6 +104,9 @@ class StickerView(BrowserView):
         # Example: If filter_by_type=='worksheet', only *.pt files under a
         # folder with filter_by_type as name will be displayed.
         self.filter_by_type = self.request.get("filter_by_type", False)
+
+        # fetch the default template
+        self.selected_template = self.get_default_template()
 
         self.items = self.get_items()
         if not self.items:
@@ -167,6 +171,8 @@ class StickerView(BrowserView):
             # Gather all templates
             for name, adapter in adapters:
                 templates += adapter(self.request)
+                # XXX: this might get inconsistent for multiple adapters!
+                self.selected_template = adapter.default_template
         if templates:
             return templates
         # If there are no adapters, get all sticker templates in the system
@@ -178,9 +184,12 @@ class StickerView(BrowserView):
         return templates
 
     def getSelectedTemplate(self):
-        """Returns the id of the sticker template selected in the request. If
-        no template has been selected, returns default's depending on the
+        """Returns the id of the sticker template selected in the request.
+
+        If no template has been selected, returns default's depending on the
         selected items and setup settings
+
+        :returns: Sticker ID
         """
         template_id = self.request.get("template")
         if not template_id:
@@ -195,7 +204,7 @@ class StickerView(BrowserView):
         default.css in the stickers path and return its contents. If no CSS
         file found, retrns an empty string
         """
-        template = self.getSelectedTemplate()
+        template = self.selected_template
         # Look for the CSS
         content = ""
         if template.find(":") >= 0:
@@ -242,7 +251,7 @@ class StickerView(BrowserView):
         """
         self.current_item = item
         templates_dir = "templates/stickers"
-        embedt = self.getSelectedTemplate()
+        embedt = self.selected_template
         if embedt.find(":") >= 0:
             prefix, embedt = embedt.split(":")
             templates_dir = self._getStickersTemplatesDirectory(prefix)
@@ -322,22 +331,6 @@ class StickerView(BrowserView):
         request_num = self.request.form.get("copies_count")
         return to_int(request_num, default_num)
 
-    def get_default_template_for(self, obj, size):
-        """Returns the id of the sticker template to be rendered for the given
-        object and size
-        """
-        obj = api.get_object(obj)
-        if ISampleType.providedBy(obj):
-            if size == "small":
-                return obj.getDefaultSmallSticker()
-            return obj.getDefaultLargeSticker()
-
-        elif IAnalysisRequest.providedBy(obj):
-            sample_type = obj.getSampleType()
-            return self.get_default_template_for(sample_type, size)
-
-        return None
-
     @memoize
     def get_default_template(self):
         """Returns the default sticker template to use for the given context
@@ -350,15 +343,11 @@ class StickerView(BrowserView):
             if template_id:
                 return template_id
 
-        # pick the default template from the first item
-        size = self.request.get("size", "")
-        for uid in self.get_uids():
-            template = self.get_default_template_for(uid, size)
-            if template:
-                return template
-
         # rely on the default setup template
         setup = api.get_setup()
+        size = self.request.get("size", "")
         if size == "small":
             return setup.getSmallStickerTemplate()
-        return setup.getLargeStickerTemplate()
+        elif size == "large":
+            return setup.getLargeStickerTemplate()
+        return setup.getAutoStickerTemplate()

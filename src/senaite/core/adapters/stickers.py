@@ -18,6 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from senaite.core import logger
 from senaite.core.interfaces import IGetStickerTemplates
 from senaite.core.vocabularies.stickers import get_sticker_templates
@@ -51,21 +52,27 @@ class GetSampleStickers(object):
                 "returned.". format(self.context.getId())
             )
             return []
+
         self.sample_type = self.context.getSampleType()
         sticker_ids = self.sample_type.getAdmittedStickers()
-        default_sticker_id = self.get_default_sticker_id()
+        default_template = self.default_template
+        setup_default_sticker = self.get_setup_default_sticker()
+        # ensure the setup default sticker is always contained
+        sticker_ids.add(setup_default_sticker)
+
         result = []
         # Getting only existing templates and its info
         stickers = get_sticker_templates()
         for sticker in stickers:
             if sticker.get("id") in sticker_ids:
                 sticker_info = sticker.copy()
-                sticker_info["selected"] = \
-                    default_sticker_id == sticker.get("id")
+                sticker_id = sticker.get("id")
+                sticker_info["selected"] = sticker_id == default_template
                 result.append(sticker_info)
         return result
 
-    def get_default_sticker_id(self):
+    @property
+    def default_template(self):
         """
         Gets the default sticker for that content type depending on the
         requested size.
@@ -75,4 +82,13 @@ class GetSampleStickers(object):
         size = self.request.get("size", "")
         if size == "small":
             return self.sample_type.getDefaultSmallSticker()
-        return self.sample_type.getDefaultLargeSticker()
+        elif size == "large":
+            return self.sample_type.getDefaultLargeSticker()
+        # fall back to the default sticker from setup
+        return self.get_setup_default_sticker()
+
+    def get_setup_default_sticker(self):
+        """Returns the default sticker from setup
+        """
+        setup = api.get_setup()
+        return setup.getAutoStickerTemplate()
