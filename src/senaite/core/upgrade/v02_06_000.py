@@ -2771,10 +2771,10 @@ def init_loq(tool):
         ulod = obj.getField("UpperDetectionLimit").getRaw(obj)
 
         # convert values to float
-        fllod = api.to_float(llod)
-        flloq = api.to_float(lloq)
-        fuloq = api.to_float(uloq)
-        fulod = api.to_float(ulod)
+        fllod = api.to_float(llod, 0.0)
+        flloq = api.to_float(lloq, 0.0)
+        fuloq = api.to_float(uloq, 1000000000.0)
+        fulod = api.to_float(ulod, 1000000000.0)
 
         # ·······|-------|=======|-------|·······
         #       LLOD    LLOQ    ULOQ    ULOD
