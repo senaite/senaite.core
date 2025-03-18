@@ -818,9 +818,9 @@ schema = BikaFolderSchema.copy() + Schema((
                 "Choose when stickers should be automatically printed:<br/>"
                 "<ul>"
                 "<li><strong>Register:</strong> Stickers are printed "
-                " automatically when new samples or records are created.</li>"
-                "<li><strong>Receive:</strong> Stickers are printed when "
-                " samples arereceived.</li>"
+                " automatically when new samples are created.</li>"
+                "<li><strong>Receive:</strong> Stickers are printed "
+                " automatically when samples are received.</li>"
                 "<li><strong>None:</strong> Disables automatic sticker "
                 "printing.</li>"
                 "</ul>"
@@ -838,8 +838,6 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_(
                 "Select the default sticker template used for "
                 "automatic printing.<br/>"
-                "<strong>Note:</strong> Sample-specific stickers are "
-                "configured based on their sample type."
             ),
         )
     ),
