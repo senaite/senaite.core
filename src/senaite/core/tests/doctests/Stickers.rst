@@ -170,3 +170,26 @@ The **large sticker** should also come from the sample type:
     >>> request["size"] = "large"
     >>> view.get_selected_template() == SAMPLE_TYPE_LARGE_STICKER
     True
+
+
+Type filters
+............
+
+Stickers can be filtered by type, e.g. withc `filter_by_type=batch` or `filter_by_type=worksheet`.
+When a type filter is set, the sticker view looks up a subfolder with the filtered type name for templates.
+
+For the `batch` type, there is currently only one template available:
+
+    >>> BATCH_STICKER = "Code_39_40x20mm.pt"
+
+    >>> batch = api.create(portal.batches, "Batch", title="Test Batch")
+    >>> view = api.get_view("sticker", context=batch, request=request)
+
+    >>> request["filter_by_type"] = "batch"
+    >>> view.get_selected_template() == BATCH_STICKER
+    True
+
+There should also be no other stickers available:
+
+    >>> len(view.get_available_templates())
+    1
