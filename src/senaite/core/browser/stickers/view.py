@@ -84,7 +84,6 @@ class StickerView(BrowserView):
         self.context = context
         self.request = request
         self.current_item = None
-        self.selected_template = None
 
     def __call__(self):
         # Need to generate a PDF with the stickers?
@@ -100,10 +99,7 @@ class StickerView(BrowserView):
         # the path with the type name will be given as vocabulary.
         # Example: If filter_by_type=='worksheet', only *.pt files under a
         # folder with filter_by_type as name will be displayed.
-        self.filter_by_type = self.request.get("filter_by_type", False)
-
-        # fetch the default template
-        self.selected_template = self.get_selected_template()
+        self.filter_by_type = self.request.get("filter_by_type")
 
         self.items = self.get_items()
         if not self.items:
@@ -145,35 +141,42 @@ class StickerView(BrowserView):
             return [api.get_uid(self.context)]
         return uids
 
+    def get_sticker_template_adapters(self):
+        """Query context adapters for IGetStickerTemplate
+        """
+        try:
+            return getAdapters((self.context, ), IGetStickerTemplates)
+        except ComponentLookupError:
+            logger.debug("No IGetStickerTemplates adapters found for %s."
+                         % api.get_path(self.context))
+            return []
+
     def get_available_templates(self):
         """Returns a list of available sticker templates
 
         Each list item is a dictionary with the following structure:
 
             {
-                'id': <template_id>,
-                'title': <teamplate_title>,
-                'selected: True/False',
+                "id": <template_id>,
+                "title": <teamplate_title>,
+                "selected: True/False",
             }
-        """
-        # Getting adapters for current context. those adapters will return
-        # the desired sticker templates for the current context:
-        try:
-            adapters = getAdapters((self.context, ), IGetStickerTemplates)
-        except ComponentLookupError:
-            logger.info("No IGetStickerTemplates adapters found.")
-            adapters = None
 
+        :returns: list of template info records
+        """
         templates = []
+
+        adapters = self.get_sticker_template_adapters()
         if adapters is not None:
             # Gather all templates
             for name, adapter in adapters:
                 templates += adapter(self.request)
+
         if templates:
             return templates
 
-        # If there are no adapters, get all sticker templates in the system
-        selected_template = self.selected_template
+        # If there are no adapters, get all sticker templates available
+        selected_template = self.get_selected_template()
         for temp in get_sticker_templates(filter_by_type=self.filter_by_type):
             out = temp
             out["selected"] = temp.get("id", "") == selected_template
@@ -189,7 +192,7 @@ class StickerView(BrowserView):
         default.css in the stickers path and return its contents. If no CSS
         file found, retrns an empty string
         """
-        template = self.selected_template
+        template = self.get_selected_template()
         # Look for the CSS
         content = ""
         if template.find(":") >= 0:
@@ -236,7 +239,7 @@ class StickerView(BrowserView):
         """
         self.current_item = item
         templates_dir = "templates/stickers"
-        embedt = self.selected_template
+        embedt = self.get_selected_template()
         if embedt.find(":") >= 0:
             prefix, embedt = embedt.split(":")
             templates_dir = self._getStickersTemplatesDirectory(prefix)
@@ -329,6 +332,13 @@ class StickerView(BrowserView):
             template_id = templates[0].get("id", "") if templates else ""
             if template_id:
                 return template_id
+
+        adapters = self.get_sticker_template_adapters()
+        for name, adapter in adapters:
+            default_template = getattr(adapter, "default_template", None)
+            if not default_template:
+                continue
+            return default_template
 
         # rely on the default setup template
         setup = api.get_setup()
