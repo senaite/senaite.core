@@ -806,29 +806,44 @@ schema = BikaFolderSchema.copy() + Schema((
             rows=15,
         ),
     ),
+
     StringField(
-        'AutoPrintStickers',
+        "AutoPrintStickers",
         schemata="Sticker",
         vocabulary=STICKER_AUTO_OPTIONS,
         widget=SelectionWidget(
             format='select',
-            label=_("Automatic sticker printing"),
+            label=_("Automatic Sticker Printing"),
             description=_(
-                "Select 'Register' if you want stickers to be automatically printed when "
-                "new Samples or sample records are created. Select 'Receive' to print stickers "
-                "when Samples or Samples are received. Select 'None' to disable automatic printing"),
+                "Choose when stickers should be automatically printed:<br/>"
+                "<ul>"
+                "<li><strong>Register:</strong> Stickers are printed "
+                " automatically when new samples or records are created.</li>"
+                "<li><strong>Receive:</strong> Stickers are printed when "
+                " samples arereceived.</li>"
+                "<li><strong>None:</strong> Disables automatic sticker "
+                "printing.</li>"
+                "</ul>"
+            ),
         )
     ),
+
     StringField(
-        'AutoStickerTemplate',
+        "AutoStickerTemplate",
         schemata="Sticker",
         vocabulary="getStickerTemplates",
         widget=SelectionWidget(
             format='select',
-            label=_("Sticker templates"),
-            description=_("Select which sticker to print when automatic sticker printing is enabled"),
+            label=_("Default Sticker Template"),
+            description=_(
+                "Select the default sticker template used for "
+                "automatic printing.<br/>"
+                "<strong>Note:</strong> Sample-specific stickers are "
+                "configured based on their sample type."
+            ),
         )
     ),
+
     StringField(
         'SmallStickerTemplate',
         schemata="Sticker",
@@ -836,31 +851,45 @@ schema = BikaFolderSchema.copy() + Schema((
         default="Code_128_1x48mm.pt",
         widget=SelectionWidget(
             format='select',
-            label=_("Small sticker"),
-            description=_("Select which sticker should be used as the 'small' sticker by default")
+            label=_("Small Sticker Template"),
+            description=_(
+                "Choose the default template for 'small' stickers.<br/>"
+                "<strong>Note:</strong> Sample-specific 'small' stickers are "
+                "configured based on their sample type."
+            ),
         )
     ),
+
     StringField(
-        'LargeStickerTemplate',
+        "LargeStickerTemplate",
         schemata="Sticker",
         vocabulary="getStickerTemplates",
         default="Code_128_1x72mm.pt",
         widget=SelectionWidget(
             format='select',
-            label=_("Large sticker"),
-            description=_("Select which sticker should be used as the 'large' sticker by default")
+            label=_("Large Sticker Template"),
+            description=_(
+                "Choose the default template for 'large' stickers.<br/>"
+                "<strong>Note:</strong> Sample-specific 'large' stickers are "
+                "configured based on their sample type."
+            ),
         )
     ),
+
     IntegerField(
-        'DefaultNumberOfCopies',
+        "DefaultNumberOfCopies",
         schemata="Sticker",
-        required="1",
-        default="1",
+        required=True,
+        default=1,
         widget=IntegerWidget(
-            label=_("Number of copies"),
-            description=_("Set the default number of copies to be printed for each sticker")
+            label=_("Default Number of Copies"),
+            description=_(
+                "Specify how many copies of each sticker should be printed "
+                "by default."
+            ),
         )
     ),
+
     IDFormattingField(
         'IDFormatting',
         schemata="ID Server",
