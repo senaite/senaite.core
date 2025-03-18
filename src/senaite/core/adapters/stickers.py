@@ -52,6 +52,9 @@ class GetSampleStickers(object):
             return []
 
         sticker_ids = self.sample_type.getAdmittedStickers()
+        if not sticker_ids:
+            return []
+
         default_template = self.default_template
         setup_default_sticker = self.get_setup_default_sticker()
         # ensure the setup default sticker is always contained
