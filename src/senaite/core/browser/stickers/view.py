@@ -95,20 +95,33 @@ class StickerView(BrowserView):
             pdfstream = self.pdf_from_post()
             return pdfstream
 
-        # If filter by type is given in the request, only the templates under
-        # the path with the type name will be given as vocabulary.
-        # Example: If filter_by_type=='worksheet', only *.pt files under a
-        # folder with filter_by_type as name will be displayed.
-        self.filter_by_type = self.request.get("filter_by_type")
-
-        self.items = self.get_items()
-        if not self.items:
+        if not self.get_items():
             logger.warning(
                 "Cannot print stickers: no items specified in request")
             self.request.response.redirect(self.context.absolute_url())
             return
 
         return self.template()
+
+    @property
+    def filter_by_type(self):
+        """Returns the filter type from the request
+
+        If filter by type is given in the request, only the templates under the
+        path with the type name will be given as vocabulary.
+
+        Example:
+        If filter_by_type=='worksheet', only *.pt files under a folder with
+        filter_by_type as name will be displayed.
+        """
+        return self.request.get("filter_by_type")
+
+    def get_items(self):
+        """Returns a list of SuperModel items
+        """
+        uids = self.get_uids()
+        items = map(lambda uid: SuperModel(uid), uids)
+        return self._resolve_number_of_copies(items)
 
     def get_back_url(self):
         """Calculate the Back URL
@@ -125,13 +138,6 @@ class StickerView(BrowserView):
             url = "{}/multi_results?uids={}".format(
                 url, ",".join(self.get_uids()))
         return url
-
-    def get_items(self):
-        """Returns a list of SuperModel items
-        """
-        uids = self.get_uids()
-        items = map(lambda uid: SuperModel(uid), uids)
-        return self._resolve_number_of_copies(items)
 
     def get_uids(self):
         """Parse the UIDs from the request `items` parameter

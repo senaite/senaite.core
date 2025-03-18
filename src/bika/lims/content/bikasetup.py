@@ -845,7 +845,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
 
     StringField(
-        'SmallStickerTemplate',
+        "SmallStickerTemplate",
         schemata="Sticker",
         vocabulary="getStickerTemplates",
         default="Code_128_1x48mm.pt",
