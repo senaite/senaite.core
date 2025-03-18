@@ -14,7 +14,9 @@
             tal:attributes="src string:${here/portal_url}/++resource++senaite.core.stickers.static/stickers.js" />
   </head>
 
-  <body tal:attributes="data-itemsurl python:view.getItemsURL(); data-filter_by_type python:view.filter_by_type or ''">
+  <body tal:attributes="data-items_url python: view.getItemsURL();
+                        data-filter_by_type python: view.filter_by_type or '';
+                        data-back_url  python: view.get_back_url();">
     <div id="sticker-preview-wrapper" class="container-fluid p-0">
       <div id="sticker-preview-header" class="row bg-light">
         <div id="options-handler" class="col-sm-3 m-auto no-gutters py-3">
@@ -39,11 +41,18 @@
                    tal:attributes="value view/get_copies_count" />
           </div>
 
-        <!-- Back/Print Button -->
+          <!-- Back/Print Button -->
           <div id="sticker-buttons">
-            <input type="button" id="cancel-button" value="Back" class="btn btn-secondary btn-sm"
-                   i18n:attributes="value" tal:attributes="data-url python:view.get_back_url();" />
-            <input type="button" id="print-button" value="Print" class="btn btn-primary btn-sm" i18n:attributes="value" />
+            <input type="button"
+                   id="cancel-button"
+                   class="btn btn-secondary btn-sm"
+                   value="Back"
+                   i18n:attributes="value" />
+            <input type="button"
+                   id="print-button"
+                   class="btn btn-primary btn-sm"
+                   value="Print"
+                   i18n:attributes="value" />
           </div>
 
         </div>

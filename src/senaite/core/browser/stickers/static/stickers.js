@@ -1,20 +1,23 @@
 document.addEventListener("DOMContentLoaded", function () {
-  var printButton = $('#print-button');
+  var backURL = $('body').data('back_url');
   var cancelButton = $('#cancel-button');
-  var templateSelect = $('select#template');
   var copiesCountInput = $('#copies_count');
+  var filterByType = $('body').data('filter_by_type');
+  var itemsURL = $('body').data('items_url');
+  var printButton = $('#print-button');
   var stickerRule = $('#sticker-rule');
   var stickersWrapper = $('#stickers-wrapper');
+  var templateSelect = $('select#template');
 
   printButton.click(function (e) {
     e.preventDefault();
     printPdf();
-    window.location = cancelButton.attr('data-url');
+    window.location = backURL;
   });
 
   cancelButton.click(function (e) {
     e.preventDefault();
-    window.location = cancelButton.attr('data-url');
+    window.location = backURL;
   });
 
   templateSelect.change(function () {
@@ -31,13 +34,13 @@ document.addEventListener("DOMContentLoaded", function () {
   function reload(template, copies_count) {
     stickersWrapper.fadeTo('fast', 0.4);
     $.ajax({
-      url: $('body').attr('data-itemsurl'),
+      url: itemsURL,
       type: 'POST',
       async: true,
       data: {
         "template": template,
         "copies_count": copies_count,
-        "filter_by_type": $('body').attr('data-filter_by_type')
+        "filter_by_type": filterByType
       }
     }).always(function (data) {
       let htmldata = $(data).find('#stickers-wrapper').html();
@@ -61,19 +64,18 @@ document.addEventListener("DOMContentLoaded", function () {
       stickersHtml += $(this).clone().wrap('<div></div>').parent().html();
     });
 
-    var form = '<form action="' + url + '" name="topdf" method="post" style="display:none">' +
-      '<textarea name="html"><div style="padding:0px;"></div>' + stickersHtml + '</textarea>' +
-      '<input type="hidden" name="pdf" value="1" />' +
-      '<textarea name="style">' + style + '</textarea>' +
-      '</form>';
+    var form = $('<form>', {
+        action: url,
+        method: 'post',
+        target: '_blank',
+      style: 'display:none'
+    });
+    form.append($('<textarea>', { name: 'html', text: '<div style="padding:0px;"></div>' + stickersHtml }));
+    form.append($('<input>', { type: 'hidden', name: 'pdf', value: '1' }));
+    form.append($('<textarea>', { name: 'style', text: style }));
 
-    var pdfWindow = window.open();
-    $(pdfWindow.document.body).html(form);
-    pdfWindow.document.forms.topdf.submit();
-  }
-
-  if (location.href.indexOf("autoprint=1") !== -1) {
-    printPdf();
-    window.location = cancelButton.attr('data-url');
+    $('body').append(form);
+    form.submit();
+    form.remove();
   }
 });
