@@ -51,7 +51,8 @@ class GetSampleStickers(object):
             )
             return []
 
-        sticker_ids = self.sample_type.getAdmittedStickers()
+        # get a copy of the admitted stickers set
+        sticker_ids = set(self.sample_type.getAdmittedStickers())
         if not sticker_ids:
             return []
 
