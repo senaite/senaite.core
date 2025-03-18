@@ -116,6 +116,12 @@ class StickerView(BrowserView):
         """
         return self.request.get("filter_by_type")
 
+    @property
+    def items(self):
+        """Returns the selected items from the request
+        """
+        return self.get_items()
+
     def get_items(self):
         """Returns a list of SuperModel items
         """
