@@ -1027,7 +1027,7 @@ We can compare dates without time as well:
 
 
 Convert timedelta to Dict Object and Back
-................................
+.........................................
 
 Let's try to initialize a timedelta object and convert it first:
 
