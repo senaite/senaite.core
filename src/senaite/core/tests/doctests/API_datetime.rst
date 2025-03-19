@@ -630,6 +630,87 @@ Check 24h vs 12h format:
     >>> dtime.date_to_string(dt, fmt="%Y-%m-%d %I:%M %p")
     '1755-08-01 11:01 PM'
 
+Formats used by TranslationService are also supported:
+
+    >>> DATE = "2021-08-01 22:13:05"
+    >>> dt = datetime.strptime(DATE, "%Y-%m-%d %H:%M:%S")
+    >>> dtime.date_to_string(dt, fmt="${Y}-${m}-${d} ${H}:${M}:${S}")
+    '2021-08-01 22:13:05'
+
+    >>> dtime.date_to_string(dt, fmt="${Y}-${m}-${d} ${I}:${M} ${p}")
+    '2021-08-01 10:13 PM'
+
+    >>> dtime.date_to_string(dt, fmt="${Y}-${m}-${d} ${H}:${M}")
+    '2021-08-01 22:13'
+
+    >>> dtime.date_to_string(dt, fmt="${Y}-${m}-${d}")
+    '2021-08-01'
+
+    >>> dtime.date_to_string(dt, fmt="${Y}-${m}-${d}")
+    '2021-08-01'
+
+    >>> dtime.date_to_string(dt, fmt="${I}:${M} ${p}")
+    '10:13 PM'
+
+    >>> dtime.date_to_string(dt, fmt="${A} ${d}. ${B} ${Y}, ${H}:${M}")
+    'Sunday 01. August 2021, 22:13'
+
+    >>> dtime.date_to_string(dt, fmt="${a} ${d} ${b} ${Y}, ${H}:${M}")
+    'Sun 01 Aug 2021, 22:13'
+
+It works with timezones too:
+
+    >>> dt = dtime.to_zone(dt, "Europe/Berlin")
+    >>> dtime.date_to_string(dt, fmt="${A} ${d}. ${B} ${Y}, ${H}:${M} ${Z}")
+    'Sunday 01. August 2021, 22:13 CEST'
+
+It also works when the year is <= 1900:
+
+    >>> DATE = "1010-11-12 22:23:03"
+    >>> dt = datetime.strptime(DATE, "%Y-%m-%d %H:%M:%S")
+    >>> dtime.date_to_string(dt, fmt="${Y}-${m}-${d} ${I}:${M} ${p}")
+    '1010-11-12 10:23 PM'
+
+    >>> dtime.date_to_string(dt, fmt="${H}:${M}")
+    '22:23'
+
+    >>> dtime.date_to_string(dt, fmt="${Y}-${m}-${d}T${H}:${M}")
+    '1010-11-12T22:23'
+
+    >>> dtime.date_to_string(dt, fmt="${Y}-${m}-${d} ${H}:${M}")
+    '1010-11-12 22:23'
+
+    >>> dtime.date_to_string(dt, fmt="${Y}/${m}/${d} ${H}:${M}")
+    '1010/11/12 22:23'
+
+    >>> dtime.date_to_string(dt, fmt="${d} ${b} ${Y}, ${H}:${M}")
+    '12 Nov 1010, 22:23'
+
+    >>> dtime.date_to_string(dt, fmt="${d} ${B} ${Y}, ${H}:${M}")
+    '12 November 1010, 22:23'
+
+As long as we don't ask for the name or abbreviation of weeks:
+
+    >>> dtime.date_to_string(dt, fmt="${A} ${d}. ${B} ${Y}, ${H}:${M}")
+    Traceback (most recent call last):
+    ...
+    ValueError: year=1010 is before 1900; the datetime strftime() methods require year >= 1900
+
+    >>> dtime.date_to_string(dt, fmt="${w}")
+    Traceback (most recent call last):
+    ...
+    ValueError: year=1010 is before 1900; the datetime strftime() methods require year >= 1900
+
+    >>> dtime.date_to_string(dt, fmt="${a}")
+    Traceback (most recent call last):
+    ...
+    ValueError: year=1010 is before 1900; the datetime strftime() methods require year >= 1900
+
+    >>> dtime.date_to_string(dt, fmt="${A}")
+    Traceback (most recent call last):
+    ...
+    ValueError: year=1010 is before 1900; the datetime strftime() methods require year >= 1900
+
 
 Localization
 ............
@@ -946,7 +1027,7 @@ We can compare dates without time as well:
 
 
 Convert timedelta to Dict Object and Back
-................................
+.........................................
 
 Let's try to initialize a timedelta object and convert it first:
 
@@ -1007,3 +1088,30 @@ Wrong values are ignored and replaced with 0:
 
     >>> dtime.to_timedelta({'days': 'wrong value'})
     datetime.timedelta(0)
+
+
+Date and time format conversions
+................................
+
+We can easily convert formats expressed in C standard (1989 version) to msgids
+used by the TranslationServiceTool:
+
+    >>> dtime.to_msgstr("%Y-%m-%d %I:%M %p")
+    '${Y}-${m}-${d} ${I}:${M} ${p}'
+
+    >>> dtime.to_msgstr("%Y-%m-%d %H:%M")
+    '${Y}-${m}-${d} ${H}:${M}'
+
+    >>> dtime.to_msgstr("%A %d. %B %Y, %H:%M %Z")
+    '${A} ${d}. ${B} ${Y}, ${H}:${M} ${Z}'
+
+And the other way round:
+
+    >>> dtime.to_C1989("${Y}-${m}-${d} ${I}:${M} ${p}")
+    '%Y-%m-%d %I:%M %p'
+
+    >>> dtime.to_C1989("${Y}-${m}-${d} ${H}:${M}")
+    '%Y-%m-%d %H:%M'
+
+    >>> dtime.to_C1989("${A} ${d}. ${B} ${Y}, ${H}:${M} ${Z}")
+    '%A %d. %B %Y, %H:%M %Z'

@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2692 Refactor Sticker Functionality
+- #2690 Support date and datetime on result entry
 - #2691 Fix APIError on upgrade step 2659 (init_loq)
 - #2689 Fix 2-Dimensional CSV import interface
 - #2688 Fix JS events from legacy controllers are bound multiple times

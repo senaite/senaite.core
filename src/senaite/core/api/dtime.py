@@ -39,6 +39,8 @@ from DateTime.DateTime import DateError
 from DateTime.DateTime import DateTimeError
 from DateTime.DateTime import SyntaxError
 from DateTime.DateTime import TimeError
+from senaite.core.i18n import get_month_name
+from senaite.core.i18n import get_weekday_name
 from zope.i18n import translate
 
 
@@ -428,6 +430,25 @@ def to_iso_format(dt):
     return None
 
 
+def to_msgstr(fmt):
+    """Converts to the format used by the TranslationServiceTool, that supports
+    the following directives, each used as a variable in msgstr:
+       ${A} ${a} ${B} ${b} ${H} ${I} ${m} ${d} ${M} ${p} ${S} ${Y} ${y} ${Z}
+
+    For example: "${d}-${m}-${Y} ${H}:${M}"
+
+    Note the following directives from C standard are NOT supported:
+        %w %f %z %j %U %W %c %x %X
+    """
+    return re.sub(r"%([aAdbBmyYHIpMSZ])", r"${\1}", fmt)
+
+
+def to_C1989(fmt):
+    """Converts to a format code that adheres to the C standard (1989 version)
+    """
+    return re.sub(r"\${([aAwdbBmyYHIpMSfzZjUWcxX])}", r"%\1", fmt)
+
+
 def date_to_string(dt, fmt="%Y-%m-%d", default=""):
     """Format the date to string
     """
@@ -440,31 +461,15 @@ def date_to_string(dt, fmt="%Y-%m-%d", default=""):
     if isinstance(dt, six.string_types):
         dt = to_DT(dt)
 
+    # convert the format to C Standard (1989 version) just in case
+    fmt_c1989 = to_C1989(fmt)
+
     try:
-        return dt.strftime(fmt)
+        return dt.strftime(fmt_c1989) or default
     except ValueError:
-        #  Fix ValueError: year=1111 is before 1900;
-        #  the datetime strftime() methods require year >= 1900
-
-        # convert format string to be something like "${Y}-${m}-${d}"
-        new_fmt = ""
-        var = False
-        for x in fmt:
-            if x == "%":
-                var = True
-                new_fmt += "${"
-                continue
-            if var:
-                new_fmt += x
-                new_fmt += "}"
-                var = False
-            else:
-                new_fmt += x
-
-        def pad(val):
-            """Add a zero if val is a single digit
-            """
-            return "{:0>2}".format(val)
+        # The datetime strftime() function requires year >= 1900
+        # Use safe_substitute instead
+        new_fmt = to_msgstr(fmt)
 
         # Manually extract relevant date and time parts
         dt = to_DT(dt)
@@ -473,14 +478,28 @@ def date_to_string(dt, fmt="%Y-%m-%d", default=""):
             "y": dt.yy(),
             "m": dt.mm(),
             "d": dt.dd(),
-            "H": pad(dt.h_24()),
-            "I": pad(dt.h_12()),
-            "M": pad(dt.minute()),
+            "H": "{:0>2}".format(dt.h_24()),
+            "I": "{:0>2}".format(dt.h_12()),
+            "M": "{:0>2}".format(dt.minute()),
             "p": dt.ampm().upper(),
-            "S": dt.second(),
+            "S": "{:0>2}".format(dt.second()),
+            "Z": get_timezone(dt),
+            "b": get_month_name(dt.month(), abbr=True),
+            "B": get_month_name(dt.month()),
         }
 
-        return Template(new_fmt).safe_substitute(data)
+        if "${w}" in new_fmt:
+            data["w"] = int(dt.strftime("%w"))
+
+        if "${a}" in new_fmt.lower():
+            # Weekday name ${A} or abbreviation (${a})
+            weekday = int(dt.strftime("%w"))
+            data.update({
+                "a": get_weekday_name(weekday, abbr=True),
+                "A": get_weekday_name(weekday),
+            })
+
+        return Template(new_fmt).safe_substitute(data) or default
 
 
 def to_localized_time(dt, long_format=None, time_only=None,

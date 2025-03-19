@@ -199,7 +199,7 @@ class EditForm(EditFormAdapterBase):
         if result_type and api.is_list(result_type):
             return self.toggle_result_type(result_type[0])
 
-        if result_type in ["numeric", "string", "text"]:
+        if result_type in ["numeric", "string", "text", "date", "datetime"]:
             self.add_hide_field("ResultOptions")
             self.add_hide_field("ResultOptionsSorting")
         else:
