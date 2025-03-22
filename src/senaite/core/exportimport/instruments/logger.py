@@ -44,8 +44,8 @@ class Logger(object):
 
     def msg(self, array, msg, numline, line, mapping):
         if isinstance(mapping, dict):
+            # ensure all mapping values and the message are unicode
             mapping = dict([(k, safe_unicode(v)) for k, v in mapping.items()])
-            # ensure all mapping values are unicode
             msg = t(_(safe_unicode(msg), mapping=mapping))
         else:
             msg = t(safe_unicode(msg))
