@@ -138,7 +138,6 @@ Unless we load the latest version:
     >>> at_wrapper.getFormula()
     '([Ca] + [Mg]) * 2'
 
-
 We change it back again to the original value:
 
     >>> calc.setFormula("[Ca] + [Mg]")
