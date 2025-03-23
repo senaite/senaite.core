@@ -51,4 +51,14 @@
       factory=".localroles.ClientShareableLocalRoles"
       name="senaite.core.adapter.localroles.clientshareable" />
 
+  <!-- Versionable wrapper for AT contents -->
+  <adapter
+      for="Products.Archetypes.interfaces.IBaseObject"
+      provides="senaite.core.interfaces.IVersionWrapper"
+      factory=".versionwrapper.VersionWrapperFactory" />
+  <adapter
+      for="plone.dexterity.interfaces.IDexterityContent"
+      provides="senaite.core.interfaces.IVersionWrapper"
+      factory=".versionwrapper.VersionWrapperFactory" />
+
 </configure>
