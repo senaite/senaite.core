@@ -90,7 +90,6 @@ Setup the Lab for testing:
 Versionable AT Content Wrapper
 ..............................
 
-
 We create an AT Calculation for this test:
 
     >>> calc = api.create(calculations, "Calculation", title="Total Hardness", Formula="[Ca] + [Mg]")
@@ -211,7 +210,6 @@ And the old title abd formula:
 Versionable DX Content Wrapper
 ..............................
 
-
 Create a new Dexterity object:
 
     >>> dept = api.create(setup.departments, "Department", title="Clinical Lab", DepartmentID="CL", Manager=labcontact)
@@ -259,6 +257,3 @@ Unless we load the latest version:
 
     >>> dx_wrapper.getDepartmentID()
     'CLab'
-
-
-
