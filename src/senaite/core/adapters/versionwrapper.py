@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
+from copy import deepcopy
+
 from bika.lims import api
 from bika.lims.api import snapshot as s_api
+from bika.lims.utils import tmpID
 from plone.dexterity.interfaces import IDexterityContent
 from Products.Archetypes.interfaces import IBaseContent
 from senaite.core.interfaces import IVersionWrapper
 from zope.interface import directlyProvides
 from zope.interface import implementer
-from copy import deepcopy
-from bika.lims.utils import tmpID
 
 
 @implementer(IVersionWrapper)
