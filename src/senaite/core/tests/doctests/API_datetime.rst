@@ -1148,6 +1148,7 @@ The function is aware of monthly shifts:
   >>> dtime.ymd(years=1, months=43)
   '4y 7m'
 
+
 Convert a duration to ymd format
 ................................
 
@@ -1364,3 +1365,23 @@ But we can force the system to keep the non-normalized version:
 
     >>> dtime.to_relativedelta(duration, normalized=False)
     relativedelta(years=+1238, months=+7, days=+32.4)
+
+
+Get the time span between two dates in `ymd` format
+···················································
+
+We can easily get the time span between two dates:
+
+    >>> dtime.get_ymd("20250323", "20250323")
+    '0d'
+
+    >>> dtime.get_ymd("20250323", "20250324")
+    '1d'
+
+    >>> dt1 = dtime.ansi_to_dt("20250322")
+    >>> dt2 = dtime.ansi_to_dt("20250324")
+    >>> dtime.get_ymd(dt1, dt2)
+    '2d'
+
+    >>> dtime.get_ymd("2023-04-12", "20250324")
+    '1y 11m 12d'
