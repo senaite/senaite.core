@@ -1115,3 +1115,252 @@ And the other way round:
 
     >>> dtime.to_C1989("${A} ${d}. ${B} ${Y}, ${H}:${M} ${Z}")
     '%A %d. %B %Y, %H:%M %Z'
+
+
+Create a duration in ymd format
+...............................
+
+We can create a duration in `ymd` format easily:
+
+  >>> dtime.ymd(years=1, months=2, days=3)
+  '1y 2m 3d'
+
+  >>> dtime.ymd(years=1, months=2)
+  '1y 2m'
+
+  >>> dtime.ymd(years=1)
+  '1y'
+
+  >>> dtime.ymd()
+  '0d'
+
+  >>> dtime.ymd(months=2, days=3)
+  '2m 3d'
+
+  >>> dtime.ymd(days=3)
+  '3d'
+
+The function is aware of monthly shifts:
+
+  >>> dtime.ymd(months=13)
+  '1y 1m'
+
+  >>> dtime.ymd(years=1, months=43)
+  '4y 7m'
+
+Convert a duration to ymd format
+................................
+
+We can convert a `relativedelta` to ymd format:
+
+    >>> duration = dtime.relativedelta(years=1, months=2, days=3)
+    >>> dtime.to_ymd(duration)
+    '1y 2m 3d'
+
+    >>> duration = dtime.relativedelta(months=6, days=2)
+    >>> dtime.to_ymd(duration)
+    '6m 2d'
+
+Is aware of non-normalized versions too:
+
+    >>> duration = dtime.relativedelta(months=6, days=2.4)
+    >>> dtime.to_ymd(duration)
+    '6m 2d'
+
+    >>> duration = dtime.relativedelta(months=6, days=2.6)
+    >>> dtime.to_ymd(duration)
+    '6m 2d'
+
+We can also convert values from `tuple` or `list` types to `ymd`:
+
+    >>> dtime.to_ymd([1,2,3])
+    '1y 2m 3d'
+
+    >>> dtime.to_ymd((1,2,3))
+    '1y 2m 3d'
+
+And omit days and months:
+
+    >>> dtime.to_ymd([1,2])
+    '1y 2m'
+
+    >>> dtime.to_ymd([1,])
+    '1y'
+
+We can transform an already existing ymd to its standard format:
+
+    >>> dtime.to_ymd("1y2m3d")
+    '1y 2m 3d'
+
+Zeros and whitespaces are omitted as well:
+
+    >>> dtime.to_ymd("1y0m   3d")
+    '1y 3d'
+
+Returns a `TypeError` if the value is not of the expected type:
+
+    >>> dtime.to_ymd(object())
+    Traceback (most recent call last):
+    [...]
+    TypeError: <object object at ... is not supported
+
+Returns a `ValueError` if the value has the right type, but format is wrong:
+
+    >>> dtime.to_ymd("")
+    Traceback (most recent call last):
+    [...]
+    ValueError: Not a valid ymd: ''
+
+    >>> dtime.to_ymd("123")
+    Traceback (most recent call last):
+    [...]
+    ValueError: Not a valid ymd: '123'
+
+    >>> dtime.to_ymd("y123d")
+    Traceback (most recent call last):
+    [...]
+    ValueError: Not a valid ymd: 'y123d'
+
+And returns a ymd-compliant result when current date or no duration is set:
+
+    >>> duration = dtime.relativedelta()
+    >>> dtime.to_ymd(duration)
+    '0d'
+
+    >>> dtime.to_ymd("0y")
+    '0d'
+
+    >>> dtime.to_ymd("0y0m0d")
+    '0d'
+
+Function is even aware of monthly and yearly shifts:
+
+    >>> duration = dtime.relativedelta(years=1235, months=23, days=10)
+    >>> dtime.to_ymd(duration)
+    '1236y 11m 10d'
+
+    >>> dtime.to_ymd("1235y23m10d")
+    '1236y 11m 10d'
+
+    >>> dtime.to_ymd("1235y43m10d")
+    '1238y 7m 10d'
+
+
+Check if a value is a ymd
+.........................
+
+Returns true for ymd-like strings:
+
+    >>> dtime.is_ymd("3d")
+    True
+
+    >>> dtime.is_ymd("2m  3d")
+    True
+
+    >>> dtime.is_ymd("0y 2m3d")
+    True
+
+    >>> dtime.is_ymd("0y0m0d")
+    True
+
+    >>> dtime.is_ymd("0d")
+    True
+
+But returns false if the format or type is not valid:
+
+    >>> dtime.is_ymd("y3d")
+    False
+
+    >>> dtime.is_ymd("")
+    False
+
+    >>> dtime.is_ymd(object())
+    False
+
+    >>> dtime.is_ymd(dtime.relativedelta())
+    False
+
+
+Convert a duration to a `relativedelta`
+.......................................
+
+We can convert a duration expressed as `ymd` to a `relativedelta`:
+
+    >>> dtime.to_relativedelta("1y2m3d")
+    relativedelta(years=+1, months=+2, days=+3)
+
+    >>> dtime.to_relativedelta("1y0m   3d")
+    relativedelta(years=+1, days=+3)
+
+We can use a `list` or `tuple` object as well, where year is the first value,
+the month is the second and the day is the third:
+
+    >>> dtime.to_relativedelta((1,2,3))
+    relativedelta(years=+1, months=+2, days=+3)
+
+    >>> dtime.to_relativedelta([1,2,3])
+    relativedelta(years=+1, months=+2, days=+3)
+
+We can skip days and months:
+
+    >>> dtime.to_relativedelta([1,2])
+    relativedelta(years=+1, months=+2)
+
+    >>> dtime.to_relativedelta([1])
+    relativedelta(years=+1)
+
+We can use a `relativedelta` as the value too:
+
+    >>> duration = dtime.relativedelta(years=1, months=2, days=3)
+    >>> dtime.to_relativedelta(duration)
+    relativedelta(years=+1, months=+2, days=+3)
+
+    >>> duration = dtime.relativedelta(months=6, days=2)
+    >>> dtime.to_relativedelta(duration)
+    relativedelta(months=+6, days=+2)
+
+    >>> duration = dtime.relativedelta()
+    >>> dtime.to_relativedelta(duration)
+    relativedelta()
+
+Returns a TypeError if the value is not of the expected type:
+
+    >>> dtime.to_relativedelta(object())
+    Traceback (most recent call last):
+    [...]
+    TypeError: <object object at ... is not supported
+
+Returns a ValueError if the value has the rihgt type, but format is wrong:
+
+    >>> dtime.to_relativedelta("123")
+    Traceback (most recent call last):
+    [...]
+    ValueError: Not a valid ymd: '123'
+
+    >>> dtime.to_relativedelta("y123d")
+    Traceback (most recent call last):
+    [...]
+    ValueError: Not a valid ymd: 'y123d'
+
+Function is aware of monthly and yearly shifts:
+
+    >>> dtime.to_relativedelta("1235y23m10d")
+    relativedelta(years=+1236, months=+11, days=+10)
+
+    >>> dtime.to_relativedelta("1235y43m10d")
+    relativedelta(years=+1238, months=+7, days=+10)
+
+    >>> duration = dtime.relativedelta(years=1235, months=43)
+    >>> dtime.to_relativedelta(duration)
+    relativedelta(years=+1238, months=+7)
+
+By default normalizes non-integer values for days:
+
+    >>> duration = dtime.relativedelta(years=1235, months=43, days=32.4)
+    >>> dtime.to_relativedelta(duration)
+    relativedelta(years=+1238, months=+7, days=+32, hours=+9, minutes=+36)
+
+But we can force the system to keep the non-normalized version:
+
+    >>> dtime.to_relativedelta(duration, normalized=False)
+    relativedelta(years=+1238, months=+7, days=+32.4)

@@ -681,6 +681,33 @@ def is_ymd(ymd):
     return True
 
 
+def ymd(years=0, months=0, days=0):
+    """Returns a string representing a time duration in ymd format
+
+    :param years: years
+    :type years: int
+    :param months: months
+    :type months: int
+    :param days: days
+    :type days: int
+    :param default: fall-back value to return as default
+    :returns: a string that represents a duration in ymd format
+    :rtype: str
+    """
+    # create the relativedelta to take shifts into account
+    delta = relativedelta(years=years, months=months, days=days)
+    delta = delta.normalized()
+
+    # apply ymd format, with zeros omitted
+    values = [abs(delta.years), abs(delta.months), abs(delta.days)]
+    values = map(str, values)
+    value = filter(lambda it: int(it[0]), zip(values, "ymd"))
+    value = " ".join(map("".join, value))
+
+    # return a compliant ymd
+    return value or "0d"
+
+
 def to_ymd(duration, default=_marker):
     """Returns the given duration in ymd format
 
@@ -700,14 +727,7 @@ def to_ymd(duration, default=_marker):
             raise e
         return default
 
-    # apply ymd format, with zeros omitted
-    values = [abs(delta.years), abs(delta.months), abs(delta.days)]
-    values = map(str, values)
-    ymd = filter(lambda it: int(it[0]), zip(values, "ymd"))
-    ymd = " ".join(map("".join, ymd))
-
-    # return a compliant ymd when no elapsed days
-    return ymd or "0d"
+    return ymd(delta.years, delta.months, delta.days)
 
 
 def to_relativedelta(duration, normalized=True):
@@ -731,7 +751,7 @@ def to_relativedelta(duration, normalized=True):
         years = to_int(duration[0], default=0)
         months = to_int(duration[1], default=0) if len(duration) > 1 else 0
         days = to_int(duration[2], default=0) if len(duration) > 2 else 0
-        delta = relativedelta(years, months, days)
+        delta = relativedelta(years=years, months=months, days=days)
         return delta.normalized() if normalized else delta
 
     if not is_str(duration):
