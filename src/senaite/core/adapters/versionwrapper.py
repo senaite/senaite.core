@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import inspect
 from copy import deepcopy
 
 import six
@@ -22,6 +23,36 @@ class VersionWrapper(object):
         self.content = content
         self.clone = None
         self.version = 0
+
+    def __repr__(self):
+        return "<{}:{}({})>".format(
+            self.__class__.__name__,
+            api.get_portal_type(self.content),
+            api.get_uid(self.content))
+
+    def __getattr__(self, name):
+        """Dynamic lookups for attributes
+        """
+        # support for tab completion in PDB
+        if name == "__members__":
+            return [k for k, v in inspect.getmembers(self.content)]
+
+        if name in self.content.__dict__:
+            # try to lookup the value from the snapshot
+            if name in self.snapshot:
+                return self.snapshot.get(name)
+
+        # load setters from the wrapped content directly
+        if name.startswith("set"):
+            attr = getattr(self.content, name, None)
+        else:
+            # load all other attributes from the clone
+            attr = getattr(self.clone, name, None)
+
+        if attr:
+            return attr
+
+        return super(VersionWrapper, self).__getattr__(name)
 
     def get_version(self):
         return self.version
@@ -116,26 +147,6 @@ class VersionWrapper(object):
         if dtime.is_date(original_value) and value:
             return dtime.to_DT(value)
         return value
-
-    def __getattr__(self, name):
-        """Dynamic lookups of non-found attributes
-        """
-        if name in self.content.__dict__:
-            # try to lookup the value from the snapshot
-            if name in self.snapshot:
-                return self.snapshot.get(name)
-
-        # load setters from the wrapped content directly
-        if name.startswith("set"):
-            attr = getattr(self.content, name, None)
-        else:
-            # load all other attributes from the clone
-            attr = getattr(self.clone, name, None)
-
-        if attr:
-            return attr
-
-        return super(VersionWrapper, self).__getattr__(name)
 
 
 def VersionWrapperFactory(context):

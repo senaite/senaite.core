@@ -42,6 +42,9 @@ Functional Helpers:
     ...     service_uids = map(api.get_uid, services)
     ...     return create_analysisrequest(client, request, values, service_uids)
 
+    >>> def receive_sample(sample):
+    ...     do_action_for(sample, "receive")
+
     >>> def get_analysis(sample, id):
     ...     ans = sample.getAnalyses(getId=id, full_objects=True)
     ...     if len(ans) != 1:
@@ -156,6 +159,7 @@ Create some Analysis Services with unique Keywords:
 Create an new Sample:
 
     >>> sample = new_sample([TH])
+    >>> receive_sample(sample)
 
 Get the contained `Cu` Analysis:
 
