@@ -52,7 +52,12 @@ class VersionWrapper(object):
         if not snapshot:
             raise KeyError("Version %s not found" % version)
 
+        # XXX: We need to process the snapshot to the right types.
         clone.__dict__.update(snapshot)
+
+        # make acquisition chain lookups possible
+        clone.__of__(self.content.aq_parent)
+
         self.clone = clone
         self.version = version
 
