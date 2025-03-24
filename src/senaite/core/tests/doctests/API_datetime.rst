@@ -1140,13 +1140,21 @@ We can create a duration in `ymd` format easily:
   >>> dtime.ymd(days=3)
   '3d'
 
-The function is aware of monthly shifts:
+We can include hours as well:
+
+  >>> dtime.ymd(months=2, days=3, hours=10)
+  '2m 3d 10h'
+
+The function is aware of monthly and hourly shifts:
 
   >>> dtime.ymd(months=13)
   '1y 1m'
 
   >>> dtime.ymd(years=1, months=43)
   '4y 7m'
+
+  >>> dtime.ymd(years=1, months=43, hours=32)
+  '4y 7m 1d 8h'
 
 
 Convert a duration to ymd format
@@ -1162,6 +1170,22 @@ We can convert a `relativedelta` to ymd format:
     >>> dtime.to_ymd(duration)
     '6m 2d'
 
+By default, hours are omitted:
+
+    >>> duration = dtime.relativedelta(months=6, days=2, hours=3)
+    >>> dtime.to_ymd(duration)
+    '6m 2d'
+
+Unless we explicitily ask for them and are different from 0:
+
+    >>> duration = dtime.relativedelta(months=6, days=2, hours=3)
+    >>> dtime.to_ymd(duration, with_hours=True)
+    '6m 2d 3h'
+
+    >>> duration = dtime.relativedelta(months=6, days=2, hours=0)
+    >>> dtime.to_ymd(duration, with_hours=True)
+    '6m 2d'
+
 Is aware of non-normalized versions too:
 
     >>> duration = dtime.relativedelta(months=6, days=2.4)
@@ -1171,6 +1195,11 @@ Is aware of non-normalized versions too:
     >>> duration = dtime.relativedelta(months=6, days=2.6)
     >>> dtime.to_ymd(duration)
     '6m 2d'
+
+    >>> duration = dtime.relativedelta(months=6, days=2.6)
+    >>> dtime.to_ymd(duration, with_hours=True)
+    '6m 2d 14h'
+
 
 We can also convert values from `tuple` or `list` types to `ymd`:
 
@@ -1385,3 +1414,8 @@ We can easily get the time span between two dates:
 
     >>> dtime.get_ymd("2023-04-12", "20250324")
     '1y 11m 12d'
+
+And include the hours if we wish to do so:
+
+    >>> dtime.get_ymd("2023-04-12", "20250324061202", with_hours=True)
+    '1y 11m 12d 6h'

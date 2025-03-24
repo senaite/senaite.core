@@ -51,6 +51,7 @@ YMD_REGEX = (
     r"((?P<y>(\d+))y){0,1}\s*"  # years
     r"((?P<m>(\d+))m){0,1}\s*"  # months
     r"((?P<d>(\d+))d){0,1}\s*"  # days
+    r"((?P<h>(\d+))d){0,1}\s*"  # hours
 )
 
 _marker = object()
@@ -681,7 +682,7 @@ def is_ymd(ymd):
     return True
 
 
-def ymd(years=0, months=0, days=0):
+def ymd(years=0, months=0, days=0, hours=0):
     """Returns a string representing a time duration in ymd format
 
     :param years: years
@@ -690,25 +691,27 @@ def ymd(years=0, months=0, days=0):
     :type months: int
     :param days: days
     :type days: int
+    :param hours: hours
+    :type hours: int
     :param default: fall-back value to return as default
     :returns: a string that represents a duration in ymd format
     :rtype: str
     """
     # create the relativedelta to take shifts into account
-    delta = relativedelta(years=years, months=months, days=days)
+    delta = relativedelta(years=years, months=months, days=days, hours=hours)
     delta = delta.normalized()
 
     # apply ymd format, with zeros omitted
-    values = [abs(delta.years), abs(delta.months), abs(delta.days)]
-    values = map(str, values)
-    value = filter(lambda it: int(it[0]), zip(values, "ymd"))
+    values = [delta.years, delta.months, delta.days, delta.hours]
+    values = map(lambda val: str(abs(val)), values)
+    value = filter(lambda it: int(it[0]), zip(values, "ymdh"))
     value = " ".join(map("".join, value))
 
     # return a compliant ymd
     return value or "0d"
 
 
-def to_ymd(duration, default=_marker):
+def to_ymd(duration, with_hours=False, default=_marker):
     """Returns the given duration in ymd format
 
     If default is _marker, either a TypeError or ValueError is raised if
@@ -716,13 +719,16 @@ def to_ymd(duration, default=_marker):
 
     :param duration: duration to be converted to a ymd format
     :type duration: str/relativedelta
+    :param with_hours: whether hours have to be included in the output or not
+    :type with_hours: bool
     :param default: fall-back value to return as default
     :returns: a string that represents a duration in ymd format
     :rtype: str
     """
     try:
         delta = to_relativedelta(duration)
-        return ymd(delta.years, delta.months, delta.days)
+        hours = delta.hours if with_hours else 0
+        return ymd(delta.years, delta.months, delta.days, hours)
     except (TypeError, ValueError) as e:
         if default is _marker:
             raise e
@@ -746,11 +752,11 @@ def to_relativedelta(duration, normalized=True):
         return duration.normalized() if normalized else duration
 
     if isinstance(duration, (tuple, list)):
-        # a tuple of (years, months, days)
-        years = to_int(duration[0], default=0)
-        months = to_int(duration[1], default=0) if len(duration) > 1 else 0
-        days = to_int(duration[2], default=0) if len(duration) > 2 else 0
-        delta = relativedelta(years=years, months=months, days=days)
+        # convert to tuple of (years, months, days, hours) to int values
+        keys = ["years", "months", "days", "hours"]
+        values = [to_int(value, 0) for value in duration]
+        values = dict(zip(keys, values))
+        delta = relativedelta(**values)
         return delta.normalized() if normalized else delta
 
     if not is_str(duration):
@@ -761,7 +767,7 @@ def to_relativedelta(duration, normalized=True):
 
     # extract the years, months and days
     matches = re.search(YMD_REGEX, raw_ymd)
-    values = [matches.group(v) for v in "ymd"]
+    values = [matches.group(v) for v in "ymdh"]
 
     # if all values are None, assume the ymd format was not valid
     nones = [value is None for value in values]
@@ -769,8 +775,10 @@ def to_relativedelta(duration, normalized=True):
         raise ValueError("Not a valid ymd: {}".format(repr(duration)))
 
     # replace Nones with zeros and calculate everything with a relativedelta
+    keys = ["years", "months", "days", "hours"]
     values = [to_int(value, 0) for value in values]
-    delta = relativedelta(years=values[0], months=values[1], days=values[2])
+    values = dict(zip(keys, values))
+    delta = relativedelta(**values)
     return delta.normalized() if normalized else delta
 
 
@@ -806,7 +814,7 @@ def get_since_date(duration, dt=None, default=_marker):
     return dt - delta
 
 
-def get_ymd(dt1, dt2=None):
+def get_ymd(dt1, dt2=None, with_hours=False):
     """Calculates the relative delta between two dates or datetimes and
     returns the duration in ymd format
 
@@ -821,6 +829,6 @@ def get_ymd(dt1, dt2=None):
     """
     try:
         delta = get_relativedelta(dt1, dt2=dt2)
-        return to_ymd(delta)
+        return to_ymd(delta, with_hours=with_hours)
     except (ValueError, TypeError):
         return None
