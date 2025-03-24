@@ -558,7 +558,7 @@ def to_localized_time(dt, long_format=None, time_only=None,
     return time_str
 
 
-def get_relative_delta(dt1, dt2=None):
+def get_relativedelta(dt1, dt2=None):
     """Calculates the relative delta between two dates or datetimes
 
     If `dt2` is None, the current datetime is used.
@@ -594,6 +594,10 @@ def get_relative_delta(dt1, dt2=None):
         dt2 = dt2.replace(tzinfo=tzinfo)
 
     return relativedelta(dt2, dt1)
+
+
+# BBB
+get_relative_delta = get_relativedelta
 
 
 def timedelta_to_dict(value, default=_marker):
@@ -671,7 +675,7 @@ def is_ymd(ymd):
     if not is_str(ymd):
         return False
     try:
-        to_relative_delta(ymd)
+        to_relativedelta(ymd)
     except (TypeError, ValueError):
         return False
     return True
@@ -690,7 +694,7 @@ def to_ymd(duration, default=_marker):
     :rtype: str
     """
     try:
-        delta = to_relative_delta(duration)
+        delta = to_relativedelta(duration)
     except (TypeError, ValueError) as e:
         if default is _marker:
             raise e
@@ -706,7 +710,7 @@ def to_ymd(duration, default=_marker):
     return ymd or "0d"
 
 
-def to_relative_delta(duration, normalized=True):
+def to_relativedelta(duration, normalized=True):
     """Returns the given duration as a relativedelta
 
     If default is _marker, either a TypeError or ValueError is raised if
@@ -770,7 +774,7 @@ def get_since_date(duration, dt=None, default=_marker):
     :rtype: tuple
     """
     try:
-        delta = to_relative_delta(duration)
+        delta = to_relativedelta(duration)
     except (TypeError, ValueError) as e:
         if default is _marker:
             raise e
@@ -797,7 +801,7 @@ def get_ymd(dt1, dt2=None):
     :rtype: str
     """
     try:
-        delta = get_relative_delta(dt1, dt2=dt2)
+        delta = get_relativedelta(dt1, dt2=dt2)
         return to_ymd(delta)
     except (ValueError, TypeError):
         return None

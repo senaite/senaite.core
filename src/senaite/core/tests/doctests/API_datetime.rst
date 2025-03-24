@@ -943,39 +943,39 @@ We can extract the relative delta between two dates:
 
     >>> dt1 = dtime.ansi_to_dt("20230515104405")
     >>> dt2 = dtime.ansi_to_dt("20230515114405")
-    >>> dtime.get_relative_delta(dt1, dt2)
+    >>> dtime.get_relativedelta(dt1, dt2)
     relativedelta(hours=+1)
 
 We can even compare two dates from two different timezones:
 
     >>> dt1_cet = dtime.to_zone(dt1, "CET")
     >>> dt2_utc = dtime.to_zone(dt2, "UTC")
-    >>> dtime.get_relative_delta(dt1_cet, dt2_utc)
+    >>> dtime.get_relativedelta(dt1_cet, dt2_utc)
     relativedelta(hours=+3)
 
     >>> dt1_cet = dtime.to_zone(dt1, "CET")
     >>> dt2_pcf = dtime.to_zone(dt2, "Pacific/Fiji")
-    >>> dtime.get_relative_delta(dt1_cet, dt2_pcf)
+    >>> dtime.get_relativedelta(dt1_cet, dt2_pcf)
     relativedelta(hours=-9)
 
 If we compare a naive timezone, system uses the timezone of the other date:
 
     >>> dt1_cet = dtime.to_zone(dt1, "CET")
     >>> dt2_naive = dt2.replace(tzinfo=None)
-    >>> dtime.get_relative_delta(dt1_cet, dt2_naive)
+    >>> dtime.get_relativedelta(dt1_cet, dt2_naive)
     relativedelta(hours=+3)
 
 It also works when both are timezone naive:
 
     >>> dt1_naive = dt1.replace(tzinfo=None)
     >>> dt2_naive = dt2.replace(tzinfo=None)
-    >>> dtime.get_relative_delta(dt1_naive, dt2_naive)
+    >>> dtime.get_relativedelta(dt1_naive, dt2_naive)
     relativedelta(hours=+1)
 
 If we don't specify `dt2`, system simply uses current datetime:
 
-    >>> rel_now = dtime.get_relative_delta(dt1, datetime.now())
-    >>> rel_wo = dtime.get_relative_delta(dt1)
+    >>> rel_now = dtime.get_relativedelta(dt1, datetime.now())
+    >>> rel_wo = dtime.get_relativedelta(dt1)
     >>> rel_now = (rel_now.years, rel_now.months, rel_now.days, rel_now.hours)
     >>> rel_wo = (rel_wo.years, rel_wo.months, rel_wo.days, rel_wo.hours)
     >>> rel_now == rel_wo
@@ -985,44 +985,44 @@ We can even compare min and max dates:
 
     >>> dt1 = dtime.datetime.min
     >>> dt2 = dtime.datetime.max
-    >>> dtime.get_relative_delta(dtime.datetime.min, dtime.datetime.max)
+    >>> dtime.get_relativedelta(dtime.datetime.min, dtime.datetime.max)
     relativedelta(years=+9998, months=+11, days=+30, hours=+23, minutes=+59, seconds=+59, microseconds=+999999)
 
 We can even call the function with types that are not datetime, but can be
 converted to datetime:
 
-    >>> dtime.get_relative_delta("19891201131405", "20230515114400")
+    >>> dtime.get_relativedelta("19891201131405", "20230515114400")
     relativedelta(years=+33, months=+5, days=+13, hours=+22, minutes=+29, seconds=+55)
 
 But raises a `ValueError` if non-valid dates are used:
 
-    >>> dtime.get_relative_delta("17891301132505")
+    >>> dtime.get_relativedelta("17891301132505")
     Traceback (most recent call last):
     ...
     ValueError: No valid date or dates
 
 Even if the from date is correct, but not the to date:
 
-    >>> dtime.get_relative_delta("19891201131405", "20230535114400")
+    >>> dtime.get_relativedelta("19891201131405", "20230535114400")
     Traceback (most recent call last):
     ...
     ValueError: No valid date or dates
 
 We can also compare two datetimes, being the "from" earlier than "to":
 
-    >>> dtime.get_relative_delta("20230515114400", "19891201131405")
+    >>> dtime.get_relativedelta("20230515114400", "19891201131405")
     relativedelta(years=-33, months=-5, days=-13, hours=-22, minutes=-29, seconds=-55)
 
 Or compare two dates that are exactly the same:
 
-    >>> dtime.get_relative_delta("20230515114400", "20230515114400")
+    >>> dtime.get_relativedelta("20230515114400", "20230515114400")
     relativedelta()
 
 We can compare dates without time as well:
 
     >>> from_date = dtime.date(2023, 5, 6)
     >>> to_date = dtime.date(2023, 5, 7)
-    >>> dtime.get_relative_delta(from_date, to_date)
+    >>> dtime.get_relativedelta(from_date, to_date)
     relativedelta(days=+1)
 
 
