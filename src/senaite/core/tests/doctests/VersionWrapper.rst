@@ -114,6 +114,12 @@ We should have transparent access to the underlying content methods:
     >>> at_wrapper.getFormula()
     '[Ca] + [Mg]'
 
+We can also get the cloned instance:
+
+    >>> at_clone = at_wrapper.get_clone()
+    >>> api.get_workflow_status_of(at_clone)
+    'active'
+
 Now we change the calculation formula:
 
     >>> calc.setFormula("([Ca] + [Mg]) * 2")

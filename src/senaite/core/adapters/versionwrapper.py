@@ -56,6 +56,9 @@ class VersionWrapper(object):
     def get_version(self):
         return self.version
 
+    def get_clone(self):
+        return self.clone
+
     def load_latest_version(self):
         """Load the latest version of the content
         """
