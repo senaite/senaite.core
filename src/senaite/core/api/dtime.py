@@ -46,6 +46,13 @@ from zope.i18n import translate
 
 RX_GMT = r"^(\bGMT\b|)([+-]?)(\d{1,2})"
 
+YMD_REGEX = (
+    r"^"
+    r"((?P<y>(\d+))y){0,1}\s*"  # years
+    r"((?P<m>(\d+))m){0,1}\s*"  # months
+    r"((?P<d>(\d+))d){0,1}\s*"  # days
+)
+
 _marker = object()
 
 
@@ -651,3 +658,146 @@ def to_timedelta(value, default=_marker):
         minutes=to_int(value.get('minutes', 0), 0),
         seconds=to_int(value.get('seconds', 0), 0)
     )
+
+
+def is_ymd(ymd):
+    """Returns whether the string represents a duration of time in ymd format
+
+    :param ymd: supposedly ymd string to evaluate
+    :type ymd: str
+    :returns: True if a valid duration in ymd format
+    :rtype: bool
+    """
+    if not is_str(ymd):
+        return False
+    try:
+        to_relative_delta(ymd)
+    except (TypeError, ValueError):
+        return False
+    return True
+
+
+def to_ymd(duration, default=_marker):
+    """Returns the given duration in ymd format
+
+    If default is _marker, either a TypeError or ValueError is raised if
+    the duration is not valid or cannot be converted to ymd format
+
+    :param duration: duration to be converted to a ymd format
+    :type duration: str/relativedelta
+    :param default: fall-back value to return as default
+    :returns: a string that represents a duration in ymd format
+    :rtype: str
+    """
+    try:
+        delta = to_relative_delta(duration)
+    except (TypeError, ValueError) as e:
+        if default is _marker:
+            raise e
+        return default
+
+    # apply ymd format, with zeros omitted
+    values = [abs(delta.years), abs(delta.months), abs(delta.days)]
+    values = map(str, values)
+    ymd = filter(lambda it: int(it[0]), zip(values, "ymd"))
+    ymd = " ".join(map("".join, ymd))
+
+    # return a compliant ymd when no elapsed days
+    return ymd or "0d"
+
+
+def to_relative_delta(duration, normalized=True):
+    """Returns the given duration as a relativedelta
+
+    If default is _marker, either a TypeError or ValueError is raised if
+    the duration is not valid or cannot be converted to relativedelta format
+
+    :param duration: duration as length of time
+    :type delta: str/relativedelta/tuple/list
+    :param normalized: whether relative attributes are represented as integers
+    :type normalized: bool
+    :returns: a duration in time represented as a relativedelta object
+    :rtype: relativedelta
+    """
+    if isinstance(duration, relativedelta):
+        return duration.normalized() if normalized else duration
+
+    if isinstance(duration, (tuple, list)):
+        # a tuple of (years, months, days)
+        years = to_int(duration[0], default=0)
+        months = to_int(duration[1], default=0) if len(duration) > 1 else 0
+        days = to_int(duration[2], default=0) if len(duration) > 2 else 0
+        delta = relativedelta(years, months, days)
+        return delta.normalized() if normalized else delta
+
+    if not is_str(duration):
+        raise TypeError("{} is not supported".format(repr(duration)))
+
+    # to lowercase and remove leading and trailing spaces
+    raw_ymd = duration.lower().strip()
+
+    # extract the years, months and days
+    matches = re.search(YMD_REGEX, raw_ymd)
+    values = [matches.group(v) for v in "ymd"]
+
+    # if all values are None, assume the ymd format was not valid
+    nones = [value is None for value in values]
+    if all(nones):
+        raise ValueError("Not a valid ymd: {}".format(repr(duration)))
+
+    # replace Nones with zeros and calculate everything with a relativedelta
+    values = [to_int(value, 0) for value in values]
+    delta = relativedelta(years=values[0], months=values[1], days=values[2])
+    return delta.normalized() if normalized else delta
+
+
+def get_since_date(duration, dt=None, default=_marker):
+    """Returns the relative date when the event started
+
+    If dt is None, the function uses the current date time as the date from
+    which the relative date is calculated.
+
+    When delta is not a valid period and default value is _marker, a TypeError
+    or ValueError is raised. Otherwise, it returns the default value converted
+    to datetime (or None if it cannot be converted)
+
+    :param duration: duration as length of time
+    :type duration: str/relativedelta/tuple/list
+    :param dt: date from which the since date has to be calculated
+    :type dt: string/DateTime/datetime/date
+    :param default: fall-back date-like value to return as default
+    :returns: the calculated relative date
+    :rtype: tuple
+    """
+    try:
+        delta = to_relative_delta(duration)
+    except (TypeError, ValueError) as e:
+        if default is _marker:
+            raise e
+        return to_dt(default)
+
+    # datetime from which the relative date has to be calculated
+    dt = to_dt(dt) if dt else now()
+
+    # calculate the date when everything started
+    return dt - delta
+
+
+def get_ymd(dt1, dt2=None):
+    """Calculates the relative delta between two dates or datetimes and
+    returns the duration in ymd format
+
+    If `dt2` is None, the current datetime is used.
+
+    :param dt1: the first date/time to compare
+    :type dt1: string/date/datetime/DateTime
+    :param dt2: the second date/time to compare
+    :type dt2: string/date/datetime/DateTime
+    :returns: interval of time in ymd format (e.g. "2y4m")
+    :rtype: str
+    """
+    try:
+        delta = get_relative_delta(dt1, dt2=dt2)
+        return to_ymd(delta)
+    except (ValueError, TypeError):
+        return None
