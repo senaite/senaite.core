@@ -722,12 +722,11 @@ def to_ymd(duration, default=_marker):
     """
     try:
         delta = to_relativedelta(duration)
+        return ymd(delta.years, delta.months, delta.days)
     except (TypeError, ValueError) as e:
         if default is _marker:
             raise e
         return default
-
-    return ymd(delta.years, delta.months, delta.days)
 
 
 def to_relativedelta(duration, normalized=True):
