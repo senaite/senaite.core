@@ -7,6 +7,7 @@ import six
 from bika.lims import api
 from bika.lims.api import snapshot as s_api
 from bika.lims.utils import tmpID
+from Products.Archetypes.BaseUnit import BaseUnit
 from senaite.core.api import dtime
 from senaite.core.interfaces import IVersionWrapper
 from zope.interface import alsoProvides
@@ -137,6 +138,12 @@ class VersionWrapper(object):
         if dtime.is_date(original_value) and value:
             # convert date value
             return dtime.to_DT(value)
+        if isinstance(original_value, BaseUnit):
+            # E.g. the `Formula` field of a Calculation
+            bu = BaseUnit(original_value.__name__)
+            bu.__dict__ = deepcopy(original_value.__dict__)
+            bu.raw = value
+            return bu
         return value
 
 
