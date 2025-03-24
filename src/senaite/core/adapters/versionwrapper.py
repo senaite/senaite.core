@@ -7,11 +7,9 @@ import six
 from bika.lims import api
 from bika.lims.api import snapshot as s_api
 from bika.lims.utils import tmpID
-from plone.dexterity.interfaces import IDexterityContent
-from Products.Archetypes.interfaces import IBaseContent
 from senaite.core.api import dtime
 from senaite.core.interfaces import IVersionWrapper
-from zope.interface import directlyProvides
+from zope.interface import alsoProvides
 from zope.interface import implementer
 
 
@@ -66,11 +64,7 @@ class VersionWrapper(object):
     def load_version(self, version=0):
         """Load a snapshopt version
         """
-        class Clone(self.content.__class__):
-            pass
-
-        # create a clone
-        clone = Clone(tmpID())
+        clone = self.content.__class__(tmpID())
 
         # make acquisition chain lookups possible
         clone = clone.__of__(self.content.aq_parent)
@@ -78,14 +72,9 @@ class VersionWrapper(object):
         # apply the versioned data to the clone
         clone.__dict__ = self.get_versioned_data(version)
 
-        # workaround for APIError:
-        # <Clone at /plone/setup/departments/department-2> is not supported
-        if api.is_dexterity_content(self.content):
-            directlyProvides(clone, IDexterityContent)
-        elif api.is_at_content(self.content):
-            directlyProvides(clone, IBaseContent)
-        else:
-            TypeError("Expected AT or DX content, got %r" % type(self.content))
+        # apply class interfaces manually
+        class_ifaces = self.content.__class__.__implemented__.flattened()
+        alsoProvides(clone, *class_ifaces)
 
         # remember the clone and loaded version
         self.clone = clone
@@ -136,15 +125,17 @@ class VersionWrapper(object):
         # convert None types
         if value in ["None", ""]:
             return None
-        # convert boolean types
         if value in ["True", "False"]:
+            # convert boolean value
             return True if value == "True" else False
         if isinstance(original_value, six.types.IntType):
-            value = int(value)
+            # convert integer value
+            return int(value)
         if isinstance(original_value, six.types.FloatType):
-            value = float(value)
-        # convert date values
+            # convert float value
+            return float(value)
         if dtime.is_date(original_value) and value:
+            # convert date value
             return dtime.to_DT(value)
         return value
 
