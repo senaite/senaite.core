@@ -62,10 +62,19 @@ class VersionWrapper(object):
         version = s_api.get_version(self.content)
         self.load_version(version)
 
+    def make_metaclass(self, prefix="Clone"):
+        """Returns a new metaclass
+        """
+        cls_base = self.content.__class__
+        cls_name = cls_base.__name__
+        cls_dict = {"__module__": cls_base.__module__}
+        return type(prefix + cls_name, (cls_base, ), cls_dict)
+
     def load_version(self, version=0):
         """Load a snapshopt version
         """
-        clone = self.content.__class__(tmpID())
+        MetaClass = self.make_metaclass()
+        clone = MetaClass(tmpID())
 
         # make acquisition chain lookups possible
         clone = clone.__of__(self.content.aq_parent)
