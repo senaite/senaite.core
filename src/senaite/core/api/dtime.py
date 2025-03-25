@@ -676,7 +676,7 @@ def is_ymd(ymd):
     if not is_str(ymd):
         return False
     try:
-        to_relativedelta(ymd)
+        to_ymd(ymd)
     except (TypeError, ValueError):
         return False
     return True
