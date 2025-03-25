@@ -3,11 +3,9 @@
 import inspect
 from copy import deepcopy
 
-import six
 from bika.lims import api
 from bika.lims.api import snapshot as s_api
 from bika.lims.utils import tmpID
-from Products.Archetypes.BaseUnit import BaseUnit
 from senaite.core.api import dtime
 from senaite.core.interfaces import IVersionWrapper
 from zope.interface import alsoProvides
@@ -20,14 +18,16 @@ class VersionWrapper(object):
     """
     def __init__(self, content):
         self.content = content
+        self.fields = api.get_fields(content)
         self.clone = None
         self.version = 0
 
     def __repr__(self):
-        return "<{}:{}({})>".format(
+        return "<{}:{}({}@v{})>".format(
             self.__class__.__name__,
             api.get_portal_type(self.content),
-            api.get_uid(self.content))
+            api.get_id(self.content),
+            self.version)
 
     def __getattr__(self, name):
         """Dynamic lookups for attributes
@@ -115,47 +115,52 @@ class VersionWrapper(object):
             if key not in snapshot:
                 out[key] = value
             else:
-                # get the snapshot value
-                snap_value = snapshot.get(key)
                 # assigned the processed snapshot value
-                out[key] = self.process_snapshot_value(snap_value, value)
+                out[key] = self.process_snapshot_value(key, snapshot)
 
         return out
 
-    def process_snapshot_value(self, value, original_value, default=None):
+    def process_snapshot_value(self, key, snapshot, default=None):
         """Convert stringified snapshot values
 
         We try to match the required field type of the content object w/o using
         setters of the cloned object, as this might have side effects
         (reindexing, additional logic etc.).
 
-        :param value: Snapshot value
-        :param original_value: Current set value on the content object
+        :param key: Processing key
+        :param snapshot: The versioned snapshot
         :returns: Processed snapshot value
         """
+        value = snapshot.get(key)
+
         if not value:
             return default
-        # convert None types
-        if value in ["None", ""]:
-            return None
-        if value in ["True", "False"]:
-            # convert boolean value
-            return True if value == "True" else False
-        if isinstance(original_value, six.types.IntType):
-            # convert integer value
-            return int(value)
-        if isinstance(original_value, six.types.FloatType):
-            # convert float value
-            return float(value)
-        if dtime.is_date(original_value) and value:
+
+        # try to get the field
+        field = self.fields.get(key)
+        if not field:
+            return value
+
+        # guess the required value type depending on the used field
+        fieldclass = field.__class__.__name__.lower()
+
+        if fieldclass.startswith("date"):
             # convert date value
             return dtime.to_DT(value)
-        if isinstance(original_value, BaseUnit):
-            # E.g. the `Formula` field of a Calculation
-            bu = BaseUnit(original_value.__name__)
-            bu.__dict__ = deepcopy(original_value.__dict__)
-            bu.raw = value
-            return bu
+        elif fieldclass.startswith("integer"):
+            return int(value)
+        elif fieldclass.startswith("float"):
+            return float(value)
+        elif fieldclass == "fixedpointfield":
+            # AT fixedpoint field
+            return field._to_tuple(self.content, value)
+        elif value in ["None", ""]:
+            # convert None types
+            return None
+        elif value in ["True", "False"]:
+            # convert boolean value
+            return True if value == "True" else False
+
         return value
 
 
