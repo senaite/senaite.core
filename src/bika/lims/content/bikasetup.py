@@ -62,7 +62,6 @@ from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.interfaces import IHideActionsMenu
 from senaite.core.interfaces import INumberGenerator
 from senaite.core.p3compat import cmp
-from senaite.core.vocabularies.stickers import get_sticker_templates
 from zope.component import getUtility
 from zope.interface import implements
 
@@ -831,7 +830,7 @@ schema = BikaFolderSchema.copy() + Schema((
     StringField(
         "AutoStickerTemplate",
         schemata="Sticker",
-        vocabulary="getStickerTemplates",
+        vocabulary_factory="senaite.core.vocabularies.stickers",
         widget=SelectionWidget(
             format='select',
             label=_("Default Sticker Template"),
@@ -845,7 +844,7 @@ schema = BikaFolderSchema.copy() + Schema((
     StringField(
         "SmallStickerTemplate",
         schemata="Sticker",
-        vocabulary="getStickerTemplates",
+        vocabulary_factory="senaite.core.vocabularies.stickers",
         default="Code_128_1x48mm.pt",
         widget=SelectionWidget(
             format='select',
@@ -861,7 +860,7 @@ schema = BikaFolderSchema.copy() + Schema((
     StringField(
         "LargeStickerTemplate",
         schemata="Sticker",
-        vocabulary="getStickerTemplates",
+        vocabulary_factory="senaite.core.vocabularies.stickers",
         default="Code_128_1x72mm.pt",
         widget=SelectionWidget(
             format='select',
@@ -1107,12 +1106,6 @@ class BikaSetup(folder.ATFolder):
         if not session:
             return 0
         return session.timeout // 60
-
-    def getStickerTemplates(self):
-        """Get the sticker templates
-        """
-        out = [[t["id"], t["title"]] for t in get_sticker_templates()]
-        return DisplayList(out)
 
     def getAnalysisServicesVocabulary(self):
         """
