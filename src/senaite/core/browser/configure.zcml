@@ -42,5 +42,6 @@
   <include package=".user"/>
   <include package=".viewlets"/>
   <include package=".widgets"/>
+  <include package=".workflow"/>
 
 </configure>
