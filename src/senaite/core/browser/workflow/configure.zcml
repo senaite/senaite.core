@@ -1,0 +1,15 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+  <!-- Worksheet: remove -->
+  <adapter
+    name="workflow_action_remove"
+    for="bika.lims.interfaces.IWorksheet
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".worksheet.WorkflowActionRemoveAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+</configure>
