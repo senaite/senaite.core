@@ -1291,6 +1291,18 @@ class window.AnalysisRequestAdd
     term = $(el).val()
     return term.replace /^\s+|\s+$/g, ""
 
+  ###*
+   * Returns whether the search of services by term for the given point of
+   * capture is active
+   *
+   * @param poc {String} The point of capture
+   * @returns {Boolean} Whether the search by term is active or not
+  ###
+  is_search_active: (poc) ->
+    term = @get_search_term poc
+    if term
+      return true
+    return false
 
   ###*
    * Returns the list of service uids from categories that belong to the given
@@ -1653,16 +1665,15 @@ class window.AnalysisRequestAdd
   ###
   on_service_listing_header_click: (event) =>
     $el = $(event.currentTarget)
-    poc = $el.data("poc")
+    poc = $el.data "poc"
 
-    # keep categories with selected services visible if search term set
-    term = @get_search_term(poc)
-    if term
+    # keep categories with selected services visible if search by term active
+    if @is_search_active poc
       services = $("tr.#{poc}.service.visible")
       $.each services, (num, service) ->
         $service = $(service)
         category = $service.data "category"
-        $("tr.#{poc}.#{category}.category").addClass("visible")
+        $("tr.#{poc}.#{category}.category").addClass "visible"
       return
 
     # toggle visibility
@@ -1742,7 +1753,8 @@ class window.AnalysisRequestAdd
   ###*
    * Event handler for analysis service category rows.
    *
-   * Toggles the visibility of all services within this category.
+   * Toggles the visibility of all services within this category, but only if
+   * the search filter mode for this category is not enabled.
    * NOTE: Selected services always stay visible.
    *
    * @param event {Object} The event object
@@ -1751,6 +1763,11 @@ class window.AnalysisRequestAdd
     event.preventDefault()
     $el = $(event.currentTarget)
     poc = $el.attr("poc")
+
+    # do nothing if search by term is active
+    if @is_search_active poc
+      return
+
     $btn = $(".service-category-toggle", $el)
 
     expanded = $el.hasClass("expanded")

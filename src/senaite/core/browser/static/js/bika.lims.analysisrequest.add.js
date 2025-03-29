@@ -356,7 +356,8 @@
       /**
        * Event handler for analysis service category rows.
        *
-       * Toggles the visibility of all services within this category.
+       * Toggles the visibility of all services within this category, but only if
+       * the search filter mode for this category is not enabled.
        * NOTE: Selected services always stay visible.
        *
        * @param event {Object} The event object
@@ -1546,6 +1547,22 @@
     }
 
     /**
+     * Returns whether the search of services by term for the given point of
+     * capture is active
+     *
+     * @param poc {String} The point of capture
+     * @returns {Boolean} Whether the search by term is active or not
+     */
+    is_search_active(poc) {
+      var term;
+      term = this.get_search_term(poc);
+      if (term) {
+        return true;
+      }
+      return false;
+    }
+
+    /**
      * Returns the list of service uids from categories that belong to the given
      * point of capture and their human name match with the term passed-in.
      * Returns an empty list if empty term
@@ -1847,12 +1864,11 @@
     }
 
     on_service_listing_header_click(event) {
-      var $el, poc, services, term, toggle, visible;
+      var $el, poc, services, toggle, visible;
       $el = $(event.currentTarget);
       poc = $el.data("poc");
-      // keep categories with selected services visible if search term set
-      term = this.get_search_term(poc);
-      if (term) {
+      // keep categories with selected services visible if search by term active
+      if (this.is_search_active(poc)) {
         services = $(`tr.${poc}.service.visible`);
         $.each(services, function(num, service) {
           var $service, category;
@@ -1931,6 +1947,10 @@
       event.preventDefault();
       $el = $(event.currentTarget);
       poc = $el.attr("poc");
+      // do nothing if search by term is active
+      if (this.is_search_active(poc)) {
+        return;
+      }
       $btn = $(".service-category-toggle", $el);
       expanded = $el.hasClass("expanded");
       category = $el.data("category");
