@@ -564,6 +564,7 @@
                         tal:attributes="id python:service_id;
                                         class python:'{} {} service'.format(category_id, poc);
                                         poc python:poc;
+                                        data-uid python:service_uid;
                                         data-category python:category_id;
                                         fieldname python:'Analyses';">
                       <td class="service-header">

@@ -1267,33 +1267,58 @@ class window.AnalysisRequestAdd
     lines.removeClass(cls)
     if lines[idx] then $(lines[idx]).addClass(cls)
 
+
   ###*
-   * Restores the visibility of services and categories
+   * Returns the term to search through services from categories that belong
+   * to the given point of capture (poc)
+   *
+   * @param poc {String} The point of capture
+   * @returns {String} The search term
   ###
-  reset_category_visibility: (category) =>
-    $category = $(category)
-    poc = $category.attr "poc"
-    category_id = $category.data "category"
+  get_search_term: (poc) ->
+    el = $("tr.#{poc}.service-listing-header input.services-filter")
+    # strip leading and trailing whitespaces
+    term = $(el).val()
+    return term.replace /^\s+|\s+$/g, ""
 
-    # hide services with non-ticked checkboxes
-    services = $("tr.#{poc}.#{category_id}.service")
-    unchecked = $("input[type=checkbox]:not(checked)", services)
-    unchecked.closest("tr").removeClass "visible"
 
-    # display services with ticked checkboxes
-    checked = $("input[type=checkbox]:checked", services)
-    checked.closest("tr").addClass "visible"
+  ###*
+   * Returns the list of service uids from categories that belong to the given
+   * point of capture and their human name match with the term passed-in.
+   * Returns an empty list if empty term
+   *
+   * @param poc {String} The point of capture
+   * @param term {String} The search term
+   * @returns {List} The list of service uids
+  ###
+  search_services: (poc, term) ->
+    matches = []
 
-    # toggle the visibility of the category
-    $btn = $(".service-category-toggle", $category)
-    if checked.length > 0
-      $category.addClass "visible"
-      $category.addClass "expanded"
-      $btn.text "-"
-    else
-      $category.addClass "visible"
-      $category.removeClass "expanded"
-      $btn.text "+"
+    # assume no matches if term is empty
+    if not term
+      return matches
+
+    # transform the term to lower case
+    term = term.toLowerCase()
+
+    # iterate through all registered services to find matches
+    services = $("tr.#{poc}.service")
+    $.each services, (num, service) ->
+
+      # get the service basic info
+      $service = $(service)
+      category_id = $service.data "category"
+      service_uid = $service.data "uid"
+
+      # get the service human name
+      name_el = $("div.service-title", $service)
+      name = name_el.html().toLowerCase()
+
+      # hide service if no match found and not checked for any sample
+      if name.indexOf(term) isnt -1
+        matches.push service_uid
+
+    return matches
 
 
   ######################
@@ -1619,6 +1644,18 @@ class window.AnalysisRequestAdd
   on_service_listing_header_click: (event) =>
     $el = $(event.currentTarget)
     poc = $el.data("poc")
+
+    # keep categories with selected services visible if search term set
+    term = @get_search_term(poc)
+    if term
+      services = $("tr.#{poc}.service.visible")
+      $.each services, (num, service) ->
+        $service = $(service)
+        category = $service.data "category"
+        $("tr.#{poc}.#{category}.category").addClass("visible")
+      return
+
+    # toggle visibility
     visible = $el.hasClass("visible")
     toggle = not visible
     @toggle_poc_categories poc, toggle
@@ -1635,66 +1672,61 @@ class window.AnalysisRequestAdd
    * @param event {Object} The event object
   ###
   on_services_filter_change: (event) =>
-    me = this
     $el = $(event.currentTarget)
     poc = $el.closest("tr").data("poc")
 
-    # display the categories that belong to this poc
-    @toggle_poc_categories poc, true
+    # keep track of the categories to expand and keep visible
+    expanded_categories = new Set([])
 
-    # get the term to search by and strip leading and trailing whitespaces
-    term = $el.val()
-    term = term = term.replace /^\s+|\s+$/g, ""
-    term = term.toLowerCase()
+    # get the term so search by
+    term = @get_search_term poc
 
-    if not term
-      # reset the visibility of categories
-      categories = $("tr.#{poc}.category")
-      $.each categories, (num, category) ->
-        me.reset_category_visibility category
-      return
+    # do the search
+    uids = @search_services poc, term
 
-    # keep track of the categories to make visible
-    visible_categories = new Set([])
-
-    # iterate through all registered services to find matches
+    # show services that match or with ticked checkboxes
     services = $("tr.#{poc}.service")
     $.each services, (num, service) ->
-
-      # get the name of the service
       $service = $(service)
-      category_id = $service.data "category"
-      name_el = $("div.service-title", $service)
-      name = name_el.html().toLowerCase()
-
-      # hide service if no match found and not checked for any sample
-      if name.indexOf(term) is -1
-        checked = $("input[type=checkbox]:checked", service)
-        if checked.length == 0
-          $service.removeClass "visible"
-      else
+      category = $service.data "category"
+      uid = $service.data "uid"
+      if uid in uids
         $service.addClass "visible"
+        expanded_categories.add category
+        return
 
-      # add to the categories to make visible
-      if $service.hasClass "visible"
-        visible_categories.add category_id
+      # show if ticked checkboxes
+      checked = $("input[type=checkbox]:checked", $service)
+      if checked.length > 0
+        $service.addClass "visible"
+        expanded_categories.add category
+        return
 
-    # iterate through categories and update their visibility
+      # hide the service
+      $service.removeClass "visible"
+
+    # expand categories with visible services
     categories = $("tr.#{poc}.category")
     $.each categories, (num, category) ->
-
       # toggle the visibility of the category
       $category = $(category)
       $btn = $(".service-category-toggle", $category)
       category_id = $category.data "category"
-      if visible_categories.has category_id
-        $category.addClass "visible"
+
+      # expand the category if at least on service visible
+      expanded = expanded_categories.has category_id
+      if expanded
         $category.addClass "expanded"
         $btn.text "-"
       else
-        $category.removeClass "visible"
         $category.removeClass "expanded"
         $btn.text "+"
+
+      # make category visible if expanded or empty search term
+      if expanded or not term
+        $category.addClass "visible"
+      else
+        $category.removeClass "visible"
 
 
   ###*

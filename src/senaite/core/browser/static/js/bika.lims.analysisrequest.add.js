@@ -273,10 +273,6 @@
        * Highlight a line number in the paste panel
        */
       this.highlight_paster_line = this.highlight_paster_line.bind(this);
-      /**
-       * Restores the visibility of services and categories
-       */
-      this.reset_category_visibility = this.reset_category_visibility.bind(this);
       //#####################
       /* EVENT HANDLERS */
       //#####################
@@ -1522,29 +1518,56 @@
       }
     }
 
-    reset_category_visibility(category) {
-      var $btn, $category, category_id, checked, poc, services, unchecked;
-      $category = $(category);
-      poc = $category.attr("poc");
-      category_id = $category.data("category");
-      // hide services with non-ticked checkboxes
-      services = $(`tr.${poc}.${category_id}.service`);
-      unchecked = $("input[type=checkbox]:not(checked)", services);
-      unchecked.closest("tr").removeClass("visible");
-      // display services with ticked checkboxes
-      checked = $("input[type=checkbox]:checked", services);
-      checked.closest("tr").addClass("visible");
-      // toggle the visibility of the category
-      $btn = $(".service-category-toggle", $category);
-      if (checked.length > 0) {
-        $category.addClass("visible");
-        $category.addClass("expanded");
-        return $btn.text("-");
-      } else {
-        $category.addClass("visible");
-        $category.removeClass("expanded");
-        return $btn.text("+");
+    /**
+     * Returns the term to search through services from categories that belong
+     * to the given point of capture (poc)
+     *
+     * @param poc {String} The point of capture
+     * @returns {String} The search term
+     */
+    get_search_term(poc) {
+      var el, term;
+      el = $(`tr.${poc}.service-listing-header input.services-filter`);
+      // strip leading and trailing whitespaces
+      term = $(el).val();
+      return term.replace(/^\s+|\s+$/g, "");
+    }
+
+    /**
+     * Returns the list of service uids from categories that belong to the given
+     * point of capture and their human name match with the term passed-in.
+     * Returns an empty list if empty term
+     *
+     * @param poc {String} The point of capture
+     * @param term {String} The search term
+     * @returns {List} The list of service uids
+     */
+    search_services(poc, term) {
+      var matches, services;
+      matches = [];
+      // assume no matches if term is empty
+      if (!term) {
+        return matches;
       }
+      // transform the term to lower case
+      term = term.toLowerCase();
+      // iterate through all registered services to find matches
+      services = $(`tr.${poc}.service`);
+      $.each(services, function(num, service) {
+        var $service, category_id, name, name_el, service_uid;
+        // get the service basic info
+        $service = $(service);
+        category_id = $service.data("category");
+        service_uid = $service.data("uid");
+        // get the service human name
+        name_el = $("div.service-title", $service);
+        name = name_el.html().toLowerCase();
+        // hide service if no match found and not checked for any sample
+        if (name.indexOf(term) !== -1) {
+          return matches.push(service_uid);
+        }
+      });
+      return matches;
     }
 
     on_sample_nav(event) {
@@ -1812,74 +1835,81 @@
     }
 
     on_service_listing_header_click(event) {
-      var $el, poc, toggle, visible;
+      var $el, poc, services, term, toggle, visible;
       $el = $(event.currentTarget);
       poc = $el.data("poc");
+      // keep categories with selected services visible if search term set
+      term = this.get_search_term(poc);
+      if (term) {
+        services = $(`tr.${poc}.service.visible`);
+        $.each(services, function(num, service) {
+          var $service, category;
+          $service = $(service);
+          category = $service.data("category");
+          return $(`tr.${poc}.${category}.category`).addClass("visible");
+        });
+        return;
+      }
+      // toggle visibility
       visible = $el.hasClass("visible");
       toggle = !visible;
       return this.toggle_poc_categories(poc, toggle);
     }
 
     on_services_filter_change(event) {
-      var $el, categories, me, poc, services, term, visible_categories;
-      me = this;
+      var $el, categories, expanded_categories, poc, services, term, uids;
       $el = $(event.currentTarget);
       poc = $el.closest("tr").data("poc");
-      // display the categories that belong to this poc
-      this.toggle_poc_categories(poc, true);
-      // get the term to search by and strip leading and trailing whitespaces
-      term = $el.val();
-      term = term = term.replace(/^\s+|\s+$/g, "");
-      term = term.toLowerCase();
-      if (!term) {
-        // reset the visibility of categories
-        categories = $(`tr.${poc}.category`);
-        $.each(categories, function(num, category) {
-          return me.reset_category_visibility(category);
-        });
-        return;
-      }
-      // keep track of the categories to make visible
-      visible_categories = new Set([]);
-      // iterate through all registered services to find matches
+      // keep track of the categories to expand and keep visible
+      expanded_categories = new Set([]);
+      // get the term so search by
+      term = this.get_search_term(poc);
+      // do the search
+      uids = this.search_services(poc, term);
+      // show services that match or with ticked checkboxes
       services = $(`tr.${poc}.service`);
       $.each(services, function(num, service) {
-        var $service, category_id, checked, name, name_el;
-        // get the name of the service
+        var $service, category, checked, uid;
         $service = $(service);
-        category_id = $service.data("category");
-        name_el = $("div.service-title", $service);
-        name = name_el.html().toLowerCase();
-        // hide service if no match found and not checked for any sample
-        if (name.indexOf(term) === -1) {
-          checked = $("input[type=checkbox]:checked", service);
-          if (checked.length === 0) {
-            $service.removeClass("visible");
-          }
-        } else {
+        category = $service.data("category");
+        uid = $service.data("uid");
+        if (indexOf.call(uids, uid) >= 0) {
           $service.addClass("visible");
+          expanded_categories.add(category);
+          return;
         }
-        // add to the categories to make visible
-        if ($service.hasClass("visible")) {
-          return visible_categories.add(category_id);
+        // show if ticked checkboxes
+        checked = $("input[type=checkbox]:checked", $service);
+        if (checked.length > 0) {
+          $service.addClass("visible");
+          expanded_categories.add(category);
+          return;
         }
+        // hide the service
+        return $service.removeClass("visible");
       });
-      // iterate through categories and update their visibility
+      // expand categories with visible services
       categories = $(`tr.${poc}.category`);
       return $.each(categories, function(num, category) {
-        var $btn, $category, category_id;
+        var $btn, $category, category_id, expanded;
         // toggle the visibility of the category
         $category = $(category);
         $btn = $(".service-category-toggle", $category);
         category_id = $category.data("category");
-        if (visible_categories.has(category_id)) {
-          $category.addClass("visible");
+        // expand the category if at least on service visible
+        expanded = expanded_categories.has(category_id);
+        if (expanded) {
           $category.addClass("expanded");
-          return $btn.text("-");
+          $btn.text("-");
         } else {
-          $category.removeClass("visible");
           $category.removeClass("expanded");
-          return $btn.text("+");
+          $btn.text("+");
+        }
+        // make category visible if expanded or empty search term
+        if (expanded || !term) {
+          return $category.addClass("visible");
+        } else {
+          return $category.removeClass("visible");
         }
       });
     }
