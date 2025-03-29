@@ -25,8 +25,6 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget
-from Products.Archetypes.Widget import StringWidget
-from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.widgets import RejectionSetupWidget
 from bika.lims.browser.worksheet.tools import getWorksheetLayouts
 from bika.lims.config import CURRENCIES
@@ -38,7 +36,6 @@ from bika.lims.config import SCINOTATION_OPTIONS
 from bika.lims.config import WEEKDAYS
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBikaSetup
-from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from plone.app.folder import folder
 from Products.Archetypes.atapi import BooleanField
 from Products.Archetypes.atapi import BooleanWidget
@@ -57,9 +54,11 @@ from Products.Archetypes.Field import TextField
 from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.utils import IntDisplayList
 from Products.Archetypes.Widget import RichWidget
+from Products.Archetypes.Widget import StringWidget
 from Products.CMFCore.utils import getToolByName
 from senaite.core.api import geo
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.interfaces import IHideActionsMenu
 from senaite.core.interfaces import INumberGenerator
 from senaite.core.p3compat import cmp
@@ -806,61 +805,88 @@ schema = BikaFolderSchema.copy() + Schema((
             rows=15,
         ),
     ),
+
     StringField(
-        'AutoPrintStickers',
+        "AutoPrintStickers",
         schemata="Sticker",
         vocabulary=STICKER_AUTO_OPTIONS,
         widget=SelectionWidget(
             format='select',
-            label=_("Automatic sticker printing"),
+            label=_("Automatic Sticker Printing"),
             description=_(
-                "Select 'Register' if you want stickers to be automatically printed when "
-                "new Samples or sample records are created. Select 'Receive' to print stickers "
-                "when Samples or Samples are received. Select 'None' to disable automatic printing"),
+                "Choose when stickers should be automatically printed:<br/>"
+                "<ul>"
+                "<li><strong>Register:</strong> Stickers are printed "
+                " automatically when new samples are created.</li>"
+                "<li><strong>Receive:</strong> Stickers are printed "
+                " automatically when samples are received.</li>"
+                "<li><strong>None:</strong> Disables automatic sticker "
+                "printing.</li>"
+                "</ul>"
+            ),
         )
     ),
+
     StringField(
-        'AutoStickerTemplate',
+        "AutoStickerTemplate",
         schemata="Sticker",
-        vocabulary="getStickerTemplates",
+        vocabulary_factory="senaite.core.vocabularies.stickers",
         widget=SelectionWidget(
             format='select',
-            label=_("Sticker templates"),
-            description=_("Select which sticker to print when automatic sticker printing is enabled"),
+            label=_("Default Sticker Template"),
+            description=_(
+                "Select the default sticker template used for "
+                "automatic printing.<br/>"
+            ),
         )
     ),
+
     StringField(
-        'SmallStickerTemplate',
+        "SmallStickerTemplate",
         schemata="Sticker",
-        vocabulary="getStickerTemplates",
+        vocabulary_factory="senaite.core.vocabularies.stickers",
         default="Code_128_1x48mm.pt",
         widget=SelectionWidget(
             format='select',
-            label=_("Small sticker"),
-            description=_("Select which sticker should be used as the 'small' sticker by default")
+            label=_("Small Sticker Template"),
+            description=_(
+                "Choose the default template for 'small' stickers.<br/>"
+                "<strong>Note:</strong> Sample-specific 'small' stickers are "
+                "configured based on their sample type."
+            ),
         )
     ),
+
     StringField(
-        'LargeStickerTemplate',
+        "LargeStickerTemplate",
         schemata="Sticker",
-        vocabulary="getStickerTemplates",
+        vocabulary_factory="senaite.core.vocabularies.stickers",
         default="Code_128_1x72mm.pt",
         widget=SelectionWidget(
             format='select',
-            label=_("Large sticker"),
-            description=_("Select which sticker should be used as the 'large' sticker by default")
+            label=_("Large Sticker Template"),
+            description=_(
+                "Choose the default template for 'large' stickers.<br/>"
+                "<strong>Note:</strong> Sample-specific 'large' stickers are "
+                "configured based on their sample type."
+            ),
         )
     ),
+
     IntegerField(
-        'DefaultNumberOfCopies',
+        "DefaultNumberOfCopies",
         schemata="Sticker",
-        required="1",
-        default="1",
+        required=True,
+        default=1,
         widget=IntegerWidget(
-            label=_("Number of copies"),
-            description=_("Set the default number of copies to be printed for each sticker")
+            label=_("Default Number of Copies"),
+            description=_(
+                "Specify how many copies of each sticker should be printed "
+                "by default."
+            ),
         )
     ),
+
     IDFormattingField(
         'IDFormatting',
         schemata="ID Server",
@@ -1080,12 +1106,6 @@ class BikaSetup(folder.ATFolder):
         if not session:
             return 0
         return session.timeout // 60
-
-    def getStickerTemplates(self):
-        """Get the sticker templates
-        """
-        out = [[t['id'], t['title']] for t in _getStickerTemplates()]
-        return DisplayList(out)
 
     def getAnalysisServicesVocabulary(self):
         """

@@ -1,0 +1,77 @@
+<tal:doctype tal:replace="structure string:&lt;!DOCTYPE html&gt;" />
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:attributes="lang default_language|default; xml:lang default_language|default;"
+      i18n:domain="senaite.core">
+
+  <head>
+    <div tal:replace="structure provider:plone.htmlhead" />
+    <link rel="stylesheet" href="" type="text/css" media="screen"
+          tal:attributes="href string:${here/portal_url}/++resource++senaite.core.stickers.static/stickers.css" />
+    <script type="text/javascript" src=""
+            tal:attributes="src string:${here/portal_url}/++resource++senaite.core.stickers.static/stickers.js" />
+  </head>
+
+  <body tal:attributes="data-items_url python: view.getItemsURL();
+                        data-filter_by_type python: view.filter_by_type or '';
+                        data-back_url  python: view.get_back_url();">
+    <div id="sticker-preview-wrapper" class="container-fluid p-0">
+      <div id="sticker-preview-header" class="row bg-light">
+        <div id="options-handler" class="col-sm-3 m-auto no-gutters py-3">
+
+          <!-- Templates selection -->
+          <div id="sticker-template" class="mb-2">
+            <label for="template" class="mr-4" i18n:translate="">Template</label>
+            <select id="template" name="template" class="form-control">
+              <tal:formats tal:repeat="tpl python:view.get_available_templates()">
+                <option tal:attributes="value tpl/id;
+                                        selected tpl/selected|nothing;"
+                        tal:content="tpl/title">
+                </option>
+              </tal:formats>
+            </select>
+          </div>
+
+          <!-- Number of copies -->
+          <div id="sticker-copies" class="mb-2">
+            <label for="copies_count" class="mr-4" i18n:translate="">Number of copies</label>
+            <input name="copies_count" id="copies_count" class="form-control" type="number" min="1" step="1"
+                   tal:attributes="value view/get_copies_count" />
+          </div>
+
+          <!-- Back/Print Button -->
+          <div id="sticker-buttons">
+            <input type="button"
+                   id="cancel-button"
+                   class="btn btn-secondary btn-sm"
+                   value="Back"
+                   i18n:attributes="value" />
+            <input type="button"
+                   id="print-button"
+                   class="btn btn-primary btn-sm"
+                   value="Print"
+                   i18n:attributes="value" />
+          </div>
+
+        </div>
+      </div>
+
+      <div id="stickers-wrapper">
+        <!-- Ruler -->
+        <div id="sticker-rule">
+          <div style="font-size:6pt">mm</div>
+          <tal:tick repeat="mm python:range(0, 310, 10)">
+            <div tal:define="odd repeat/mm/odd;
+                             css python:'sticker-rule-tick-odd' if odd else 'sticker-rule-tick';"
+                 tal:attributes="class css" tal:content="mm"></div>
+          </tal:tick>
+        </div>
+        <!-- Stickers -->
+        <tal:t replace="structure python:view.render_stickers()" />
+      </div>
+    </div>
+  </body>
+
+</html>

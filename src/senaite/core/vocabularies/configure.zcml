@@ -11,8 +11,8 @@
       name="senaite.core.vocabularies.samplepreservation.categories" />
     
   <utility
-      component=".stickertemplates.StickerTemplatesVocabularyFactory"
-      name="senaite.core.vocabularies.stickertemplates" />
+      component=".stickers.StickerTemplatesVocabularyFactory"
+      name="senaite.core.vocabularies.stickers" />
 
   <utility
       component=".analysis_types.AnalysisTypesVocabularyFactory"

@@ -130,12 +130,4 @@
     END OF FIELDS/WIDGETS VISIBILITY
     -->
 
-    <!-- Stickers -->
-    <!-- IGetStickerTemplates adapters -->
-    <adapter
-      factory="bika.lims.adapters.stickers.GetSampleStickers"
-      for="bika.lims.interfaces.IAnalysisRequest"
-      provides="bika.lims.interfaces.IGetStickerTemplates"
-    />
-
 </configure>

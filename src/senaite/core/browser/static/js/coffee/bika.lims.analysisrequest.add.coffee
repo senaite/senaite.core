@@ -33,6 +33,9 @@ class window.AnalysisRequestAdd
     # Remove the '.blurrable' class to avoid inline field validation
     $(".blurrable").removeClass("blurrable")
 
+    # manually flush service search terms
+    @flush_search_terms()
+
     # bind the event handler to the elements
     @bind_eventhandler()
 
@@ -243,6 +246,8 @@ class window.AnalysisRequestAdd
 
     # Categories header clicked
     $("body").on "click", ".service-listing-header", @on_service_listing_header_click
+    # Categories filter search input changed
+    $("body").on "keyup", "input.services-filter", @on_services_filter_change
     # Category toggle button clicked
     $("body").on "click", "tr.category", @on_service_category_click
     # Composite Checkbox clicked
@@ -1266,6 +1271,78 @@ class window.AnalysisRequestAdd
     if lines[idx] then $(lines[idx]).addClass(cls)
 
 
+  ###*
+   * Flush services search filters
+  ###
+  flush_search_terms: =>
+    el = $("tr.service-listing-header input.services-filter")
+    $(el).val("")
+
+  ###*
+   * Returns the term to search through services from categories that belong
+   * to the given point of capture (poc)
+   *
+   * @param poc {String} The point of capture
+   * @returns {String} The search term
+  ###
+  get_search_term: (poc) ->
+    el = $("tr.#{poc}.service-listing-header input.services-filter")
+    # strip leading and trailing whitespaces
+    term = $(el).val()
+    return term.replace /^\s+|\s+$/g, ""
+
+  ###*
+   * Returns whether the search of services by term for the given point of
+   * capture is active
+   *
+   * @param poc {String} The point of capture
+   * @returns {Boolean} Whether the search by term is active or not
+  ###
+  is_search_active: (poc) ->
+    term = @get_search_term poc
+    if term
+      return true
+    return false
+
+  ###*
+   * Returns the list of service uids from categories that belong to the given
+   * point of capture and their human name match with the term passed-in.
+   * Returns an empty list if empty term
+   *
+   * @param poc {String} The point of capture
+   * @param term {String} The search term
+   * @returns {List} The list of service uids
+  ###
+  search_services: (poc, term) ->
+    matches = []
+
+    # assume no matches if term is empty
+    if not term
+      return matches
+
+    # transform the term to lower case
+    term = term.toLowerCase()
+
+    # iterate through all registered services to find matches
+    services = $("tr.#{poc}.service")
+    $.each services, (num, service) ->
+
+      # get the service basic info
+      $service = $(service)
+      category_id = $service.data "category"
+      service_uid = $service.data "uid"
+
+      # get the service human name
+      name_el = $("div.service-title", $service)
+      name = name_el.html().toLowerCase()
+
+      # hide service if no match found and not checked for any sample
+      if name.indexOf(term) isnt -1
+        matches.push service_uid
+
+    return matches
+
+
   ######################
   ### EVENT HANDLERS ###
   ######################
@@ -1588,16 +1665,96 @@ class window.AnalysisRequestAdd
   ###
   on_service_listing_header_click: (event) =>
     $el = $(event.currentTarget)
-    poc = $el.data("poc")
+    poc = $el.data "poc"
+
+    # keep categories with selected services visible if search by term active
+    if @is_search_active poc
+      services = $("tr.#{poc}.service.visible")
+      $.each services, (num, service) ->
+        $service = $(service)
+        category = $service.data "category"
+        $("tr.#{poc}.#{category}.category").addClass "visible"
+      return
+
+    # toggle visibility
     visible = $el.hasClass("visible")
     toggle = not visible
     @toggle_poc_categories poc, toggle
 
 
   ###*
+   * Event handler for the services filter box
+   *
+   * Searches services their name match with the given term and make them
+   * visible. Categories without matches and without any pre-selected service
+   * are hidden. If no term, the visibility of categories and services is
+   * restored.
+   *
+   * @param event {Object} The event object
+  ###
+  on_services_filter_change: (event) =>
+    $el = $(event.currentTarget)
+    poc = $el.closest("tr").data("poc")
+
+    # keep track of the categories to expand and keep visible
+    expanded_categories = new Set([])
+
+    # get the term so search by
+    term = @get_search_term poc
+
+    # do the search
+    uids = @search_services poc, term
+
+    # show services that match or with ticked checkboxes
+    services = $("tr.#{poc}.service")
+    $.each services, (num, service) ->
+      $service = $(service)
+      category = $service.data "category"
+      uid = $service.data "uid"
+      if uid in uids
+        $service.addClass "visible"
+        expanded_categories.add category
+        return
+
+      # show if ticked checkboxes
+      checked = $("input[type=checkbox]:checked", $service)
+      if checked.length > 0
+        $service.addClass "visible"
+        expanded_categories.add category
+        return
+
+      # hide the service
+      $service.removeClass "visible"
+
+    # expand categories with visible services
+    categories = $("tr.#{poc}.category")
+    $.each categories, (num, category) ->
+      # toggle the visibility of the category
+      $category = $(category)
+      $btn = $(".service-category-toggle", $category)
+      category_id = $category.data "category"
+
+      # expand the category if at least on service visible
+      expanded = expanded_categories.has category_id
+      if expanded
+        $category.addClass "expanded"
+        $btn.text "-"
+      else
+        $category.removeClass "expanded"
+        $btn.text "+"
+
+      # make category visible if expanded or empty search term
+      if expanded or not term
+        $category.addClass "visible"
+      else
+        $category.removeClass "visible"
+
+
+  ###*
    * Event handler for analysis service category rows.
    *
-   * Toggles the visibility of all services within this category.
+   * Toggles the visibility of all services within this category, but only if
+   * the search filter mode for this category is not enabled.
    * NOTE: Selected services always stay visible.
    *
    * @param event {Object} The event object
@@ -1606,6 +1763,11 @@ class window.AnalysisRequestAdd
     event.preventDefault()
     $el = $(event.currentTarget)
     poc = $el.attr("poc")
+
+    # do nothing if search by term is active
+    if @is_search_active poc
+      return
+
     $btn = $(".service-category-toggle", $el)
 
     expanded = $el.hasClass("expanded")

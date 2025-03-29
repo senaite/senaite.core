@@ -433,7 +433,7 @@
                           tal:attributes="id string:${fieldName}_help">Help</span>
                   </label>
                 </td>
-                <td>
+                <td class="pl-3 pr-3">
                   <div class="text-center" tal:condition="python:view.show_copy_button_for(field)">
                     <!-- Copy Button -->
                     <a class="copy d-block"
@@ -504,7 +504,7 @@
               <tr tal:attributes="poc poc;
                                   data-poc poc;
                                   class string:${poc} service-listing-header field-services-header">
-                <td tal:attributes="colspan python:2 + ar_count">
+                <td colspan="2">
                   <div class="poc-service-title">
                     <span tal:condition="python:poc=='field'"
                           i18n:translate="">
@@ -514,6 +514,19 @@
                           i18n:translate="">
                       Lab Analyses
                     </span>
+                  </div>
+                </td>
+                <td tal:attributes="colspan python:1 + ar_count">
+                  <div class="input-group">
+                    <input type="text" class="form-control services-filter"
+                           data-poc="poc"
+                           i18n:attributes="placeholder"
+                           placeholder="Filter analyses by name..."/>
+                    <div class="input-group-append">
+                      <div class="input-group-text">
+                        <i class="fas fa-filter"></i>
+                      </div>
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -551,6 +564,8 @@
                         tal:attributes="id python:service_id;
                                         class python:'{} {} service'.format(category_id, poc);
                                         poc python:poc;
+                                        data-uid python:service_uid;
+                                        data-category python:category_id;
                                         fieldname python:'Analyses';">
                       <td class="service-header">
                         <div class="service-title small"
