@@ -273,6 +273,10 @@
        * Highlight a line number in the paste panel
        */
       this.highlight_paster_line = this.highlight_paster_line.bind(this);
+      /**
+       * Flush services search filters
+       */
+      this.flush_search_terms = this.flush_search_terms.bind(this);
       //#####################
       /* EVENT HANDLERS */
       //#####################
@@ -424,6 +428,8 @@
       this.deselected_uids = {};
       // Remove the '.blurrable' class to avoid inline field validation
       $(".blurrable").removeClass("blurrable");
+      // manually flush service search terms
+      this.flush_search_terms();
       // bind the event handler to the elements
       this.bind_eventhandler();
       // N.B.: The new AR Add form handles File fields like this:
@@ -1516,6 +1522,12 @@
       if (lines[idx]) {
         return $(lines[idx]).addClass(cls);
       }
+    }
+
+    flush_search_terms() {
+      var el;
+      el = $("tr.service-listing-header input.services-filter");
+      return $(el).val("");
     }
 
     /**

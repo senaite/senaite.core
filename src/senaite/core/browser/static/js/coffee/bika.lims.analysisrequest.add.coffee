@@ -33,6 +33,9 @@ class window.AnalysisRequestAdd
     # Remove the '.blurrable' class to avoid inline field validation
     $(".blurrable").removeClass("blurrable")
 
+    # manually flush service search terms
+    @flush_search_terms()
+
     # bind the event handler to the elements
     @bind_eventhandler()
 
@@ -1267,6 +1270,13 @@ class window.AnalysisRequestAdd
     lines.removeClass(cls)
     if lines[idx] then $(lines[idx]).addClass(cls)
 
+
+  ###*
+   * Flush services search filters
+  ###
+  flush_search_terms: =>
+    el = $("tr.service-listing-header input.services-filter")
+    $(el).val("")
 
   ###*
    * Returns the term to search through services from categories that belong
