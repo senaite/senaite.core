@@ -132,5 +132,7 @@ class UsersOverviewControlPanel(BaseView):
         #     reindex=1,
         #     recursive=1
         # )
+        #
+        # XXX: Maybe we could index local role assignments in the future?
         for client in self.get_clients():
             mtool.deleteLocalRoles(client, member_ids, reindex=0, recursive=0)
