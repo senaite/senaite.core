@@ -273,6 +273,10 @@
        * Highlight a line number in the paste panel
        */
       this.highlight_paster_line = this.highlight_paster_line.bind(this);
+      /**
+       * Restores the visibility of services and categories
+       */
+      this.reset_category_visibility = this.reset_category_visibility.bind(this);
       //#####################
       /* EVENT HANDLERS */
       //#####################
@@ -338,6 +342,17 @@
        * @param event {Object} The event object
        */
       this.on_service_listing_header_click = this.on_service_listing_header_click.bind(this);
+      /**
+       * Event handler for the services filter box
+       *
+       * Searches services their name match with the given term and make them
+       * visible. Categories without matches and without any pre-selected service
+       * are hidden. If no term, the visibility of categories and services is
+       * restored.
+       *
+       * @param event {Object} The event object
+       */
+      this.on_services_filter_change = this.on_services_filter_change.bind(this);
       /**
        * Event handler for analysis service category rows.
        *
@@ -593,6 +608,8 @@
       console.debug("AnalysisRequestAdd::bind_eventhandler");
       // Categories header clicked
       $("body").on("click", ".service-listing-header", this.on_service_listing_header_click);
+      // Categories filter search input changed
+      $("body").on("keyup", "input.services-filter", this.on_services_filter_change);
       // Category toggle button clicked
       $("body").on("click", "tr.category", this.on_service_category_click);
       // Composite Checkbox clicked
@@ -1505,6 +1522,31 @@
       }
     }
 
+    reset_category_visibility(category) {
+      var $btn, $category, category_id, checked, poc, services, unchecked;
+      $category = $(category);
+      poc = $category.attr("poc");
+      category_id = $category.data("category");
+      // hide services with non-ticked checkboxes
+      services = $(`tr.${poc}.${category_id}.service`);
+      unchecked = $("input[type=checkbox]:not(checked)", services);
+      unchecked.closest("tr").removeClass("visible");
+      // display services with ticked checkboxes
+      checked = $("input[type=checkbox]:checked", services);
+      checked.closest("tr").addClass("visible");
+      // toggle the visibility of the category
+      $btn = $(".service-category-toggle", $category);
+      if (checked.length > 0) {
+        $category.addClass("visible");
+        $category.addClass("expanded");
+        return $btn.text("-");
+      } else {
+        $category.addClass("visible");
+        $category.removeClass("expanded");
+        return $btn.text("+");
+      }
+    }
+
     on_sample_nav(event) {
       var $el, el, idx, primary, target;
       el = event.currentTarget;
@@ -1776,6 +1818,70 @@
       visible = $el.hasClass("visible");
       toggle = !visible;
       return this.toggle_poc_categories(poc, toggle);
+    }
+
+    on_services_filter_change(event) {
+      var $el, categories, me, poc, services, term, visible_categories;
+      me = this;
+      $el = $(event.currentTarget);
+      poc = $el.closest("tr").data("poc");
+      // display the categories that belong to this poc
+      this.toggle_poc_categories(poc, true);
+      // get the term to search by and strip leading and trailing whitespaces
+      term = $el.val();
+      term = term = term.replace(/^\s+|\s+$/g, "");
+      term = term.toLowerCase();
+      if (!term) {
+        // reset the visibility of categories
+        categories = $(`tr.${poc}.category`);
+        $.each(categories, function(num, category) {
+          return me.reset_category_visibility(category);
+        });
+        return;
+      }
+      // keep track of the categories to make visible
+      visible_categories = new Set([]);
+      // iterate through all registered services to find matches
+      services = $(`tr.${poc}.service`);
+      $.each(services, function(num, service) {
+        var $service, category_id, checked, name, name_el;
+        // get the name of the service
+        $service = $(service);
+        category_id = $service.data("category");
+        name_el = $("div.service-title", $service);
+        name = name_el.html().toLowerCase();
+        // hide service if no match found and not checked for any sample
+        if (name.indexOf(term) === -1) {
+          checked = $("input[type=checkbox]:checked", service);
+          if (checked.length === 0) {
+            $service.removeClass("visible");
+          }
+        } else {
+          $service.addClass("visible");
+        }
+        // add to the categories to make visible
+        if ($service.hasClass("visible")) {
+          return visible_categories.add(category_id);
+        }
+      });
+      // iterate through categories and update their visibility
+      categories = $(`tr.${poc}.category`);
+      return $.each(categories, function(num, category) {
+        var $btn, $category, category_id;
+        // toggle the visibility of the category
+        $category = $(category);
+        $btn = $(".service-category-toggle", $category);
+        category_id = $category.data("category");
+        if (visible_categories.has(category_id)) {
+          $category.addClass("visible");
+          $category.addClass("expanded");
+          return $btn.text("-");
+        } else {
+          $category.removeClass("visible");
+          $category.removeClass("expanded");
+          return $btn.text("+");
+        }
+      });
     }
 
     on_service_category_click(event) {

@@ -518,8 +518,8 @@
                 </td>
                 <td tal:attributes="colspan python:1 + ar_count">
                   <div class="input-group">
-                    <input type="text" class="form-control"
-                           name="poc-services-filter-box"
+                    <input type="text" class="form-control services-filter"
+                           data-poc="poc"
                            i18n:attributes="placeholder"
                            placeholder="Filter analyses by name..."/>
                     <div class="input-group-append">
@@ -564,6 +564,7 @@
                         tal:attributes="id python:service_id;
                                         class python:'{} {} service'.format(category_id, poc);
                                         poc python:poc;
+                                        data-category python:category_id;
                                         fieldname python:'Analyses';">
                       <td class="service-header">
                         <div class="service-title small"

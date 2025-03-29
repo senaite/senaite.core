@@ -243,6 +243,8 @@ class window.AnalysisRequestAdd
 
     # Categories header clicked
     $("body").on "click", ".service-listing-header", @on_service_listing_header_click
+    # Categories filter search input changed
+    $("body").on "keyup", "input.services-filter", @on_services_filter_change
     # Category toggle button clicked
     $("body").on "click", "tr.category", @on_service_category_click
     # Composite Checkbox clicked
@@ -1265,6 +1267,34 @@ class window.AnalysisRequestAdd
     lines.removeClass(cls)
     if lines[idx] then $(lines[idx]).addClass(cls)
 
+  ###*
+   * Restores the visibility of services and categories
+  ###
+  reset_category_visibility: (category) =>
+    $category = $(category)
+    poc = $category.attr "poc"
+    category_id = $category.data "category"
+
+    # hide services with non-ticked checkboxes
+    services = $("tr.#{poc}.#{category_id}.service")
+    unchecked = $("input[type=checkbox]:not(checked)", services)
+    unchecked.closest("tr").removeClass "visible"
+
+    # display services with ticked checkboxes
+    checked = $("input[type=checkbox]:checked", services)
+    checked.closest("tr").addClass "visible"
+
+    # toggle the visibility of the category
+    $btn = $(".service-category-toggle", $category)
+    if checked.length > 0
+      $category.addClass "visible"
+      $category.addClass "expanded"
+      $btn.text "-"
+    else
+      $category.addClass "visible"
+      $category.removeClass "expanded"
+      $btn.text "+"
+
 
   ######################
   ### EVENT HANDLERS ###
@@ -1592,6 +1622,79 @@ class window.AnalysisRequestAdd
     visible = $el.hasClass("visible")
     toggle = not visible
     @toggle_poc_categories poc, toggle
+
+
+  ###*
+   * Event handler for the services filter box
+   *
+   * Searches services their name match with the given term and make them
+   * visible. Categories without matches and without any pre-selected service
+   * are hidden. If no term, the visibility of categories and services is
+   * restored.
+   *
+   * @param event {Object} The event object
+  ###
+  on_services_filter_change: (event) =>
+    me = this
+    $el = $(event.currentTarget)
+    poc = $el.closest("tr").data("poc")
+
+    # display the categories that belong to this poc
+    @toggle_poc_categories poc, true
+
+    # get the term to search by and strip leading and trailing whitespaces
+    term = $el.val()
+    term = term = term.replace /^\s+|\s+$/g, ""
+    term = term.toLowerCase()
+
+    if not term
+      # reset the visibility of categories
+      categories = $("tr.#{poc}.category")
+      $.each categories, (num, category) ->
+        me.reset_category_visibility category
+      return
+
+    # keep track of the categories to make visible
+    visible_categories = new Set([])
+
+    # iterate through all registered services to find matches
+    services = $("tr.#{poc}.service")
+    $.each services, (num, service) ->
+
+      # get the name of the service
+      $service = $(service)
+      category_id = $service.data "category"
+      name_el = $("div.service-title", $service)
+      name = name_el.html().toLowerCase()
+
+      # hide service if no match found and not checked for any sample
+      if name.indexOf(term) is -1
+        checked = $("input[type=checkbox]:checked", service)
+        if checked.length == 0
+          $service.removeClass "visible"
+      else
+        $service.addClass "visible"
+
+      # add to the categories to make visible
+      if $service.hasClass "visible"
+        visible_categories.add category_id
+
+    # iterate through categories and update their visibility
+    categories = $("tr.#{poc}.category")
+    $.each categories, (num, category) ->
+
+      # toggle the visibility of the category
+      $category = $(category)
+      $btn = $(".service-category-toggle", $category)
+      category_id = $category.data "category"
+      if visible_categories.has category_id
+        $category.addClass "visible"
+        $category.addClass "expanded"
+        $btn.text "-"
+      else
+        $category.removeClass "visible"
+        $category.removeClass "expanded"
+        $btn.text "+"
 
 
   ###*
