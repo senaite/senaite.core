@@ -314,8 +314,12 @@ system remains consistent with the value from the original object:
     >>> wrapper.getShortTitle() is None
     True
 
+Other AT-specific field types that are still in use might have special
+requirements too. Note these fields will be definitely removed once all
+content types are migrated to DX, but we keep them here into account for
+legacy and consistency reasons:
 
-`DurationField` type:
+- `DurationField` type:
 
     >>> Ca.getMaxTimeAllowed()
     {'hours': 0, 'minutes': 0, 'days': 5}
@@ -324,7 +328,7 @@ system remains consistent with the value from the original object:
     >>> wrapper.getMaxTimeAllowed()
     {'hours': 0, 'minutes': 0, 'days': 5}
 
-`AddressField` type:
+- `AddressField` type:
 
     >>> client.getPhysicalAddress()
     {}
@@ -343,3 +347,33 @@ system remains consistent with the value from the original object:
     >>> wrapper.load_latest_version()
     >>> sorted(wrapper.getPhysicalAddress().values())
     ['My address', 'My city', 'My country', 'My state', 'My zip']
+
+- `EmailsField` type:
+
+    >>> client.getCCEmails()
+    ''
+
+    >>> wrapper.getCCEmails()
+    ''
+
+- `ARAnalysesField` type:
+
+    >>> sample = new_sample([Ca, Mg])
+    >>> receive_sample(sample)
+    >>> wrapper = IVersionWrapper(sample)
+
+    >>> analyses = sorted(sample.getAnalyses(full_objects=True))
+    >>> analyses == sorted(wrapper.getAnalyses(full_objects=True))
+    True
+
+    >>> analyses = sorted(sample.getRawAnalyses())
+    >>> analyses == sorted(wrapper.getRawAnalyses())
+    True
+
+- `UIDReferenceField` type:
+
+    >>> sample.getContact() == wrapper.getContact()
+    True
+
+    >>> sample.getRawContact() == wrapper.getRawContact()
+    True
