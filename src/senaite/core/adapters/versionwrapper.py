@@ -160,6 +160,9 @@ class VersionWrapper(object):
         elif fieldclass == "fixedpointfield":
             # AT fixedpoint field
             return field._to_tuple(self.content, value)
+        elif fieldclass == "durationfield":
+            # AT duration field
+            return {str(key): int(val) for key, val in value.items()}
         return value
 
 

@@ -295,3 +295,12 @@ set, system returns `None` as the value instead of a `float` type:
     >>> wrapper.load_latest_version()
     >>> wrapper.getSortKey()
     23.5
+
+`DurationField` type:
+
+    >>> Ca.getMaxTimeAllowed()
+    {'hours': 0, 'minutes': 0, 'days': 5}
+
+    >>> wrapper = IVersionWrapper(Ca)
+    >>> wrapper.getMaxTimeAllowed()
+    {'hours': 0, 'minutes': 0, 'days': 5}
