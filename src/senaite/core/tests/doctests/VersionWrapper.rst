@@ -266,3 +266,32 @@ Unless we load the latest version:
 
     >>> dx_wrapper.getDepartmentID()
     'CLab'
+
+
+Values returned by the wrapper match with those from the field
+..............................................................
+
+When processing the values of a snapshot, the system tries to match the
+value with that required by the field type of the content object. This
+principle applies for both AT content types and DX types.
+
+If the value for the field is not set, the system returns `None` as the value
+without doing any conversion. For instance, the `SortKey` field from service
+does not have a default value set, but the expected type is `float`. When not
+set, system returns `None` as the value instead of a `float` type:
+
+    >>> Ca.getSortKey() is None
+    True
+
+    >>> wrapper = IVersionWrapper(Ca)
+    >>> wrapper.getSortKey() is None
+    True
+
+    >>> Ca.setSortKey("23.5")
+    >>> notify_edited(Ca)
+    >>> Ca.getSortKey()
+    23.5
+
+    >>> wrapper.load_latest_version()
+    >>> wrapper.getSortKey()
+    23.5
