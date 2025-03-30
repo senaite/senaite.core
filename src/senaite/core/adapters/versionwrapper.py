@@ -120,7 +120,7 @@ class VersionWrapper(object):
 
         return out
 
-    def process_snapshot_value(self, key, snapshot, default=None):
+    def process_snapshot_value(self, key, snapshot):
         """Convert stringified snapshot values
 
         We try to match the required field type of the content object w/o using
@@ -133,16 +133,15 @@ class VersionWrapper(object):
         """
         value = snapshot.get(key)
 
-        if not value:
-            return default
-
         # try to get the field
         field = self.fields.get(key)
         if not field:
             return value
 
-        # directly convert None, empties and bool values
-        if value in ["None", ""]:
+        # directly convert empties, None and bool values
+        if not value:
+            return value
+        elif value == "None":
             return None
         elif value in ["True", "False"]:
             return True if value == "True" else False
@@ -164,6 +163,9 @@ class VersionWrapper(object):
         elif fieldclass == "durationfield":
             # AT duration field
             return {str(key): int(val) for key, val in value.items()}
+        elif fieldclass == "emailsfield":
+            # AT emails fields
+            return value or ''
         elif fieldtype == "record":
             # AT record-like fields
             return value or {}

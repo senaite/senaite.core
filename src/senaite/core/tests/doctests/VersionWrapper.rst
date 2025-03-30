@@ -296,6 +296,25 @@ set, system returns `None` as the value instead of a `float` type:
     >>> wrapper.getSortKey()
     23.5
 
+Likewise, when a string field has an empty value set instead of a `None` the
+system remains consistent with the value from the original object:
+
+    >>> Ca.getShortTitle()
+    ''
+
+    >>> wrapper.getShortTitle()
+    ''
+
+    >>> Ca.setShortTitle(None)
+    >>> notify_edited(Ca)
+    >>> Ca.getShortTitle() is None
+    True
+
+    >>> wrapper.load_latest_version()
+    >>> wrapper.getShortTitle() is None
+    True
+
+
 `DurationField` type:
 
     >>> Ca.getMaxTimeAllowed()
