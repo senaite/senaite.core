@@ -21,7 +21,6 @@
   <include file="pricelist.zcml"/>
   <include file="referenceanalysis.zcml"/>
   <include file="referencesample.zcml"/>
-  <include file="stickers.zcml"/>
 
   <include package=".analysisrequest"/>
   <include package=".batch"/>

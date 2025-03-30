@@ -22,6 +22,7 @@ from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
+from bika.lims.utils import get_link_for
 from plone.app.users.browser.account import getSchema
 from plone.app.users.browser.userdatapanel import UserDataPanel as Base
 from plone.app.users.browser.userdatapanel import UserDataPanelAdapter
@@ -31,11 +32,27 @@ from plone.app.users.schema import checkEmailAddress
 from plone.autoform import directives
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.catalog import CONTACT_CATALOG
-from senaite.core.z3cform.widgets.uidreference.widget import \
-    UIDReferenceWidgetFactory
+from z3c.form.browser.text import TextWidget
 from z3c.form.interfaces import DISPLAY_MODE
+from z3c.form.interfaces import IFieldWidget
+from z3c.form.widget import FieldWidget
 from zope.interface import Interface
+from zope.interface import implementer
 from zope.schema import TextLine
+
+
+class ContactLinkWidget(TextWidget):
+    """Widget to render contact UID as a clickable link
+    """
+    def render(self):
+        if not self.value:
+            return None
+        return get_link_for(self.value)
+
+
+@implementer(IFieldWidget)
+def ContactLinkWidgetFactory(field, request):
+    return FieldWidget(field, ContactLinkWidget(request))
 
 
 class IUserDataSchema(Interface):
@@ -58,7 +75,7 @@ class IUserDataSchema(Interface):
 
     # Field behaves like a readonly field
     directives.mode(contact=DISPLAY_MODE)
-    directives.widget("contact", UIDReferenceWidgetFactory)
+    directives.widget("contact", ContactLinkWidgetFactory)
     contact = TextLine(
         title=_(u"label_user_contact", default=u"Contact"),
         description=_(u"description_user_contact",

@@ -32,7 +32,6 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import ISampleType
 from bika.lims.interfaces import ISampleTypeAwareMixin
-from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from magnitude import mg
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BaseObject
@@ -48,6 +47,7 @@ from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.vocabularies.stickers import get_sticker_templates
 from zope.interface import implements
 
 SMALL_DEFAULT_STICKER = "small_default"
@@ -299,7 +299,7 @@ class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
     def getStickerTemplates(self, *args, **kwargs):
         """Get the sticker templates
         """
-        out = [[t["id"], t["title"]] for t in _getStickerTemplates()]
+        out = [[t["id"], t["title"]] for t in get_sticker_templates()]
         return DisplayList(out)
 
     def getAdmittedStickerTemplates(self):
@@ -362,7 +362,7 @@ class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
             # allow all if none is selected
             return self.getStickerTemplates()
         voc = DisplayList()
-        stickers = _getStickerTemplates()
+        stickers = get_sticker_templates()
         for sticker in stickers:
             if sticker.get("id") in admitted:
                 voc.add(sticker.get("id"), sticker.get("title"))

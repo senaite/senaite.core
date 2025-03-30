@@ -20,7 +20,7 @@
 
 from senaite.core.browser.form.adapters import EditFormAdapterBase
 from senaite.core.interfaces import ISampleType
-from bika.lims.vocabularies import getStickerTemplates
+from senaite.core.vocabularies.stickers import get_sticker_templates
 
 _DGF_WIDGET_PREFIX = "form.widgets.admitted_sticker_templates.0.widgets."
 
@@ -40,7 +40,7 @@ class EditForm(EditFormAdapterBase):
         if name == _DGF_WIDGET_PREFIX + "admitted":
             # get the sticker
             templates = filter(
-                lambda t: t.get("id") in value, getStickerTemplates())
+                lambda t: t.get("id") in value, get_sticker_templates())
 
             # prepare options for the select field
             opts = map(lambda t: dict(
