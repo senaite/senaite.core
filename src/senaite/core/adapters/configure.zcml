@@ -63,4 +63,10 @@
       provides="senaite.core.interfaces.IVersionWrapper"
       factory=".versionwrapper.VersionWrapperFactory" />
 
+  <!-- Sticker adapter for Samples -->
+  <adapter
+      factory=".stickers.GetSampleStickers"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      provides="senaite.core.interfaces.stickers.IGetStickerTemplates" />
+
 </configure>

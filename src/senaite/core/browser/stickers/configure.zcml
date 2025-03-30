@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:page
+      for="*"
+      name="sticker"
+      class=".view.StickerView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <plone:static
+      directory="templates/stickers"
+      type="stickers"
+      name="senaite.core"
+      />
+
+  <!-- static resources -->
+  <browser:resourceDirectory
+      name="senaite.core.stickers.static"
+      directory="static"
+      />
+
+</configure>
