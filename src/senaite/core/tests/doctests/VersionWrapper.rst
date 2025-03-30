@@ -362,8 +362,13 @@ legacy and consistency reasons:
     >>> receive_sample(sample)
     >>> wrapper = IVersionWrapper(sample)
 
-    >>> analyses = sorted(sample.getAnalyses(full_objects=True))
-    >>> analyses == sorted(wrapper.getAnalyses(full_objects=True))
+    >>> analyses = sample.getAnalyses(full_objects=True)
+    >>> a_uids = [api.get_uid(an) for an in analyses]
+
+    >>> analyses = wrapper.getAnalyses(full_objects=True)
+    >>> w_uids = [api.get_uid(an) for an in analyses]
+
+    >>> sorted(a_uids) == sorted(w_uids)
     True
 
     >>> analyses = sorted(sample.getRawAnalyses())
