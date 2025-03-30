@@ -141,6 +141,12 @@ class VersionWrapper(object):
         if not field:
             return value
 
+        # directly convert None, empties and bool values
+        if value in ["None", ""]:
+            return None
+        elif value in ["True", "False"]:
+            return True if value == "True" else False
+
         # guess the required value type depending on the used field
         fieldclass = field.__class__.__name__.lower()
 
@@ -154,13 +160,6 @@ class VersionWrapper(object):
         elif fieldclass == "fixedpointfield":
             # AT fixedpoint field
             return field._to_tuple(self.content, value)
-        elif value in ["None", ""]:
-            # convert None types
-            return None
-        elif value in ["True", "False"]:
-            # convert boolean value
-            return True if value == "True" else False
-
         return value
 
 
