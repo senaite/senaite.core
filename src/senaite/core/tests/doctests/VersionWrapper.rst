@@ -304,3 +304,23 @@ set, system returns `None` as the value instead of a `float` type:
     >>> wrapper = IVersionWrapper(Ca)
     >>> wrapper.getMaxTimeAllowed()
     {'hours': 0, 'minutes': 0, 'days': 5}
+
+`AddressField` type:
+
+    >>> client.getPhysicalAddress()
+    {}
+
+    >>> wrapper = IVersionWrapper(client)
+    >>> wrapper.getPhysicalAddress()
+    {}
+
+    >>> subfields = ["address", "city", "zip", "state", "country"]
+    >>> address = {key: "My %s" % key for key in subfields}
+    >>> client.setPhysicalAddress(address)
+    >>> notify_edited(client)
+    >>> sorted(client.getPhysicalAddress().values())
+    ['My address', 'My city', 'My country', 'My state', 'My zip']
+
+    >>> wrapper.load_latest_version()
+    >>> sorted(wrapper.getPhysicalAddress().values())
+    ['My address', 'My city', 'My country', 'My state', 'My zip']

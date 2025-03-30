@@ -149,6 +149,7 @@ class VersionWrapper(object):
 
         # guess the required value type depending on the used field
         fieldclass = field.__class__.__name__.lower()
+        fieldtype = getattr(field, "type", None)
 
         if fieldclass.startswith("date"):
             # convert date value
@@ -163,6 +164,9 @@ class VersionWrapper(object):
         elif fieldclass == "durationfield":
             # AT duration field
             return {str(key): int(val) for key, val in value.items()}
+        elif fieldtype == "record":
+            # AT record-like fields
+            return value or {}
         return value
 
 
