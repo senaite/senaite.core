@@ -1881,7 +1881,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # If there are required fields missing, flag an error
             for field in missing:
                 fieldname = "{}-{}".format(field, num)
-                label = self.get_field_label(field)
+                label = self.get_field_label(field) or field
                 msg = self.context.translate(_("Field '{}' is required"))
                 fielderrors[fieldname] = msg.format(label)
 
