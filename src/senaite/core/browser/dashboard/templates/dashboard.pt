@@ -9,7 +9,7 @@
        tal:attributes="href string:${portal_url}?redirect_to=frontpage">
       Switch to frontpage
     </a>
-    <h1 class="documentFirstHeading" i18n:translate="">System Dashboard</h1>
+    <h1 class="documentFirstHeading" i18n:translate="">Systum Dashboard</h1>
   </metal:content-title>
 
   <a style="float:right;" href="#" i18n:translate="">Switch to Frontpage</a>
