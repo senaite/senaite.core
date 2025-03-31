@@ -4,6 +4,11 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2701 Make expected sampling date optional
+- #2700 Fix missing condition fieldname in sample add form statusmessage
+- #2697 Allow to remove users
+- #2698 Custom contact widget in user profile
+- #2699 Add search filter by term for services in add sample form
 - #2692 Refactor Sticker Functionality
 - #2696 Fix error when removing a Worksheet from inside its view
 - #2690 Support date and datetime on result entry
