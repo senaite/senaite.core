@@ -8,7 +8,7 @@
         <div class="text-center text-muted">
           <ul class="list-inline">
             <li>
-              <span i18n:translate="label_powered_by">SENAITE is powered by</span>
+              <span i18n:translate="label_powered_by">TCSL Adypsoe</span>
               <a href="http://plone.org"
                  title="This site was built using the Plone Open Source CMS/WCM."
                  i18n:attributes="title title_built_with_plone;"

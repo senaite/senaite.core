@@ -7715,7 +7715,7 @@ msgstr ""
 msgid "label_new_password"
 msgstr ""
 
-#. Default: "SENAITE is powered by"
+#. Default: "TCSL Adypsoe"
 #: senaite/core/browser/viewlets/templates/colophon.pt:11
 msgid "label_powered_by"
 msgstr ""
