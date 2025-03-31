@@ -4,6 +4,7 @@ Changelog
 2.6.0 (unreleased)
 ------------------
 
+- #2700 Fix missing condition fieldname in sample add form statusmessage
 - #2697 Allow to remove users
 - #2698 Custom contact widget in user profile
 - #2699 Add search filter by term for services in add sample form
