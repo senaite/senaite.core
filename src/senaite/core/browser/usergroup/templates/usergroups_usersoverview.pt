@@ -120,7 +120,7 @@
                       <th rowspan="" i18n:translate="listingheader_user_name">User name</th>
                       <th class="text-center" tal:repeat="portal_role portal_roles" tal:content="portal_role" i18n:translate="">Role</th>
                       <th class="text-center" rowspan="" i18n:translate="listingheader_reset_password">Reset Password</th>
-                      <!-- <th rowspan="" i18n:translate="listingheader_remove">Remove</th> -->
+                      <th rowspan="" i18n:translate="listingheader_remove">Remove</th>
                     </tr>
                   </tal:block>
                   <tal:block repeat="user batch">
@@ -174,16 +174,16 @@
                                      disabled python:user['can_set_password'] and default or 'disabled'" />
                       </td>
 
-                      <!-- N.B.: We disallow to delete users here, because this can bring a large site down when all contents are processed to change the owner.
-                           <td class="listingCheckbox">
-                           <input type="checkbox"
-                           class="noborder notify"
-                           name="delete:list"
-                           value=""
-                           tal:attributes="value userid;
-                           disabled python:user['can_delete'] and default or 'disabled'" />
-                           </td>
-                      -->
+                      <!-- N.B.: We allow to delete users here, but skip recursive local role deletion.
+                                 Check `UsersOverviewControlPanel.deleteMembers` for details -->
+                      <td class="listingCheckbox text-center align-middle">
+                        <input type="checkbox"
+                               class="noborder"
+                               name="delete:list"
+                               value=""
+                               tal:attributes="value userid;
+                                               disabled python:user['can_delete'] and default or 'disabled'" />
+                      </td>
 
                     </tr>
                   </tal:block>

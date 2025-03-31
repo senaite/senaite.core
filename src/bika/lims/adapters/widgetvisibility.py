@@ -175,7 +175,6 @@ class SamplingFieldsVisibility(SenaiteATWidgetVisibility):
                 return "invisible"
 
         elif field_name == "SamplingDate":
-            field.required = sampling
             if not sampling:
                 # sampling deactivated, do not display this field
                 return "invisible"
