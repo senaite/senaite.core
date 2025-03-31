@@ -21,10 +21,10 @@
   <div class="collapse navbar-collapse" id="toolbarContent">
 
     <!-- left -->
-    <ul class="nav navbar-nav mr-auto content-views">
-      <!-- contentviews -->
+    <!-- <ul class="nav navbar-nav mr-auto content-views">
+      
       <div tal:replace="structure view/base_render"></div>
-    </ul>
+    </ul>  removed plone view and active button -->
 
     <!-- right -->
     <ul class="navbar-nav ml-auto">
@@ -49,10 +49,10 @@
         </a>
       </li>
 
-      <!-- LIMS Setup -->
+      <!-- LIMS Setup Removed settings icon using display : none ;-->
       <li class="nav-item" tal:condition="view/is_manager">
-        <a class="nav-link"
-           tal:attributes="href view/get_lims_setup_url">
+        <a class="nav-link" style=" display : none;"  
+           tal:attributes="href view/get_lims_setup_url">  
           <span tal:omit-tag="">
             <i class="fas fa-cog"></i>
           </span>
