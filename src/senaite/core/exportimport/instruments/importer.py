@@ -256,24 +256,26 @@ class AnalysisResultsImporter(Logger):
         :returns: Converted analysis result
         """
 
+        if api.is_floatable(result) and not analysis.getStringResult():
+            # ensure floatable string result containing a decimal point
+            result = str(result)
+            if "." not in result:
+                result = "{}.0".format(result)
+
         result_options = analysis.getResultOptions()
         result_type = analysis.getResultType()
 
         if result_options:
-            # Handle result options as integer values
+            # NOTE: Result options can be set as integer or float values!
             result_values = map(
                 lambda r: r.get("ResultValue"), result_options)
-
-            # NOTE: The method `setResult` converts numeric result to a float.
-            # However, result options can be set as integer or float values.
-            # Even if we import the result from as an integer, e.g. `1`, the
-            # result is set as `1.0`.
-            if result_type == "select":
-                # check if an integer result value is set in the result options
-                if "{:.0f}".format(result) in result_values:
-                    # convert the result to an integer value to avoid further
-                    # processing in `setResult`
-                    return int(result)
+            if result_type == "select" and api.is_floatable(result):
+                # check if the integer result matches a result option
+                selection = str(int(float(result)))
+                if selection in result_values:
+                    # XXX: Results like e.g. "1.1" or 1.2 match result options
+                    # with the value set to "1" as well!
+                    return selection
 
         return result
 
@@ -361,12 +363,16 @@ class AnalysisResultsImporter(Logger):
             return False
 
         # Log allowed sample and analyses states
-        self.log(_("Allowed sample states: ${allowed_states}", mapping={
-            "allowed_states": ", ".join(self.allowed_sample_states_msg)
-        }))
-        self.log(_("Allowed analysis states: ${allowed_states}", mapping={
-            "allowed_states": ", ".join(self.allowed_analysis_states_msg)
-        }))
+        self.log(_("Allowed sample states: ${allowed_states}"),
+                 mapping={
+                     "allowed_states": ", ".join(
+                         self.allowed_sample_states_msg)
+                 })
+        self.log(_("Allowed analysis states: ${allowed_states}"),
+                 mapping={
+                     "allowed_states": ", ".join(
+                         self.allowed_analysis_states_msg)
+                 })
         if not any([self.override_non_empty, self.override_with_empty]):
             self.log(_("Don't override analysis results"))
         if self.override_non_empty:
@@ -439,8 +445,9 @@ class AnalysisResultsImporter(Logger):
             for result in results:
 
                 for keyword, values in result.items():
+
+                    # keyword might be excluded
                     if keyword not in self.keywords:
-                        # Analysis keyword doesn't exist
                         continue
 
                     ans = [a for a in analyses if a.getKeyword() == keyword
@@ -501,7 +508,7 @@ class AnalysisResultsImporter(Logger):
                         else:
                             ar = analysis.portal_type == "Analysis" \
                                 and analysis.aq_parent or None
-                            if ar and ar.UID:
+                            if ar is not None:
                                 importedar = ar.getId() in importedars.keys() \
                                             and importedars[ar.getId()] or []
                                 if keyword not in importedar:
@@ -527,8 +534,8 @@ class AnalysisResultsImporter(Logger):
 
         for arid, acodes in six.iteritems(importedars):
             acodesmsg = "Analysis %s" % ', '.join(acodes)
-            self.log(_("${request_id}: ${keywords} imported sucessfully",
-                       mapping={"request_id": arid, "keywords": acodesmsg}))
+            self.log(_("${request_id}: ${keywords} imported sucessfully"),
+                     mapping={"request_id": arid, "keywords": acodesmsg})
 
         for instid, acodes in six.iteritems(importedinsts):
             acodesmsg = "Analysis %s" % ', '.join(acodes)
@@ -538,15 +545,15 @@ class AnalysisResultsImporter(Logger):
         if refsample and self.instrument:
             self.log(_("Import finished successfully: ${updated_ars} Samples, "
                        "${updated_instruments} Instruments and "
-                       "${updated_results} results updated",
-                       mapping={"updated_ars": str(len(importedars)),
-                                "updated_instruments": str(len(importedinsts)),
-                                "updated_results": str(ancount)}))
+                       "${updated_results} results updated"),
+                     mapping={"updated_ars": str(len(importedars)),
+                              "updated_instruments": str(len(importedinsts)),
+                              "updated_results": str(ancount)})
         else:
             self.log(_("Import finished successfully: ${updated_ars} Samples "
-                       "and ${updated_results} results updated",
-                       mapping={"updated_ars": str(len(importedars)),
-                                "updated_results": str(ancount)}))
+                       "and ${updated_results} results updated"),
+                     mapping={"updated_ars": str(len(importedars)),
+                              "updated_results": str(ancount)})
 
     @deprecate("Please use self.process_analysis instead")
     def _process_analysis(self, sid, analysis, values):
@@ -609,13 +616,13 @@ class AnalysisResultsImporter(Logger):
                 updated = True
                 # TODO: change test not to rely on this logline!
                 self.log(_("${sid} result for '${analysis_keyword}:"
-                           "${interim_keyword}': '${value}'",
+                           "${interim_keyword}': '${value}'"),
                          mapping={
                              "sid": sid,
                              "analysis_keyword": analysis.getKeyword(),
                              "interim_keyword": keyword,
                              "value": str(value),
-                         }))
+                         })
             interims_out.append(interim_copy)
 
         # write back interims
@@ -646,24 +653,24 @@ class AnalysisResultsImporter(Logger):
         # check if analysis has a calculation set
         if calculation:
             self.log(_("Skipping result for analysis '${keyword}' of sample "
-                       "'${sid}' with calculation '${calculation}'",
-                       mapping={
-                           "keyword": keyword,
-                           "sid": sid,
-                           "calculation": calculation.Title(),
-                       }))
+                       "'${sid}' with calculation '${calculation}'"),
+                     mapping={
+                         "keyword": keyword,
+                         "sid": sid,
+                         "calculation": calculation.Title(),
+                     })
             return False
 
         # check if non-empty result can be overwritten
         if not self.can_override_analysis_result(analysis, result):
             self.log(_("Analysis '${keyword}' of sample '${sid}' has the "
                        "result '${result}' set, which is kept due to the "
-                       "selected override option",
-                       mapping={
-                           "sid": sid,
-                           "result": result,
-                           "keyword": keyword,
-                       }))
+                       "selected override option"),
+                     mapping={
+                         "sid": sid,
+                         "result": analysis.getResult(),
+                         "keyword": keyword,
+                     })
             return False
 
         # convert result for result options
@@ -681,12 +688,12 @@ class AnalysisResultsImporter(Logger):
         if date_captured:
             analysis.setResultCaptureDate(date_captured)
 
-        self.log(_("${sid} result for '${keyword}': '${result}'",
-                   mapping={
-                       "sid": sid,
-                       "keyword": keyword,
-                       "result": result,
-                   }))
+        self.log(_("${sid} result for '${keyword}': '${result}'"),
+                 mapping={
+                     "sid": sid,
+                     "keyword": keyword,
+                     "result": result,
+                 })
 
         return True
 
@@ -735,12 +742,12 @@ class AnalysisResultsImporter(Logger):
                 field.set(analysis, value)
 
             updated = True
-            self.log(_("${sid} Updated field '${field}' with '${value}'",
-                       mapping={
-                           "sid": sid,
-                           "field": key,
-                           "value": value,
-                       }))
+            self.log(_("${sid} Updated field '${field}' with '${value}'"),
+                     mapping={
+                         "sid": sid,
+                         "field": key,
+                         "value": value,
+                     })
 
         return updated
 
@@ -788,8 +795,8 @@ class AnalysisResultsImporter(Logger):
                 self.save_submit_analysis(obj)
                 obj.reindexObject(idxs=["Result"])
                 self.log(
-                    "${request_id}: calculated result for "
-                    "'${analysis_keyword}': '${analysis_result}'",
+                    _("${request_id}: calculated result for "
+                      "'${analysis_keyword}': '${analysis_result}'"),
                     mapping={"request_id": objid,
                              "analysis_keyword": obj.getKeyword(),
                              "analysis_result": str(obj.getResult())})
@@ -871,11 +878,11 @@ class AnalysisResultsImporter(Logger):
             analysis.reindexObject()
         else:
             self.log(_("Attachment '${attachment}' was already linked "
-                       "to analysis ${analysis}",
-                       mapping={
-                           "attachment": filename,
-                           "analysis": analysis.getKeyword(),
-                       }))
+                       "to analysis ${analysis}"),
+                     mapping={
+                         "attachment": filename,
+                         "analysis": analysis.getKeyword(),
+                     })
 
     def get_attachment_filenames(self, ws):
         """Returns all attachment filenames in the given worksheet

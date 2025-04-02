@@ -108,9 +108,6 @@ def setup_handler(context):
     # XXX P5: Fix HTML filtering
     # setup_html_filter(portal)
 
-    # Set CMF Form actions
-    setup_form_controller_actions(portal)
-
     logger.info("SENAITE setup handler [DONE]")
 
 
@@ -171,24 +168,6 @@ def setup_groups(portal):
                 roles=gdata["roles"],)
             logger.info("+++ Granted group {title} ({id}) the roles {roles}"
                         .format(**gdata))
-
-
-def setup_form_controller_actions(portal):
-    """Setup custom CMF Form actions
-    """
-    logger.info("*** Setup Form Controller custom actions ***")
-    fc_tool = api.get_tool("portal_form_controller")
-
-    # Redirect the user to Worksheets listing view after the "remove" action
-    # from inside Worksheet context is pressed
-    # https://github.com/senaite/senaite.core/pull/1480
-    fc_tool.addFormAction(
-        object_id="content_status_modify",
-        status="success",
-        context_type="Worksheet",
-        button=None,
-        action_type="redirect_to",
-        action_arg="python:object.aq_inner.aq_parent.absolute_url()")
 
 
 def setup_html_filter(portal):

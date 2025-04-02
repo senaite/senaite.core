@@ -678,6 +678,8 @@ RESULT_TYPES = (
     ("multiselect", _("Multiple selection")),
     ("multiselect_duplicates", _("Multiple selection (with duplicates)")),
     ("multichoice", _("Multiple choices")),
+    ("date", _("Date")),
+    ("datetime", _("Datetime")),
 )
 
 # Type of control to be rendered on results entry

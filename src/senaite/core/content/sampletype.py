@@ -38,18 +38,31 @@ from senaite.core.schema.fields import DataGridRow
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.duration.widget import DurationWidgetFactory
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
-from z3c.form import validator
 from zope import schema
 from zope.interface import Interface
 from zope.interface import Invalid
 from zope.interface import implementer
+from zope.interface import provider
+from zope.schema.interfaces import IContextSourceBinder
+from zope.schema.vocabulary import SimpleTerm
+from zope.schema.vocabulary import SimpleVocabulary
 
-STICKERS_VOCABULARY = "senaite.core.vocabularies.stickertemplates"
+STICKERS_VOCABULARY = "senaite.core.vocabularies.stickers"
 DEFAULT_ADMITTED_STICKER_TEMPLATES = [{
     "admitted": set(),
     "small_default": None,
     "large_default": None
 }]
+
+
+@provider(IContextSourceBinder)
+def admitted_stickers_vocabulary(context):
+    if not isinstance(context, dict):
+        context = {}
+    admitted = context.get("admitted", [])
+    return SimpleVocabulary([
+        SimpleTerm(value=item, token=item) for item in admitted
+    ])
 
 
 def default_retention_period():
@@ -90,7 +103,7 @@ class IStickersRecordSchema(Interface):
             u"label_sampletype_small_default",
             default=u"Default small sticker"
         ),
-        vocabulary=STICKERS_VOCABULARY,
+        source=admitted_stickers_vocabulary,
         required=False,
     )
 
@@ -99,7 +112,7 @@ class IStickersRecordSchema(Interface):
             u"label_sampletype_large_default",
             default=u"Default large sticker"
         ),
-        vocabulary=STICKERS_VOCABULARY,
+        source=admitted_stickers_vocabulary,
         required=False,
     )
 
@@ -241,45 +254,9 @@ class ISampleTypeSchema(model.Schema):
                       default=u"Defines the stickers to use for "
                               u"this sample type."),
         value_type=DataGridRow(schema=IStickersRecordSchema),
-        required=True,
+        required=False,
         default=DEFAULT_ADMITTED_STICKER_TEMPLATES,
     )
-
-
-class StickersFieldValidator(validator.SimpleFieldValidator):
-    """Custom validator for DGF
-    """
-
-    def validate(self, value):
-        if value is None:
-            value = []
-
-        valid = False
-        msg = _(u"Invalid sticker object format")
-
-        if len(value) == 1:
-            valid = True
-            errors = []
-            if not len(value[0]["admitted"]):
-                valid = False
-                errors.append(
-                    _(u"at least one admitted sticker must be chosen"))
-            if not value[0]["small_default"]:
-                valid = False
-                errors.append(_(u"select small default sticker"))
-            if not value[0]["large_default"]:
-                valid = False
-                errors.append(_(u"select large default sticker"))
-            msg = _(u"ERRORS: ") + ", ".join(errors)
-
-        if not valid:
-            raise Invalid(msg)
-
-
-validator.WidgetValidatorDiscriminators(
-    StickersFieldValidator,
-    field=ISampleTypeSchema["admitted_sticker_templates"],
-)
 
 
 @implementer(ISampleType, ISampleTypeSchema, IDeactivable)

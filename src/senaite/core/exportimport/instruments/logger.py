@@ -19,8 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api import safe_unicode
 from bika.lims.api import to_list
-from Products.CMFPlone.utils import safe_unicode
 from senaite.core.i18n import translate as t
 
 
@@ -42,8 +42,10 @@ class Logger(object):
     def log(self, msg, numline=None, line=None, mapping=None):
         self.msg(self._logs, msg, numline, line, mapping)
 
-    def msg(self, array, msg, numline=None, line=None, mapping={}):
-        if mapping:
+    def msg(self, array, msg, numline, line, mapping):
+        if isinstance(mapping, dict):
+            # ensure all mapping values and the message are unicode
+            mapping = dict([(k, safe_unicode(v)) for k, v in mapping.items()])
             msg = t(_(safe_unicode(msg), mapping=mapping))
         else:
             msg = t(safe_unicode(msg))

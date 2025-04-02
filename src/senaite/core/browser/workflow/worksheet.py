@@ -18,18 +18,21 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.vocabularies import getStickerTemplates
-from senaite.core.schema.vocabulary import to_simple_vocabulary
-from zope.interface import implementer
-from zope.schema.interfaces import IVocabularyFactory
+from bika.lims import api
+from bika.lims.browser.workflow import WorkflowActionGenericAdapter
+from bika.lims.workflow import doActionFor
 
 
-@implementer(IVocabularyFactory)
-class StickerTemplatesVocabulary(object):
+class WorkflowActionRemoveAdapter(WorkflowActionGenericAdapter):
+    """Adapter in charge of remove a worksheet
+    """
 
-    def __call__(self, context, filter_by_type=False):
-        templates = getStickerTemplates(filter_by_type=filter_by_type)
-        return to_simple_vocabulary([(t["id"], t["title"]) for t in templates])
+    def __call__(self, action, objects):
+        worksheet = self.context
 
+        # Call the remove action
+        doActionFor(worksheet, "remove")
 
-StickerTemplatesVocabularyFactory = StickerTemplatesVocabulary()
+        parent = api.get_parent(worksheet)
+        url = api.get_url(parent)
+        return self.redirect(redirect_url=url)

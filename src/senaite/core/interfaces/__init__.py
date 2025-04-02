@@ -22,6 +22,7 @@ from plone.app.z3cform.interfaces import IPloneFormLayer
 from plone.protect.interfaces import IDisableCSRFProtection
 from senaite.core.interfaces.catalog import *  # noqa:F401,F403
 from senaite.core.interfaces.datamanager import IDataManager  # noqa:F401
+from senaite.core.interfaces.stickers import *  # noqa:F401,F403
 from senaite.core.interfaces.widget import *  # noqa:F401,F403
 from zope.interface import Interface
 
@@ -145,6 +146,11 @@ class ITemporaryObject(Interface):
     that implements this interface.
 
     Also see: `senaite.core.patches.catalog.catlog_object`
+    """
+
+
+class IVersionWrapper(Interface):
+    """Content wrapper that allows to retrieve versioned attributes
     """
 
 

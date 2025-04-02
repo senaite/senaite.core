@@ -26,16 +26,11 @@ from bika.lims.utils import to_utf8
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
-from pkg_resources import resource_filename
-from plone.resource.utils import iterDirectoriesOfType
 from senaite.core.p3compat import cmp
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.site.hooks import getSite
-
-import os
-import glob
 
 
 class CatalogVocabulary(object):
@@ -328,116 +323,3 @@ class AnalystVocabulary(UserVocabulary):
 
 
 AnalystVocabularyFactory = AnalystVocabulary()
-
-
-def getTemplates(bikalims_path, restype, filter_by_type=False):
-    """ Returns an array with the Templates available in the Bika LIMS path
-        specified plus the templates from the resources directory specified and
-        available on each additional product (restype).
-
-        Each array item is a dictionary with the following structure:
-            {'id': <template_id>,
-             'title': <template_title>}
-
-        If the template lives outside the bika.lims add-on, both the template_id
-        and template_title include a prefix that matches with the add-on
-        identifier. template_title is the same name as the id, but with
-        whitespaces and without extension.
-
-        As an example, for a template from the my.product add-on located in
-        <restype> resource dir, and with a filename "My_cool_report.pt", the
-        dictionary will look like:
-            {'id': 'my.product:My_cool_report.pt',
-             'title': 'my.product: My cool report'}
-
-        :param bikalims_path: the path inside bika lims to find the stickers.
-        :type bikalims_path: an string as a path
-        :param restype: the resource directory type to search for inside
-            an addon.
-        :type restype: string
-        :param filter_by_type: the folder name to look for inside the
-        templates path
-        :type filter_by_type: string/boolean
-    """
-    # Retrieve the templates from bika.lims add-on
-    templates_dir = resource_filename("bika.lims", bikalims_path)
-    tempath = os.path.join(templates_dir, '*.pt')
-    templates = [os.path.split(x)[-1] for x in glob.glob(tempath)]
-
-    # Retrieve the templates from other add-ons
-    for templates_resource in iterDirectoriesOfType(restype):
-        prefix = templates_resource.__name__
-        if prefix == 'bika.lims':
-            continue
-        directory = templates_resource.directory
-        # Only use the directory asked in 'filter_by_type'
-        if filter_by_type:
-            directory = directory + '/' + filter_by_type
-        if os.path.isdir(directory):
-            dirlist = os.listdir(directory)
-            exts = ['{0}:{1}'.format(prefix, tpl) for tpl in dirlist if
-                    tpl.endswith('.pt')]
-            templates.extend(exts)
-
-    out = []
-    templates.sort()
-    for template in templates:
-        title = template[:-3]
-        title = title.replace('_', ' ')
-        title = title.replace(':', ': ')
-        out.append({'id': template,
-                    'title': title})
-
-    return out
-
-
-def getStickerTemplates(filter_by_type=False):
-    """ Returns an array with the sticker templates available. Retrieves the
-        TAL templates saved in templates/stickers folder.
-
-        Each array item is a dictionary with the following structure:
-            {'id': <template_id>,
-             'title': <template_title>}
-
-        If the template lives outside the bika.lims add-on, both the template_id
-        and template_title include a prefix that matches with the add-on
-        identifier. template_title is the same name as the id, but with
-        whitespaces and without extension.
-
-        As an example, for a template from the my.product add-on located in
-        templates/stickers, and with a filename "EAN128_default_small.pt", the
-        dictionary will look like:
-            {'id': 'my.product:EAN128_default_small.pt',
-             'title': 'my.product: EAN128 default small'}
-        If filter by type is given in the request, only the templates under
-        the path with the type name will be rendered given as vocabulary.
-        Example: If filter_by_type=='worksheet', only *.tp files under a
-        folder with this name will be displayed.
-
-        :param filter_by_type:
-        :type filter_by_type: string/bool.
-        :returns: an array with the sticker templates available
-    """
-    # Retrieve the templates from bika.lims add-on
-    # resdirname
-    resdirname = 'stickers'
-    if filter_by_type:
-        bikalims_path = os.path.join(
-            "browser", "templates", resdirname, filter_by_type)
-    else:
-        bikalims_path = os.path.join("browser", "templates", resdirname)
-    # getTemplates needs two parameters, the first one is the bikalims path
-    # where the stickers will be found. The second one is the resource
-    # directory type. This allows us to filter stickers by the type we want.
-    return getTemplates(bikalims_path, resdirname, filter_by_type)
-
-
-class StickerTemplatesVocabulary(object):
-    """ Locate all sticker templates
-    """
-    implements(IVocabularyFactory)
-
-    def __call__(self, context, filter_by_type=False):
-        out = [SimpleTerm(x['id'], x['id'], x['title']) for x in
-               getStickerTemplates(filter_by_type=filter_by_type)]
-        return SimpleVocabulary(out)

@@ -51,4 +51,22 @@
       factory=".localroles.ClientShareableLocalRoles"
       name="senaite.core.adapter.localroles.clientshareable" />
 
+  <!-- History aware wrapper for AT contents -->
+  <adapter
+      for="Products.Archetypes.interfaces.IBaseObject"
+      provides="senaite.core.interfaces.IVersionWrapper"
+      factory=".versionwrapper.VersionWrapperFactory" />
+
+  <!-- History aware wrapper for DX contents -->
+  <adapter
+      for="plone.dexterity.interfaces.IDexterityContent"
+      provides="senaite.core.interfaces.IVersionWrapper"
+      factory=".versionwrapper.VersionWrapperFactory" />
+
+  <!-- Sticker adapter for Samples -->
+  <adapter
+      factory=".stickers.GetSampleStickers"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      provides="senaite.core.interfaces.stickers.IGetStickerTemplates" />
+
 </configure>

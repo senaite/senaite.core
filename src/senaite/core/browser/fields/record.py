@@ -296,6 +296,7 @@ class RecordField(ObjectField):
         return self._encode_strings(value, instance, **kwargs)
 
     def _encode_strings(self, value, instance, **kwargs):
+        value = value if value else {}
         new_value = value
         for k, v in value.items():
             if isinstance(v, six.text_type):

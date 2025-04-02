@@ -5,6 +5,18 @@ Changelog
 ------------------
 
 - #2600 Migrate Calculations to DX
+- #2694 Add version wrapper for AT and DX contents
+- #2695 Support for relativedelta and ymd in api.dtime
+- #2701 Make expected sampling date optional
+- #2700 Fix missing condition fieldname in sample add form statusmessage
+- #2697 Allow to remove users
+- #2698 Custom contact widget in user profile
+- #2699 Add search filter by term for services in add sample form
+- #2692 Refactor Sticker Functionality
+- #2696 Fix error when removing a Worksheet from inside its view
+- #2690 Support date and datetime on result entry
+- #2691 Fix APIError on upgrade step 2659 (init_loq)
+- #2689 Fix 2-Dimensional CSV import interface
 - #2688 Fix JS events from legacy controllers are bound multiple times
 - #2682 Added Limit of Quantification (LOQ) for services and analyses
 - #2687 Remove legacy and obsolete rejection.js

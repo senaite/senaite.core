@@ -34,6 +34,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.validation import validation
 from Products.validation.interfaces.IValidator import IValidator
 from Products.ZCTextIndex.ParseTree import ParseError
+from senaite.core.api import dtime
 from senaite.core.i18n import translate as _t
 from zope.interface import implements
 
@@ -1371,6 +1372,10 @@ class DefaultResultValidator(object):
         result_type = request.get("ResultType")
         if result_type in ["string", "text"]:
             return True
+
+        elif result_type in ["date", "datetime"]:
+            if not dtime.is_date(default_result):
+                return _t(_("Default result is not a valid date"))
 
         elif result_type == "numeric":
             if not api.is_floatable(default_result):

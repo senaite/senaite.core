@@ -21,7 +21,6 @@
 from Acquisition import aq_base
 from bika.lims import api
 from bika.lims.setuphandlers import reindex_content_structure
-from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.setuphandlers import setup_groups
 from plone.dexterity.fti import DexterityFTI
 from plone.registry.interfaces import IRegistry
@@ -189,7 +188,6 @@ def install(context):
     add_dexterity_portal_items(portal)
 
     # Set CMF Form actions
-    setup_form_controller_actions(portal)
     setup_form_controller_more_action(portal)
 
     # Setup markup default and allowed schemas
