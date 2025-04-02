@@ -943,39 +943,39 @@ We can extract the relative delta between two dates:
 
     >>> dt1 = dtime.ansi_to_dt("20230515104405")
     >>> dt2 = dtime.ansi_to_dt("20230515114405")
-    >>> dtime.get_relative_delta(dt1, dt2)
+    >>> dtime.get_relativedelta(dt1, dt2)
     relativedelta(hours=+1)
 
 We can even compare two dates from two different timezones:
 
     >>> dt1_cet = dtime.to_zone(dt1, "CET")
     >>> dt2_utc = dtime.to_zone(dt2, "UTC")
-    >>> dtime.get_relative_delta(dt1_cet, dt2_utc)
+    >>> dtime.get_relativedelta(dt1_cet, dt2_utc)
     relativedelta(hours=+3)
 
     >>> dt1_cet = dtime.to_zone(dt1, "CET")
     >>> dt2_pcf = dtime.to_zone(dt2, "Pacific/Fiji")
-    >>> dtime.get_relative_delta(dt1_cet, dt2_pcf)
+    >>> dtime.get_relativedelta(dt1_cet, dt2_pcf)
     relativedelta(hours=-9)
 
 If we compare a naive timezone, system uses the timezone of the other date:
 
     >>> dt1_cet = dtime.to_zone(dt1, "CET")
     >>> dt2_naive = dt2.replace(tzinfo=None)
-    >>> dtime.get_relative_delta(dt1_cet, dt2_naive)
+    >>> dtime.get_relativedelta(dt1_cet, dt2_naive)
     relativedelta(hours=+3)
 
 It also works when both are timezone naive:
 
     >>> dt1_naive = dt1.replace(tzinfo=None)
     >>> dt2_naive = dt2.replace(tzinfo=None)
-    >>> dtime.get_relative_delta(dt1_naive, dt2_naive)
+    >>> dtime.get_relativedelta(dt1_naive, dt2_naive)
     relativedelta(hours=+1)
 
 If we don't specify `dt2`, system simply uses current datetime:
 
-    >>> rel_now = dtime.get_relative_delta(dt1, datetime.now())
-    >>> rel_wo = dtime.get_relative_delta(dt1)
+    >>> rel_now = dtime.get_relativedelta(dt1, datetime.now())
+    >>> rel_wo = dtime.get_relativedelta(dt1)
     >>> rel_now = (rel_now.years, rel_now.months, rel_now.days, rel_now.hours)
     >>> rel_wo = (rel_wo.years, rel_wo.months, rel_wo.days, rel_wo.hours)
     >>> rel_now == rel_wo
@@ -985,44 +985,44 @@ We can even compare min and max dates:
 
     >>> dt1 = dtime.datetime.min
     >>> dt2 = dtime.datetime.max
-    >>> dtime.get_relative_delta(dtime.datetime.min, dtime.datetime.max)
+    >>> dtime.get_relativedelta(dtime.datetime.min, dtime.datetime.max)
     relativedelta(years=+9998, months=+11, days=+30, hours=+23, minutes=+59, seconds=+59, microseconds=+999999)
 
 We can even call the function with types that are not datetime, but can be
 converted to datetime:
 
-    >>> dtime.get_relative_delta("19891201131405", "20230515114400")
+    >>> dtime.get_relativedelta("19891201131405", "20230515114400")
     relativedelta(years=+33, months=+5, days=+13, hours=+22, minutes=+29, seconds=+55)
 
 But raises a `ValueError` if non-valid dates are used:
 
-    >>> dtime.get_relative_delta("17891301132505")
+    >>> dtime.get_relativedelta("17891301132505")
     Traceback (most recent call last):
     ...
     ValueError: No valid date or dates
 
 Even if the from date is correct, but not the to date:
 
-    >>> dtime.get_relative_delta("19891201131405", "20230535114400")
+    >>> dtime.get_relativedelta("19891201131405", "20230535114400")
     Traceback (most recent call last):
     ...
     ValueError: No valid date or dates
 
 We can also compare two datetimes, being the "from" earlier than "to":
 
-    >>> dtime.get_relative_delta("20230515114400", "19891201131405")
+    >>> dtime.get_relativedelta("20230515114400", "19891201131405")
     relativedelta(years=-33, months=-5, days=-13, hours=-22, minutes=-29, seconds=-55)
 
 Or compare two dates that are exactly the same:
 
-    >>> dtime.get_relative_delta("20230515114400", "20230515114400")
+    >>> dtime.get_relativedelta("20230515114400", "20230515114400")
     relativedelta()
 
 We can compare dates without time as well:
 
     >>> from_date = dtime.date(2023, 5, 6)
     >>> to_date = dtime.date(2023, 5, 7)
-    >>> dtime.get_relative_delta(from_date, to_date)
+    >>> dtime.get_relativedelta(from_date, to_date)
     relativedelta(days=+1)
 
 
@@ -1115,3 +1115,310 @@ And the other way round:
 
     >>> dtime.to_C1989("${A} ${d}. ${B} ${Y}, ${H}:${M} ${Z}")
     '%A %d. %B %Y, %H:%M %Z'
+
+
+Create a duration in ymd format
+...............................
+
+We can create a duration in `ymd` format easily:
+
+  >>> dtime.ymd(years=1, months=2, days=3)
+  '1y 2m 3d'
+
+  >>> dtime.ymd(years=1, months=2)
+  '1y 2m'
+
+  >>> dtime.ymd(years=1)
+  '1y'
+
+  >>> dtime.ymd()
+  '0d'
+
+  >>> dtime.ymd(months=2, days=3)
+  '2m 3d'
+
+  >>> dtime.ymd(days=3)
+  '3d'
+
+We can include hours as well:
+
+  >>> dtime.ymd(months=2, days=3, hours=10)
+  '2m 3d 10h'
+
+The function is aware of monthly and hourly shifts:
+
+  >>> dtime.ymd(months=13)
+  '1y 1m'
+
+  >>> dtime.ymd(years=1, months=43)
+  '4y 7m'
+
+  >>> dtime.ymd(years=1, months=43, hours=32)
+  '4y 7m 1d 8h'
+
+
+Convert a duration to ymd format
+................................
+
+We can convert a `relativedelta` to ymd format:
+
+    >>> duration = dtime.relativedelta(years=1, months=2, days=3)
+    >>> dtime.to_ymd(duration)
+    '1y 2m 3d'
+
+    >>> duration = dtime.relativedelta(months=6, days=2)
+    >>> dtime.to_ymd(duration)
+    '6m 2d'
+
+By default, hours are omitted:
+
+    >>> duration = dtime.relativedelta(months=6, days=2, hours=3)
+    >>> dtime.to_ymd(duration)
+    '6m 2d'
+
+Unless we explicitily ask for them and are different from 0:
+
+    >>> duration = dtime.relativedelta(months=6, days=2, hours=3)
+    >>> dtime.to_ymd(duration, with_hours=True)
+    '6m 2d 3h'
+
+    >>> duration = dtime.relativedelta(months=6, days=2, hours=0)
+    >>> dtime.to_ymd(duration, with_hours=True)
+    '6m 2d'
+
+Is aware of non-normalized versions too:
+
+    >>> duration = dtime.relativedelta(months=6, days=2.4)
+    >>> dtime.to_ymd(duration)
+    '6m 2d'
+
+    >>> duration = dtime.relativedelta(months=6, days=2.6)
+    >>> dtime.to_ymd(duration)
+    '6m 2d'
+
+    >>> duration = dtime.relativedelta(months=6, days=2.6)
+    >>> dtime.to_ymd(duration, with_hours=True)
+    '6m 2d 14h'
+
+
+We can also convert values from `tuple` or `list` types to `ymd`:
+
+    >>> dtime.to_ymd([1,2,3])
+    '1y 2m 3d'
+
+    >>> dtime.to_ymd((1,2,3))
+    '1y 2m 3d'
+
+And omit days and months:
+
+    >>> dtime.to_ymd([1,2])
+    '1y 2m'
+
+    >>> dtime.to_ymd([1,])
+    '1y'
+
+We can transform an already existing ymd to its standard format:
+
+    >>> dtime.to_ymd("1y2m3d")
+    '1y 2m 3d'
+
+Zeros and whitespaces are omitted as well:
+
+    >>> dtime.to_ymd("1y0m   3d")
+    '1y 3d'
+
+Returns a `TypeError` if the value is not of the expected type:
+
+    >>> dtime.to_ymd(object())
+    Traceback (most recent call last):
+    [...]
+    TypeError: <object object at ... is not supported
+
+Returns a `ValueError` if the value has the right type, but format is wrong:
+
+    >>> dtime.to_ymd("")
+    Traceback (most recent call last):
+    [...]
+    ValueError: Not a valid ymd: ''
+
+    >>> dtime.to_ymd("123")
+    Traceback (most recent call last):
+    [...]
+    ValueError: Not a valid ymd: '123'
+
+    >>> dtime.to_ymd("y123d")
+    Traceback (most recent call last):
+    [...]
+    ValueError: Not a valid ymd: 'y123d'
+
+And returns a ymd-compliant result when current date or no duration is set:
+
+    >>> duration = dtime.relativedelta()
+    >>> dtime.to_ymd(duration)
+    '0d'
+
+    >>> dtime.to_ymd("0y")
+    '0d'
+
+    >>> dtime.to_ymd("0y0m0d")
+    '0d'
+
+Function is even aware of monthly and yearly shifts:
+
+    >>> duration = dtime.relativedelta(years=1235, months=23, days=10)
+    >>> dtime.to_ymd(duration)
+    '1236y 11m 10d'
+
+    >>> dtime.to_ymd("1235y23m10d")
+    '1236y 11m 10d'
+
+    >>> dtime.to_ymd("1235y43m10d")
+    '1238y 7m 10d'
+
+
+Check if a value is a ymd
+.........................
+
+Returns true for ymd-like strings:
+
+    >>> dtime.is_ymd("3d")
+    True
+
+    >>> dtime.is_ymd("2m  3d")
+    True
+
+    >>> dtime.is_ymd("0y 2m3d")
+    True
+
+    >>> dtime.is_ymd("0y0m0d")
+    True
+
+    >>> dtime.is_ymd("0d")
+    True
+
+    >>> dtime.is_ymd("1h")
+    True
+
+But returns false if the format or type is not valid:
+
+    >>> dtime.is_ymd("y3d")
+    False
+
+    >>> dtime.is_ymd("")
+    False
+
+    >>> dtime.is_ymd(object())
+    False
+
+    >>> dtime.is_ymd(dtime.relativedelta())
+    False
+
+
+Convert a duration to a `relativedelta`
+.......................................
+
+We can convert a duration expressed as `ymd` to a `relativedelta`:
+
+    >>> dtime.to_relativedelta("1y2m3d")
+    relativedelta(years=+1, months=+2, days=+3)
+
+    >>> dtime.to_relativedelta("1y0m   3d")
+    relativedelta(years=+1, days=+3)
+
+We can use a `list` or `tuple` object as well, where year is the first value,
+the month is the second and the day is the third:
+
+    >>> dtime.to_relativedelta((1,2,3))
+    relativedelta(years=+1, months=+2, days=+3)
+
+    >>> dtime.to_relativedelta([1,2,3])
+    relativedelta(years=+1, months=+2, days=+3)
+
+We can skip days and months:
+
+    >>> dtime.to_relativedelta([1,2])
+    relativedelta(years=+1, months=+2)
+
+    >>> dtime.to_relativedelta([1])
+    relativedelta(years=+1)
+
+We can use a `relativedelta` as the value too:
+
+    >>> duration = dtime.relativedelta(years=1, months=2, days=3)
+    >>> dtime.to_relativedelta(duration)
+    relativedelta(years=+1, months=+2, days=+3)
+
+    >>> duration = dtime.relativedelta(months=6, days=2)
+    >>> dtime.to_relativedelta(duration)
+    relativedelta(months=+6, days=+2)
+
+    >>> duration = dtime.relativedelta()
+    >>> dtime.to_relativedelta(duration)
+    relativedelta()
+
+Returns a TypeError if the value is not of the expected type:
+
+    >>> dtime.to_relativedelta(object())
+    Traceback (most recent call last):
+    [...]
+    TypeError: <object object at ... is not supported
+
+Returns a ValueError if the value has the rihgt type, but format is wrong:
+
+    >>> dtime.to_relativedelta("123")
+    Traceback (most recent call last):
+    [...]
+    ValueError: Not a valid ymd: '123'
+
+    >>> dtime.to_relativedelta("y123d")
+    Traceback (most recent call last):
+    [...]
+    ValueError: Not a valid ymd: 'y123d'
+
+Function is aware of monthly and yearly shifts:
+
+    >>> dtime.to_relativedelta("1235y23m10d")
+    relativedelta(years=+1236, months=+11, days=+10)
+
+    >>> dtime.to_relativedelta("1235y43m10d")
+    relativedelta(years=+1238, months=+7, days=+10)
+
+    >>> duration = dtime.relativedelta(years=1235, months=43)
+    >>> dtime.to_relativedelta(duration)
+    relativedelta(years=+1238, months=+7)
+
+By default normalizes non-integer values for days:
+
+    >>> duration = dtime.relativedelta(years=1235, months=43, days=32.4)
+    >>> dtime.to_relativedelta(duration)
+    relativedelta(years=+1238, months=+7, days=+32, hours=+9, minutes=+36)
+
+But we can force the system to keep the non-normalized version:
+
+    >>> dtime.to_relativedelta(duration, normalized=False)
+    relativedelta(years=+1238, months=+7, days=+32.4)
+
+
+Get the time span between two dates in `ymd` format
+···················································
+
+We can easily get the time span between two dates:
+
+    >>> dtime.get_ymd("20250323", "20250323")
+    '0d'
+
+    >>> dtime.get_ymd("20250323", "20250324")
+    '1d'
+
+    >>> dt1 = dtime.ansi_to_dt("20250322")
+    >>> dt2 = dtime.ansi_to_dt("20250324")
+    >>> dtime.get_ymd(dt1, dt2)
+    '2d'
+
+    >>> dtime.get_ymd("2023-04-12", "20250324")
+    '1y 11m 12d'
+
+And include the hours if we wish to do so:
+
+    >>> dtime.get_ymd("2023-04-12", "20250324061202", with_hours=True)
+    '1y 11m 12d 6h'
