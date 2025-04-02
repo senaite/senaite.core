@@ -1296,6 +1296,9 @@ Returns true for ymd-like strings:
     >>> dtime.is_ymd("0d")
     True
 
+    >>> dtime.is_ymd("1h")
+    True
+
 But returns false if the format or type is not valid:
 
     >>> dtime.is_ymd("y3d")

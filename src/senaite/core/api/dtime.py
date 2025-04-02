@@ -51,7 +51,7 @@ YMD_REGEX = (
     r"((?P<y>(\d+))y){0,1}\s*"  # years
     r"((?P<m>(\d+))m){0,1}\s*"  # months
     r"((?P<d>(\d+))d){0,1}\s*"  # days
-    r"((?P<h>(\d+))d){0,1}\s*"  # hours
+    r"((?P<h>(\d+))h){0,1}\s*"  # hours
 )
 
 _marker = object()
