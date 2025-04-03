@@ -44,6 +44,7 @@ FIELD_CONTROL  = "form.widgets.template_layout.{}.widgets.control_ref"
 FIELD_DUP = "form.widgets.template_layout.{}.widgets.dup"
 FIELD_DUP_PROXY = "form.widgets.template_layout.{}.widgets.dup_proxy:list"
 FIELD_REF_PROXY = "form.widgets.template_layout.{}.widgets.reference_proxy:list"
+WIDGET_INSTRUMENTS = "form-widgets-instrument"
 
 NUM_POS_HTML = Template("""
 <input
@@ -96,14 +97,10 @@ class EditForm(EditFormAdapterBase):
         dup_match = dup_proxy_regex.search(name)
         ref_match = ref_proxy_regex.search(name)
 
-        if name == "form.widgets.restrict_to_method" and value:
-            method_uid = value[0]
-            # flush the instruments selector and update the query
-            instruments = self.get_instruments(method_uid)
-            self.add_state_widget(
-                "form-widgets-instrument",
-                query={"UID": instruments} if instruments else None,
-            )
+        if name == "form.widgets.restrict_to_method":
+            # update the instruments available for selection
+            method = value[0] if value else None
+            self.update_instruments(method)
         elif type_match:
             idx = type_match.group(1)
             val = value[0]
@@ -222,11 +219,20 @@ class EditForm(EditFormAdapterBase):
             "selected": selected,
         })
 
-    def get_instruments(self, method):
-        """Returns a list of UIDs of instruments supported by the given method
+    def update_instruments(self, method):
+        """Updates the available instruments for selection
         """
         method = api.get_object(method, default=None)
-        return method.getRawInstruments() if method else []
+        if not method:
+            # restore the query of the instrument selector (search for all)
+            query = {"portal_type": "Instrument", "is_active": True}
+            self.add_state_widget(WIDGET_INSTRUMENTS, query=query)
+            return
+
+        # restrict the available instruments to those supported
+        instruments = method.getRawInstruments()
+        query = {"UID": instruments} if instruments else None
+        self.add_state_widget(WIDGET_INSTRUMENTS, query=query)
 
     def add_change_num_positions(self, data):
         url = self.context.absolute_url()
