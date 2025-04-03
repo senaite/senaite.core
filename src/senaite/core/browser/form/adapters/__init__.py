@@ -42,6 +42,7 @@ class EditFormAdapterBase(object):
             "html": [],
             "attributes": [],
             "callbacks": [],
+            "states": [],
         }
 
     @property
@@ -135,3 +136,9 @@ class EditFormAdapterBase(object):
         """
         record = dict(selector=selector, event=event, name=name, **kw)
         self.add_record_to("callbacks", record)
+
+    def add_state_widget(self, name, **kw):
+        """Add the field to the widgets list
+        """
+        record = dict(name=name, **kw)
+        self.add_record_to("states", record)

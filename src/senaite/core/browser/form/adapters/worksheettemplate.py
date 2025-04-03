@@ -98,10 +98,12 @@ class EditForm(EditFormAdapterBase):
 
         if name == "form.widgets.restrict_to_method" and value:
             method_uid = value[0]
-            options = self.get_instruments_options(method_uid)
-            self.add_update_field("form.widgets.instrument", {
-                "options": options
-            })
+            # flush the instruments selector and update the query
+            instruments = self.get_instruments(method_uid)
+            self.add_state_widget(
+                "form-widgets-instrument",
+                query={"UID": instruments} if instruments else None,
+            )
         elif type_match:
             idx = type_match.group(1)
             val = value[0]
@@ -220,25 +222,11 @@ class EditForm(EditFormAdapterBase):
             "selected": selected,
         })
 
-    def get_instruments_options(self, method):
-        """Returns a list of dicts that represent instrument options suitable
-        for a selection list, with an empty option as first item
+    def get_instruments(self, method):
+        """Returns a list of UIDs of instruments supported by the given method
         """
-        options = [{
-            "title": _(u"form_widget_instrument_title",
-                       default=u"No Instrument"),
-            "value": [""]
-        }]
         method = api.get_object(method, default=None)
-        instruments = method.getInstruments() if method else []
-        for instrument in instruments:
-            option = {
-                "title": api.get_title(instrument),
-                "value": api.get_uid(instrument)
-            }
-            options.append(option)
-
-        return options
+        return method.getRawInstruments() if method else []
 
     def add_change_num_positions(self, data):
         url = self.context.absolute_url()
