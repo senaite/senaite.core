@@ -550,6 +550,5 @@ class WorksheetTemplate(Container):
                 if method_uid in instrument.getRawMethods():
                     uids.append(uid)
             # create a simple UID query
-            uids = uids if uids else "None"
             query = {"UID": uids}
         return query
