@@ -44,3 +44,13 @@ def upgrade(tool):
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+@upgradestep(product, version)
+def import_rolemap(tool):
+    """Import registry step from profiles
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+
+    setup.runImportStepFromProfile(profile, "rolemap")
