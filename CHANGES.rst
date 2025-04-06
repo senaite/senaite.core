@@ -4,6 +4,8 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2707 Fix analyst permission for auto results import
+
 
 
 2.6.0 (2025-04-04)
