@@ -200,6 +200,12 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
+    <permission name="senaite.core: Add AutoImportLog" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <!-- Required when triggering auto_import_results with an Analyst user -->
+      <role name="Analyst"/>
+    </permission>
     <permission name="senaite.core: Add Batch" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
