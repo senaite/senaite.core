@@ -73,12 +73,13 @@ class window.AnalysisRequestAdd
    *
   ###
   get_global_settings: =>
-    @ajax_post_form("get_global_settings").done (settings) ->
+    done_callback = (settings) ->
       console.debug "Global Settings:", settings
       # remember the global settings
       @global_settings = settings
       # trigger event for whom it might concern
       $(@).trigger "settings:updated", settings
+    @ajax_post_form("get_global_settings", {}, done_callback)
 
 
   ###*
@@ -86,10 +87,11 @@ class window.AnalysisRequestAdd
    *
   ###
   get_flush_settings: =>
-    @ajax_post_form("get_flush_settings").done (settings) ->
+    done_callback = (settings) ->
       console.debug "Flush settings:", settings
       @flush_settings = settings
       $(@).trigger "flush_settings:updated", settings
+    @ajax_post_form("get_flush_settings", {}, done_callback)
 
 
   ###*
@@ -102,9 +104,9 @@ class window.AnalysisRequestAdd
         uid: uid
       processData: yes
       contentType: 'application/x-www-form-urlencoded; charset=UTF-8'
-
-    @ajax_post_form("get_service", options).done (data) ->
+    done_callback = (data) -> 
       console.debug "get_service::data=", data
+    @ajax_post_form("get_service", options, done_callback)
 
 
   ###*
@@ -112,12 +114,13 @@ class window.AnalysisRequestAdd
    *
   ###
   recalculate_records: =>
-    @ajax_post_form("recalculate_records").done (records) ->
+    done_callback = (records) ->
       console.debug "Recalculate Analyses: Records=", records
       # remember a services snapshot
       @records_snapshot = records
       # trigger event for whom it might concern
       $(@).trigger "data:updated", records
+    @ajax_post_form("recalculate_records", {}, done_callback)
 
 
   ###*
@@ -129,7 +132,7 @@ class window.AnalysisRequestAdd
       console.debug "*** Skipping Price calculation ***"
       return
 
-    @ajax_post_form("recalculate_prices").done (data) ->
+    done_callback = (data) ->
       console.debug "Recalculate Prices Data=", data
       for own arnum, prices of data
         $("#discount-#{arnum}").text prices.discount
@@ -138,7 +141,7 @@ class window.AnalysisRequestAdd
         $("#total-#{arnum}").text prices.total
       # trigger event for whom it might concern
       $(@).trigger "prices:updated", data
-
+    @ajax_post_form("recalculate_prices", {}, done_callback)
 
   ###*
    * Ajax POST the form data to the given endpoint
@@ -148,7 +151,7 @@ class window.AnalysisRequestAdd
    * @param endpoint {String} Ajax endpoint to call
    * @param options {Object} Additional ajax options
   ###
-  ajax_post_form: (endpoint, options={}) =>
+  ajax_post_form: (endpoint, options={}, done_callback) =>
     console.debug "°°° ajax_post_form::Endpoint=#{endpoint} °°°"
     # calculate the right form URL
     base_url = @get_base_url()
@@ -180,13 +183,16 @@ class window.AnalysisRequestAdd
     # Notify Ajax start
     me = this
     $(me).trigger "ajax:start"
-    $.ajax(ajax_options).always (data) ->
-      # Always notify Ajax end
-      $(me).trigger "ajax:end"
+    $.ajax(ajax_options).done (data) ->
+      if typeof done_callback == "function"
+        done_callback(data)
     .fail (request, status, error) ->
       msg = _t("Sorry, an error occured: #{status}")
       window.bika.lims.portalMessage msg
       window.scroll 0, 0
+    .always (data) ->
+      # Always notify Ajax end
+      $(me).trigger "ajax:end"
 
 
   ###*
@@ -2072,12 +2078,13 @@ class window.AnalysisRequestAdd
     console.debug "°°° on_cancel °°°"
     event.preventDefault()
     base_url = this.get_base_url()
-
-    @ajax_post_form("cancel").done (data) ->
+    done_callback = (data) ->
       if data["redirect_to"]
         window.location.replace data["redirect_to"]
       else
         window.location.replace base_url
+
+    @ajax_post_form("cancel", {}, done_callback)
 
 
   ###*
@@ -2112,7 +2119,7 @@ class window.AnalysisRequestAdd
     $("div.fieldErrorBox").text("")
 
     # Ajax POST to the submit endpoint
-    @ajax_post_form("submit").done (data) ->
+    done_callback = (data) ->
       ###
       # data contains the following useful keys:
       # - errors: any errors which prevented the AR from being created
@@ -2156,6 +2163,8 @@ class window.AnalysisRequestAdd
         window.location.replace data['redirect_to']
       else
         window.location.replace base_url
+
+    @ajax_post_form("submit", {}, done_callback)
 
 
   ###*

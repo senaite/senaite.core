@@ -453,25 +453,29 @@
     }
 
     get_global_settings() {
-      return this.ajax_post_form("get_global_settings").done(function(settings) {
+      var done_callback;
+      done_callback = function(settings) {
         console.debug("Global Settings:", settings);
         // remember the global settings
         this.global_settings = settings;
         // trigger event for whom it might concern
         return $(this).trigger("settings:updated", settings);
-      });
+      };
+      return this.ajax_post_form("get_global_settings", {}, done_callback);
     }
 
     get_flush_settings() {
-      return this.ajax_post_form("get_flush_settings").done(function(settings) {
+      var done_callback;
+      done_callback = function(settings) {
         console.debug("Flush settings:", settings);
         this.flush_settings = settings;
         return $(this).trigger("flush_settings:updated", settings);
-      });
+      };
+      return this.ajax_post_form("get_flush_settings", {}, done_callback);
     }
 
     get_service(uid) {
-      var options;
+      var done_callback, options;
       options = {
         data: {
           uid: uid
@@ -479,27 +483,31 @@
         processData: true,
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8'
       };
-      return this.ajax_post_form("get_service", options).done(function(data) {
+      done_callback = function(data) {
         return console.debug("get_service::data=", data);
-      });
+      };
+      return this.ajax_post_form("get_service", options, done_callback);
     }
 
     recalculate_records() {
-      return this.ajax_post_form("recalculate_records").done(function(records) {
+      var done_callback;
+      done_callback = function(records) {
         console.debug("Recalculate Analyses: Records=", records);
         // remember a services snapshot
         this.records_snapshot = records;
         // trigger event for whom it might concern
         return $(this).trigger("data:updated", records);
-      });
+      };
+      return this.ajax_post_form("recalculate_records", {}, done_callback);
     }
 
     recalculate_prices() {
+      var done_callback;
       if (this.global_settings.show_prices === false) {
         console.debug("*** Skipping Price calculation ***");
         return;
       }
-      return this.ajax_post_form("recalculate_prices").done(function(data) {
+      done_callback = function(data) {
         var arnum, prices;
         console.debug("Recalculate Prices Data=", data);
         for (arnum in data) {
@@ -512,10 +520,11 @@
         }
         // trigger event for whom it might concern
         return $(this).trigger("prices:updated", data);
-      });
+      };
+      return this.ajax_post_form("recalculate_prices", {}, done_callback);
     }
 
-    ajax_post_form(endpoint, options = {}) {
+    ajax_post_form(endpoint, options = {}, done_callback) {
       var ajax_options, base_url, form, form_data, me, url;
       console.debug(`°°° ajax_post_form::Endpoint=${endpoint} °°°`);
       // calculate the right form URL
@@ -546,14 +555,18 @@
       // Notify Ajax start
       me = this;
       $(me).trigger("ajax:start");
-      return $.ajax(ajax_options).always(function(data) {
-        // Always notify Ajax end
-        return $(me).trigger("ajax:end");
+      return $.ajax(ajax_options).done(function(data) {
+        if (typeof done_callback === "function") {
+          return done_callback(data);
+        }
       }).fail(function(request, status, error) {
         var msg;
         msg = _t(`Sorry, an error occured: ${status}`);
         window.bika.lims.portalMessage(msg);
         return window.scroll(0, 0);
+      }).always(function(data) {
+        // Always notify Ajax end
+        return $(me).trigger("ajax:end");
       });
     }
 
@@ -2301,21 +2314,22 @@
     }
 
     on_cancel(event, callback) {
-      var base_url;
+      var base_url, done_callback;
       console.debug("°°° on_cancel °°°");
       event.preventDefault();
       base_url = this.get_base_url();
-      return this.ajax_post_form("cancel").done(function(data) {
+      done_callback = function(data) {
         if (data["redirect_to"]) {
           return window.location.replace(data["redirect_to"]);
         } else {
           return window.location.replace(base_url);
         }
-      });
+      };
+      return this.ajax_post_form("cancel", {}, done_callback);
     }
 
     on_form_submit(event, callback) {
-      var action, action_input, base_url, btn, me, portal_url;
+      var action, action_input, base_url, btn, done_callback, me, portal_url;
       console.debug("°°° on_form_submit °°°");
       event.preventDefault();
       me = this;
@@ -2336,7 +2350,7 @@
       $("div.error").removeClass("error");
       $("div.fieldErrorBox").text("");
       // Ajax POST to the submit endpoint
-      return this.ajax_post_form("submit").done(function(data) {
+      done_callback = function(data) {
         var dialog, errorbox, field, fieldname, message, msg, parent;
         /*
          * data contains the following useful keys:
@@ -2384,7 +2398,8 @@
         } else {
           return window.location.replace(base_url);
         }
-      });
+      };
+      return this.ajax_post_form("submit", {}, done_callback);
     }
 
     /**
