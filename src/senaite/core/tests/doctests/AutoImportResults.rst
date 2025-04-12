@@ -18,6 +18,7 @@ Needed Imports:
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from bika.lims.workflow import isTransitionAllowed
     >>> from DateTime import DateTime
+    >>> from plone.app.testing import login
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
@@ -53,6 +54,14 @@ Functional Helpers:
     ...     os.mkdir(folder)
     ...     return folder
 
+    >>> def auto_import(user):
+    ...     current_user = api.user.get_user()
+    ...     login(portal, user)
+    ...     view = api.get_view("auto_import_results")
+    ...     out = view()
+    ...     login(portal, current_user.getUserName())
+    ...     return out
+
 
 Variables:
 
@@ -77,6 +86,11 @@ We need to create some basic objects for the test:
     >>> Cu = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", SortKey="2", Category=category.UID(), Accredited=True)
     >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", SortKey="3", Category=category.UID())
 
+Add an `analyst` test user:
+
+    >>> pm = api.get_tool("portal_membership")
+    >>> pm.addMember("analyst", "analyst", ["Analyst"], [])
+
 
 Setup the LIMS for automatic result imports
 ...........................................
@@ -91,10 +105,9 @@ Setup an instrument with an import interface:
     >>> instrument.getImportDataInterface()
     ['generic.two_dimension']
 
-Calling the 'auto_import_results' view should work:
+Calling the 'auto_import_results' view should work as `Anlyst` user:
 
-    >>> view = api.get_view("auto_import_results")
-    >>> print view()
+    >>> print(auto_import("analyst"))
     2... [INFO] [Instrument:Test Instrument] Auto import for Test Instrument started ...
     2... [INFO] Auto-Import finished
 
@@ -116,8 +129,7 @@ Now create an instrument results file:
 
 Run the import view again:
 
-    >>> view = api.get_view("auto_import_results")
-    >>> log = view()
+    >>> log = auto_import("analyst")
 
     >>> api.get_workflow_status_of(sample)
     'to_be_verified'
@@ -177,8 +189,7 @@ Create a new instrument results file:
 
 Run the import view again:
 
-    >>> view = api.get_view("auto_import_results")
-    >>> log = view()
+    >>> log = auto_import("analyst")
 
     >>> sample2.Au.getResult()
     '10.0'
@@ -235,8 +246,7 @@ Create a new instrument results file:
 
 Run the import view again:
 
-    >>> view = api.get_view("auto_import_results")
-    >>> log = view()
+    >>> log = auto_import("analyst")
 
     >>> sample3.Au.getFormattedResult()
     'Found'
@@ -295,8 +305,7 @@ Create a new instrument results file:
 
 Run the import view again:
 
-    >>> view = api.get_view("auto_import_results")
-    >>> log = view()
+    >>> log = auto_import("analyst")
 
     >>> sample4.Au.getFormattedResult()
     'Found'

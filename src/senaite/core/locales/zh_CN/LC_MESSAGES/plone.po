@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2025-02-27 15:23+0000\n"
+"POT-Creation-Date: 2025-04-03 13:20+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Raymond Yu <cl_yu@hotmail.com>, 2024\n"
 "Language-Team: Chinese (China) (https://app.transifex.com/senaite/teams/87045/zh_CN/)\n"
@@ -500,7 +500,7 @@ msgid "heading_version_overview"
 msgstr "条目 版本概述"
 
 #. Default: "If you are unsure of which format to use, just select Plain Text and type the document as you usually do."
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:31
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:52
 msgid "help_format_wysiwyg"
 msgstr "帮助 格式纯文本键入"
 
@@ -525,7 +525,7 @@ msgid "help_sharing_page_default_page"
 msgstr "帮助共享页面的默认页面"
 
 #. Default: "HTML"
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:52
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:73
 msgid "html"
 msgstr "超文本标记语言"
 
@@ -650,7 +650,7 @@ msgid "label_find_group"
 msgstr "标签 寻找组"
 
 #. Default: "Format"
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:29
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:50
 msgid "label_format"
 msgstr "标签 格式"
 
@@ -853,6 +853,7 @@ msgstr "列表标题 组用户名"
 
 #. Default: "Remove"
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:159
+#: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:123
 msgid "listingheader_remove"
 msgstr "列表标题 删除"
 
@@ -878,7 +879,7 @@ msgid "no_file"
 msgstr "没有文件"
 
 #. Default: "Plain Text"
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:61
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:82
 msgid "plain_text"
 msgstr "纯文本"
 
@@ -888,7 +889,7 @@ msgid "return_to_view"
 msgstr "返回查看"
 
 #. Default: "Structured Text"
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:43
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:64
 msgid "structured_text"
 msgstr "结构化文本"
 

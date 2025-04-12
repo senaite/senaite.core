@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2025-02-27 15:23+0000\n"
+"POT-Creation-Date: 2025-04-03 13:20+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2023\n"
 "Language-Team: German (https://app.transifex.com/senaite/teams/87045/de/)\n"
@@ -498,7 +498,7 @@ msgid "heading_version_overview"
 msgstr "Versionsübersicht"
 
 #. Default: "If you are unsure of which format to use, just select Plain Text and type the document as you usually do."
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:31
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:52
 msgid "help_format_wysiwyg"
 msgstr "Wenn Sie sich nicht sicher sind, welches Format Sie verwenden sollen, wählen Sie einfach Nur-Text und geben Sie das Dokument wie gewohnt ein."
 
@@ -523,7 +523,7 @@ msgid "help_sharing_page_default_page"
 msgstr "Sie passen die Freigabeberechtigungen für eine Standardansicht in einem Container an. Um sie für den gesamten Container anzupassen, ${go_here}."
 
 #. Default: "HTML"
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:52
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:73
 msgid "html"
 msgstr "HTML"
 
@@ -648,7 +648,7 @@ msgid "label_find_group"
 msgstr "Finden Sie hier eine Gruppe"
 
 #. Default: "Format"
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:29
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:50
 msgid "label_format"
 msgstr "Format"
 
@@ -851,6 +851,7 @@ msgstr "Gruppen-/Benutzername"
 
 #. Default: "Remove"
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:159
+#: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:123
 msgid "listingheader_remove"
 msgstr "Entfernen"
 
@@ -876,7 +877,7 @@ msgid "no_file"
 msgstr ""
 
 #. Default: "Plain Text"
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:61
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:82
 msgid "plain_text"
 msgstr "Klartext"
 
@@ -886,7 +887,7 @@ msgid "return_to_view"
 msgstr "Zurück"
 
 #. Default: "Structured Text"
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:43
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:64
 msgid "structured_text"
 msgstr "Strukturierter Text"
 
