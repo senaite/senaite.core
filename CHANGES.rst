@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2708 Fix QR code has no embedded ID
 - #2707 Fix analyst permission for auto results import
 
 
