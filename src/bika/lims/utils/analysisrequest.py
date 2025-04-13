@@ -144,7 +144,7 @@ def create_analysisrequest(client, request, values, analyses=None,
             # auto-receive the sample, but only if the user (that might be
             # a client) has enough privileges and the sample has a value set
             # for DateSampled. Otherwise, sample_due
-            receive_sample(ar)
+            receive_sample(ar, check_permission=True)
 
         else:
             # sample_due is the default initial status of the sample
