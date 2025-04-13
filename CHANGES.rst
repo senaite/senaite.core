@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2709 Fix permissions are not checked on auto-reception of samples
 - #2705 Fix instruments not filtered by method in WS template edit view
 - #2707 Fix analyst permission for auto results import
 
