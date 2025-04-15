@@ -2368,6 +2368,7 @@
               msg += `${message}<br/>`;
             }
           }
+          this.form_submission_flag = false;
           window.bika.lims.portalMessage(msg);
           return window.scroll(0, 0);
         } else if (data['confirmation']) {

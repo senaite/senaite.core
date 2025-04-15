@@ -11,6 +11,7 @@ Changelog
 2.6.0 (2025-04-04)
 ------------------
 
+- #2710 Fix prevent of double submission for Sample Add Form
 - #2694 Add version wrapper for AT and DX contents
 - #2695 Support for relativedelta and ymd in api.dtime
 - #2701 Make expected sampling date optional
