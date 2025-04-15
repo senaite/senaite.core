@@ -2141,7 +2141,8 @@ class window.AnalysisRequestAdd
             message = data.errors.fielderrors[fieldname]
             errorbox.text message
             msg += "#{message}<br/>"
-
+        
+        @form_submission_flag = no
         window.bika.lims.portalMessage msg
         window.scroll 0, 0
 
