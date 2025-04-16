@@ -2093,7 +2093,7 @@ class window.AnalysisRequestAdd
   on_form_submit: (event, callback) =>
     console.debug "°°° on_form_submit °°°"
     event.preventDefault()
-    return unless not @form_submission_flag
+    return if @form_submission_flag
     @form_submission_flag = yes
     me = this
 

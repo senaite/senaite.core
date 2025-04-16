@@ -2320,7 +2320,7 @@
       var action, action_input, base_url, btn, me, portal_url;
       console.debug("°°° on_form_submit °°°");
       event.preventDefault();
-      if (!!this.form_submission_flag) {
+      if (this.form_submission_flag) {
         return;
       }
       this.form_submission_flag = true;
