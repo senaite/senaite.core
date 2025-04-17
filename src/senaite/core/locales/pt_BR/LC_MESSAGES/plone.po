@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2025-02-27 15:23+0000\n"
+"POT-Creation-Date: 2025-04-03 13:20+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Fabiano Solari, 2022\n"
 "Language-Team: Portuguese (Brazil) (https://app.transifex.com/senaite/teams/87045/pt_BR/)\n"
@@ -497,7 +497,7 @@ msgid "heading_version_overview"
 msgstr "cabeçalho_versão_visãogeral"
 
 #. Default: "If you are unsure of which format to use, just select Plain Text and type the document as you usually do."
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:31
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:52
 msgid "help_format_wysiwyg"
 msgstr ""
 
@@ -522,7 +522,7 @@ msgid "help_sharing_page_default_page"
 msgstr ""
 
 #. Default: "HTML"
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:52
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:73
 msgid "html"
 msgstr ""
 
@@ -647,7 +647,7 @@ msgid "label_find_group"
 msgstr ""
 
 #. Default: "Format"
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:29
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:50
 msgid "label_format"
 msgstr ""
 
@@ -850,6 +850,7 @@ msgstr ""
 
 #. Default: "Remove"
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:159
+#: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:123
 msgid "listingheader_remove"
 msgstr ""
 
@@ -875,7 +876,7 @@ msgid "no_file"
 msgstr ""
 
 #. Default: "Plain Text"
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:61
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:82
 msgid "plain_text"
 msgstr ""
 
@@ -885,7 +886,7 @@ msgid "return_to_view"
 msgstr "retornar_para_visualização"
 
 #. Default: "Structured Text"
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:43
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:64
 msgid "structured_text"
 msgstr ""
 

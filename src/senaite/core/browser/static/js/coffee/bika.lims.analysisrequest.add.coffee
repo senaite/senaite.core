@@ -30,6 +30,9 @@ class window.AnalysisRequestAdd
     # => keep track to avoid setting these fields with the default values
     @deselected_uids = {}
 
+    # flag that indicates that form already has been submitted once
+    @form_submission_flag = no
+
     # Remove the '.blurrable' class to avoid inline field validation
     $(".blurrable").removeClass("blurrable")
 
@@ -2090,6 +2093,8 @@ class window.AnalysisRequestAdd
   on_form_submit: (event, callback) =>
     console.debug "°°° on_form_submit °°°"
     event.preventDefault()
+    return if @form_submission_flag
+    @form_submission_flag = yes
     me = this
 
     # The clicked submit button is not part of the form data, therefore,
@@ -2136,7 +2141,8 @@ class window.AnalysisRequestAdd
             message = data.errors.fielderrors[fieldname]
             errorbox.text message
             msg += "#{message}<br/>"
-
+        
+        @form_submission_flag = no
         window.bika.lims.portalMessage msg
         window.scroll 0, 0
 

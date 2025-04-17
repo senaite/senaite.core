@@ -427,6 +427,8 @@
       // manually deselected references
       // => keep track to avoid setting these fields with the default values
       this.deselected_uids = {};
+      // flag that indicates that form already has been submitted once
+      this.form_submission_flag = false;
       // Remove the '.blurrable' class to avoid inline field validation
       $(".blurrable").removeClass("blurrable");
       // manually flush service search terms
@@ -2318,6 +2320,10 @@
       var action, action_input, base_url, btn, me, portal_url;
       console.debug("°°° on_form_submit °°°");
       event.preventDefault();
+      if (this.form_submission_flag) {
+        return;
+      }
+      this.form_submission_flag = true;
       me = this;
       // The clicked submit button is not part of the form data, therefore,
       // we pass the name of the button through a hidden field
@@ -2362,6 +2368,7 @@
               msg += `${message}<br/>`;
             }
           }
+          this.form_submission_flag = false;
           window.bika.lims.portalMessage(msg);
           return window.scroll(0, 0);
         } else if (data['confirmation']) {

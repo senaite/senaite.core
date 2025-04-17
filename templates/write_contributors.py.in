@@ -117,6 +117,69 @@ def get_git_contributors_section():
     return lines
 
 
+def get_lang_team(po_file):
+    """Returns the language team of the .po file
+    """
+    rx = re.compile(r'^"Language-Team:\s(.*)\s\(https.*\\n"')
+    for line in open(po_file, "r").readlines():
+        match = rx.match(line)
+        if match:
+            return match.groups()[0]
+    return None
+
+
+def get_lang_code(po_file):
+    """Returns the language code of the .po file
+    """
+    rx = re.compile(r'^"Language:\s(.*)\\n"')
+    for line in open(po_file, "r").readlines():
+        match = rx.match(line)
+        if match:
+            return match.groups()[0]
+    return None
+
+
+def get_last_translator(po_file):
+    """Returns the last translator of the .po file
+    """
+    for line in open(po_file, "r").readlines():
+        line = line.replace('"Last-Translator:', '#', 1)
+        name = get_translator(line)
+        if name:
+            return name
+    return None
+
+
+def get_translator(line):
+    # with email
+    rx = re.compile(r'^#\s(.*)\s<(.*)>,\s\d{4}.*')
+    match = rx.match(line)
+    if match:
+        name = match.groups()[0]
+        email = match.groups()[1]
+        return "%s, %s" % (name, email)
+
+    # without email
+    rx = re.compile(r'^#\s(.*),\s\d{4}.*')
+    match = rx.match(line)
+    if match:
+        return match.groups()[0]
+
+    return None
+
+
+def get_translators(po_file):
+    """Returns the translators from the .po file
+    """
+    names = [get_translator(line) for line in open(po_file, "r").readlines()]
+    # add the last translator
+    last = get_last_translator(po_file)
+    names.append(last)
+    # remove empties
+    names = filter(None, names)
+    return sorted(names)
+
+
 def get_translators_section():
     parser = optparse.OptionParser()
 
@@ -137,56 +200,18 @@ def get_translators_section():
     extensions = map(lambda ext: ext.strip(), options.extensions.split(","))
 
     def resolve_translators(path):
-        lines = open(path, "r").readlines()
-        translators_section = False
-        translators_list = list()
-        lang_name = ""
-        lang_iso  = ""
-
-        for line in lines:
-            if line.startswith('# Translators'):
-                translators_section = True
-                continue
-
-            if translators_section and line.startswith('#'):
-                pattern = r'\# (.*) \<(.*)\>'
-                search = re.match(pattern, line)
-                if not search:
-                    continue
-
-                groups = search.groups()
-                if len(groups) != 2:
-                    continue
-
-                translator = '|'.join(groups)
-                name, email = resolve_contributor(translator)
-                if not name or not email:
-                    continue
-                translator_line = '{}, {}'.format(name, email)
-                if translator_line not in translators_list:
-                    translators_list.append(translator_line)
-
-            if translators_section and line.startswith('"Language-Team'):
-                lang_name = re.sub(r"\(https?://\S+\)", "", line)
-                lang_name = lang_name[16:len(lang_name)-4]
-                lang_name = lang_name.strip()
-                continue
-
-            if translators_section and line.startswith('"Language:'):
-                lang_iso = line[11:len(line)-4]
-                continue
-
-            if line.startswith('#: ') or (lang_name and lang_iso):
-                break
-
-        trans = list()
-        if lang_name and lang_iso and translators_list:
-            translators_list = list(set(translators_list))
-            for translator in translators_list:
-                line = '- {}, {} ({})\n'.format(translator, lang_name, lang_iso)
-                trans.append(line)
-
-        return lang_iso, trans
+        # get the lang iso code
+        iso = get_lang_code(path)
+        # get the lang team (lang fullname)
+        team = get_lang_team(path)
+        # get the translators
+        translators = get_translators(path)
+        translators = sorted(set(translators))
+        # build the lines
+        lines = []
+        for name in translators:
+            lines.append('- %s, %s (%s)\n' % (name, team, iso))
+        return iso, lines
 
     def callback(arg, dirname, names):
         # only read from files where the file extension match (.po per default)

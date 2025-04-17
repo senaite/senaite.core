@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2025-02-27 15:23+0000\n"
+"POT-Creation-Date: 2025-04-03 13:20+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2024\n"
 "Language-Team: Catalan (https://app.transifex.com/senaite/teams/87045/ca/)\n"
@@ -497,7 +497,7 @@ msgid "heading_version_overview"
 msgstr "Visió general de la versió"
 
 #. Default: "If you are unsure of which format to use, just select Plain Text and type the document as you usually do."
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:31
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:52
 msgid "help_format_wysiwyg"
 msgstr "Si no esteu segur de quin format heu d'utilitzar, seleccioneu Text simple i escriviu el document tal i com ho feu normalment."
 
@@ -522,7 +522,7 @@ msgid "help_sharing_page_default_page"
 msgstr "Esteu ajustant els privilegis de compartició per a una vista predeterminada en un contenidor. Per a ajustar-los per al contenidor sencer, ${go_here}."
 
 #. Default: "HTML"
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:52
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:73
 msgid "html"
 msgstr "HTML"
 
@@ -647,7 +647,7 @@ msgid "label_find_group"
 msgstr "Troba un grup aquí"
 
 #. Default: "Format"
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:29
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:50
 msgid "label_format"
 msgstr "Format"
 
@@ -850,6 +850,7 @@ msgstr "Nom de grup/usuari"
 
 #. Default: "Remove"
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:159
+#: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:123
 msgid "listingheader_remove"
 msgstr "Suprimeix"
 
@@ -875,7 +876,7 @@ msgid "no_file"
 msgstr "No hi ha cap fitxer"
 
 #. Default: "Plain Text"
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:61
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:82
 msgid "plain_text"
 msgstr "Text simple"
 
@@ -885,7 +886,7 @@ msgid "return_to_view"
 msgstr "Torna"
 
 #. Default: "Structured Text"
-#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:43
+#: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:64
 msgid "structured_text"
 msgstr "Text estructurat"
 

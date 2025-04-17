@@ -20,163 +20,93 @@ contributions descending.
 - Inus Scheepers, inus@bikalabs.com
 - Oliver Roch, oliver.roch@d9t.de
 - Alexander Karlsson, ak.zylinx@gmail.com
+- Leonid Toporkov, leonid.toporkov@gmail.com
+- Anton Zhuchkov, antonzh85@gmail.com
 - Anton Feun, anton@satides.co.za
 - Winnie, winniehell@users.noreply.github.com
 - Jayadeep Karnati, karnatijayadeep@gmail.com
 - Lemoene, lemoene@bikalabs.com
-- Dhruv Khattar, dhruv@khattarindia.com
 - witekdev, witekdev@gmail.com
+- Dhruv Khattar, dhruv@khattarindia.com
+- DanE417, daanyaaleffendi1997@gmail.com
 - Anderson Smith, andersonsmith183@gmail.com
-- Leonid Toporkov, leonid.toporkov@gmail.com
 - Javis Sullivan, javissullivan@gmail.com
 - toropok, leonid.toporkov@gmail.com
 - Pieter van der Merwe, pieter_vdm@debortoli.com.au
 - Jean Jordaan, jean.jordaan@gmail.com
 - MoffatMore, 12894381+MoffatMore@users.noreply.github.com
+- fengyundeng, 91647579+fengyundeng@users.noreply.github.com
 - Stefan Gruber, s.gruber@liscon.de
 - krishan Chopra, krishanchopra61@yahoo.in
 - jpsinghgoud, jaipal.singh@research.iiit.ac.in
-- Anton Zhuchkov, antonzh85@gmail.com
 - Siyamalan, 20146320+siyamalan@users.noreply.github.com
 - Aleksandr Melnikov, aleksandr.melnikov@limelyte.com
 - Henrique Chehad, hchehad@gmail.com
-- RML-IAEA, 95472242+RML-IAEA@users.noreply.github.com
+- Dieter van der Westhuizen, dietervdwes@gmail.com
+- fengyun deng, fengyun.deng@xrem.cn
 - luthando5, 104898641+luthando5@users.noreply.github.com
 - goelakash, goelakash93@gmail.com
+- RML-IAEA, 95472242+RML-IAEA@users.noreply.github.com
 - Manav Batra, manavbatra@outlook.com
+- Sílvia Álvarez, 61150318+zzzirvia@users.noreply.github.com
 - Bugerman58, antonzh85@gmail.com
 - José Manuel Pérez Lendínez, jmplz14@correo.ugr.es
 - mimishons, shoniwam@nmrl.org.zw
+- nnpvaan, 84114449+nnpvaan@users.noreply.github.com
 
 
 Translators
 ===========
 
-- Inus Scheepers, inus@animatica.co.za, Afrikaans (af)
-- Lemoene Smit, lemoene@bikalabs.com, Afrikaans (af)
-- Mohammed Gaber, mohammedxp@gmail.com, Arabic (ar)
-- Omar Anwar, omaraglan91@yahoo.com, Arabic (ar)
+- lemoene Smit, lemoene@bikalabs.com, Afrikaans (af)
 - Bakir Helic, bakirh@gmail.com, Bosnian (bs)
 - Jordi Puiggené, jpuiggene@naralabs.com, Catalan (ca)
-- Campbell McKellar-Basset, campbell@bikalabs.com, Catalan (ca)
-- Tomáš Ocelka, tomas.ocelka@ehss.eu, Czech (cs)
-- trendspotter, j.podhorecky@volny.cz, Czech (cs)
-- Jiří Podhorecký, j.podhorecky@volny.cz, Czech (cs)
-- majak, majak@mailme.dk, Danish (Denmark) (da_DK)
-- Harry  Falk, harrymfalk@gmail.com, German (de)
-- kare, katharina.hubig@web.de, German (de)
-- Lutz Kogel, lkogel@koluma.de, German (de)
-- Stefan Gruber, st.gruber@t-online.de, German (de)
-- Mabuse, mabuse@byom.de, German (de)
-- Marc Jedrzejas, marc.jedr@gmail.com, German (de)
-- mkandler, kandler.m@bartelt.at, German (de)
+- David Molins, Catalan (Spain) (ca_ES)
+- Jiří Podhorecký, jirka.p@volny.cz, Czech (cs)
 - Marc Jedrzejas, marc.jedr@gmail.com, German (de)
 - Ramon Bartl, rb@ridingbytes.com, German (de)
 - Stefan Gruber, s.gruber@liscon.de, German (de)
-- cistrans, limstranslate@gmail.com, Greek (el)
-- limsgr, inactive+limsgr@transifex.com, Greek (el)
-- Mike Metcalfe, mike@webtide.co.za, English (United States) (en_US)
-- PabloBF, pablobusattof@gmail.com, Esperanto (eo)
+- Winnie, German (de)
+- David Molins, Spanish (es)
 - ELvira Aylon, elvira@icb.csic.es, Spanish (es)
-- Leonardo J. Caballero G., leonardocaballero@gmail.com, Spanish (es)
-- Leonardo Rojas, leonardorojass@gmail.com, Spanish (es)
-- Carlos Javier García Quintana, garciaquintana_carlos@yahoo.com.mx, Spanish (es)
-- Alfonso de la Guarda Reyes, alfonsodg@gmail.com, Spanish (es)
-- Pau Soliva, psoliva@naralabs.com, Spanish (es)
-- Luis Lorenzo Gomez Blanco, luislorenzogomezblanco@yahoo.es, Spanish (es)
 - Jordi Puiggené, jpuiggene@naralabs.com, Spanish (es)
-- Chema Polo, chemapolo@gmail.com, Spanish (es)
-- orestesmanolo, orestesmanolo@gmail.com, Spanish (es)
-- SSchott, sschottv@gmail.com, Spanish (es)
-- Michael Quintana, michaelquintana@gmail.com, Spanish (es)
-- Campbell McKellar-Basset, campbell@bikalabs.com, Spanish (es)
+- Leonardo J. Caballero G., leonardocaballero@gmail.com, Spanish (es)
+- Mathias Hochkofler, Spanish (es)
+- Pau Soliva, psoliva@naralabs.com, Spanish (es)
 - Leonardo J. Caballero G., leonardocaballero@gmail.com, Spanish (Latin America) (es_419)
-- Marco Rodriguez, tabarishneo@gmail.com, Spanish (Latin America) (es_419)
-- Didinson Muñoz, dmunozcster@gmail.com, Spanish (Latin America) (es_419)
 - Leonardo J. Caballero G., leonardocaballero@gmail.com, Spanish (Argentina) (es_AR)
-- Fernando Sánchez, nando@liberorbis.com, Spanish (Peru) (es_PE)
-- Jordi Puiggené, jpuiggene@naralabs.com, Spanish (Peru) (es_PE)
-- Alfonso de la Guarda Reyes, alfonsodg@gmail.com, Spanish (Peru) (es_PE)
-- Carlos Javier García Quintana, garciaquintana_carlos@yahoo.com.mx, Spanish (Peru) (es_PE)
-- Campbell McKellar-Basset, campbell@bikalabs.com, Spanish (Peru) (es_PE)
 - roozbeh karimi, information.spnco@gmail.com, Persian (fa)
-- alireza mashayekhi, alireza.mashayekhi@gmail.com, Persian (fa)
-- arma, arma4c@gmail.com, Persian (fa)
-- Mohammad Javad Danesh, daneshy@gmail.com, Persian (fa)
 - Ludwig Muster, ludwig.muster@gmail.com, French (fr)
-- CestPasFaux, rodriguesdossantos.vincent@gmail.com, French (fr)
-- Bonamour, nicolas.bonamour-du-tartre@parisdescartes.fr, French (fr)
-- MALESSAN, malessan@gmail.com, French (fr)
-- Antoine Plumereau, toineplume@gmail.com, French (fr)
-- hbrahi1, extradisk@yahoo.com, French (fr)
-- az, azeddine.moumin@gmail.com, French (fr)
-- Didier Desplanque, didier.desplanque@gmail.com, French (fr)
-- Ahmed BEN BRAHIM, ahmed.benbrahim@hotmail.com, French (fr)
-- DELAMARRE, julien.delamarre@univ-rouen.fr, French (fr)
+- Olivier Mahé, French (fr)
+- giulio morelli, Italian (it)
 - Wei Chung Sim, wchung.mardi@gmail.com, Malay (ms)
-- Jayadeep Karnati, karnatijayadeep@gmail.com, Hindi (hi)
-- Alphons Senki, senki.alphons@gmail.com, Hungarian (hu)
-- Fitra Purna, fitra_purna@yahoo.co.id, Indonesian (id)
-- Alessandro Ciai, a.ciai@btree.it, Italian (it)
-- Alberto De Boni, albertodeboni@gmail.com, Italian (it)
-- Gianluigi Tiesi, sherpya@gmail.com, Italian (it)
-- warfox, a.deboni@neobe.it, Italian (it)
-- Raffaele Filannino, raffaele.filannino@gmail.com, Italian (it)
-- Luca Salemmi, lusalemmi@gmail.com, Italian (it)
-- Nastuko Toda, m2330880989@shibuya-center.com, Japanese (ja)
-- Lemoene Smit, lemoene@bikalabs.com, Georgian (Georgia) (ka_GE)
-- Audrius Zajančkauskas, audrius@avr.lt, Lithuanian (lt)
-- aleksandras, aleksandras.savilionis@gmail.com, Lithuanian (lt)
-- erka, erdeneochir88@gmail.com, Mongolian (mn)
-- Emil Cyraniak, cyrano30@epf.pl, Polish (pl)
 - Piotr Turek, piotr.turek@borpol.com.pl, Polish (pl)
-- Ryszard Grodowski, ryszard@grodowski.com, Polish (pl)
-- Frederico Ribeiro, freddy.boc@gmail.com, Portuguese (pt)
+- Fabiano Solari, Portuguese (Brazil) (pt_BR)
+- Matthew Harrison, Portuguese (Brazil) (pt_BR)
 - diassuncao diassuncao, diassuncao@gmail.com, Portuguese (Brazil) (pt_BR)
-- Irapuan Coleto Bottosso, ibottosso@gmail.com, Portuguese (Brazil) (pt_BR)
-- Camila Barreto, kmila.barreto@gmail.com, Portuguese (Brazil) (pt_BR)
-- PabloBF, pablobusattof@gmail.com, Portuguese (Brazil) (pt_BR)
-- MARCELO BONNET, mbonnet2002@yahoo.com, Portuguese (Brazil) (pt_BR)
-- Wesley Gabriel de Oliveira Leal, wesleygabriel@gmail.com, Portuguese (Brazil) (pt_BR)
-- emidio j g balcon1, emidio98@hotmail.com, Portuguese (Brazil) (pt_BR)
-- Frederico Ribeiro, freddy.boc@gmail.com, Portuguese (Brazil) (pt_BR)
-- Cesar Brod, cesar@brod.com.br, Portuguese (Brazil) (pt_BR)
-- Renato Cruz, renato@baktron.com.br, Portuguese (Brazil) (pt_BR)
-- cruzrenato1, renatorlcruz@gmail.com, Portuguese (Brazil) (pt_BR)
-- baktron, fernando@baktron.com.br, Portuguese (Brazil) (pt_BR)
-- corneliu.e, corneliueva@yahoo.com, Romanian (Romania) (ro_RO)
-- Алексей Сериков, nchrom@gmail.com, Russian (ru)
-- Artem Kladov, artem.kladov@flant.com, Russian (ru)
-- Oleksandr Fedorov, fedoroffall@yandex.ru, Russian (ru)
-- Pavel Shuper, shuper@bionixlab.com, Russian (ru)
-- Михаил Стручалин, m.struchalin@gmail.com, Russian (ru)
-- nchrom, nchrom@gmail.com, Russian (ru)
+- Florin Ghidu, Romanian (ro)
+- Leonid Toporkov, Russian (ru)
+- PavelFadeev, Russian (ru)
+- Ragnar Lothbrok, Russian (ru)
 - alex r, transifex.com@rmpl.of.by, Russian (ru)
+- Алексей Сериков, nchrom@gmail.com, Russian (ru)
+- Albion Shala, Albanian (Albania) (sq_AL)
+- Bakhtiyor Barotov, Tajik (tg)
 - Suphachock Upalee, suphamew@gmail.com, Thai (th)
-- Burak ÇAM, burakcam@akdeniz.edu.tr, Turkish (Turkey) (tr_TR)
-- tekbaspinar, tekbaspinar@gmail.com, Turkish (Turkey) (tr_TR)
-- Yildiz Oezkan, perry@wysiwyg.ch, Turkish (Turkey) (tr_TR)
-- Dima Domin, dima.domin@gmail.com, Ukrainian (Ukraine) (uk_UA)
 - Misha Bychkov, mich.bychkov@gmail.com, Ukrainian (Ukraine) (uk_UA)
-- Pavel Shuper, shuper@bionixlab.com, Ukrainian (Ukraine) (uk_UA)
 - Roman Sobol, romansobolua@gmail.com, Ukrainian (Ukraine) (uk_UA)
-- Muzzammil Hussain, dexter.hussain@gmail.com, Urdu (ur)
 - Kevin Xu, 139526780@qq.com, Chinese (zh)
-- Rui Tang, bio.nanoparticle@gmail.com, Chinese (zh)
-- xuhaida76, xuhaida@gmail.com, Chinese (China) (zh_CN)
-- YD L., liangyuandong.1990@aliyun.com, Chinese (China) (zh_CN)
+- ZZZ, Chinese (zh)
+- erikking, Chinese (zh)
+- Carman Hu, Chinese (China) (zh_CN)
 - Raymond Yu, cl_yu@hotmail.com, Chinese (China) (zh_CN)
-- lin chen, aling1472@163.com, Chinese (China) (zh_CN)
-- Rui Tang, bio.nanoparticle@gmail.com, Chinese (China) (zh_CN)
-- jincheng_li, 394428196@qq.com, Chinese (China) (zh_CN)
-- Bisheng, doun@163.com, Chinese (China) (zh_CN)
-- Tao Li, wintersun_li@yahoo.com, Chinese (China) (zh_CN)
-- yuan314159, yuan314159@gmail.com, Chinese (China) (zh_CN)
-- Cheng Jin, 17067405@qq.com, Chinese (China) (zh_CN)
-- Inus Scheepers, inus@animatica.co.za, Chinese (China) (zh_CN)
-- prosper wang, prosperwang@163.com, Chinese (China) (zh_CN)
-- 道, liangyuandong.1990@aliyun.com, Chinese (China) (zh_CN)
-- Rui Tang, bio.nanoparticle@gmail.com, Chinese (Taiwan) (zh_TW)
-- Matthew Tsui, mtsui@app2one.com, Chinese (Taiwan) (zh_TW)
+- YD L., liangyuandong.1990@aliyun.com, Chinese (China) (zh_CN)
+- ZZZ, Chinese (China) (zh_CN)
+- Zhuo Song, Chinese (China) (zh_CN)
+- aaron lau, Chinese (China) (zh_CN)
+- xuhaida76, xuhaida@gmail.com, Chinese (China) (zh_CN)
+- 田野, Chinese (China) (zh_CN)
+- 见宇 高, Chinese (China) (zh_CN)
 - Liz Sung, lesliesong@gmail.com, Chinese (Taiwan) (zh_TW)
 - Wei Chung Sim, wchung.mardi@gmail.com, Chinese (Taiwan) (zh_TW)
+- ZZZ, Chinese (Taiwan) (zh_TW)

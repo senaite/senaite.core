@@ -1,6 +1,69 @@
 Release notes
 =============
 
+Update from 2.5.0 to 2.6.0
+--------------------------
+
+**IMPORTANT: Allocate Sufficient Time for This Upgrade**
+
+Version 2.6.0 introduces a number of significant changes that require careful
+planning. If you maintain custom add-ons, you should take time to review the
+update and assess whether your code will need adjustments.
+
+A key highlight of this release is the migration of many content types from
+Archetypes (AT) to Dexterity (DX). This is part of the broader effort to
+modernize the codebase and move closer to full Python 3 compatibility.
+As a result, the following content types have been migrated:
+
+``AnalysisCategories``, ``AnalysisCategory``, ``AnalysisProfiles``,
+``AnalysisProfile``, ``AttachmentTypes``, ``AttachmentType``, ``BatchLabels``,
+``BatchLabel``, ``ContainerTypes``, ``ContainerType``, ``Departments``,
+``Department``, ``InstrumentTypes``, ``InstrumentType``, ``LabProducts``,
+``LabProduct``, ``Manufacturers``, ``Manufacturer``, ``Preservations``,
+``Preservation``, ``SampleConditions``, ``SampleCondition``,
+``SampleMatrices``, ``SampleMatrix``, ``SamplePoints``, ``SamplePoint``,
+``SampleTemplates``, ``SampleTemplate``, ``SampleTypes``, ``SampleType``,
+``SamplingDeviations``, ``SamplingDeviation``, ``StorageLocations``,
+``StorageLocation``, ``SubGroups``, ``SubGroup``, ``Suppliers``, ``Supplier``,
+``WorksheetTemplates``, ``WorksheetTemplate``.
+
+If you have any extenders or modifiers attached to these types in your own
+add-ons, you will need to port that functionality to use Dexterity behaviors.
+
+In addition to the migration, version 2.6.0 introduces various improvements
+across the platform. Some of the most notable enhancements include support for
+Limit of Quantification (LOQ), improved handling of uncertainty values, better
+performance of analysis verification, a revamped sticker engine, new paste
+capabilities in sample registration, enhanced worksheet management, and the
+ability to remove users and customize user contact information. The release
+also includes refinements to result entry, multi-result analysis
+specifications, more robust catalog indexing, and many bug fixes and visual
+improvements across the user interface.
+
+Several long-standing bugs have been addressed as well, including issues with
+result entry, catalog indexing, permissions, rejections, and Unicode handling.
+Performance improvements were made for analysis verification and recalculation,
+and additional developer utilities were added to the API.
+
+Please note that the upgrade process may take a considerable amount of time.
+This is primarily due to upgrade step 2654, which involves processing and
+migrating a large amount of catalog data. Be prepared for a longer-than-usual
+upgrade window, especially for large databases.
+
+This release has been thoroughly tested with Plone 5.2.15 and 5.2.14. For best
+compatibility and stability, it is strongly recommended that you pin your
+buildout to one of these versions when upgrading.
+
+To ensure a smooth upgrade process, we also recommend taking a few
+precautionary steps beforehand:
+
+- Run a `zeopack` to compact the database
+- Create a full backup of your code and database
+- Ensure as many analyses as possible are in *Verified* or *Published* status
+- Stop any non-essential services or applications to free up memory
+- Clear or rotate log files to begin with a clean slate
+
+
 Update from 2.0.0 to 2.1.0
 --------------------------
 
