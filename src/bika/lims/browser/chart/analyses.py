@@ -20,6 +20,8 @@
 
 import json
 from bika.lims import api
+from senaite.core.api import dtime
+
 
 class EvolutionChart(object):
 
@@ -42,8 +44,7 @@ class EvolutionChart(object):
             if not api.is_floatable(value):
                 return
         cap_date = analysis_object.getResultCaptureDate()
-        cap_date = api.is_date(cap_date) and \
-                   cap_date.strftime('%Y-%m-%d %I:%M %p') or ''
+        cap_date = dtime.date_to_string(cap_date, "%Y-%m-%d %H:%M:%S")
         if not cap_date:
             return
 
