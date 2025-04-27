@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2715 Allow the edition of QC results from inside Instrument
 - #2708 Fix QR code has no embedded ID
 - #2705 Fix instruments not filtered by method in WS template edit view
 - #2707 Fix analyst permission for auto results import
