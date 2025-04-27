@@ -539,7 +539,6 @@ class InstrumentReferenceAnalysesView(AnalysesView):
         self.allow_edit = True
         self.show_select_column = True
         self.show_search = False
-        self.omit_form = True
 
         self.catalog = ANALYSIS_CATALOG
 
