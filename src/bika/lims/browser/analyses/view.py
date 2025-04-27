@@ -205,15 +205,13 @@ class AnalysesView(ListingView):
                 "type": "boolean"}),
         ))
 
-        # Inject Remarks column for listing
-        if self.analysis_remarks_enabled():
-            self.columns["Remarks"] = {
-                "title": "Remarks",
-                "toggle": False,
-                "sortable": False,
-                "type": "remarks",
-                "ajax": True,
-            }
+        self.columns["Remarks"] = {
+            "title": "Remarks",
+            "toggle": False,
+            "sortable": False,
+            "type": "remarks",
+            "ajax": True,
+        }
 
         self.review_states = [
             {
@@ -1666,15 +1664,18 @@ class AnalysesView(ListingView):
         :param item: analysis' dictionary counterpart that represents a row
         """
 
-        if self.analysis_remarks_enabled():
-            item["Remarks"] = analysis_brain.getRemarks
+        remarks = analysis_brain.getRemarks
 
-        if self.is_analysis_edition_allowed(analysis_brain):
+        # do allow edition only if remarks enabled in setup
+        enabled = self.analysis_remarks_enabled()
+        can_edit = self.is_analysis_edition_allowed(analysis_brain)
+        if enabled and can_edit:
+            item["Remarks"] = remarks
             item["allow_edit"].extend(["Remarks"])
-        else:
-            # render HTMLified text in readonly mode
-            item["Remarks"] = api.text_to_html(
-                analysis_brain.getRemarks, wrap=None)
+
+        elif not can_edit:
+            # render HTMLified text in readonly mode, even if not enabled
+            item["Remarks"] = api.text_to_html(remarks, wrap=None)
 
     def _append_html_element(self, item, element, html, glue="&nbsp;",
                              after=True):

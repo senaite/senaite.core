@@ -561,13 +561,6 @@ class InstrumentReferenceAnalysesView(AnalysesView):
             "sortable": False
         }
 
-        self.columns["Remarks"] = {
-            "title": "Remarks",
-            "toggle": False,
-            "sortable": False,
-            "type": "remarks",
-        }
-
         self.review_states[0]["columns"] = [
             "Service",
             "getReferenceAnalysesGroupID",
