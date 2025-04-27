@@ -583,9 +583,6 @@ class InstrumentReferenceAnalysesView(AnalysesView):
         item = super(InstrumentReferenceAnalysesView,
                      self).folderitem(obj, item, index)
 
-        # check if editable
-        is_editable = self.is_analysis_edition_allowed(obj)
-
         # get the full object
         analysis = self.get_object(obj)
 
