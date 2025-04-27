@@ -588,10 +588,6 @@ class InstrumentReferenceAnalysesView(AnalysesView):
         item["replace"]["Partition"] = get_link(api.get_url(sample),
                                                 api.get_id(sample))
 
-        # Display remarks for supervisor QC officer when checking QC results
-        remarks = analysis.getRemarks()
-        item["Remarks"] = api.text_to_html(remarks, wrap=None)
-
         # Get retractions field
         item["Retractions"] = ""
         report = analysis.getRetractedAnalysesPdfReport()
