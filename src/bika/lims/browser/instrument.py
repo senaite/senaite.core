@@ -561,6 +561,13 @@ class InstrumentReferenceAnalysesView(AnalysesView):
             "sortable": False
         }
 
+        self.columns["Remarks"] = {
+            "title": "Remarks",
+            "toggle": False,
+            "sortable": False,
+            "type": "remarks",
+        }
+
         self.review_states[0]["columns"] = [
             "Service",
             "getReferenceAnalysesGroupID",
@@ -587,6 +594,10 @@ class InstrumentReferenceAnalysesView(AnalysesView):
         sample = analysis.getSample()
         item["replace"]["Partition"] = get_link(api.get_url(sample),
                                                 api.get_id(sample))
+
+        # Display remarks for supervisor QC officer when checking QC results
+        remarks = analysis.getRemarks()
+        item["Remarks"] = api.text_to_html(remarks, wrap=None)
 
         # Get retractions field
         item["Retractions"] = ""
