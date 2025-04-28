@@ -219,13 +219,11 @@
                var source = "standard_fields"
                var target = "prominent_fields";
 
-               if (sid == 'fieldlist-prominent') {
+               if (sid == "fieldlist-prominent") {
                  source = "prominent_fields";
                  target = "standard_fields";
                }
-
-
-               let input = item.context.querySelector("input[name='" + source + ":list']");
+               let input = item[0].querySelector("input[name='" + source + ":list']");
                if (input) {
                  input.name = target + ":list";
                }
