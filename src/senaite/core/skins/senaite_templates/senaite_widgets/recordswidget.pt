@@ -55,7 +55,7 @@
                         i18n_domain field/widget/i18n_domain|context/i18n_domain|string:plone">
 
             <table
-              class="recordswidget nosort table table-condensed"
+              class="recordswidget nosort table table-sm"
               tal:attributes="id string:${fieldName}_table">
 
               <tr class="header">
