@@ -271,6 +271,7 @@ module.exports = {
         { from: "../node_modules/jquery-form/dist", to: path.resolve(staticPath, "modules/jquery-form") },
         { from: "../node_modules/jquery-migrate/dist", to: path.resolve(staticPath, "modules/jquery-migrate") },
         { from: "../node_modules/jquery-ui/dist", to: path.resolve(staticPath, "modules/jquery-ui") },
+        { from: "../node_modules/handlebars/dist", to: path.resolve(staticPath, "modules/handlebars") },
         { from: "../node_modules/bootstrap/dist", to: path.resolve(staticPath, "modules/bootstrap") },
         { from: "../node_modules/popper.js/dist/umd", to: path.resolve(staticPath, "modules/popperjs") },
         { from: "../node_modules/bootstrap-confirmation2/dist", to: path.resolve(staticPath, "modules/bootstrap-confirmation2") },
