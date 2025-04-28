@@ -341,7 +341,9 @@ class EditForm {
    */
   update_form(form, data) {
     console.info("*** UPDATE FORM ***", data)
-
+    if (data === null) {
+      data = {};
+    }
     let hide = data.hide || [];
     let show = data.show || [];
     let readonly = data.readonly || [];
