@@ -882,6 +882,16 @@
     }
 
     /**
+     * Checks if the given value is a String
+     *
+     * @param thing {Object} value to check
+     * @returns {Boolean} True if the value is a String
+     */
+    is_string(value) {
+      return typeof value === "string" || value instanceof String;
+    }
+
+    /**
      * Checks if the given value is a plain Object
      *
      * @param thing {Object} value to check
@@ -1099,7 +1109,12 @@
     set_reference_field(field, values) {
       var controller, fieldname;
       if (!this.is_array(values)) {
-        values = values.split("\n");
+        if (this.is_string(values)) {
+          values = values.split("\n");
+        } else {
+          // handle field flushing (passes null)
+          values = [];
+        }
       }
       // filter out invalid UIDs
       // NOTE: UIDs have always a length of 32
