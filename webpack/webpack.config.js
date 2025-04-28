@@ -245,8 +245,6 @@ module.exports = {
       }, {
         // thirdparty.css
         src: [
-          "../src/senaite/core/browser/static/thirdparty/jqueryui/themes/base/jquery-ui.min.css",
-          "../src/senaite/core/browser/static/thirdparty/jqueryui/themes/base/theme.css",
           "../src/senaite/core/browser/static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.css",
         ],
         dest: code => ({
@@ -267,19 +265,19 @@ module.exports = {
     // https://webpack.js.org/plugins/copy-webpack-plugin/
     new CopyPlugin({
       patterns: [
-        { from: "../node_modules/jquery/dist", to: path.resolve(staticPath, "modules/jquery") },
+        { from: "../node_modules/bootstrap-confirmation2/dist", to: path.resolve(staticPath, "modules/bootstrap-confirmation2") },
+        { from: "../node_modules/bootstrap-select/dist", to: path.resolve(staticPath, "modules/bootstrap-select") },
+        { from: "../node_modules/bootstrap/dist", to: path.resolve(staticPath, "modules/bootstrap") },
+        { from: "../node_modules/handlebars/dist", to: path.resolve(staticPath, "modules/handlebars") },
+        { from: "../node_modules/intl-tel-input/build", to: path.resolve(staticPath, "modules/intl-tel-input") },
         { from: "../node_modules/jquery-form/dist", to: path.resolve(staticPath, "modules/jquery-form") },
         { from: "../node_modules/jquery-migrate/dist", to: path.resolve(staticPath, "modules/jquery-migrate") },
         { from: "../node_modules/jquery-ui/dist", to: path.resolve(staticPath, "modules/jquery-ui") },
-        { from: "../node_modules/handlebars/dist", to: path.resolve(staticPath, "modules/handlebars") },
-        { from: "../node_modules/bootstrap/dist", to: path.resolve(staticPath, "modules/bootstrap") },
+        { from: "../node_modules/jquery/dist", to: path.resolve(staticPath, "modules/jquery") },
         { from: "../node_modules/popper.js/dist/umd", to: path.resolve(staticPath, "modules/popperjs") },
-        { from: "../node_modules/bootstrap-confirmation2/dist", to: path.resolve(staticPath, "modules/bootstrap-confirmation2") },
-        { from: "../node_modules/bootstrap-select/dist", to: path.resolve(staticPath, "modules/bootstrap-select") },
-        { from: "../node_modules/react/umd/react.production.min.js", to: path.resolve(staticPath, "modules/react") },
         { from: "../node_modules/react-dom/umd/react-dom.production.min.js", to: path.resolve(staticPath, "modules/react-dom") },
+        { from: "../node_modules/react/umd/react.production.min.js", to: path.resolve(staticPath, "modules/react") },
         { from: "../node_modules/tinymce", to: path.resolve(staticPath, "modules/tinymce"), globOptions: {ignore: ["**/README.md"],},},
-        { from: "../node_modules/intl-tel-input/build", to: path.resolve(staticPath, "modules/intl-tel-input") },
         // { from: "../node_modules/@fortawesome/fontawesome-free", to: path.resolve(staticPath, "modules/fontawesome-free") },
       ]
     }),
