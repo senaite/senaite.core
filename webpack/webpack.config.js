@@ -221,8 +221,6 @@ module.exports = {
       }, {
         // thirdparty.js
         src: [
-          "../src/senaite/core/browser/static/thirdparty/jqueryui/jquery-ui-1.12.1.min.js",
-          "../src/senaite/core/browser/static/thirdparty/jqueryui/jquery-ui-i18n.min.js",
           "../src/senaite/core/browser/static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.js",
           "../src/senaite/core/browser/static/thirdparty/plone/overlayhelpers.js",
           "../src/senaite/core/browser/static/thirdparty/jquery-barcode-2.2.0.min.js",
@@ -272,6 +270,7 @@ module.exports = {
         { from: "../node_modules/jquery/dist", to: path.resolve(staticPath, "modules/jquery") },
         { from: "../node_modules/jquery-form/dist", to: path.resolve(staticPath, "modules/jquery-form") },
         { from: "../node_modules/jquery-migrate/dist", to: path.resolve(staticPath, "modules/jquery-migrate") },
+        { from: "../node_modules/jquery-ui/dist", to: path.resolve(staticPath, "modules/jquery-ui") },
         { from: "../node_modules/bootstrap/dist", to: path.resolve(staticPath, "modules/bootstrap") },
         { from: "../node_modules/popper.js/dist/umd", to: path.resolve(staticPath, "modules/popperjs") },
         { from: "../node_modules/bootstrap-confirmation2/dist", to: path.resolve(staticPath, "modules/bootstrap-confirmation2") },
