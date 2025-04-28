@@ -1,40 +1,39 @@
-jQuery(function($){
-    $(document).ready(function(){
-        var widgets = $('div.RejectionWidget');
-        for (var i=0;i < widgets.length;i++){
-            hide_show_other($(widgets[i]))
-            hide_show_options($(widgets[i]));
-        };
-        $('input.rejectionwidget-checkbox-other').bind("change copy", function () {
-            hide_show_other($(this).closest('div.RejectionWidget'));
+jQuery(function($) {
+    function hide_show_options(div_widget) {
+        var isChecked = div_widget.find(".rejectionwidget-checkbox").prop("checked");
+        if (isChecked) {
+            div_widget.find("div.options-set").show();
+        } else {
+            div_widget.find("div.options-set").hide();
+        }
+    }
+
+    function hide_show_other(div_widget) {
+        var isChecked = div_widget.find(".rejectionwidget-checkbox-other").prop("checked");
+        if (isChecked) {
+            div_widget.find(".rejectionwidget-input-other").show();
+        } else {
+            div_widget.find(".rejectionwidget-input-other").hide();
+        }
+    }
+
+    $(document).ready(function() {
+        var widgets = $("div.RejectionWidget");
+
+        widgets.each(function() {
+            var $widget = $(this);
+            hide_show_other($widget);
+            hide_show_options($widget);
         });
-        $('input.rejectionwidget-checkbox').bind("change copy", function () {
-            hide_show_options($(this).closest('div.RejectionWidget'));
+
+        $(document).on("change copy", "input.rejectionwidget-checkbox-other", function() {
+            var $widget = $(this).closest("div.RejectionWidget");
+            hide_show_other($widget);
+        });
+
+        $(document).on("change copy", "input.rejectionwidget-checkbox", function() {
+            var $widget = $(this).closest("div.RejectionWidget");
+            hide_show_options($widget);
         });
     });
 });
-
-function hide_show_options(div_widget) {
-    // Hide/show the rejection options divisions depending on the checkbox status
-    var checkbox = $(div_widget).find('.rejectionwidget-checkbox').attr('checked');
-    if (checkbox == "checked") {
-        // Showing the options-set
-        $(div_widget).find('div.options-set').show();
-    }
-    else{
-        // Hide the options-set
-        $(div_widget).find('div.options-set').hide();
-    }
-};
-function hide_show_other(div_widget) {
-    // Hide/show the "other" text field option depending on the checkbox status
-    var checkbox = $(div_widget).find('.rejectionwidget-checkbox-other').attr('checked');
-    if (checkbox == "checked") {
-        // Showing the options-set
-        $(div_widget).find('.rejectionwidget-input-other').show();
-    }
-    else{
-        // Hide the options-set
-        $(div_widget).find('.rejectionwidget-input-other').hide();
-    }
-}
