@@ -179,7 +179,6 @@ module.exports = {
           // legacy.js
           "../src/senaite/core/browser/static/js/bika.lims.analysisrequest.js",
           "../src/senaite/core/browser/static/js/bika.lims.artemplate.js",
-          "../src/senaite/core/browser/static/js/bika.lims.batch.js",
           "../src/senaite/core/browser/static/js/bika.lims.bikasetup.js",
           "../src/senaite/core/browser/static/js/bika.lims.calculation.edit.js",
           "../src/senaite/core/browser/static/js/bika.lims.client.js",

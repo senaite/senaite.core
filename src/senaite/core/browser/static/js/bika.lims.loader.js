@@ -80,10 +80,6 @@ window.bika.lims.controllers =  {
   // AR Add 2
     "#analysisrequest_add_form": ['AnalysisRequestAdd'],
 
-    // Batches
-    ".portaltype-batchfolder":
-        ['BatchFolderView'],
-
     // Worksheets
     ".portaltype-worksheetfolder":
         ['WorksheetFolderView'],
