@@ -134,6 +134,10 @@ function InstrumentReferenceAnalysesView() {
             }
         });
 
+        $(document).on("listing:loaded", "body", function(event) {
+            filterRows();
+        });
+
         $(document).on("click", "#printgraph", function(e) {
             e.preventDefault();
             const w = 670;
@@ -172,15 +176,14 @@ function InstrumentReferenceAnalysesView() {
     }
 
     function filterRows() {
-        const ankeyword = $("#selanalyses").val().split("(").pop().replace(")", "").trim();
         const idqc = $("#selqcsample").val();
+        const service = $("#selanalyses").val().split("(")[0].trim();
         let count = 0;
 
         $("div.results-info").remove();
-        $(".item-listing-tbody tr").each(function() {
-            const match = $(this).attr("keyword") === ankeyword &&
+        $(".contentstable tr").each(function() {
+            const match = $(this).find("td.Service strong").html() === service &&
                           $(this).find("td.Partition a").html() === idqc;
-
             if (match) {
                 $(this).fadeIn();
                 count++;
@@ -189,7 +192,7 @@ function InstrumentReferenceAnalysesView() {
             }
         });
 
-        $(".bika-listing-table").closest("div").before(`<div class="results-info">${count} results found</div>`);
+        $(".listing-container").closest("div").before(`<div class="results-info mb-2">${count} results found</div>`);
     }
 
     function drawControlChart(width, height) {
