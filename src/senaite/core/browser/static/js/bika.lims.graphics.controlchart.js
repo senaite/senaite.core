@@ -14,7 +14,7 @@ function ControlChart() {
     var centerlimit = 0.5;
     var lowerlimit_text = "Lower Limit";
     var upperlimit_text = "Upper Limit";
-    var lowerlimit_text = "Center Limit";
+    var centerlimit_text = "Center Limit";
     var interpolation = "basis";
     var pointid = "";
 
@@ -33,7 +33,7 @@ function ControlChart() {
      */
     this.setData = function(data) {
         that.datasource = data;
-    }
+    };
 
     /**
      * Sets the X key from the datasource X-values.
@@ -41,7 +41,7 @@ function ControlChart() {
      */
     this.setXColumn = function(xcolumnkey) {
         that.xcolumnkey = xcolumnkey;
-    }
+    };
 
     /**
      * Sets the Y key from the datasource Y-values.
@@ -49,7 +49,7 @@ function ControlChart() {
      */
     this.setYColumn = function(ycolumnkey) {
         that.ycolumnkey = ycolumnkey;
-    }
+    };
 
     /**
      * Label to display on the Y-axis
@@ -57,15 +57,15 @@ function ControlChart() {
      */
     this.setYLabel = function(ylabel) {
         that.ylabel = ylabel;
-    }
+    };
 
     /**
      * Label to display on the X-axis
      * By default, 'Value'
-    */
+     */
     this.setXLabel = function(xlabel) {
         that.xlabel = xlabel;
-    }
+    };
 
     /**
      * Sets the upper limit line value
@@ -73,7 +73,7 @@ function ControlChart() {
      */
     this.setUpperLimit = function(upperLimit) {
         that.upperlimit = upperLimit;
-    }
+    };
 
     /**
      * Sets the lower limit line value
@@ -81,7 +81,7 @@ function ControlChart() {
      */
     this.setLowerLimit = function(lowerLimit) {
         that.lowerlimit = lowerLimit;
-    }
+    };
 
     /**
      * Sets the center limit line value
@@ -89,7 +89,7 @@ function ControlChart() {
      */
     this.setCenterLimit = function(centerLimit) {
         that.centerlimit = centerLimit;
-    }
+    };
 
     /**
      * Sets the text to be displayed above upper limit line
@@ -97,7 +97,7 @@ function ControlChart() {
      */
     this.setUpperLimitText = function(upperLimitText) {
         that.upperlimit_text = upperLimitText;
-    }
+    };
 
     /**
      * Sets the text to be displayed below lower limit line
@@ -105,7 +105,7 @@ function ControlChart() {
      */
     this.setLowerLimitText = function(lowerLimitText) {
         that.lowerlimit_text = lowerLimitText;
-    }
+    };
 
     /**
      * Sets the text to be displayed above center limit line
@@ -113,21 +113,21 @@ function ControlChart() {
      */
     this.setCenterLimitText = function(centerLimitText) {
         that.centerlimit_text = centerLimitText;
-    }
+    };
 
     /**
      * Sets the interpolation to be used for drawing the line
      */
     this.setInterpolation = function(interpolation) {
         that.interpolation = interpolation;
-    }
+    };
 
     /**
      * Sets the key to be used to set the identifier to each point
      */
     this.setPointId = function(pointId) {
         that.pointid = pointId;
-    }
+    };
 
     /**
      * Draws the chart inside the container specified as 'canvas'
@@ -136,25 +136,16 @@ function ControlChart() {
     this.draw = function(canvas) {
         var width = $(canvas).innerWidth() - 20;
         var height = $(canvas).innerHeight() - 20;
-        var margin = {top: 20, right: 20, bottom: 30, left: 30},
-        width = width - margin.left - margin.right,
-        height = height - margin.top - margin.bottom;
+        var margin = { top: 20, right: 20, bottom: 30, left: 30 };
 
-        var x = d3.time.scale()
-            .range([0, width]);
+        width -= margin.left + margin.right;
+        height -= margin.top + margin.bottom;
 
-        var y = d3.scale.linear()
-            .range([height,0]);
+        var x = d3.time.scale().range([0, width]);
+        var y = d3.scale.linear().range([height, 0]);
 
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom")
-            .tickSize(0);
-
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left")
-            .tickSize(0);
+        var xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(0);
+        var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
 
         var line = d3.svg.line()
             .interpolate(that.interpolation)
@@ -165,20 +156,20 @@ function ControlChart() {
             .attr("xmlns", "http://www.w3.org/2000/svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
-          .append("g")
+            .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         function tonumber(val) {
-            if (!val || typeof o !== 'string') {
-              return val;
+            if (!val || typeof val !== 'string') {
+                return val;
             }
-            return +val;
+            return parseFloat(val);
         }
 
         // Let's go for fun
         // Convert values to floats
         // "2014-02-19 15:11:23"
-        x_data_parse = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
+        var x_data_parse = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
         that.datasource.forEach(function(d) {
             d.x_axis = x_data_parse(d[that.xcolumnkey]);
             d.y_axis = tonumber(d[that.ycolumnkey]);
@@ -188,40 +179,44 @@ function ControlChart() {
         function sortByDateAscending(a, b) {
             return a.x_axis - b.x_axis;
         }
+
         that.datasource.sort(sortByDateAscending);
 
         x.domain(d3.extent(that.datasource, function(d) { return d.x_axis; }));
+
         var min = d3.min(that.datasource, function(d) { return d.y_axis; });
         if (min > that.lowerlimit) {
             min = that.lowerlimit;
         }
+
         var max = d3.max(that.datasource, function(d) { return d.y_axis; });
         if (max < that.upperlimit) {
             max = that.upperlimit;
         }
+
         y.domain([min, max]);
 
         svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis)
-                .style("font-size", "11px")
-                .append("text")
-                    .attr("x", width)
-                    .attr("dy", "-0.71em")
-                    .attr("text-anchor", "end")
-                    .text(that.xlabel);
+            .style("font-size", "11px")
+            .append("text")
+            .attr("x", width)
+            .attr("dy", "-0.71em")
+            .attr("text-anchor", "end")
+            .text(that.xlabel);
 
         svg.append("g")
             .attr("class", "y axis")
             .call(yAxis)
             .style("font-size", "11px")
             .append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", ".71em")
-                .style("text-anchor", "end")
-                .text(that.ylabel);
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text(that.ylabel);
 
         svg.append("path")
             .datum(that.datasource)
@@ -233,42 +228,34 @@ function ControlChart() {
 
         // set points
         that.datasource.forEach(function(d) {
-            svg.append("g")
-                .attr("fill", "#2f2f2f")
-                .append("circle")
+            var group = svg.append("g").attr("fill", "#2f2f2f");
+
+            group.append("circle")
                 .attr("id", d.point_id)
                 .attr("r", 3)
                 .attr("cx", x(d.x_axis))
                 .attr("cy", y(d.y_axis))
                 .on("mouseout", function() {
-                    d3.select(this)
-                        .attr("fill", "#2f2f2f")
-                        .attr("r", 3);
-                    d3.select(this.parentNode.children[1])
-                        .remove();
+                    d3.select(this).attr("fill", "#2f2f2f").attr("r", 3);
+                    d3.select(this.parentNode).select("text").remove();
                 })
-                .on("mouseover",  function() {
-                    d3.select(this)
-                        .attr("fill", "#4682b4")
-                        .attr("r", 6);
-                    d3.select(this.parentNode)
-                        .append("text")
-                            .attr("fill", "#000000")
-                            .style("font-size", "10px")
-                            .attr("x", x(d.x_axis) - 10)
-                            .attr("y", y(d.y_axis) - 10)
-                            .text(d.y_axis+that.ylabel);
-                }).on("click",  function() {
-                    d3.select(this)
-                        .attr("fill", "#4682b4")
-                        .attr("r", 6);
-                    d3.select(this.parentNode)
-                        .append("text")
-                            .attr("fill", "#000000")
-                            .style("font-size", "10px")
-                            .attr("x", x(d.x_axis) - 10)
-                            .attr("y", y(d.y_axis) - 10)
-                            .text(d.y_axis+that.ylabel);
+                .on("mouseover", function() {
+                    d3.select(this).attr("fill", "#4682b4").attr("r", 6);
+                    group.append("text")
+                        .attr("fill", "#000000")
+                        .style("font-size", "10px")
+                        .attr("x", x(d.x_axis) - 10)
+                        .attr("y", y(d.y_axis) - 10)
+                        .text(d.y_axis + that.ylabel);
+                })
+                .on("click", function() {
+                    d3.select(this).attr("fill", "#4682b4").attr("r", 6);
+                    group.append("text")
+                        .attr("fill", "#000000")
+                        .style("font-size", "10px")
+                        .attr("x", x(d.x_axis) - 10)
+                        .attr("y", y(d.y_axis) - 10)
+                        .text(d.y_axis + that.ylabel);
                 });
         });
 
@@ -276,32 +263,47 @@ function ControlChart() {
         svg.append("line")
             .attr("stroke", "#8e0000")
             .attr("stroke-width", "1px")
-            .attr("stroke-dasharray", "5, 5")
-            .attr({ x1: 0, y1: y(that.upperlimit), x2: width, y2: y(that.upperlimit) });
+            .attr("stroke-dasharray", "5,5")
+            .attr("x1", 0)
+            .attr("y1", y(that.upperlimit))
+            .attr("x2", width)
+            .attr("y2", y(that.upperlimit));
+
         svg.append("text")
-            .attr({ x: 30, y: y(that.upperlimit) - 5})
-            .style("font-size","11px")
+            .attr("x", 30)
+            .attr("y", y(that.upperlimit) - 5)
+            .style("font-size", "11px")
             .text(that.upperlimit_text);
 
         // lower limit line
         svg.append("line")
             .attr("stroke", "#8e0000")
             .attr("stroke-width", "1px")
-            .attr("stroke-dasharray", "5, 5")
-            .attr({ x1: 0, y1: y(that.lowerlimit), x2: width, y2: y(that.lowerlimit) });
+            .attr("stroke-dasharray", "5,5")
+            .attr("x1", 0)
+            .attr("y1", y(that.lowerlimit))
+            .attr("x2", width)
+            .attr("y2", y(that.lowerlimit));
+
         svg.append("text")
-            .attr({ x: 30, y: y(that.lowerlimit) - 5})
-            .style("font-size","11px")
+            .attr("x", 30)
+            .attr("y", y(that.lowerlimit) - 5)
+            .style("font-size", "11px")
             .text(that.lowerlimit_text);
 
         // center limit line
         svg.append("line")
             .attr("stroke", "#598859")
             .attr("stroke-width", "1px")
-            .attr({ x1: 0, y1: y(that.centerlimit), x2: width, y2: y(that.centerlimit) });
+            .attr("x1", 0)
+            .attr("y1", y(that.centerlimit))
+            .attr("x2", width)
+            .attr("y2", y(that.centerlimit));
+
         svg.append("text")
-            .attr({ x: 30, y: y(that.centerlimit) - 5})
-            .style("font-size","11px")
+            .attr("x", 30)
+            .attr("y", y(that.centerlimit) - 5)
+            .style("font-size", "11px")
             .text(that.centerlimit_text);
-    }
+    };
 }
