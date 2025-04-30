@@ -1,207 +1,118 @@
 /**
- * Global vars
+ * Global utility class
  */
-
 function CommonUtils() {
-
-    var that = this;
+    const that = this;
 
     /**
-     * Entry-point method for CommonUtils
+     * Entry-point method
      */
-    that.load = function() {
+    that.load = function () {
+        // Ensure namespace exists
+        window.bika = window.bika || {};
+        window.bika.lims = window.bika.lims || {};
 
-        window.bika = window.bika || {
-            lims: {}
+        /**
+         * Displays a Bootstrap 4-compatible dismissible alert
+         * @param {string|string[]} message - The message or messages to display
+         * @param {string} level - One of: "info", "warning", "error" (default: "error")
+         */
+        window.bika.lims.portalMessage = function (message, level = "error") {
+            const levelClassMap = {
+                info: "alert-info",
+                warning: "alert-warning",
+                error: "alert-danger"
+            };
+
+            const alertClass = levelClassMap[level] || levelClassMap.error;
+            const titleMap = {
+                info: _t("Information"),
+                warning: _t("Warning"),
+                error: _t("Error")
+            };
+
+            const title = titleMap[level] || titleMap.error;
+
+            // Normalize message to array
+            const messages = Array.isArray(message) ? message : [message];
+
+            const listItems = messages.map(msg => `<li>${msg}</li>`).join("");
+
+            const alertHtml = `
+                <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                    <strong>${title}:</strong>
+                    <ul class="mb-0">${listItems}</ul>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="${_t("Close")}">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>`;
+
+            $(".portalMessage").remove(); // clean up any previous custom messages
+            $("#viewlet-above-content").append(alertHtml);
         };
 
         /**
-         * Analysis Service dependants and dependencies retrieval
+         * Logs a message to the backend (if window.location is available)
          */
-        window.bika.lims.AnalysisService = window.bika.lims.AnalysisService || {
-            Dependants: function(service_uid){
-                var request_data = {
-                    catalog_name: "senaite_catalog_setup",
-                    UID: service_uid,
-                    include_methods: 'getServiceDependantsUIDs',
-                };
-                var deps = {};
-                $.ajaxSetup({async:false});
-                window.bika.lims.jsonapi_read(request_data, function(data){
-                    if (data.objects != null && data.objects.length > 0) {
-                        deps = data.objects[0].getServiceDependantsUIDs;
-                    } else {
-                        deps = [];
-                    }
-                });
-                $.ajaxSetup({async:true});
-                return deps;
-            },
-            Dependencies: function(service_uid){
-                var request_data = {
-                    catalog_name: "senaite_catalog_setup",
-                    UID: service_uid,
-                    include_methods: 'getServiceDependenciesUIDs',
-                };
-                var deps = {};
-                $.ajaxSetup({async:false});
-                window.bika.lims.jsonapi_read(request_data, function(data){
-                    if (data.objects != null && data.objects.length > 0) {
-                        deps = data.objects[0].getServiceDependenciesUIDs;
-                    } else {
-                        deps = [];
-                    }
-                });
-                $.ajaxSetup({async:true});
-                return deps;
-            }
-        };
+        window.bika.lims.log = function (e) {
+            const url = window.location?.href;
+            if (!url) return;
 
-        window.bika.lims.portalMessage = function (message) {
-            var str = "<dl class='portalMessage error alert alert-danger'>"+
-                "<dt>"+_t("Error")+"</dt>"+
-                "<dd><ul>" + message +
-                "</ul></dd></dl>";
-            $(".portalMessage").remove();
-            $(str).appendTo("#viewlet-above-content");
-        };
-
-        window.bika.lims.log = function(e) {
-            if (window.location.url == undefined || window.location.url == null) {
-                return;
-            }
-            var message = "(" + window.location.url + "): " + e;
-            $.ajax({
-                type: "POST",
-                url: "js_log",
-                data: {"message":message,
-                        "_authenticator": $("input[name='_authenticator']").val()}
-            });
-        };
-        window.bika.lims.warning = function(e) {
-            var message = "(" + window.location.href + "): " + e;
-            $.ajax({
-                type: "POST",
-                url: "js_warn",
-                data: {"message":message,
-                        "_authenticator": $("input[name='_authenticator']").val()}
-            });
-        };
-        window.bika.lims.error = function(e) {
-            var message = "(" + window.location.href + "): " + e;
-            $.ajax({
-                type: "POST",
-                url: "js_err",
-                data: {"message":message,
-                        "_authenticator": $("input[name='_authenticator']").val()}
+            $.post("js_log", {
+                message: `(${url}): ${e}`,
+                _authenticator: $("input[name='_authenticator']").val()
             });
         };
 
+        /**
+         * Sends a warning to the backend
+         */
+        window.bika.lims.warning = function (e) {
+            $.post("js_warn", {
+                message: `(${window.location.href}): ${e}`,
+                _authenticator: $("input[name='_authenticator']").val()
+            });
+        };
+
+        /**
+         * Sends an error to the backend
+         */
+        window.bika.lims.error = function (e) {
+            $.post("js_err", {
+                message: `(${window.location.href}): ${e}`,
+                _authenticator: $("input[name='_authenticator']").val()
+            });
+        };
+
+        /**
+         * JSON API reader with caching
+         */
         window.bika.lims.jsonapi_cache = {};
-        window.bika.lims.jsonapi_read = function(request_data, handler) {
-            window.bika.lims.jsonapi_cache = window.bika.lims.jsonapi_cache || {};
-            // if no page_size is specified, we need to explicitly add one here: 0=all.
-            var page_size = request_data.page_size;
-            if (page_size == undefined) {
-                request_data.page_size = 0
+
+        window.bika.lims.jsonapi_read = function (request_data, handler) {
+            const cache = window.bika.lims.jsonapi_cache;
+
+            // Ensure page_size is explicitly set
+            if (typeof request_data.page_size === "undefined") {
+                request_data.page_size = 0;
             }
-            var jsonapi_cacheKey = $.param(request_data);
-            var jsonapi_read_handler = handler;
-            if (window.bika.lims.jsonapi_cache[jsonapi_cacheKey] === undefined){
+
+            const cacheKey = $.param(request_data);
+
+            if (!cache[cacheKey]) {
                 $.ajax({
                     type: "POST",
                     dataType: "json",
-                    url: window.portal_url + "/@@API/read",
+                    url: `${window.portal_url}/@@API/read`,
                     data: request_data,
-                    success: function(data) {
-                        window.bika.lims.jsonapi_cache[jsonapi_cacheKey] = data;
-                        jsonapi_read_handler(data);
+                    success: function (data) {
+                        cache[cacheKey] = data;
+                        handler(data);
                     }
                 });
             } else {
-                jsonapi_read_handler(window.bika.lims.jsonapi_cache[jsonapi_cacheKey]);
+                handler(cache[cacheKey]);
             }
         };
-
-        /**
-         * Update or modify a query filter for a reference widget.
-         * This will set the options, then re-create the combogrid widget
-         * with the new filter key/value.
-         * If filtervalue is empty, the function will delete the query element.
-         *
-         * @param {object} element - the input element as combogrid.
-         * @param {string} filterkey - the new filter key to filter by.
-         * @param {string} filtervalue - the value of the new filter.
-         * @param {string} querytype - it can be 'base_query' or 'search_query'
-         */
-        window.bika.lims.update_combogrid_query = function(
-                element, filterkey, filtervalue, querytype) {
-
-            if (!$(element).is(':visible')) {
-                return;
-            };
-            if (!querytype) {
-                querytype = 'base_query';
-            };
-            var query =  jQuery.parseJSON($(element).attr(querytype));
-            // Adding the new query filter
-            if (filtervalue) {
-                query[filterkey] = filtervalue;
-                };
-            // Deleting the query filter
-            if (filtervalue === '' && query[filterkey]){
-                delete query[filterkey];
-            };
-            $(element).attr(querytype, JSON.stringify(query));
-
-            var options = jQuery.parseJSON(
-                $(element).attr("combogrid_options"));
-
-            // Building new ajax request
-            options.url = window.portal_url + "/" + options.url;
-            options.url = options.url + "?_authenticator=" +
-                $("input[name='_authenticator']").val();
-            options.url = options.url + "&catalog_name=" +
-                $(element).attr("catalog_name");
-
-            options.url = options.url + "&base_query=" +
-                encodeURIComponent($(element).attr("base_query"));
-            options.url = options.url + "&search_query=" +
-                encodeURIComponent($.toJSON(query));
-
-            var col_model = options.colModel;
-            var search_fields = options.search_fields;
-            var discard_empty = options.discard_empty;
-            var min_length = options.minLength;
-
-            options.url = options.url + "&colModel=" +
-                $.toJSON(col_model);
-
-            options.url = options.url + "&search_fields=" +
-                $.toJSON(search_fields)
-
-            options.url = options.url + "&discard_empty=" +
-                $.toJSON(discard_empty);
-
-            options.url = options.url + "&minLength=" +
-                $.toJSON(min_length);
-
-            options.force_all = "false";
-
-            // Apply changes
-            $(element).combogrid(options);
-        };
-
-        // Priority Selection Widget
-        $('.ArchetypesPrioritySelectionWidget select').change(function(e){
-            var val = $(this).find('option:selected').val();
-            $(this).attr('value', val);
-        });
-        $('.ArchetypesPrioritySelectionWidget select').change();
-
-    }
-    that.svgToImage = function(svg) {
-        var url = 'data:image/svg+xml;base64,' + btoa(svg);
-        return '<img src="'+url+'"/>';
     };
 }
