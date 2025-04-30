@@ -145,7 +145,7 @@ function InstrumentReferenceAnalysesView() {
             drawControlChart(w, h);
 
             const WinPrint = window.open("", "", "width=800,height=900");
-            const css = `<link href="${window.portal_url}/++resource++bika.lims.css/print-graph.css" rel="stylesheet" type="text/css">`;
+            const css = `<link href="${window.portal_url}/++plone++senaite.core.static/bundles/senaite.core.css" rel="stylesheet" type="text/css">`;
             const heading = $("span.documentFirstHeading").closest("h1").clone();
             const content = $("#content-core").clone();
 
@@ -153,11 +153,15 @@ function InstrumentReferenceAnalysesView() {
             content.find("#selanalyses").after(`<span class='bold'>${$("#selanalyses").val()}</span>`).hide();
             content.find("#interpolation").after(`<span class='bold'>${$("#interpolation").val()}</span>`).hide();
             content.find("#selqcsample").after(`<span class='bold'>${$("#selqcsample").val()}</span>`).hide();
+            content.find("a#printgraph").hide();
+            content.find("div.listing-container").children().last().hide();
 
             WinPrint.document.write(`<html><head>${css}</head><body>${content.html()}</body></html>`);
             WinPrint.document.close();
             WinPrint.focus();
             WinPrint.print();
+
+            // Reset chart scaling
             $("#chart").css("width", "100%").removeAttr("height");
             drawControlChart(null, null);
             WinPrint.close();

@@ -6,49 +6,66 @@
       i18n:domain="senaite.core">
 
   <body>
+    <!-- Title section -->
     <metal:content-title fill-slot="content-title">
-      <h1>
+      <h1 class="d-flex align-items-center">
         <img tal:condition="view/icon | nothing"
-             src="" tal:attributes="src view/icon"/>
-        <span class="documentFirstHeading"
-              tal:content="context/title"></span>
+             src=""
+             tal:attributes="src view/icon"
+             alt="Icon"
+             class="mr-2" />
+        <span class="documentFirstHeading" tal:content="context/title"></span>
       </h1>
     </metal:content-title>
 
+    <!-- Description section -->
     <metal:content-description fill-slot="content-description">
+      <!-- No additional description for now -->
     </metal:content-description>
 
+    <!-- Main content -->
     <metal:content-core fill-slot="content-core">
+      <div class="row mb-4">
+        <div class="col-sm-12">
+          <div class="card shadow-sm p-3">
+            <form class="form-inline flex-wrap align-items-end">
+              <input type="hidden" id="selqcsample" name="selqcsample" />
 
-      <div class="row">
-        <!-- Chart container -->
-        <div class="col-sm-12 chart-container">
-          <div class="chart-options">
-            <input type="hidden" id="selqcsample" name="selqcsample">
-            <label for="selanalyses" i18n:translate="">Analysis</label>
-            <select id="selanalyses" name="selanalyses">
-            </select>
-            <label for="interpolation" i18n:translate="">Interpolation</label>
-            <select id="interpolation" name="interpolation">
-              <option value="basis" i18n:translate="" selected>Basis</option>
-              <option value="cardinal" i18n:translate="">Cardinal</option>
-              <option value="linear" i18n:translate="">Linear</option>
-            </select>
-            <a href="#"
-               id="printgraph"
-               class="print-16 btn btn-xs btn-default"
-               i18n:translate="">Print</a>
+              <div class="form-group mr-3 mb-2">
+                <label for="selanalyses" class="mr-2" i18n:translate="">Analysis</label>
+                <select id="selanalyses" name="selanalyses" class="form-control form-control-sm"></select>
+              </div>
+
+              <div class="form-group mr-3 mb-2">
+                <label for="interpolation" class="mr-2" i18n:translate="">Interpolation</label>
+                <select id="interpolation" name="interpolation" class="form-control form-control-sm">
+                  <option value="basis" i18n:translate="" selected>Basis</option>
+                  <option value="cardinal" i18n:translate="">Cardinal</option>
+                  <option value="linear" i18n:translate="">Linear</option>
+                </select>
+              </div>
+
+              <div class="form-group mb-2">
+                <a href="#"
+                   id="printgraph"
+                   class="btn btn-outline-secondary btn-sm"
+                   i18n:translate="">
+                  Print
+                </a>
+              </div>
+            </form>
+
+            <div id="chart" class="mt-4"></div>
           </div>
-          <div id="chart"></div>
         </div>
       </div>
 
-      <!-- Reference Analyses table -->
+      <!-- Reference Analyses Table -->
       <div class="row">
-        <div class="col-sm-12">
+        <div class="col-sm-12 small">
           <tal:referenceanalyses define="table view/get_analyses_table_view">
-            <span tal:replace="structure python:table.ajax_contents_table()"/>
-            <input type="hidden" id="graphdata" tal:attributes="value python:table.chart.get_json()"/>
+            <span tal:replace="structure python:table.ajax_contents_table()" />
+            <input type="hidden" id="graphdata" tal:attributes="value python:table.chart.get_json()" />
           </tal:referenceanalyses>
         </div>
       </div>
