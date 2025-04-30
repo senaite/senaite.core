@@ -184,7 +184,6 @@ module.exports = {
           "../src/senaite/core/browser/static/js/bika.lims.client.js",
           "../src/senaite/core/browser/static/js/bika.lims.common.js",
           "../src/senaite/core/browser/static/js/bika.lims.graphics.controlchart.js",
-          "../src/senaite/core/browser/static/js/bika.lims.graphics.range.js",
           "../src/senaite/core/browser/static/js/bika.lims.instrument.js",
           "../src/senaite/core/browser/static/js/bika.lims.referencesample.js",
           "../src/senaite/core/browser/static/js/bika.lims.site.js",
