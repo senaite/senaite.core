@@ -56,9 +56,6 @@ window.bika.lims.controllers =  {
     ".portaltype-client.template-base_edit":
         ['ClientEditView'],
 
-    "div.overlay #client-base-edit":
-        ['ClientOverlayHandler'],
-
     // Reference Samples
     ".portaltype-referencesample.template-analyses":
         ['ReferenceSampleAnalysesView'],
