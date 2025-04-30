@@ -1,51 +1,52 @@
 jQuery(function($) {
+
     function hide_show_options() {
-        // Hide/show the rejection options divisions depending on the checkbox status
-        var isChecked = $("input.rejectionwidget-checkbox").prop("checked");
-        if (isChecked) {
-            $("div.rejectionwidget-container").show();
-        } else {
-            $("div.rejectionwidget-container").hide();
-        }
+        // Toggle visibility of the rejection options container based on checkbox state
+        const isChecked = $("input.rejectionwidget-checkbox").prop("checked");
+        $("div.rejectionwidget-container").toggle(isChecked);
     }
 
     function rejectionwidget_loadEventHandlers() {
-        // Append an option div at the end of the options set
-        $("#RejectionReasons_more").on("click", function(e) {
-            var fieldname = this.id.split("_")[0];
-            var optionsset = $("div.options-set");
-            var all_optionset = $("div.option-set");
-            // Clone last option set
-            var option = all_optionset.last().clone();
-            var input = option.find("input[id^='" + fieldname + "']");
-            var input_ID = input.attr('id');
-            var input_name = input.attr('name');
-            var option_ID = option.attr('id');
+        // Handle adding new rejection reason input
+        $("#RejectionReasons_more").on("click", function() {
+            const fieldname = this.id.split("_")[0];
+            const $optionsSet = $("div.options-set");
+            const $lastOption = $("div.option-set").last();
 
-            var idParts = input_ID.split("-");
-            var nameParts = input_name.split("-");
-            var optionParts = option_ID.split("-");
+            if (!$lastOption.length) return;
 
-            var nr = parseInt(idParts[2], 10) + 1;
+            const $newOption = $lastOption.clone();
+            const $input = $newOption.find(`input[id^="${fieldname}"]`);
 
-            input.attr({
-                'id': idParts[0] + "-" + idParts[1] + "-" + nr,
-                'name': nameParts[0] + "-" + nr + ":records:ignore_empty"
-            }).val('');
+            const inputID = $input.attr("id") || "";
+            const inputName = $input.attr("name") || "";
+            const optionID = $newOption.attr("id") || "";
 
-            option.attr('id', optionParts[0] + "-" + optionParts[1] + "-" + nr);
-            option.appendTo(optionsset);
+            const idParts = inputID.split("-");
+            const nameParts = inputName.split("-");
+            const optionParts = optionID.split("-");
+
+            if (idParts.length < 3 || nameParts.length < 1 || optionParts.length < 3) return;
+
+            const nextIndex = parseInt(idParts[2], 10) + 1;
+
+            $input.attr({
+                id: `${idParts[0]}-${idParts[1]}-${nextIndex}`,
+                name: `${nameParts[0]}-${nextIndex}:records:ignore_empty`
+            }).val("");
+
+            $newOption.attr("id", `${optionParts[0]}-${optionParts[1]}-${nextIndex}`);
+            $newOption.appendTo($optionsSet);
         });
 
-        // Use event delegation for dynamic delete buttons
-        $(document).on('click', ".rej_deletebtn", function(e) {
+        // Handle removal of rejection reason input
+        $(document).on("click", ".rej_deletebtn", function(e) {
             e.preventDefault();
-            var $optionSets = $(".RejectionSetupWidget .option-set");
+            const $optionSets = $(".RejectionSetupWidget .option-set");
             if ($optionSets.length > 1) {
-                // Remove the option div
-                $(this).closest('.option-set').remove();
+                $(this).closest(".option-set").remove();
             } else {
-                // If it's the last option-set, just clear the fields
+                // Only clear if it's the last remaining option
                 $(".RejectionSetupWidget input[type='text']").val('');
             }
         });
@@ -53,6 +54,7 @@ jQuery(function($) {
 
     // Initialize the widget
     hide_show_options();
-    $('input.rejectionwidget-checkbox').on('change', hide_show_options);
+    $("input.rejectionwidget-checkbox").on("change", hide_show_options);
     rejectionwidget_loadEventHandlers();
+
 });
