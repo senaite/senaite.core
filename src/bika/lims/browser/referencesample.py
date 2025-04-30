@@ -19,23 +19,22 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
-from bika.lims.utils import get_link_for
 from datetime import datetime
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.chart.analyses import EvolutionChart
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
-from senaite.core.i18n import translate as t
+from bika.lims.utils import get_link_for
 from plone.app.layout.globals.interfaces import IViewView
 from plone.memoize import view
 from Products.ATContentTypes.utils import DT2dt
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.i18n import translate as t
 from zope.interface import implements
 
 
@@ -122,90 +121,40 @@ class ReferenceAnalysesView(AnalysesView):
         super(ReferenceAnalysesView, self).__init__(context, request)
 
         self.form_id = "{}_qcanalyses".format(api.get_uid(context))
-        self.allow_edit = False
-        self.show_select_column = False
-        self.show_search = False
-        self.omit_form = True
+        self.allow_edit = True
+        self.show_select_column = True
         self.show_search = False
 
         self.contentFilter = {
             "portal_type": "ReferenceAnalysis",
             "path": {
                 "query": "/".join(self.context.getPhysicalPath()),
-                "level": 0}
+                "level": 0},
+            "sort_on": "getResultCaptureDate",
+            "sort_order": "descending"
         }
 
-        self.columns = collections.OrderedDict((
-            ("id", {
-                "title": _("ID"),
-                "sortable": False,
-                "toggle": False}),
-            ("getReferenceAnalysesGroupID", {
-                "title": _("QC Sample ID"),
-                "sortable": False,
-                "toggle": True}),
-            ("Category", {
-                "title": _("Category"),
-                "sortable": False,
-                "toggle": True}),
-            ("Service", {
-                "title": _("Service"),
-                "sortable": False,
-                "toggle": True}),
-            ("Worksheet", {
-                "title": _("Worksheet"),
-                "sortable": False,
-                "toggle": True}),
-            ("Method", {
-                "title": _("Method"),
-                "sortable": False,
-                "toggle": True}),
-            ("Instrument", {
-                "title": _("Instrument"),
-                "sortable": False,
-                "toggle": True}),
-            ("Result", {
-                "title": _("Result"),
-                "sortable": False,
-                "toggle": True}),
-            ("CaptureDate", {
-                "title": _("Captured"),
-                "sortable": False,
-                "toggle": True}),
-            ("Uncertainty", {
-                "title": _("+-"),
-                "sortable": False,
-                "toggle": True}),
-            ("DueDate", {
-                "title": _("Due Date"),
-                "sortable": False,
-                "toggle": True}),
-            ("retested", {
-                "title": _("Retested"),
-                "sortable": False,
-                "type": "boolean",
-                "toggle": True}),
-            ("state_title", {
-                "title": _("State"),
-                "sortable": False,
-                "toggle": True}),
-        ))
+        # insert the QC-specific columns
+        self.add_column("getReferenceAnalysesGroupID",
+                        title=_("QC Analysis ID"),
+                        after="Service")
+        self.add_column("Worksheet",
+                        title=_("Worksheet"),
+                        after="getReferenceAnalysesGroupID")
 
-        self.review_states = [
-            {
-                "id": "default",
-                "title": _("All"),
-                "contentFilter": {},
-                "transitions": [],
-                "columns": self.columns.keys()
-            },
-        ]
         self.chart = EvolutionChart()
 
-    def is_analysis_edition_allowed(self, analysis_brain):
-        """see AnalysesView.is_analysis_edition_allowed
+    def add_column(self, id, **kwargs):
+        """Add the given column to all review states
         """
-        return False
+        after = kwargs.pop("after", "")
+        self.columns[id] = kwargs
+        for rv in self.review_states:
+            cols = rv["columns"]
+            index = len(cols)
+            if after and after in cols:
+                index = cols.index(after) + 1
+            cols.insert(index, id)
 
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
@@ -219,19 +168,11 @@ class ReferenceAnalysesView(AnalysesView):
         """
         item = super(ReferenceAnalysesView, self).folderitem(obj, item, index)
 
-        if not item:
-            return None
-        obj = api.get_object(obj)
-        item["Category"] = obj.getCategoryTitle()
-        ws = obj.getWorksheet()
-        if not ws:
-            logger.warn(
-                "No Worksheet found for ReferenceAnalysis {}"
-                .format(obj.getId))
-        else:
-            item["Worksheet"] = ws.Title()
-            anchor = "<a href='%s'>%s</a>" % (ws.absolute_url(), ws.Title())
-            item["replace"]["Worksheet"] = anchor
+        analysis = self.get_object(obj)
+        ws = analysis.getWorksheet()
+        if ws:
+            item["Worksheet"] = api.get_uid(ws)
+            item["replace"]["Worksheet"] = get_link_for(ws)
 
         # Add the analysis to the QC Chart
         self.chart.add_analysis(obj)
