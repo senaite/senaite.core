@@ -33,15 +33,17 @@ from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import format_supsub
 from bika.lims.utils import formatDecimalMark
+from bika.lims.utils import get_client
 from bika.lims.utils import to_utf8
 from bika.lims.utils.analysis import format_uncertainty
 from DateTime import DateTime
+from plone.memoize import view
 from plone.resource.utils import queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.config.registry import WS_PRINT_TMPL_RECORD
 from senaite.core.p3compat import cmp
 from senaite.core.registry import get_registry_record
-from senaite.core.config.registry import WS_PRINT_TMPL_RECORD
 
 
 class PrintView(BrowserView):
@@ -96,6 +98,13 @@ class PrintView(BrowserView):
             return self._flush_pdf()
         else:
             return self.template()
+
+    @view.memoize
+    def get_default_decimal_mark(self):
+        """Returns the default decimal mark from the setup
+        """
+        setup = api.get_setup()
+        return setup.getDecimalMark()
 
     def get_analyses_data_by_title(self, ar_data, title):
         """A template helper to pick an Analysis identified by the name of the
@@ -398,7 +407,12 @@ class PrintView(BrowserView):
     def _analysis_data(self, analysis):
         """ Returns a dict that represents the analysis
         """
-        decimalmark = analysis.aq_parent.aq_parent.getDecimalMark()
+        client = get_client(analysis)
+        if client:
+            decimalmark = client.getDecimalMark()
+        else:
+            # no client found – this happens for QC analyses
+            decimalmark = self.get_default_decimal_mark()
         keyword = analysis.getKeyword()
         andict = {
             'obj': analysis,
