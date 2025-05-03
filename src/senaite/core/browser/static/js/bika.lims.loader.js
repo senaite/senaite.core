@@ -18,6 +18,10 @@ window.bika.lims.controllers =  {
     ".barcode, .qrcode":
         ['BarcodeUtils'],
 
+    // Range graphics
+    ".range-chart":
+        ['RangeGraph'],
+
     // Atachments
     ".attachments":
         ['AttachmentsUtils'],
