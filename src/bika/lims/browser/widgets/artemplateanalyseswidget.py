@@ -36,6 +36,7 @@ from Products.Archetypes.Widget import TypesWidget
 from zope.i18n.locales import locales
 
 
+# XXX: To be removed
 class ARTemplateAnalysesView(BikaListingView):
     """Listing table to display Analyses Services for AR Templates
     """
@@ -268,9 +269,9 @@ class ARTemplateAnalysesWidget(TypesWidget):
     """
     _properties = TypesWidget._properties.copy()
     _properties.update({
-        "macro": "bika_widgets/artemplateanalyseswidget",
-        "helper_js": ("bika_widgets/artemplateanalyseswidget.js",),
-        "helper_css": ("bika_widgets/artemplateanalyseswidget.css",),
+        # "macro": "bika_widgets/artemplateanalyseswidget",
+        # "helper_js": ("bika_widgets/artemplateanalyseswidget.js",),
+        # "helper_css": ("bika_widgets/artemplateanalyseswidget.css",),
     })
 
     security = ClassSecurityInfo()
