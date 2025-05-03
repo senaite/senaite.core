@@ -23,11 +23,12 @@ from Products.Archetypes.Registry import registerWidget
 from bika.lims.browser.widgets import RecordsWidget
 
 
+# XXX To be removed
 class ARTemplatePartitionsWidget(RecordsWidget):
     _properties = RecordsWidget._properties.copy()
     _properties.update({
-        'helper_js': ("senaite_widgets/recordswidget.js",
-                      "bika_widgets/artemplatepartitionswidget.js",)
+        # 'helper_js': ("senaite_widgets/recordswidget.js",
+        #               "bika_widgets/artemplatepartitionswidget.js",)
     })
 
     security = ClassSecurityInfo()
