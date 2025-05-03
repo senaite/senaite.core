@@ -43,6 +43,7 @@ class EditFormAdapterBase(object):
             "attributes": [],
             "callbacks": [],
             "states": [],
+            "listings": [],
         }
 
     @property
@@ -142,3 +143,9 @@ class EditFormAdapterBase(object):
         """
         record = dict(name=name, **kw)
         self.add_record_to("states", record)
+
+    def add_state_listing(self, name, **kw):
+        """Add the field to the listings list
+        """
+        record = dict(name=name, **kw)
+        self.add_record_to("listings", record)
