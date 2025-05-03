@@ -3,99 +3,69 @@
  */
 function WorksheetPrintView() {
 
-    var that = this;
-    var referrer_cookie_name = '_wspv';
+  const referrerCookieName = "ws.print.urlback";
 
-    /**
-     * Entry-point method for AnalysisRequestPublishView
-     */
-    that.load = function() {
+  this.load = function () {
+    let backUrl = document.referrer || bika.lims.SiteView.readCookie(referrerCookieName) || portal_url;
+    bika.lims.SiteView.setCookie(referrerCookieName, backUrl);
 
-        // Store referrer in cookie in case it is lost due to a page reload
-        var backurl = document.referrer;
-        if (backurl) {
-            bika.lims.SiteView.setCookie("ws.print.urlback", backurl);
-        } else {
-            backurl = bika.lims.SiteView.readCookie("ws.print.urlback");
-            if (!backurl) {
-                backurl = portal_url;
-            }
-        }
+    loadBarcodes();
 
-        load_barcodes();
+    $("#print_button").on("click", function (e) {
+      e.preventDefault();
+      window.print();
+    });
 
-        $('#print_button').click(function(e) {
-            e.preventDefault();
-            window.print();
-        });
+    $("#cancel_button").on("click", function (e) {
+      e.preventDefault();
+      window.location.href = backUrl;
+    });
 
-        $('#cancel_button').click(function(e) {
-            e.preventDefault();
-            location.href = backurl;
-        });
+    $("#template, #numcols").on("change", function () {
+      updateWorksheetView($("#template").val(), $("#numcols").val());
+    });
+  };
 
-        $('#template').change(function(e) {
-            var url = window.location.href;
-            var seltpl = $(this).val();
-            var selcols = $("#numcols").val();
-            $('#worksheet-printview').animate({opacity:0.2}, 'slow');
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: { "template":seltpl,
-                        "numcols":selcols}
-            })
-            .always(function(data) {
-                var htmldata = data;
-                var cssdata = $(htmldata).find('#report-style').html();
-                $('#report-style').html(cssdata);
-                htmldata = $(htmldata).find('#worksheet-printview').html();
-                $('#worksheet-printview').html(htmldata);
-                $('#worksheet-printview').animate({opacity:1}, 'slow');
-                load_barcodes();
-            });
-        });
+  function updateWorksheetView(template, numCols) {
+    const url = window.location.href;
+    const $worksheet = $("#worksheet-printview");
 
-        $('#numcols').change(function(e) {
-            var url = window.location.href;
-            var selcols = $(this).val();
-            var seltpl = $('#template').val();
-            $('#worksheet-printview').animate({opacity:0.2}, 'slow');
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: { "template":seltpl,
-                        "numcols":selcols}
-            })
-            .always(function(data) {
-                var htmldata = data;
-                var cssdata = $(htmldata).find('#report-style').html();
-                $('#report-style').html(cssdata);
-                htmldata = $(htmldata).find('#worksheet-printview').html();
-                $('#worksheet-printview').html(htmldata);
-                $('#worksheet-printview').animate({opacity:1}, 'slow');
-                load_barcodes();
-            });
-        });
-    }
+    $worksheet.animate({ opacity: 0.2 }, "slow");
 
-    function get(name){
-       if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
-          return decodeURIComponent(name[1]);
-    }
+    $.ajax({
+      url: url,
+      type: "POST",
+      data: {
+        template: template,
+        numcols: numCols,
+      },
+    }).always(function (response) {
+      const cssData = $(response).find("#report-style").html();
+      const htmlData = $(response).find("#worksheet-printview").html();
 
-    function load_barcodes() {
-        // Barcode generator
-        $('.barcode').each(function() {
-            var id = $(this).attr('data-id');
-            var code = $(this).attr('data-code');
-            var barHeight = $(this).attr('data-barHeight');
-            var addQuietZone = $(this).attr('data-addQuietZone');
-            var showHRI = $(this).attr('data-showHRI');
-            $(this).barcode(id, code,
-                            {'barHeight': parseInt(barHeight),
-                             'addQuietZone': Boolean(addQuietZone),
-                             'showHRI': Boolean(showHRI) });
-        });
-    }
+      $("#report-style").html(cssData);
+      $worksheet.html(htmlData);
+      $worksheet.animate({ opacity: 1 }, "slow");
+
+      loadBarcodes();
+    });
+  }
+
+  function loadBarcodes() {
+    $(".barcode").each(function () {
+      const $this = $(this);
+      const id = $this.data("id");
+      const code = $this.data("code");
+      const barHeight = parseInt($this.data("barheight"));
+      const addQuietZone = Boolean($this.data("addquietzone"));
+      const showHRI = Boolean($this.data("showhri"));
+
+      $this.barcode(id, code, {
+        barHeight: barHeight,
+        addQuietZone: addQuietZone,
+        showHRI: showHRI,
+      });
+    });
+  }
+
 }
