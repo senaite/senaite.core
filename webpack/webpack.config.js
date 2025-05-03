@@ -219,7 +219,6 @@ module.exports = {
       }, {
         // thirdparty.js
         src: [
-          "../src/senaite/core/browser/static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.js",
           "../src/senaite/core/browser/static/thirdparty/plone/overlayhelpers.js",
           "../src/senaite/core/browser/static/thirdparty/jquery-barcode-2.2.0.min.js",
           "../src/senaite/core/browser/static/thirdparty/jquery-qrcode-0.17.0.min.js",
@@ -242,9 +241,7 @@ module.exports = {
         },
       }, {
         // thirdparty.css
-        src: [
-          "../src/senaite/core/browser/static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.css",
-        ],
+        src: [],
         dest: code => ({
           "thirdparty.css":new CleanCSS({}).minify(code).styles,
         })
