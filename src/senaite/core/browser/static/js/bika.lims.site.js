@@ -7,7 +7,6 @@
       this.load = this.load.bind(this);
       /* INITIALIZERS */
       this.bind_eventhandler = this.bind_eventhandler.bind(this);
-      this.init_referencedefinition = this.init_referencedefinition.bind(this);
       /* METHODS */
       this.get_portal_url = this.get_portal_url.bind(this);
       this.get_authenticator = this.get_authenticator.bind(this);
@@ -25,15 +24,11 @@
       this.on_at_float_field_keyup = this.on_at_float_field_keyup.bind(this);
       this.on_numeric_field_paste = this.on_numeric_field_paste.bind(this);
       this.on_numeric_field_keypress = this.on_numeric_field_keypress.bind(this);
-      this.on_reference_definition_list_change = this.on_reference_definition_list_change.bind(this);
       this.on_overlay_panel_click = this.on_overlay_panel_click.bind(this);
     }
 
     load() {
       console.debug("SiteView::load");
-      // initialze reference definition selection
-      // @init_referencedefinition()
-
       // bind the event handler to the elements
       this.bind_eventhandler();
       // allowed keys for numeric fields
@@ -64,8 +59,6 @@
        * delegate the event: https://learn.jquery.com/events/event-delegation/
        */
       console.debug("SiteView::bind_eventhandler");
-      // ReferenceSample selection changed
-      $("body").on("change", "#ReferenceDefinition\\:list", this.on_reference_definition_list_change);
       // Numeric field events
       $("body").on("keypress", ".numeric", this.on_numeric_field_keypress);
       $("body").on("paste", ".numeric", this.on_numeric_field_paste);
@@ -85,18 +78,6 @@
           $("body").removeClass("loading");
         }
       });
-    }
-
-    init_referencedefinition() {
-      /*
-       * Initialize reference definition selection
-       * XXX: When is this used?
-       */
-      console.debug("SiteView::init_referencedefinition");
-      if ($('#ReferenceDefinition:list').val() !== '') {
-        console.warn("SiteView::init_referencedefinition: Refactor this method!");
-        return $('#ReferenceDefinition:list').change();
-      }
     }
 
     get_portal_url() {
@@ -262,49 +243,6 @@
       } else {
         event.preventDefault();
       }
-    }
-
-    on_reference_definition_list_change(event) {
-      var $el, authenticator, el, option, uid;
-      /*
-       * Eventhandler when the user clicked on the reference defintion dropdown.
-       *
-       * 1. Add a ReferenceDefintion at /bika_setup/bika_referencedefinitions
-       * 2. Add a Supplier in /bika_setup/bika_suppliers
-       * 3. Add a ReferenceSample in /bika_setup/bika_suppliers/supplier-1/portal_factory/ReferenceSample
-       *
-       * The dropdown with the id="ReferenceDefinition:list" is rendered there.
-       */
-      console.debug("°°° SiteView::on_reference_definition_list_change °°°");
-      el = event.currentTarget;
-      $el = $(el);
-      authenticator = this.get_authenticator();
-      uid = $el.val();
-      option = $el.children(':selected').html();
-      if (uid === '') {
-        // No reference definition selected;
-        // render empty widget.
-        $('#Blank').prop('checked', false);
-        $('#Hazardous').prop('checked', false);
-        $('.bika-listing-table').load('referenceresults', {
-          '_authenticator': authenticator
-        });
-        return;
-      }
-      if (option.search(_t('(Blank)')) > -1 || option.search("(Blank)") > -1) {
-        $('#Blank').prop('checked', true);
-      } else {
-        $('#Blank').prop('checked', false);
-      }
-      if (option.search(_t('(Hazardous)')) > -1 || option.search("(Hazardous)") > -1) {
-        $('#Hazardous').prop('checked', true);
-      } else {
-        $('#Hazardous').prop('checked', false);
-      }
-      $('.bika-listing-table').load('referenceresults', {
-        '_authenticator': authenticator,
-        'uid': uid
-      });
     }
 
     on_overlay_panel_click(event) {

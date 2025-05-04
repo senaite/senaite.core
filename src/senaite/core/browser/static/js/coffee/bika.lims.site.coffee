@@ -8,9 +8,6 @@ class window.SiteView
   load: =>
     console.debug "SiteView::load"
 
-    # initialze reference definition selection
-    # @init_referencedefinition()
-
     # bind the event handler to the elements
     @bind_eventhandler()
 
@@ -44,9 +41,6 @@ class window.SiteView
     ###
     console.debug "SiteView::bind_eventhandler"
 
-    # ReferenceSample selection changed
-    $("body").on "change", "#ReferenceDefinition\\:list", @on_reference_definition_list_change
-
     # Numeric field events
     $("body").on "keypress", ".numeric", @on_numeric_field_keypress
     $("body").on "paste", ".numeric", @on_numeric_field_paste
@@ -69,17 +63,6 @@ class window.SiteView
         $("body").removeClass "loading"
         return
 
-
-  init_referencedefinition: =>
-    ###
-     * Initialize reference definition selection
-     * XXX: When is this used?
-    ###
-    console.debug "SiteView::init_referencedefinition"
-
-    if $('#ReferenceDefinition:list').val() != ''
-      console.warn "SiteView::init_referencedefinition: Refactor this method!"
-      $('#ReferenceDefinition:list').change()
 
 
   ### METHODS ###
@@ -264,50 +247,6 @@ class window.SiteView
       return
     else
       event.preventDefault()
-    return
-
-
-  on_reference_definition_list_change: (event) =>
-    ###
-     * Eventhandler when the user clicked on the reference defintion dropdown.
-     *
-     * 1. Add a ReferenceDefintion at /bika_setup/bika_referencedefinitions
-     * 2. Add a Supplier in /bika_setup/bika_suppliers
-     * 3. Add a ReferenceSample in /bika_setup/bika_suppliers/supplier-1/portal_factory/ReferenceSample
-     *
-     * The dropdown with the id="ReferenceDefinition:list" is rendered there.
-    ###
-    console.debug "°°° SiteView::on_reference_definition_list_change °°°"
-
-    el = event.currentTarget
-    $el = $(el)
-
-    authenticator = @get_authenticator()
-    uid = $el.val()
-    option = $el.children(':selected').html()
-
-    if uid == ''
-      # No reference definition selected;
-      # render empty widget.
-      $('#Blank').prop 'checked', false
-      $('#Hazardous').prop 'checked', false
-      $('.bika-listing-table').load 'referenceresults', '_authenticator': authenticator
-      return
-
-    if option.search(_t('(Blank)')) > -1 or option.search("(Blank)") > -1
-      $('#Blank').prop 'checked', true
-    else
-      $('#Blank').prop 'checked', false
-
-    if option.search(_t('(Hazardous)')) > -1 or option.search("(Hazardous)") > -1
-      $('#Hazardous').prop 'checked', true
-    else
-      $('#Hazardous').prop 'checked', false
-
-    $('.bika-listing-table').load 'referenceresults',
-      '_authenticator': authenticator
-      'uid': uid
-
     return
 
 
