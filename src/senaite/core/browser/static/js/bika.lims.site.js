@@ -1,284 +1,184 @@
-(function() {
-  /* Please use this command to compile this file into the parent `js` directory:
-      coffee --no-header -w -o ../ -c bika.lims.site.coffee
-  */
-  window.SiteView = class SiteView {
-    constructor() {
-      this.load = this.load.bind(this);
-      /* INITIALIZERS */
-      this.bind_eventhandler = this.bind_eventhandler.bind(this);
-      /* METHODS */
-      this.get_portal_url = this.get_portal_url.bind(this);
-      this.get_authenticator = this.get_authenticator.bind(this);
-      this.portalAlert = this.portalAlert.bind(this);
-      this.portal_alert = this.portal_alert.bind(this);
-      this.log = this.log.bind(this);
-      this.readCookie = this.readCookie.bind(this);
-      this.read_cookie = this.read_cookie.bind(this);
-      this.setCookie = this.setCookie.bind(this);
-      this.set_cookie = this.set_cookie.bind(this);
-      this.notificationPanel = this.notificationPanel.bind(this);
-      this.notify_in_panel = this.notify_in_panel.bind(this);
-      /* EVENT HANDLER */
-      this.on_at_integer_field_keyup = this.on_at_integer_field_keyup.bind(this);
-      this.on_at_float_field_keyup = this.on_at_float_field_keyup.bind(this);
-      this.on_numeric_field_paste = this.on_numeric_field_paste.bind(this);
-      this.on_numeric_field_keypress = this.on_numeric_field_keypress.bind(this);
-      this.on_overlay_panel_click = this.on_overlay_panel_click.bind(this);
+window.SiteView = class SiteView {
+  constructor() {
+    this.load = this.load.bind(this);
+    this.bind_eventhandler = this.bind_eventhandler.bind(this);
+    this.get_portal_url = this.get_portal_url.bind(this);
+    this.get_authenticator = this.get_authenticator.bind(this);
+    this.portalAlert = this.portalAlert.bind(this);
+    this.portal_alert = this.portal_alert.bind(this);
+    this.log = this.log.bind(this);
+    this.readCookie = this.readCookie.bind(this);
+    this.read_cookie = this.read_cookie.bind(this);
+    this.setCookie = this.setCookie.bind(this);
+    this.set_cookie = this.set_cookie.bind(this);
+    this.notificationPanel = this.notificationPanel.bind(this);
+    this.notify_in_panel = this.notify_in_panel.bind(this);
+    this.on_at_integer_field_keyup = this.on_at_integer_field_keyup.bind(this);
+    this.on_at_float_field_keyup = this.on_at_float_field_keyup.bind(this);
+    this.on_numeric_field_paste = this.on_numeric_field_paste.bind(this);
+    this.on_numeric_field_keypress = this.on_numeric_field_keypress.bind(this);
+    this.on_overlay_panel_click = this.on_overlay_panel_click.bind(this);
+  }
+
+  load() {
+    console.debug("SiteView::load");
+    this.bind_eventhandler();
+    this.allowed_keys = [8, 9, 13, 35, 36, 37, 39, 46, 44, 60, 62, 45, 69, 101, 61];
+  }
+
+  bind_eventhandler() {
+    console.debug("SiteView::bind_eventhandler");
+
+    $(document).on("keypress", ".numeric", this.on_numeric_field_keypress);
+    $(document).on("paste", ".numeric", this.on_numeric_field_paste);
+    $(document).on("keyup", "input[name*='\\:int\\'], .ArchetypesIntegerWidget input", this.on_at_integer_field_keyup);
+    $(document).on("keyup", "input[name*='\\:float\\'], .ArchetypesDecimalWidget input", this.on_at_float_field_keyup);
+    $(document).on("click", "a.overlay_panel", this.on_overlay_panel_click);
+
+    $(document).on({
+      ajaxStart: () => $("body").addClass("loading"),
+      ajaxStop: () => $("body").removeClass("loading"),
+      ajaxError: () => $("body").removeClass("loading")
+    });
+  }
+
+  get_portal_url() {
+    return window.portal_url;
+  }
+
+  get_authenticator() {
+    console.warn("SiteView::get_authenticator is deprecated. Use site.authenticator()");
+    return window.site.authenticator();
+  }
+
+  portalAlert(html) {
+    console.warn("Use portal_alert instead of portalAlert");
+    return this.portal_alert(html);
+  }
+
+  portal_alert(html) {
+    console.debug("SiteView::portal_alert");
+    let $alerts = $('#portal-alert');
+
+    if ($alerts.length === 0) {
+      $('#portal-header').append(`<div id="portal-alert" style="display:none"><div class="portal-alert-item">${html}</div></div>`);
+    } else {
+      $alerts.append(`<div class="portal-alert-item">${html}</div>`);
     }
 
-    load() {
-      console.debug("SiteView::load");
-      // bind the event handler to the elements
-      this.bind_eventhandler();
-      // allowed keys for numeric fields
-      return this.allowed_keys = [
-        8, // backspace
-        9, // tab
-        13, // enter
-        35, // end
-        36, // home
-        37, // left arrow
-        39, // right arrow
-        46, // delete - We don't support the del key in Opera because del == . == 46.
-        44, // ,
-        60, // <
-        62, // >
-        45, // -
-        69, // E
-        101, // e,
-        61 // =
-      ];
-    }
+    $('#portal-alert').fadeIn();
+  }
 
-    bind_eventhandler() {
-      /*
-       * Binds callbacks on elements
-       *
-       * N.B. We attach all the events to the form and refine the selector to
-       * delegate the event: https://learn.jquery.com/events/event-delegation/
-       */
-      console.debug("SiteView::bind_eventhandler");
-      // Numeric field events
-      $("body").on("keypress", ".numeric", this.on_numeric_field_keypress);
-      $("body").on("paste", ".numeric", this.on_numeric_field_paste);
-      // AT field events
-      $("body").on("keyup", "input[name*='\\:int\'], .ArchetypesIntegerWidget input", this.on_at_integer_field_keyup);
-      $("body").on("keyup", "input[name*='\\:float\'], .ArchetypesDecimalWidget input", this.on_at_float_field_keyup);
-      $("body").on("click", "a.overlay_panel", this.on_overlay_panel_click);
-      // Show loader on Ajax events
-      return $(document).on({
-        ajaxStart: function() {
-          $("body").addClass("loading");
-        },
-        ajaxStop: function() {
-          $("body").removeClass("loading");
-        },
-        ajaxError: function() {
-          $("body").removeClass("loading");
-        }
-      });
-    }
+  log(message) {
+    console.debug(`SiteView::log: ${message}`);
+    return window.bika?.lims?.log?.(message);
+  }
 
-    get_portal_url() {
-      /*
-       * Return the portal url
-       */
-      return window.portal_url;
-    }
+  readCookie(cname) {
+    console.warn("Use read_cookie instead");
+    return this.read_cookie(cname);
+  }
 
-    get_authenticator() {
-      /*
-       * Get the authenticator value
-       */
-      console.warn("SiteView::get_authenticator: Please use site.authenticator instead");
-      return window.site.authenticator();
+  read_cookie(cname) {
+    const nameEQ = `${cname}=`;
+    const ca = document.cookie.split(';');
+    for (let c of ca) {
+      c = c.trim();
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length);
     }
+    return null;
+  }
 
-    portalAlert(html) {
-      /*
-       * BBB: Use portal_alert
-       */
-      console.warn("SiteView::portalAlert: Please use portal_alert method instead.");
-      return this.portal_alert(html);
+  setCookie(cname, cvalue) {
+    console.warn("Use set_cookie instead");
+    return this.set_cookie(cname, cvalue);
+  }
+
+  set_cookie(cname, cvalue) {
+    document.cookie = `${cname}=${cvalue}; path=/`;
+  }
+
+  notificationPanel(data, mode) {
+    console.warn("Use notify_in_panel instead");
+    return this.notify_in_panel(data, mode);
+  }
+
+  notify_in_panel(data, mode) {
+    console.debug(`notify_in_panel: ${mode} = ${data}`);
+    $('#panel-notification').remove();
+    const html = `
+      <div id="panel-notification" style="display:none">
+        <div class="${mode}-notification-item">${data}</div>
+      </div>`;
+    $('div#viewlet-above-content-title').append(html);
+    $('#panel-notification').fadeIn('slow', () => {
+      setTimeout(() => {
+        $('#panel-notification').fadeOut('slow');
+      }, 3000);
+    });
+  }
+
+  on_at_integer_field_keyup(e) {
+    const $el = $(e.currentTarget);
+    const cleanVal = $el.val().replace(/\D/g, '');
+    if ($el.val() !== cleanVal) {
+      $el.val(cleanVal);
     }
+  }
 
-    portal_alert(html) {
-      var alerts;
-      /*
-       * Display a portal alert box
-       */
-      console.debug("SiteView::portal_alert");
-      alerts = $('#portal-alert');
-      if (alerts.length === 0) {
-        $('#portal-header').append(`<div id='portal-alert' style='display:none'><div class='portal-alert-item'>${html}</div></div>`);
-      } else {
-        alerts.append(`<div class='portal-alert-item'>${html}</div>`);
-      }
-      alerts.fadeIn();
+  on_at_float_field_keyup(e) {
+    const $el = $(e.currentTarget);
+    const cleanVal = $el.val().replace(/[^-.\d]/g, '');
+    if ($el.val() !== cleanVal) {
+      $el.val(cleanVal);
     }
+  }
 
-    log(message) {
-      /*
-       * Log message via bika.lims.log
-       */
-      console.debug(`SiteView::log: message=${message}`);
-      // XXX: This should actually log via XHR to the server, but seem to not work.
-      return window.bika.lims.log(message);
-    }
+  on_numeric_field_paste(e) {
+    const $el = $(e.currentTarget);
+    setTimeout(() => {
+      $el.val($el.val().replace(',', '.'));
+    }, 0);
+  }
 
-    readCookie(cname) {
-      /*
-       * BBB: Use read_cookie
-       */
-      console.warn("SiteView::readCookie: Please use site.read_cookie instead");
-      return window.site.read_cookie(cname);
-    }
+  on_numeric_field_keypress(e) {
+    const key = e.which;
+    const isAllowed = this.allowed_keys.includes(key);
+    const isDigit = key >= 48 && key <= 57;
 
-    read_cookie(cname) {
-      /*
-       * Read cookie value
-       */
-      console.warn("SiteView::read_cookie. Please use site.read_cookie instead");
-      return window.site.read_cookie(cname);
-    }
-
-    setCookie(cname, cvalue) {
-      /*
-       * BBB: Use set_cookie
-       */
-      console.warn("SiteView::setCookie. Please use site.set_cookie instead");
-      return window.site.set_cookie(cname, cvalue);
-    }
-
-    set_cookie(cname, cvalue) {
-      /*
-       * Read cookie value
-       */
-      console.warn("SiteView::set_cookie. Please use site.set_cookie instead");
-      window.site.set_cookie(cname, cvalue);
-    }
-
-    notificationPanel(data, mode) {
-      /*
-       * BBB: Use notify_in_panel
-       */
-      console.warn("SiteView::notificationPanel: Please use notfiy_in_panel method instead.");
-      return this.notify_in_panel(data, mode);
-    }
-
-    notify_in_panel(data, mode) {
-      var html;
-      /*
-       * Render an alert inside the content panel, e.g.in autosave of ARView
-       */
-      console.debug(`SiteView::notify_in_panel:data=${data}, mode=${mode}`);
-      $('#panel-notification').remove();
-      html = `<div id='panel-notification' style='display:none'><div class='${mode}-notification-item'>${data}</div></div>`;
-      $('div#viewlet-above-content-title').append(html);
-      $('#panel-notification').fadeIn('slow', 'linear', function() {
-        setTimeout((function() {
-          $('#panel-notification').fadeOut('slow', 'linear');
-        }), 3000);
-      });
-    }
-
-    on_at_integer_field_keyup(event) {
-      var $el, el;
-      /*
-       * Eventhandler for AT integer fields
-       */
-      console.debug("°°° SiteView::on_at_integer_field_keyup °°°");
-      el = event.currentTarget;
-      $el = $(el);
-      if (/\D/g.test($el.val())) {
-        $el.val($el.val().replace(/\D/g, ''));
-      }
-    }
-
-    on_at_float_field_keyup(event) {
-      var $el, el;
-      /*
-       * Eventhandler for AT float fields
-       */
-      console.debug("°°° SiteView::on_at_float_field_keyup °°°");
-      el = event.currentTarget;
-      $el = $(el);
-      if (/[^-.\d]/g.test($el.val())) {
-        $el.val($el.val().replace(/[^.\d]/g, ''));
-      }
-    }
-
-    on_numeric_field_paste(event) {
-      var $el, el;
-      /*
-       * Eventhandler when the user pasted a value inside a numeric field.
-       */
-      console.debug("°°° SiteView::on_numeric_field_paste °°°");
-      el = event.currentTarget;
-      $el = $(el);
-      // Wait (next cycle) for value popluation and replace commas.
-      window.setTimeout((function() {
+    if (!isDigit && !isAllowed) {
+      e.preventDefault();
+    } else {
+      const $el = $(e.currentTarget);
+      setTimeout(() => {
         $el.val($el.val().replace(',', '.'));
-      }), 0);
+      }, 0);
     }
+  }
 
-    on_numeric_field_keypress(event) {
-      var $el, el, isAllowedKey, key;
-      /*
-       * Eventhandler when the user pressed a key inside a numeric field.
-       */
-      console.debug("°°° SiteView::on_numeric_field_keypress °°°");
-      el = event.currentTarget;
-      $el = $(el);
-      key = event.which;
-      isAllowedKey = this.allowed_keys.join(',').match(new RegExp(key));
-      if (!key || 48 <= key && key <= 57 || isAllowedKey) {
-        // Opera assigns values for control keys.
-        // Wait (next cycle) for value popluation and replace commas.
-        window.setTimeout((function() {
-          $el.val($el.val().replace(',', '.'));
-        }), 0);
-        return;
-      } else {
-        event.preventDefault();
-      }
-    }
+  on_overlay_panel_click(e) {
+    e.preventDefault();
+    const $el = $(e.currentTarget);
 
-    on_overlay_panel_click(event) {
-      var el;
-      /*
-       * Eventhandler when the service info icon was clicked
-       */
-      console.debug("°°° SiteView::on_overlay_panel_click °°°");
-      event.preventDefault();
-      el = event.currentTarget;
-      // https://jquerytools.github.io/documentation/overlay
-      // https://github.com/plone/plone.app.jquerytools/blob/master/plone/app/jquerytools/browser/overlayhelpers.js
-      $(el).prepOverlay({
-        subtype: "ajax",
+    if (typeof $el.prepOverlay === 'function') {
+      $el.prepOverlay({
+        subtype: 'ajax',
         width: '80%',
         filter: '#content>*:not(div#portal-column-content)',
         config: {
           closeOnClick: true,
           closeOnEsc: true,
-          onBeforeLoad: function(event) {
-            var overlay;
-            overlay = this.getOverlay();
-            return overlay.draggable();
+          onBeforeLoad: function () {
+            this.getOverlay().draggable();
           },
-          onLoad: function(event) {
-            // manually dispatch the DOMContentLoaded event, so that the ReactJS
-            // component loads
-            event = new Event("DOMContentLoaded", {});
-            return window.document.dispatchEvent(event);
+          onLoad: function () {
+            document.dispatchEvent(new Event("DOMContentLoaded"));
           }
         }
       });
-      // workaround un-understandable overlay api
-      return $(el).click();
+      $el.click(); // required for prepOverlay
+    } else {
+      console.warn('prepOverlay not available. Consider updating or replacing it.');
     }
-
-  };
-
-}).call(this);
+  }
+};
