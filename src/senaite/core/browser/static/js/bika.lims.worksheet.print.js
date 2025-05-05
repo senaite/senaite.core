@@ -1,32 +1,38 @@
 /**
- * Controller class for Worksheed Print View
+ * Worksheet Print Controller
+ *
+ * This controller is loaded in the worksheet print popup
  */
-function WorksheetPrintView() {
+window.WorksheetPrintView = class WorksheetPrintView {
+  constructor() {
+    this.referrerCookieName = "ws.print.urlback";
+    this.load = this.load.bind(this);
+    this.loadBarcodes = this.loadBarcodes.bind(this);
+    this.updateWorksheetView = this.updateWorksheetView.bind(this);
+  }
 
-  const referrerCookieName = "ws.print.urlback";
+  load() {
+    let backUrl = document.referrer || window.site.read_cookie(this.referrerCookieName) || portal_url;
+    window.site.set_cookie(this.referrerCookieName, backUrl);
 
-  this.load = function () {
-    let backUrl = document.referrer || senaite.core.controllers.SiteView.readCookie(referrerCookieName) || portal_url;
-    senaite.core.controllers.SiteView.setCookie(referrerCookieName, backUrl);
+    this.loadBarcodes();
 
-    loadBarcodes();
-
-    $("#print_button").on("click", function (e) {
+    $("#print_button").on("click", (e) => {
       e.preventDefault();
       window.print();
     });
 
-    $("#cancel_button").on("click", function (e) {
+    $("#cancel_button").on("click", (e) => {
       e.preventDefault();
       window.location.href = backUrl;
     });
 
-    $("#template, #numcols").on("change", function () {
-      updateWorksheetView($("#template").val(), $("#numcols").val());
+    $("#template, #numcols").on("change", () => {
+      this.updateWorksheetView($("#template").val(), $("#numcols").val());
     });
-  };
+  }
 
-  function updateWorksheetView(template, numCols) {
+  updateWorksheetView(template, numCols) {
     const url = window.location.href;
     const $worksheet = $("#worksheet-printview");
 
@@ -39,33 +45,33 @@ function WorksheetPrintView() {
         template: template,
         numcols: numCols,
       },
-    }).always(function (response) {
-      const cssData = $(response).find("#report-style").html();
-      const htmlData = $(response).find("#worksheet-printview").html();
+    }).always((response) => {
+      const $response = $(response);
+      const cssData = $response.find("#report-style").html();
+      const htmlData = $response.find("#worksheet-printview").html();
 
       $("#report-style").html(cssData);
       $worksheet.html(htmlData);
       $worksheet.animate({ opacity: 1 }, "slow");
 
-      loadBarcodes();
+      this.loadBarcodes();
     });
   }
 
-  function loadBarcodes() {
+  loadBarcodes() {
     $(".barcode").each(function () {
-      const $this = $(this);
-      const id = $this.data("id");
-      const code = $this.data("code");
-      const barHeight = parseInt($this.data("barheight"));
-      const addQuietZone = Boolean($this.data("addquietzone"));
-      const showHRI = Boolean($this.data("showhri"));
+      const $el = $(this);
+      const id = $el.data("id");
+      const code = $el.data("code");
+      const barHeight = parseInt($el.data("barheight"), 10);
+      const addQuietZone = Boolean($el.data("addquietzone"));
+      const showHRI = Boolean($el.data("showhri"));
 
-      $this.barcode(id, code, {
+      $el.barcode(id, code, {
         barHeight: barHeight,
         addQuietZone: addQuietZone,
         showHRI: showHRI,
       });
     });
   }
-
 }
