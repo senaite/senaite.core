@@ -1,35 +1,43 @@
 /**
- * Controller class for Client's Edit view
+ * Client Edit Form Controller
+ *
+ * This controller is loaded for the client edit view, e.g.
+ * `/senaite/clients/client-1`.
  */
-function ClientEditView() {
-    const that = this;
+window.ClientEditView = class ClientEditView {
+  constructor() {
+    this.$decimalMarkField = $("#archetypes-fieldname-DecimalMark");
+    this.$decimalMarkToggle = $("#DefaultDecimalMark");
 
-    const $decimalMarkField = $("#archetypes-fieldname-DecimalMark");
-    const $decimalMarkToggle = $("#DefaultDecimalMark");
+    // Bind methods
+    this.load = this.load.bind(this);
+    this.initializeDecimalMarkBehavior = this.initializeDecimalMarkBehavior.bind(this);
+    this.toggleDecimalMarkVisibility = this.toggleDecimalMarkVisibility.bind(this);
+  }
 
-    /**
-     * Entry-point method
-     */
-    that.load = function () {
-        initializeDecimalMarkBehavior();
-    };
+  /**
+   * Entry-point method
+   */
+  load() {
+    this.initializeDecimalMarkBehavior();
+  }
 
-    /**
-     * Controls visibility of DecimalMark field based on toggle
-     */
-    function initializeDecimalMarkBehavior() {
-        toggleDecimalMarkVisibility($decimalMarkToggle.is(":checked"));
+  /**
+   * Controls visibility of DecimalMark field based on toggle
+   */
+  initializeDecimalMarkBehavior() {
+    this.toggleDecimalMarkVisibility(this.$decimalMarkToggle.is(":checked"));
 
-        $decimalMarkToggle.on("change", function () {
-            toggleDecimalMarkVisibility($(this).is(":checked"));
-        });
+    this.$decimalMarkToggle.on("change", () => {
+      this.toggleDecimalMarkVisibility(this.$decimalMarkToggle.is(":checked"));
+    });
+  }
+
+  toggleDecimalMarkVisibility(isChecked) {
+    if (isChecked) {
+      this.$decimalMarkField.fadeOut();
+    } else {
+      this.$decimalMarkField.fadeIn();
     }
-
-    function toggleDecimalMarkVisibility(isChecked) {
-        if (isChecked) {
-            $decimalMarkField.fadeOut();
-        } else {
-            $decimalMarkField.fadeIn();
-        }
-    }
+  }
 }
