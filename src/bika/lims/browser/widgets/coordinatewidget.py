@@ -29,7 +29,7 @@ class CoordinateWidget(RecordWidget):
     security = ClassSecurityInfo()
     _properties = RecordWidget._properties.copy()
     _properties.update({
-        "macro": "bika_widgets/coordinatewidget",
+        # "macro": "bika_widgets/coordinatewidget",
     })
 
 
