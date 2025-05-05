@@ -28,9 +28,9 @@ from senaite.core.api import geo
 class AddressWidget(TypesWidget):
     _properties = TypesWidget._properties.copy()
     _properties.update({
-        'macro': "bika_widgets/addresswidget",
-        'helper_js': ("bika_widgets/addresswidget.js",),
-        'helper_css': ("bika_widgets/addresswidget.css",),
+        'macro': "senaite_widgets/addresswidget",
+        'helper_js': ("senaite_widgets/addresswidget.js",),
+        'helper_css': ("senaite_widgets/addresswidget.css",),
         'showLegend': True,
         'showDistrict': True,
         'showCopyFrom': True,
