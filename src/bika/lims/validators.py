@@ -35,6 +35,7 @@ from Products.validation import validation
 from Products.validation.interfaces.IValidator import IValidator
 from Products.ZCTextIndex.ParseTree import ParseError
 from senaite.core.api import dtime
+from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.i18n import translate as _t
 from zope.interface import implements
 
@@ -1550,6 +1551,51 @@ class UpperLimitOfQuantificationValidator(object):
             ))
 
 
+class UniqueReferenceSampleIDValidator(object):
+    """
+    Ensures that no existing object in the system has an ID matching the value
+    of the field to which this validator is applied.
+    """
+    implements(IValidator)
+    name = "unique_referencesample_id_validator"
+
+    def __call__(self, value, **kwargs):
+        instance = kwargs["instance"]
+
+        # skip if no value provided
+        if not value:
+            return
+
+        import pdb;pdb.set_trace()
+        parent = api.get_parent(instance)
+        if not api.is_valid_id(value, container=parent):
+            return _t(_(
+                u"validator_referencesample_id_invalid",
+                default=u"The Reference Sample ID is invalid. Ensure it "
+                        u"contains only letters, numbers, underscores ('_'), "
+                        u"or hyphens ('-'), and verify that no other "
+                        u"Reference Sample with the same ID already exists.",
+            ))
+
+        # check if a reference sample with this id exists already
+        uid = api.get_uid(instance)
+        cat = api.get_tool(SENAITE_CATALOG)
+        brains = cat(portal_type="ReferenceSample")
+        for brain in brains:
+            obj_id = api.get_id(brain)
+            if obj_id != value:
+                continue
+            if api.get_uid(brain) == uid:
+                continue
+
+            return _t(_(
+                u"validator_referencesample_id_exists",
+                default=u"A Reference Sample with the ID '%s' already "
+                        u"exists." % value
+            ))
+
+
 validation.register(LowerLimitOfDetectionValidator())
 validation.register(LowerLimitOfQuantificationValidator())
 validation.register(UpperLimitOfQuantificationValidator())
+validation.register(UniqueReferenceSampleIDValidator())
