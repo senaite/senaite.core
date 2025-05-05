@@ -2569,7 +2569,7 @@ The candidate must contain only letters, numbers, hyphens or underscores:
     False
     >>> api.is_valid_id("12345%")
     False
-    >>> api.is_valid_id("12 345")
+    >>> api.is_valid_id("1234 5")
     False
 
 However, '_' and '-' are not admitted at the start or at the end:
@@ -2582,6 +2582,21 @@ However, '_' and '-' are not admitted at the start or at the end:
     False
     >>> api.is_valid_id("my-own-ID_")
     False
+
+And minimum length of 3 is required:
+
+    >>> api.is_valid_id("1")
+    False
+    >>> api.is_valid_id("12")
+    False
+    >>> api.is_valid_id("123")
+    True
+    >>> api.is_valid_id("a")
+    False
+    >>> api.is_valid_id("ab")
+    False
+    >>> api.is_valid_id("abc")
+    True
 
 Reserved words like `REQUEST`, `aq_parent` or `manage_main` are not supported:
 
