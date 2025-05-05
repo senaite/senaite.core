@@ -1,5 +1,8 @@
-/**
- * Analysis Request View Controllers
+/** Sample View Controller
+ *
+ * This controller is loaded for sample view, e.g.:
+ * `/senaite/samples/clients/client-1/H2O-0001`
+ *
  */
 window.AnalysisRequestView = class AnalysisRequestView {
   load() {

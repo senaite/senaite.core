@@ -1,5 +1,8 @@
-/**
- * Controller class for BikaSetup Edit view
+/** Bika Setup Controller
+ *
+ * This controller is loaded for the old bika setup view, e.g.:
+ * `/senaite/bika_setup`
+ *
  */
 function BikaSetupEditView() {
     const that = this;
