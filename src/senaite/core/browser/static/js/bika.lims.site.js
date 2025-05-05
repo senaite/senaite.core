@@ -1,17 +1,19 @@
+/**
+ * Site View Controller
+ *
+ * This controller is *always* loaded, i.e. for all templates.
+ */
 window.SiteView = class SiteView {
   constructor() {
     this.load = this.load.bind(this);
     this.bind_eventhandler = this.bind_eventhandler.bind(this);
     this.get_portal_url = this.get_portal_url.bind(this);
     this.get_authenticator = this.get_authenticator.bind(this);
-    this.portalAlert = this.portalAlert.bind(this);
-    this.portal_alert = this.portal_alert.bind(this);
     this.log = this.log.bind(this);
     this.readCookie = this.readCookie.bind(this);
     this.read_cookie = this.read_cookie.bind(this);
     this.setCookie = this.setCookie.bind(this);
     this.set_cookie = this.set_cookie.bind(this);
-    this.notificationPanel = this.notificationPanel.bind(this);
     this.notify_in_panel = this.notify_in_panel.bind(this);
     this.on_at_integer_field_keyup = this.on_at_integer_field_keyup.bind(this);
     this.on_at_float_field_keyup = this.on_at_float_field_keyup.bind(this);
@@ -57,27 +59,9 @@ window.SiteView = class SiteView {
     return window.site.authenticator();
   }
 
-  portalAlert(html) {
-    console.warn("Use portal_alert instead of portalAlert");
-    return this.portal_alert(html);
-  }
-
-  portal_alert(html) {
-    console.debug("SiteView::portal_alert");
-    let $alerts = $('#portal-alert');
-
-    if ($alerts.length === 0) {
-      $('#portal-header').append(`<div id="portal-alert" style="display:none"><div class="portal-alert-item">${html}</div></div>`);
-    } else {
-      $alerts.append(`<div class="portal-alert-item">${html}</div>`);
-    }
-
-    $('#portal-alert').fadeIn();
-  }
-
   log(message) {
     console.debug(`SiteView::log: ${message}`);
-    return window.bika?.lims?.log?.(message);
+    return senaite.core.globals.log(message);
   }
 
   readCookie(cname) {
@@ -102,11 +86,6 @@ window.SiteView = class SiteView {
 
   set_cookie(cname, cvalue) {
     document.cookie = `${cname}=${cvalue}; path=/`;
-  }
-
-  notificationPanel(data, mode) {
-    console.warn("Use notify_in_panel instead");
-    return this.notify_in_panel(data, mode);
   }
 
   notify_in_panel(data, mode) {

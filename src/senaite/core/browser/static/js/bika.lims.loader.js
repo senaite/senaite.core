@@ -9,10 +9,9 @@ window.senaite.core.globals = window.senaite.core.globals || {};
  * Controllers are instantiated and stored in senaite.core.controllers.
  */
 const CONTROLLER_MAP = {
-  "html": ["CommonUtils"],
+  "html": ["CommonUtils", "SiteView"],
   ".barcode, .qrcode": ["BarcodeUtils"],
   ".attachments": ["AttachmentsUtils"],
-  "body": ["SiteView"],
 
   // Instruments
   ".portaltype-instrument.template-referenceanalyses": ["InstrumentReferenceAnalysesView"],
