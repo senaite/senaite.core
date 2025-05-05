@@ -44,7 +44,6 @@ from Products.Archetypes.Widget import ComputedWidget
 from Products.Archetypes.Widget import StringWidget
 from Products.Archetypes.Widget import TextAreaWidget
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import check_id
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.catalog import SETUP_CATALOG
 from zope.interface import implements
