@@ -285,7 +285,7 @@ class AnalysisSpecificationWidget(TypesWidget):
     """
     _properties = TypesWidget._properties.copy()
     _properties.update({
-        "macro": "bika_widgets/analysisspecificationwidget",
+        "macro": "senaite_widgets/analysisspecificationwidget",
     })
 
     security = ClassSecurityInfo()
