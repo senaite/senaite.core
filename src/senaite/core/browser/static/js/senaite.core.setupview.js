@@ -1,119 +1,95 @@
-
-/* Please use this command to compile this file into the parent directory:
-    coffee --no-header -w -o ../ -c senaite.core.setupview.coffee
+/**
+ * SENAITE Setup View Controller
+ *
+ * This controller is loaded for the SENAITE Setup View, e.g. `/senaite/setup/@@lims-setup`
  */
+window.SetupViewController = class SetupViewController {
+  constructor() {
+    this.onSearch = this.onSearch.bind(this);
+    this.onKeypress = this.onKeypress.bind(this);
+    this.first = null;
+    this.items = this.getItems();
+  }
 
-(function() {
-  var SetupViewController;
+  load() {
+    console.debug("SetupViewController::load");
+    this.bind_eventhandler();
+  }
 
-  document.addEventListener("DOMContentLoaded", function() {
-    console.debug("*** DOMContentLoaded: --> Loading Controller");
-    return window.setupview_controller = new SetupViewController();
-  });
+  bind_eventhandler() {
+    console.debug("SetupViewController::bind_eventhandler");
+    const $searchbox = $("#searchbox");
+    $searchbox.on("input", this.onSearch);
+    $searchbox.on("keypress", this.onKeypress);
+  }
 
-  SetupViewController = (function() {
-    function SetupViewController() {
-      var searchbox;
-      this.on_search = this.on_search.bind(this);
-      this.on_keypress = this.on_keypress.bind(this);
-      searchbox = document.getElementById("searchbox");
-      searchbox.addEventListener("input", this.on_search);
-      searchbox.addEventListener("keypress", this.on_keypress);
-      this.first = null;
-      this.items = this.get_items();
+  hideTile(tile) {
+    $(tile).addClass("d-none");
+  }
+
+  showTile(tile) {
+    $(tile).removeClass("d-none");
+  }
+
+  getTiles() {
+    return $("div.tilewrapper");
+  }
+
+  getItems() {
+    return $("div.tilewrapper span.title").map(function () {
+      return {
+        title: $(this).text().toLowerCase(),
+        el: this
+      };
+    }).get();
+  }
+
+  showAll() {
+    this.getTiles().each((_, tile) => {
+      this.showTile(tile);
+    });
+  }
+
+  filterItems(value) {
+    this.first = null;
+
+    if (!value) {
+      this.showAll();
+      return;
     }
 
-    SetupViewController.prototype.hide_tile = function(tile) {
-      return tile.classList.add("d-none");
-    };
+    const rx = new RegExp(value, "gi");
 
-    SetupViewController.prototype.show_tile = function(tile) {
-      return tile.classList.remove("d-none");
-    };
-
-    SetupViewController.prototype.get_tiles = function() {
-      return document.querySelectorAll("div.tilewrapper");
-    };
-
-    SetupViewController.prototype.get_items = function() {
-      var items, nodes;
-      nodes = document.querySelectorAll("div.tilewrapper span.title");
-      items = [];
-      nodes.forEach(function(el) {
-        var title;
-        title = el.innerText.toLowerCase();
-        return items.push({
-          title: title,
-          el: el
-        });
-      });
-      return items;
-    };
-
-    SetupViewController.prototype.show_all = function() {
-      var tiles;
-      tiles = this.get_tiles();
-      return tiles.forEach((function(_this) {
-        return function(tile) {
-          return _this.show_tile(tile);
-        };
-      })(this));
-    };
-
-    SetupViewController.prototype.filter_items = function(value) {
-      this.first = null;
-      if (!value) {
-        return this.show_all();
+    this.items.forEach(item => {
+      const $tile = $(item.el).closest("div.tilewrapper");
+      if (item.title.match(rx)) {
+        this.showTile($tile);
+        if (this.first === null) {
+          this.first = $tile;
+        }
+      } else {
+        this.hideTile($tile);
       }
-      return this.items.forEach((function(_this) {
-        return function(item) {
-          var el, rx, tile, title;
-          el = item.el;
-          tile = el.closest("div.tilewrapper");
-          title = item.title;
-          rx = RegExp(value, "gi");
-          if (title.match(rx)) {
-            _this.show_tile(tile);
-            if (_this.first === null) {
-              return _this.first = tile;
-            }
-          } else {
-            return _this.hide_tile(tile);
-          }
-        };
-      })(this));
-    };
+    });
+  }
 
-    SetupViewController.prototype.navigate = function(tile) {
-      var url;
-      if (this.first === null) {
-        return;
-      }
-      url = this.first.querySelector("a").getAttribute("href");
-      if (!url) {
-        return;
-      }
-      return location.href = url;
-    };
+  navigate() {
+    if (this.first === null) return;
 
-    SetupViewController.prototype.on_search = function(event) {
-      var target, value;
-      target = event.currentTarget;
-      value = target.value.toLowerCase();
-      return this.filter_items(value);
-    };
+    const href = this.first.find("a").attr("href");
+    if (href) {
+      window.location.href = href;
+    }
+  }
 
-    SetupViewController.prototype.on_keypress = function(event) {
-      var code;
-      code = event.keyCode;
-      if (code !== 13) {
-        return;
-      }
-      return this.navigate();
-    };
+  onSearch(event) {
+    const value = $(event.currentTarget).val().toLowerCase();
+    this.filterItems(value);
+  }
 
-    return SetupViewController;
-
-  })();
-
-}).call(this);
+  onKeypress(event) {
+    if (event.key === "Enter") {
+      this.navigate();
+    }
+  }
+}

@@ -12,6 +12,7 @@ const CONTROLLER_MAP = {
   "html": ["CommonUtils", "SiteView"],
   ".barcode, .qrcode": ["BarcodeUtils"],
   ".attachments": ["AttachmentsUtils"],
+  ".template-lims-setup": ["SetupViewController"],
 
   // Instruments
   ".portaltype-instrument.template-referenceanalyses": ["InstrumentReferenceAnalysesView"],
