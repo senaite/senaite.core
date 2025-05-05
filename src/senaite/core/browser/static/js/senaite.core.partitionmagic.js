@@ -1,58 +1,37 @@
-
-/* Please use this command to compile this file into the parent directory:
-    coffee --no-header -w -o ../ -c senaite.core.partitionmagic.coffee
+/**
+ * Partition Magic Controller
+ *
+ * This controller is loaded for the partition view
  */
+window.PartitionController = class PartitionController {
+  constructor() {
+    this.bind_eventhandler = this.bind_eventhandler.bind(this);
+    this.on_analysis_click = this.on_analysis_click.bind(this);
+  }
 
-(function() {
-  var PartitionController,
-    bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  load() {
+    console.debug("PartitionController::load");
+    this.bind_eventhandler();
+  }
 
-  document.addEventListener("DOMContentLoaded", function() {
-    console.debug("*** DOMContentLoaded: --> Loading Partition Controller");
-    return window.partition_controller = new PartitionController();
-  });
+  /**
+   * Binds delegated event handlers to the DOM
+   */
+  bind_eventhandler() {
+    console.debug("PartitionController::bind_eventhandler");
 
-  PartitionController = (function() {
+    $("body").on("click", "tr.analysis", this.on_analysis_click);
+  }
 
-    /*
-     * Partition Controller
-     */
-    function PartitionController() {
-      this.on_analysis_click = bind(this.on_analysis_click, this);
-      this.bind_eventhandler = bind(this.bind_eventhandler, this);
-      this.bind_eventhandler();
-      return this;
+  /**
+   * Handles click on analysis row
+   * If user clicks on anything other than a checkbox, the row's checkbox is toggled
+   */
+  on_analysis_click(event) {
+    const $row = $(event.currentTarget);
+
+    if (event.target.type !== "checkbox") {
+      $row.find("input[type=checkbox]").trigger("click");
     }
-
-    PartitionController.prototype.bind_eventhandler = function() {
-
-      /*
-       * Binds callbacks on elements
-       *
-       * N.B. We attach all the events to the body and refine the selector to
-       * delegate the event: https://learn.jquery.com/events/event-delegation/
-       *
-       */
-      console.debug("PartitionController::bind_eventhandler");
-      return $("body").on("click", "tr.analysis", this.on_analysis_click);
-    };
-
-    PartitionController.prototype.on_analysis_click = function(event) {
-
-      /*
-       * Eventhandler for Analysis Click
-       */
-      var $el, el, me;
-      me = this;
-      el = event.currentTarget;
-      $el = $(el);
-      if (event.target.type !== "checkbox") {
-        return $("input[type=checkbox]", $el).click();
-      }
-    };
-
-    return PartitionController;
-
-  })();
-
-}).call(this);
+  }
+}

@@ -34,6 +34,7 @@ const CONTROLLER_MAP = {
   ".portaltype-analysisrequest": ["AnalysisRequestView"],
   ".portaltype-analysisrequest.template-base_view": ["WorksheetManageResultsView"],
   "#analysisrequest_add_form": ["AnalysisRequestAdd"],
+  ".template-partition_magic": ["PartitionController"],
 
   // Worksheets
   ".portaltype-worksheetfolder": ["WorksheetFolderView"],
