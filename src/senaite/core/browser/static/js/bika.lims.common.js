@@ -9,15 +9,16 @@ function CommonUtils() {
      */
     that.load = function () {
         // Ensure namespace exists
-        window.bika = window.bika || {};
-        window.bika.lims = window.bika.lims || {};
+        window.senaite = window.senaite || {};
+        window.senaite.core = window.senaite.core || {};
+        window.senaite.core.globals = window.senaite.core.globals || {};
 
         /**
          * Displays a Bootstrap 4-compatible dismissible alert
          * @param {string|string[]} message - The message or messages to display
          * @param {string} level - One of: "info", "warning", "error" (default: "error")
          */
-        window.bika.lims.portalMessage = function (message, level = "error") {
+        that.portalMessage = window.senaite.core.globals.portalMessage = function (message, level = "error") {
             const levelClassMap = {
                 info: "alert-info",
                 warning: "alert-warning",
@@ -54,7 +55,7 @@ function CommonUtils() {
         /**
          * Logs a message to the backend (if window.location is available)
          */
-        window.bika.lims.log = function (e) {
+        that.log = window.senaite.core.globals.log = function (e) {
             const url = window.location?.href;
             if (!url) return;
 
@@ -67,7 +68,7 @@ function CommonUtils() {
         /**
          * Sends a warning to the backend
          */
-        window.bika.lims.warning = function (e) {
+        that.warning = window.senaite.core.globals.warning = function (e) {
             $.post("js_warn", {
                 message: `(${window.location.href}): ${e}`,
                 _authenticator: $("input[name='_authenticator']").val()
@@ -77,7 +78,7 @@ function CommonUtils() {
         /**
          * Sends an error to the backend
          */
-        window.bika.lims.error = function (e) {
+        that.error = window.senaite.core.globals.error = function (e) {
             $.post("js_err", {
                 message: `(${window.location.href}): ${e}`,
                 _authenticator: $("input[name='_authenticator']").val()
@@ -87,10 +88,10 @@ function CommonUtils() {
         /**
          * JSON API reader with caching
          */
-        window.bika.lims.jsonapi_cache = {};
+        window.senaite.core.globals.jsonapi_cache = {};
 
-        window.bika.lims.jsonapi_read = function (request_data, handler) {
-            const cache = window.bika.lims.jsonapi_cache;
+        that.jsonapi_read = window.senaite.core.globals.jsonapi_read = function (request_data, handler) {
+            const cache = window.senaite.core.globals.jsonapi_cache;
 
             // Ensure page_size is explicitly set
             if (typeof request_data.page_size === "undefined") {

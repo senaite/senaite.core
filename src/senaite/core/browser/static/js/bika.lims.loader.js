@@ -1,6 +1,7 @@
 window.senaite = window.senaite || {};
 window.senaite.core = window.senaite.core || {};
 window.senaite.core.controllers = window.senaite.core.controllers || {};
+window.senaite.core.globals = window.senaite.core.globals || {};
 
 /**
  * Mapping of DOM selectors to controller class names.
@@ -53,7 +54,7 @@ window.senaite.core.controller_map = {
  * @param {Array<string>} controllerKeys - Force-load specific selectors
  * @returns {number} - Count of newly loaded controllers
  */
-window.senaite.core.loadControllers = function(all = false, controllerKeys = []) {
+window.senaite.core.globals.loadControllers = function(all = false, controllerKeys = []) {
   const map = window.senaite.core.controller_map;
   const registry = window.senaite.core.controllers;
   const loaded = new Set(Object.keys(registry));
@@ -92,6 +93,6 @@ window.senaite.core.loadControllers = function(all = false, controllerKeys = [])
 
 // Auto-load controllers when DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
-  const count = window.senaite.core.loadControllers(false, []);
+  const count = window.senaite.core.globals.loadControllers(false, []);
   console.debug(`*** SENAITE LOADER INITIALIZED (${count} controllers loaded) ***`);
 });
