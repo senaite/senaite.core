@@ -1566,7 +1566,11 @@ class UniqueReferenceSampleIDValidator(object):
         if not value:
             return
 
-        import pdb;pdb.set_trace()
+        # skip if the value matches with object's current id
+        if instance.getId() == value:
+            return
+
+        # check if the id is valid
         parent = api.get_parent(instance)
         if not api.is_valid_id(value, container=parent):
             return _t(_(
