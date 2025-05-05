@@ -30,7 +30,7 @@ _marker = []
 class DecimalWidget(_d):
     _properties = _d._properties.copy()
     _properties.update({
-        'macro': "bika_widgets/decimal",
+        'macro': "senaite_widgets/decimal",
         'unit': '',
     })
 
