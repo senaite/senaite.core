@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2720 Allow to set custom IDs to reference samples
 - #2716 Fix submit form on confirmation dialog "Yes" button click
 - #2718 Fix AttributeError in Worksheet Print View
 - #2717 Allow the edition of QC results from inside Reference Sample
