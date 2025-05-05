@@ -13,7 +13,7 @@
          tal:attributes="id string:parent-fieldname-$fieldName-$uid"
          class="remarks_history remarks-widget my-4">
 
-      <tal:static define="static_path string:${portal/absolute_url}/bika_widgets">
+      <tal:static define="static_path string:${portal/absolute_url}/senaite_widgets">
         <link rel="stylesheet" type="text/css" media="all"
               tal:attributes="href string:${static_path}/remarkswidget.css"/>
       </tal:static>
@@ -35,7 +35,7 @@
   </metal:view_macro>
 
   <metal:remarks_edit define-macro="remarks_edit">
-    <tal:static define="static_path string:${portal/absolute_url}/bika_widgets">
+    <tal:static define="static_path string:${portal/absolute_url}/senaite_widgets">
       <script type="text/javascript"
               tal:attributes="src string:${static_path}/remarkswidget.js"></script>
       <link rel="stylesheet" type="text/css" media="all"
@@ -87,8 +87,8 @@
   <metal:edit define-macro="edit">
     <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
       <metal:fill fill-slot="widget_body">
-        <metal:block use-macro="context/bika_widgets/remarkswidget/macros/remarks_history"/>
-        <metal:block use-macro="context/bika_widgets/remarkswidget/macros/remarks_edit"/>
+        <metal:block use-macro="context/senaite_widgets/remarkswidget/macros/remarks_history"/>
+        <metal:block use-macro="context/senaite_widgets/remarkswidget/macros/remarks_edit"/>
       </metal:fill>
     </metal:use>
   </metal:edit>
