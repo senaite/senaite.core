@@ -235,7 +235,7 @@
        function loadBarCharts() {
          $('.bar-chart').each(function(e){
            var id = $(this).attr('id');
-           var vis = bika.lims.SiteView.readCookie('visible.'+id);
+           var vis = senaite.core.controllers.SiteView.readCookie('visible.'+id);
            if (vis == 1) {
              $('#'+id).show();
              $('#'+id+"-period").show();
@@ -249,12 +249,12 @@
            e.preventDefault();
            var barchartid = $(this).attr('target-id');
            if ($('#'+barchartid).is(":visible")) {
-             bika.lims.SiteView.setCookie('visible.'+barchartid, 0);
+             senaite.core.controllers.SiteView.setCookie('visible.'+barchartid, 0);
              $('#'+barchartid+'-period').hide();
              $('#'+barchartid).hide();
              $('#'+barchartid).closest('div.dashboard-panels').find('.dashboard-info-panel-wrapper').show();
            } else {
-             bika.lims.SiteView.setCookie('visible.'+barchartid, 1);
+             senaite.core.controllers.SiteView.setCookie('visible.'+barchartid, 1);
              $('#'+barchartid+'-period').show();
              $('#'+barchartid).show();
              $('#'+barchartid).closest('div.dashboard-panels').find('.dashboard-info-panel-wrapper').hide();
@@ -421,10 +421,10 @@
            $(selector).live('change', function(){
              section_id = $(this).attr('section_id');
              selected = $(this).find(':selected').val();
-             cookie_data = render_cookie_data(bika.lims.SiteView.readCookie(cookie_id));
+             cookie_data = render_cookie_data(senaite.core.controllers.SiteView.readCookie(cookie_id));
              cookie_data[section_id] = selected;
              cookie_data = build_cookie_data(cookie_data);
-             bika.lims.SiteView.setCookie('dashboard_filter_cookie', cookie_data);
+             senaite.core.controllers.SiteView.setCookie('dashboard_filter_cookie', cookie_data);
              window.location.reload(true);
            });
          }
