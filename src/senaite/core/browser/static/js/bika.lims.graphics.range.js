@@ -1,22 +1,26 @@
-/**
- * Controller class for Range graphics
+/** D3js Range Control Chart
+ *
+ * Currently not used, but kept as reference.
+ *
  */
-function RangeGraph() {
-  const that = this;
+class RangeGraph {
+  constructor() {
+    this.load = this.load.bind(this);
+  }
 
-  that.load = function () {
-    $(".range-chart").each(function () {
-      const $el = $(this);
+  load() {
+    $(".range-chart").each((_, el) => {
+      const $el = $(el);
       const width = parseFloat($el.css("width")) || 100;
       const rangeData = JSON.parse($el.attr("data-range") || "{}");
       const resultData = JSON.parse($el.attr("data-result") || "null");
 
-      loadRangeChart(this, width, rangeData, resultData);
+      this.loadRangeChart(el, width, rangeData, resultData);
       $el.removeClass("range-chart");
     });
-  };
+  }
 
-  function toDictOfFloats(range, result) {
+  toDictOfFloats(range, result) {
     if (!$.isNumeric(result)) return null;
 
     const parsedResult = parseFloat(result);
@@ -42,8 +46,8 @@ function RangeGraph() {
     };
   }
 
-  function loadRangeChart(canvas, width, range, result) {
-    const specs = toDictOfFloats(range, result);
+  loadRangeChart(canvas, width, range, result) {
+    const specs = this.toDictOfFloats(range, result);
     if (!specs) return;
 
     const radius = width * 0.03;
@@ -88,7 +92,6 @@ function RangeGraph() {
     const barY = (height - barHeight) / 2;
     const barRadius = radius * 0.9;
 
-    // Background segments
     const segments = [
       { x: x(xMin), width: x(warn_min) - x(xMin) + barRadius, fill: "#e9e9e9" },
       { x: x(warn_min), width: x(min) - x(warn_min), fill: colorShoulder },
@@ -108,7 +111,6 @@ function RangeGraph() {
         .style("fill", seg.fill);
     });
 
-    // Draw the result indicator
     chart.append("circle")
       .attr("cx", x(res))
       .attr("cy", height / 2)

@@ -11,7 +11,6 @@ window.senaite.core.globals = window.senaite.core.globals || {};
 const CONTROLLER_MAP = {
   "html": ["CommonUtils"],
   ".barcode, .qrcode": ["BarcodeUtils"],
-  ".range-chart": ["RangeGraph"],
   ".attachments": ["AttachmentsUtils"],
   "body": ["SiteView"],
 
