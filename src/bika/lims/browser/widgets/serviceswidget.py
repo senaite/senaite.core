@@ -191,7 +191,7 @@ class ServicesWidget(TypesWidget):
     """
     _properties = TypesWidget._properties.copy()
     _properties.update({
-        "macro": "bika_widgets/serviceswidget",
+        "macro": "senaite_widgets/serviceswidget",
     })
 
     security = ClassSecurityInfo()
