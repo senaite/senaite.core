@@ -34,7 +34,6 @@ const CONTROLLER_MAP = {
   // Analysis Requests
   ".portaltype-analysisrequest": ["AnalysisRequestView"],
   ".portaltype-analysisrequest.template-base_view": ["WorksheetManageResultsView"],
-  ".portaltype-analysisrequest.template-ar_add": ["AnalysisRequestAddView"],
   "#analysisrequest_add_form": ["AnalysisRequestAdd"],
 
   // Worksheets
