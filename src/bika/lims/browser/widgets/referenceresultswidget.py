@@ -178,9 +178,9 @@ class ReferenceResultsWidget(TypesWidget):
     """
     _properties = TypesWidget._properties.copy()
     _properties.update({
-        "macro": "bika_widgets/referenceresultswidget",
-        "helper_js": ("bika_widgets/referenceresultswidget.js",),
-        "helper_css": ("bika_widgets/referenceresultswidget.css",)
+        "macro": "senaite_widgets/referenceresultswidget",
+        "helper_js": ("senaite_widgets/referenceresultswidget.js",),
+        "helper_css": ("senaite_widgets/referenceresultswidget.css",)
     })
 
     security = ClassSecurityInfo()
