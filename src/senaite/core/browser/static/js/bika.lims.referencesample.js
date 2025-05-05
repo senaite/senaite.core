@@ -1,170 +1,159 @@
 /**
- * Controller class for Reference Sample Analyses View
+ * Reference Sample Controller
+ *
+ * This controller is loaded for the reference samples, e.g.
+ * `/senaite/setup/suppliers/supplier-10/QC-001/analyses`.
  */
-function ReferenceSampleAnalysesView() {
-    const that = this;
+window.ReferenceSampleAnalysesView = class ReferenceSampleAnalysesView {
+  constructor() {
+    this.load = this.load.bind(this);
+    this.filterRows = this.filterRows.bind(this);
+    this.drawControlChart = this.drawControlChart.bind(this);
+  }
 
-    /**
-     * Entry-point method
-     */
-    that.load = function() {
-        const data = $.parseJSON($("#graphdata").val());
-        let qcrec = false;
+  load() {
+    const data = $.parseJSON($("#graphdata").val());
+    let qcrec = false;
 
-        // Populate analyses selector
-        $.each(data, function(key, value) {
-            $("#selanalyses").append(`<option value="${key}">${key}</option>`);
-            if (!qcrec) {
-                $.each(value, function(k) {
-                    $("#selqcsample").val(k);
-                    return false; // break inner loop
-                });
-                qcrec = true;
-            }
+    // Populate analyses selector
+    $.each(data, (key, value) => {
+      $("#selanalyses").append(`<option value="${key}">${key}</option>`);
+      if (!qcrec) {
+        $.each(value, (k) => {
+          $("#selqcsample").val(k);
+          return false; // break inner loop
         });
+        qcrec = true;
+      }
+    });
 
-        // Initial draw
-        if ($("#selanalyses").val()) {
-            filterRows();
-            drawControlChart(null, null);
-        }
-
-        // Change handlers
-        $(document).on("change", "#selanalyses", function() {
-            drawControlChart(null, null);
-            filterRows();
-        });
-
-        $(document).on("change", "#interpolation", function() {
-            drawControlChart(null, null);
-        });
-
-        // Mouseover/mouseout on table rows
-        $(document).on("mouseover", ".item-listing-tbody tr", function() {
-            const uid = $(this).attr("uid");
-            if (uid) {
-                $(this).addClass("selected");
-                $(`#chart svg g circle#${uid}`).trigger("__onmouseover");
-            }
-        });
-
-        $(document).on("mouseout", ".item-listing-tbody tr", function() {
-            const uid = $(this).attr("uid");
-            if (uid) {
-                $(this).removeClass("selected");
-                $(`#chart svg g circle#${uid}`).trigger("__onmouseout");
-            }
-        });
-
-        $(document).on("listing:loaded", "body", function(event) {
-            filterRows();
-        });
-
-        // Print graph handler
-        $(document).on("click", "#printgraph", function(e) {
-            e.preventDefault();
-
-            const selectedValue = $("#selanalyses").val();
-            $("#selanalyses option").prop("selected", false);
-            $(`#selanalyses option[value="${selectedValue}"]`).prop("selected", true);
-
-            const w = 670;
-            const h = $("#chart").attr("height");
-            drawControlChart(w, h);
-
-            const WinPrint = window.open("", "", "width=800,height=900");
-            const css = `<link href="${window.portal_url}/++plone++senaite.core.static/bundles/senaite.core.css" rel="stylesheet" type="text/css">`;
-            const heading = $("span.documentFirstHeading").closest("h1").clone();
-            const content = $("#content-core").clone();
-
-            content.prepend(heading);
-            content.find("#selanalyses").after(`<span class="font-weight-bold">${selectedValue}</span>`).hide();
-            content.find("#interpolation").after(`<span class="font-weight-bold">${$("#interpolation").val()}</span>`).hide();
-            content.find("a#printgraph").hide();
-            content.find("div.listing-container").children().last().hide();
-
-            WinPrint.document.write(`<html><head>${css}</head><body>${content.html()}</body></html>`);
-            WinPrint.document.close();
-            WinPrint.focus();
-            WinPrint.print();
-
-            // Reset chart scaling
-            $("#chart").css("width", "100%").removeAttr("height");
-            drawControlChart(null, null);
-            WinPrint.close();
-        });
-
-        $("div.bika-listing-table-container").fadeIn();
-    };
-
-    /**
-     * Hide/Show the reference analyses rows from the table
-     */
-    function filterRows() {
-        const idqc = $("#selanalyses").val();
-        const service = $("#selanalyses").val().split("(")[0].trim();
-        let count = 0;
-
-        $("div.results-info").remove();
-        $(".contentstable tr").each(function() {
-            const match = $(this).find("td.Service strong").html() === service
-            if (match) {
-                $(this).fadeIn();
-                count++;
-            } else {
-                $(this).hide();
-            }
-        });
-
-        $(".listing-container").closest("div").before(`<div class="results-info mb-2">${count} results found</div>`);
+    // Initial draw
+    if ($("#selanalyses").val()) {
+      this.filterRows();
+      this.drawControlChart();
     }
 
-    /**
-     * Draws the control chart
-     */
-    function drawControlChart(width, height) {
-        const analysisKey = $("#selanalyses").val();
-        const refType = $("#selqcsample").val();
-        const interpolation = $("#interpolation").val();
-        const w = width === null ? $("#chart").innerWidth() : width;
-        const h = height === null ? $("#chart").innerHeight() : height;
+    // Change handlers
+    $(document).on("change", "#selanalyses", () => {
+      this.drawControlChart();
+      this.filterRows();
+    });
 
-        $("#chart").css({ width: w, height: h }).empty().show();
+    $(document).on("change", "#interpolation", this.drawControlChart);
 
-        let data = $.parseJSON($("#graphdata").val())[analysisKey];
+    $(document).on("mouseover", ".item-listing-tbody tr", function () {
+      const uid = $(this).attr("uid");
+      if (uid) {
+        $(this).addClass("selected");
+        $(`#chart svg g circle#${uid}`).trigger("__onmouseover");
+      }
+    });
 
-        if (!data || !data[refType] || data[refType].length === 0) {
-            $("#chart").hide();
-            return;
-        }
+    $(document).on("mouseout", ".item-listing-tbody tr", function () {
+      const uid = $(this).attr("uid");
+      if (uid) {
+        $(this).removeClass("selected");
+        $(`#chart svg g circle#${uid}`).trigger("__onmouseout");
+      }
+    });
 
-        data = data[refType];
-        const lastPoint = data[data.length - 1];
-        const unit = lastPoint.unit || "";
-        const upper = lastPoint.upper;
-        const lower = lastPoint.lower;
-        const target = lastPoint.target;
+    $(document).on("listing:loaded", "body", () => {
+      this.filterRows();
+    });
 
-        const ylabel = unit ? unit : "Result";
+    $(document).on("click", "#printgraph", (e) => {
+      e.preventDefault();
 
-        const uppertxt = `UCL (${upper}${unit})`;
-        const lowertxt = `LCL (${lower}${unit})`;
-        const centrtxt = `CL (${target}${unit})`;
+      const selectedValue = $("#selanalyses").val();
+      $("#selanalyses option").prop("selected", false);
+      $(`#selanalyses option[value="${selectedValue}"]`).prop("selected", true);
 
-        const chart = new ControlChart();
-        chart.setData(data);
-        chart.setInterpolation(interpolation);
-        chart.setXColumn("date");
-        chart.setYColumn("result");
-        chart.setPointId("id");
-        chart.setYLabel(ylabel);
-        chart.setXLabel("Date");
-        chart.setUpperLimitText(uppertxt);
-        chart.setLowerLimitText(lowertxt);
-        chart.setCenterLimitText(centrtxt);
-        chart.setCenterLimit(target);
-        chart.setUpperLimit(upper);
-        chart.setLowerLimit(lower);
-        chart.draw("#chart");
+      const w = 670;
+      const h = $("#chart").attr("height");
+      this.drawControlChart(w, h);
+
+      const win = window.open("", "", "width=800,height=900");
+      const css = `<link href="${window.portal_url}/++plone++senaite.core.static/bundles/senaite.core.css" rel="stylesheet">`;
+      const heading = $("span.documentFirstHeading").closest("h1").clone();
+      const content = $("#content-core").clone();
+
+      content.prepend(heading);
+      content.find("#selanalyses").after(`<span class="font-weight-bold">${selectedValue}</span>`).hide();
+      content.find("#interpolation").after(`<span class="font-weight-bold">${$("#interpolation").val()}</span>`).hide();
+      content.find("a#printgraph").hide();
+      content.find("div.listing-container").children().last().hide();
+
+      win.document.write(`<html><head>${css}</head><body>${content.html()}</body></html>`);
+      win.document.close();
+      win.focus();
+      win.print();
+      win.close();
+
+      $("#chart").css("width", "100%").removeAttr("height");
+      this.drawControlChart();
+    });
+
+    $("div.bika-listing-table-container").fadeIn();
+  }
+
+  filterRows() {
+    const service = $("#selanalyses").val().split("(")[0].trim();
+    let count = 0;
+
+    $("div.results-info").remove();
+
+    $(".contentstable tr").each(function () {
+      const match = $(this).find("td.Service strong").html() === service;
+      if (match) {
+        $(this).fadeIn();
+        count++;
+      } else {
+        $(this).hide();
+      }
+    });
+
+    $(".listing-container").closest("div").before(
+      `<div class="results-info mb-2">${count} results found</div>`
+    );
+  }
+
+  drawControlChart(width = null, height = null) {
+    const analysisKey = $("#selanalyses").val();
+    const refType = $("#selqcsample").val();
+    const interpolation = $("#interpolation").val();
+    const w = width || $("#chart").innerWidth();
+    const h = height || $("#chart").innerHeight();
+
+    $("#chart").css({ width: w, height: h }).empty().show();
+
+    let data = $.parseJSON($("#graphdata").val())[analysisKey];
+
+    if (!data || !data[refType] || data[refType].length === 0) {
+      $("#chart").hide();
+      return;
     }
+
+    data = data[refType];
+    const lastPoint = data[data.length - 1];
+    const unit = lastPoint.unit || "";
+    const upper = lastPoint.upper;
+    const lower = lastPoint.lower;
+    const target = lastPoint.target;
+
+    const chart = new ControlChart();
+    chart.setData(data);
+    chart.setInterpolation(interpolation);
+    chart.setXColumn("date");
+    chart.setYColumn("result");
+    chart.setPointId("id");
+    chart.setYLabel(unit || "Result");
+    chart.setXLabel("Date");
+    chart.setUpperLimitText(`UCL (${upper}${unit})`);
+    chart.setLowerLimitText(`LCL (${lower}${unit})`);
+    chart.setCenterLimitText(`CL (${target}${unit})`);
+    chart.setCenterLimit(target);
+    chart.setUpperLimit(upper);
+    chart.setLowerLimit(lower);
+    chart.draw("#chart");
+  }
 }
