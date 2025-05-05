@@ -554,7 +554,7 @@
       }).fail(function(request, status, error) {
         var msg;
         msg = _t(`Sorry, an error occured: ${status}`);
-        window.bika.lims.portalMessage(msg);
+        window.senaite.core.globals.portalMessage(msg);
         return window.scroll(0, 0);
       });
     }
@@ -2384,7 +2384,7 @@
             }
           }
           this.form_submission_flag = false;
-          window.bika.lims.portalMessage(msg);
+          window.senaite.core.globals.portalMessage(msg);
           return window.scroll(0, 0);
         } else if (data['confirmation']) {
           dialog = me.template_dialog("confirm-template", data.confirmation);

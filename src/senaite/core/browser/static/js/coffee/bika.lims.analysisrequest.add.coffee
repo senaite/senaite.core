@@ -188,7 +188,7 @@ class window.AnalysisRequestAdd
       $(me).trigger "ajax:end"
     .fail (request, status, error) ->
       msg = _t("Sorry, an error occured: #{status}")
-      window.bika.lims.portalMessage msg
+      window.senaite.core.globals.portalMessage msg
       window.scroll 0, 0
 
 
@@ -2156,7 +2156,7 @@ class window.AnalysisRequestAdd
             msg += "#{message}<br/>"
         
         @form_submission_flag = no
-        window.bika.lims.portalMessage msg
+        window.senaite.core.globals.portalMessage msg
         window.scroll 0, 0
 
       else if data['confirmation']
