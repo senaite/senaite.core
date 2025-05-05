@@ -31,8 +31,14 @@ window.SiteView = class SiteView {
 
     $(document).on("keypress", ".numeric", this.on_numeric_field_keypress);
     $(document).on("paste", ".numeric", this.on_numeric_field_paste);
-    $(document).on("keyup", "input[name*='\\:int\\'], .ArchetypesIntegerWidget input", this.on_at_integer_field_keyup);
-    $(document).on("keyup", "input[name*='\\:float\\'], .ArchetypesDecimalWidget input", this.on_at_float_field_keyup);
+
+    // Integer and float fields using attribute checks instead of problematic selectors
+    $(document).on("keyup", "input", (e) => {
+      const name = e.target.name || "";
+      if (name.includes(":int")) this.on_at_integer_field_keyup(e);
+      if (name.includes(":float")) this.on_at_float_field_keyup(e);
+    });
+
     $(document).on("click", "a.overlay_panel", this.on_overlay_panel_click);
 
     $(document).on({
@@ -176,7 +182,7 @@ window.SiteView = class SiteView {
           }
         }
       });
-      $el.click(); // required for prepOverlay
+      $el.click();
     } else {
       console.warn('prepOverlay not available. Consider updating or replacing it.');
     }
