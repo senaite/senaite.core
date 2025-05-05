@@ -106,7 +106,13 @@ window.InstrumentReferenceAnalysesView = class InstrumentReferenceAnalysesView {
   }
 
   load() {
-    const data = $.parseJSON($("#graphdata").val());
+    const gd = $("#graphdata")
+    // return if not found
+    if (!gd.length) {
+      console.warn("No element with graph data found!")
+      return;
+    };
+    const data = $.parseJSON(gd.val());
 
     $.each(data, (key) => {
       $("#selanalyses").append(`<option value="${key}">${key}</option>`);

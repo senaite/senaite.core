@@ -6,8 +6,8 @@ function WorksheetPrintView() {
   const referrerCookieName = "ws.print.urlback";
 
   this.load = function () {
-    let backUrl = document.referrer || bika.lims.SiteView.readCookie(referrerCookieName) || portal_url;
-    bika.lims.SiteView.setCookie(referrerCookieName, backUrl);
+    let backUrl = document.referrer || senaite.core.controllers.SiteView.readCookie(referrerCookieName) || portal_url;
+    senaite.core.controllers.SiteView.setCookie(referrerCookieName, backUrl);
 
     loadBarcodes();
 

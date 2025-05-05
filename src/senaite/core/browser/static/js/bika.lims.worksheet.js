@@ -1,11 +1,11 @@
-/* Please use this command to compile this file into the parent `js` directory:
-    coffee --no-header -w -o ../ -c bika.lims.worksheet.coffee
-*/
+/**
+ * Worksheet Folder View Controller
+ *
+ * This controller is loaded for the instrument edit view, e.g.
+ * `/senaite/bika_setup/bika_instruments/instrument-1`.
+ */
 window.WorksheetFolderView = class WorksheetFolderView {
   constructor() {
-    /*
-    * Controller class for Worksheets Folder
-     */
     this.load = this.load.bind(this);
     /* INITIALIZERS */
     this.bind_eventhandler = this.bind_eventhandler.bind(this);

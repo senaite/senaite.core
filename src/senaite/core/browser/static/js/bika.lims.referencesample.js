@@ -12,7 +12,13 @@ window.ReferenceSampleAnalysesView = class ReferenceSampleAnalysesView {
   }
 
   load() {
-    const data = $.parseJSON($("#graphdata").val());
+    const gd = $("#graphdata")
+    // return if not found
+    if (!gd.length) {
+      console.warn("No element with graph data found!")
+      return;
+    };
+    const data = $.parseJSON(gd.val());
     let qcrec = false;
 
     // Populate analyses selector
