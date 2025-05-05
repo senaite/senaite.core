@@ -1,46 +1,49 @@
 /**
- * Controller class for calculation edit page.
+ * Calculation Edit Form Controller
+ *
+ * This controller is loaded for the calculation edit view, e.g.
+ * `/senaite/bika_setup/bika_calculations/calculation-1`.
  */
-function CalculationEditView() {
-    var that = this;
+window.CalculationEditView = class CalculationEditView {
+  constructor() {
+    this.load = this.load.bind(this);
+    this.onFormulaChange = this.onFormulaChange.bind(this);
+  }
 
-    that.load = function() {
-        // Immediately hide the TestParameters_more button
-        $("#TestParameters_more").hide();
+  load() {
+    // Immediately hide the TestParameters_more button
+    $("#TestParameters_more").hide();
 
-        // When updating Formula, we must modify TestParameters
-        $(document).on("change", "#Formula", function(event) {
-            // Get existing param keywords
-            var existingParams = [];
-            $("[id^=TestParameters-keyword]").each(function() {
-                existingParams.push($(this).val());
-            });
+    // Bind change event to formula input
+    $(document).on("change", "#Formula", this.onFormulaChange);
+  }
 
-            // Find param keywords used in formula
-            var formula = $("#Formula").val();
-            var matches = formula.match(/\[[^\]]*\]/gi) || [];
+  onFormulaChange() {
+    const existingParams = [];
 
-            // Add missing params to bottom of list
-            matches.forEach(function(keyword) {
-                keyword = keyword.replace("[", "").replace("]", "");
-                if (existingParams.indexOf(keyword) === -1) {
-                    var existingRows = $(".records_row_TestParameters");
-                    var lastRow = existingRows.last();
-                    var newRowIndex = existingRows.length.toString();
+    $("[id^=TestParameters-keyword]").each(function () {
+      existingParams.push($(this).val());
+    });
 
-                    var newRow = lastRow.clone(true);
+    const formula = $("#Formula").val();
+    const matches = formula.match(/\[[^\]]*\]/gi) || [];
 
-                    // Update keyword and IDs
-                    newRow.find("[id^=TestParameters-keyword]")
-                        .val(keyword)
-                        .attr("id", "TestParameters-keyword-" + newRowIndex);
-                    newRow.find("[id^=TestParameters-value]")
-                        .attr("id", "TestParameters-value-" + newRowIndex);
+    matches.forEach((keyword) => {
+      keyword = keyword.replace("[", "").replace("]", "");
+      if (!existingParams.includes(keyword)) {
+        const existingRows = $(".records_row_TestParameters");
+        const lastRow = existingRows.last();
+        const newRowIndex = existingRows.length.toString();
+        const newRow = lastRow.clone(true);
 
-                    // Insert the new row before the last one
-                    newRow.insertBefore(lastRow);
-                }
-            });
-        });
-    };
+        newRow.find("[id^=TestParameters-keyword]")
+          .val(keyword)
+          .attr("id", "TestParameters-keyword-" + newRowIndex);
+        newRow.find("[id^=TestParameters-value]")
+          .attr("id", "TestParameters-value-" + newRowIndex);
+
+        newRow.insertBefore(lastRow);
+      }
+    });
+  }
 }
