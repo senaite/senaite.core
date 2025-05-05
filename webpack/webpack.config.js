@@ -177,22 +177,23 @@ module.exports = {
       files: [{
         src: [
           // legacy.js
-          "../src/senaite/core/browser/static/js/bika.lims.analysisrequest.js",
-          "../src/senaite/core/browser/static/js/bika.lims.artemplate.js",
-          "../src/senaite/core/browser/static/js/bika.lims.bikasetup.js",
-          "../src/senaite/core/browser/static/js/bika.lims.calculation.edit.js",
-          "../src/senaite/core/browser/static/js/bika.lims.graphics.range.js",
-          "../src/senaite/core/browser/static/js/bika.lims.client.js",
-          "../src/senaite/core/browser/static/js/bika.lims.common.js",
-          "../src/senaite/core/browser/static/js/bika.lims.graphics.controlchart.js",
-          "../src/senaite/core/browser/static/js/bika.lims.instrument.js",
-          "../src/senaite/core/browser/static/js/bika.lims.referencesample.js",
-          "../src/senaite/core/browser/static/js/bika.lims.site.js",
-          "../src/senaite/core/browser/static/js/bika.lims.utils.attachments.js",
-          "../src/senaite/core/browser/static/js/bika.lims.utils.barcode.js",
-          "../src/senaite/core/browser/static/js/bika.lims.worksheet.js",
-          "../src/senaite/core/browser/static/js/bika.lims.worksheet.print.js",
-          "../src/senaite/core/browser/static/js/bika.lims.loader.js",
+          "../src/senaite/core/browser/static/js/senaite.core.analysisrequest.js",
+          "../src/senaite/core/browser/static/js/senaite.core.bikasetup.js",
+          "../src/senaite/core/browser/static/js/senaite.core.calculation.edit.js",
+          "../src/senaite/core/browser/static/js/senaite.core.client.js",
+          "../src/senaite/core/browser/static/js/senaite.core.common.js",
+          "../src/senaite/core/browser/static/js/senaite.core.graphics.controlchart.js",
+          "../src/senaite/core/browser/static/js/senaite.core.graphics.range.js",
+          "../src/senaite/core/browser/static/js/senaite.core.instrument.js",
+          "../src/senaite/core/browser/static/js/senaite.core.loader.js",
+          "../src/senaite/core/browser/static/js/senaite.core.partitionmagic.js",
+          "../src/senaite/core/browser/static/js/senaite.core.referencesample.js",
+          "../src/senaite/core/browser/static/js/senaite.core.setupview.js",
+          "../src/senaite/core/browser/static/js/senaite.core.site.js",
+          "../src/senaite/core/browser/static/js/senaite.core.utils.attachments.js",
+          "../src/senaite/core/browser/static/js/senaite.core.utils.barcode.js",
+          "../src/senaite/core/browser/static/js/senaite.core.worksheet.js",
+          "../src/senaite/core/browser/static/js/senaite.core.worksheet.print.js",
         ],
         dest: code => {
           if (devMode) {
@@ -212,7 +213,7 @@ module.exports = {
       }, {
         // legacy.css
         src: [
-          "../src/senaite/core/browser/static/css/bika.lims.graphics.css",
+          "../src/senaite/core/browser/static/css/senaite.core.graphics.css",
         ],
         dest: code => ({
           "legacy.css":new CleanCSS({}).minify(code).styles,
