@@ -139,6 +139,7 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 
+# TODO: Remove, migrated in https://github.com/senaite/senaite.core/pull/2533
 class SamplePoint(BaseContent, HistoryAwareMixin, ClientAwareMixin,
                   SampleTypeAwareMixin):
     implements(ISamplePoint, IDeactivable)
