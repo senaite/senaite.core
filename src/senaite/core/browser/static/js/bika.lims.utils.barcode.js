@@ -1,47 +1,50 @@
 /**
- * Controller class for barcode utils
+ * Barcode Controller
+ *
+ * This controller is loaded if a barcode or qrcode element was found
  */
-function BarcodeUtils() {
+window.BarcodeUtils = class BarcodeUtils {
+  constructor() {
+    this.load = this.load.bind(this);
+  }
 
-    var that = this;
+  load() {
+    // Generate QR codes
+    $(".qrcode").each(function () {
+      const $el = $(this);
+      const render = $el.data("render") || "div";
+      const size = $el.data("size");
+      const code = $el.data("code");
+      const quiet = $el.data("quiet") || 0;
+      const text = $el.data("text") || "no text";
 
-    that.load = function() {
+      $el.qrcode({
+        render: render,
+        size: size, // 37.79 px ~ 10mm
+        code: code,
+        quiet: quiet,
+        text: text.toString()
+      });
+    });
 
-        // https://larsjung.de/jquery-qrcode
-        $(".qrcode").each(function() {
-           let render = $(this).data("render") || "div";
-           let size = $(this).data("size");
-           let code = $(this).data("code");
-           let quiet = $(this).data("quiet") || 0;
-           let text = $(this).data("text") || "no text";
+    // Generate barcodes
+    $(".barcode").each(function () {
+      const $el = $(this);
+      const id = $el.data("id") || "deadbeef";
+      const code = $el.data("code") || "code128";
+      const barHeight = $el.data("barheight") || 10;
+      const addQuietZone = $el.data("addquietzone") || false;
+      const showHRI = $el.data("showhri") || false;
+      const output = $el.data("output") || "svg";
+      const color = $el.data("color") || "#000000";
 
-           $(this).qrcode({
-                render: render,
-                size: size, // 37.79 pixel == 10mm
-                code: code,
-                quiet: quiet, // quiet zone in modules
-                text: text.toString()
-            });
-        });
-
-
-        // https://barcode-coder.com/en/barcode-jquery-plugin-201.html
-        $(".barcode").each(function() {
-            let id = $(this).data("id") || "deadbeef";
-            let code = $(this).data("code") || "code128";
-            let barHeight = $(this).data("barheight") || 10;
-            let addQuietZone = $(this).data("addquietzone") || false;
-            let showHRI = $(this).data("showhri") || false;
-            let output = $(this).data("output") || "svg";
-            let color = $(this).data("color") || "#000000";
-
-            $(this).barcode(id.toString(), code, {
-                barHeight: barHeight,
-                addQuietZone: addQuietZone,
-                showHRI: showHRI,
-                output: output,
-                color: color
-            });
-        });
-    }
+      $el.barcode(id.toString(), code, {
+        barHeight: barHeight,
+        addQuietZone: addQuietZone,
+        showHRI: showHRI,
+        output: output,
+        color: color
+      });
+    });
+  }
 }
