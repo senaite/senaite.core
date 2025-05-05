@@ -1,134 +1,97 @@
-window.bika = window.bika || { lims: {} };
+window.senaite = window.senaite || {};
+window.senaite.core = window.senaite.core || {};
+window.senaite.core.controllers = window.senaite.core.controllers || {};
 
 /**
- * Dictionary of JS objects to be loaded at runtime.
- * The key is the DOM element to look for in the current page. The
- * values are the JS objects to be loaded if a match is found in the
- * page for the specified key. The loader initializes the JS objects
- * following the order of the dictionary.
+ * Mapping of DOM selectors to controller class names.
+ * Controllers are instantiated and stored in senaite.core.controllers.
  */
-window.bika.lims.controllers =  {
+window.senaite.core.controller_map = {
+  "html": ["CommonUtils"],
+  ".barcode, .qrcode": ["BarcodeUtils"],
+  ".range-chart": ["RangeGraph"],
+  ".attachments": ["AttachmentsUtils"],
+  "body": ["SiteView"],
 
-    /** JS Utilities **/
+  // Instruments
+  ".portaltype-instrument.template-referenceanalyses": ["InstrumentReferenceAnalysesView"],
+  ".portaltype-instrumentcertification.template-base_edit": ["InstrumentCertificationEditView"],
+  ".portaltype-instrument.template-base_edit": ["InstrumentEditView"],
 
-    "html":
-        ['CommonUtils'],
+  // Calculations
+  ".portaltype-calculation": ["CalculationEditView"],
 
-    // Barcode utils
-    ".barcode, .qrcode":
-        ['BarcodeUtils'],
+  // Setup
+  ".portaltype-bikasetup.template-base_edit": ["BikaSetupEditView"],
 
-    // Range graphics
-    ".range-chart":
-        ['RangeGraph'],
+  // Clients
+  ".portaltype-client.template-base_edit": ["ClientEditView"],
 
-    // Atachments
-    ".attachments":
-        ['AttachmentsUtils'],
+  // Reference Samples
+  ".portaltype-referencesample.template-analyses": ["ReferenceSampleAnalysesView"],
 
-    /** JS objects to be loaded always **/
+  // Analysis Requests
+  ".portaltype-analysisrequest": ["AnalysisRequestView"],
+  ".portaltype-analysisrequest.template-base_view": ["WorksheetManageResultsView", "AnalysisRequestViewView"],
+  ".portaltype-analysisrequest.template-analyses": ["AnalysisRequestAnalysesView"],
+  ".portaltype-analysisrequest.template-ar_add": ["AnalysisRequestAddView"],
+  "#analysisrequest_add_form": ["AnalysisRequestAdd"],
 
-    "body":
-        ['SiteView'],
+  // Worksheets
+  ".portaltype-worksheetfolder": ["WorksheetFolderView"],
+  ".portaltype-worksheet.template-manage_results": ["WorksheetManageResultsView"],
+  "#worksheet-printview-wrapper": ["WorksheetPrintView"],
 
-
-    /** JS objects to be loaded on specific views or pages **/
-
-    // Instruments
-    ".portaltype-instrument.template-referenceanalyses":
-        ['InstrumentReferenceAnalysesView'],
-
-    ".portaltype-instrumentcertification.template-base_edit":
-        ['InstrumentCertificationEditView'],
-
-    ".portaltype-instrument.template-base_edit":
-            ['InstrumentEditView'],
-
-    // Editing a calculation
-    ".portaltype-calculation":
-        ['CalculationEditView'],
-
-    // Bika Setup
-    ".portaltype-bikasetup.template-base_edit":
-        ['BikaSetupEditView'],
-
-    // Clients
-    ".portaltype-client.template-base_edit":
-        ['ClientEditView'],
-
-    // Reference Samples
-    ".portaltype-referencesample.template-analyses":
-        ['ReferenceSampleAnalysesView'],
-
-    // Analysis Requests
-    ".portaltype-analysisrequest":
-        ['AnalysisRequestView'],
-
-    ".portaltype-analysisrequest.template-base_view":
-        ['WorksheetManageResultsView',
-         'AnalysisRequestViewView',],
-
-    ".portaltype-analysisrequest.template-analyses":
-        ['AnalysisRequestAnalysesView'],
-
-    // Common and utilities for AR Add forms
-    ".portaltype-analysisrequest.template-ar_add": ['AnalysisRequestAddView'],
-
-  // AR Add 2
-    "#analysisrequest_add_form": ['AnalysisRequestAdd'],
-
-    // Worksheets
-    ".portaltype-worksheetfolder":
-        ['WorksheetFolderView'],
-
-    ".portaltype-worksheet.template-manage_results":
-        ['WorksheetManageResultsView'],
-
-    "#worksheet-printview-wrapper":
-        ['WorksheetPrintView'],
-
-    // If RemarksWidget is in use on this page,
-    // load RemarksWIdgetview
-    ".ArchetypesRemarksWidget": ["RemarksWidgetView"],
-
-    // Add here your view-controller/s assignment
-
+  // Remarks Widget
+  ".ArchetypesRemarksWidget": ["RemarksWidgetView"]
 };
 
-
 /**
- * 'all' is a bool variable used to load all the controllers.
- * 'controllerKeys' is an array which contains specific controllers' keys which aren't
- * in the current view, but you want to be loaded anyway. To deal with overlay
- * widgets, for example.
- * Calling the function "loadControllers(false, [array with desied JS controllers keys from
- * window.bika.lims.controllers])", allows you to force bika to load/reload JS controllers defined inside the array.
+ * Load and initialize controllers, storing instances in senaite.core.controllers
+ *
+ * @param {boolean} all - Whether to force load all controllers
+ * @param {Array<string>} controllerKeys - Force-load specific selectors
+ * @returns {number} - Count of newly loaded controllers
  */
-window.bika.lims.loadControllers = function(all, controllerKeys) {
-    var controllers = window.bika.lims.controllers;
-    var _bika_lims_loaded_js = window.bika.lims._loaded || [];  // Track loaded controllers globally
-    var prev = _bika_lims_loaded_js.length;
-    for (var key in controllers) {
-        if ($(key).length || $.inArray(key, controllerKeys) >= 0) {
-            controllers[key].forEach(function(js) {
-                if (all || $.inArray(key, controllerKeys) >= 0 || $.inArray(js, _bika_lims_loaded_js) < 0) {
-                    console.debug("[senaite.loader] Loading " + js);
-                    if (!window.bika.lims[js]) { // Ensure it's not already initialized
-                        obj = new window[js]();
-                        obj.load();
-                        window.bika.lims[js] = obj;
-                        _bika_lims_loaded_js.push(js);
-                    }
-                }
-            });
+window.senaite.core.loadControllers = function(all = false, controllerKeys = []) {
+  const map = window.senaite.core.controller_map;
+  const registry = window.senaite.core.controllers;
+  const loaded = new Set(Object.keys(registry));
+  let loadedCount = 0;
+
+  for (const selector in map) {
+    const shouldLoad = all || controllerKeys.includes(selector) || $(selector).length > 0;
+    if (!shouldLoad) continue;
+
+    map[selector].forEach(controllerName => {
+      if (loaded.has(controllerName)) return;
+
+      const ControllerClass = window[controllerName];
+      if (typeof ControllerClass !== "function") {
+        console.warn(`[senaite.core.loader] Controller not found: ${controllerName}`);
+        return;
+      }
+
+      try {
+        const instance = new ControllerClass();
+        if (typeof instance.load === "function") {
+          instance.load();
         }
-    }
+        registry[controllerName] = instance;
+        loaded.add(controllerName);
+        loadedCount += 1;
+        console.debug(`[senaite.core.loader] Loaded: ${controllerName}`);
+      } catch (err) {
+        console.error(`[senaite.core.loader] Failed to load ${controllerName}:`, err);
+      }
+    });
+  }
 
-    window.bika.lims._loaded = _bika_lims_loaded_js;  // Store the updated list globally
-    return _bika_lims_loaded_js.length - prev;
+  return loadedCount;
 };
 
-document.addEventListener("DOMContentLoaded", function(event) {
-    window.bika.lims.loadControllers(false, []);
-    console.debug("*** SENAITE LOADER INITIALIZED ***");
+// Auto-load controllers when DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  const count = window.senaite.core.loadControllers(false, []);
+  console.debug(`*** SENAITE LOADER INITIALIZED (${count} controllers loaded) ***`);
 });
