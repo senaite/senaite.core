@@ -1,7 +1,7 @@
 /** Common global utility functions
  *
  * This controller is *always* loaded, i.e. for all templates.
- * IT provides common utility functions in `senaite.core.globals`.
+ * It provides common utility functions in `senaite.core.globals`.
  *
  */
 window.CommonUtils = class CommonUtils {
