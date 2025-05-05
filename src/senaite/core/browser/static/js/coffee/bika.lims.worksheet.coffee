@@ -1,5 +1,5 @@
 ### Please use this command to compile this file into the parent `js` directory:
-    coffee --no-header -w -o ../ -c bika.lims.worksheet.coffee
+    coffee --no-header -b -w -o ../ -c bika.lims.worksheet.coffee
 ###
 
 
@@ -97,7 +97,7 @@ class window.WorksheetFolderView
     if instrument_uid
       message = _t("Only the analyses for which the selected instrument is allowed will be added automatically.")
       # actually just a notification, but lacking a proper css class here
-      bika.lims.SiteView.notify_in_panel message, "error"
+      senaite.core.controllers.SiteView.notify_in_panel message, "error"
 
 
 
@@ -228,9 +228,9 @@ class window.WorksheetManageResultsView
         _authenticator: @get_authenticator()
       dataType: "json"
     .done (data) ->
-      bika.lims.SiteView.notify_in_panel _p("Changes saved."), "succeed"
+      senaite.core.controllers.SiteView.notify_in_panel _p("Changes saved."), "succeed"
     .fail () ->
-        bika.lims.SiteView.notify_in_panel _t("Could not set the selected analyst"), "error"
+      senaite.core.controllers.SiteView.notify_in_panel _t("Could not set the selected analyst"), "error"
 
   on_layout_change: (event) =>
     ###
@@ -263,7 +263,7 @@ class window.WorksheetManageResultsView
     .done (data) ->
       @reload_analyses_listing()
     .fail () ->
-        bika.lims.SiteView.notify_in_panel _t("Unable to apply the selected instrument"), "error"
+        senaite.core.controllers.SiteView.notify_in_panel _t("Unable to apply the selected instrument"), "error"
 
 
   on_wideiterims_analyses_change: (event) =>
