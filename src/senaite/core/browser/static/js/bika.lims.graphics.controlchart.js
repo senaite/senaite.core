@@ -1,309 +1,210 @@
-/**
- * D3 Control chart
+/** D3js Control Chart
+ *
+ * Wrapper class for D3 control chart used for QC samples
+ *
+ * Used in:
+ *   - bika.lims.instrument.js
+ *   - bika.lims.referencesample.js
  */
-function ControlChart() {
+class ControlChart {
+  constructor() {
+    this.datasource = [];
+    this.xcolumnkey = "date";
+    this.ycolumnkey = "value";
+    this.xlabel = "Date";
+    this.ylabel = "Value";
+    this.lowerlimit = 0;
+    this.upperlimit = 1;
+    this.centerlimit = 0.5;
+    this.lowerlimit_text = "Lower Limit";
+    this.upperlimit_text = "Upper Limit";
+    this.centerlimit_text = "Center Limit";
+    this.interpolation = "basis";
+    this.pointid = "";
+  }
 
-    var that = this;
-    var datasource = [];
-    var xcolumnkey = 'date';
-    var ycolumnkey = 'value';
-    var xlabel = "Date";
-    var ylabel = "Value";
-    var lowerlimit = 0;
-    var upperlimit = 1;
-    var centerlimit = 0.5;
-    var lowerlimit_text = "Lower Limit";
-    var upperlimit_text = "Upper Limit";
-    var centerlimit_text = "Center Limit";
-    var interpolation = "basis";
-    var pointid = "";
+  setData(data) {
+    this.datasource = data;
+  }
 
-    /**
-     * Sets the data to the chart
-     *
-     * Data format:
-     *   [{ "date": "2014-03-12 13:01:00",
-     *      "value": "2.13"},
-     *    { "date": "2014-03-13 11:11:11",
-     *      "value": "5.2"}]
-     *
-     * By default the column keys are 'date' and 'value', but can be
-     * changed using the methods setXColumn and setYColumn. This allows
-     * not to restrict the data source to only two columns.
-     */
-    this.setData = function(data) {
-        that.datasource = data;
-    };
+  setXColumn(key) {
+    this.xcolumnkey = key;
+  }
 
-    /**
-     * Sets the X key from the datasource X-values.
-     * By default, 'date'
-     */
-    this.setXColumn = function(xcolumnkey) {
-        that.xcolumnkey = xcolumnkey;
-    };
+  setYColumn(key) {
+    this.ycolumnkey = key;
+  }
 
-    /**
-     * Sets the Y key from the datasource Y-values.
-     * By default, 'value'
-     */
-    this.setYColumn = function(ycolumnkey) {
-        that.ycolumnkey = ycolumnkey;
-    };
+  setXLabel(label) {
+    this.xlabel = label;
+  }
 
-    /**
-     * Label to display on the Y-axis
-     * By default, 'Date'
-     */
-    this.setYLabel = function(ylabel) {
-        that.ylabel = ylabel;
-    };
+  setYLabel(label) {
+    this.ylabel = label;
+  }
 
-    /**
-     * Label to display on the X-axis
-     * By default, 'Value'
-     */
-    this.setXLabel = function(xlabel) {
-        that.xlabel = xlabel;
-    };
+  setUpperLimit(limit) {
+    this.upperlimit = limit;
+  }
 
-    /**
-     * Sets the upper limit line value
-     * Default: 1
-     */
-    this.setUpperLimit = function(upperLimit) {
-        that.upperlimit = upperLimit;
-    };
+  setLowerLimit(limit) {
+    this.lowerlimit = limit;
+  }
 
-    /**
-     * Sets the lower limit line value
-     * Default: 0
-     */
-    this.setLowerLimit = function(lowerLimit) {
-        that.lowerlimit = lowerLimit;
-    };
+  setCenterLimit(limit) {
+    this.centerlimit = limit;
+  }
 
-    /**
-     * Sets the center limit line value
-     * Default: 0.5
-     */
-    this.setCenterLimit = function(centerLimit) {
-        that.centerlimit = centerLimit;
-    };
+  setUpperLimitText(text) {
+    this.upperlimit_text = text;
+  }
 
-    /**
-     * Sets the text to be displayed above upper limit line
-     * By default: 'Upper Limit'
-     */
-    this.setUpperLimitText = function(upperLimitText) {
-        that.upperlimit_text = upperLimitText;
-    };
+  setLowerLimitText(text) {
+    this.lowerlimit_text = text;
+  }
 
-    /**
-     * Sets the text to be displayed below lower limit line
-     * By default: 'Lower Limit'
-     */
-    this.setLowerLimitText = function(lowerLimitText) {
-        that.lowerlimit_text = lowerLimitText;
-    };
+  setCenterLimitText(text) {
+    this.centerlimit_text = text;
+  }
 
-    /**
-     * Sets the text to be displayed above center limit line
-     * By default: 'Center Limit'
-     */
-    this.setCenterLimitText = function(centerLimitText) {
-        that.centerlimit_text = centerLimitText;
-    };
+  setInterpolation(method) {
+    this.interpolation = method;
+  }
 
-    /**
-     * Sets the interpolation to be used for drawing the line
-     */
-    this.setInterpolation = function(interpolation) {
-        that.interpolation = interpolation;
-    };
+  setPointId(id) {
+    this.pointid = id;
+  }
 
-    /**
-     * Sets the key to be used to set the identifier to each point
-     */
-    this.setPointId = function(pointId) {
-        that.pointid = pointId;
-    };
+  draw(canvas) {
+    const widthRaw = $(canvas).innerWidth() - 20;
+    const heightRaw = $(canvas).innerHeight() - 20;
+    const margin = { top: 20, right: 20, bottom: 30, left: 30 };
+    const width = widthRaw - margin.left - margin.right;
+    const height = heightRaw - margin.top - margin.bottom;
 
-    /**
-     * Draws the chart inside the container specified as 'canvas'
-     * Accepts a jquery element identifier (i.e. '#chart')
-     */
-    this.draw = function(canvas) {
-        var width = $(canvas).innerWidth() - 20;
-        var height = $(canvas).innerHeight() - 20;
-        var margin = { top: 20, right: 20, bottom: 30, left: 30 };
+    const x = d3.time.scale().range([0, width]);
+    const y = d3.scale.linear().range([height, 0]);
 
-        width -= margin.left + margin.right;
-        height -= margin.top + margin.bottom;
+    const xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(0);
+    const yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
 
-        var x = d3.time.scale().range([0, width]);
-        var y = d3.scale.linear().range([height, 0]);
+    const line = d3.svg.line()
+      .interpolate(this.interpolation)
+      .x(d => x(d.x_axis))
+      .y(d => y(d.y_axis));
 
-        var xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(0);
-        var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
+    const svg = d3.select(canvas).append("svg")
+      .attr("xmlns", "http://www.w3.org/2000/svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
 
-        var line = d3.svg.line()
-            .interpolate(that.interpolation)
-            .x(function(d) { return x(d.x_axis); })
-            .y(function(d) { return y(d.y_axis); });
+    const parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
 
-        var svg = d3.select(canvas).append("svg")
-            .attr("xmlns", "http://www.w3.org/2000/svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    this.datasource.forEach(d => {
+      d.x_axis = parseDate(d[this.xcolumnkey]);
+      d.y_axis = parseFloat(d[this.ycolumnkey]);
+      d.point_id = d[this.pointid];
+    });
 
-        function tonumber(val) {
-            if (!val || typeof val !== 'string') {
-                return val;
-            }
-            return parseFloat(val);
-        }
+    this.datasource.sort((a, b) => a.x_axis - b.x_axis);
 
-        // Let's go for fun
-        // Convert values to floats
-        // "2014-02-19 15:11:23"
-        var x_data_parse = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
-        that.datasource.forEach(function(d) {
-            d.x_axis = x_data_parse(d[that.xcolumnkey]);
-            d.y_axis = tonumber(d[that.ycolumnkey]);
-            d.point_id = d[that.pointid];
+    x.domain(d3.extent(this.datasource, d => d.x_axis));
+
+    let min = d3.min(this.datasource, d => d.y_axis);
+    if (min > this.lowerlimit) min = this.lowerlimit;
+
+    let max = d3.max(this.datasource, d => d.y_axis);
+    if (max < this.upperlimit) max = this.upperlimit;
+
+    y.domain([min, max]);
+
+    svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", `translate(0,${height})`)
+      .call(xAxis)
+      .style("font-size", "11px")
+      .append("text")
+      .attr("x", width)
+      .attr("dy", "-0.71em")
+      .attr("text-anchor", "end")
+      .text(this.xlabel);
+
+    svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+      .style("font-size", "11px")
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text(this.ylabel);
+
+    svg.append("path")
+      .datum(this.datasource)
+      .attr("stroke", "#4682b4")
+      .attr("stroke-width", "1.5px")
+      .attr("fill", "none")
+      .attr("class", "line")
+      .attr("d", line);
+
+    // Render data points
+    this.datasource.forEach(d => {
+      const group = svg.append("g").attr("fill", "#2f2f2f");
+
+      group.append("circle")
+        .attr("id", d.point_id)
+        .attr("r", 3)
+        .attr("cx", x(d.x_axis))
+        .attr("cy", y(d.y_axis))
+        .on("mouseout", function () {
+          d3.select(this).attr("fill", "#2f2f2f").attr("r", 3);
+          d3.select(this.parentNode).select("text").remove();
+        })
+        .on("mouseover", () => {
+          d3.select(d3.event.currentTarget).attr("fill", "#4682b4").attr("r", 6);
+          group.append("text")
+            .attr("fill", "#000000")
+            .style("font-size", "10px")
+            .attr("x", x(d.x_axis) - 10)
+            .attr("y", y(d.y_axis) - 10)
+            .text(`${d.y_axis} ${this.ylabel}`);
+        })
+        .on("click", () => {
+          d3.select(d3.event.currentTarget).attr("fill", "#4682b4").attr("r", 6);
+          group.append("text")
+            .attr("fill", "#000000")
+            .style("font-size", "10px")
+            .attr("x", x(d.x_axis) - 10)
+            .attr("y", y(d.y_axis) - 10)
+            .text(`${d.y_axis} ${this.ylabel}`);
         });
+    });
 
-        function sortByDateAscending(a, b) {
-            return a.x_axis - b.x_axis;
-        }
+    // Draw limit lines
+    const limits = [
+      { y: this.upperlimit, color: "#8e0000", text: this.upperlimit_text },
+      { y: this.lowerlimit, color: "#8e0000", text: this.lowerlimit_text },
+      { y: this.centerlimit, color: "#598859", text: this.centerlimit_text }
+    ];
 
-        that.datasource.sort(sortByDateAscending);
+    limits.forEach(lim => {
+      svg.append("line")
+        .attr("stroke", lim.color)
+        .attr("stroke-width", "1px")
+        .attr("stroke-dasharray", lim.text.includes("Limit") ? "5,5" : null)
+        .attr("x1", 0)
+        .attr("y1", y(lim.y))
+        .attr("x2", width)
+        .attr("y2", y(lim.y));
 
-        x.domain(d3.extent(that.datasource, function(d) { return d.x_axis; }));
-
-        var min = d3.min(that.datasource, function(d) { return d.y_axis; });
-        if (min > that.lowerlimit) {
-            min = that.lowerlimit;
-        }
-
-        var max = d3.max(that.datasource, function(d) { return d.y_axis; });
-        if (max < that.upperlimit) {
-            max = that.upperlimit;
-        }
-
-        y.domain([min, max]);
-
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis)
-            .style("font-size", "11px")
-            .append("text")
-            .attr("x", width)
-            .attr("dy", "-0.71em")
-            .attr("text-anchor", "end")
-            .text(that.xlabel);
-
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .style("font-size", "11px")
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(that.ylabel);
-
-        svg.append("path")
-            .datum(that.datasource)
-            .attr("stroke", "#4682b4")
-            .attr("stroke-width", "1.5px")
-            .attr("fill", "none")
-            .attr("class", "line")
-            .attr("d", line);
-
-        // set points
-        that.datasource.forEach(function(d) {
-            var group = svg.append("g").attr("fill", "#2f2f2f");
-
-            group.append("circle")
-                .attr("id", d.point_id)
-                .attr("r", 3)
-                .attr("cx", x(d.x_axis))
-                .attr("cy", y(d.y_axis))
-                .on("mouseout", function() {
-                    d3.select(this).attr("fill", "#2f2f2f").attr("r", 3);
-                    d3.select(this.parentNode).select("text").remove();
-                })
-                .on("mouseover", function() {
-                    d3.select(this).attr("fill", "#4682b4").attr("r", 6);
-                    group.append("text")
-                        .attr("fill", "#000000")
-                        .style("font-size", "10px")
-                        .attr("x", x(d.x_axis) - 10)
-                        .attr("y", y(d.y_axis) - 10)
-                        .text(d.y_axis + that.ylabel);
-                })
-                .on("click", function() {
-                    d3.select(this).attr("fill", "#4682b4").attr("r", 6);
-                    group.append("text")
-                        .attr("fill", "#000000")
-                        .style("font-size", "10px")
-                        .attr("x", x(d.x_axis) - 10)
-                        .attr("y", y(d.y_axis) - 10)
-                        .text(d.y_axis + that.ylabel);
-                });
-        });
-
-        // upper limit line
-        svg.append("line")
-            .attr("stroke", "#8e0000")
-            .attr("stroke-width", "1px")
-            .attr("stroke-dasharray", "5,5")
-            .attr("x1", 0)
-            .attr("y1", y(that.upperlimit))
-            .attr("x2", width)
-            .attr("y2", y(that.upperlimit));
-
-        svg.append("text")
-            .attr("x", 30)
-            .attr("y", y(that.upperlimit) - 5)
-            .style("font-size", "11px")
-            .text(that.upperlimit_text);
-
-        // lower limit line
-        svg.append("line")
-            .attr("stroke", "#8e0000")
-            .attr("stroke-width", "1px")
-            .attr("stroke-dasharray", "5,5")
-            .attr("x1", 0)
-            .attr("y1", y(that.lowerlimit))
-            .attr("x2", width)
-            .attr("y2", y(that.lowerlimit));
-
-        svg.append("text")
-            .attr("x", 30)
-            .attr("y", y(that.lowerlimit) - 5)
-            .style("font-size", "11px")
-            .text(that.lowerlimit_text);
-
-        // center limit line
-        svg.append("line")
-            .attr("stroke", "#598859")
-            .attr("stroke-width", "1px")
-            .attr("x1", 0)
-            .attr("y1", y(that.centerlimit))
-            .attr("x2", width)
-            .attr("y2", y(that.centerlimit));
-
-        svg.append("text")
-            .attr("x", 30)
-            .attr("y", y(that.centerlimit) - 5)
-            .style("font-size", "11px")
-            .text(that.centerlimit_text);
-    };
+      svg.append("text")
+        .attr("x", 30)
+        .attr("y", y(lim.y) - 5)
+        .style("font-size", "11px")
+        .text(lim.text);
+    });
+  }
 }
