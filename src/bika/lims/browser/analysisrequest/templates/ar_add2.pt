@@ -14,9 +14,9 @@
       <!-- AR Add form -->
       <script type="text/javascript"
               src="bika.lims.analysisrequest.add.js"
-              tal:attributes="src string:${portal/absolute_url}/++plone++senaite.core.static/js/bika.lims.analysisrequest.add.js"></script>
+              tal:attributes="src string:${portal/absolute_url}/++plone++senaite.core.static/js/senaite.core.analysisrequest.add.js"></script>
       <link rel="stylesheet" type="text/css" media="all" href=""
-            tal:attributes="href string:${portal/absolute_url}/++plone++senaite.core.static/css/bika.lims.analysisrequest.add.css"/>
+            tal:attributes="href string:${portal/absolute_url}/++plone++senaite.core.static/css/senaite.core.analysisrequest.add.css"/>
 
       <!-- Handlebars JS Templates -->
 
