@@ -2138,18 +2138,21 @@ def is_valid_id(thing, container=None):
     :type id: str
     :returns: True if the id meets all the conditions, False otherwise.
     """
-    id_rx = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9_\-]+[a-zA-Z0-9]$")
+    id_rx = re.compile(r"^[a-z0-9][a-z0-9_\-]+[a-z0-9]$")
     illegal = re.compile(r"^(aq_|manage|request).*")
 
     if not is_string(thing):
         return False
 
+    # convert to lower to simplify regex
+    lower = thing.lower()
+
     # check length and characters
-    if not id_rx.match(thing):
+    if not id_rx.match(lower):
         return False
 
     # check for reserved/illegal word
-    if illegal.match(thing):
+    if illegal.match(lower):
         return False
 
     # check for portal type names
