@@ -357,21 +357,21 @@ Create the sample:
     >>> cu.getDetectionLimitOperand()
     '<'
 
-The Detection Limit is not kept on the retest:
+The Detection Limit is kept on the retest:
 
-    >>> success = do_action_for(analysis, "retract")
-    >>> retest = analysis.getRetest()
+    >>> success = do_action_for(cu, "retract")
+    >>> retest = cu.getRetest()
     >>> retest.getResult()
-    ''
+    '10'
 
     >>> retest.getFormattedResult(html=False)
-    ''
+    '< 10'
 
     >>> retest.isLowerDetectionLimit()
-    False
+    True
 
     >>> retest.getDetectionLimitOperand()
-    ''
+    '<'
 
 Do the same with Upper Detection Limit (UDL):
 
@@ -393,16 +393,16 @@ Do the same with Upper Detection Limit (UDL):
 
 The Detection Limit is not kept on the retest:
 
-    >>> success = do_action_for(analysis, "retract")
-    >>> retest = analysis.getRetest()
+    >>> success = do_action_for(cu, "retract")
+    >>> retest = cu.getRetest()
     >>> retest.getResult()
-    ''
+    '10'
 
     >>> retest.getFormattedResult(html=False)
-    ''
+    '> 10'
 
     >>> retest.isUpperDetectionLimit()
-    False
+    True
 
     >>> retest.getDetectionLimitOperand()
-    ''
+    '>'
