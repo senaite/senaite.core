@@ -216,14 +216,18 @@ class ReferenceSample(BaseFolder):
 
     def _renameAfterCreation(self, check_auto_id=False):
         ref_id = self.getManualId()
-        parent = api.get_parent(self)
-        if not api.is_valid_id(ref_id, container=parent):
-            # empty or non-valid id. Rely on idserver
+        if not ref_id:
+            # empty id. Rely on idserver
             from senaite.core.idserver import renameAfterCreation
             renameAfterCreation(self)
             return
 
-        # Assign the manually entered id
+        parent = api.get_parent(self)
+        if not api.is_valid_id(ref_id, container=parent):
+            # the id is not valid
+            raise ValueError("The ManualID is not valid: %s" % ref_id)
+
+        # assign the manually entered id
         self.setId(ref_id)
 
     security.declarePublic('current_date')
