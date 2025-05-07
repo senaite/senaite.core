@@ -20,5 +20,5 @@ def ObjectEditedEventHandler(obj, event):
         return
 
     # re-assign id and reindex
-    obj.setId(manual_id)
+    parent.manage_renameObject(obj_id, manual_id)
     obj.reindexObject()
