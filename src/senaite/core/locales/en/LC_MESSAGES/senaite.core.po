@@ -145,7 +145,7 @@ msgstr ""
 
 #: bika/lims/browser/worksheet/templates/add_analyses.pt:61
 msgid "<i class=\"fas fa-link\" aria-hidden=\"true\" /> Go to worksheet template setup"
-msgstr ""
+msgstr "<i class=\"fas fa-link\" aria-hidden=\"true\" /> Go to jobcard template setup"
 
 #: bika/lims/browser/templates/senaite-frontpage.pt:15
 msgid "<img src=\"${DYNAMIC_CONTENT}\" /> Welcome to SENAITE"
@@ -594,7 +594,7 @@ msgstr ""
 
 #: senaite/core/exportimport/instruments/importer.py:823
 msgid "Attached file '%{filename}' to worksheet ${worksheet}"
-msgstr ""
+msgstr "Attached file '%{filename}' to jobcard ${worksheet}"
 
 #: senaite/core/extender/label.py:58
 msgid "Attached labels"
@@ -1389,7 +1389,7 @@ msgstr ""
 
 #: senaite/core/browser/samples/view.py:710
 msgid "Create Worksheet"
-msgstr ""
+msgstr "Create jobcard"
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:134
 msgid "Create a new SENAITE site"
@@ -1401,11 +1401,11 @@ msgstr ""
 
 #: senaite/core/browser/samples/view.py:714
 msgid "Create a new worksheet for the selected samples"
-msgstr ""
+msgstr "Create a new jobcard for the selected samples"
 
 #: bika/lims/browser/worksheet/templates/worksheets.pt:31
 msgid "Create new worksheet"
-msgstr ""
+msgstr "Create new jobcard"
 
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Create partitions"
@@ -1428,7 +1428,7 @@ msgstr ""
 
 #: senaite/core/browser/modals/sample.py:64
 msgid "Created worksheet %s"
-msgstr ""
+msgstr "Created jobcard %s"
 
 #: senaite/core/browser/samples/partition_magic.py:113
 msgid "Created {} partitions: {}"
@@ -1636,7 +1636,7 @@ msgstr ""
 
 #: senaite/core/registry/schema.py:120
 msgid "Default column order for worksheet analysis listings"
-msgstr ""
+msgstr "Default column order for jobcard analysis listings"
 
 #: bika/lims/content/bikasetup.py:1008
 msgid "Default count of Sample to add."
@@ -1657,7 +1657,7 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:490
 msgid "Default layout in worksheet view"
-msgstr ""
+msgstr "Default layout in jobcard view"
 
 #: bika/lims/content/abstractbaseanalysis.py:351
 msgid "Default method used for analyses of this type"
@@ -1665,7 +1665,7 @@ msgstr ""
 
 #: senaite/core/registry/schema.py:144
 msgid "Default printing templates order for worksheet"
-msgstr ""
+msgstr "Default printing templates order for jobcard"
 
 #: bika/lims/content/analysisservice.py:195
 msgid "Default result"
@@ -2064,7 +2064,7 @@ msgstr ""
 
 #: bika/lims/content/worksheettemplate.py:140
 msgid "Enable Multiple Use of Instrument in Worksheets."
-msgstr ""
+msgstr "Enable Multiple Use of Instrument in jobcards."
 
 #: bika/lims/content/bikasetup.py:627
 msgid "Enable Sample Preservation"
@@ -2182,7 +2182,7 @@ msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:522
 msgid "Evolution of Worksheets"
-msgstr ""
+msgstr "Evolution of jobcards"
 
 #: senaite/core/exportimport/import.pt:172
 msgid "Example Cronjob to execute the auto import every 10 minutes"
@@ -3482,15 +3482,15 @@ msgstr ""
 
 #: bika/lims/skins/bika/bika_widgets/worksheettemplatelayoutwidget.pt:33
 msgid "No Reference Definitions for Blanks available. <br /> To add a Blank in this Worksheet Template, create a Reference Definition for a Blank sample first."
-msgstr ""
+msgstr "No Reference Definitions for Blanks available. <br /> To add a Blank in this Jobcard Template, create a Reference Definition for a Blank sample first."
 
 #: bika/lims/skins/bika/bika_widgets/worksheettemplatelayoutwidget.pt:38
 msgid "No Reference Definitions for Controls available. <br /> To add a Control in this Worksheet Template, create a Reference Definition for a Control sample first."
-msgstr ""
+msgstr "No Reference Definitions for Controls available. <br /> To add a Control in this Jobcard Template, create a Reference Definition for a Control sample first."
 
 #: bika/lims/skins/bika/bika_widgets/worksheettemplatelayoutwidget.pt:43
 msgid "No ReferenceDefinitions for Controls nor Blanks available. <br /> To add a Control or Blank in this Worksheet Template, create a Reference Definition first."
-msgstr ""
+msgstr "No ReferenceDefinitions for Controls nor Blanks available. <br /> To add a Control or Blank in this Jobcard Template, create a Reference Definition first."
 
 #: senaite/core/exportimport/instruments/importer.py:410
 msgid "No Sample found for ${sid}"
@@ -3526,7 +3526,7 @@ msgstr ""
 
 #: bika/lims/browser/worksheet/views/add_analyses.py:152
 msgid "No analyses were added to this worksheet."
-msgstr ""
+msgstr "No analyses were added to this jobcard."
 
 #: senaite/core/browser/attachment/attachment.py:219
 msgid "No analysis found for service '{}'"
@@ -3753,7 +3753,7 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:195
 msgid "Only lab managers can create and manage worksheets"
-msgstr ""
+msgstr "Only lab managers can create and manage jobcards"
 
 #: bika/lims/content/bikasetup.py:640
 msgid "Only laboratory workdays are considered for the analysis turnaround time calculation. "
@@ -3995,7 +3995,7 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:491
 msgid "Preferred layout of the results entry table in the Worksheet view. Classic layout displays the Samples in rows and the analyses in columns. Transposed layout displays the Samples in columns and the analyses in rows."
-msgstr ""
+msgstr "Preferred layout of the results entry table in the Jobcard view. Classic layout displays the Samples in rows and the analyses in columns. Transposed layout displays the Samples in columns and the analyses in rows."
 
 #: bika/lims/content/bikasetup.py:291
 msgid "Preferred scientific notation format for reports"
@@ -4098,7 +4098,7 @@ msgstr ""
 
 #: bika/lims/browser/worksheet/templates/results.pt:135
 msgid "Print Worksheet"
-msgstr ""
+msgstr "Print Jobcard"
 
 #: bika/lims/browser/templates/batch_publish.pt:124
 msgid "Print date:"
@@ -5079,7 +5079,7 @@ msgstr ""
 
 #: bika/lims/content/worksheettemplate.py:82
 msgid "Select which Analyses should be included on the Worksheet"
-msgstr ""
+msgstr "Select which Analyses should be included on the Jobcard"
 
 #: bika/lims/content/bikasetup.py:851
 msgid "Select which sticker should be used as the 'large' sticker by default"
@@ -5322,7 +5322,7 @@ msgstr ""
 
 #: bika/lims/content/worksheettemplate.py:63
 msgid "Specify the size of the Worksheet, e.g. corresponding to a specific instrument's tray size. Then select an Analysis 'type' per Worksheet position.Where QC samples are selected, also select which Reference Sample should be used.If a duplicate analysis is selected, indicate which sample position it should be a duplicate of"
-msgstr ""
+msgstr "Specify the size of the Jobcard, e.g. corresponding to a specific instrument's tray size. Then select an Analysis 'type' per Jobcard position.Where QC samples are selected, also select which Reference Sample should be used.If a duplicate analysis is selected, indicate which sample position it should be a duplicate of"
 
 #: senaite/core/browser/samples/templates/manage_sample_fields.pt:149
 #: senaite/core/registry/schema.py:270
@@ -5551,7 +5551,7 @@ msgstr ""
 
 #: bika/lims/browser/batch/batchbook.py:38
 msgid "The batch book allows to introduce analysis results for all samples in this batch. Please note that submitting the results for verification is only possible within samples or worksheets, because additional information like e.g. the instrument or the method need to be set additionally."
-msgstr ""
+msgstr "The batch book allows to introduce analysis results for all samples in this batch. Please note that submitting the results for verification is only possible within samples or jobcards, because additional information like e.g. the instrument or the method need to be set additionally."
 
 #: bika/lims/content/analysisrequest.py:835
 msgid "The client side identifier of the sample"
@@ -5812,11 +5812,11 @@ msgstr ""
 
 #: bika/lims/browser/worksheet/tools.py:84
 msgid "This worksheet has been created to replace the rejected worksheet at ${ws_id}"
-msgstr ""
+msgstr "This jobcard has been created to replace the rejected jobcard at ${ws_id}"
 
 #: bika/lims/browser/worksheet/tools.py:77
 msgid "This worksheet has been rejected.  The replacement worksheet is ${ws_id}"
-msgstr ""
+msgstr "This jobcard has been rejected.  The replacement jobcard is ${ws_id}"
 
 #: bika/lims/config.py:97
 msgid "Thursday"
@@ -6432,7 +6432,7 @@ msgstr ""
 
 #: bika/lims/content/abstractbaseanalysis.py:400
 msgid "When the results of duplicate analyses on worksheets, carried out on the same sample, differ with more than this percentage, an alert is raised"
-msgstr ""
+msgstr "When the results of duplicate analyses on jobcards, carried out on the same sample, differ with more than this percentage, an alert is raised"
 
 #: bika/lims/validators.py:511
 msgid "Wildcards for interims are not allowed: ${wildcards}"
@@ -6457,35 +6457,35 @@ msgstr ""
 #: bika/lims/browser/referencesample.py:156
 #: bika/lims/browser/templates/analyses_retractedlist.pt:22
 msgid "Worksheet"
-msgstr ""
+msgstr "Jobcard"
 
 #: bika/lims/content/worksheettemplate.py:62
 msgid "Worksheet Layout"
-msgstr ""
+msgstr "Jobcard Layout"
 
 #: senaite/core/profiles/default/types/WorksheetTemplate.xml
 msgid "Worksheet Template"
-msgstr ""
+msgstr "Jobcard Template"
 
 #: senaite/core/profiles/default/types/WorksheetTemplates.xml
 msgid "Worksheet Templates"
-msgstr ""
+msgstr "Jobcard Templates"
 
 #: senaite/core/registry/schema.py:110
 msgid "Worksheet View"
-msgstr ""
+msgstr "Jobcard View"
 
 #: senaite/core/registry/schema.py:143
 msgid "Worksheet printing templates order"
-msgstr ""
+msgstr "Jobcard printing templates order"
 
 #: senaite/core/registry/schema.py:111
 msgid "Worksheet view configuration"
-msgstr ""
+msgstr "Jobcard view configuration"
 
 #: senaite/core/browser/dashboard/dashboard.py:529
 msgid "Worksheets"
-msgstr ""
+msgstr "Jobcards"
 
 #: senaite/core/content/supplier.py:166
 msgid "Wrong IBAN length by %s: %s"
@@ -6522,7 +6522,7 @@ msgstr ""
 
 #: bika/lims/browser/worksheet/tools.py:42
 msgid "You do not have sufficient privileges to view the worksheet ${worksheet_title}."
-msgstr ""
+msgstr "You do not have sufficient privileges to view the jobcard ${worksheet_title}."
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:78
 msgid "You have multiple SENAITE sites:"
@@ -7339,7 +7339,7 @@ msgstr ""
 #. Default: "Select the preferred instrument"
 #: senaite/core/content/worksheettemplate.py:266
 msgid "description_worksheettemplate_instrument"
-msgstr ""
+msgstr "description_jobcardtemplate_instrument"
 
 #. Default: "Restrict the available analysis services and instruments to those with the selected method.<br/>In order to apply this change to the services list, you should save the change first."
 #: senaite/core/content/worksheettemplate.py:240
@@ -7349,12 +7349,12 @@ msgstr ""
 #. Default: "Select which Analyses should be included on the Worksheet"
 #: senaite/core/content/worksheettemplate.py:350
 msgid "description_worksheettemplate_services"
-msgstr ""
+msgstr "description_jobcardtemplate_services"
 
 #. Default: "Specify the size of the Worksheet, e.g. corresponding to a specific instrument's tray size. Then select an Analysis 'type' per Worksheet position. Where QC samples are selected, also select which Reference Sample should be used. If a duplicate analysis is selected, indicate which sample position it should be a duplicate of"
 #: senaite/core/content/worksheettemplate.py:315
 msgid "description_worksheettemplate_template_layout"
-msgstr ""
+msgstr "description_jobcardtemplate_template_layout"
 
 #. Default: "Not found Analysis position for duplicate."
 #: senaite/core/browser/form/adapters/worksheettemplate.py:115
@@ -7637,12 +7637,12 @@ msgstr ""
 #. Default: "Analyses"
 #: senaite/core/content/worksheettemplate.py:332
 msgid "label_fieldset_worksheettemplate_analyses"
-msgstr ""
+msgstr "label_fieldset_jobcardtemplate_analyses"
 
 #. Default: "Layout"
 #: senaite/core/content/worksheettemplate.py:275
 msgid "label_fieldset_worksheettemplate_layout"
-msgstr ""
+msgstr "label_fieldset_jobcardtemplate_layout"
 
 #. Default: "Location"
 #: bika/lims/content/instrument.py:319
@@ -8068,12 +8068,12 @@ msgstr ""
 #. Default: "Preferred instrument"
 #: senaite/core/content/worksheettemplate.py:262
 msgid "label_worksheettemplate_instrument"
-msgstr ""
+msgstr "label_jobcardtemplate_instrument"
 
 #. Default: "Restrict to Method"
 #: senaite/core/content/worksheettemplate.py:236
 msgid "label_worksheettemplate_restrict_to_method"
-msgstr ""
+msgstr "label_jobcardtemplate_restrict_to_method"
 
 #. Default: "Add"
 #: senaite/core/browser/controlpanel/analysiscategories/view.py:50
@@ -9091,47 +9091,47 @@ msgstr ""
 #. Default: "Add"
 #: senaite/core/browser/controlpanel/worksheettemplates/view.py:52
 msgid "listing_worksheettemplates_action_add"
-msgstr ""
+msgstr "listing_jobcardtemplates_action_add"
 
 #. Default: "Description"
 #: senaite/core/browser/controlpanel/worksheettemplates/view.py:75
 msgid "listing_worksheettemplates_column_description"
-msgstr ""
+msgstr "listing_jobcardtemplates_column_description"
 
 #. Default: "Instrument"
 #: senaite/core/browser/controlpanel/worksheettemplates/view.py:89
 msgid "listing_worksheettemplates_column_instrument"
-msgstr ""
+msgstr "listing_jobcardtemplates_column_instrument"
 
 #. Default: "Method"
 #: senaite/core/browser/controlpanel/worksheettemplates/view.py:82
 msgid "listing_worksheettemplates_column_method"
-msgstr ""
+msgstr "listing_jobcardtemplates_column_method"
 
 #. Default: "Name"
 #: senaite/core/browser/controlpanel/worksheettemplates/view.py:68
 msgid "listing_worksheettemplates_column_name"
-msgstr ""
+msgstr "listing_jobcardtemplates_column_name"
 
 #. Default: "Active"
 #: senaite/core/browser/controlpanel/worksheettemplates/view.py:101
 msgid "listing_worksheettemplates_state_active"
-msgstr ""
+msgstr "listing_jobcardtemplates_state_active"
 
 #. Default: "All"
 #: senaite/core/browser/controlpanel/worksheettemplates/view.py:117
 msgid "listing_worksheettemplates_state_all"
-msgstr ""
+msgstr "isting_jobcardtemplates_state_all"
 
 #. Default: "Inactive"
 #: senaite/core/browser/controlpanel/worksheettemplates/view.py:109
 msgid "listing_worksheettemplates_state_inactive"
-msgstr ""
+msgstr "listing_jobcardtemplates_state_inactive"
 
 #. Default: "Worksheet Templates"
 #: senaite/core/browser/controlpanel/worksheettemplates/view.py:59
 msgid "listing_worksheettemplates_title"
-msgstr ""
+msgstr "listing_jobcardtemplates_title"
 
 #: bika/lims/controlpanel/bika_analysisservices.py:285
 msgid "minutes"
@@ -9860,27 +9860,27 @@ msgstr ""
 #. Default: "Description"
 #: senaite/core/content/worksheettemplate.py:213
 msgid "title_worksheettemplate_description"
-msgstr ""
+msgstr "title_jobcardtemplate_description"
 
 #. Default: "Number of Positions"
 #: senaite/core/content/worksheettemplate.py:290
 msgid "title_worksheettemplate_num_of_positions"
-msgstr ""
+msgstr "title_jobcardtemplate_num_of_positions"
 
 #. Default: "Analysis Services"
 #: senaite/core/content/worksheettemplate.py:346
 msgid "title_worksheettemplate_services"
-msgstr ""
+msgstr "title_jobcardtemplate_services"
 
 #. Default: "Worksheet Layout"
 #: senaite/core/content/worksheettemplate.py:311
 msgid "title_worksheettemplate_template_layout"
-msgstr ""
+msgstr "title_jobcardtemplate_template_layout"
 
 #. Default: "Name"
 #: senaite/core/content/worksheettemplate.py:205
 msgid "title_worksheettemplate_title"
-msgstr ""
+msgstr "title_jobcardtemplate_title"
 
 #: senaite/core/browser/dashboard/templates/dashboard.pt:530
 msgid "to"
