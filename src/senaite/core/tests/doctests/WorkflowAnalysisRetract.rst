@@ -132,12 +132,12 @@ The new analysis is a copy of retracted one:
     >>> retest.getKeyword() == analysis.getKeyword()
     True
 
-But it does not keep the result:
+It keeps the result:
 
-    >>> not retest.getResult()
+    >>> retest.getResult() == analysis.getResult()
     True
 
-And Result capture date is None:
+But the result capture date is None:
 
     >>> not retest.getResultCaptureDate()
     True
