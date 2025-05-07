@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2721 Retain result for analysis retest
 - #2716 Fix submit form on confirmation dialog "Yes" button click
 - #2718 Fix AttributeError in Worksheet Print View
 - #2717 Allow the edition of QC results from inside Reference Sample
