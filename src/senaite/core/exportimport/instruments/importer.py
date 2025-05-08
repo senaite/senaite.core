@@ -32,6 +32,7 @@ from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.exportimport.instruments.logger import Logger
 from senaite.core.i18n import translate as t
+from senaite.core.registry import get_registry_record
 from zope.cachedescriptors.property import Lazy as lazy_property
 from zope.deprecation import deprecate
 
@@ -381,6 +382,8 @@ class AnalysisResultsImporter(Logger):
         attachments = {}
         infile = self.parser.getInputFile()
 
+        analysis_attach_importfile = get_registry_record("import_analysis_attach_importfile")
+
         ancount = 0
         updated_analyses = []
         importedinsts = {}
@@ -506,7 +509,7 @@ class AnalysisResultsImporter(Logger):
                                     importedar.append(keyword)
                                 importedars[ar.getId()] = importedar
 
-                        if ws:
+                        if ws and analysis_attach_importfile:
                             # attach import file
                             self.attach_attachment(
                                 analysis, attachments[ws.getId()])
