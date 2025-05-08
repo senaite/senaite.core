@@ -2376,6 +2376,7 @@
           dialog.on("yes", function() {
             // Re-submit
             $("input[name=confirmed]").val("1");
+            me.form_submission_flag = false;
             return $("input[name=save_button]").trigger("click");
           });
           return dialog.on("no", function() {

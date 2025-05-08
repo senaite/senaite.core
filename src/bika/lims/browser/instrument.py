@@ -32,6 +32,7 @@ from bika.lims.content.instrumentmaintenancetask import \
     InstrumentMaintenanceTaskStatuses as mstatus
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
+from bika.lims.utils import get_link_for
 from senaite.core.i18n import translate as t
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
@@ -535,10 +536,9 @@ class InstrumentReferenceAnalysesView(AnalysesView):
         AnalysesView.__init__(self, context, request, **kwargs)
 
         self.form_id = "{}_qcanalyses".format(api.get_uid(context))
-        self.allow_edit = False
-        self.show_select_column = False
+        self.allow_edit = True
+        self.show_select_column = True
         self.show_search = False
-        self.omit_form = True
 
         self.catalog = ANALYSIS_CATALOG
 
@@ -548,30 +548,31 @@ class InstrumentReferenceAnalysesView(AnalysesView):
             "sort_on": "getResultCaptureDate",
             "sort_order": "reverse"
         }
-        self.columns["getReferenceAnalysesGroupID"] = {
-            "title": _("QC Sample ID"),
-            "sortable": False
-        }
-        self.columns["Partition"] = {
-            "title": _("Reference Sample"),
-            "sortable": False
-        }
-        self.columns["Retractions"] = {
-            "title": "",
-            "sortable": False
-        }
 
-        self.review_states[0]["columns"] = [
-            "Service",
-            "getReferenceAnalysesGroupID",
-            "Partition",
-            "Result",
-            "Uncertainty",
-            "CaptureDate",
-            "Retractions"
-        ]
-        self.review_states[0]["transitions"] = [{}]
+        # insert the QC-specific columns
+        self.add_column("getReferenceAnalysesGroupID",
+                        title=_("QC Sample ID"),
+                        after="Service")
+
+        self.add_column("Partition",
+                        title=_("Reference Sample"),
+                        after="getReferenceAnalysesGroupID")
+
+        self.add_column("Retractions", title=_("Retractions"))
+
         self.chart = EvolutionChart()
+
+    def add_column(self, id, **kwargs):
+        """Add the given column to all review states
+        """
+        after = kwargs.pop("after", "")
+        self.columns[id] = kwargs
+        for rv in self.review_states:
+            cols = rv["columns"]
+            index = len(cols)
+            if after and after in cols:
+                index = cols.index(after) + 1
+            cols.insert(index, id)
 
     def isItemAllowed(self, obj):
         allowed = super(InstrumentReferenceAnalysesView,
@@ -581,7 +582,9 @@ class InstrumentReferenceAnalysesView(AnalysesView):
     def folderitem(self, obj, item, index):
         item = super(InstrumentReferenceAnalysesView,
                      self).folderitem(obj, item, index)
-        analysis = api.get_object(obj)
+
+        # get the full object
+        analysis = self.get_object(obj)
 
         # Partition is used to group/toggle QC Analyses
         sample = analysis.getSample()
@@ -604,6 +607,13 @@ class InstrumentReferenceAnalysesView(AnalysesView):
         self.chart.add_analysis(analysis)
 
         return item
+
+    def _folder_item_instrument(self, analysis_brain, item):
+        """Always display the current instrument in read-only mode
+        """
+        instrument = self.get_instrument(analysis_brain)
+        item["Instrument"] = api.get_uid(instrument)
+        item["replace"]["Instrument"] = get_link_for(instrument, tabindex="-1")
 
 
 class InstrumentCertificationsView(BikaListingView):

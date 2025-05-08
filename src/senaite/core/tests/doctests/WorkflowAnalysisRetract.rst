@@ -132,12 +132,12 @@ The new analysis is a copy of retracted one:
     >>> retest.getKeyword() == analysis.getKeyword()
     True
 
-But it does not keep the result:
+It keeps the result:
 
-    >>> not retest.getResult()
+    >>> retest.getResult() == analysis.getResult()
     True
 
-And Result capture date is None:
+But the result capture date is None:
 
     >>> not retest.getResultCaptureDate()
     True
@@ -357,21 +357,21 @@ Create the sample:
     >>> cu.getDetectionLimitOperand()
     '<'
 
-The Detection Limit is not kept on the retest:
+The Detection Limit is kept on the retest:
 
-    >>> success = do_action_for(analysis, "retract")
-    >>> retest = analysis.getRetest()
+    >>> success = do_action_for(cu, "retract")
+    >>> retest = cu.getRetest()
     >>> retest.getResult()
-    ''
+    '10'
 
     >>> retest.getFormattedResult(html=False)
-    ''
+    '< 10'
 
     >>> retest.isLowerDetectionLimit()
-    False
+    True
 
     >>> retest.getDetectionLimitOperand()
-    ''
+    '<'
 
 Do the same with Upper Detection Limit (UDL):
 
@@ -391,18 +391,18 @@ Do the same with Upper Detection Limit (UDL):
     >>> cu.getDetectionLimitOperand()
     '>'
 
-The Detection Limit is not kept on the retest:
+The Detection Limit is kept on the retest:
 
-    >>> success = do_action_for(analysis, "retract")
-    >>> retest = analysis.getRetest()
+    >>> success = do_action_for(cu, "retract")
+    >>> retest = cu.getRetest()
     >>> retest.getResult()
-    ''
+    '10'
 
     >>> retest.getFormattedResult(html=False)
-    ''
+    '> 10'
 
     >>> retest.isUpperDetectionLimit()
-    False
+    True
 
     >>> retest.getDetectionLimitOperand()
-    ''
+    '>'

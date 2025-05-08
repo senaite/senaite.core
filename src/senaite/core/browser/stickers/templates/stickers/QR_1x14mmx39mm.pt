@@ -5,7 +5,7 @@
   <!-- QR Code -->
   <div class="qrcode"
        data-size="36"
-       tal:attributes="data-code sample_id">
+       tal:attributes="data-text python:sample_id;">
   </div>
 
   <div class="sample_id" tal:content="sample_id">Sample ID</div>

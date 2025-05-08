@@ -177,8 +177,8 @@ function ControlChart() {
 
         // Let's go for fun
         // Convert values to floats
-        // "2014-02-19 03:11 PM"
-        x_data_parse = d3.time.format("%Y-%m-%d %I:%M %p").parse;
+        // "2014-02-19 15:11:23"
+        x_data_parse = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
         that.datasource.forEach(function(d) {
             d.x_axis = x_data_parse(d[that.xcolumnkey]);
             d.y_axis = tonumber(d[that.ycolumnkey]);

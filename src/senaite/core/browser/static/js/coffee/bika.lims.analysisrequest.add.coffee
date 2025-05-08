@@ -2151,6 +2151,7 @@ class window.AnalysisRequestAdd
         dialog.on "yes", ->
             # Re-submit
             $("input[name=confirmed]").val "1"
+            me.form_submission_flag = no
             $("input[name=save_button]").trigger "click"
 
         dialog.on "no", ->
