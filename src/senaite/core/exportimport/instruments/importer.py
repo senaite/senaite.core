@@ -803,9 +803,9 @@ class AnalysisResultsImporter(Logger):
         )
         attachment.reindexObject()
 
-        logger.info(_(
-            "Attached file '{filename}' to worksheet {worksheet}"
-            .format(filename=filename, worksheet=ws.getId())))
+        logger.info(_(u"Attached file '{filename}' to worksheet {worksheet}"
+                      .format(filename=api.safe_unicode(filename),
+                              worksheet=ws.getId())))
 
         return attachment
 
