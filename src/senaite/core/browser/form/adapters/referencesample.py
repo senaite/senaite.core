@@ -37,11 +37,12 @@ class EditForm(EditFormAdapterBase):
                     "analyses.",
                 )
             )
-      return self.data
+        return self.data
 
     def modified(self, data):
         name = data.get("name")
         value = data.get("value")
+
         # Populate dependencies of the reference definition
         if name == "ReferenceDefinition":
             definitions = map(api.get_object_by_uid, filter(api.is_uid, value))
