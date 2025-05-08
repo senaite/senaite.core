@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2723 Add registry to control import file attachment to Worksheet assigned analyses
 - #2722 Fix instrument import loggings
 - #2716 Fix submit form on confirmation dialog "Yes" button click
 - #2718 Fix AttributeError in Worksheet Print View
