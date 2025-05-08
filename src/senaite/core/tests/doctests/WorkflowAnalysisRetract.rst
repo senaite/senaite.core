@@ -391,7 +391,7 @@ Do the same with Upper Detection Limit (UDL):
     >>> cu.getDetectionLimitOperand()
     '>'
 
-The Detection Limit is not kept on the retest:
+The Detection Limit is kept on the retest:
 
     >>> success = do_action_for(cu, "retract")
     >>> retest = cu.getRetest()
