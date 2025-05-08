@@ -29,6 +29,12 @@ from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import format_supsub
 
+DEFAULT_SKIP_FIELDS = [
+    "Attachment",
+    "ResultCaptureDate",
+    "Worksheet"
+]
+
 
 def create_analysis(context, source, **kwargs):
     """Create a new Analysis.  The source can be an Analysis Service or
@@ -64,12 +70,7 @@ def create_analysis(context, source, **kwargs):
     interim_fields = kwargs.pop("InterimFields", service.getInterimFields())
 
     # do not copy these fields from source
-    skip_fields = [
-        "Attachment",
-        "Result",
-        "ResultCaptureDate",
-        "Worksheet"
-    ]
+    skip_fields = kwargs.pop("skip", DEFAULT_SKIP_FIELDS)
 
     kwargs.update({
         "container": context,
