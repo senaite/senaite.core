@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2722 Fix instrument import loggings
+- #2720 Allow to set custom IDs to reference samples
 - #2721 Retain result for analysis retest
 - #2716 Fix submit form on confirmation dialog "Yes" button click
 - #2718 Fix AttributeError in Worksheet Print View
