@@ -1015,7 +1015,7 @@ class AnalysisResultsImporter(Logger):
                 # Fetching ReferenceAnalysis for its id or uid should
                 # *always* return a unique result
                 self.err(
-                    "More than one Reference Analysis found for {obect_id}"
+                    "More than one Reference Analysis found for {object_id}"
                     .format(object_id=objid))
                 return []
 
