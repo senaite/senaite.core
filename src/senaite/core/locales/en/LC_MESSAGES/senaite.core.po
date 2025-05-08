@@ -6993,7 +6993,7 @@ msgstr ""
 #. Default: "Analysis"
 #: senaite/core/config/vocabularies.py:35
 msgid "analysis_type_analysis"
-msgstr ""
+msgstr "Test"
 
 #. Default: "Blank"
 #: senaite/core/config/vocabularies.py:39
@@ -7071,7 +7071,7 @@ msgstr ""
 #. Default: "The category the analysis service belongs to"
 #: bika/lims/content/abstractbaseanalysis.py:453
 msgid "description_analysis_category"
-msgstr ""
+msgstr "The category the test service belongs to"
 
 #. Default: "Select the responsible department"
 #: bika/lims/content/abstractbaseanalysis.py:511
@@ -7084,7 +7084,7 @@ msgstr ""
 #. compromised data, as the integrity of the sample can degrade over time.
 #. Consequently, any results obtained after this period may not accurately
 #. reflect the sample's true composition, impacting data validity. Note: This
-#. setting does not affect the test's availability in the 'Manage Analyses'
+#. setting does not affect the test's availability in the 'Manage Tests'
 #. view."
 #: bika/lims/content/abstractbaseanalysis.py:377
 msgid "description_analysis_maxholdingtime"
@@ -7117,19 +7117,20 @@ msgstr ""
 #. mg/l, ppm, dB, mV, etc."
 #: bika/lims/content/abstractbaseanalysis.py:110
 msgid "description_analysis_unit"
-msgstr ""
+msgstr "The measurement units for this test service' results, e.g.
+#. mg/l, ppm, dB, mV, etc."
 
 #. Default: "Provide a list of units that are suitable for the analysis.
 #. Ensure to include the default unit in this list"
 #: bika/lims/content/abstractbaseanalysis.py:143
 msgid "description_analysis_unitchoices"
-msgstr ""
+msgstr "Provide a list of units that are suitable for the test Ensure to include the default unit in this list"
 
 #. Default: "To be displayed below each Analysis Category section on results
 #. reports."
 #: senaite/core/content/analysiscategory.py:64
 msgid "description_analysiscategory_comments"
-msgstr ""
+msgstr "To be displayed below each Test Category section on results reports."
 
 #. Default: "Select the responsible department"
 #: senaite/core/content/analysiscategory.py:85
@@ -7161,7 +7162,7 @@ msgstr ""
 #. price"
 #: senaite/core/content/analysisprofile.py:161
 msgid "description_analysisprofile_profile_vat"
-msgstr ""
+msgstr "Please provide the GST in percent that is added to the profile price"
 
 #. Default: "Sample types for which this analysis profile is supported. This
 #. profile won't be available for selection in sample creation and edit forms
@@ -7170,17 +7171,17 @@ msgstr ""
 #. the sample type of the sample."
 #: senaite/core/content/analysisprofile.py:184
 msgid "description_analysisprofile_sampletypes"
-msgstr ""
+msgstr "Sample types for which this test profile is supported. This profile won't be available for selection in sample creation and edit forms unless the selected sample type is one of these. If no sample type is set here, this profile will always be available for selection, regardless of the sample type of the sample."
 
 #. Default: "Select the included analyses for this profile"
 #: senaite/core/content/analysisprofile.py:110
 msgid "description_analysisprofile_services"
-msgstr ""
+msgstr "Select the included tests for this profile"
 
 #. Default: "Use profile price instead of single analyses prices"
 #: senaite/core/content/analysisprofile.py:137
 msgid "description_analysisprofile_use_profile_price"
-msgstr ""
+msgstr "Use profile price instead of single tests prices"
 
 #. Default: "Number of samples to create with the information provided"
 #: bika/lims/content/analysisrequest.py:1394
@@ -7190,7 +7191,7 @@ msgstr ""
 #. Default: "Link dynamic analysis specification"
 #: bika/lims/content/analysisspec.py:72
 msgid "description_analysisspec_dynamicspec"
-msgstr ""
+msgstr "Link dynamic test specification"
 
 #. Default: "'Min' and 'Max' values indicate a valid results range. Any result
 #. outside this results range will raise an alert.<br/>'Min warn' and 'Max
@@ -7222,7 +7223,7 @@ msgstr ""
 #. Default: "Select the analysis profile for this template"
 #: bika/lims/content/artemplate.py:257
 msgid "description_artemplate_profile"
-msgstr ""
+msgstr "Select the test profile for this template"
 
 #. Default: "Select the sample point for this template"
 #: bika/lims/content/artemplate.py:58
@@ -7263,7 +7264,7 @@ msgstr ""
 #. entered manually for analyses"
 #: bika/lims/content/bikasetup.py:346
 msgid "description_bikasetup_allow_manual_result_capture_date"
-msgstr ""
+msgstr "If this option is activated, the result capture date can be entered manually for tests"
 
 #. Default: "When selected, the responsible persons of all involved lab
 #. departments will receive publication emails."
@@ -7274,7 +7275,7 @@ msgstr ""
 #. Default: "Group analyses by category for samples"
 #: bika/lims/content/bikasetup.py:324
 msgid "description_bikasetup_categorizesampleanalyses"
-msgstr ""
+msgstr "Group tests by category for samples"
 
 #. Default: "Select this to make DateSampled field required on sample
 #. creation. This functionality only takes effect when 'Sampling workflow' is
@@ -7307,7 +7308,7 @@ msgstr ""
 #. Default: "Analyses are required for sample registration"
 #: bika/lims/content/bikasetup.py:335
 msgid "description_bikasetup_sampleanalysesrequired"
-msgstr ""
+msgstr "Tests are required for sample registration"
 
 #. Default: "Dependent services of this calculation"
 #: bika/lims/content/calculation.py:84
@@ -7360,7 +7361,7 @@ msgstr ""
 #. analysis results reports containing analyses by their department."
 #: senaite/core/content/department.py:105
 msgid "description_department_manager"
-msgstr ""
+msgstr "Select a manager from the available personnel configured under the 'lab contacts' setup item. Departmental managers are referenced on test results reports containing analyses by their department."
 
 #. Default: "Name of the department"
 #: senaite/core/content/department.py:51
@@ -7565,13 +7566,13 @@ msgstr ""
 #. Default: "Select an analysis profile for this sample"
 #: bika/lims/content/analysisrequest.py:404
 msgid "description_sample_profiles"
-msgstr ""
+msgstr "Select an test profile for this sample"
 
 #. Default: "Select an analysis specification that should be used in the
 #. sample publication report"
 #: bika/lims/content/analysisrequest.py:720
 msgid "description_sample_publicationspecification"
-msgstr ""
+msgstr "Select an test specification that should be used in the sample publication report"
 
 #. Default: "Reference to retracted sample"
 #: bika/lims/content/analysisrequest.py:1292
@@ -7606,7 +7607,7 @@ msgstr ""
 #. Default: "Select an analysis specification for this sample"
 #: bika/lims/content/analysisrequest.py:676
 msgid "description_sample_specification"
-msgstr ""
+msgstr "Select an test specification for this sample"
 
 #. Default: "Location where the sample is kept"
 #: bika/lims/content/analysisrequest.py:777
@@ -7621,7 +7622,7 @@ msgstr ""
 #. Default: "Select an analysis template for this sample"
 #: bika/lims/content/analysisrequest.py:376
 msgid "description_sample_template"
-msgstr ""
+msgstr "Select an test template for this sample"
 
 #. Default: "Check this box if the samples taken at this point are 'composite'
 #. and put together from more than one sub sample, e.g. several surface
@@ -7888,7 +7889,7 @@ msgstr ""
 #. Default: "Select the preferred instrument"
 #: senaite/core/content/worksheettemplate.py:266
 msgid "description_worksheettemplate_instrument"
-msgstr "description_jobcardtemplate_instrument"
+msgstr "Select the preferred instrument"
 
 #. Default: "Restrict the available analysis services and instruments to those
 #. with the selected method.<br/>In order to apply this change to the services
@@ -7900,7 +7901,7 @@ msgstr ""
 #. Default: "Select which Analyses should be included on the Worksheet"
 #: senaite/core/content/worksheettemplate.py:350
 msgid "description_worksheettemplate_services"
-msgstr "description_jobcardtemplate_services"
+msgstr ""
 
 #. Default: "Specify the size of the Worksheet, e.g. corresponding to a
 #. specific instrument's tray size. Then select an Analysis 'type' per
@@ -7909,7 +7910,7 @@ msgstr "description_jobcardtemplate_services"
 #. indicate which sample position it should be a duplicate of"
 #: senaite/core/content/worksheettemplate.py:315
 msgid "description_worksheettemplate_template_layout"
-msgstr "description_jobcardtemplate_template_layout"
+msgstr ""
 
 #. Default: "Not found Analysis position for duplicate."
 #: senaite/core/browser/form/adapters/worksheettemplate.py:115
@@ -8004,7 +8005,7 @@ msgstr ""
 #. Default: "Analysis Category"
 #: bika/lims/content/abstractbaseanalysis.py:450
 msgid "label_analysis_category"
-msgstr ""
+msgstr "Test Category"
 
 #. Default: "Department"
 #: bika/lims/content/abstractbaseanalysis.py:508
@@ -8044,7 +8045,7 @@ msgstr ""
 #. Default: "Dynamic Analysis Specification"
 #: bika/lims/content/analysisspec.py:69
 msgid "label_analysisspec_dynamicspec"
-msgstr ""
+msgstr "Dynamic Test Specification"
 
 #. Default: "Sample Type"
 #: bika/lims/content/analysisspec.py:49
@@ -8064,7 +8065,7 @@ msgstr ""
 #. Default: "Analysis Profile"
 #: bika/lims/content/artemplate.py:254
 msgid "label_artemplate_profile"
-msgstr ""
+msgstr "Test Profile"
 
 #. Default: "Sample Point"
 #: bika/lims/content/artemplate.py:55
@@ -8194,12 +8195,12 @@ msgstr ""
 #. Default: "Analyses"
 #: senaite/core/content/worksheettemplate.py:332
 msgid "label_fieldset_worksheettemplate_analyses"
-msgstr "label_fieldset_jobcardtemplate_analyses"
+msgstr "Tests"
 
 #. Default: "Layout"
 #: senaite/core/content/worksheettemplate.py:275
 msgid "label_fieldset_worksheettemplate_layout"
-msgstr "label_fieldset_jobcardtemplate_layout"
+msgstr ""
 
 #. Default: "Location"
 #: bika/lims/content/instrument.py:319
@@ -8404,7 +8405,7 @@ msgstr ""
 #. Default: "Analysis Profiles"
 #: bika/lims/content/analysisrequest.py:401
 msgid "label_sample_profiles"
-msgstr ""
+msgstr "Test Profiles"
 
 #. Default: "Publication Specification"
 #: bika/lims/content/analysisrequest.py:717
@@ -8444,7 +8445,7 @@ msgstr ""
 #. Default: "Analysis Specification"
 #: bika/lims/content/analysisrequest.py:673
 msgid "label_sample_specification"
-msgstr ""
+msgstr "Test Specification"
 
 #. Default: "Storage Location"
 #: bika/lims/content/analysisrequest.py:774
@@ -8625,12 +8626,12 @@ msgstr ""
 #. Default: "Preferred instrument"
 #: senaite/core/content/worksheettemplate.py:262
 msgid "label_worksheettemplate_instrument"
-msgstr "label_jobcardtemplate_instrument"
+msgstr ""
 
 #. Default: "Restrict to Method"
 #: senaite/core/content/worksheettemplate.py:236
 msgid "label_worksheettemplate_restrict_to_method"
-msgstr "label_jobcardtemplate_restrict_to_method"
+msgstr ""
 
 #. Default: "Add"
 #: senaite/core/browser/controlpanel/analysiscategories/view.py:50
@@ -8675,7 +8676,7 @@ msgstr ""
 #. Default: "Analysis Categories"
 #: senaite/core/browser/controlpanel/analysiscategories/view.py:57
 msgid "listing_analysiscategories_title"
-msgstr ""
+msgstr "Test Categories"
 
 #. Default: "Add"
 #: senaite/core/browser/controlpanel/analysisprofiles/view.py:54
@@ -8720,7 +8721,7 @@ msgstr ""
 #. Default: "Analysis Profiles"
 #: senaite/core/browser/controlpanel/analysisprofiles/view.py:61
 msgid "listing_analysisprofiles_title"
-msgstr ""
+msgstr "Test Profiles"
 
 #. Default: "Add"
 #: senaite/core/browser/controlpanel/attachmenttypes/view.py:50
@@ -8860,7 +8861,7 @@ msgstr ""
 #. Default: "Dynamic Analysis Specifications"
 #: senaite/core/browser/controlpanel/dynamicanalysisspecs/view.py:61
 msgid "listing_dynamic_analysisspecs_title"
-msgstr ""
+msgstr "Dynamic Analysis Specification"
 
 #. Default: "Add"
 #: senaite/core/browser/controlpanel/instrumentlocations/view.py:52
@@ -9648,47 +9649,47 @@ msgstr ""
 #. Default: "Add"
 #: senaite/core/browser/controlpanel/worksheettemplates/view.py:52
 msgid "listing_worksheettemplates_action_add"
-msgstr "listing_jobcardtemplates_action_add"
+msgstr ""
 
 #. Default: "Description"
 #: senaite/core/browser/controlpanel/worksheettemplates/view.py:75
 msgid "listing_worksheettemplates_column_description"
-msgstr "listing_jobcardtemplates_column_description"
+msgstr ""
 
 #. Default: "Instrument"
 #: senaite/core/browser/controlpanel/worksheettemplates/view.py:89
 msgid "listing_worksheettemplates_column_instrument"
-msgstr "listing_jobcardtemplates_column_instrument"
+msgstr ""
 
 #. Default: "Method"
 #: senaite/core/browser/controlpanel/worksheettemplates/view.py:82
 msgid "listing_worksheettemplates_column_method"
-msgstr "listing_jobcardtemplates_column_method"
+msgstr ""
 
 #. Default: "Name"
 #: senaite/core/browser/controlpanel/worksheettemplates/view.py:68
 msgid "listing_worksheettemplates_column_name"
-msgstr "listing_jobcardtemplates_column_name"
+msgstr ""
 
 #. Default: "Active"
 #: senaite/core/browser/controlpanel/worksheettemplates/view.py:101
 msgid "listing_worksheettemplates_state_active"
-msgstr "listing_jobcardtemplates_state_active"
+msgstr ""
 
 #. Default: "All"
 #: senaite/core/browser/controlpanel/worksheettemplates/view.py:117
 msgid "listing_worksheettemplates_state_all"
-msgstr "isting_jobcardtemplates_state_all"
+msgstr ""
 
 #. Default: "Inactive"
 #: senaite/core/browser/controlpanel/worksheettemplates/view.py:109
 msgid "listing_worksheettemplates_state_inactive"
-msgstr "listing_jobcardtemplates_state_inactive"
+msgstr ""
 
 #. Default: "Worksheet Templates"
 #: senaite/core/browser/controlpanel/worksheettemplates/view.py:59
 msgid "listing_worksheettemplates_title"
-msgstr "listing_jobcardtemplates_title"
+msgstr "Jobcard Templates"
 
 #: bika/lims/controlpanel/bika_analysisservices.py:285
 msgid "minutes"
@@ -10025,7 +10026,7 @@ msgstr ""
 #. Default: "Analysis Type"
 #: senaite/core/content/worksheettemplate.py:106
 msgid "title_layout_record_type"
-msgstr ""
+msgstr "Test Type"
 
 #. Default: "Manager"
 #: senaite/core/permissions/localroles.py:86
@@ -10417,27 +10418,27 @@ msgstr ""
 #. Default: "Description"
 #: senaite/core/content/worksheettemplate.py:213
 msgid "title_worksheettemplate_description"
-msgstr "title_jobcardtemplate_description"
+msgstr ""
 
 #. Default: "Number of Positions"
 #: senaite/core/content/worksheettemplate.py:290
 msgid "title_worksheettemplate_num_of_positions"
-msgstr "title_jobcardtemplate_num_of_positions"
+msgstr ""
 
 #. Default: "Analysis Services"
 #: senaite/core/content/worksheettemplate.py:346
 msgid "title_worksheettemplate_services"
-msgstr "title_jobcardtemplate_services"
+msgstr "Test Services"
 
 #. Default: "Worksheet Layout"
 #: senaite/core/content/worksheettemplate.py:311
 msgid "title_worksheettemplate_template_layout"
-msgstr "title_jobcardtemplate_template_layout"
+msgstr "Jobcard Layout"
 
 #. Default: "Name"
 #: senaite/core/content/worksheettemplate.py:205
 msgid "title_worksheettemplate_title"
-msgstr "title_jobcardtemplate_title"
+msgstr ""
 
 #: senaite/core/browser/dashboard/templates/dashboard.pt:530
 msgid "to"
