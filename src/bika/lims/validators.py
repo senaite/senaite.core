@@ -1584,11 +1584,8 @@ class UniqueReferenceSampleIDValidator(object):
         # check if a reference sample with this id exists already
         uid = api.get_uid(instance)
         cat = api.get_tool(SENAITE_CATALOG)
-        brains = cat(portal_type="ReferenceSample")
+        brains = cat(portal_type="ReferenceSample", getId=value)
         for brain in brains:
-            obj_id = api.get_id(brain)
-            if obj_id != value:
-                continue
             if api.get_uid(brain) == uid:
                 continue
 
