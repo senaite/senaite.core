@@ -2521,3 +2521,131 @@ It also takes invariants into consideration:
     >>> category.setSortKey(10.0)
     >>> api.validate(category)
     {}
+
+
+Get the registered portal types
+...............................
+
+We can easily get the list with the names of the portal types registered in
+the system:
+
+    >>> portal_types = api.get_portal_types()
+    >>> sorted(portal_types)
+    ['ARReport', 'ARTemplate', 'ARTemplates', ..., 'WorksheetTemplates']
+
+
+Check if an id is valid
+.......................
+
+`is_valid_id` checks whether a given value is a valid ID candidate.
+
+The candidate must contain only letters, numbers, hyphens or underscores:
+
+    >>> api.is_valid_id("abcABC")
+    True
+    >>> api.is_valid_id("123456")
+    True
+    >>> api.is_valid_id("ab123AB")
+    True
+    >>> api.is_valid_id("a-1-2_3_B")
+    True
+    >>> api.is_valid_id("my-own-ID")
+    True
+    >>> api.is_valid_id("ábcABC")
+    False
+    >>> api.is_valid_id("àbcABC")
+    False
+    >>> api.is_valid_id("a/cABC")
+    False
+    >>> api.is_valid_id("a!cABC")
+    False
+    >>> api.is_valid_id("a#cABC")
+    False
+    >>> api.is_valid_id("a$cABC")
+    False
+    >>> api.is_valid_id("a=cABC")
+    False
+    >>> api.is_valid_id("a$cABC")
+    False
+    >>> api.is_valid_id("12345%")
+    False
+    >>> api.is_valid_id("1234 5")
+    False
+
+However, '_' and '-' are not admitted at the start or at the end:
+
+    >>> api.is_valid_id("-my-own-ID")
+    False
+    >>> api.is_valid_id("_my-own-ID")
+    False
+    >>> api.is_valid_id("my-own-ID-")
+    False
+    >>> api.is_valid_id("my-own-ID_")
+    False
+
+And minimum length of 3 is required:
+
+    >>> api.is_valid_id("1")
+    False
+    >>> api.is_valid_id("12")
+    False
+    >>> api.is_valid_id("123")
+    True
+    >>> api.is_valid_id("a")
+    False
+    >>> api.is_valid_id("ab")
+    False
+    >>> api.is_valid_id("abc")
+    True
+
+Reserved words like `REQUEST`, `aq_parent` or `manage_main` are not supported:
+
+    >>> api.is_valid_id("REQUEST")
+    False
+    >>> api.is_valid_id("request")
+    False
+    >>> api.is_valid_id("aq_inner")
+    False
+    >>> api.is_valid_id("aq_parent")
+    False
+    >>> api.is_valid_id("manage_main")
+    False
+    >>> api.is_valid_id("manage")
+    False
+
+Words that match registered portal types are not supported:
+
+    >>> api.is_valid_id("AnalysisRequest")
+    False
+    >>> api.is_valid_id("analysisRequest")
+    True
+    >>> api.is_valid_id("WorksheetTemplate")
+    False
+    >>> api.is_valid_id("AnalysisService")
+    False
+
+We can even pass the container where the object with the candidate ID would be
+stored. If so, the value cannot match with attributes or functions from the
+container:
+
+    >>> api.is_valid_id("sort_key", container=category)
+    False
+    >>> api.is_valid_id("department", container=category)
+    False
+    >>> api.is_valid_id("getSortKey", container=category)
+    False
+    >>> api.is_valid_id("getDepartment", container=category)
+    False
+
+It also checks for IDs from objects in the container:
+
+    >>> api.is_valid_id("analysiscategory-1")
+    True
+    >>> api.is_valid_id("analysiscategory-1", container=categories)
+    False
+    >>> api.is_valid_id("analysiscategory-2", container=categories)
+    False
+    >>> api.is_valid_id("analysiscategory-5", container=categories)
+    True
+    >>> api.is_valid_id("analysiscategory-1", container=departments)
+    True
