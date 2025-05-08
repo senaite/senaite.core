@@ -83,4 +83,10 @@
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".data_import.EditForm"/>
 
+  <!-- Edit Form: Reference Sample -->
+  <adapter
+      for="bika.lims.interfaces.IReferenceSample
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".referencesample.EditForm"/>
+
 </configure>

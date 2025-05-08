@@ -1581,6 +1581,15 @@ class UniqueReferenceSampleIDValidator(object):
                         u"Reference Sample with the same ID already exists.",
             ))
 
+        # do not modify the id if it has objects inside
+        if instance.objectIds():
+            return _t(_(
+                u"validator_referencesample_id_children",
+                default=u"The Reference Sample ID cannot be changed because "
+                        u"it is already associated with other objects, such "
+                        u"as QC analyses.",
+            ))
+
         # check if a reference sample with this id exists already
         uid = api.get_uid(instance)
         cat = api.get_tool(SENAITE_CATALOG)

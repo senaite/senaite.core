@@ -19,6 +19,10 @@ def ObjectEditedEventHandler(obj, event):
     if not api.is_valid_id(manual_id, container=parent):
         return
 
+    # do not modify the id if it has objects inside
+    if obj.objectIds():
+        return
+
     # re-assign id and reindex
     parent.manage_renameObject(obj_id, manual_id)
     obj.reindexObject()
