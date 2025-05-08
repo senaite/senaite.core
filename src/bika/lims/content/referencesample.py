@@ -49,6 +49,22 @@ from senaite.core.catalog import SETUP_CATALOG
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
+    StringField(
+        "ManualId",
+        schemata="Description",
+        searchable=True,
+        validators=("unique_referencesample_id_validator",),
+        widget=StringWidget(
+            label=_("Reference ID"),
+            description=_(
+                "The unique identifier for this reference sample. If "
+                "specified, the system will use this value as the sample's ID "
+                "instead of automatically generating one based on the "
+                "formatting rules defined in the setup's ID server."
+            ),
+        )
+    ),
+
     UIDReferenceField(
         "ReferenceDefinition",
         schemata="Description",
@@ -199,8 +215,20 @@ class ReferenceSample(BaseFolder):
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
-        from senaite.core.idserver import renameAfterCreation
-        renameAfterCreation(self)
+        ref_id = self.getManualId()
+        if not ref_id:
+            # empty id. Rely on idserver
+            from senaite.core.idserver import renameAfterCreation
+            renameAfterCreation(self)
+            return
+
+        parent = api.get_parent(self)
+        if not api.is_valid_id(ref_id, container=parent):
+            # the id is not valid
+            raise ValueError("The ManualID is not valid: %s" % ref_id)
+
+        # assign the manually entered id
+        self.setId(ref_id)
 
     security.declarePublic('current_date')
     def current_date(self):

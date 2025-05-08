@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2719 jQuery3 compatibility
+- #2720 Allow to set custom IDs to reference samples
+- #2721 Retain result for analysis retest
 - #2716 Fix submit form on confirmation dialog "Yes" button click
 - #2718 Fix AttributeError in Worksheet Print View
 - #2717 Allow the edition of QC results from inside Reference Sample
