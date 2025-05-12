@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2719 jQuery3 compatibility
+- #2723 Add registry to control import file attachment to Worksheet assigned analyses
+- #2722 Fix instrument import loggings
 - #2720 Allow to set custom IDs to reference samples
 - #2721 Retain result for analysis retest
 - #2716 Fix submit form on confirmation dialog "Yes" button click

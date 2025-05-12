@@ -32,6 +32,7 @@ from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.exportimport.instruments.logger import Logger
 from senaite.core.i18n import translate as t
+from senaite.core.registry import get_registry_record
 from zope.cachedescriptors.property import Lazy as lazy_property
 from zope.deprecation import deprecate
 
@@ -310,8 +311,8 @@ class AnalysisResultsImporter(Logger):
                 continue
             # check if keyword is valid
             if not self.is_valid_keyword(keyword):
-                self.warn(_("Service keyword ${analysis_keyword} not found",
-                            mapping={"analysis_keyword": keyword}))
+                self.warn(_("Service keyword {analysis_keyword} not found"
+                            .format(analysis_keyword=keyword)))
                 continue
             # remember the valid service keyword
             keywords.append(keyword)
@@ -363,16 +364,12 @@ class AnalysisResultsImporter(Logger):
             return False
 
         # Log allowed sample and analyses states
-        self.log(_("Allowed sample states: ${allowed_states}"),
-                 mapping={
-                     "allowed_states": ", ".join(
-                         self.allowed_sample_states_msg)
-                 })
-        self.log(_("Allowed analysis states: ${allowed_states}"),
-                 mapping={
-                     "allowed_states": ", ".join(
-                         self.allowed_analysis_states_msg)
-                 })
+        self.log(_("Allowed sample states: {allowed_states}"
+                   .format(allowed_states=", ".join(
+                       self.allowed_sample_states_msg))))
+        self.log(_("Allowed analysis states: {allowed_states}"
+                   .format(allowed_states=", ".join(
+                       self.allowed_analysis_states_msg))))
         if not any([self.override_non_empty, self.override_with_empty]):
             self.log(_("Don't override analysis results"))
         if self.override_non_empty:
@@ -384,6 +381,8 @@ class AnalysisResultsImporter(Logger):
         # analyses that are updated by this import
         attachments = {}
         infile = self.parser.getInputFile()
+
+        analysis_attach_importfile = get_registry_record("import_analysis_attach_importfile")
 
         ancount = 0
         updated_analyses = []
@@ -400,12 +399,11 @@ class AnalysisResultsImporter(Logger):
             # create them first if we have an instrument
             if len(analyses) == 0 and not self.instrument:
                 self.warn(_("Instrument not found"))
-                self.warn(_("No Sample with '${allowed_ar_states}' states"
-                            "found, and no QC analyses found for ${sid}",
-                            mapping={
-                                "allowed_ar_states": ", ".join(
-                                    self.allowed_sample_states_msg),
-                                "sid": sid}))
+                self.warn(_("No Sample with '{allowed_ar_states}' states"
+                            "found, and no QC analyses found for {sid}"
+                            .format(allowed_ar_states=", ".join(
+                                self.allowed_sample_states_msg),
+                                    sid=sid)))
                 continue
 
             # we have an instrument
@@ -413,8 +411,8 @@ class AnalysisResultsImporter(Logger):
                 # Create a new ReferenceAnalysis and link it to the Instrument.
                 refsample = self.get_reference_sample_by_id(sid)
                 if not refsample:
-                    self.warn(_("No Sample found for ${sid}",
-                                mapping={"sid": sid}))
+                    self.warn(_("No Sample found for {sid}"
+                                .format(sid=sid)))
                     continue
 
                 # Allowed are more than one result for the same sample and
@@ -432,13 +430,11 @@ class AnalysisResultsImporter(Logger):
 
             # No analyses found
             elif len(analyses) == 0:
-                self.warn(_("No analyses found for ${sid} "
-                            "in the states '${allowed_sample_states}' ",
-                            mapping={
-                                "allowed_sample_states": ", ".join(
-                                    self.allowed_sample_states_msg),
-                                "sid": sid,
-                            }))
+                self.warn(_("No analyses found for {sid} "
+                            "in the states '{allowed_sample_states}' "
+                            .format(allowed_sample_states=", ".join(
+                                self.allowed_sample_states_msg),
+                                    sid=sid)))
                 continue
 
             # import the results
@@ -458,17 +454,15 @@ class AnalysisResultsImporter(Logger):
 
                     if len(ans) == 0:
                         # no analysis found for keyword
-                        self.warn(_("No analyses found for ${sid} "
-                                    "and keyword '${keyword}'",
-                                  mapping={"sid": sid,
-                                           "keyword": keyword}))
+                        self.warn(_("No analyses found for {sid} "
+                                    "and keyword '{keyword}'"
+                                    .format(sid=sid, keyword=keyword)))
                         continue
                     elif len(ans) > 1:
                         # multiple analyses found for keyword
                         self.warn(_("More than one analysis found for "
-                                    "${sid} and keyword '${keyword}'",
-                                  mapping={"sid": sid,
-                                           "keyword": keyword}))
+                                    "{sid} and keyword '{keyword}'"
+                                    .format(sid=sid, keyword=keyword)))
                         continue
                     else:
                         analysis = ans[0]
@@ -515,7 +509,7 @@ class AnalysisResultsImporter(Logger):
                                     importedar.append(keyword)
                                 importedars[ar.getId()] = importedar
 
-                        if ws:
+                        if ws and analysis_attach_importfile:
                             # attach import file
                             self.attach_attachment(
                                 analysis, attachments[ws.getId()])
@@ -534,8 +528,8 @@ class AnalysisResultsImporter(Logger):
 
         for arid, acodes in six.iteritems(importedars):
             acodesmsg = "Analysis %s" % ', '.join(acodes)
-            self.log(_("${request_id}: ${keywords} imported sucessfully"),
-                     mapping={"request_id": arid, "keywords": acodesmsg})
+            self.log(_("{request_id}: {keywords} imported sucessfully"
+                       .format(request_id=arid, keywords=acodesmsg)))
 
         for instid, acodes in six.iteritems(importedinsts):
             acodesmsg = "Analysis %s" % ', '.join(acodes)
@@ -543,17 +537,17 @@ class AnalysisResultsImporter(Logger):
             self.log(msg)
 
         if refsample and self.instrument:
-            self.log(_("Import finished successfully: ${updated_ars} Samples, "
-                       "${updated_instruments} Instruments and "
-                       "${updated_results} results updated"),
-                     mapping={"updated_ars": str(len(importedars)),
-                              "updated_instruments": str(len(importedinsts)),
-                              "updated_results": str(ancount)})
+            self.log(_("Import finished successfully: {updated_ars} Samples, "
+                       "{updated_instruments} Instruments and "
+                       "{updated_results} results updated"
+                       .format(updated_ars=str(len(importedars)),
+                               updated_instruments=str(len(importedinsts)),
+                               updated_results=str(ancount))))
         else:
-            self.log(_("Import finished successfully: ${updated_ars} Samples "
-                       "and ${updated_results} results updated"),
-                     mapping={"updated_ars": str(len(importedars)),
-                              "updated_results": str(ancount)})
+            self.log(_("Import finished successfully: {updated_ars} Samples "
+                       "and {updated_results} results updated"
+                       .format(updated_ars=str(len(importedars)),
+                               updated_results=str(ancount))))
 
     @deprecate("Please use self.process_analysis instead")
     def _process_analysis(self, sid, analysis, values):
@@ -615,14 +609,12 @@ class AnalysisResultsImporter(Logger):
                 interim_copy["value"] = value
                 updated = True
                 # TODO: change test not to rely on this logline!
-                self.log(_("${sid} result for '${analysis_keyword}:"
-                           "${interim_keyword}': '${value}'"),
-                         mapping={
-                             "sid": sid,
-                             "analysis_keyword": analysis.getKeyword(),
-                             "interim_keyword": keyword,
-                             "value": str(value),
-                         })
+                self.log(_("{sid} result for '{analysis_keyword}:"
+                           "{interim_keyword}': '{value}'"
+                           .format(sid=sid,
+                                   analysis_keyword=analysis.getKeyword(),
+                                   interim_keyword=keyword,
+                                   value=str(value))))
             interims_out.append(interim_copy)
 
         # write back interims
@@ -652,25 +644,22 @@ class AnalysisResultsImporter(Logger):
 
         # check if analysis has a calculation set
         if calculation:
-            self.log(_("Skipping result for analysis '${keyword}' of sample "
-                       "'${sid}' with calculation '${calculation}'"),
-                     mapping={
-                         "keyword": keyword,
-                         "sid": sid,
-                         "calculation": calculation.Title(),
-                     })
+            self.log(_(u"Skipping result for analysis '{keyword}' of sample "
+                       "'{sid}' with calculation '{calculation}'"
+                       .format(keyword=keyword,
+                               sid=sid,
+                               calculation=api.safe_unicode(
+                                   calculation.Title()))))
             return False
 
         # check if non-empty result can be overwritten
         if not self.can_override_analysis_result(analysis, result):
-            self.log(_("Analysis '${keyword}' of sample '${sid}' has the "
-                       "result '${result}' set, which is kept due to the "
-                       "selected override option"),
-                     mapping={
-                         "sid": sid,
-                         "result": analysis.getResult(),
-                         "keyword": keyword,
-                     })
+            self.log(_("Analysis '{keyword}' of sample '{sid}' has the "
+                       "result '{result}' set, which is kept due to the "
+                       "selected override option"
+                       .format(sid=sid,
+                               result=analysis.getResult(),
+                               keyword=keyword)))
             return False
 
         # convert result for result options
@@ -688,12 +677,8 @@ class AnalysisResultsImporter(Logger):
         if date_captured:
             analysis.setResultCaptureDate(date_captured)
 
-        self.log(_("${sid} result for '${keyword}': '${result}'"),
-                 mapping={
-                     "sid": sid,
-                     "keyword": keyword,
-                     "result": result,
-                 })
+        self.log(_("{sid} result for '{keyword}': '{result}'"
+                   .format(sid=sid, keyword=keyword, result=result)))
 
         return True
 
@@ -742,13 +727,8 @@ class AnalysisResultsImporter(Logger):
                 field.set(analysis, value)
 
             updated = True
-            self.log(_("${sid} Updated field '${field}' with '${value}'"),
-                     mapping={
-                         "sid": sid,
-                         "field": key,
-                         "value": value,
-                     })
-
+            self.log(_("{sid} Updated field '{field}' with '{value}'"
+                       .format(sid=sid, field=key, value=value)))
         return updated
 
     def save_submit_analysis(self, analysis):
@@ -794,12 +774,11 @@ class AnalysisResultsImporter(Logger):
             if success:
                 self.save_submit_analysis(obj)
                 obj.reindexObject(idxs=["Result"])
-                self.log(
-                    _("${request_id}: calculated result for "
-                      "'${analysis_keyword}': '${analysis_result}'"),
-                    mapping={"request_id": objid,
-                             "analysis_keyword": obj.getKeyword(),
-                             "analysis_result": str(obj.getResult())})
+                self.log(_("{request_id}: calculated result for "
+                           "'{analysis_keyword}': '{analysis_result}'"
+                           .format(request_id=objid,
+                                   analysis_keyword=obj.getKeyword(),
+                                   analysis_result=str(obj.getResult()))))
                 # recursively recalculate analyses that have this analysis as
                 # a dependent service
                 self.calculateTotalResults(objid, obj)
@@ -827,12 +806,9 @@ class AnalysisResultsImporter(Logger):
         )
         attachment.reindexObject()
 
-        logger.info(_(
-            "Attached file '%{filename}' to worksheet ${worksheet}",
-            mapping={
-                "filename": filename,
-                "worksheet": ws.getId(),
-            }))
+        logger.info(_(u"Attached file '{filename}' to worksheet {worksheet}"
+                      .format(filename=api.safe_unicode(filename),
+                              worksheet=ws.getId())))
 
         return attachment
 
@@ -869,20 +845,16 @@ class AnalysisResultsImporter(Logger):
         if filename not in atts_filenames:
             an_atts.append(attachment)
             logger.info(
-                _("Attaching '${attachment}' to Analysis '${analysis}'",
-                  mapping={
-                      "attachment": filename,
-                      "analysis": analysis.getKeyword(),
-                  }))
+                _(u"Attaching '{attachment}' to Analysis '{analysis}'"
+                  .format(attachment=api.safe_unicode(filename),
+                          analysis=analysis.getKeyword())))
             analysis.setAttachment([att.UID() for att in an_atts])
             analysis.reindexObject()
         else:
-            self.log(_("Attachment '${attachment}' was already linked "
-                       "to analysis ${analysis}"),
-                     mapping={
-                         "attachment": filename,
-                         "analysis": analysis.getKeyword(),
-                     })
+            self.log(_(u"Attachment '{attachment}' was already linked "
+                       "to analysis {analysis}"
+                       .format(attachment=api.safe_unicode(filename),
+                               analysis=analysis.getKeyword())))
 
     def get_attachment_filenames(self, ws):
         """Returns all attachment filenames in the given worksheet
@@ -1002,8 +974,8 @@ class AnalysisResultsImporter(Logger):
             return self._getZODBAnalysesFromReferenceAnalyses(objid, None)
 
         elif len(ars) > 1:
-            self.err("More than one Sample found for ${object_id}",
-                     mapping={"object_id": objid})
+            self.err("More than one Sample found for {object_id}"
+                     .format(object_id=objid))
             return []
 
         ar = ars[0].getObject()
@@ -1018,7 +990,7 @@ class AnalysisResultsImporter(Logger):
             if len(refans) == 0:
                 return []
 
-            elif criteria == 'rgid':
+            elif criteria == "rgid":
                 return [an.getObject() for an in refans]
 
             elif len(refans) == 1:
@@ -1037,21 +1009,21 @@ class AnalysisResultsImporter(Logger):
                     # A ReferenceAnalysis must be always assigned to
                     # a Worksheet (Regular QC) or to an Instrument
                     # (Internal Calibration Test)
-                    self.err("The Reference Analysis ${object_id} has neither "
-                             "instrument nor worksheet assigned",
-                             mapping={"object_id": objid})
+                    self.err("The Reference Analysis {object_id} has neither "
+                             "instrument nor worksheet assigned"
+                             .format(object_id=objid))
                     return []
             else:
                 # This should never happen!
                 # Fetching ReferenceAnalysis for its id or uid should
                 # *always* return a unique result
                 self.err(
-                    "More than one Reference Analysis found for ${obect_id}",
-                    mapping={"object_id": objid})
+                    "More than one Reference Analysis found for {object_id}"
+                    .format(object_id=objid))
                 return []
 
         else:
-            sortorder = ['rgid', 'rid', 'ruid']
+            sortorder = ["rgid", "rid", "ruid"]
             for crit in sortorder:
                 analyses = self._getZODBAnalysesFromReferenceAnalyses(objid,
                                                                       crit)

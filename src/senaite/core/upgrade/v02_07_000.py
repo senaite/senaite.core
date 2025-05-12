@@ -48,9 +48,19 @@ def upgrade(tool):
 
 @upgradestep(product, version)
 def import_rolemap(tool):
-    """Import registry step from profiles
+    """Import rolemap step from profiles
     """
     portal = tool.aq_inner.aq_parent
     setup = portal.portal_setup
 
     setup.runImportStepFromProfile(profile, "rolemap")
+
+
+@upgradestep(product, version)
+def import_registry(tool):
+    """Import registry step from profiles
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+
+    setup.runImportStepFromProfile(profile, "plone.app.registry")
