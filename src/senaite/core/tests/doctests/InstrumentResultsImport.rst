@@ -235,6 +235,11 @@ Allow the instrument for our services and controls:
     >>> Fe.setInstruments([instrument])
     >>> Int.setInstruments([instrument])
 
+Attach import file to each analysis that is attached to a worksheet:
+
+    >>> from senaite.core.registry import set_registry_record
+    >>> set_registry_record("import_analysis_attach_importfile", True)
+
 
 Basic Instrument Results Import
 ...............................

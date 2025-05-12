@@ -395,3 +395,32 @@ class ISampleRegistry(ISenaiteRegistry):
         value_type=schema.ASCIILine(),
         required=False,
     )
+
+
+class IImportRegistry(ISenaiteRegistry):
+    """Registry settings for instrument imports
+    """
+
+    model.fieldset(
+        "Import",
+        label=_(
+            u"label_registry_import",
+            default=u"Import"
+        ),
+        fields=[
+            "import_analysis_attach_importfile",
+        ],
+    )
+
+    import_analysis_attach_importfile = schema.Bool(
+        title=_(
+            u"label_registry_import_analysis_attach_attachment",
+            default=u"Attach import file to Analyses"
+        ),
+        description=_(
+            u"description_registry_import_analysis_attach_attachment",
+            default=u"Attach import file to all Worksheet assigned analyses"
+        ),
+        default=False,
+        required=False,
+    )
