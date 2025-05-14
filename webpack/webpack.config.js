@@ -95,16 +95,20 @@ module.exports = {
       },
       {
         test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        // https://webpack.js.org/guides/asset-modules
         type: "asset/resource",
         generator: {
-          filename: "../fonts/[name][ext]"
+          filename: "../fonts/[name][ext]",
+          publicPath: "/++plone++senaite.core.static/fonts/"
         }
       },
       {
         test: /\.(png|jpg)(\?v=\d+\.\d+\.\d+)?$/,
+        // https://webpack.js.org/guides/asset-modules
         type: "asset/resource",
         generator: {
-          filename: "../assets/img/[name][ext]"
+          filename: "../assets/img/[name][ext]",
+          publicPath: "/++plone++senaite.core.static/assets/img/"
         }
       }
     ]
