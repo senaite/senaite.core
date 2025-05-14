@@ -47,7 +47,7 @@ module.exports = {
   output: {
     filename: devMode ? "[name].js" : `[name]-${gitHash}.js`,
     path: path.resolve(staticPath, "bundles"),
-    publicPath: "/++plone++senaite.core.static/bundles"
+    publicPath: "/++plone++senaite.core.static/bundles/"
   },
   module: {
     rules: [
@@ -95,31 +95,17 @@ module.exports = {
       },
       {
         test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-        use: [
-          {
-            // https://webpack.js.org/loaders/file-loader/
-            loader: "file-loader",
-            options: {
-              name: "[name].[ext]",
-              outputPath: "../fonts",
-              publicPath: "/++plone++senaite.core.static/fonts",
-            }
-          }
-        ]
+        type: "asset/resource",
+        generator: {
+          filename: "../fonts/[name][ext]"
+        }
       },
       {
         test: /\.(png|jpg)(\?v=\d+\.\d+\.\d+)?$/,
-        use: [
-          {
-            // https://webpack.js.org/loaders/file-loader/
-            loader: "file-loader",
-            options: {
-              name: "[name].[ext]",
-              outputPath: "../assets/img",
-              publicPath: "/++plone++senaite.core.static/assets/img",
-            }
-          }
-        ]
+        type: "asset/resource",
+        generator: {
+          filename: "../assets/img/[name][ext]"
+        }
       }
     ]
   },
