@@ -27,7 +27,6 @@
     "intl-tel-input": "^17.0.19",
     "jquery": "^3",
     "jquery-form": "^4.3.0",
-    "jquery-migrate": "^3",
     "jquery-ui": "^1.14.1",
     "popper.js": "^1.16.1",
     "react": "^18.2.0",

@@ -1,7 +1,6 @@
 <!-- external JS libraries -->
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/jquery/jquery.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/jquery-form/jquery.form.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/jquery-migrate/jquery-migrate.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/jquery-ui/jquery-ui.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/handlebars/handlebars.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/popperjs/popper.min.js"></script>
