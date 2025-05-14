@@ -13,13 +13,35 @@
             enctype="multipart/form-data"
             tal:attributes="action string:${here/absolute_url}/create_worksheet_modal">
 
-        <div class="form-group form-group-sm">
+        <!-- Available Analysts -->
+        <div class="form-group form-group-sm mb-3">
+          <label i18n:translate=""
+                 class="mr-2"
+                 for="analysis-categories-select">
+            Select analyst
+          </label>
+          <select id="analyst-select"
+                  name="analyst"
+                  tal:define="analysts view/get_analysts">
+            <tal:options repeat="analyst analysts">
+              <option tal:attributes="value python:analyst.get('username')"
+                      tal:content="python:analyst.get('fullname')"/>
+            </tal:options>
+          </select>
+          <small id="analyst-help"
+                 i18n:translate=""
+                 class="form-text text-muted">
+            The worksheet will be assigned to this analyst
+          </small>
+        </div>
+
+        <!-- Available Categories -->
+        <div class="form-group form-group-sm mb-3">
           <label i18n:translate=""
                  class="mr-2"
                  for="analysis-categories-select">
             Select analysis categories
           </label>
-          <!-- Available Categories -->
           <select multiple
                   id="analysis-categories-select"
                   name="categories"
@@ -36,6 +58,7 @@
           </small>
         </div>
 
+        <!-- Submit -->
         <div class="form-group mt-2">
           <input class="btn btn-sm btn-primary"
                  type="submit"
@@ -64,6 +87,9 @@
        noneSelectedText: _t("No items selected"),
        selectAllText: _t("Select all"),
        deselectAllText: _t("Deselect all")
+     });
+     $("select#analyst-select").selectpicker({
+       liveSearch: true,
      });
      // callback to toggle the submit button on or off
      $("select#analysis-categories-select").on("changed.bs.select", function (e, clickedIndex, isSelected, previousValue) {

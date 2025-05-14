@@ -54,18 +54,21 @@ class CreateWorksheetModal(Modal):
     def handle_submit(self, REQUEST=None):
         """Extract categories from request and create worksheet
         """
+        analyst = self.request.form.get("analyst")
         categories = self.request.form.get("categories")
+
         if isinstance(categories, string_types):
             categories = [categories]
         # filter out non-UIDs
         categories = filter(api.is_uid, categories)
-        worksheet = self.create_worksheet_for(self.uids, categories)
+
+        worksheet = self.create_worksheet_for(self.uids, analyst, categories)
         self.add_status_message(
             _("Created worksheet %s" % api.get_id(worksheet)), level="info")
         # redirect to the new worksheet
         return api.get_url(worksheet)
 
-    def create_worksheet_for(self, samples, categories):
+    def create_worksheet_for(self, samples, analyst, categories):
         """Create a new worksheet
 
         The new worksheet contains the analyses of all samples which match the
@@ -87,6 +90,7 @@ class CreateWorksheetModal(Modal):
         # create the new worksheet
         ws = api.create(self.worksheet_folder, "Worksheet")
         ws.setResultsLayout(self.worksheet_layout)
+        ws.setAnalyst(analyst)
         ws.addAnalyses(analyses)
         return ws
 
@@ -135,3 +139,24 @@ class CreateWorksheetModal(Modal):
             "uid": api.get_uid(category),
             "obj": category,
         }
+
+    def get_analysts(self):
+        """Returns all analyst users
+
+        This function searches for users which have at least the Analyst role,
+        and prepares a list of dictionaries for each user containing the
+        username and fullname.
+
+        :returns: List of analyst data dictionaries
+        """
+        #
+        users = api.get_users_by_roles(["Manager", "LabManager", "Analyst"])
+        analysts = []
+        for user in users:
+            username = user.getUserName()
+            fullname = api.get_user_fullname(username)
+            analysts.append({
+                "username": username,
+                "fullname": fullname or username,
+            })
+        return analysts
