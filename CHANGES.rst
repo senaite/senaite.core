@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2724 Allow to select an analyst in the create worksheet modal
 - #2720 Allow to set custom IDs to reference samples
 - #2721 Retain result for analysis retest
 - #2716 Fix submit form on confirmation dialog "Yes" button click
