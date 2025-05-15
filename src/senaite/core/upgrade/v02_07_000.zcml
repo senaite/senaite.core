@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add registry key for instrument import attachment handling"
+      description="Allow to set analysis attachments optional"
+      source="2701"
+      destination="2702"
+      handler=".v02_07_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Allow Analyst to create AutoImportLog"
       description="Fix Unauthorized Error on auto_import_results"
       source="2700"
