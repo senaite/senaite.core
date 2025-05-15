@@ -159,4 +159,5 @@ class CreateWorksheetModal(Modal):
                 "username": username,
                 "fullname": fullname or username,
             })
-        return analysts
+        # sort by fulname
+        return sorted(analysts, key=lambda x: x.get("fullname").lower())

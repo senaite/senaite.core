@@ -21,11 +21,15 @@
             Select analyst
           </label>
           <select id="analyst-select"
+                  class="selectpicker show-tick"
                   name="analyst"
                   tal:define="analysts view/get_analysts">
             <tal:options repeat="analyst analysts">
-              <option tal:attributes="value python:analyst.get('username')"
-                      tal:content="python:analyst.get('fullname')"/>
+              <option tal:define="username python:analyst.get('username');
+                                  fullname python:analyst.get('fullname');"
+                      tal:attributes="value python:username;
+                                      data-subtext string:(${username})"
+                      tal:content="python:fullname"/>
             </tal:options>
           </select>
           <small id="analyst-help"
