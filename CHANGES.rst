@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2725 Update webpack build system
 - #2719 jQuery3 compatibility
 - #2723 Add registry to control import file attachment to Worksheet assigned analyses
 - #2722 Fix instrument import loggings
