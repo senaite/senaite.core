@@ -13,21 +13,17 @@ const TerserPlugin = require("terser-webpack-plugin");
 const uglifyJS = require("uglify-js");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
-
-const gitCmd = "git rev-list -1 HEAD -- `pwd`";
-let gitHash = childProcess.execSync(gitCmd).toString().substring(0, 7);
-
+const mode = process.env.mode;
+const isDev = mode === "development";
+const isProd = mode === "production";
 const staticPath = path.resolve(__dirname, "../src/senaite/core/browser/static");
 
-const devMode = process.env.mode == "development";
-const prodMode = process.env.mode == "production";
-const mode = process.env.mode;
 console.log(`RUNNING WEBPACK IN '${mode}' MODE`);
 
 
 module.exports = {
   // https://webpack.js.org/configuration/devtool
-  devtool: devMode ? "eval" : "source-map",
+  devtool: isDev ? "eval" : "source-map",
   // https://webpack.js.org/configuration/mode/#usage
   mode: mode,
   context: path.resolve(__dirname, "app"),
@@ -45,7 +41,7 @@ module.exports = {
     ]
   },
   output: {
-    filename: devMode ? "[name].js" : `[name]-${gitHash}.js`,
+    filename: isDev ? "[name].js" : `[name].[contenthash].js`,
     path: path.resolve(staticPath, "bundles"),
     publicPath: "/++plone++senaite.core.static/bundles/"
   },
@@ -58,7 +54,8 @@ module.exports = {
         use: [
           {
             // https://webpack.js.org/loaders/babel-loader/
-            loader: "babel-loader"
+            loader: "babel-loader",
+            options: { cacheDirectory: true },
           }
         ]
       },
@@ -71,7 +68,8 @@ module.exports = {
           },
           {
             // https://webpack.js.org/loaders/css-loader/
-            loader: "css-loader"
+            loader: "css-loader",
+            options: { sourceMap: isDev },
           },
         ]
       },
@@ -85,11 +83,13 @@ module.exports = {
           },
           {
             // https://webpack.js.org/loaders/css-loader/
-            loader: "css-loader"
+            loader: "css-loader",
+            options: { sourceMap: isDev },
           },
           {
             // https://webpack.js.org/loaders/sass-loader/
-            loader: "sass-loader"
+            loader: "sass-loader",
+            options: { sourceMap: isDev },
           }
         ]
       },
@@ -114,7 +114,12 @@ module.exports = {
     ]
   },
   optimization: {
-    minimize: prodMode,
+    splitChunks: {
+      chunks: "all",
+      name: false,
+    },
+    runtimeChunk: "single",
+    minimize: isProd,
     minimizer: [
       // https://v4.webpack.js.org/plugins/terser-webpack-plugin/
       new TerserPlugin({
@@ -186,7 +191,7 @@ module.exports = {
           "../src/senaite/core/browser/static/js/senaite.core.worksheet.print.js",
         ],
         dest: code => {
-          if (devMode) {
+          if (isDev) {
             return {
               "legacy.js": code
             }
@@ -217,7 +222,7 @@ module.exports = {
           "../src/senaite/core/browser/static/thirdparty/d3.js",
         ],
         dest: code => {
-          if (devMode) {
+          if (isDev) {
             return {
               "thirdparty.js": code
             }
@@ -246,7 +251,7 @@ module.exports = {
     new MiniCssExtractPlugin({
       // N.B. use stable CSS name, because it is used in tinyMCE content as well
       //      -> see: `senaite.core.js`
-      // filename: devMode ? "[name].css" : `[name]-${gitHash}.css`,
+      // filename: isDev ? "[name].css" : `[name]-${gitHash}.css`,
       filename: "[name].css"
     }),
     // https://webpack.js.org/plugins/copy-webpack-plugin/
