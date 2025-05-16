@@ -13,13 +13,39 @@
             enctype="multipart/form-data"
             tal:attributes="action string:${here/absolute_url}/create_worksheet_modal">
 
-        <div class="form-group form-group-sm">
+        <!-- Available Analysts -->
+        <div class="form-group form-group-sm mb-3">
+          <label i18n:translate=""
+                 class="mr-2"
+                 for="analysis-categories-select">
+            Select analyst
+          </label>
+          <select id="analyst-select"
+                  class="selectpicker show-tick"
+                  name="analyst"
+                  tal:define="analysts view/get_analysts">
+            <tal:options repeat="analyst analysts">
+              <option tal:define="username python:analyst.get('username');
+                                  fullname python:analyst.get('fullname');"
+                      tal:attributes="value python:username;
+                                      data-subtext string:(${username})"
+                      tal:content="python:fullname"/>
+            </tal:options>
+          </select>
+          <small id="analyst-help"
+                 i18n:translate=""
+                 class="form-text text-muted">
+            The worksheet will be assigned to this analyst
+          </small>
+        </div>
+
+        <!-- Available Categories -->
+        <div class="form-group form-group-sm mb-3">
           <label i18n:translate=""
                  class="mr-2"
                  for="analysis-categories-select">
             Select analysis categories
           </label>
-          <!-- Available Categories -->
           <select multiple
                   id="analysis-categories-select"
                   name="categories"
@@ -36,11 +62,36 @@
           </small>
         </div>
 
+        <!-- Available Worksheet Templates -->
+        <div class="form-group form-group-sm mb-3">
+          <label i18n:translate=""
+                 class="mr-2"
+                 for="worksheet-templates-select">
+            Select worksheet template
+          </label>
+          <select id="worksheet-template-select"
+                  class="selectpicker show-tick"
+                  name="template"
+                  tal:define="templates view/get_worksheet_templates">
+            <tal:options repeat="template templates">
+              <option tal:define="uid python:template.get('uid');
+                                  title python:template.get('title');"
+                      tal:attributes="value python:uid;"
+                      tal:content="python:title"/>
+            </tal:options>
+          </select>
+          <small id="analyst-help"
+                 i18n:translate=""
+                 class="form-text text-muted">
+            The template that will be immediately assigned to the worksheet
+          </small>
+        </div>
+
+        <!-- Submit -->
         <div class="form-group mt-2">
           <input class="btn btn-sm btn-primary"
                  type="submit"
                  name="create_worksheet"
-                 disabled="disabled"
                  i18n:attributes="value"
                  value="Create Worksheet" />
         </div>
@@ -61,21 +112,18 @@
      $("select#analysis-categories-select").selectpicker({
        actionsBox: true,
        liveSearch: true,
-       noneSelectedText: _t("No items selected"),
+       noneSelectedText: _t("Select category"),
        selectAllText: _t("Select all"),
        deselectAllText: _t("Deselect all")
      });
-     // callback to toggle the submit button on or off
-     $("select#analysis-categories-select").on("changed.bs.select", function (e, clickedIndex, isSelected, previousValue) {
-       let el = e.currentTarget;
-       let submit = $("input[name='create_worksheet']");
-       if (el.value) {
-         submit.attr("disabled", false);
-       } else {
-         submit.attr("disabled", true);
-       }
+     $("select#analyst-select").selectpicker({
+       liveSearch: true,
+       noneSelectedText: _t("Select analyst"),
      });
-
+     $("select#worksheet-template-select").selectpicker({
+       liveSearch: true,
+       noneSelectedText: _t("Select template"),
+     });
    });
   </script>
 </div>
