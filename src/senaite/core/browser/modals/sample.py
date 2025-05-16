@@ -18,12 +18,12 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from six import string_types
-
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.browser.modals import Modal
+from senaite.core.catalog import SETUP_CATALOG
+from six import string_types
 
 
 class CreateWorksheetModal(Modal):
@@ -55,30 +55,33 @@ class CreateWorksheetModal(Modal):
         """Extract categories from request and create worksheet
         """
         analyst = self.request.form.get("analyst")
-        categories = self.request.form.get("categories")
+        categories = self.request.form.get("categories", [])
+        template = self.request.form.get("template")
+        samples = list(map(api.get_object, self.uids))
 
         if isinstance(categories, string_types):
             categories = [categories]
         # filter out non-UIDs
         categories = filter(api.is_uid, categories)
 
-        worksheet = self.create_worksheet_for(self.uids, analyst, categories)
+        worksheet = self.create_worksheet_for(
+            samples, analyst, categories, template)
         self.add_status_message(
             _("Created worksheet %s" % api.get_id(worksheet)), level="info")
         # redirect to the new worksheet
         return api.get_url(worksheet)
 
-    def create_worksheet_for(self, samples, analyst, categories):
+    def create_worksheet_for(self, samples, analyst, categories, template):
         """Create a new worksheet
 
         The new worksheet contains the analyses of all samples which match the
-        are in the given categories
+        are in the given categories.
 
         :param samples: Sample obejects or UIDs
         :param categories: Category objects or UIDs
+        :param template: Worksheet template
         :returns: new created Workshett
         """
-        samples = map(api.get_object, samples)
         categories = map(api.get_object, categories)
         analyses = []
         for sample in samples:
@@ -89,9 +92,10 @@ class CreateWorksheetModal(Modal):
 
         # create the new worksheet
         ws = api.create(self.worksheet_folder, "Worksheet")
-        ws.setResultsLayout(self.worksheet_layout)
         ws.setAnalyst(analyst)
         ws.addAnalyses(analyses)
+        ws.applyWorksheetTemplate(api.get_object(template, None))
+        ws.setResultsLayout(self.worksheet_layout)
         return ws
 
     @property
@@ -161,3 +165,25 @@ class CreateWorksheetModal(Modal):
             })
         # sort by fulname
         return sorted(analysts, key=lambda x: x.get("fullname").lower())
+
+    def get_worksheet_templates(self):
+        """Returns all WS templates
+
+        This function searches for worksheet templates and prepares a list of
+        dictionaries for each template containing the UID and the title.
+
+        :returns_ List of worksheet template data dictionaries
+        """
+        templates = [{"uid": "", "title": ""}]
+        query = {
+            "portal_type": "WorksheetTemplate",
+            "is_active": True,
+            "sort_on": "sortable_title",
+        }
+        results = api.search(query, SETUP_CATALOG)
+        for brain in results:
+            templates.append({
+                "uid": api.get_uid(brain),
+                "title": api.get_title(brain)
+            })
+        return templates
