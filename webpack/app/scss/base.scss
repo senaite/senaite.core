@@ -22,9 +22,15 @@ $primary: $link-color !default;
 // Fontawesome
 $fa-font-path: "../../node_modules/@fortawesome/fontawesome-free/webfonts" !default;
 @import "../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
-// @import "../../node_modules/@fortawesome/fontawesome-free/scss/regular";
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/regular";
 @import "../../node_modules/@fortawesome/fontawesome-free/scss/solid";
 // @import "../../node_modules/@fortawesome/fontawesome-free/scss/brands";
+
+// fixture for fontawesome 6 spinning icons
+.fa-beat, .fa-bounce, .fa-fade, .fa-beat-fade, .fa-flip, .fa-pulse, .fa-shake, .fa-spin, .fa-spin-pulse {
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+}
 
 // Sidebar (depends on Bootstrap variables)
 $sidebar-minimized-width: 50px;
