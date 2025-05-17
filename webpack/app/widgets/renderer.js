@@ -33,9 +33,15 @@ export const render_tinymce_widget = (el) => {
     target: el,
     plugins: ["paste", "link", "fullscreen", "table", "code"],
     // NOTE: CSS file must match configuration of entry point in webpack.config.js
-    content_css : "/++plone++senaite.core.static/bundles/senaite.core.css",
-  })
-}
+    content_css: "/++plone++senaite.core.static/bundles/senaite.core.css",
+    promotion: false,
+    branding: false,
+    license_key: "gpl",
+  });
+};
+// Fixture to skip plone.protect patching
+(window.tinymce = window.tinymce || {}).util = window.tinymce.util || {};
+(window.tinymce.util.XHR = window.tinymce.util.XHR || {})._send = window.tinymce.util.XHR._send || function () {};
 
 // Phone Widget
 export const render_phone_widget = (el) => {

@@ -5100,10 +5100,10 @@ tinyglobby@^0.2.12:
     fdir "^6.4.4"
     picomatch "^4.0.2"
 
-tinymce@^5.9.1:
-  version "5.10.7"
-  resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-5.10.7.tgz#d89d446f1962f2a1df6b2b70018ce475ec7ffb80"
-  integrity sha512-9UUjaO0R7FxcFo0oxnd1lMs7H+D0Eh+dDVo5hKbVe1a+VB0nit97vOqlinj+YwgoBDt6/DSCUoWqAYlLI8BLYA==
+tinymce@^7.9.0:
+  version "7.9.0"
+  resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-7.9.0.tgz#92e2260629de77e864e0a66e61c4a6193cf9cc32"
+  integrity sha512-tTrUmUGWqy1BY1WwDYh4WiuHm23LiRTcE1Xq3WLO8HKFzde/d0bTF/hXWOa97zqGh0ndJHx/nysQaNC9Gcd16g==
 
 to-fast-properties@^2.0.0:
   version "2.0.0"
