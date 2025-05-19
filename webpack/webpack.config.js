@@ -266,8 +266,6 @@ module.exports = {
         { from: "../node_modules/jquery-ui/dist", to: path.resolve(staticPath, "modules/jquery-ui") },
         { from: "../node_modules/jquery/dist", to: path.resolve(staticPath, "modules/jquery") },
         { from: "../node_modules/popper.js/dist/umd", to: path.resolve(staticPath, "modules/popperjs") },
-        { from: "../node_modules/react-dom/umd/react-dom.production.min.js", to: path.resolve(staticPath, "modules/react-dom") },
-        { from: "../node_modules/react/umd/react.production.min.js", to: path.resolve(staticPath, "modules/react") },
         { from: "../node_modules/tinymce", to: path.resolve(staticPath, "modules/tinymce"), globOptions: {ignore: ["**/README.md"],},},
         // { from: "../node_modules/@fortawesome/fontawesome-free", to: path.resolve(staticPath, "modules/fontawesome-free") },
       ]
@@ -282,8 +280,6 @@ module.exports = {
   ],
   externals: {
     // https://webpack.js.org/configuration/externals
-    react: "React",
-    "react-dom": "ReactDOM",
     $: "jQuery",
     jquery: "jQuery",
     bootstrap: "bootstrap",

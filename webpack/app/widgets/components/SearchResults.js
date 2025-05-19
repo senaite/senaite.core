@@ -130,14 +130,14 @@ class SearchResults extends React.Component {
       let width = column.width || "auto";
       let align = column.align || "left";
       columns.push(
-        <th className="border-top-0" width={width} align={align}>
+        <th key={label} className="border-top-0" width={width} align={align}>
           {_t(label)}
         </th>
       );
     }
     // Append additional column for usage state
     columns.push(
-      <th className="border-top-0" width="1"></th>
+      <th key="linked" className="border-top-0" width="1"></th>
     )
     return columns;
   }
@@ -159,7 +159,8 @@ class SearchResults extends React.Component {
       let cursor = value ? "pointer" : "not-allowed";
       let title = value ? "" : _t("Missing key");
       rows.push(
-        <tr value={value}
+        <tr key={index}
+            value={value}
             index={index}
             title={title}
             style={{cursor:cursor}}
@@ -203,13 +204,13 @@ class SearchResults extends React.Component {
       let value = result[name];
       let highlighted = this.highlight(value, searchterm);
       columns.push(
-        <td dangerouslySetInnerHTML={{__html: highlighted}}></td>
+        <td key={name} dangerouslySetInnerHTML={{__html: highlighted}}></td>
       );
     }
     let value = this.get_result_value(result);
     let used = this.props.values.indexOf(value) > -1;
     columns.push(
-      <td>{used && <i className="fas fa-link text-success"></i>}</td>
+      <td key={value}>{used && <i className="fas fa-link text-success"></i>}</td>
     );
     return columns;
   }
@@ -258,13 +259,13 @@ class SearchResults extends React.Component {
       if (page == first_page && crop_before) {
         // link to first page
         pages.push(
-          <li>
+          <li key="first-page">
             <button className="page-link" page={1} onClick={this.on_page}>1</button>
           </li>
         );
         // placeholder
         pages.push(
-          <li>
+          <li key="placeholder-left">
             <div className="page-link">...</div>
           </li>
         );
@@ -272,7 +273,7 @@ class SearchResults extends React.Component {
       }
 
       pages.push(
-        <li className={cls.join(" ")}>
+        <li key={page} className={cls.join(" ")}>
           <button className="page-link" page={page} onClick={this.on_page}>
             {page}
           </button>
@@ -283,13 +284,13 @@ class SearchResults extends React.Component {
       if (page === last_page && crop_after) {
         // placeholder
         pages.push(
-          <li>
+          <li key="placeholder-right">
             <div className="page-link">...</div>
           </li>
         );
         // link to last page
         pages.push(
-          <li>
+          <li key="last-page">
             <button className="page-link" page={total} onClick={this.on_page}>
               {total}
             </button>
@@ -311,7 +312,7 @@ class SearchResults extends React.Component {
     let cls = ["page-item"]
     if (!this.props.next_url) cls.push("disabled")
     return (
-      <li className={cls.join(" ")}>
+      <li key="next" className={cls.join(" ")}>
         <button className="page-link" onClick={this.on_next_page}>
           Next
         </button>
@@ -328,7 +329,7 @@ class SearchResults extends React.Component {
     let cls = ["page-item"]
     if (!this.props.prev_url) cls.push("disabled")
     return (
-      <li className={cls.join(" ")}>
+      <li key="previous" className={cls.join(" ")}>
         <button className="page-link" onClick={this.on_prev_page}>
           Previous
         </button>
@@ -343,7 +344,7 @@ class SearchResults extends React.Component {
    */
   build_close_button() {
     return (
-      <button className="btn btn-sm btn-link" onClick={this.on_close}>
+      <button key="close" className="btn btn-sm btn-link" onClick={this.on_close}>
         <i className="fas fa-window-close"></i>
       </button>
     )

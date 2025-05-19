@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 // https://www.tiny.cloud/docs/tinymce/6
 import tinymce from "tinymce";
 // https://github.com/jackocnr/intl-tel-input#readme
@@ -10,19 +10,27 @@ import QuerySelectWidgetController from "./queryselect/widget.js"
 import AddressWidgetController from "./addresswidget/widget.js"
 import SelectOtherWidgetController from "./selectother/widget.js"
 
+// Helper to render React components safely using createRoot
+const safeRender = (Component, el, props = {}) => {
+  if (!el._reactRoot) {
+    el._reactRoot = ReactDOM.createRoot(el);
+  }
+  return el._reactRoot.render(<Component {...props} root_el={el} />);
+};
+
 // Query Select Widget
 export const render_queryselect_widget = (el) => {
-  return ReactDOM.render(<QuerySelectWidgetController root_class="queryselectfield" root_el={el}/>, el);
+  return safeRender(QuerySelectWidgetController, el, { root_class: "queryselectfield" });
 }
 
 // UID Reference Widget
 export const render_uidreference_widget = (el) => {
-  return ReactDOM.render(<QuerySelectWidgetController root_class="uidreferencefield" root_el={el}/>, el);
+  return safeRender(QuerySelectWidgetController, el, { root_class: "uidreferencefield" });
 }
 
 // Address Widget
 export const render_address_widget = (el) => {
-  return ReactDOM.render(<AddressWidgetController root_class="address" root_el={el}/>, el);
+  return safeRender(AddressWidgetController, el, { root_class: "address" });
 }
 
 // TinyMCE Widget
@@ -84,5 +92,5 @@ export const render_phone_widget = (el) => {
 
 // SelectOther Widget
 export const render_selectother_widget = (el) => {
-  return ReactDOM.render(<SelectOtherWidgetController root_class="selectotherfield" root_el={el}/>, el);
+  return safeRender(SelectOtherWidgetController, el, { root_class: "selectotherfield" });
 }
