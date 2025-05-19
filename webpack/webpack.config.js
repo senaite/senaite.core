@@ -114,11 +114,6 @@ module.exports = {
     ]
   },
   optimization: {
-    splitChunks: {
-      chunks: "all",
-      name: false,
-    },
-    runtimeChunk: "single",
     minimize: isProd,
     minimizer: [
       // https://v4.webpack.js.org/plugins/terser-webpack-plugin/
