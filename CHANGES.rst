@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2726 Update fontawesome 5 -> 6
 - #2725 Update webpack build system
 - #2719 jQuery3 compatibility
 - #2724 Allow to select an analyst and template in the create worksheet modal
