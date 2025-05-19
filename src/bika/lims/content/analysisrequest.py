@@ -1531,7 +1531,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
                 service = analysis.getAnalysisService()
                 assigned_services[service].append(api.get_review_status(analysis))
 
-            # prepare all open services that need to be added again
+            # create a list of all open services that need to be added
             # NOTE: missing services will be otherwise removed!
             services_to_add = [k for k, v in assigned_services.items() if any(
                 filter(lambda rs: rs not in DETACHED_STATES, v))]

@@ -188,7 +188,7 @@ Now we assign the same profile again:
 
     >>> ar1.setProfiles(profile1)
 
-The rejected samples should be not re-assigned:
+The rejected samples should not be re-assigned:
 
     >>> map(api.get_review_status, ar1.getAnalyses())
     ['rejected', 'rejected', 'rejected']
