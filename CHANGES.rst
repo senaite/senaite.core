@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2728 Update ReactJS 18 -> 19
 - #2727 Update TinyMCE 5 -> 7
 - #2726 Update fontawesome 5 -> 6
 - #2725 Update webpack build system
