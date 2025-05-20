@@ -48,6 +48,12 @@ Functional Helpers:
     ...     analyses = sample.getAnalyses(full_objects=True)
     ...     return filter(lambda an: an.getServiceUID() in uids, analyses)
 
+    >>> def get_analysis(sample, id):
+    ...     ans = sample.getAnalyses(getId=id, full_objects=True)
+    ...     if len(ans) != 1:
+    ...         return None
+    ...     return ans[0]
+
 Variables::
 
     >>> date_now = timestamp()
@@ -845,3 +851,104 @@ And the attachment is now only linked to the attachment of the original analysis
 
     >>> att_an.getLinkedAnalyses()
     [<Analysis at /plone/clients/client-1/water-0003/NoCalc>]
+
+
+
+Retaining Analyses
+~~~~~~~~~~~~~~~~~~
+
+Some analyses must be retained for track & tracability, i.e. `retracted` or `rejected` analyses
+or analyses in the states `to_be_verified` or `verified`.
+
+Therefore, it is crucial to keep those analyses, no matter what is passed in.
+
+First, we create a new sample holding 3 analyses:
+
+    >>> all_services = [analysisservice1, analysisservice2, analysisservice3]
+    >>> sample = create_analysisrequest(client, request, values, all_services)
+
+    >>> success = do_action_for(sample, "receive")
+    >>> api.get_review_status(sample)
+    'sample_received'
+
+    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
+    [<Analysis at /plone/clients/client-1/water-0004/CA>, <Analysis at /plone/clients/client-1/water-0004/MG>, <Analysis at /plone/clients/client-1/water-0004/PH>]
+
+Now we reject the `PH` analysis:
+
+    >>> success = do_action_for(sample.PH, "reject")
+    >>> api.get_review_status(sample.PH)
+    'rejected'
+
+Trying to flush all analyses with the field will retain the rejected analysis:
+
+    >>> field.set(sample, [])
+    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
+    [<Analysis at /plone/clients/client-1/water-0004/PH>]
+
+However, it is possible to add this analysis again:
+
+    >>> field.set(sample, [analysisservice1])
+    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
+    [<Analysis at /plone/clients/client-1/water-0004/PH>, <Analysis at /plone/clients/client-1/water-0004/PH-1>]
+
+Flushing the field will again retain the rejected one:
+
+    >>> field.set(sample, [])
+    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
+    [<Analysis at /plone/clients/client-1/water-0004/PH>]
+
+Let's add a `MG` analysis and add a result:
+
+    >>> field.set(sample, [analysisservice2])
+    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
+    [<Analysis at /plone/clients/client-1/water-0004/MG>, <Analysis at /plone/clients/client-1/water-0004/PH>]
+
+    >>> analysis = get_analysis(sample, "MG")
+    >>> analysis.setResult(7)
+    >>> success = do_action_for(analysis, "submit")
+    >>> api.get_review_status(analysis)
+    'to_be_verified'
+
+Trying to flush all analyses with the field will retain the rejected and submitted analysis:
+
+    >>> field.set(sample, [])
+    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
+    [<Analysis at /plone/clients/client-1/water-0004/MG>, <Analysis at /plone/clients/client-1/water-0004/PH>]
+
+Now we retract the submitted analysis:
+
+    >>> success = do_action_for(analysis, "retract")
+    >>> api.get_review_status(analysis)
+    'retracted'
+
+We should have now the retest as well:
+
+    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
+    [<Analysis at /plone/clients/client-1/water-0004/MG>, <Analysis at /plone/clients/client-1/water-0004/MG-1>, <Analysis at /plone/clients/client-1/water-0004/PH>]
+
+Now we flush again the field, which should wipe out the retest:
+
+    >>> field.set(sample, [])
+    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
+    [<Analysis at /plone/clients/client-1/water-0004/MG>, <Analysis at /plone/clients/client-1/water-0004/PH>]
+
+But we can add it again:
+
+    >>> field.set(sample, [analysisservice2])
+    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
+    [<Analysis at /plone/clients/client-1/water-0004/MG>, <Analysis at /plone/clients/client-1/water-0004/MG-1>, <Analysis at /plone/clients/client-1/water-0004/PH>]
+
+And add another result:
+
+    >>> analysis = get_analysis(sample, "MG-1")
+    >>> analysis.setResult(7.5)
+    >>> success = do_action_for(analysis, "submit")
+    >>> api.get_review_status(analysis)
+    'to_be_verified'
+
+This should retain it as well if we try to flush the field:
+
+    >>> field.set(sample, [])
+    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
+    [<Analysis at /plone/clients/client-1/water-0004/MG>, <Analysis at /plone/clients/client-1/water-0004/MG-1>, <Analysis at /plone/clients/client-1/water-0004/PH>]

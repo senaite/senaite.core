@@ -130,7 +130,7 @@ class SampleAnalysesFieldDataManager(FieldDataManager):
         to_remove = filter(lambda an: not ISubmitted.providedBy(an), to_remove)
         # Retain analyses from detached states
         to_remove = filter(lambda an: api.get_review_status(an)
-                           in [DETACHED_STATES], to_remove)
+                           not in DETACHED_STATES, to_remove)
 
         # Remove analyses
         map(self.remove_analysis, to_remove)
