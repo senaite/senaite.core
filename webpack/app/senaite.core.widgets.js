@@ -63,18 +63,24 @@ const WIDGETS = [
   * */
 const render_all_widgets = (root_element) => {
   WIDGETS.forEach((cfg) => {
-    let root = root_element instanceof(Node) ? root_element : document;
-    let elements = root.querySelectorAll(cfg.selector);
-    let renderer = cfg.renderer;
+    const root = root_element instanceof(Node) ? root_element : document;
+    const elements = root.querySelectorAll(cfg.selector);
+    const renderer = cfg.renderer;
+
     elements.forEach((element) => {
       if (renderer) {
-        let controller = renderer(element);
-        if (element.id) {
-          // use the ID attribute as the primary identifier
-          window.senaite.core.widgets[element.id] = controller;
-        } else if (element.dataset.id) {
-          // check if we have a `data-id` set that we can use
-          window.senaite.core.widgets[JSON.parse(element.dataset.id)] = controller;
+        const ref = renderer(element);
+        const widget_id = element.id || element.dataset.id || null;
+        if (widget_id) {
+          // workaround to get the controller instance in ReactJS 19
+          const waitForRef = () => {
+            if (ref.current) {
+              window.senaite.core.widgets[widget_id] = ref.current;
+            } else {
+              requestAnimationFrame(waitForRef);
+            }
+          };
+          waitForRef();
         } else {
           console.warn("Element has no ID set! Controller can not be accessed for ", element)
         }
