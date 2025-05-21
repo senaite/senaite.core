@@ -226,6 +226,7 @@ module.exports = {
           "../src/senaite/core/browser/static/thirdparty/d3.js",
         ],
         dest: code => {
+          // no minifying of already minified code
           const joined = Array.isArray(code) ? code.join("\n") : code;
           return { "thirdparty.js": joined };
         }
