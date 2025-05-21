@@ -186,20 +186,29 @@ module.exports = {
           "../src/senaite/core/browser/static/js/senaite.core.worksheet.print.js",
         ],
         dest: code => {
+          const joined = Array.isArray(code) ? code.join("\n") : code;
+
           if (isDev) {
-            return {
-              "legacy.js": code
-            }
+            return { "legacy.js": joined };
           }
-          const min = uglifyJS.minify(code, {sourceMap: {
-            filename: "legacy.js",
-            // url: "legacy.js.map"
-          }, compress: {drop_console: true}});
-          return {
-            "legacy.js":min.code,
-            // "legacy.js.map": min.map
+
+          const min = uglifyJS.minify(joined, {
+            compress: { drop_console: true },
+            mangle: false,
+            keep_fnames: true
+          });
+
+          if (min.error) {
+            console.error("UglifyJS error:", min.error);
+            throw min.error;
           }
-        },
+
+          if (!min.code || typeof min.code !== "string") {
+            throw new Error("UglifyJS output is empty or invalid for legacy.js");
+          }
+
+          return { "legacy.js": min.code };
+        }
       }, {
         // legacy.css
         src: [
@@ -217,20 +226,17 @@ module.exports = {
           "../src/senaite/core/browser/static/thirdparty/d3.js",
         ],
         dest: code => {
-          if (isDev) {
-            return {
-              "thirdparty.js": code
-            }
-          }
-          const min = uglifyJS.minify(code, {sourceMap: {
-            filename: "thirdparty.js",
-            // url: "thirdparty.js.map"
-          }, compress: {drop_console: true}});
-          return {
-            "thirdparty.js":min.code,
-            // "thirdparty.js.map": min.map
-          }
-        },
+          const joined = Array.isArray(code) ? code.join("\n") : code;
+          return { "thirdparty.js": joined };
+        }
+      }, {
+        // legacy.css
+        src: [
+          "../src/senaite/core/browser/static/css/senaite.core.graphics.css",
+        ],
+        dest: code => ({
+          "legacy.css":new CleanCSS({}).minify(code).styles,
+        })
       }, {
         // thirdparty.css
         src: [],
