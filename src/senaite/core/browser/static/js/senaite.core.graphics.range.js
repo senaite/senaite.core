@@ -76,7 +76,7 @@ class RangeGraph {
     const colorDot = inRange ? "#279989" : inShoulder ? "#ffae00" : "#ff0000";
     const colorShoulder = inRange || inShoulder ? "#d9e9e6" : "#dcdcdc";
 
-    const x = d3.scale.linear()
+    const x = d3.scaleLinear()
       .domain([xMin, xMax])
       .range([0, contentWidth]);
 
