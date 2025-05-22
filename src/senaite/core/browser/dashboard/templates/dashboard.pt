@@ -236,7 +236,7 @@
        function loadBarCharts() {
          $(".bar-chart").each(function () {
            var id = $(this).attr("id");
-           var vis = senaite.core.controllers.SiteView.readCookie("visible." + id);
+           var vis = senaite.core.controllers.SiteView.read_cookie("visible." + id);
            if (vis == 1) {
              $("#" + id).show();
              $("#" + id + "-period").show();
@@ -387,9 +387,9 @@
          $("select.dashboard_filters").on("change", function () {
            var section_id = $(this).attr("section_id");
            var selected = $(this).find(":selected").val();
-           var cookie_data = render_cookie_data(senaite.core.controllers.SiteView.readCookie(cookie_id));
+           var cookie_data = render_cookie_data(senaite.core.controllers.SiteView.read_cookie(cookie_id));
            cookie_data[section_id] = selected;
-           senaite.core.controllers.SiteView.setCookie(cookie_id, build_cookie_data(cookie_data));
+           senaite.core.controllers.SiteView.set_cookie(cookie_id, build_cookie_data(cookie_data));
            window.location.reload(true);
          });
        }
