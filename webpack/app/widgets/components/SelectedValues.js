@@ -66,11 +66,12 @@ class SelectedValues extends React.Component {
     let selected_values = this.get_selected_values();
     let readonly = this.props.readonly;
 
-    for (let value of selected_values) {
-      let context = this.props.records[value] || {};
-      let review_state = context.review_state || "default";
+    selected_values.forEach((value, index) => {
+      const context = this.props.records[value] || {};
+      const review_state = context.review_state || "default";
+      const key = `${value}-${index}`;
       items.push(
-        <li key={value} value={value} className="d-inline-block">
+        <li key={key} value={value} className="d-inline-block">
           <div className="d-flex flex-nowrap p-1 mb-1 mr-1 bg-light border rounded field-validation">
             <span className={"state-" + review_state}
                   dangerouslySetInnerHTML={{__html: this.render_display_template(value)}}></span>
@@ -86,7 +87,7 @@ class SelectedValues extends React.Component {
 
         </li>
       );
-    }
+    });
     return items
   }
 
