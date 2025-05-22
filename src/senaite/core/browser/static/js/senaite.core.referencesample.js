@@ -63,8 +63,11 @@ window.ReferenceSampleAnalysesView = class ReferenceSampleAnalysesView {
       }
     });
 
-    $(document).on("listing:loaded", "body", () => {
-      this.filterRows();
+    $(document).on("listing:loaded", "body", (event) => {
+      // wait until the listing view rendered the table
+      setTimeout(() => {
+        this.filterRows();
+      }, 500);
     });
 
     $(document).on("click", "#printgraph", (e) => {
@@ -103,7 +106,19 @@ window.ReferenceSampleAnalysesView = class ReferenceSampleAnalysesView {
   }
 
   filterRows() {
-    const service = $("#selanalyses").val().split("(")[0].trim();
+    let service = null;
+
+    const service_select = $("#selanalyses").val();
+    if (service_select) {
+      const matches = [...service_select.matchAll(/\([^()]*\)/g)];
+      if (matches.length >= 2) {
+        const last = matches[matches.length - 1][0];
+        service = service_select.replace(last, "").trim();
+      } else if (matches.length === 1) {
+        service = service_select.replace(matches[0][0], '').trim();
+      }
+    }
+
     let count = 0;
 
     $("div.results-info").remove();
