@@ -1405,6 +1405,11 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
+    TextField(
+        "InvalidationReason",
+        allowable_content_types=("text/plain",),
+        widget=ComputedWidget(visible=False)
+    ),
 ))
 
 

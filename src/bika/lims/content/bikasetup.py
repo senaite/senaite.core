@@ -592,6 +592,23 @@ schema = BikaFolderSchema.copy() + Schema((
             ),
         ),
     ),
+    # NOTE: This is a Proxy Field which delegates to the SENAITE Registry!
+    BooleanField(
+        "InvalidationReasonRequired",
+        schemata="Sampling",
+        default=True,
+        widget=BooleanWidget(
+            label=_(
+                "label_bikasetup_invalidation_reason_required",
+                default="Invalidation reason required"
+            ),
+            description=_(
+                "description_bikasetup_invalidation_reason_required",
+                default="Specify whether providing a reason is mandatory when "
+                        "invalidating a sample."
+            ),
+        ),
+    ),
     BooleanField(
         "AutoreceiveSamples",
         schemata="Sampling",
@@ -793,12 +810,17 @@ schema = BikaFolderSchema.copy() + Schema((
             "$lab_address",
         widget=RichWidget(
             label=_("Email body for Sample Invalidation notifications"),
-            description=_("Set the text for the body of the email to be sent, "
-                          ", if option 'Email notification on Sample "
-                          "'invalidation' enabled,  to the Sample's client "
-                          "contact. You can use reserved keywords: $sample_id, "
-                          "$sample_link, $retest_id, $retest_link, "
-                          "$lab_address"),
+            description=_(
+                "Enter the text for the email body used to notify the client "
+                "contact about the sample invalidation. This field is "
+                "applicable when the 'Email Notification on Sample "
+                "Invalidation' option is enabled. You can include "
+                "placeholders such as $sample_id for the invalidated sample "
+                "ID, $sample_link for a direct link to the sample, $retest_id "
+                "for the ID of the retest sample (if applicable), "
+                "$retest_link for its link, $reason for the invalidation "
+                "reason, and $lab_address for the laboratory's address."
+            ),
             default_mime_type='text/x-rst',
             output_mime_type='text/x-html',
             allow_file_upload=False,
@@ -1360,6 +1382,23 @@ class BikaSetup(folder.ATFolder):
         # setup is `None` during initial site content structure installation
         if setup:
             setup.setDateSampledRequired(value)
+
+    def getInvalidationReasonRequired(self):
+        """Get the value form the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getInvalidationReasonRequired()
+        return self.getField("InvalidationReasonRequired").default
+
+    def setInvalidationReasonRequired(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setInvalidationReasonRequired(value)
 
 
 registerType(BikaSetup, PROJECTNAME)
