@@ -1675,6 +1675,7 @@ class AnalysesView(ListingView):
 
         if self.analysis_remarks_enabled():
             item["Remarks"] = analysis_brain.getRemarks
+
         if self.can_edit_remarks(analysis_brain):
             item["allow_edit"].extend(["Remarks"])
         else:
