@@ -26,9 +26,9 @@ from Products.Archetypes.Widget import TypesWidget
 class RejectionSetupWidget(TypesWidget):
     _properties = TypesWidget._properties.copy()
     _properties.update({
-        'macro': "bika_widgets/rejectionsetupwidget",
-        'helper_js': ("bika_widgets/rejectionsetupwidget.js",),
-        'helper_css': ("bika_widgets/rejectionsetupwidget.css",),
+        'macro': "senaite_widgets/rejectionsetupwidget",
+        'helper_js': ("senaite_widgets/rejectionsetupwidget.js",),
+        'helper_css': ("senaite_widgets/rejectionsetupwidget.css",),
     })
 
     security = ClassSecurityInfo()

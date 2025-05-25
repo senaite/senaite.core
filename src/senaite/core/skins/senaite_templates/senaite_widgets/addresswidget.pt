@@ -1,0 +1,157 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      i18n:domain="senaite.core">
+
+  <metal:view_macro define-macro="view"
+                    tal:define="innerJoin field/innerJoin;
+                                outerJoin field/outerJoin;
+                                subfieldViews python:field.getSubfieldViews(here,innerJoin)"
+                    tal:replace="structure python:outerJoin.join(subfieldViews)" />
+
+  <metal:define define-macro="edit">
+    <metal:use use-macro="field_macro | here/widgets/field/macros/edit">
+      <metal:fill fill-slot="widget_body">
+        <tal:define define="addr python:request.form.get(fieldName, accessor());
+                            possibles here/getPossibleAddresses;
+                            country python:addr.get('country', '');
+                            state python:addr.get('state','');
+                            district python:addr.get('district','');
+                            city python:addr.get('city','');
+                            zip python:addr.get('zip','');
+                            address python:addr.get('address','');
+                            defcountry python:country or widget.getDefaultCountry();">
+          <fieldset class="border p-3 mb-4">
+            <span tal:replace="structure context/@@authenticator/authenticator" />
+
+            <!-- Country -->
+            <div class="form-group row">
+              <label class="col-sm-2 col-form-label" i18n:translate=""
+                     tal:attributes="for string:${fieldName}_country">Country</label>
+              <div class="col-sm-4">
+                <select class="form-control"
+                        tal:attributes="name string:${fieldName}.country:record;
+                               id string:${fieldName}.country"
+                        tal:define="values python:widget.getCountries();">
+                  <option value=""></option>
+                  <tal:x tal:repeat="value values">
+                    <option tal:content="python:value[1]"
+                            tal:attributes="value python:value[1];
+                                         selected python:value[1] == country and 'selected' or (country=='' and value[0] == defcountry and 'selected' or '')">
+                    </option>
+                  </tal:x>
+                </select>
+              </div>
+
+              <!-- Copy From -->
+              <div class="col-sm-6" tal:condition="widget/showCopyFrom">
+                <div class="input-group input-group-sm">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" i18n:translate="">Copy from</span>
+                  </div>
+                  <select class="form-control"
+                          tal:attributes="id string:${fieldName}.selection;">
+                    <option></option>
+                    <tal:possibles tal:repeat="possible possibles">
+                      <option tal:content="possible"
+                              tal:condition="python:possible != fieldName"
+                              tal:attributes="value possible"></option>
+                    </tal:possibles>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+
+            <!-- State -->
+            <div class="form-group row">
+              <label class="col-sm-2 col-form-label" i18n:translate=""
+                     tal:attributes="for string:${fieldName}_state">State</label>
+              <div class="col-sm-10">
+                <select class="form-control"
+                        tal:attributes="name string:${fieldName}.state:record;
+                               id string:${fieldName}.state"
+                        tal:define="values python:widget.getStates(defcountry)">
+                  <option value=''></option>
+                  <tal:x tal:repeat="value values">
+                    <option tal:content="python:value[2]"
+                            tal:attributes="value python:value[2];
+                                         selected python:value[2] == state and 'selected' or '';">
+                    </option>
+                  </tal:x>
+                </select>
+              </div>
+            </div>
+
+            <!-- District -->
+            <div class="form-group row" tal:condition="widget/showDistrict">
+              <label class="col-sm-2 col-form-label" i18n:translate=""
+                     tal:attributes="for string:${fieldName}_district">District</label>
+              <div class="col-sm-10">
+                <select class="form-control"
+                        tal:attributes="name string:${fieldName}.district:record;
+                               id string:${fieldName}.district"
+                        tal:define="values python:widget.getDistricts(defcountry, state)">
+                  <option value=''></option>
+                  <option tal:define="districts python:[val[2] for val in values];
+                                      missing python:district and district not in districts"
+                          tal:condition="missing"
+                          tal:attributes="value python:district"
+                          tal:content="python:district"
+                          selected="selected"/>
+                  <tal:x tal:repeat="value values">
+                    <option tal:content="python:value[2]"
+                            tal:attributes="value python:value[2];
+                                         selected python:value[2] == district and 'selected' or '';">
+                    </option>
+                  </tal:x>
+                </select>
+              </div>
+            </div>
+
+            <!-- City -->
+            <div class="form-group row" tal:condition="widget/showCity">
+              <label class="col-sm-2 col-form-label" i18n:translate=""
+                     tal:attributes="for string:${fieldName}_city">City</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control"
+                       tal:attributes="value city;
+                             name string:${fieldName}.city:record;
+                             id string:${fieldName}.city" />
+              </div>
+            </div>
+
+            <!-- Postal Code -->
+            <div class="form-group row" tal:condition="widget/showPostalCode">
+              <label class="col-sm-2 col-form-label" i18n:translate=""
+                     tal:attributes="for string:${fieldName}_zip">Postal code</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control"
+                       tal:attributes="value zip;
+                             name string:${fieldName}.zip:record;
+                             id string:${fieldName}.zip" />
+              </div>
+            </div>
+
+            <!-- Address -->
+            <div class="form-group row" tal:condition="widget/showAddress">
+              <label class="col-sm-2 col-form-label" i18n:translate="">Address</label>
+              <div class="col-sm-10">
+                <textarea class="form-control" rows="3"
+                          tal:attributes="name string:${fieldName}.address:record;
+                                 id string:${fieldName}.address"
+                          tal:content="address">
+                </textarea>
+              </div>
+            </div>
+
+          </fieldset>
+        </tal:define>
+      </metal:fill>
+    </metal:use>
+  </metal:define>
+
+  <!-- Use string field's search macro for consistency -->
+  <div metal:define-macro="search">
+    <div metal:use-macro="here/widgets/string/macros/edit"></div>
+  </div>
+</html>

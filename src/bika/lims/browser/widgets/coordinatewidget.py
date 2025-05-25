@@ -23,11 +23,13 @@ from senaite.core.browser.widgets.recordwidget import RecordWidget
 from Products.Archetypes.Registry import registerWidget
 
 
+# TODO: Remove, only used in SamplePoint, which was migrated here:
+#       https://github.com/senaite/senaite.core/pull/2533
 class CoordinateWidget(RecordWidget):
     security = ClassSecurityInfo()
     _properties = RecordWidget._properties.copy()
     _properties.update({
-        "macro": "bika_widgets/coordinatewidget",
+        # "macro": "bika_widgets/coordinatewidget",
     })
 
 

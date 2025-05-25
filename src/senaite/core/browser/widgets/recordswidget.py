@@ -38,7 +38,6 @@ class RecordsWidget(RecordWidget):
         "helper_css": ("senaite_widgets/recordswidget.css",),
         "allowDelete": True,
         "readOnly": False,
-        "combogrid_options": "",
     })
 
     security.declarePublic("process_form")

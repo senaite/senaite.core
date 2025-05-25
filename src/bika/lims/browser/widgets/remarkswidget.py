@@ -25,7 +25,7 @@ from Products.Archetypes.Widget import TypesWidget
 class RemarksWidget(TypesWidget):
     _properties = TypesWidget._properties.copy()
     _properties.update({
-        'macro': 'bika_widgets/remarkswidget',
+        "macro": "senaite_widgets/remarkswidget",
         })
 
     security = ClassSecurityInfo()

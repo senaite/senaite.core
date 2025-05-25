@@ -27,9 +27,9 @@ class WorksheetTemplateLayoutWidget(RecordsWidget):
     security = ClassSecurityInfo()
     _properties = RecordsWidget._properties.copy()
     _properties.update({
-        "macro": "bika_widgets/worksheettemplatelayoutwidget",
-        "helper_js": ("bika_widgets/worksheettemplatelayoutwidget.js",),
-        "helper_css": ("bika_widgets/worksheettemplatelayoutwidget.css",),
+        # "macro": "bika_widgets/worksheettemplatelayoutwidget",
+        # "helper_js": ("bika_widgets/worksheettemplatelayoutwidget.js",),
+        # "helper_css": ("bika_widgets/worksheettemplatelayoutwidget.css",),
     })
 
     security.declarePublic("get_template_rows")

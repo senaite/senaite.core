@@ -123,7 +123,7 @@ class ImportView(BrowserView):
         """
         setup_catalog = api.get_tool(SETUP_CATALOG)
         brains = setup_catalog(portal_type="Instrument", is_active=True)
-        items = [("", _("... Choose an Instrument ..."))]
+        items = []
         for brain in brains:
             instrument = api.get_object(brain)
             # XXX: ImportDataInterface is a multi values string field!
@@ -136,4 +136,5 @@ class ImportView(BrowserView):
             items.append((instrument.UID(), u(instrument.Title())))
 
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
+        items.insert(0, ("", _("... Choose an Instrument ...")))
         return DisplayList(list(items))

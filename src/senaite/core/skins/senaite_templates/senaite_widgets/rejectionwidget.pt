@@ -1,0 +1,92 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      i18n:domain="senaite.core">
+
+  <!-- View Macro -->
+  <metal:view_macro define-macro="view"
+                    tal:define="widget_data python:request.form.get(fieldName, accessor());
+                                dict python:widget_data[0] if len(widget_data) > 0 else {};">
+    <span tal:condition="python: not(widget.isRejectionEnabled(dict))"
+          i18n:translate="">No</span>
+    <span tal:condition="python: widget.isRejectionEnabled(dict)"
+          tal:content="python:widget.getRejectionReasons(dict)">Yes, unknown</span>
+  </metal:view_macro>
+
+  <!-- Edit Macro -->
+  <metal:define define-macro="edit"
+                tal:define="widget_data python:request.form.get(fieldName, accessor());
+                            options python:widget_data[0] if len(widget_data) > 0 else {};">
+    <!-- Field Label and Description -->
+    <div class="form-group" tal:condition="python: widget.render_own_label">
+      <label tal:attributes="for fieldName"
+             class="font-weight-bold">
+        <span i18n:translate="" tal:replace="python:widget.Label(here)"></span>
+      </label>
+      <small class="form-text text-muted"
+             tal:attributes="id python: fieldName + '_help'"
+             tal:content="python:widget.Description(here)"></small>
+    </div>
+
+    <!-- Rejection Widget -->
+    <div class="form-group RejectionWidget"
+         tal:attributes="id string:archetypes-fieldname-${fieldName}">
+
+      <!-- Main Checkbox -->
+      <div class="form-check mb-3">
+        <input type="checkbox"
+               class="form-check-input rejectionwidget-checkbox rejectionwidget-field"
+               tal:attributes="name string:${fieldName}.checkbox:records;
+                               id string:${fieldName}.checkbox;" />
+        <label class="form-check-label"
+               tal:attributes="for string:${fieldName}.checkbox;"
+               i18n:translate="">Reject</label>
+      </div>
+
+      <!-- Options Container -->
+      <div class="options-set border rounded bg-light p-3" id="options-set">
+
+        <!-- Multiselect Options -->
+        <div class="form-group mb-3">
+          <label for="rejectionReasons" class="font-weight-bold" i18n:translate="">Select reasons</label>
+          <select class="form-control rejectionwidget-multiselect rejectionwidget-field"
+                  multiple
+                  tal:define="list python:widget.rejectionOptionsList();"
+                  tal:attributes="name string:${fieldName}.multiselection:records:list;
+                                  id string:${fieldName}.multiselection;">
+            <option tal:repeat="item list"
+                    tal:attributes="value python:item"
+                    tal:content="python:item"
+                    i18n:translate=""></option>
+          </select>
+        </div>
+
+        <!-- Other Reason -->
+        <div class="form-group">
+          <div class="form-check">
+            <input type="checkbox"
+                   class="form-check-input rejectionwidget-checkbox-other rejectionwidget-field"
+                   tal:attributes="name string:${fieldName}.checkbox.other:records;
+                                   id string:${fieldName}.checkbox.other;" />
+            <label class="form-check-label" i18n:translate="">Other reasons</label>
+          </div>
+
+          <div class="mt-2">
+            <input type="text"
+                   class="form-control form-control-sm rejectionwidget-input-other rejectionwidget-field"
+                   tal:attributes="name string:${fieldName}.other:records;
+                                   id string:${fieldName}.other;"
+                   size="20"
+                   tabindex="#" />
+          </div>
+        </div>
+
+      </div> <!-- .options-set -->
+
+    </div> <!-- .RejectionWidget -->
+  </metal:define>
+
+  <!-- Search Macro -->
+  <div metal:define-macro="search">
+    <div metal:use-macro="here/widgets/string/macros/search"></div>
+  </div>
+</html>

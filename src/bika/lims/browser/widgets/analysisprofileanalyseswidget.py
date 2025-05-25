@@ -36,6 +36,7 @@ from Products.Archetypes.Widget import TypesWidget
 from zope.i18n.locales import locales
 
 
+# XXX: To be removed
 class AnalysisProfileAnalysesView(BikaListingView):
     """Listing table to display Analyses Services for Analysis Profiles
     """
@@ -260,9 +261,9 @@ class AnalysisProfileAnalysesWidget(TypesWidget):
     """
     _properties = TypesWidget._properties.copy()
     _properties.update({
-        "macro": "bika_widgets/analysisprofileanalyseswidget",
-        "helper_js": ("bika_widgets/analysisprofileanalyseswidget.js",),
-        "helper_css": ("bika_widgets/analysisprofileanalyseswidget.css",),
+        # "macro": "bika_widgets/analysisprofileanalyseswidget",
+        # "helper_js": ("bika_widgets/analysisprofileanalyseswidget.js",),
+        # "helper_css": ("bika_widgets/analysisprofileanalyseswidget.css",),
     })
 
     security = ClassSecurityInfo()

@@ -21,10 +21,10 @@
 import math
 
 from AccessControl import ClassSecurityInfo
+from Products.Archetypes.Widget import IntegerWidget
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets import ComboBoxWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IInstrumentCertification
@@ -106,7 +106,7 @@ schema = BikaSchema.copy() + Schema((
     StringField(
         'ExpirationInterval',
         vocabulary="getInterval",
-        widget=ComboBoxWidget(
+        widget=IntegerWidget(
             label=_("Interval"),
             description=_("The interval is calculated from the 'From' field "
                           "and defines when the certificate expires in days. "

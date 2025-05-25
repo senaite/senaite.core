@@ -5,6 +5,17 @@ Changelog
 ------------------
 
 - #2600 Migrate Calculations to DX
+- #2733 Fixed improper permission check for editing analysis remarks
+- #2731 Fix ReactJS complains about duplicate keys
+- #2730 Update D3js 3 -> 7
+- #2728 Update ReactJS 18 -> 19
+- #2727 Update TinyMCE 5 -> 7
+- #2726 Update fontawesome 5 -> 6
+- #2725 Update webpack build system
+- #2719 jQuery3 compatibility
+- #2724 Allow to select an analyst and template in the create worksheet modal
+- #2723 Add registry to control import file attachment to Worksheet assigned analyses
+- #2722 Fix instrument import loggings
 - #2720 Allow to set custom IDs to reference samples
 - #2721 Retain result for analysis retest
 - #2716 Fix submit form on confirmation dialog "Yes" button click

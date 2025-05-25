@@ -341,7 +341,9 @@ class EditForm {
    */
   update_form(form, data) {
     console.info("*** UPDATE FORM ***", data)
-
+    if (data === null) {
+      data = {};
+    }
     let hide = data.hide || [];
     let show = data.show || [];
     let readonly = data.readonly || [];
@@ -354,6 +356,29 @@ class EditForm {
     let attributes = data.attributes || [];
     let callbacks = data.callbacks || [];
     let states = data.states || [];
+    let listings = data.listings || [];
+
+    // ReactJS widget states
+    for (const record of states) {
+      let name, rest;
+      ({name, ...rest} = record);
+      if (name in window.senaite.core.widgets) {
+        let widget = window.senaite.core.widgets[name];
+        widget.clear_results();
+        widget.flush();
+        widget.setState(rest);
+      }
+    }
+
+    // ReactJS listing states
+    for (const record of listings) {
+      let name, rest;
+      ({name, ...rest} = record);
+      if (name in window.listings) {
+        let listing = window.listings[name] || window.senaite.core.listings[name];
+        listing.setState(rest);
+      }
+    }
 
     // render field errors
     for (const record of errors) {
@@ -428,18 +453,6 @@ class EditForm {
       let el = this.get_form_field_by_name(form, name);
       if (!el) continue;
       this.set_field_value(el, value);
-    }
-
-    // states (for React widgets)
-    for (const record of states) {
-      let name, rest;
-      ({name, ...rest} = record);
-      if (name in window.senaite.core.widgets) {
-        let widget = window.senaite.core.widgets[name];
-        widget.clear_results();
-        widget.flush();
-        widget.setState(rest);
-      }
     }
 
     // html

@@ -18,28 +18,26 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.Archetypes.Widget import IntegerWidget as _i
+from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Registry import registerPropertyType
 from Products.Archetypes.Registry import registerWidget
-
-from AccessControl import ClassSecurityInfo
-
-_marker = []
+from Products.Archetypes.Widget import IntegerWidget as _i
 
 
 class IntegerWidget(_i):
     _properties = _i._properties.copy()
     _properties.update({
-        'macro': "bika_widgets/integer",
-        'unit': '',
+        "macro": "senaite_widgets/integer",
+        "unit": "",
     })
 
     security = ClassSecurityInfo()
 
+
 registerWidget(IntegerWidget,
-               title='Integer',
-               description=('Renders a HTML text input box which '
-                            'accepts a integer value'),
+               title="Integer",
+               description=("Renders a HTML text input box which "
+                            "accepts a integer value"),
                )
 
-registerPropertyType('unit', 'string', IntegerWidget)
+registerPropertyType("unit", "string", IntegerWidget)

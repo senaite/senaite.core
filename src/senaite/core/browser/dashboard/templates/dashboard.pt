@@ -225,98 +225,88 @@
        border-radius: 2px 2px 0 0;
      }
     </style>
-    <script>
-     document.addEventListener("DOMContentLoaded", () => {
+
+    <script type="text/javascript">
+     document.addEventListener("DOMContentLoaded", function () {
        loadBarCharts();
        dashboard_cookie_controller();
        role_permission_input_controller();
        load_roles_visibility_links();
 
        function loadBarCharts() {
-         $('.bar-chart').each(function(e){
-           var id = $(this).attr('id');
-           var vis = bika.lims.SiteView.readCookie('visible.'+id);
+         $(".bar-chart").each(function () {
+           var id = $(this).attr("id");
+           var vis = senaite.core.controllers.SiteView.read_cookie("visible." + id);
            if (vis == 1) {
-             $('#'+id).show();
-             $('#'+id+"-period").show();
-             $('#'+id).closest('div.dashboard-panels').find('.dashboard-info-panel-wrapper').hide();
-             $('#'+id).addClass('loaded');
+             $("#" + id).show();
+             $("#" + id + "-period").show();
+             $("#" + id).closest("div.dashboard-panels").find(".dashboard-info-panel-wrapper").hide();
+             $("#" + id).addClass("loaded");
              loadBarChart(id);
            }
          });
 
-         $('div.toggle-barchart a').click(function(e) {
+         $("div.toggle-barchart a").on("click", function (e) {
            e.preventDefault();
-           var barchartid = $(this).attr('target-id');
-           if ($('#'+barchartid).is(":visible")) {
-             bika.lims.SiteView.setCookie('visible.'+barchartid, 0);
-             $('#'+barchartid+'-period').hide();
-             $('#'+barchartid).hide();
-             $('#'+barchartid).closest('div.dashboard-panels').find('.dashboard-info-panel-wrapper').show();
+           var barchartid = $(this).attr("target-id");
+           if ($("#" + barchartid).is(":visible")) {
+             senaite.core.controllers.SiteView.setCookie("visible." + barchartid, 0);
+             $("#" + barchartid + "-period").hide();
+             $("#" + barchartid).hide();
+             $("#" + barchartid).closest("div.dashboard-panels").find(".dashboard-info-panel-wrapper").show();
            } else {
-             bika.lims.SiteView.setCookie('visible.'+barchartid, 1);
-             $('#'+barchartid+'-period').show();
-             $('#'+barchartid).show();
-             $('#'+barchartid).closest('div.dashboard-panels').find('.dashboard-info-panel-wrapper').hide();
+             senaite.core.controllers.SiteView.setCookie("visible." + barchartid, 1);
+             $("#" + barchartid + "-period").show();
+             $("#" + barchartid).show();
+             $("#" + barchartid).closest("div.dashboard-panels").find(".dashboard-info-panel-wrapper").hide();
              loadBarChart(barchartid);
-             /*    if (!$('#'+barchartid).hasClass('loaded')) {
-                loadBarChart(barchartid);
-                $('#'+barchartid).addClass('loaded');
-                }*/
            }
          });
        }
 
        function loadBarChart(id) {
-         var container = $('#'+id);
-         $(container).find('svg').remove();
-         var raw_data = JSON.parse($(container).attr('data'));
+         var container = $("#" + id);
+         container.find("svg").remove();
+         var raw_data = JSON.parse(container.attr("data"));
          var data = raw_data.data;
-         if (data.length == 0 || Object.keys(data[0]).length < 2) {
+         if (data.length === 0 || Object.keys(data[0]).length < 2) {
            return;
          }
-         // All available states come sorted from by quantity descending, but we
-         // only want those for which there is at least one entry in data
-         var states = raw_data.states;
-         states = states.filter(function(key) { return key in data[0] });
+         var states = raw_data.states.filter(function (key) {
+           return key in data[0];
+         });
 
-         $(container).html("");
-         var margin = {top: 10, right: 200, bottom: 50, left: 50},
-             width = $(container).innerWidth() - margin.left - margin.right,
+         container.html("");
+         var margin = { top: 10, right: 200, bottom: 50, left: 50 },
+             width = container.innerWidth() - margin.left - margin.right,
              height = 200 - margin.top - margin.bottom;
 
-         var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
-         var y = d3.scale.linear().range([height, 0]);
-         colors = JSON.parse($(container).attr('data-colors'));
-         var color = d3.scale.ordinal().range(colors);
+         var x = d3.scaleBand().rangeRound([0, width]).padding(0.1);
+         var y = d3.scaleLinear().range([height, 0]);
+         var colors = JSON.parse(container.attr("data-colors"));
+         var color = d3.scaleOrdinal().range(colors);
          color.domain(states);
 
-         var xAxis = d3.svg.axis()
-                       .scale(x)
-                       .orient("bottom")
-                       .ticks(10);
-         var yAxis = d3.svg.axis()
-                       .scale(y)
-                       .orient("left")
-                       .tickSize(-width, 0, 0)
-                       .tickFormat(d3.format(".2s"));
+         const xAxis = d3.axisBottom(x).ticks(10);
+         const yAxis = d3.axisLeft(y).tickSize(-width).tickFormat(d3.format(".2s"))
 
-         var svg = d3.select("#"+id).append("svg")
+
+         var svg = d3.select("#" + id).append("svg")
                      .attr("width", width + margin.left + margin.right)
                      .attr("height", height + margin.top + margin.bottom)
                      .append("g")
                      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-         data.forEach(function(d) {
-           var y0=0;
-           d.statuses=color.domain().map(function(name) {
-             return {name: name, y0: y0, y1:y0 += +d[name]};
+         data.forEach(function (d) {
+           var y0 = 0;
+           d.statuses = color.domain().map(function (name) {
+             return { name: name, y0: y0, y1: y0 += +d[name] };
            });
            d.total = d.statuses[d.statuses.length - 1].y1;
          });
 
-         x.domain(data.map(function(d) { return d.date;}));
-         y.domain([0, d3.max(data, function(d) { return d.total; })]);
+         x.domain(data.map(function (d) { return d.date; }));
+         y.domain([0, d3.max(data, function (d) { return d.total; })]);
 
          svg.append("g")
             .attr("class", "x axis")
@@ -327,139 +317,110 @@
             .style("font-size", "9px")
             .attr("dx", "-.8em")
             .attr("dy", "-.55em")
-            .attr("transform", "rotate(-90)" );
+            .attr("transform", "rotate(-90)");
 
-         svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis);
+         svg.append("g").attr("class", "y axis").call(yAxis);
 
-         var state = svg.selectAll(".state")
-                        .data(data)
-                        .enter()
-                        .append("g")
+         var state = svg.selectAll(".state").data(data).enter().append("g")
                         .attr("class", "g")
-                        .attr("transform", function(d) { return "translate(" + x(d.date) + ",0)"; });
+                        .attr("transform", function (d) { return "translate(" + x(d.date) + ",0)"; });
 
          state.selectAll("rect")
-              .data(function(d) { return d.statuses; })
+              .data(function (d) { return d.statuses; })
               .enter()
               .append("rect")
-              .attr("width", x.rangeBand())
-              .attr("y", function(d) { return y(d.y1); })
-              .attr("height", function(d) { return y(d.y0) - y(d.y1); })
-              .attr("data-date",function(d) { return d.x; })
-              .attr("data-value", function(d) { return d.y1-d.y0; })
-              .attr("data-name", function(d) { return d.name; })
-              .style("fill", function(d) { return colors[d.name]; })
-              .on("mouseout", function() {
-                d3.select(this.parentNode.children[this.parentNode.children.length-1])
-                  .remove();
+              .attr("width", x.bandwidth())
+              .attr("y", function (d) { return y(d.y1); })
+              .attr("height", function (d) { return y(d.y0) - y(d.y1); })
+              .attr("data-date", function (d) { return d.x; })
+              .attr("data-value", function (d) { return d.y1 - d.y0; })
+              .attr("data-name", function (d) { return d.name; })
+              .style("fill", function (d) { return colors[d.name]; })
+              .on("mouseout", function () {
+                d3.select(this.parentNode.children[this.parentNode.children.length - 1]).remove();
               })
-              .on("mouseover",  function() {
-                var date = d3.select(this).attr('data-date');
-                var name = d3.select(this).attr('data-name');
-                var val = name+": "+d3.select(this).attr('data-value');
-                var y = d3.select(this).attr('y');
-                var x = d3.select(this).attr('x');
+              .on("mouseover", function () {
+                var name = d3.select(this).attr("data-name");
+                var val = name + ": " + d3.select(this).attr("data-value");
                 d3.select(this.parentNode)
                   .append("text")
                   .attr("fill", "#333")
                   .style("font-size", "10px")
                   .style("font-weight", "bold")
-                  .attr("x", x)
+                  .attr("x", d3.select(this).attr("x"))
                   .attr("y", 0)
                   .attr("class", "graph-text-bar")
                   .text(val);
               });
 
-         var legend = svg.selectAll(".legend")
-                         .data(states.slice().reverse())
+         var legend = svg.selectAll(".legend").data(states.slice().reverse())
                          .enter().append("g")
                          .attr("class", "legend")
-                         .attr("transform", function(d, i) {
-                           return "translate(0," + i * 12 + ")";
+                         .attr("transform", function (d, i) {
+                           return "translate(0," + (i * 12) + ")";
                          });
 
          legend.append("rect")
                .attr("x", width + 15)
                .attr("width", 6)
                .attr("height", 6)
-               .style("fill", function(d) { return colors[d]; });
+               .style("fill", function (d) { return colors[d]; });
 
          legend.append("text")
                .attr("x", width + 30)
                .attr("y", 0)
                .attr("dy", "6")
-               .text(function(d) { return d; })
+               .text(function (d) { return d; });
        }
 
        function load_roles_visibility_links() {
-         $('a.dashboard-visibility-link').click(function(e){
+         $("a.dashboard-visibility-link").on("click", function (e) {
            e.preventDefault();
-           var parent = $(this).closest('div.dashboard-section');
-           var panel = $(parent).find('div.roles-visibility');
-           if ($(panel).is(':visible')) {
-             $(panel).hide();
-           } else {
-             $(panel).show();
-           }
+           var parent = $(this).closest("div.dashboard-section");
+           var panel = $(parent).find("div.roles-visibility");
+           panel.toggle();
          });
        }
+
        function dashboard_cookie_controller() {
-         /* Links a linker controller to each dashboard filter selector.
-            This controller reads the cookie data once the selector has been
-            modified and updates its data.
-          */
-         var selector;
-         var selector_section_id;
-         var cookie;
-         var counter;
-         var cookie_id = 'dashboard_filter_cookie'
-         var filter_selectors = $('select.dashboard_filters');
-         for(counter = 0; counter < filter_selectors.length; counter++){
-           selector = filter_selectors[counter];
-           $(selector).live('change', function(){
-             section_id = $(this).attr('section_id');
-             selected = $(this).find(':selected').val();
-             cookie_data = render_cookie_data(bika.lims.SiteView.readCookie(cookie_id));
-             cookie_data[section_id] = selected;
-             cookie_data = build_cookie_data(cookie_data);
-             bika.lims.SiteView.setCookie('dashboard_filter_cookie', cookie_data);
-             window.location.reload(true);
-           });
-         }
-       };
-       function render_cookie_data(data){
+         var cookie_id = "dashboard_filter_cookie";
+         $("select.dashboard_filters").on("change", function () {
+           var section_id = $(this).attr("section_id");
+           var selected = $(this).find(":selected").val();
+           var cookie_data = render_cookie_data(senaite.core.controllers.SiteView.read_cookie(cookie_id));
+           cookie_data[section_id] = selected;
+           senaite.core.controllers.SiteView.set_cookie(cookie_id, build_cookie_data(cookie_data));
+           window.location.reload(true);
+         });
+       }
+
+       function render_cookie_data(data) {
          return JSON.parse(data);
-       };
-       function build_cookie_data(data){
+       }
+
+       function build_cookie_data(data) {
          return JSON.stringify(data);
-       };
+       }
+
        function role_permission_input_controller() {
-         /* Ajax post to update registry values */
-         var section_id, role, chk_val;
-         var role_checks = $('div.roles-visibility input[type="checkbox"]');
-         for(counter = 0; counter < role_checks.length; counter++){
-           selector = role_checks[counter];
-           $(selector).live('change', function(){
-             section_id = $(this).attr('section_id');
-             role = $(this).attr('role_id');
-             chk_val = $(this).is(':checked');
-             // AJAX post
-             $.ajax({
-               dataType: 'json',
-               async: false,
-               type: 'POST',
-               url: 'dashboard_view_permissions_update',
-               data: {
-                 'section_name': section_id,
-                 'role_id': role,
-                 'check_state': chk_val,
-                 '_authenticator': $('input[name=\'_authenticator\']').val()
-               }
-             });
+         $("div.roles-visibility input[type='checkbox']").on("change", function () {
+           var section_id = $(this).attr("section_id");
+           var role = $(this).attr("role_id");
+           var chk_val = $(this).is(":checked");
+
+           $.ajax({
+             dataType: "json",
+             async: false,
+             type: "POST",
+             url: "dashboard_view_permissions_update",
+             data: {
+               section_name: section_id,
+               role_id: role,
+               check_state: chk_val,
+               _authenticator: $("input[name='_authenticator']").val()
+             }
            });
-         }
+         });
        }
      });
     </script>

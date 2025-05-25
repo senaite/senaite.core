@@ -32,9 +32,9 @@ except Exception:
 class RejectionWidget(TypesWidget):
     _properties = TypesWidget._properties.copy()
     _properties.update({
-        'macro': "bika_widgets/rejectionwidget",
-        'helper_js': ("bika_widgets/rejectionwidget.js",),
-        'helper_css': ("bika_widgets/rejectionwidget.css",),
+        'macro': "senaite_widgets/rejectionwidget",
+        'helper_js': ("senaite_widgets/rejectionwidget.js",),
+        'helper_css': ("senaite_widgets/rejectionwidget.css",),
     })
 
     security = ClassSecurityInfo()
