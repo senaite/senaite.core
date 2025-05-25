@@ -144,13 +144,13 @@ class WorkflowActionInvalidateAdapter(WorkflowActionGenericAdapter):
     def __call__(self, action, objects):
         samples = filter(IAnalysisRequest.providedBy, objects)
         if samples:
-            # Action reject applies to samples. Redirect to Sample Reject view
+            # Redirect to the samples invalidation view
             uids = map(api.get_uid, samples)
             uids = ",".join(uids)
             url = "%s/invalidate_samples?uids=%s" % (self.back_url, uids)
             return self.redirect(redirect_url=url)
 
-        # Generic transition if reject applies to other types (e.g. Analysis)
+        # Generic transition if invalidation applies to other types
         transitioned = self.do_action(action, objects)
         if not transitioned:
             return self.redirect(message=_("No changes made"), level="warning")
