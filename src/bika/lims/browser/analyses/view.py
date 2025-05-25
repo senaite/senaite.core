@@ -61,6 +61,7 @@ from senaite.core.permissions import EditFieldResults
 from senaite.core.permissions import EditResults
 from senaite.core.permissions import FieldEditAnalysisConditions
 from senaite.core.permissions import FieldEditAnalysisHidden
+from senaite.core.permissions import FieldEditAnalysisRemarks
 from senaite.core.permissions import FieldEditAnalysisResult
 from senaite.core.permissions import TransitionVerify
 from senaite.core.permissions import ViewResults
@@ -451,6 +452,12 @@ class AnalysesView(ListingView):
             return False
 
         return True
+
+    def can_edit_remarks(self, analysis_brain):
+        """Returns whether current user can edit the Remarks of the analysis
+        """
+        obj = self.get_object(analysis_brain)
+        return self.has_permission(FieldEditAnalysisRemarks, obj)
 
     @viewcache.memoize
     def is_manual_result_capture_date_allowed(self):
@@ -1669,7 +1676,7 @@ class AnalysesView(ListingView):
         if self.analysis_remarks_enabled():
             item["Remarks"] = analysis_brain.getRemarks
 
-        if self.is_analysis_edition_allowed(analysis_brain):
+        if self.can_edit_remarks(analysis_brain):
             item["allow_edit"].extend(["Remarks"])
         else:
             # render HTMLified text in readonly mode
