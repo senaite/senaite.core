@@ -22,16 +22,13 @@
            tal:attributes="href python:retest.absolute_url()"
            tal:content="python: retest.getId()"></a>.
       </p>
-
       <p class="title mb-0"
          tal:condition="python: not retest" i18n:translate="">
         This sample has been invalidated.
       </p>
-
       <p class="description" tal:condition="python: reason"
          tal:content="python: reason">
       </p>
-
     </div>
   </div>
 </div>

@@ -160,7 +160,7 @@ class InvalidateSamplesView(BrowserView):
         recipients = list(OrderedDict.fromkeys(recipients))
 
         # extend with the CC emails
-        recipients = list(recipients) + sample.getCCEmails(as_list=True)
+        recipients = recipients + sample.getCCEmails(as_list=True)
         recipients = filter(is_valid_email_address, recipients)
         return list(recipients)
 
