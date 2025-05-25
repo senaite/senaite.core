@@ -27,12 +27,6 @@ from bika.lims.api.analysis import is_result_range_compliant
 from bika.lims.api.security import check_permission
 
 
-class InvalidAnalysisRequestViewlet(ViewletBase):
-    """ Current Analysis Request is invalid and display the link to the retest
-    """
-    template = ViewPageTemplateFile("templates/invalid_ar_viewlet.pt")
-
-
 class RetestAnalysisRequestViewlet(ViewletBase):
     """ Current Analysis Request is a retest. Display the link to the invalid
     """

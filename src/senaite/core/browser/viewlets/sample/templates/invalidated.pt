@@ -1,0 +1,37 @@
+<div tal:condition="python: view.is_visible()"
+     i18n:domain="senaite.core">
+
+  <div class="visualClear"></div>
+
+  <div id="portal-alert"
+       tal:define="sample python: view.sample;
+                   reason python: sample.getInvalidationReason();
+                   retest python: view.get_retest();">
+
+    <div class="portlet-alert-item alert alert-warning alert-dismissible">
+      <button type="button" class="close" data-dismiss="alert"
+              aria-label="Close" i18n:attributes="aria-label">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <strong i18n:translate="">Warning</strong>
+
+      <p class="title mb-0"
+         tal:condition="python:retest" i18n:translate="">
+        This sample has been invalidated. Please follow the link to the retest
+        <a i18n:name="retest_id"
+           tal:attributes="href python:retest.absolute_url()"
+           tal:content="python: retest.getId()"></a>.
+      </p>
+
+      <p class="title mb-0"
+         tal:condition="python: not retest" i18n:translate="">
+        This sample has been invalidated.
+      </p>
+
+      <p class="description" tal:condition="python: reason"
+         tal:content="python: reason">
+      </p>
+
+    </div>
+  </div>
+</div>
