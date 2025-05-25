@@ -350,7 +350,7 @@ class AnalysesView(ListingView):
             return False
         if obj is None:
             return check_permission(permission, self.context)
-        return check_permission(permission, api.get_object(obj))
+        return check_permission(permission, self.get_object(obj))
 
     @viewcache.memoize
     def is_analysis_edition_allowed(self, analysis_brain):
