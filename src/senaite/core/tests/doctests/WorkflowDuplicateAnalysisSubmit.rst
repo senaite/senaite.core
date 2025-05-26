@@ -20,6 +20,7 @@ Needed Imports:
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
+    >>> from zope.lifecycleevent import modified
 
 Functional Helpers:
 
@@ -67,6 +68,12 @@ Functional Helpers:
     >>> def get_roles_for_permission(permission, context):
     ...     allowed = set(rolesForPermissionOn(permission, context))
     ...     return sorted(allowed)
+
+    >>> def notify_edited(content):
+    ...     if api.is_at_content(content):
+    ...         content.processForm()
+    ...     elif api.is_dexterity_content(content):
+    ...         modified(content)
 
 Variables:
 
@@ -304,6 +311,7 @@ Prepare the calculation and set the calculation to analysis `Au`:
     >>> interims = [interim_1, interim_2, interim_3, interim_4, interim_5]
     >>> calc.setInterimFields(interims)
     >>> calc.setFormula("[IT1]+[IT2]+[IT3]+[IT4]+[IT5]")
+    >>> notify_edited(calc)
     >>> Au.setCalculation(calc)
 
 Create a Worksheet with duplicate:
@@ -365,6 +373,7 @@ Prepare a calculation that depends on `Cu` and assign it to `Fe` analysis:
 
     >>> calc_fe = api.create(setup.calculations, 'Calculation', title='Calc for Fe')
     >>> calc_fe.setFormula("[Cu]*10")
+    >>> notify_edited(calc_fe)
     >>> Fe.setCalculation(calc_fe)
 
 Prepare a calculation that depends on `Fe` and assign it to `Au` analysis:
@@ -373,6 +382,7 @@ Prepare a calculation that depends on `Fe` and assign it to `Au` analysis:
     >>> interim_1 = {'keyword': 'IT1', 'title': 'Interim 1'}
     >>> calc_au.setInterimFields([interim_1])
     >>> calc_au.setFormula("([IT1]+[Fe])/2")
+    >>> notify_edited(calc_au)
     >>> Au.setCalculation(calc_au)
 
 Create an Analysis Request:
