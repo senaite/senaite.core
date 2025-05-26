@@ -29,6 +29,7 @@ Imports:
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
+    >>> from zope.lifecycleevent import modified
 
 
 Functional Helpers:
@@ -47,6 +48,12 @@ Functional Helpers:
     ...     uids = map(api.get_uid, services)
     ...     analyses = sample.getAnalyses(full_objects=True)
     ...     return filter(lambda an: an.getServiceUID() in uids, analyses)
+
+    >>> def notify_edited(content):
+    ...     if api.is_at_content(content):
+    ...         content.processForm()
+    ...     elif api.is_dexterity_content(content):
+    ...         modified(content)
 
 Variables::
 
@@ -144,17 +151,13 @@ Create Analysis Service w/o calculation (Keyword: `NOCALC`):
 
 Create some Calculations with Formulas referencing existing AS keywords:
 
-    >>> calc1 = api.create(calculations, "Calculation", title="Round")
-    >>> calc1.setFormula("round(12345, 2)")
+    >>> calc1 = api.create(calculations, "Calculation", title="Round", Formula="round(12345, 2)")
 
-    >>> calc2 = api.create(calculations, "Calculation", title="A in ppt")
-    >>> calc2.setFormula("[A] * 1000")
+    >>> calc2 = api.create(calculations, "Calculation", title="A in ppt", Formula="[A] * 1000")
 
-    >>> calc3 = api.create(calculations, "Calculation", title="B in ppt")
-    >>> calc3.setFormula("[B] * 1000")
+    >>> calc3 = api.create(calculations, "Calculation", title="B in ppt", Formula="[B] * 1000")
 
-    >>> calc4 = api.create(calculations, "Calculation", title="Total Hardness")
-    >>> calc4.setFormula("[CA] + [MG]")
+    >>> calc4 = api.create(calculations, "Calculation", title="Total Hardness", Formula="[CA] + [MG]")
 
 Assign the calculations to the Analysis Services:
 
@@ -484,6 +487,7 @@ Create some interim fields:
 Append interim field `A` to the `Total Hardness` Calculation:
 
     >>> calc4.setInterimFields([interim1])
+    >>> notify_edited(calc4)
     >>> map(lambda x: str(x["keyword"]), calc4.getInterimFields())
     ['A']
 
@@ -501,41 +505,61 @@ Now we assign the `Total Hardness` Analysis Service:
     >>> analysis
     <Analysis at /plone/clients/client-1/water-0001/THCaCO3>
 
-The created Analysis has the same Calculation attached, as the Analysis Service:
+The created Analysis has a version wrapped calculation of the Analysis Service attached:
 
     >>> analysis_calc = analysis.getCalculation()
     >>> analysis_calc
-    <Calculation at /plone/setup/calculations/calculation-4>
+    <VersionWrapper:Calculation(calculation-4@v1)>
 
-And therefore, also the same Interim Fields as the Calculation:
+This means, it has the same version as the service on creation time;
 
-    >>> map(lambda x: x["keyword"], analysis_calc.getInterimFields())
+    >>> analysis_calc.get_version()
+    1
+
+    >>> api.get_version(analysisservice4.getCalculation())
+    1
+
+And therefore, the analysis calculation has the same interims as the service calculation:
+
+    >>> map(lambda x: str(x["keyword"]), analysis_calc.getInterimFields())
     ['A']
 
-The Analysis also inherits the Interim Fields of the Analysis Service:
+The Analysis now inherits the Interim Fields of the Analysis Service and the Calculation:
 
     >>> map(lambda x: x["keyword"], analysis.getInterimFields())
     ['B', 'A']
 
-But what happens if the Interim Fields of either the Analysis Service or of the
+But what happens if the Interim Fields of either the Analysis Service or the
 Calculation change and the AR is updated with the same Analysis Service?
 
 Change the Interim Field of the Calculation to `C`:
 
     >>> calc4.setInterimFields([interim3])
+    >>> notify_edited(calc4)
     >>> map(lambda x: str(x["keyword"]), calc4.getInterimFields())
     ['C']
 
-Change the Interim Fields of the Analysis Service to `D`:
+
+This creates a new version of the calculation:
+
+    >>> api.get_version(analysisservice4.getCalculation())
+    2
+
+And the Calculation should return the new interims:
+
+    >>> map(lambda x: str(x["keyword"]), calc4.getInterimFields())
+    ['C']
+
+Now we change the Interim Fields of the Analysis Service to `D`:
 
     >>> analysisservice4.setInterimFields([interim4])
 
-The Analysis Service returns only local interim fields:
+The Analysis Service should return only local interim fields:
 
     >>> map(lambda x: x["keyword"], analysisservice4.getInterimFields())
     ['D']
 
-Update the AR with the new Analysis Service:
+Finally, we update the Sample with the new Analysis Service:
 
     >>> field.set(ar, [analysisservice4])
 
@@ -549,12 +573,17 @@ The calculation should be still there:
 
     >>> analysis_calc = analysis.getCalculation()
     >>> analysis_calc
-    <Calculation at /plone/setup/calculations/calculation-4>
+    <VersionWrapper:Calculation(calculation-4@v1)>
 
-And therefore, also the same Interim Fields as the Calculation:
+However, the version of the initial calculation remains unless we flush the field first:
+
+    >>> analysis_calc.get_version()
+    1
+
+Consequently, it returns also the same Interim Fields as the Calculation in this version:
 
     >>> map(lambda x: str(x["keyword"]), analysis_calc.getInterimFields())
-    ['C']
+    ['A']
 
 The existing Analysis retains the initial Interim Fields of the Analysis
 Service, together with the interim from the associated Calculation:
