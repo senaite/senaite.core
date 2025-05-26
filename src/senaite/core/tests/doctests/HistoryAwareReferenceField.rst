@@ -1,8 +1,8 @@
 History Aware Reference Field
 -----------------------------
 
-This field behaves almost the same like the standard AT ReferenceField, but
-stores the version of the reference object on `set` and keeps that version.
+This field behaves almost the same like the standard UID reference field, but
+stores the version of the reference object during `set` and keeps that version.
 
 Currently, only analyses uses that field to store the exact version of their
 calculation. This ensures that later changes in, e.g. the formula, does not
