@@ -45,11 +45,6 @@ class VersionWrapper(object):
         if name == "__members__":
             return [k for k, v in inspect.getmembers(self.content)]
 
-        if name in self.content.__dict__:
-            # try to lookup the value from the snapshot
-            if name in self.snapshot:
-                return self.snapshot.get(name)
-
         if self.is_restricted_method(name):
             attr = restsricted_method(self, name)
         else:
