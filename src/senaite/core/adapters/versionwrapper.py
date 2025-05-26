@@ -111,9 +111,17 @@ class VersionWrapper(object):
         class_ifaces = self.content.__class__.__implemented__.flattened()
         alsoProvides(clone, *class_ifaces)
 
+        # keep some backreferences on the clone
+        clone._original = self.content
+        clone._wrapper = self
+        # BBB: used in services info popup
+        clone.version_id = version
+
         # remember the clone and loaded version
         self.clone = clone
         self.version = version
+        # BBB: used in services info popup
+        self.version_id = version
 
     def get_versioned_data(self, version):
         """Get the versioned data of the current content
