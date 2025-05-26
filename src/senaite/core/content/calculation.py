@@ -521,13 +521,12 @@ class Calculation(Container):
     def setFormula(self, value):
         """Set the Dependent Services from the text of the calculation Formula
         """
-        bsc = getToolByName(self, 'senaite_catalog_setup')
+        sc = api.get_tool(SETUP_CATALOG)
         if not value:
             self.setDependentServices(None)
         else:
             keywords = re.compile(r"\[([^.^\]]+)\]").findall(value)
-            brains = bsc(portal_type='AnalysisService',
-                         getKeyword=keywords)
+            brains = sc(portal_type='AnalysisService', getKeyword=keywords)
             services = [brain.getObject() for brain in brains]
             self.setDependentServices(services)
 
