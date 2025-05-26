@@ -32,7 +32,6 @@ from bika.lims.interfaces import IDeactivable
 from plone.autoform import directives
 from plone.supermodel import model
 from Products.CMFCore import permissions
-from Products.CMFCore.utils import getToolByName
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.interfaces import ICalculation
