@@ -185,8 +185,7 @@ Reference Samples:
 
 Calculation:
 
-    >>> calculation = api.create(calculations, "Calculation", title="Total Metals")
-    >>> calculation.setFormula("[Au] + [Cu] + [Fe]")
+    >>> calculation = api.create(calculations, "Calculation", title="Total Metals", Formula="[Au] + [Cu] + [Fe]")
 
 Calculation Analysis Service:
 
