@@ -12,6 +12,15 @@ from zope.interface import alsoProvides
 from zope.interface import implementer
 
 
+def restsricted_method(instance, func_name):
+    """Restricted method to avoid harmful actions on the wrapper
+    """
+    def dummy(*args, **kw):
+        raise AttributeError("It is not allowed to call the method '%s' "
+                             "on a version wrapper!" % func_name)
+    return dummy
+
+
 @implementer(IVersionWrapper)
 class VersionWrapper(object):
     """A content wrapper that retrieves versioned attributes
@@ -41,9 +50,8 @@ class VersionWrapper(object):
             if name in self.snapshot:
                 return self.snapshot.get(name)
 
-        # load setters from the wrapped content directly
-        if name.startswith("set"):
-            attr = getattr(self.content, name, None)
+        if self.is_restricted_method(name):
+            attr = restsricted_method(self, name)
         else:
             # load all other attributes from the clone
             attr = getattr(self.clone, name, None)
@@ -52,6 +60,20 @@ class VersionWrapper(object):
             return attr
 
         return super(VersionWrapper, self).__getattr__(name)
+
+    def is_restricted_method(self, name):
+        """Checks if the method is restricted
+        """
+        func_name = name.lower()
+        attr = getattr(self.clone, name, None)
+        is_callable = callable(attr)
+        if func_name.startswith("set") and is_callable:
+            return True
+        elif func_name.startswith("manage_") and is_callable:
+            return True
+        elif "index" in func_name and is_callable:
+            return True
+        return False
 
     def get_version(self):
         return self.version
