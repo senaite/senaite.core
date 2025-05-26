@@ -20,6 +20,7 @@
 
 import six
 from AccessControl import ClassSecurityInfo
+from Acquisition import aq_base
 from bika.lims import APIError
 from bika.lims import api
 from bika.lims import logger
@@ -320,8 +321,7 @@ def get_backreferences(context, relationship=None, as_brains=None):
       dictionary.  This value can then be modified in-place, to edit the stored
       backreferences.
     """
-
-    instance = context.aq_base
+    instance = aq_base(context)
     raw_backrefs = get_storage(instance)
 
     if not relationship:
