@@ -387,8 +387,8 @@ class Calculation(Container):
             keys = row.keys()
             if "value" not in keys:
                 row["value"] = 0
-            # convert falsy values to empty string to avoid values like "None"
-            if not row["value"]:
+            # convert None values to empty string to avoid value conversion to "None"
+            if row["value"] is None:
                 row["value"] = ""
             new_value.append(row)
 
