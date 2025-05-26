@@ -28,6 +28,7 @@ Needed Imports:
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
     >>> from plone.app.testing import setRoles
+    >>> from zope.lifecycleevent import modified
 
 Functional Helpers:
 
@@ -61,6 +62,12 @@ Functional Helpers:
     ...         if analysis.getServiceUID() == service_uid:
     ...             return analysis
     ...     return None
+
+    >>> def notify_edited(content):
+    ...     if api.is_at_content(content):
+    ...         content.processForm()
+    ...     elif api.is_dexterity_content(content):
+    ...         modified(content)
 
 Variables:
 
@@ -180,6 +187,7 @@ Create a new calculation with interims:
     >>> calc = api.create(setup.calculations, "Calculation", title="Drying Loss Calculation")
     >>> calc.setInterimFields([{"keyword": "SW", "title": "Weight of Sample"}, {"keyword": "DW", "title": "Dry Sample Weight"}])
     >>> calc.setFormula("[DW]/[SW]*100")
+    >>> notify_edited(calc)
 
     >>> calc.getFormula()
     '[DW]/[SW]*100'
