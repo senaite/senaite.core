@@ -259,6 +259,7 @@ retraction of a dependency causes the auto-retraction of its dependents.
 Prepare a calculation that depends on `Cu`and assign it to `Fe` analysis:
 
     >>> calc_fe = api.create(setup.calculations, 'Calculation', title='Calc for Fe', Formula="[Cu]*10")
+    >>> Fe.setCalculation(calc_fe)
 
 Prepare a calculation that depends on `Fe` and assign it to `Au` analysis:
 
