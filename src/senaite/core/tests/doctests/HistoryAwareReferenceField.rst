@@ -26,6 +26,7 @@ Needed Imports:
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
+    >>> from zope.lifecycleevent import modified
 
 Functional Helpers:
 
@@ -48,6 +49,12 @@ Functional Helpers:
     ...     if len(ans) != 1:
     ...         return None
     ...     return ans[0]
+
+    >>> def notify_edited(content):
+    ...     if api.is_at_content(content):
+    ...         content.processForm()
+    ...     elif api.is_dexterity_content(content):
+    ...         modified(content)
 
 
 Environment Setup
@@ -91,12 +98,9 @@ Create some Analysis Services with unique Keywords:
 
 Create a calculation for Total Hardness:
 
-    >>> calc = api.create(calculations, "Calculation", title="Total Hardness")
+    >>> calc = api.create(calculations, "Calculation", title="Total Hardness", formula="[Ca] + [Mg]")
 
 The `Formula` field references the keywords from Analysis Services::
-
-    >>> calc.setFormula("[Ca] + [Mg]")
-    >>> calc.processForm()
 
     >>> calc.getFormula()
     '[Ca] + [Mg]'
@@ -127,7 +131,7 @@ Now we change the calculation formula:
     >>> calc.setFormula("2 * ([Ca] + [Mg])")
     >>> calc.getFormula()
     '2 * ([Ca] + [Mg])'
-    >>> calc.processForm()
+    >>> notify_edited(calc)
 
 The calculation of the analysis should be unchanged:
 
