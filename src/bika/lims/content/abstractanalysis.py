@@ -29,7 +29,6 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims import logger
-from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields import ResultRangeField
 from bika.lims.browser.fields import UIDReferenceField
@@ -48,7 +47,6 @@ from bika.lims.workflow import getTransitionDate
 from DateTime import DateTime
 from Products.Archetypes.Field import IntegerField
 from Products.Archetypes.Field import StringField
-from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.Schema import Schema
 from Products.CMFCore.permissions import View
 from senaite.core.api import dtime
@@ -130,13 +128,13 @@ NumberOfRequiredVerifications = IntegerField(
 
 # Routine Analyses and Reference Analysis have a versioned link to
 # the calculation at creation time.
-Calculation = HistoryAwareReferenceField(
-    'Calculation',
+Calculation = UIDReferenceField(
+    "Calculation",
     read_permission=View,
     write_permission=FieldEditAnalysisResult,
-    allowed_types=('Calculation',),
-    relationship='AnalysisCalculation',
-    referenceClass=HoldingReference
+    allowed_types=("Calculation",),
+    relationship="AnalysisCalculation",
+    version_aware=True,
 )
 
 # InterimFields are defined in Calculations, Services, and Analyses.
