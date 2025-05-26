@@ -71,6 +71,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
 from senaite.core.interfaces import ITemporaryObject
+from senaite.core.interfaces import IVersionWrapper
 from zope import globalrequest
 from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.component import getUtility
@@ -78,10 +79,10 @@ from zope.component import queryMultiAdapter
 from zope.container.contained import notifyContainerModified
 from zope.event import notify
 from zope.i18n import translate
+from zope.interface import Invalid
 from zope.interface import alsoProvides
 from zope.interface import directlyProvides
 from zope.interface import noLongerProvides
-from zope.interface import Invalid
 from zope.lifecycleevent import ObjectMovedEvent
 from zope.publisher.browser import TestRequest
 from zope.schema import getFieldsInOrder
@@ -504,6 +505,8 @@ def is_object(brain_or_object):
         return True
     if is_supermodel(brain_or_object):
         return True
+    if is_version_wrapper(brain_or_object):
+        return True
     if is_at_content(brain_or_object):
         return True
     if is_dexterity_content(brain_or_object):
@@ -525,6 +528,9 @@ def get_object(brain_object_uid, default=_marker):
         return get_object_by_uid(brain_object_uid, default=default)
     elif is_supermodel(brain_object_uid):
         return brain_object_uid.instance
+    elif is_version_wrapper(brain_object_uid):
+        # return the version wrapper instead of the cloned object
+        return brain_object_uid
     if not is_object(brain_object_uid):
         if default is _marker:
             fail("{} is not supported.".format(repr(brain_object_uid)))
@@ -561,12 +567,23 @@ def is_supermodel(brain_or_object):
 
     :param brain_or_object: A single catalog brain or content object
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
-    :returns: True if the object is a catalog brain
+    :returns: True if the object is a supermodel
     :rtype: bool
     """
     # avoid circular imports
     from senaite.app.supermodel.interfaces import ISuperModel
     return ISuperModel.providedBy(brain_or_object)
+
+
+def is_version_wrapper(brain_or_object):
+    """Checks if the passed in object is a version wrapper
+
+    :param brain_or_object: A single catalog brain or content object
+    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
+    :returns: True if the object is a version wrapper
+    :rtype: bool
+    """
+    return IVersionWrapper.providedBy(brain_or_object)
 
 
 def is_dexterity_content(brain_or_object):
