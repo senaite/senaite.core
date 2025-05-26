@@ -81,7 +81,7 @@ Setup the Lab for testing:
     >>> bikasetup.setSelfVerificationEnabled(True)
     >>> analysisservices = bikasetup.bika_analysisservices
     >>> categories = setup.analysiscategories
-    >>> calculations = bikasetup.bika_calculations
+    >>> calculations = setup.calculations
     >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH")
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
     >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
@@ -93,26 +93,26 @@ Setup the Lab for testing:
 Versionable AT Content Wrapper
 ..............................
 
-We create an AT Calculation for this test:
+We create an AT service content for this test:
 
-    >>> calc = api.create(calculations, "Calculation", title="Total Hardness", Formula="[Ca] + [Mg]")
+    >>> Fe = api.create(analysisservices, "AnalysisService", title="Ferrum", Keyword="Fe", Category=category)
 
-    >>> api.is_at_content(calc)
+    >>> api.is_at_content(Fe)
     True
 
 The initial version should be 0:
 
-    >>> get_version(calc)
+    >>> api.get_version(Fe)
     0
 
 Fetch the version wrapper:
 
-    >>> at_wrapper = IVersionWrapper(calc)
+    >>> at_wrapper = IVersionWrapper(Fe)
 
 We should have transparent access to the underlying content methods:
 
-    >>> at_wrapper.getFormula()
-    '[Ca] + [Mg]'
+    >>> at_wrapper.Title()
+    'Ferrum'
 
 We can also get the cloned instance:
 
@@ -120,41 +120,40 @@ We can also get the cloned instance:
     >>> api.get_workflow_status_of(at_clone)
     'active'
 
-Now we change the calculation formula:
+Now we change the title:
 
-    >>> calc.setFormula("([Ca] + [Mg]) * 2")
-    >>> notify_edited(calc)
+    >>> Fe.setTitle("Ferrum (Fe)")
+    >>> notify_edited(Fe)
 
 The version should be increased:
 
-    >>> get_version(calc)
+    >>> api.get_version(Fe)
     1
 
 Although the changes are reflected by the content itself:
 
-    >>> calc.getFormula()
-    '([Ca] + [Mg]) * 2'
+    >>> Fe.Title()
+    'Ferrum (Fe)'
 
 The version wrapper retains the previous version:
 
-    >>> at_wrapper.getFormula()
-    '[Ca] + [Mg]'
+    >>> at_wrapper.Title()
+    'Ferrum'
 
 Unless we load the latest version:
 
     >>> at_wrapper.load_latest_version()
 
-    >>> at_wrapper.getFormula()
-    '([Ca] + [Mg]) * 2'
-
-We change it back again to the original value:
-
-    >>> calc.setFormula("[Ca] + [Mg]")
-    >>> notify_edited(calc)
+    >>> at_wrapper.Title()
+    'Ferrum (Fe)'
 
 
 Sample Calculaiton
 ..................
+
+Create a calculation:
+
+    >>> calc = api.create(calculations, "Calculation", title="Total Hardness", formula="[Ca] + [Mg]")
 
 Create some Analysis Services with unique Keywords:
 
@@ -173,23 +172,22 @@ Get the contained `Cu` Analysis:
     >>> mg = get_analysis(sample, Mg.getKeyword())
     >>> th = get_analysis(sample, TH.getKeyword())
 
-TODO: We need a history aware UID reference field to provide the right version wrapped calculation here:
+We get no a **history aware version wrapper** object, which is bound to the
+initial version of the calculation:
 
     >>> th_calc = th.getCalculation()
+    >>> api.is_version_wrapper(th_calc)
+    True
 
 Get the version on creation:
 
-    >>> th_calc_version = get_version(th_calc)
-    >>> th_calc_version
-    2
+    >>> th_calc.get_version()
+    0
 
-    >>> th_calc_wrapper = IVersionWrapper(th_calc)
-    >>> th_calc_wrapper.load_version(th_calc_version)
+    >>> api.get_version(calc)
+    0
 
-    >>> th_calc_wrapper.getFormula()
-    '[Ca] + [Mg]'
-
-We simulate now a change in the calculation:o
+We simulate now a change in the calculation:
 
     >>> calc.setTitle("Double Total Hardness")
     >>> calc.setFormula("2 * ([Ca] + [Mg])")
@@ -199,20 +197,20 @@ We simulate now a change in the calculation:o
 
 The version should be bumped:
 
-    >>> get_version(th_calc)
-    3
+    >>> api.get_version(calc)
+    1
 
 However, the wrapper still contains the previous version:
 
-    >>> th_calc_wrapper.get_version()
-    2
+    >>> th_calc.get_version()
+    0
 
 And the old title abd formula:
 
-    >>> th_calc_wrapper.Title()
+    >>> th_calc.Title()
     'Total Hardness'
 
-    >>> th_calc_wrapper.getFormula()
+    >>> th_calc.getFormula()
     '[Ca] + [Mg]'
 
 
@@ -228,7 +226,7 @@ Create a new Dexterity object:
 
 The initial version should be 0:
 
-    >>> get_version(dept)
+    >>> api.get_version(dept)
     0
 
 Fetch the version wrapper:
@@ -247,7 +245,7 @@ Now we change the department ID:
 
 The version should be increased:
 
-    >>> get_version(dept)
+    >>> api.get_version(dept)
     1
 
 Although the changes are reflected by the content itself:
