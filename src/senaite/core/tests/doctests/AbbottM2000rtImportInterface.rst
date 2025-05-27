@@ -119,8 +119,7 @@ This service matches the service specified in the file from which the import wil
     >>> analysisservice
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>
 
-    >>> total_calc = api.create(calculations, 'Calculation', title='TotalCalc')
-    >>> total_calc.setFormula('[HIV06ml] * 100')
+    >>> total_calc = api.create(calculations, 'Calculation', title='TotalCalc', Formula='[HIV06ml] * 100')
     >>> analysisservice2 = api.create(bika_analysisservices,
     ...                              "AnalysisService",
     ...                              title="Test Total Results",
