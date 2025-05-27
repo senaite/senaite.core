@@ -64,7 +64,7 @@ class VersionWrapper(object):
         is_callable = callable(attr)
         if func_name.startswith("set") and is_callable:
             return True
-        elif func_name.startswith("manage_") and is_callable:
+        elif func_name.startswith("manage") and is_callable:
             return True
         elif "index" in func_name and is_callable:
             return True
