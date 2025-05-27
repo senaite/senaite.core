@@ -385,7 +385,7 @@ class Calculation(Container):
             row = dict(value[x])
             keys = row.keys()
             if "value" not in keys:
-                row["value"] = 0
+                row["value"] = ""
             # convert None values to empty string to avoid value conversion to "None"
             if row["value"] is None:
                 row["value"] = ""
