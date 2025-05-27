@@ -193,7 +193,7 @@ Create a new calculation with interims:
     '[DW]/[SW]*100'
 
     >>> list(sorted([{i['keyword']:i['value']}for i in calc.getInterimFields()], key=lambda i: i.get("keyword")))
-    [{'SW': 0}, {'DW': 0}]
+    [{'SW': ''}, {'DW': ''}]
 
 Set the calculation to a new service:
 
