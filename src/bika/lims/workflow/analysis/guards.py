@@ -117,7 +117,7 @@ def guard_submit(analysis):
         if interim.get("allow_empty", False) in true_values:
             continue
 
-        if not interim.get("value", ""):
+        if interim.get("value") in [None, ""]:
             return False
 
     # Cannot submit if attachment not set, but is required
