@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2734 Fixed Client restricted categories in the Sample add view form
 - #2733 Fixed improper permission check for editing analysis remarks
 - #2731 Fix ReactJS complains about duplicate keys
 - #2730 Update D3js 3 -> 7
