@@ -58,6 +58,7 @@ COLUMNS = BASE_COLUMNS + [
     "Type",
     "description",
     "getCategoryUID",
+    "getCategoryTitle",
     "getClientUID",
     "getKeyword",
     "getPrefix",  # used in reference widget columns

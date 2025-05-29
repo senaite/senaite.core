@@ -1,5 +1,5 @@
 ### Please use this command to compile this file into the parent `js` directory:
-    coffee --no-header -w -o -b -c senaite.core.analysisrequest.add.coffee
+    coffee --no-header -w -o . -b -c senaite.core.analysisrequest.add.coffee
 ###
 
 
@@ -459,6 +459,16 @@ class window.AnalysisRequestAdd
         # hide checkbox container
         parent = service_cb.parent "div.analysisservice"
         parent.hide()
+
+      # disable(and uncheck) services that are not includes allowed categories
+      all_services = $("input[name='Analyses-#{arnum}:list']")
+      all_services.each (index_service, service) ->
+        service_element = $(service)
+        uid_service = service_element.val()
+        if not record.available_services.includes(uid_service)
+          service_element.prop "checked": no
+          service_element.prop "disabled": yes
+
 
   ###*
    * Return the portal url (calculated in code)

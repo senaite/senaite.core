@@ -18,8 +18,11 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from senaite.core import logger
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.setuphandlers import add_catalog_column
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 
@@ -64,3 +67,20 @@ def import_registry(tool):
     setup = portal.portal_setup
 
     setup.runImportStepFromProfile(profile, "plone.app.registry")
+
+
+@upgradestep(product, version)
+def category_title_to_metadata(tool):
+    """Add Category title to metadata of setup catalog
+    """
+    column = "getCategoryTitle"
+    logger.info("Adding '%s' column to Setup Catalog metadata..." % column)
+    setup_catalog = api.get_tool(SETUP_CATALOG)
+    add_catalog_column(setup_catalog, column)
+
+    logger.info("Reindexing analysis categories ...")
+    for brain in setup_catalog(portal_type="AnalysisCategory"):
+        obj = brain.getObject()
+        logger.info("Reindex analysis category: %r" % obj)
+        obj.reindexObject(idxs=[], update_metadata=True)
+    logger.info("Adding '%s' column to Setup Catalog metadata [DONE]" % column)
