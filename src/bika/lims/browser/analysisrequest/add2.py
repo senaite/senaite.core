@@ -532,14 +532,14 @@ class AnalysisRequestAddView(BrowserView):
         :returns: Mapping of category -> list of services
         :rtype: dict
         """
-        bsc = api.get_tool("senaite_catalog_setup")
+        setup_catalog = api.get_tool(SETUP_CATALOG)
         query = {
             "portal_type": "AnalysisService",
             "point_of_capture": poc,
             "is_active": True,
             "sort_on": "sortable_title",
         }
-        services = bsc(query)
+        services = setup_catalog(query)
         analyses = {}
 
         for brain in services:
@@ -1282,14 +1282,15 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         client_metadata = metadata.get("client_metadata", None)
         client_uid = client_metadata and client_metadata.items()[0][0]
         categories = get_categories(client_uid)
-        bsc = api.get_tool("senaite_catalog_setup")
+        setup_catalog = api.get_tool(SETUP_CATALOG)
         query = {
             "portal_type": "AnalysisService",
             "is_active": True,
             "category_uid": list(map(lambda c: c.UID, categories)),
         }
+        uids = list(map(lambda s: s.UID, setup_catalog(query)))
         return {
-            "available_services": list(map(lambda s: s.UID, bsc(query))),
+            "available_services": uids,
         }
 
     @viewcache.memoize
