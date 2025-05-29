@@ -258,7 +258,7 @@ class ICalculationSchema(model.Schema):
         allow_insert=True,
         allow_delete=True,
         allow_reorder=True,
-        auto_append=False)
+        auto_append=True)
     imports = DataGridField(
         title=_(u"label_calculation_imports",
                 default=u"Additional Python Libraries"),
