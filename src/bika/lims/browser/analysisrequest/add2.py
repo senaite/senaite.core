@@ -92,13 +92,13 @@ def cache_key(method, self, obj):
 def get_categories(for_client=None):
     """Return service categories in the right order
     """
-    bsc = api.get_tool("senaite_catalog_setup")
+    setup_catalog = api.get_tool(SETUP_CATALOG)
     query = {
         "portal_type": "AnalysisCategory",
         "is_active": True,
         "sort_on": "sortable_title",
     }
-    categories = bsc(query)
+    categories = setup_catalog(query)
     if not for_client:
         return categories
     client = api.get_object(for_client, None)
