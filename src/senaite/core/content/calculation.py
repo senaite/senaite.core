@@ -163,6 +163,8 @@ def calculate_formula(formula="", parameters={}, imports=None):
         result = "Key Error: {}".format(str(e.args[0]))
     except ImportError as e:
         result = "Import Error: {}".format(str(e.args[0]))
+    except SyntaxError as e:
+        result = "Syntax Error: {}".format(str(e.args[0]))
     except Exception as e:
         result = "Unspecified exception: {}".format(str(e.args[0]))
 
