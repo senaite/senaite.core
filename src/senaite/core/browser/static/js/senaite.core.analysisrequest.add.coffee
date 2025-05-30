@@ -387,6 +387,7 @@ class window.AnalysisRequestAdd
 
     # initially hide all service-related icons
     $(".service-lockbtn").hide()
+    $(".service-restricted").hide()
 
     # hide all holding time related icons and set checks enabled by default
     $(".analysisservice").show()
@@ -465,9 +466,11 @@ class window.AnalysisRequestAdd
       all_services.each (index_service, service) ->
         service_element = $(service)
         uid_service = service_element.val()
+        restricted = $("##{uid_service}-#{arnum}-restricted")
         if not record.available_services.includes(uid_service)
           service_element.prop "checked": no
           service_element.prop "disabled": yes
+          restricted.show()
 
 
   ###*

@@ -595,6 +595,14 @@
                                             class python:cls;
                                             arnum python:arnum;">
 
+                          <!-- Service not allowed by category -->
+                          <div tal:attributes="id python:'{}-{}-restricted'.format(service_uid, arnum);
+                                               class python:'service-restricted {}-restricted'.format(service_uid);"
+                                title="Restricted by category for Client"
+                                i18n:attributes="title">
+                            &#128683;
+                          </div>
+
                           <!-- Service locked button -->
                           <div tal:attributes="uid python:service_uid;
                                                arnum python:arnum;

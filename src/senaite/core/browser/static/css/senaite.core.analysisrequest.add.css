@@ -124,6 +124,9 @@
     cursor: pointer;
     display: none;
 }
+.service-restricted {
+    display: none;
+}
 .service-info-table td.service-info-key {
     width: 33%!important;
 }

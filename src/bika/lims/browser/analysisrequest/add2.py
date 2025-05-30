@@ -1281,7 +1281,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         return out
 
     def get_available_services(self, metadata):
-        """Check services
+        """Getting services by category for client or all available
         """
         client_metadata = metadata.get("client_metadata", None)
         client_uid = client_metadata and client_metadata.items()[0][0]
