@@ -543,14 +543,14 @@ class AnalysisRequestAddView(BrowserView):
         analyses = {}
 
         for brain in services:
-            category_uid = brain.getCategoryUID
-            category_title = ""
-            if category_uid:
-                category_brain = api.get_brain_by_uid(category_uid)
-                category_title = category_brain and category_brain.Title
-            if category_title not in analyses:
-                analyses[category_title] = []
-            analyses[category_title].append(brain)
+            cat_uid = brain.getCategoryUID
+            cat_title = ""
+            if cat_uid:
+                cat_brain = api.get_brain_by_uid(cat_uid)
+                cat_title = cat_brain and api.get_title(cat_brain)
+            if cat_title not in analyses:
+                analyses[cat_title] = []
+            analyses[cat_title].append(brain)
         return analyses
 
 

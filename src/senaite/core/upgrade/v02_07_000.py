@@ -18,11 +18,8 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import api
 from senaite.core import logger
-from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config import PROJECTNAME as product
-from senaite.core.setuphandlers import add_catalog_column
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 
