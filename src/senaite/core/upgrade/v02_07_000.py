@@ -67,20 +67,3 @@ def import_registry(tool):
     setup = portal.portal_setup
 
     setup.runImportStepFromProfile(profile, "plone.app.registry")
-
-
-@upgradestep(product, version)
-def category_title_to_metadata(tool):
-    """Add Category title to metadata of setup catalog
-    """
-    column = "getCategoryTitle"
-    logger.info("Adding '%s' column to Setup Catalog metadata..." % column)
-    setup_catalog = api.get_tool(SETUP_CATALOG)
-    add_catalog_column(setup_catalog, column)
-
-    logger.info("Reindexing analysis categories ...")
-    for brain in setup_catalog(portal_type="AnalysisCategory"):
-        obj = brain.getObject()
-        logger.info("Reindex analysis category: %r" % obj)
-        obj.reindexObject(idxs=[], update_metadata=True)
-    logger.info("Adding '%s' column to Setup Catalog metadata [DONE]" % column)

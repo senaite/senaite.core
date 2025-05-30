@@ -397,15 +397,6 @@ class AnalysisService(AbstractBaseAnalysis):
             return None
         return calculation
 
-    def getCategoryTitle(self):
-        """Get the title of category
-        """
-        field = self.getField("Category")
-        category = field.get(self)
-        if not category:
-            return None
-        return api.get_title(category)
-
     def getRawCalculation(self):
         """Returns the UID of the assigned calculation
 
