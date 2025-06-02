@@ -2110,12 +2110,13 @@ def validate(obj, invariants=True):
 
         value = getattr(obj, field_name, None)
 
-        # Handle callable values
         if callable(value):
+            # Handle callable values, e.g. effective, expired etc.
             value = value()
         if isinstance(value, six.string_types):
             value = safe_unicode(value)
         if is_string_field(field):
+            # provide UTF8 encoded strings for stringfields, e.g. the ID field.
             value = to_utf8(value)
 
         try:
