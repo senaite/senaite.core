@@ -1515,7 +1515,8 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             return
 
         # Don't add analyses from profiles during sample creation.
-        # In this case the required analyses are added afterwards explicitly.
+        # In this case the required analyses are already extracted from all
+        # profiles.
         #
         # Also only add analyses if a profile (value) is selected:
         # https://github.com/senaite/senaite.core/pull/2672
