@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2735 Fix API field validation for DX contents
+- #2736 Fix profile services are not applied when creating samples programmatically
 - #2733 Fixed improper permission check for editing analysis remarks
 - #2731 Fix ReactJS complains about duplicate keys
 - #2730 Update D3js 3 -> 7

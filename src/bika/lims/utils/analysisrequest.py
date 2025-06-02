@@ -76,7 +76,7 @@ def create_analysisrequest(client, request, values, analyses=None,
     # Resolve the Service uids of analyses to be added in the Sample. Values
     # passed-in might contain Profiles and also values that are not uids. Also,
     # additional analyses can be passed-in through either values or services
-    service_uids = to_services_uids(values=values, services=analyses)
+    service_uids = to_service_uids(services=analyses, values=values)
 
     # Remove the Analyses from values. We will add them manually
     values.update({"Analyses": []})
@@ -243,7 +243,7 @@ def get_hidden_service_uids(profile_or_template):
     return map(lambda setting: setting["uid"], hidden)
 
 
-def to_services_uids(services=None, values=None):
+def to_service_uids(services=None, values=None):
     """Returns a list of Analysis Services UIDS
 
     :param services: A list of service items (uid, keyword, brain, obj, title)
@@ -268,6 +268,13 @@ def to_services_uids(services=None, values=None):
 
     # Convert them to a list of service uids
     uids = filter(None, map(to_service_uid, uids))
+
+    # Extract and append the service UIDs from the profiles
+    for profile in to_list(values.get("Profiles", [])):
+        profile = api.get_object(profile, None)
+        if not profile:
+            continue
+        uids.extend(profile.getServiceUIDs())
 
     # Get the service uids without duplicates, but preserving the order
     return list(OrderedDict.fromkeys(uids).keys())
