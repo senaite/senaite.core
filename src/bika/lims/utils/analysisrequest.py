@@ -270,8 +270,8 @@ def to_service_uids(services=None, values=None):
     uids = filter(None, map(to_service_uid, uids))
 
     # Extract and append the service UIDs from the profiles
-    for profile in values.get("Profiles", []):
-        profile = api.get_object(profile)
+    for profile in to_list(values.get("Profiles", [])):
+        profile = api.get_object(profile, None)
         if not profile:
             continue
         uids.extend(profile.getServiceUIDs())
