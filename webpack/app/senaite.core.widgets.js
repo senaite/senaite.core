@@ -107,7 +107,6 @@ const render_all_widgets = (root_element) => {
     console.debug("All widgets loaded, dispatching event:", event);
     document.dispatchEvent(event);
   });
-
 };
 
 // Initialize all widgets when the document is ready
@@ -123,5 +122,4 @@ document.addEventListener("DOMContentLoaded", () => {
     // won't be functional
     render_all_widgets(event.detail.row);
   });
-
 });
