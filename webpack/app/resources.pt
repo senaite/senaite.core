@@ -7,9 +7,8 @@
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/bootstrap/js/bootstrap.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/bootstrap-confirmation2/bootstrap-confirmation.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/bootstrap-select/js/bootstrap-select.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/react/react.production.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/react-dom/react-dom.production.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/tinymce/tinymce.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/d3/d3.min.js"></script>
 
 <!-- external CSS libraries -->
 <link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/modules/bootstrap-select/css/bootstrap-select.min.css"/>

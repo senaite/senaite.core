@@ -236,7 +236,7 @@
        function loadBarCharts() {
          $(".bar-chart").each(function () {
            var id = $(this).attr("id");
-           var vis = senaite.core.controllers.SiteView.readCookie("visible." + id);
+           var vis = senaite.core.controllers.SiteView.read_cookie("visible." + id);
            if (vis == 1) {
              $("#" + id).show();
              $("#" + id + "-period").show();
@@ -281,14 +281,15 @@
              width = container.innerWidth() - margin.left - margin.right,
              height = 200 - margin.top - margin.bottom;
 
-         var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
-         var y = d3.scale.linear().range([height, 0]);
+         var x = d3.scaleBand().rangeRound([0, width]).padding(0.1);
+         var y = d3.scaleLinear().range([height, 0]);
          var colors = JSON.parse(container.attr("data-colors"));
-         var color = d3.scale.ordinal().range(colors);
+         var color = d3.scaleOrdinal().range(colors);
          color.domain(states);
 
-         var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(10);
-         var yAxis = d3.svg.axis().scale(y).orient("left").tickSize(-width, 0, 0).tickFormat(d3.format(".2s"));
+         const xAxis = d3.axisBottom(x).ticks(10);
+         const yAxis = d3.axisLeft(y).tickSize(-width).tickFormat(d3.format(".2s"))
+
 
          var svg = d3.select("#" + id).append("svg")
                      .attr("width", width + margin.left + margin.right)
@@ -328,7 +329,7 @@
               .data(function (d) { return d.statuses; })
               .enter()
               .append("rect")
-              .attr("width", x.rangeBand())
+              .attr("width", x.bandwidth())
               .attr("y", function (d) { return y(d.y1); })
               .attr("height", function (d) { return y(d.y0) - y(d.y1); })
               .attr("data-date", function (d) { return d.x; })
@@ -386,9 +387,9 @@
          $("select.dashboard_filters").on("change", function () {
            var section_id = $(this).attr("section_id");
            var selected = $(this).find(":selected").val();
-           var cookie_data = render_cookie_data(senaite.core.controllers.SiteView.readCookie(cookie_id));
+           var cookie_data = render_cookie_data(senaite.core.controllers.SiteView.read_cookie(cookie_id));
            cookie_data[section_id] = selected;
-           senaite.core.controllers.SiteView.setCookie(cookie_id, build_cookie_data(cookie_data));
+           senaite.core.controllers.SiteView.set_cookie(cookie_id, build_cookie_data(cookie_data));
            window.location.reload(true);
          });
        }

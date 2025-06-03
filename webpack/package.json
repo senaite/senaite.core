@@ -1,6 +1,6 @@
 {
   "name": "senaite.core",
-  "version": "2.2.0",
+  "version": "2.7.0",
   "main": "app/senaite.core.js",
   "scripts": {
     "build": "mode=production webpack",
@@ -24,14 +24,15 @@
     "bootstrap": "^4.6.0",
     "bootstrap-confirmation2": "^4.2.1",
     "bootstrap-select": "^1.13.18",
+    "d3": "^7.9.0",
     "handlebars": "^4.7.8",
     "intl-tel-input": "^17.0.19",
     "jquery": "^3",
     "jquery-form": "^4.3.0",
     "jquery-ui": "^1.14.1",
     "popper.js": "^1.16.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "tinymce": "^7.9.0"
   },
   "devDependencies": {

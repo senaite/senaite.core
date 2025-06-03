@@ -68,7 +68,13 @@ class ControlChart {
   }
 
   setInterpolation(method) {
-    this.interpolation = method;
+    const curves = {
+      basis: d3.curveBasis,
+      linear: d3.curveLinear,
+      step: d3.curveStep,
+      cardinal: d3.curveCardinal,
+    };
+    this.interpolation = curves[method] || d3.curveBasis;
   }
 
   setPointId(id) {
@@ -82,14 +88,14 @@ class ControlChart {
     const width = widthRaw - margin.left - margin.right;
     const height = heightRaw - margin.top - margin.bottom;
 
-    const x = d3.time.scale().range([0, width]);
-    const y = d3.scale.linear().range([height, 0]);
+    const x = d3.scaleTime().range([0, width]);
+    const y = d3.scaleLinear().range([height, 0]);
 
-    const xAxis = d3.svg.axis().scale(x).orient("bottom").tickSize(0);
-    const yAxis = d3.svg.axis().scale(y).orient("left").tickSize(0);
+    const xAxis = d3.axisBottom(x).tickSize(0);
+    const yAxis = d3.axisLeft(y).tickSize(0).tickFormat(d3.format(".2s"));
 
-    const line = d3.svg.line()
-      .interpolate(this.interpolation)
+    const line = d3.line()
+      .curve(this.interpolation)
       .x(d => x(d.x_axis))
       .y(d => y(d.y_axis));
 
@@ -100,7 +106,7 @@ class ControlChart {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    const parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
+    const parseDate = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
     this.datasource.forEach(d => {
       d.x_axis = parseDate(d[this.xcolumnkey]);
@@ -163,8 +169,8 @@ class ControlChart {
           d3.select(this).attr("fill", "#2f2f2f").attr("r", 3);
           d3.select(this.parentNode).select("text").remove();
         })
-        .on("mouseover", () => {
-          d3.select(d3.event.currentTarget).attr("fill", "#4682b4").attr("r", 6);
+        .on("mouseover", (event) => {
+          d3.select(event.currentTarget).attr("fill", "#4682b4").attr("r", 6);
           group.append("text")
             .attr("fill", "#000000")
             .style("font-size", "10px")
@@ -172,8 +178,8 @@ class ControlChart {
             .attr("y", y(d.y_axis) - 10)
             .text(`${d.y_axis} ${this.ylabel}`);
         })
-        .on("click", () => {
-          d3.select(d3.event.currentTarget).attr("fill", "#4682b4").attr("r", 6);
+        .on("click", (event) => {
+          d3.select(event.currentTarget).attr("fill", "#4682b4").attr("r", 6);
           group.append("text")
             .attr("fill", "#000000")
             .style("font-size", "10px")
