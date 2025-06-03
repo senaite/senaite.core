@@ -276,6 +276,11 @@ def to_service_uids(services=None, values=None):
             continue
         uids.extend(profile.getServiceUIDs())
 
+    # Exclude service uids if not available in categories for Client
+    client = values.get("Client")
+    available_uids = get_available_service_uids(client)
+    uids = [uid for uid in uids if uid in available_uids]
+
     # Get the service uids without duplicates, but preserving the order
     return list(OrderedDict.fromkeys(uids).keys())
 
@@ -314,6 +319,43 @@ def to_service_uid(uid_brain_obj_str):
             return api.get_uid(brains[0])
 
     return None
+
+
+def get_available_service_uids(client=None):
+    """Getting services by category for client or all available
+    """
+    categories = get_categories(client)
+    setup_catalog = api.get_tool(SETUP_CATALOG)
+    query = {
+        "portal_type": "AnalysisService",
+        "is_active": True,
+        "category_uid": list(map(lambda c: c.UID, categories)),
+    }
+    return list(map(lambda s: s.UID, setup_catalog(query)))
+
+
+def get_categories(for_client=None):
+    """Return service categories in the right order
+    """
+    setup_catalog = api.get_tool(SETUP_CATALOG)
+    query = {
+        "portal_type": "AnalysisCategory",
+        "is_active": True,
+        "sort_on": "sortable_title",
+    }
+    categories = setup_catalog(query)
+    if not for_client:
+        return categories
+    client = api.get_object(for_client, None)
+    if client:
+        restricted_categories = client.getRestrictedCategories()
+        restricted_category_ids = map(
+            lambda c: c.getId(), restricted_categories)
+        # keep correct order of categories
+        if restricted_category_ids:
+            categories = filter(
+                lambda c: c.getId in restricted_category_ids, categories)
+    return categories
 
 
 def create_retest(ar):

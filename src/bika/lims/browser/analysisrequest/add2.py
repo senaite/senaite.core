@@ -40,6 +40,8 @@ from bika.lims.interfaces import IAddSampleRecordsValidator
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
 from bika.lims.interfaces.field import IUIDReferenceField
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
+from bika.lims.utils.analysisrequest import get_categories
+from bika.lims.utils.analysisrequest import get_available_service_uids
 from BTrees.OOBTree import OOBTree
 from DateTime import DateTime
 from plone import protect
@@ -87,30 +89,6 @@ def cache_key(method, self, obj):
     if obj is None:
         raise DontCache
     return api.get_cache_key(obj)
-
-
-def get_categories(for_client=None):
-    """Return service categories in the right order
-    """
-    setup_catalog = api.get_tool(SETUP_CATALOG)
-    query = {
-        "portal_type": "AnalysisCategory",
-        "is_active": True,
-        "sort_on": "sortable_title",
-    }
-    categories = setup_catalog(query)
-    if not for_client:
-        return categories
-    client = api.get_object(for_client, None)
-    if client:
-        restricted_categories = client.getRestrictedCategories()
-        restricted_category_ids = map(
-            lambda c: c.getId(), restricted_categories)
-        # keep correct order of categories
-        if restricted_category_ids:
-            categories = filter(
-                lambda c: c.getId in restricted_category_ids, categories)
-    return categories
 
 
 class AnalysisRequestAddView(BrowserView):
@@ -1285,14 +1263,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """
         client_metadata = metadata.get("client_metadata", None)
         client_uid = client_metadata and client_metadata.items()[0][0]
-        categories = get_categories(client_uid)
-        setup_catalog = api.get_tool(SETUP_CATALOG)
-        query = {
-            "portal_type": "AnalysisService",
-            "is_active": True,
-            "category_uid": list(map(lambda c: c.UID, categories)),
-        }
-        uids = list(map(lambda s: s.UID, setup_catalog(query)))
+        uids = get_available_service_uids(client_uid)
         return {
             "available_services": uids,
         }
