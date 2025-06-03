@@ -176,6 +176,34 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     UIDReferenceField(
+        "SampleType",
+        required=1,
+        allowed_types=("SampleType",),
+        mode="rw",
+        read_permission=View,
+        write_permission=FieldEditSampleType,
+        widget=ReferenceWidget(
+            label=_(
+                "label_sample_sampletype",
+                default="Sample Type"),
+            description=_(
+                "description_sample_sampletype",
+                default="Select the sample type of this sample"),
+            render_own_label=True,
+            visible={
+                "add": "edit",
+                "secondary": "disabled",
+            },
+            catalog=SETUP_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        ),
+    ),
+
+    UIDReferenceField(
         "CCContact",
         multiValued=1,
         allowed_types=("Contact",),
@@ -190,10 +218,11 @@ schema = BikaSchema.copy() + Schema((
                 "description_sample_cccontact",
                 default="The contacts used in CC for email notifications"),
             render_own_label=True,
-            visible={
-                "add": "edit",
-                "header_table": "prominent",
-            },
+            visible={'edit': 'invisible', 'view': 'invisible'}, #hidden_AG
+            # visible={
+            #     "add": "edit",
+            #     "header_table": "prominent",
+            # },
             ui_item="Title",
             catalog=CONTACT_CATALOG,
             # TODO: Make custom query to handle parent client UID
@@ -218,10 +247,11 @@ schema = BikaSchema.copy() + Schema((
         widget=StringWidget(
             label=_("CC Emails"),
             description=_("Additional email addresses to be notified"),
-            visible={
-                'add': 'edit',
-                'header_table': 'prominent',
-            },
+            visible={'edit': 'invisible', 'view': 'invisible'}, #hidden_AG
+            # visible={
+            #     'add': 'edit',
+            #     'header_table': 'prominent',
+            # },
             render_own_label=True,
             size=20,
         ),
@@ -315,9 +345,10 @@ schema = BikaSchema.copy() + Schema((
                 "description_sample_batch",
                 default="Assign sample to a batch"),
             render_own_label=True,
-            visible={
-                "add": "edit",
-            },
+            visible={'edit': 'invisible', 'view': 'invisible'}, #hidden_AG
+            # visible={
+            #     "add": "edit",
+            # },
             catalog_name=SENAITE_CATALOG,
             search_index="listing_searchable_text",
             query={
@@ -350,9 +381,10 @@ schema = BikaSchema.copy() + Schema((
                 "description_sample_subgroup",
                 default="The assigned batch sub group of this request"),
             render_own_label=True,
-            visible={
-                "add": "edit",
-            },
+            visible={'edit': 'invisible', 'view': 'invisible'}, #hidden_AG
+            # visible={
+            #     "add": "edit",
+            # },
             catalog_name=SETUP_CATALOG,
             query={
                 "is_active": True,
@@ -424,6 +456,8 @@ schema = BikaSchema.copy() + Schema((
     # a valid date!
     DateTimeField(
         'DateSampled',
+        required=False,
+        default=None,
         mode="rw",
         max="getMaxDateSampled",
         read_permission=View,
@@ -503,40 +537,14 @@ schema = BikaSchema.copy() + Schema((
             size=20,
             show_time=True,
             render_own_label=True,
-            visible={
-                'add': 'edit',
-                'secondary': 'disabled',
-            },
+            visible={'edit': 'invisible', 'view': 'invisible'}, #hidden_AG
+            # visible={
+            #     'add': 'edit',
+            #     'secondary': 'disabled',
+            # },
         ),
     ),
 
-    UIDReferenceField(
-        "SampleType",
-        required=1,
-        allowed_types=("SampleType",),
-        mode="rw",
-        read_permission=View,
-        write_permission=FieldEditSampleType,
-        widget=ReferenceWidget(
-            label=_(
-                "label_sample_sampletype",
-                default="Sample Type"),
-            description=_(
-                "description_sample_sampletype",
-                default="Select the sample type of this sample"),
-            render_own_label=True,
-            visible={
-                "add": "edit",
-                "secondary": "disabled",
-            },
-            catalog=SETUP_CATALOG,
-            query={
-                "is_active": True,
-                "sort_on": "sortable_title",
-                "sort_order": "ascending"
-            },
-        ),
-    ),
 
     UIDReferenceField(
         "Container",
@@ -553,9 +561,10 @@ schema = BikaSchema.copy() + Schema((
                 "description_sample_container",
                 default="Select a container for this sample"),
             render_own_label=True,
-            visible={
-                "add": "edit",
-            },
+            visible={'edit': 'invisible', 'view': 'invisible'}, #hidden_AG
+            # visible={
+            #     "add": "edit",
+            # },
             catalog_name=SETUP_CATALOG,
             query={
                 "is_active": True,
@@ -584,9 +593,10 @@ schema = BikaSchema.copy() + Schema((
                 "description_sample_preservation",
                 default="Select the needed preservation for this sample"),
             render_own_label=True,
-            visible={
-                "add": "edit",
-            },
+            visible={'edit': 'invisible', 'view': 'invisible'}, #hidden_AG
+            # visible={
+            #     "add": "edit",
+            # },
             catalog_name=SETUP_CATALOG,
             query={
                 "is_active": True,
@@ -607,10 +617,11 @@ schema = BikaSchema.copy() + Schema((
             size=20,
             show_time=True,
             render_own_label=True,
-            visible={
-                'add': 'edit',
-                'header_table': 'prominent',
-            },
+            visible={'edit': 'invisible', 'view': 'invisible'}, #hidden_AG
+            # visible={
+            #     'add': 'edit',
+            #     'header_table': 'prominent',
+            # },
         ),
     ),
 
@@ -778,10 +789,11 @@ schema = BikaSchema.copy() + Schema((
                 "description_sample_storagelocation",
                 default="Location where the sample is kept"),
             render_own_label=True,
-            visible={
-                "add": "edit",
-                "secondary": "disabled",
-            },
+            visible={'edit': 'invisible', 'view': 'invisible'}, #hidden_AG
+            # visible={
+            #     "add": "edit",
+            #     "secondary": "disabled",
+            # },
             catalog_name=SETUP_CATALOG,
             query={
                 "is_active": True,
@@ -921,10 +933,11 @@ schema = BikaSchema.copy() + Schema((
         widget=StringWidget(
             label=_("Environmental conditions"),
             description=_("The environmental condition during sampling"),
-            visible={
-                'add': 'edit',
-                'header_table': 'prominent',
-            },
+            # visible={
+            #     'add': 'edit',
+            #     'header_table': 'prominent',
+            # },
+            visible={'edit': 'invisible', 'view': 'invisible'}, #hidden_AG
             render_own_label=True,
             size=20,
         ),
@@ -939,10 +952,11 @@ schema = BikaSchema.copy() + Schema((
         widget=BooleanWidget(
             label=_("Composite"),
             render_own_label=True,
-            visible={
-                'add': 'edit',
-                'secondary': 'disabled',
-            },
+            visible={'edit': 'invisible', 'view': 'invisible'}, #hidden_AG
+            # visible={
+            #     'add': 'edit',
+            #     'secondary': 'disabled',
+            # },
         ),
     ),
 
@@ -956,10 +970,11 @@ schema = BikaSchema.copy() + Schema((
             label=_("Invoice Exclude"),
             description=_("Should the analyses be excluded from the invoice?"),
             render_own_label=True,
-            visible={
-                'add': 'edit',
-                'header_table': 'visible',
-            },
+            visible={'edit': 'invisible', 'view': 'invisible'}, #hidden_AG
+            # visible={
+            #     'add': 'edit',
+            #     'header_table': 'visible',
+            # },
         ),
     ),
 
@@ -1372,7 +1387,8 @@ schema = BikaSchema.copy() + Schema((
                           "clients."),
             format="radio",
             render_own_label=True,
-            visible={'add': 'edit'}
+            visible={'edit': 'invisible', 'view': 'invisible'} #hidden_AG
+            # visible={'add': 'edit'}
         ),
     ),
 
