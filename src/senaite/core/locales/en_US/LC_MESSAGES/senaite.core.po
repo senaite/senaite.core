@@ -5467,7 +5467,7 @@ msgstr ""
 
 #: senaite/core/browser/dashboard/templates/dashboard.pt:12
 msgid "System Dashboard"
-msgstr ""
+msgstr "Labs Dashboard"
 
 #: bika/lims/content/abstractbaseanalysis.py:984
 msgid "System default"
