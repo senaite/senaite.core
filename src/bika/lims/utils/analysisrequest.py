@@ -332,7 +332,8 @@ def get_available_service_uids(client=None):
     categories = get_categories(client)
     if categories:
         query["category_uid"] = list(map(lambda c: c.UID, categories))
-    return list(map(lambda s: s.UID, api.search(query, SETUP_CATALOG)))
+    uids = list(map(lambda s: s.UID, api.search(query, SETUP_CATALOG)))
+    return filter(None, uids)
 
 
 def get_categories(for_client=None):
