@@ -65,6 +65,12 @@
                              data-required python:required and '1' or '0';
                              python:widget_attrs;">
           <!-- ReactJS controlled component -->
+
+          <!-- The hidden input field provides the field value before the widget is rendered.
+              This is necessary if e.g. a JS requires the value directly after DOM loaded event -->
+          <input type="hidden"
+                 tal:attributes="name python:fieldName;
+                                 value python:'\r\n'.join(field.widget.get_value(context, field, value))" />
         </div>
 
         <div class="fieldErrorBox" tal:condition="required"></div>
