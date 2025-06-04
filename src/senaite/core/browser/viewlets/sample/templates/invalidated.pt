@@ -24,7 +24,7 @@
         <span i18n:name="actor_fullname" tal:replace="info/fullname"></span>
         (<span i18n:name="actor_id" tal:replace="info/actor"></span>) on
         <span i18n:name="date" tal:replace="info/date"></span> for the
-        following reason:
+        following reason(s):
         <span i18n:name="reason" tal:replace="reason"></span>.
       </p>
 
