@@ -122,16 +122,10 @@
                 <!-- Send email notification -->
                 <div class="form-group field"
                   tal:define="recipients sample/recipients">
-                  <input type="checkbox"
+                  <input type="checkbox" checked
                          name="samples.notify:records"
                          id="input-email-notification"
-                         tal:condition="recipients"
-                         tal:attributes="checked python:view.is_notification_enabled;"/>
-                  <input type="checkbox"
-                         name="samples.notify:records"
-                         id="input-email-notification"
-                         tal:condition="not:recipients"
-                         disabled="disabled"/>
+                         tal:condition="recipients"/>
                   <label class="font-weight-bold" for="input-email-notification" i18n:translate="">
                     Email notification
                   </label>

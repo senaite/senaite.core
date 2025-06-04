@@ -62,13 +62,6 @@ class InvalidateSamplesView(BrowserView):
         return list(OrderedDict.fromkeys(uids))
 
     @property
-    def is_notification_enabled(self):
-        """Returns whether the notification on sample invalidation is enabled
-        """
-        setup = api.get_setup()
-        return setup.getNotifyOnSampleInvalidation()
-
-    @property
     def is_reason_required(self):
         """Returns whether the introduction of a reason is required for the
         invalidation of a sample
