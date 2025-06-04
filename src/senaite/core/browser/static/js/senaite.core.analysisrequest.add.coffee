@@ -187,6 +187,7 @@ class window.AnalysisRequestAdd
       # Always notify Ajax end
       $(me).trigger "ajax:end"
     .fail (request, status, error) ->
+      me.form_submission_flag = no
       msg = _t("Sorry, an error occured: #{status}")
       window.senaite.core.globals.portalMessage msg
       window.scroll 0, 0
