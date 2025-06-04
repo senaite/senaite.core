@@ -2522,6 +2522,22 @@ It also takes invariants into consideration:
     >>> api.validate(category)
     {}
 
+It is also possible to validate standard DX content types:
+
+    >>> client = self.portal.clients["client-1"]
+
+A standard Plone folder:
+
+    >>> dx_folder = api.create(client, "Folder", title="Test Folder")
+    >>> api.validate(dx_folder)
+    {}
+
+A standard Plone document:
+
+    >>> dx_document = api.create(dx_folder, "Document", title="Test Document")
+    >>> api.validate(dx_document)
+    {}
+
 
 Get the registered portal types
 ...............................
