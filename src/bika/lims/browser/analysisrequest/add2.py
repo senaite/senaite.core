@@ -19,9 +19,11 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
+import time
 from collections import OrderedDict
 from datetime import datetime
 from datetime import timedelta
+from random import uniform
 
 import six
 import transaction
@@ -57,6 +59,7 @@ from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.p3compat import cmp
 from senaite.core.permissions import TransitionMultiResults
 from senaite.core.registry import get_registry_record
+from ZODB.POSException import ConflictError
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getAdapters
 from zope.component import queryAdapter
@@ -1964,7 +1967,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Creates samples for the given records
         """
         samples = []
-        for record in records:
+
+        user = api.user.get_user()
+        request = api.get_request()
+        path_info = request.get("PATH_INFO", "")
+        failed = 0
+
+        for num, record in enumerate(records):
+
             client_uid = record.get("Client")
             client = self.get_object_by_uid(client_uid)
             if not client:
@@ -1976,16 +1986,49 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Create as many samples as required
             num_samples = self.get_num_samples(record)
             for idx in range(num_samples):
-                sample = crar(client, self.request, record)
+                attempt = 0
+                sample = None
 
-                # Create the attachments
-                for attachment_record in attachments:
-                    self.create_attachment(sample, attachment_record)
+                # try to create the sample in a conflict-safe way
+                while attempt < 100:
+                    attempt += 1
+                    T = transaction.get()
+                    T.setUser(user.getId())
+                    sample = self.create_sample(client, attachments, record)
+                    path = "{}/create_samples/{}".format(
+                        path_info, sample.getId())
+                    T.note(path)
+                    try:
+                        transaction.commit()
+                        break
+                    except ConflictError:
+                        sample = None
+                        T.log.error(
+                            "👻 Transaction Conflict Error while creating "
+                            "sample after attempt {}".format(attempt))
+                        transaction.abort()
+                        time.sleep(uniform(0, 1))
 
-                transaction.savepoint(optimistic=True)
-                samples.append(sample)
+                if sample:
+                    samples.append(sample)
+                else:
+                    failed += 1
+        if failed > 0:
+            logger.error("Failed to create {} samples after 100 attempts"
+                         .format(failed))
 
         return samples
+
+    def create_sample(self, client, attachments, record):
+        """Create a single sample from the given record
+        """
+        sample = crar(client, self.request, record)
+
+        # Create the attachments
+        for attachment_record in attachments:
+            self.create_attachment(sample, attachment_record)
+
+        return sample
 
     def get_num_samples(self, record):
         """Return the number of samples to create for the given record
