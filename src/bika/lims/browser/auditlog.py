@@ -18,6 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import json
 import collections
 import six
 
@@ -26,7 +27,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.api.snapshot import compare_snapshots
 from bika.lims.api.snapshot import get_snapshot_by_version
 from bika.lims.api.snapshot import get_snapshot_metadata
-from bika.lims.api.snapshot import get_snapshot_version
 from bika.lims.api.snapshot import get_snapshots
 from bika.lims.interfaces import IAuditable
 from senaite.core.api import dtime
@@ -94,6 +94,11 @@ class AuditLogView(ListingView):
                 "title": _("Workflow State"), "sortable": False}),
             ("diff", {
                 "title": _("Changes"), "sortable": False}),
+            ("snapshot", {
+                "title": _("Snapshot"),
+                "sortable": False,
+                "toggle": False,
+            }),
         ))
 
         self.review_states = [
@@ -190,13 +195,27 @@ class AuditLogView(ListingView):
         # slice a batch
         batch = snapshots[self.limit_from:self.limit_from+self.pagesize]
 
-        for snapshot in batch:
+        for num, snapshot in enumerate(batch):
             item = self.make_empty_item(**snapshot)
+
             # get the version of the snapshot
-            version = get_snapshot_version(self.context, snapshot)
+            #
+            # NOTE: We need to calculate the version based on the known index,
+            # because at this point we have similar snapshots that would return
+            # the same version!
+            #
+            # With this PR we added a timestamp to the metadata of the snapshot
+            # to make sure they can be distinguished:
+            # https://github.com/senaite/senaite.core/pull/2739
+            #
+            # version = get_snapshot_version(self.context, snapshot)
+            version = self.total - self.limit_from - num - 1
 
             # Version
             item["version"] = version
+
+            snapshot_data = json.dumps(snapshot, indent=2, sort_keys=True)
+            item["snapshot"] = api.text_to_html(snapshot_data, wrap="pre")
 
             # get the metadata of the diff
             metadata = get_snapshot_metadata(snapshot)
