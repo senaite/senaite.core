@@ -18,8 +18,13 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from collections import OrderedDict
 from string import Template
 
+from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.PlonePAS.plugins.ufactory import PloneUser
+from Products.PlonePAS.tools.memberdata import MemberData
 from bika.lims import _
 from bika.lims import api
 from bika.lims.api.mail import compose_email
@@ -27,11 +32,6 @@ from bika.lims.api.mail import is_valid_email_address
 from bika.lims.interfaces import IContact
 from bika.lims.utils import get_link_for
 from bika.lims.workflow import doActionFor as do_action_for
-from collections import OrderedDict
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.PlonePAS.plugins.ufactory import PloneUser
-from Products.PlonePAS.tools.memberdata import MemberData
 from senaite.core.api import dtime
 from senaite.core.api import workflow as wapi
 from senaite.core.catalog import SAMPLE_CATALOG
@@ -87,7 +87,9 @@ class InvalidateSamplesView(BrowserView):
         # Handle invalidation
         if form_submitted and form_invalidate:
 
-            for sample in form.get("samples", []):
+            processed = OrderedDict()
+            samples = form.get("samples", [])
+            for sample in samples:
                 uid = sample.get("uid", "")
                 reason = sample.get("reason", "").strip()
                 notify = sample.get("notify", "") == "on"
@@ -106,11 +108,23 @@ class InvalidateSamplesView(BrowserView):
                     self.add_status_message(message, level="warning")
                     continue
 
-                # notify via email
-                if notify:
-                    self.send_invalidation_email(sample)
+                # keep track of the transitioned samples and recipients
+                processed[sample] = []
 
-                return self.redirect()
+                # notify via email and keep track of notified samples
+                if notify:
+                    recipients = self.send_invalidation_email(sample)
+                    processed[sample] = recipients
+
+            if not processed:
+                return self.redirect(message=_(
+                    "No samples were invalidated. Please ensure samples are "
+                    "selected and meet the criteria for invalidation."
+                ), level="error")
+
+            # get the success message
+            message = self.get_success_message(processed)
+            return self.redirect(message=message)
 
         # Handle cancel
         if form_submitted and form_cancel:
@@ -118,6 +132,55 @@ class InvalidateSamplesView(BrowserView):
                 "The invalidation process has been successfully cancelled."
             ))
         return self.template()
+
+    def get_success_message(self, processed):
+        """Returns the success message for samples that have been processed
+        """
+        # get the sample objects
+        samples = processed.keys()
+        # get the ids
+        sample_ids = list(map(api.get_id, samples))
+        # get the list of samples that were successfully notified by email
+        notified = [samp for samp in samples if processed.get(samp)]
+        # we are only interested on ids
+        notified = list(map(api.get_id, notified))
+
+        if len(samples) == 1 and notified:
+            return _(
+                "Sample ${sample_id} was successfully invalidated, and a "
+                "notification email has been sent to the following "
+                "recipients: ${recipients}.",
+                mapping={
+                    "sample_id": sample_ids[0],
+                    "recipients": processed.get(samples[0]),
+                })
+
+        if len(sample_ids) == 1:
+            return _(
+                "Sample ${sample_id} has been successfully invalidated.",
+                mapping={
+                    "sample_id": sample_ids[0]
+                }
+            )
+
+        if notified:
+            return _(
+                "Samples ${sample_ids} were successfully invalidated, with "
+                "notification emails sent for the following: ${notified_ids}.",
+                mapping={
+                    "sample_ids": ", ".join(sample_ids),
+                    "notified_ids": ", ".join(notified),
+                }
+            )
+
+        return _(
+            "Samples ${sample_ids} were successfully invalidated, with "
+            "notification emails sent for the following: ${notified_ids}.",
+            mapping={
+                "sample_ids": ", ".join(sample_ids),
+                "notified_ids": ", ".join(notified),
+            }
+        )
 
     def get_samples(self):
         """Returns a list of objects coming from the "uids" request parameter
@@ -192,11 +255,14 @@ class InvalidateSamplesView(BrowserView):
 
     def send_invalidation_email(self, sample):
         """Sends an email about the invalidation to the contacts of the sample
+        and if succeeds, returns back the email's "To" mime header. Returns
+        None otherwise
         """
         try:
             email_message = self.get_invalidation_email(sample)
             host = api.get_tool("MailHost")
             host.send(email_message, immediate=True)
+            return email_message["To"]
         except Exception as err_msg:
             message = _(
                 "Cannot send email for ${sample_id}: ${error}",
@@ -205,6 +271,8 @@ class InvalidateSamplesView(BrowserView):
                     "error": api.safe_unicode(err_msg)
                 })
             self.add_status_message(message, level="warning")
+
+        return None
 
     def get_invalidation_email(self, sample):
         """Returns the sample invalidation MIME Message for the sample
@@ -217,8 +285,8 @@ class InvalidateSamplesView(BrowserView):
         # Compose the email
         subject = t(
             _("Erroneous result publication: ${sample_id}",
-              mapping={"sample_id": api.get_id(sample)}
-        ))
+              mapping={"sample_id": api.get_id(sample)})
+        )
 
         setup = api.get_setup()
         retest = sample.getRetest()
