@@ -208,10 +208,7 @@ class AuditLogView(ListingView):
             # to make sure they can be distinguished.
             #
             # version = get_snapshot_version(self.context, snapshot)
-            version = self.total - num - self.limit_from - 1
-
-            # we use the version as the UID to make the items distinct
-            item["uid"] = version
+            version = self.total - self.limit_from - num - 1
 
             # Version
             item["version"] = version
