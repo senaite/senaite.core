@@ -293,7 +293,6 @@ class InvalidateSamplesView(BrowserView):
         retest = sample.getRetest()
         lab_email = setup.laboratory.getEmailAddress()
         lab_address = setup.laboratory.getPrintAddress()
-        reason = self.get_invalidation_reason(sample) or ""
         body = Template(setup.getEmailBodySampleInvalidation())
         body = body.safe_substitute({
             "lab_address": "<br/>".join(lab_address),
