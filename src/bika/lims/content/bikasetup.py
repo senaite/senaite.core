@@ -782,23 +782,11 @@ schema = BikaFolderSchema.copy() + Schema((
             ),
         ),
     ),
-    BooleanField(
-        'NotifyOnSampleInvalidation',
-        schemata="Notifications",
-        default=True,
-        widget=BooleanWidget(
-            label=_("Email notification on Sample invalidation"),
-            description=_("Select this to activate automatic notifications "
-                          "via email to the Client and Lab Managers when a "
-                          "Sample is invalidated.")
-        ),
-    ),
     TextField(
         "EmailBodySampleInvalidation",
         default_content_type='text/html',
         default_output_type='text/x-html-safe',
         schemata="Notifications",
-        label=_("Email body for Sample Invalidation notifications"),
         default=
             "Some non-conformities have been detected in the results report "
             "published for Sample $sample_link. "
@@ -811,17 +799,22 @@ schema = BikaFolderSchema.copy() + Schema((
             "<br/><br/> "
             "$lab_address",
         widget=RichWidget(
-            label=_("Email body for Sample Invalidation notifications"),
+            label=_(
+                "label_bikasetup_invalidation_email_body",
+                default="Email body for Sample Invalidation notifications"
+            ),
             description=_(
-                "Enter the text for the email body used to notify the client "
-                "contact about the sample invalidation. This field is "
-                "applicable when the 'Email Notification on Sample "
-                "Invalidation' option is enabled. You can include "
-                "placeholders such as $sample_id for the invalidated sample "
-                "ID, $sample_link for a direct link to the sample, $retest_id "
-                "for the ID of the retest sample (if applicable), "
-                "$retest_link for its link, $reason for the invalidation "
-                "reason, and $lab_address for the laboratory's address."
+                "description_bikasetup_invalidation_email_body",
+                default=
+                "Define the template for the email body that will be "
+                "automatically sent to primary contacts and laboratory "
+                "managers when a sample is invalidated. The following "
+                "placeholders are supported: "
+                "<code title='The ID of the sample'>$sample_id</code>, "
+                "<code title='The ID of the sample retest'>$retest_id</code>, "
+                "<code title='The link to the retest'>$retest_link</code>, "
+                "<code title='The reason(s) for invalidation'>$reason</code>, "
+                "<code title='The address of the lab'>$lab_address</code>."
             ),
             default_mime_type='text/x-rst',
             output_mime_type='text/x-html',
