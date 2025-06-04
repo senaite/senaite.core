@@ -7,5 +7,11 @@
                        style view/style;
                        title view/title;">
     <!-- ReactJS controlled component -->
+
+    <!-- The hidden input field provides the field value before the widget is rendered.
+         This is necessary if e.g. a JS requires the value directly after DOM loaded event -->
+    <input type="hidden"
+           tal:attributes="name python:view.name;
+                           value python:'\r\n'.join(view.get_value())" />
   </div>
 </html>

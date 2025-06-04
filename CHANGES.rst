@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2739 Fix snapshot versioning
+- #2737 Fix form values omitted on initial load for UID reference fields in sample add form
 - #2735 Fix API field validation for DX contents
 - #2736 Fix profile services are not applied when creating samples programmatically
 - #2733 Fixed improper permission check for editing analysis remarks
