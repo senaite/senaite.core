@@ -267,6 +267,9 @@
                      name="ServiceConditions-{{../arnum}}.required:records"
                      value="{{required}}"/>
               <input type="hidden"
+                     name="ServiceConditions-{{../arnum}}.report:records"
+                     value="{{report}}"/>
+              <input type="hidden"
                      name="ServiceConditions-{{../arnum}}.choices:records"
                      value="{{choices}}"/>
               <input type="hidden"
