@@ -145,18 +145,18 @@
 
           <!-- Form Controls -->
           <div>
-            <!-- Cancel -->
-            <input class="btn btn-secondary btn-sm"
-                   type="submit"
-                   name="button_cancel"
-                   i18n:attributes="value"
-                   value="Cancel"/>
             <!-- Continue -->
             <input class="btn btn-danger btn-sm"
                    type="submit"
                    name="button_continue"
                    i18n:attributes="value"
                    value="Reject"/>
+            <!-- Cancel -->
+            <input class="btn btn-secondary btn-sm"
+                   type="submit"
+                   name="button_cancel"
+                   i18n:attributes="value"
+                   value="Cancel"/>
           </div>
         </form>
       </div>
