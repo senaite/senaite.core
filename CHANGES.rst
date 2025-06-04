@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2739 Fix snapshot versioning
 - #2735 Fix API field validation for DX contents
 - #2736 Fix profile services are not applied when creating samples programmatically
 - #2733 Fixed improper permission check for editing analysis remarks
