@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2740 Support for analysis conditions in results reports
 - #2739 Fix snapshot versioning
 - #2737 Fix form values omitted on initial load for UID reference fields in sample add form
 - #2735 Fix API field validation for DX contents
