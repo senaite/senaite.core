@@ -18,9 +18,11 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims.interfaces import IInvalidated
 from plone.app.layout.viewlets import ViewletBase
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.api.dtime import to_localized_time
 
 
 class InvalidatedSampleViewlet(ViewletBase):
@@ -44,6 +46,39 @@ class InvalidatedSampleViewlet(ViewletBase):
         """Returns whether the current sample was invalidated
         """
         return IInvalidated.providedBy(self.sample)
+
+    def get_invalidation_info(self):
+        """Returns the information about the last invalidation transition that
+        took place for the current sample
+        """
+        # get the review history (newest first)
+        history = api.get_review_history(self.sample)
+        for event in history:
+            if event.get("action") != "invalidate":
+                continue
+            dt = event.get("time")
+            actor = event.get("actor")
+            return {
+                "actor": actor,
+                "fullname": self.get_fullname(actor),
+                "date": to_localized_time(dt, long_format=True),
+            }
+
+        return {}
+
+    def get_fullname(self, actor):
+        """Returns the fullname of the user passed-in
+        """
+        user = api.get_user(actor)
+        if not user:
+            return actor
+
+        props = api.get_user_properties(user)
+        fullname = props.get("fullname", actor)
+        contact = api.get_user_contact(user)
+        fullname = contact and contact.getFullname() or fullname
+        return fullname
+
 
     def get_retest(self):
         """Returns the retest of the current sample, if any
