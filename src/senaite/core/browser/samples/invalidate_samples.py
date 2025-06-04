@@ -148,9 +148,7 @@ class InvalidateSamplesView(BrowserView):
         if len(sample_ids) == 1:
             return _(
                 "Sample ${sample_id} has been successfully invalidated.",
-                mapping={
-                    "sample_id": sample_ids[0]
-                }
+                mapping={"sample_id": sample_ids[0]}
             )
 
         if notified:
@@ -164,12 +162,8 @@ class InvalidateSamplesView(BrowserView):
             )
 
         return _(
-            "Samples ${sample_ids} were successfully invalidated, with "
-            "notification emails sent for the following: ${notified_ids}.",
-            mapping={
-                "sample_ids": ", ".join(sample_ids),
-                "notified_ids": ", ".join(notified),
-            }
+            "Samples ${sample_ids} were successfully invalidated.",
+            mapping={"sample_ids": ", ".join(sample_ids),}
         )
 
     def get_samples(self):
