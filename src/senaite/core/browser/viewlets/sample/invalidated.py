@@ -58,10 +58,12 @@ class InvalidatedSampleViewlet(ViewletBase):
                 continue
             dt = event.get("time")
             actor = event.get("actor")
+            comments = event.get("comments", "")
             return {
                 "actor": actor,
                 "fullname": self.get_fullname(actor),
                 "date": to_localized_time(dt, long_format=True),
+                "comment": api.safe_unicode(comments),
             }
 
         return {}

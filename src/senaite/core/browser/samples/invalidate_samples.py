@@ -21,6 +21,7 @@
 from collections import OrderedDict
 from string import Template
 
+from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.PlonePAS.plugins.ufactory import PloneUser
@@ -31,7 +32,6 @@ from bika.lims.api.mail import compose_email
 from bika.lims.api.mail import is_valid_email_address
 from bika.lims.interfaces import IContact
 from bika.lims.utils import get_link_for
-from bika.lims.workflow import doActionFor as do_action_for
 from senaite.core.api import dtime
 from senaite.core.api import workflow as wapi
 from senaite.core.catalog import SAMPLE_CATALOG
@@ -89,14 +89,11 @@ class InvalidateSamplesView(BrowserView):
 
                 # invalidate
                 sample = api.get_object_by_uid(uid)
-                sample.setInvalidationReason(reason)
-                success, msg = do_action_for(sample, "invalidate")
-                if not success:
+                if not self.invalidate(sample, comment=reason):
                     message = _(
                         "Cannot invalidate ${sample_id}: ${error}",
                         mapping={
                             "sample_id": api.get_id(sample),
-                            "error": api.safe_unicode(msg)
                         })
                     self.add_status_message(message, level="warning")
                     continue
@@ -246,6 +243,17 @@ class InvalidateSamplesView(BrowserView):
 
         return None
 
+    def invalidate(self, sample, comment=""):
+        """Invalidates the sample and stores a comment in action as the reason
+        of invalidation
+        """
+        wf = api.get_tool("portal_workflow")
+        try:
+            wf.doActionFor(sample, "invalidate", comment=comment)
+            return True
+        except WorkflowException:
+            return False
+
     def send_invalidation_email(self, sample):
         """Sends an email about the invalidation to the contacts of the sample
         and if succeeds, returns back the email's "To" mime header. Returns
@@ -285,6 +293,7 @@ class InvalidateSamplesView(BrowserView):
         retest = sample.getRetest()
         lab_email = setup.laboratory.getEmailAddress()
         lab_address = setup.laboratory.getPrintAddress()
+        reason = self.get_invalidation_reason(sample) or ""
         body = Template(setup.getEmailBodySampleInvalidation())
         body = body.safe_substitute({
             "lab_address": "<br/>".join(lab_address),
@@ -292,11 +301,21 @@ class InvalidateSamplesView(BrowserView):
             "sample_link": get_link_for(sample, csrf=False),
             "retest_id": api.get_id(retest),
             "retest_link": get_link_for(retest, csrf=False),
-            "reason": sample.getInvalidationReason(),
+            "reason": self.get_invalidation_reason(sample),
         })
 
         return compose_email(from_addr=lab_email, to_addr=recipients,
                              subj=subject, body=body, html=True)
+
+    def get_invalidation_reason(self, sample):
+        """Returns the reason of the invalidation, if any. Returns empty string
+        otherwise
+        """
+        history = api.get_review_history(sample)
+        for event in history:
+            if event.get("action") == "invalidate":
+                return event.get("comments", "")
+        return ""
 
     def redirect(self, redirect_url=None, message=None, level="info"):
         """Redirect with a message
