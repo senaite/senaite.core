@@ -18,6 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import json
 import collections
 import six
 
@@ -93,6 +94,11 @@ class AuditLogView(ListingView):
                 "title": _("Workflow State"), "sortable": False}),
             ("diff", {
                 "title": _("Changes"), "sortable": False}),
+            ("snapshot", {
+                "title": _("Snapshot"),
+                "sortable": False,
+                "toggle": False,
+            }),
         ))
 
         self.review_states = [
@@ -204,8 +210,14 @@ class AuditLogView(ListingView):
             # version = get_snapshot_version(self.context, snapshot)
             version = self.total - num - self.limit_from - 1
 
+            # we use the version as the UID to make the items distinct
+            item["uid"] = version
+
             # Version
             item["version"] = version
+
+            snapshot_data = json.dumps(snapshot, indent=2, sort_keys=True)
+            item["snapshot"] = api.text_to_html(snapshot_data, wrap="pre")
 
             # get the metadata of the diff
             metadata = get_snapshot_metadata(snapshot)
