@@ -205,7 +205,8 @@ class AuditLogView(ListingView):
             # the same version!
             #
             # With this PR we added a timestamp to the metadata of the snapshot
-            # to make sure they can be distinguished.
+            # to make sure they can be distinguished:
+            # https://github.com/senaite/senaite.core/pull/2739
             #
             # version = get_snapshot_version(self.context, snapshot)
             version = self.total - self.limit_from - num - 1
