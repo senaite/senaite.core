@@ -224,7 +224,9 @@ class ISetupSchema(model.Schema):
         description=_(
             u"description_senaitesetup_invalidation_reason_required",
             default=u"Specify whether providing a reason is mandatory when "
-                    u"invalidating a sample."
+                    u"invalidating a sample. If enabled, the '$reason' "
+                    u"placeholder in the sample invalidation notification "
+                    u"email body will be replaced with the entered reason."
         ),
         default=True,
     )

@@ -776,7 +776,9 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_(
                 "description_bikasetup_invalidation_reason_required",
                 default="Specify whether providing a reason is mandatory when "
-                        "invalidating a sample."
+                        "invalidating a sample. If enabled, the '$reason' "
+                        "placeholder in the sample invalidation notification "
+                        "email body will be replaced with the entered reason."
             ),
         ),
     ),
