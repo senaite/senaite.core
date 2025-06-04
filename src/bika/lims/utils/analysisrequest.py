@@ -329,8 +329,9 @@ def get_available_service_uids(client=None):
     query = {
         "portal_type": "AnalysisService",
         "is_active": True,
-        "category_uid": list(map(lambda c: c.UID, categories)),
     }
+    if categories:
+        query["category_uid"] = list(map(lambda c: c.UID, categories))
     return list(map(lambda s: s.UID, setup_catalog(query)))
 
 
@@ -344,6 +345,8 @@ def get_categories(for_client=None):
         "sort_on": "sortable_title",
     }
     categories = setup_catalog(query)
+    if not categories:
+        return []
     if not for_client:
         return categories
     client = api.get_object(for_client, None)
