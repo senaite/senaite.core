@@ -592,23 +592,6 @@ schema = BikaFolderSchema.copy() + Schema((
             ),
         ),
     ),
-    # NOTE: This is a Proxy Field which delegates to the SENAITE Registry!
-    BooleanField(
-        "InvalidationReasonRequired",
-        schemata="Sampling",
-        default=True,
-        widget=BooleanWidget(
-            label=_(
-                "label_bikasetup_invalidation_reason_required",
-                default="Invalidation reason required"
-            ),
-            description=_(
-                "description_bikasetup_invalidation_reason_required",
-                default="Specify whether providing a reason is mandatory when "
-                        "invalidating a sample."
-            ),
-        ),
-    ),
     BooleanField(
         "AutoreceiveSamples",
         schemata="Sampling",
@@ -778,6 +761,23 @@ schema = BikaFolderSchema.copy() + Schema((
             output_mime_type='text/x-html',
             allow_file_upload=False,
             rows=15,
+        ),
+    ),
+    # NOTE: This is a Proxy Field which delegates to the SENAITE Registry!
+    BooleanField(
+        "InvalidationReasonRequired",
+        schemata="Notifications",
+        default=True,
+        widget=BooleanWidget(
+            label=_(
+                "label_bikasetup_invalidation_reason_required",
+                default="Invalidation reason required"
+            ),
+            description=_(
+                "description_bikasetup_invalidation_reason_required",
+                default="Specify whether providing a reason is mandatory when "
+                        "invalidating a sample."
+            ),
         ),
     ),
     BooleanField(
