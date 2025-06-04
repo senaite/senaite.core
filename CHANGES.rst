@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2738 Fix the behavior of the 'Save' button when errors occur during submission
 - #2735 Fix API field validation for DX contents
 - #2736 Fix profile services are not applied when creating samples programmatically
 - #2733 Fixed improper permission check for editing analysis remarks
