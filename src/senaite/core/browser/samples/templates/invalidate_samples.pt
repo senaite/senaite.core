@@ -154,18 +154,18 @@
 
           <!-- Form Controls -->
           <div>
+            <!-- Continue -->
+            <input class="btn btn-danger btn-sm"
+                   type="submit"
+                   name="button_invalidate"
+                   i18n:attributes="value"
+                   value="Invalidate"/>
             <!-- Cancel -->
             <input class="btn btn-secondary btn-sm"
                    type="submit"
                    name="button_cancel"
                    i18n:attributes="value"
                    value="Cancel"/>
-            <!-- Continue -->
-            <input class="btn btn-primary btn-sm"
-                   type="submit"
-                   name="button_invalidate"
-                   i18n:attributes="value"
-                   value="Invalidate"/>
           </div>
         </form>
       </div>
