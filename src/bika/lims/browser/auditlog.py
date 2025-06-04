@@ -190,10 +190,20 @@ class AuditLogView(ListingView):
         # slice a batch
         batch = snapshots[self.limit_from:self.limit_from+self.pagesize]
 
-        for snapshot in batch:
+        for num, snapshot in enumerate(batch):
             item = self.make_empty_item(**snapshot)
+
             # get the version of the snapshot
-            version = get_snapshot_version(self.context, snapshot)
+            #
+            # NOTE: We need to calculate the version based on the known index,
+            # because at this point we have similar snapshots that would return
+            # the same version!
+            #
+            # With this PR we added a timestamp to the metadata of the snapshot
+            # to make sure they can be distinguished.
+            #
+            # version = get_snapshot_version(self.context, snapshot)
+            version = self.total - num - self.limit_from - 1
 
             # Version
             item["version"] = version

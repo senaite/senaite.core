@@ -259,6 +259,16 @@ The metadata holds the information about the performing user etc.:
    [u'Authenticated', u'LabManager']
 
 
+Get the creation date of a snapshot
+...................................
+
+Each snapshot contains a creation timestamp in the metadata:
+
+   >>> created = get_snapshot_created(last_snap)
+   >>> created
+   DateTime(...)
+
+
 Take a new Snapshot
 ...................
 
