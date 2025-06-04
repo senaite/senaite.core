@@ -279,8 +279,8 @@ def to_service_uids(services=None, values=None):
     # Exclude service uids if not available in categories for Client
     client = values.get("Client")
     available_uids = get_available_service_uids(client)
-    if available_uids:
-        uids = [uid for uid in uids if uid in available_uids]
+    # if available_uids:
+    #    uids = [uid for uid in uids if uid in available_uids]
 
     # Get the service uids without duplicates, but preserving the order
     return list(OrderedDict.fromkeys(uids).keys())
