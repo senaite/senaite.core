@@ -277,9 +277,10 @@ def to_service_uids(services=None, values=None):
         uids.extend(profile.getServiceUIDs())
 
     # Exclude service uids if not available in categories for Client
-    # client = values.get("Client")
-    # available_uids = get_available_service_uids(client)
-    # uids = [uid for uid in uids if uid in available_uids]
+    client = values.get("Client")
+    available_uids = get_available_service_uids(client)
+    if available_uids:
+        uids = [uid for uid in uids if uid in available_uids]
 
     # Get the service uids without duplicates, but preserving the order
     return list(OrderedDict.fromkeys(uids).keys())
@@ -324,15 +325,14 @@ def to_service_uid(uid_brain_obj_str):
 def get_available_service_uids(client=None):
     """Getting services by category for client or all available
     """
-    categories = get_categories(client)
-    setup_catalog = api.get_tool(SETUP_CATALOG)
     query = {
         "portal_type": "AnalysisService",
         "is_active": True,
     }
+    categories = get_categories(client)
     if categories:
         query["category_uid"] = list(map(lambda c: c.UID, categories))
-    return list(map(lambda s: s.UID, setup_catalog(query)))
+    return list(map(lambda s: s.UID, api.search(query, SETUP_CATALOG)))
 
 
 def get_categories(for_client=None):
