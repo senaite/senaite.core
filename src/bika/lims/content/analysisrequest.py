@@ -1528,8 +1528,8 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
             # create a mapping of service UID -> list of analysis review states
             assigned_services = defaultdict(list)
-            for analysis in self.getAnalyses(full_objects=True):
-                service_uid = analysis.getRawAnalysisService()
+            for analysis in self.getAnalyses():
+                service_uid = analysis.getServiceUID
                 review_status = api.get_review_status(analysis)
                 assigned_services[service_uid].append(review_status)
 
