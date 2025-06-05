@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2734 Fixed Client restricted categories in the Sample add view form
+- #2740 Support for analysis conditions in results reports
 - #2738 Fix the behavior of the 'Save' button when errors occur during submission
 - #2739 Fix snapshot versioning
 - #2737 Fix form values omitted on initial load for UID reference fields in sample add form
