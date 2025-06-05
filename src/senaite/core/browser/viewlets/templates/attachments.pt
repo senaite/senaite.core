@@ -130,15 +130,18 @@
 
                 <td class="attachment-render-in-report text-center"
                     tal:define="render_in_report python:attachment.get('render_in_report', False)">
-                  <input type="checkbox"
-                         tal:attributes="name string:attachments.RenderInReport:records:boolean;
-                                         checked python:render_in_report;"/>
-                  <input type="hidden"
-                         tal:attributes="name string:attachments.RenderInReport:records:boolean:default;
-                                         value python:False;"/>
+                  <!-- Render in Report -->
+                  <tal:block tal:condition="can_edit">
+                    <input type="checkbox"
+                          tal:attributes="name string:attachments.RenderInReport:records:boolean;
+                                          checked python:render_in_report;"/>
+                    <input type="hidden"
+                          tal:attributes="name string:attachments.RenderInReport:records:boolean:default;
+                                          value python:False;"/>
+                  </tal:block>
                   <span i18n:translate=""
                         tal:condition="not:can_edit"
-                        tal:content="python:'Yes' if attachment.get('can_edit') else 'No'"/>
+                        tal:content="python:'Yes' if attachment.get('render_in_report') else 'No'"/>
                 </td>
 
                 <td class="attachment-delete" tal:condition="can_delete">
