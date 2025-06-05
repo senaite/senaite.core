@@ -217,6 +217,20 @@ class ISetupSchema(model.Schema):
         default=False,
     )
 
+    invalidation_reason_required = schema.Bool(
+        title=_(
+            u"title_senaitesetup_invalidation_reason_required",
+            default=u"Invalidation reason required"),
+        description=_(
+            u"description_senaitesetup_invalidation_reason_required",
+            default=u"Specify whether providing a reason is mandatory when "
+                    u"invalidating a sample. If enabled, the '$reason' "
+                    u"placeholder in the sample invalidation notification "
+                    u"email body will be replaced with the entered reason."
+        ),
+        default=True,
+    )
+
     ###
     # Fieldsets
     ###
@@ -226,6 +240,7 @@ class ISetupSchema(model.Schema):
         fields=[
             "max_number_of_samples_add",
             "date_sampled_required",
+            "invalidation_reason_required",
         ]
     )
     model.fieldset(
@@ -466,4 +481,20 @@ class Setup(Container):
         """Show/hide the laboratory name in the login page
         """
         mutator = self.mutator("show_lab_name_in_login")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getInvalidationReasonRequired(self):
+        """Returns whether the introduction of a reason is required when
+        invalidating a sample
+        """
+        accessor = self.accessor("invalidation_reason_required")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setInvalidationReasonRequired(self, value):
+        """Set whether the introduction of a reason is required when
+        invalidating a sample
+        """
+        mutator = self.mutator("invalidation_reason_required")
         return mutator(self, value)

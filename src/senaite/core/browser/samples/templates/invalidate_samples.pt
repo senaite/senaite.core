@@ -15,12 +15,17 @@
     <!-- Title -->
     <metal:title fill-slot="content-title">
       <h2 i18n:translate="" class="d-inline align-middle">
-        Reject samples
+        Sample Invalidation
       </h2>
     </metal:title>
 
     <!-- Description -->
     <metal:description fill-slot="content-description">
+      Use this form to invalidate one or more samples. Invalidating a sample
+      will mark it as no longer valid and may impact associated records or
+      reports. Please ensure that all required fields are completed and
+      double-check the details before proceeding. If you do not wish to
+      invalidate the sample(s), click 'Cancel' to return to the previous page.
     </metal:description>
 
     <!-- Content -->
@@ -33,12 +38,12 @@
             &larr; Go back</a>
       </div>
 
-      <div id="reject-samples-view"
-           tal:define="portal context/@@plone_portal_state/portal;">
+      <div id="invalidate-samples-view"
+           tal:define="reason_required view/is_reason_required">
 
-        <form class="form"
-              id="reject_samples_form"
-              name="reject_samples_form"
+        <form class="form senaite-form"
+              id="invalidate_samples_form"
+              name="invalidate_samples_form"
               method="POST">
 
           <!-- Hidden Fields -->
@@ -51,7 +56,8 @@
             <input type="hidden" name="uids:list"
                    tal:attributes="value sample/uid"/>
 
-            <div class="card mb-3">
+            <div class="card mb-3"
+                 tal:define="num repeat/sample/number">
 
               <div class="card-header">
                 <!-- Client -->
@@ -73,56 +79,53 @@
                 </div>
               </div>
 
-              <div class="card-body"
-                   tal:define="reasons python: view.get_rejection_reasons()">
+              <div class="card-body">
 
                 <input type="hidden" name="samples.uid:records"
                        tal:attributes="value sample/uid"/>
 
-                <!-- Pre-defined rejection reasons -->
-                <div class="form-group field">
-                  <label class="font-weight-bold" i18n:translate="">
-                    Rejection reasons
+                <!-- Invalidation reason -->
+                <div class="form-group has-validation">
+                  <label class="font-weight-bold formQuestion mb-2">
+                    <span i18n:translate="">Invalidation reason</span>
+                    <span class="fieldRequired"
+                          tal:condition="reason_required"
+                          i18n:attributes="title title_required;"
+                          title="Required">&nbsp;</span>
+                    <span class="formHelp discreet help-block-small"
+                          i18n:translate="">
+                    Please provide a comment explaining the reason for
+                    invalidating the sample. If the email notification option
+                    is selected, the sample contact will be informed, and this
+                    comment will be included in the email content.
+                    </span>
                   </label>
-                  <div tal:condition="reasons" tal:repeat="reason reasons">
-                    <input type="checkbox"
-                           tal:attributes="name string:samples.reasons:records:list;
-                                           value reason"/>
-                    <span tal:content="reason"></span>
-                  </div>
-                  <div tal:condition="python: not reasons" i18n:translate="">
-                    There are no pre-defined conditions set
-                  </div>
-                </div>
 
-                <!-- Other rejection reasons -->
-                <div class="form-group">
-                  <label class="font-weight-bold"
-                         tal:condition="reasons" i18n:translate="">
-                    Other reasons
-                  </label>
-                  <label class="font-weight-bold"
-                         tal:condition="python: not reasons"
-                         i18n:translate="">
-                    Rejection reasons
-                  </label>
-                  <textarea rows="5" class="form-control"
-                            tal:attributes="name string:samples.other_reasons:records"></textarea>
+                  <tal:required condition="reason_required">
+                    <textarea rows="5" class="form-control"
+                              name="samples.reason:records"
+                              tal:attributes="id string:reason-${num}"
+                              required></textarea>
+                      <div class="invalid-feedback" i18n:translate="">
+                        Please provide the reason for invalidating the sample.
+                      </div>
+                  </tal:required>
+
+                  <tal:non_required condition="not:reason_required">
+                    <textarea rows="5" class="form-control"
+                              name="samples.reason:records"
+                              tal:attributes="id string:reason-${num}"></textarea>
+                  </tal:non_required>
+
                 </div>
 
                 <!-- Send email notification -->
                 <div class="form-group field"
                   tal:define="recipients sample/recipients">
-                  <input type="checkbox"
+                  <input type="checkbox" checked
                          name="samples.notify:records"
                          id="input-email-notification"
-                         tal:condition="recipients"
-                         tal:attributes="checked python:view.is_notification_enabled;"/>
-                  <input type="checkbox"
-                         name="samples.notify:records"
-                         id="input-email-notification"
-                         tal:condition="not:recipients"
-                         disabled="disabled"/>
+                         tal:condition="recipients"/>
                   <label class="font-weight-bold" for="input-email-notification" i18n:translate="">
                     Email notification
                   </label>
@@ -148,9 +151,9 @@
             <!-- Continue -->
             <input class="btn btn-danger btn-sm"
                    type="submit"
-                   name="button_continue"
+                   name="button_invalidate"
                    i18n:attributes="value"
-                   value="Reject"/>
+                   value="Invalidate"/>
             <!-- Cancel -->
             <input class="btn btn-secondary btn-sm"
                    type="submit"
