@@ -1526,11 +1526,12 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             # get the profiles
             profiles = map(api.get_object_by_uid, uids)
 
-            # create a mapping of service object -> list of analysis review states
+            # create a mapping of service UID -> list of analysis review states
             assigned_services = defaultdict(list)
             for analysis in self.getAnalyses(full_objects=True):
-                service = analysis.getAnalysisService()
-                assigned_services[service].append(api.get_review_status(analysis))
+                service_uid = analysis.getRawAnalysisService()
+                review_status = api.get_review_status(analysis)
+                assigned_services[service_uid].append(review_status)
 
             # create a list of all open services that need to be added
             # NOTE: missing services will be otherwise removed!
