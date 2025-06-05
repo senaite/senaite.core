@@ -341,12 +341,20 @@ def get_available_service_uids(client=None):
         "portal_type": "AnalysisService",
         "is_active": True,
     }
+    setup_catalog = api.get_tool(SETUP_CATALOG)
+    service_brains = setup_catalog(query)
     categories = get_categories(client)
     if categories:
-        # For services without category add None
-        query["category_uid"] = list(map(lambda c: c.UID, categories)) + [None]
-    setup_catalog = api.get_tool(SETUP_CATALOG)
-    return list(map(lambda s: s.UID, setup_catalog(query)))
+        available_uids = []
+        # also if services without category
+        cat_uids = list(map(lambda c: c.UID, categories))
+        for brain in service_brains:
+            cat_uid = brain.getCategoryUID
+            # brain without category returned <BLANKLINE> that cast to bool
+            if not bool(cat_uid) or cat_uid in cat_uids:
+                available_uids.append(brain.UID)
+
+    return list(map(lambda s: s.UID, service_brains))
 
 
 def get_categories(for_client=None):
