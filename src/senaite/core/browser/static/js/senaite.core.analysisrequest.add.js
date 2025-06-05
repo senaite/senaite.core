@@ -725,6 +725,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     me = this;
     // initially hide all service-related icons
     $(".service-lockbtn").hide();
+    $(".service-restricted").hide();
     // hide all holding time related icons and set checks enabled by default
     $(".analysisservice").show();
     $(".service-beyondholdingtime").hide();
@@ -733,6 +734,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     });
     // set all values for one record (a single column in the AR Add form)
     return $.each(records, function(arnum, record) {
+      var all_services;
       // Apply the values generically
       $.each(record, function(name, metadata) {
         if (!name.endsWith("_metadata")) {
@@ -788,7 +790,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
         return false;
       });
       // disable (and uncheck) services that are beyond sample holding time
-      return $.each(record.beyond_holding_time, function(index, uid) {
+      $.each(record.beyond_holding_time, function(index, uid) {
         var beyond_holding_time, parent, service_cb;
         // display the alert
         beyond_holding_time = $(`#${uid}-${arnum}-beyondholdingtime`);
@@ -801,6 +803,23 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
         // hide checkbox container
         parent = service_cb.parent("div.analysisservice");
         return parent.hide();
+      });
+      // disable(and uncheck) services that are not includes allowed categories
+      all_services = $(`input[name='Analyses-${arnum}:list']`);
+      return all_services.each(function(index_service, service) {
+        var restricted, service_element, uid_service;
+        service_element = $(service);
+        uid_service = service_element.val();
+        restricted = $(`#${uid_service}-${arnum}-restricted`);
+        if (!record.available_services.includes(uid_service)) {
+          service_element.prop({
+            "checked": false
+          });
+          service_element.prop({
+            "disabled": true
+          });
+          return restricted.show();
+        }
       });
     });
   }
