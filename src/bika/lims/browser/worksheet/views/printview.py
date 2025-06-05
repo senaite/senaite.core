@@ -482,7 +482,6 @@ class PrintView(BrowserView):
                         sample.getDateSampled(), long_format=True),
                     'date_received': self.ulocalized_time(
                         sample.getDateReceived(), long_format=0),
-                    'client_sampleid': sample.getClientSampleID(),
                     }
 
             if sample.portal_type == "ReferenceSample":
@@ -491,6 +490,7 @@ class PrintView(BrowserView):
             else:
                 data['sample_type'] = self._sample_type(sample)
                 data['sample_point'] = self._sample_point(sample)
+                data['client_sampleid'] = sample.getClientSampleID()
         return data
 
     def _sample_type(self, sample=None):
