@@ -125,6 +125,7 @@
     display: none;
 }
 .service-restricted {
+    cursor: default;
     display: none;
 }
 .service-info-table td.service-info-key {

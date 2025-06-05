@@ -468,10 +468,12 @@ class window.AnalysisRequestAdd
         service_element = $(service)
         uid_service = service_element.val()
         restricted = $("##{uid_service}-#{arnum}-restricted")
+        lock_btn = $("##{uid_service}-#{arnum}-lockbtn")
         if not record.available_services.includes(uid_service)
           service_element.prop "checked": no
           service_element.prop "disabled": yes
           restricted.show()
+          lock_btn.hide()
 
 
   ###*

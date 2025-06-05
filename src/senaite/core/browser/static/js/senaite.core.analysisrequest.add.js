@@ -807,10 +807,11 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
       // disable(and uncheck) services that are not includes allowed categories
       all_services = $(`input[name='Analyses-${arnum}:list']`);
       return all_services.each(function(index_service, service) {
-        var restricted, service_element, uid_service;
+        var lock_btn, restricted, service_element, uid_service;
         service_element = $(service);
         uid_service = service_element.val();
         restricted = $(`#${uid_service}-${arnum}-restricted`);
+        lock_btn = $(`#${uid_service}-${arnum}-lockbtn`);
         if (!record.available_services.includes(uid_service)) {
           service_element.prop({
             "checked": false
@@ -818,7 +819,8 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
           service_element.prop({
             "disabled": true
           });
-          return restricted.show();
+          restricted.show();
+          return lock_btn.hide();
         }
       });
     });

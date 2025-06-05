@@ -269,19 +269,27 @@ def to_service_uids(services=None, values=None):
     # Convert them to a list of service uids
     uids = filter(None, map(to_service_uid, uids))
 
-    # Extract and append the service UIDs from the profiles
+    client = values.get("Client")
+    available_uids = get_available_service_uids(client)
+    available_set = set(available_uids)
+    profiles = []
+
+    # Extract and append the service UIDs from the profiles if contained
+    # into available services by category
     for profile in to_list(values.get("Profiles", [])):
         profile = api.get_object(profile, None)
         if not profile:
             continue
-        uids.extend(profile.getServiceUIDs())
+        from_profile = set(profile.getServiceUIDs())
+        intersection = list(from_profile & available_set)
+        if intersection:
+            profiles.extend(profile)
+            uids.extend(intersection)
+
+    values["Profiles"] = profiles
 
     # Exclude service uids if not available in categories for Client
-    client = values.get("Client")
-    available_uids = get_available_service_uids(client)
-    logger.info("Available service uids: {}".format(available_uids))
-    # if available_uids:
-    #    uids = [uid for uid in uids if uid in available_uids]
+    uids = [uid for uid in uids if uid in available_uids]
 
     # Get the service uids without duplicates, but preserving the order
     return list(OrderedDict.fromkeys(uids).keys())
@@ -325,6 +333,9 @@ def to_service_uid(uid_brain_obj_str):
 
 def get_available_service_uids(client=None):
     """Getting services by category for client or all available
+
+    :param client: A Client object, uid or brain
+    :returns: a list of Analyses Services UIDs
     """
     query = {
         "portal_type": "AnalysisService",
@@ -332,13 +343,17 @@ def get_available_service_uids(client=None):
     }
     categories = get_categories(client)
     if categories:
-        query["category_uid"] = list(map(lambda c: c.UID, categories))
-    uids = list(map(lambda s: s.UID, api.search(query, SETUP_CATALOG)))
-    return filter(None, uids)
+        # For services without category add None
+        query["category_uid"] = list(map(lambda c: c.UID, categories)) + [None]
+    setup_catalog = api.get_tool(SETUP_CATALOG)
+    return list(map(lambda s: s.UID, setup_catalog(query)))
 
 
 def get_categories(for_client=None):
     """Return service categories in the right order
+
+    :param for_client: A Client object, uid or brain
+    :returns: a list of brains for Categories
     """
     setup_catalog = api.get_tool(SETUP_CATALOG)
     query = {
