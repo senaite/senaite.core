@@ -1539,10 +1539,10 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
                 filter(lambda rs: rs not in DETACHED_STATES, v))]
 
             for profile in profiles:
-                for service_uid in profile.getRawServices():
+                for service_uid in profile.getRawServiceUIDs():
                     # skip previously assigned services, as they are already
                     # added above
-                    if service_uid in assigned_services:
+                    if service_uid in assigned_services.keys():
                         continue
                     # add any new service
                     services_to_add.append(service_uid)
