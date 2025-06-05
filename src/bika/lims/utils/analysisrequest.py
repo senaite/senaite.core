@@ -346,13 +346,14 @@ def get_available_service_uids(client=None):
     categories = get_categories(client)
     if categories:
         available_uids = []
-        # also if services without category
         cat_uids = list(map(lambda c: c.UID, categories))
         for brain in service_brains:
             cat_uid = brain.getCategoryUID
+            # also if services without category
             # brain without category returned <BLANKLINE> that cast to bool
             if not bool(cat_uid) or cat_uid in cat_uids:
                 available_uids.append(brain.UID)
+        return available_uids
 
     return list(map(lambda s: s.UID, service_brains))
 
