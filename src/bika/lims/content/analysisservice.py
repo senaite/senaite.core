@@ -210,6 +210,7 @@ Conditions = RecordsField(
         "choices",
         "default",
         "required",
+        "report",
     ),
     required_subfields=(
         "title",
@@ -222,6 +223,7 @@ Conditions = RecordsField(
         "choices": _("Choices"),
         "default": _("Default value"),
         "required": _("Required"),
+        "report": _("Report"),
     },
     subfield_descriptions={
         "choices": _("Please use the following format for select options: "
@@ -234,6 +236,7 @@ Conditions = RecordsField(
         "default": "string",
         "choices": "string",
         "required": "boolean",
+        "report": "boolean",
     },
     subfield_sizes={
         "title": 20,
