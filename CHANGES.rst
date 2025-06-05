@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2729 Fix rejected analyses reassigned from profile
+- #2738 Fix the behavior of the 'Save' button when errors occur during submission
 - #2739 Fix snapshot versioning
 - #2737 Fix form values omitted on initial load for UID reference fields in sample add form
 - #2735 Fix API field validation for DX contents
