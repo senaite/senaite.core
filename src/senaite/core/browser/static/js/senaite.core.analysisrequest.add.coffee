@@ -1,5 +1,5 @@
 ### Please use this command to compile this file into the parent `js` directory:
-    coffee --no-header -w -o -b -c senaite.core.analysisrequest.add.coffee
+    coffee --no-header -w -b -c senaite.core.analysisrequest.add.coffee
 ###
 
 
@@ -187,6 +187,7 @@ class window.AnalysisRequestAdd
       # Always notify Ajax end
       $(me).trigger "ajax:end"
     .fail (request, status, error) ->
+      me.form_submission_flag = no
       msg = _t("Sorry, an error occured: #{status}")
       window.senaite.core.globals.portalMessage msg
       window.scroll 0, 0
