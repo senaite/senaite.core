@@ -539,6 +539,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
                 "choices": "",
                 "default": "",
                 "required": "",
+                "report": "",
                 "value": "",
             }
             condition = dict(condition)
