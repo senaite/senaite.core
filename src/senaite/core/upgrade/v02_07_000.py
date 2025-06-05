@@ -18,10 +18,15 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+
+from bika.lims import api
+from bika.lims.interfaces import IInvalidated
 from senaite.core import logger
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
+from zope.interface import alsoProvides
 
 version = "2.7.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -64,3 +69,26 @@ def import_registry(tool):
     setup = portal.portal_setup
 
     setup.runImportStepFromProfile(profile, "plone.app.registry")
+
+
+def mark_invalidated_samples(tool):
+    """Mark invalidated samples with IInvalidated interface
+    """
+    logger.info("Mark invalidated samples as IInvalidated ...")
+    query = {"portal_type": "AnalysisRequest", "review_state": "invalid"}
+    brains = api.search(query, SAMPLE_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Flagging invalidated samples {0}/{1}"
+                        .format(num, total))
+
+        sample = api.get_object(brain)
+        if IInvalidated.providedBy(sample):
+            continue
+
+        alsoProvides(sample, IInvalidated)
+        sample.reindexObject()
+        sample._p_deactivate()
+
+    logger.info("Mark invalidated samples as IInvalidated [DONE]")

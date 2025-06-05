@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Mark invalidated samples as IInvalidated"
+      description="Mark invalidated samples with IInvalidated interface"
+      source="2702"
+      destination="2703"
+      handler=".v02_07_000.mark_invalidated_samples"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Add registry key for instrument import attachment handling"
       description="Allow to set analysis attachments optional"
       source="2701"

@@ -763,15 +763,23 @@ schema = BikaFolderSchema.copy() + Schema((
             rows=15,
         ),
     ),
+    # NOTE: This is a Proxy Field which delegates to the SENAITE Registry!
     BooleanField(
-        'NotifyOnSampleInvalidation',
+        "InvalidationReasonRequired",
         schemata="Notifications",
         default=True,
         widget=BooleanWidget(
-            label=_("Email notification on Sample invalidation"),
-            description=_("Select this to activate automatic notifications "
-                          "via email to the Client and Lab Managers when a "
-                          "Sample is invalidated.")
+            label=_(
+                "label_bikasetup_invalidation_reason_required",
+                default="Invalidation reason required"
+            ),
+            description=_(
+                "description_bikasetup_invalidation_reason_required",
+                default="Specify whether providing a reason is mandatory when "
+                        "invalidating a sample. If enabled, the '$reason' "
+                        "placeholder in the sample invalidation notification "
+                        "email body will be replaced with the entered reason."
+            ),
         ),
     ),
     TextField(
@@ -779,7 +787,6 @@ schema = BikaFolderSchema.copy() + Schema((
         default_content_type='text/html',
         default_output_type='text/x-html-safe',
         schemata="Notifications",
-        label=_("Email body for Sample Invalidation notifications"),
         default=
             "Some non-conformities have been detected in the results report "
             "published for Sample $sample_link. "
@@ -792,13 +799,23 @@ schema = BikaFolderSchema.copy() + Schema((
             "<br/><br/> "
             "$lab_address",
         widget=RichWidget(
-            label=_("Email body for Sample Invalidation notifications"),
-            description=_("Set the text for the body of the email to be sent, "
-                          ", if option 'Email notification on Sample "
-                          "'invalidation' enabled,  to the Sample's client "
-                          "contact. You can use reserved keywords: $sample_id, "
-                          "$sample_link, $retest_id, $retest_link, "
-                          "$lab_address"),
+            label=_(
+                "label_bikasetup_invalidation_email_body",
+                default="Email body for Sample Invalidation notifications"
+            ),
+            description=_(
+                "description_bikasetup_invalidation_email_body",
+                default=
+                "Define the template for the email body that will be "
+                "automatically sent to primary contacts and laboratory "
+                "managers when a sample is invalidated. The following "
+                "placeholders are supported: "
+                "<code title='The ID of the sample'>$sample_id</code>, "
+                "<code title='The ID of the sample retest'>$retest_id</code>, "
+                "<code title='The link to the retest'>$retest_link</code>, "
+                "<code title='The reason(s) for invalidation'>$reason</code>, "
+                "<code title='The address of the lab'>$lab_address</code>."
+            ),
             default_mime_type='text/x-rst',
             output_mime_type='text/x-html',
             allow_file_upload=False,
@@ -1360,6 +1377,23 @@ class BikaSetup(folder.ATFolder):
         # setup is `None` during initial site content structure installation
         if setup:
             setup.setDateSampledRequired(value)
+
+    def getInvalidationReasonRequired(self):
+        """Get the value form the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getInvalidationReasonRequired()
+        return self.getField("InvalidationReasonRequired").default
+
+    def setInvalidationReasonRequired(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setInvalidationReasonRequired(value)
 
 
 registerType(BikaSetup, PROJECTNAME)
