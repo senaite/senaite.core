@@ -21,6 +21,7 @@
 import base64
 import functools
 import re
+from collections import defaultdict
 from datetime import datetime
 from decimal import Decimal
 
@@ -135,6 +136,7 @@ from zope.interface import noLongerProvides
 IMG_SRC_RX = re.compile(r'<img.*?src="(.*?)"')
 IMG_DATA_SRC_RX = re.compile(r'<img.*?src="(data:image/.*?;base64,)(.*?)"')
 FINAL_STATES = ["published", "retracted", "rejected", "cancelled"]
+DETACHED_STATES = ["retracted", "rejected"]
 
 
 # SCHEMA DEFINITION
@@ -1523,13 +1525,28 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         if value and not api.is_temporary(self):
             # get the profiles
             profiles = map(api.get_object_by_uid, uids)
-            # get the current set of analyses/services
-            analyses = self.getAnalyses(full_objects=True)
-            services = map(lambda an: an.getAnalysisService(), analyses)
-            # determine all the services to add
-            services_to_add = set(services)
+
+            # create a mapping of service UID -> list of analysis review states
+            assigned_services = defaultdict(list)
+            for analysis in self.getAnalyses():
+                service_uid = analysis.getServiceUID
+                review_status = api.get_review_status(analysis)
+                assigned_services[service_uid].append(review_status)
+
+            # create a list of all open services that need to be added
+            # NOTE: missing services will be otherwise removed!
+            services_to_add = [k for k, v in assigned_services.items() if any(
+                filter(lambda rs: rs not in DETACHED_STATES, v))]
+
             for profile in profiles:
-                services_to_add.update(profile.getServices())
+                for service_uid in profile.getRawServiceUIDs():
+                    # skip previously assigned services, as they are already
+                    # added above
+                    if service_uid in assigned_services.keys():
+                        continue
+                    # add any new service
+                    services_to_add.append(service_uid)
+
             # set all analyses
             self.setAnalyses(list(services_to_add))
 

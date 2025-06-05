@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2743 Added client_sampleid to worksheet printview
+- #2729 Fix rejected analyses reassigned from profile
 - #2732 Added a sample invalidation form with support for entering a reason
 - #2740 Support for analysis conditions in results reports
 - #2738 Fix the behavior of the 'Save' button when errors occur during submission
