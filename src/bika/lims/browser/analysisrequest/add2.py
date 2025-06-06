@@ -1249,6 +1249,10 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             available_services = self.get_available_services(metadata)
             metadata.update(available_services)
 
+            # get available categories for client
+            available_categories = self.get_available_categories(metadata)
+            metadata.update(available_categories)
+
             # services conducted beyond the holding time limit
             beyond = self.get_services_beyond_holding_time(record)
             metadata["beyond_holding_time"] = beyond
@@ -1266,6 +1270,21 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         uids = get_available_service_uids(client_uid)
         return {
             "available_services": uids,
+        }
+
+    def get_available_categories(self, metadata):
+        """Getting available categories by client from form
+        """
+        client_metadata = metadata.get("client_metadata", None)
+        client_uid = client_metadata and client_metadata.items()[0][0]
+        categories = []
+        for cat in get_categories(client_uid):
+            categories.append({
+                "uid": cat.UID,
+                "title": cat.Title,
+            })
+        return {
+            "available_categories": categories,
         }
 
     @viewcache.memoize

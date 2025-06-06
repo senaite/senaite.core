@@ -263,6 +263,8 @@ class window.AnalysisRequestAdd
 
     # Analysis lock button clicked
     $("body").on "click", ".service-lockbtn", @on_analysis_lock_button_click
+    # Analysis restricted button clicked
+    $("body").on "click", ".service-restricted", @on_analysis_restricted_button_click
     # Analysis info button clicked
     $("body").on "click", ".service-infobtn", @on_analysis_details_click
     # Copy button clicked
@@ -1559,6 +1561,35 @@ class window.AnalysisRequestAdd
         $(@).dialog "destroy"
 
     dialog = @template_dialog "service-dependant-template", context, buttons
+
+
+  ###*
+   * Event handler when an Analysis Service restricted by category.
+   *
+   * @param event {Object} The event object
+  ###
+  on_analysis_restricted_button_click: (event) =>
+    console.debug "°°° on_analysis_restricted_button_click °°°"
+
+    me = this
+    el = event.currentTarget
+    $el = $(el)
+    uid = $el.attr "uid"
+    arnum = $el.attr "arnum"
+
+    record = me.records_snapshot[arnum]
+    service_title = $("[data-uid='#{uid}'] .service-title").text()
+
+    context = {}
+    context["service_title"] = service_title
+    context["client"] = Object.values(record.client_metadata)[0]
+    context["categories"] = record.available_categories
+
+    buttons =
+      OK: ->
+        $(@).dialog "destroy"
+
+    dialog = @template_dialog "service-not-allowed", context, buttons
 
 
   ###*

@@ -49,6 +49,23 @@
         </div>
       </script>
 
+      <!-- Add Client restricted category popup -->
+      <script id="service-not-allowed" type="text/x-handlebars-template">
+        <div title="Service restricted" i18n:attributes="title">
+          <p i18n:translate="">The '{{service_title}}' cannot be selected, because it is restricted allowed categories.</p>
+          <div class="dialog-dependencies dialog-listing">
+            {{#with client}}
+            <p i18n:translate="">For the '{{title}}' available categories:</p>
+            {{/with}}
+            {{#each categories}}
+            <div class="dialog-dependency">
+              <span>{{title}}</span>
+            </div>
+            {{/each}}
+          </div>
+        </div>
+      </script>
+
       <!-- Dependant services popup -->
       <script id="service-dependant-template" type="text/x-handlebars-template">
         <div title="Service locked" i18n:attributes="title">
@@ -599,7 +616,9 @@
                                             arnum python:arnum;">
 
                           <!-- Service not allowed by category -->
-                          <div tal:attributes="id python:'{}-{}-restricted'.format(service_uid, arnum);
+                          <div tal:attributes="uid python:service_uid;
+                                               arnum python:arnum;
+                                               id python:'{}-{}-restricted'.format(service_uid, arnum);
                                                class python:'service-restricted {}-restricted'.format(service_uid);"
                                 title="Restricted by category for Client"
                                 i18n:attributes="title">

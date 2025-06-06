@@ -304,6 +304,12 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
      */
     this.on_analysis_lock_button_click = this.on_analysis_lock_button_click.bind(this);
     /**
+     * Event handler when an Analysis Service restricted by category.
+     *
+     * @param event {Object} The event object
+     */
+    this.on_analysis_restricted_button_click = this.on_analysis_restricted_button_click.bind(this);
+    /**
      * Event handler when an Analysis Template was selected.
      *
      * @param event {Object} The event object
@@ -625,6 +631,8 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     $("body").on("click", "tr[fieldname=Analyses] input[type='checkbox'].analysisservice-cb", this.on_analysis_checkbox_click);
     // Analysis lock button clicked
     $("body").on("click", ".service-lockbtn", this.on_analysis_lock_button_click);
+    // Analysis restricted button clicked
+    $("body").on("click", ".service-restricted", this.on_analysis_restricted_button_click);
     // Analysis info button clicked
     $("body").on("click", ".service-infobtn", this.on_analysis_details_click);
     // Copy button clicked
@@ -1801,6 +1809,28 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
       }
     };
     return dialog = this.template_dialog("service-dependant-template", context, buttons);
+  }
+
+  on_analysis_restricted_button_click(event) {
+    var $el, arnum, buttons, context, dialog, el, me, record, service_title, uid;
+    console.debug("°°° on_analysis_restricted_button_click °°°");
+    me = this;
+    el = event.currentTarget;
+    $el = $(el);
+    uid = $el.attr("uid");
+    arnum = $el.attr("arnum");
+    record = me.records_snapshot[arnum];
+    service_title = $(`[data-uid='${uid}'] .service-title`).text();
+    context = {};
+    context["service_title"] = service_title;
+    context["client"] = Object.values(record.client_metadata)[0];
+    context["categories"] = record.available_categories;
+    buttons = {
+      OK: function() {
+        return $(this).dialog("destroy");
+      }
+    };
+    return dialog = this.template_dialog("service-not-allowed", context, buttons);
   }
 
   on_analysis_template_selected(event) {

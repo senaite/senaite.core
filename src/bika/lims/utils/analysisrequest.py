@@ -269,26 +269,21 @@ def to_service_uids(services=None, values=None):
     # Convert them to a list of service uids
     uids = filter(None, map(to_service_uid, uids))
 
-    client = values.get("Client")
-    available_uids = get_available_service_uids(client)
-    available_set = set(available_uids)
-    profiles = []
-
     # Extract and append the service UIDs from the profiles if contained
     # into available services by category
     for profile in to_list(values.get("Profiles", [])):
         profile = api.get_object(profile, None)
         if not profile:
             continue
-        from_profile = set(profile.getServiceUIDs())
-        intersection = list(from_profile & available_set)
-        if intersection:
-            profiles.extend(profile)
-            uids.extend(intersection)
+        uids.extend(profile.getServiceUIDs())
 
-    values["Profiles"] = profiles
+    # TODO: add intersection between services from profiles and
+    #  available services for client and remove 'empty' profiles from values,
+    #  but running test is failed
 
     # Exclude service uids if not available in categories for Client
+    client = values.get("Client")
+    available_uids = get_available_service_uids(client)
     uids = [uid for uid in uids if uid in available_uids]
 
     # Get the service uids without duplicates, but preserving the order
