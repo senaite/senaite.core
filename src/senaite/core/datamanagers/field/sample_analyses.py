@@ -118,16 +118,19 @@ class SampleAnalysesFieldDataManager(FieldDataManager):
 
         # Add analyses
         params = dict(prices=prices, hidden=hidden, specs=specs)
-        map(lambda serv: self.add_analysis(self.context, serv, **params), services)
+        map(lambda s: self.add_analysis(self.context, s, **params), services)
 
         # Get all analyses (those from descendants included)
         analyses = self.context.objectValues("Analysis")
         analyses.extend(self.get_analyses_from_descendants(self.context))
 
-        # Bail out those not in services list or submitted
         uids = map(api.get_uid, services)
         to_remove = filter(lambda an: an.getServiceUID() not in uids, analyses)
+        # Retain submitted analyses
         to_remove = filter(lambda an: not ISubmitted.providedBy(an), to_remove)
+        # Retain analyses from detached states
+        to_remove = filter(lambda an: api.get_review_status(an)
+                           not in DETACHED_STATES, to_remove)
 
         # Remove analyses
         map(self.remove_analysis, to_remove)
