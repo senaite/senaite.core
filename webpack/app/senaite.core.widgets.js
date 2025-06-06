@@ -62,34 +62,52 @@ const WIDGETS = [
 /** Initialize all widgets below a certain root element
   * */
 const render_all_widgets = (root_element) => {
+  const allWaits = [];
+
   WIDGETS.forEach((cfg) => {
     const root = root_element instanceof(Node) ? root_element : document;
     const elements = root.querySelectorAll(cfg.selector);
     const renderer = cfg.renderer;
 
     elements.forEach((element) => {
-      if (renderer) {
-        const ref = renderer(element);
-        const widget_id = element.id || element.dataset.id || null;
-        if (widget_id) {
-          // workaround to get the controller instance in ReactJS 19
-          const waitForRef = () => {
-            if (ref.current) {
-              window.senaite.core.widgets[widget_id] = ref.current;
-            } else {
-              requestAnimationFrame(waitForRef);
-            }
-          };
-          waitForRef();
-        } else {
-          console.warn("Element has no ID set! Controller can not be accessed for ", element)
-        }
-      } else {
+      if (!renderer) {
         throw new Error("Widget renderer required");
+      }
+
+      const ref = renderer(element);
+      const widget_id = element.id || element.dataset.id || null;
+
+      // workaround to get the controller instance in ReactJS 19
+      if (widget_id) {
+        // Create a promise for each widget's controller to be available
+        const waitForRef = () =>
+          new Promise((resolve) => {
+            const check = () => {
+              if (ref.current) {
+                window.senaite.core.widgets[widget_id] = ref.current;
+                resolve();
+              } else {
+                requestAnimationFrame(check);
+              }
+            };
+            check();
+          });
+        allWaits.push(waitForRef());
+      } else {
+        console.warn("Element has no ID set! Controller can not be accessed for ", element);
       }
     });
   });
-}
+
+  // Once all widgets are initialized, fire the custom event
+  Promise.all(allWaits).then(() => {
+    const event = new CustomEvent("senaite.core.widgets:loaded", {
+      detail: window.senaite.core.widgets,
+    });
+    console.debug("All widgets loaded, dispatching event:", event);
+    document.dispatchEvent(event);
+  });
+};
 
 // Initialize all widgets when the document is ready
 document.addEventListener("DOMContentLoaded", () => {
@@ -104,5 +122,4 @@ document.addEventListener("DOMContentLoaded", () => {
     // won't be functional
     render_all_widgets(event.detail.row);
   });
-
 });

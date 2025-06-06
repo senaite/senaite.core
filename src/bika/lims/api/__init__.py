@@ -56,6 +56,7 @@ from plone.memoize.volatile import DontCache
 from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.BaseObject import BaseObject
 from Products.Archetypes.event import ObjectInitializedEvent
+from Products.Archetypes.public import StringField
 from Products.Archetypes.utils import mapply
 from Products.CMFCore.interfaces import IFolderish
 from Products.CMFCore.interfaces import ISiteRoot
@@ -120,6 +121,20 @@ UID_RX = re.compile("[a-z0-9]{32}$")
 UID_CATALOG = "uid_catalog"
 PORTAL_CATALOG = "portal_catalog"
 
+# fields that are not validated by the API
+SKIP_VALIDATION_FIELDS = [
+    "allow_discussion",
+    "contributors",
+    "creators",
+    "effective",
+    "exclude_from_nav",
+    "expires",
+    "language",
+    "nextPreviousEnabled",
+    "relatedItems",
+    "rights",
+    "subjects",
+]
 
 class APIError(Exception):
     """Base exception class for bika.lims errors."""
@@ -2092,19 +2107,40 @@ def validate(obj, invariants=True):
     if not is_dexterity_content(obj):
         raise TypeError("%r is not supported" % type(obj))
 
+    def is_string_field(field):
+        """Check if the field is a string field
+        """
+        return isinstance(field, (StringField)) or \
+            getattr(field, "_type", None) in [str]
+
     errors = {}
 
     # iterate through object fields and validate each
     fields = get_fields(obj)
+
     for field_name, field in fields.items():
+        if field_name in SKIP_VALIDATION_FIELDS:
+            continue
+
         value = getattr(obj, field_name, None)
-        value = safe_unicode(value)
+
+        if callable(value):
+            # Handle callable values, e.g. effective, expired etc.
+            value = value()
+        if isinstance(value, six.string_types):
+            value = safe_unicode(value)
+        if is_string_field(field):
+            # provide UTF8 encoded strings for stringfields, e.g. the ID field.
+            value = to_utf8(value)
+
         try:
             field.validate(value)
         except RequiredMissing:
             errors[field_name] = "required field"
         except WrongType:
-            errors[field_name] = "wrong type"
+            # ignore wrong type errors if the field is not required and unset
+            if value is not None:
+                errors[field_name] = "wrong type"
         except Invalid as ex:
             errors[field_name] = translate(ex.message)
 

@@ -21,7 +21,6 @@
 import json
 
 import six
-
 from bika.lims import _
 from bika.lims import api
 from bika.lims import logger
@@ -33,6 +32,7 @@ from DateTime import DateTime
 from persistent.list import PersistentList
 from plone.memoize.ram import cache
 from senaite.app.supermodel import SuperModel
+from senaite.core.api import dtime
 from zope.annotation.interfaces import IAnnotatable
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides
@@ -162,6 +162,23 @@ def get_last_snapshot(obj):
     return get_snapshot_by_version(obj, version)
 
 
+def get_snapshot_created(snapshot):
+    """Returns the snapshot creation date
+
+    :param snapshot: Snapshot dictionary
+    :returns: DateTime object of the snapshot creation date
+    """
+    metadata = get_snapshot_metadata(snapshot)
+    created = metadata.get("snapshot_created")
+
+    # prefer the timestamp if existing
+    timestamp = metadata.get("timestamp")
+    if timestamp:
+        created = dtime.from_timestamp(timestamp)
+
+    return dtime.to_DT(created)
+
+
 def get_snapshot_metadata(snapshot):
     """Returns the snapshot metadata
 
@@ -261,6 +278,7 @@ def get_object_metadata(obj, **kw):
     :param obj: Content object
     :returns: Dictionary of extracted object metadata
     """
+    created = DateTime()
 
     # inject metadata of volatile data
     metadata = {
@@ -269,7 +287,8 @@ def get_object_metadata(obj, **kw):
         "action": "",
         "review_state": api.get_review_status(obj),
         "active": api.is_active(obj),
-        "snapshot_created": DateTime().ISO(),
+        "snapshot_created": created.ISO(),
+        "timestamp": dtime.to_timestamp(created),
         "modified": api.get_modification_date(obj).ISO(),
         "remote_address": "",
         "user_agent": "",

@@ -1,21 +1,26 @@
-<div tal:omit-tag=""
-     tal:define="invalid python:view.context.getInvalidated()"
-     tal:condition="python:invalid"
+<div tal:define="invalidated python:view.context.getInvalidated()"
+     tal:condition="python: invalidated"
      i18n:domain="senaite.core">
 
   <div class="visualClear"></div>
 
   <div id="portal-alert">
+
     <div class="portlet-alert-item alert alert-info alert-dismissible">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <button type="button" class="close" data-dismiss="alert"
+              aria-label="Close" i18n:attributes="aria-label">
         <span aria-hidden="true">&times;</span>
       </button>
       <strong i18n:translate="">Info</strong>
-      <p class="title">
-        <span i18n:translate="">This Sample has been generated automatically due to the retraction of the Sample </span>
-        <a tal:attributes="href python:invalid.absolute_url()"
-           tal:content="python:invalid.getId()"></a>
+
+      <p class="title" i18n:translate="">
+        This sample is a retest, automatically generated following the
+        invalidation of sample
+        <a i18n:name="invalidated_id"
+           tal:attributes="href python: invalidated.absolute_url()"
+           tal:content="python: invalidated.getId()"></a>.
       </p>
+
     </div>
   </div>
 </div>

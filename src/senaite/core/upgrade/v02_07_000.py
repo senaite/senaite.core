@@ -18,23 +18,31 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+
 from bika.lims import api
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
+from bika.lims.interfaces import IInvalidated
 from bika.lims.utils import tmpID
 from persistent.list import PersistentList
-from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
+from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
+from senaite.core.schema.uidreferencefield import get_backrefs
 from senaite.core.schema.uidreferencefield import get_backref_storage
-from senaite.core.setuphandlers import add_senaite_setup_items
 from senaite.core.upgrade import upgradestep
-from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import uncatalog_object
+from senaite.core.upgrade.utils import UpgradeUtils
 from zope.component import getMultiAdapter
+from zope.interface import alsoProvides
+from zope.interface import noLongerProvides
+from senaite.core.upgrade.v02_06_000 import remove_at_portal_types
+from senaite.core.upgrade.v02_06_000 import get_setup_folder
+
 
 version = "2.7.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -84,42 +92,27 @@ def import_registry(tool):
     setup.runImportStepFromProfile(profile, "plone.app.registry")
 
 
-def remove_at_portal_types(tool):
-    """Remove obsolete AT portal type information
+def mark_invalidated_samples(tool):
+    """Mark invalidated samples with IInvalidated interface
     """
-    logger.info("Remove AT types from portal_types tool ...")
-    pt = api.get_tool("portal_types")
-    for type_name in REMOVE_AT_TYPES:
-        fti = pt.getTypeInfo(type_name)
-        # keep DX FTIs
-        if isinstance(fti, DexterityFTI):
-            logger.info("Type '{}' is already a DX FTI".format(fti))
+    logger.info("Mark invalidated samples as IInvalidated ...")
+    query = {"portal_type": "AnalysisRequest", "review_state": "invalid"}
+    brains = api.search(query, SAMPLE_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Flagging invalidated samples {0}/{1}"
+                        .format(num, total))
+
+        sample = api.get_object(brain)
+        if IInvalidated.providedBy(sample):
             continue
-        elif not fti:
-            # Removed already
-            continue
-        pt.manage_delObjects(fti.getId())
 
-    # remove from AT's factory tool as well. This is necessary for the AT's
-    # factory_tool to not shortcut `createObject?type_name=` on object creation
-    ft = api.get_tool("portal_factory")
-    at_types = ft.getFactoryTypes().keys()
-    at_types = filter(lambda name: name not in REMOVE_AT_TYPES, at_types)
-    ft.manage_setPortalFactoryTypes(listOfTypeIds=at_types)
+        alsoProvides(sample, IInvalidated)
+        sample.reindexObject()
+        sample._p_deactivate()
 
-    logger.info("Remove AT types from portal_types tool ... [DONE]")
-
-
-def get_setup_folder(folder_id):
-    """Returns the folder from setup with the given name
-    """
-    setup = api.get_senaite_setup()
-    folder = setup.get(folder_id)
-    if not folder:
-        portal = api.get_portal()
-        add_senaite_setup_items(portal)
-        folder = setup.get(folder_id)
-    return folder
+    logger.info("Mark invalidated samples as IInvalidated [DONE]")
 
 
 @upgradestep(product, version)
@@ -161,6 +154,7 @@ def migrate_calculations_to_dx(tool):
     else:
         logger.warn("Cannot remove {}. Is not empty".format(origin))
 
+    remove_calculations_from_repositorytool()
     logger.info("Convert Calculations to Dexterity [DONE]")
 
 
@@ -241,6 +235,9 @@ def migrate_calculation_to_dx(src, destination=None):
     # copy workflow history
     migrator.copy_workflow_history(src, target)
 
+    if IVersioned.providedBy(src):
+        noLongerProvides(src, IVersioned)
+
     # copy marker interfaces
     migrator.copy_marker_interfaces(src, target)
 
@@ -257,3 +254,21 @@ def migrate_calculation_to_dx(src, destination=None):
     migrator.copy_id(src, target)
 
     logger.info("Migrated Calculation from %s -> %s" % (src, target))
+
+
+def remove_calculations_from_repositorytool():
+    """Remove Analysis Service from Repository Tool
+    """
+    logger.info("Remove auto versioning for Calculations ...")
+    portal_type = "Calculation"
+
+    rt = api.get_tool("portal_repository")
+    mapping = rt._version_policy_mapping
+    mapping.pop(portal_type, None)
+    rt._version_policy_mapping = mapping
+    versionable_types = rt.getVersionableContentTypes()
+    if portal_type in versionable_types:
+        versionable_types.remove(portal_type)
+        rt.setVersionableContentTypes(versionable_types)
+
+    logger.info("Remove auto versioning for Analysis Services ... [DONE]")

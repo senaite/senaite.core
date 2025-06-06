@@ -5,9 +5,17 @@
    <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Move Calculations to Senaite setup"
       description="Migrate Calculations to Senaite setup"
+      source="2703"
+      destination="2704"
+      handler=".v02_07_000.migrate_calculations_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Mark invalidated samples as IInvalidated"
+      description="Mark invalidated samples with IInvalidated interface"
       source="2702"
       destination="2703"
-      handler=".v02_07_000.migrate_calculations_to_dx"
+      handler=".v02_07_000.mark_invalidated_samples"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

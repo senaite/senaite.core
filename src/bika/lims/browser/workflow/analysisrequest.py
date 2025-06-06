@@ -18,25 +18,14 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from string import Template
-
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
-from bika.lims.api.mail import compose_email
-from bika.lims.api.mail import is_valid_email_address
 from bika.lims.browser.workflow import RequestContextAware
 from bika.lims.browser.workflow import WorkflowActionGenericAdapter
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IAnalysisRequest
-from bika.lims.interfaces import IContact
 from bika.lims.interfaces import IWorkflowActionUIDsAdapter
-from bika.lims.utils import get_link_for
-from collections import OrderedDict
 from DateTime import DateTime
-from Products.CMFPlone.utils import safe_unicode
-from Products.PlonePAS.plugins.ufactory import PloneUser
-from Products.PlonePAS.tools.memberdata import MemberData
 from zope.interface import implements
 
 
@@ -153,106 +142,23 @@ class WorkflowActionInvalidateAdapter(WorkflowActionGenericAdapter):
     """
 
     def __call__(self, action, objects):
+        samples = filter(IAnalysisRequest.providedBy, objects)
+        if samples:
+            # Redirect to the samples invalidation view
+            uids = map(api.get_uid, samples)
+            uids = ",".join(uids)
+            url = "%s/invalidate_samples?uids=%s" % (self.back_url, uids)
+            return self.redirect(redirect_url=url)
+
+        # Generic transition if invalidation applies to other types
         transitioned = self.do_action(action, objects)
         if not transitioned:
             return self.redirect(message=_("No changes made"), level="warning")
 
-        # Need to notify client contacts?
-        if not self.context.bika_setup.getNotifyOnSampleInvalidation():
-            return self.success(transitioned)
-
-        # Alert the client contacts who ordered the results, stating that a
-        # possible mistake has been picked up and is under investigation.
-        for sample in transitioned:
-            self.send_invalidation_email(sample)
-
         # Redirect the user to success page
-        return self.success(transitioned)
-
-    def send_invalidation_email(self, sample):
-        """Sends an email notification to sample's client contact if the sample
-        passed in has a retest associated
-        """
-        retest = sample.getRetest()
-        if not retest:
-            logger.warn("No retest found for {}. And it should!"
-                        .format(api.get_id(sample)))
-            return
-
-        # Send the email
-        try:
-            email_message = self.get_invalidation_email(sample)
-            host = api.get_tool("MailHost")
-            host.send(email_message, immediate=True)
-        except Exception as err_msg:
-            message = _(
-                "Cannot send email for ${sample_id}: ${error}",
-                mapping={
-                    "sample_id": api.get_id(sample),
-                    "error": safe_unicode(err_msg)
-                })
-            self.context.plone_utils.addPortalMessage(message, "warning")
-
-    def get_invalidation_email(self, sample):
-        """Returns the sample invalidation MIME Message for the sample
-        """
-        # Get the recipients
-        managers = api.get_users_by_roles("LabManager")
-        recipients = managers + [sample.getContact()] + sample.getCCContact()
-        recipients = filter(None, map(self.get_email_address, recipients))
-        recipients = list(OrderedDict.fromkeys(recipients))
-
-        if not recipients:
-            sample_id = api.get_id(sample)
-            raise ValueError("No valid recipients for {}".format(sample_id))
-
-        # Compose the email
-        subject = self.context.translate(_(
-            "Erroneous result publication: ${sample_id}",
-            mapping={"sample_id": api.get_id(sample)}
-        ))
-
-        setup = api.get_setup()
-        retest = sample.getRetest()
-        lab_email = setup.laboratory.getEmailAddress()
-        lab_address = setup.laboratory.getPrintAddress()
-        body = Template(setup.getEmailBodySampleInvalidation())
-        body = body.safe_substitute({
-            "lab_address": "<br/>".join(lab_address),
-            "sample_id": api.get_id(sample),
-            "sample_link": get_link_for(sample, csrf=False),
-            "retest_id": api.get_id(retest),
-            "retest_link": get_link_for(retest, csrf=False),
-        })
-
-        return compose_email(from_addr=lab_email, to_addr=recipients,
-                             subj=subject, body=body, html=True)
-
-    def get_email_address(self, contact_user_email):
-        """Returns the email address for the contact, member or email
-        """
-        if is_valid_email_address(contact_user_email):
-            return contact_user_email
-
-        if IContact.providedBy(contact_user_email):
-            contact_email = contact_user_email.getEmailAddress()
-            return self.get_email_address(contact_email)
-
-        if isinstance(contact_user_email, MemberData):
-            contact_user_email = contact_user_email.getUser()
-
-        if isinstance(contact_user_email, PloneUser):
-            # Try with the contact's email first
-            contact = api.get_user_contact(contact_user_email)
-            contact_email = self.get_email_address(contact)
-            if contact_email:
-                return contact_email
-
-            # Fallback to member's email
-            user_email = contact_user_email.getProperty("email")
-            return self.get_email_address(user_email)
-
-        return None
+        ids = map(api.get_id, transitioned)
+        message = _("Invalidated items: {}").format(", ".join(ids))
+        return self.success(transitioned, message=message)
 
 
 class WorkflowActionPrintSampleAdapter(WorkflowActionGenericAdapter):

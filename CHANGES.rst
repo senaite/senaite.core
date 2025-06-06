@@ -5,6 +5,15 @@ Changelog
 ------------------
 
 - #2600 Migrate Calculations to DX
+- #2743 Added client_sampleid to worksheet printview
+- #2729 Fix rejected analyses reassigned from profile
+- #2732 Added a sample invalidation form with support for entering a reason
+- #2740 Support for analysis conditions in results reports
+- #2738 Fix the behavior of the 'Save' button when errors occur during submission
+- #2739 Fix snapshot versioning
+- #2737 Fix form values omitted on initial load for UID reference fields in sample add form
+- #2735 Fix API field validation for DX contents
+- #2736 Fix profile services are not applied when creating samples programmatically
 - #2733 Fixed improper permission check for editing analysis remarks
 - #2731 Fix ReactJS complains about duplicate keys
 - #2730 Update D3js 3 -> 7

@@ -1,5 +1,5 @@
   /* Please use this command to compile this file into the parent `js` directory:
-      coffee --no-header -w -o -b ../ -c bika.lims.analysisrequest.add.coffee
+      coffee --no-header -w -b -c senaite.core.analysisrequest.add.coffee
   */
 var hasProp = {}.hasOwnProperty,
   indexOf = [].indexOf;
@@ -552,6 +552,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
       return $(me).trigger("ajax:end");
     }).fail(function(request, status, error) {
       var msg;
+      me.form_submission_flag = false;
       msg = _t(`Sorry, an error occured: ${status}`);
       window.senaite.core.globals.portalMessage(msg);
       return window.scroll(0, 0);
