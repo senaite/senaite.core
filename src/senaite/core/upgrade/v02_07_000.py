@@ -30,7 +30,6 @@ from senaite.core import logger
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
-from senaite.core.schema.uidreferencefield import get_backrefs
 from senaite.core.schema.uidreferencefield import get_backref_storage
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import copy_snapshots
@@ -271,4 +270,4 @@ def remove_calculations_from_repositorytool():
         versionable_types.remove(portal_type)
         rt.setVersionableContentTypes(versionable_types)
 
-    logger.info("Remove auto versioning for Analysis Services ... [DONE]")
+    logger.info("Remove auto versioning for Calculation... [DONE]")
