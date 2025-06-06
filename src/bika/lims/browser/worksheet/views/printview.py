@@ -490,6 +490,7 @@ class PrintView(BrowserView):
             else:
                 data['sample_type'] = self._sample_type(sample)
                 data['sample_point'] = self._sample_point(sample)
+                data['client_sampleid'] = sample.getClientSampleID()
         return data
 
     def _sample_type(self, sample=None):

@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2734 Fixed Client restricted categories in the Sample add view form
+- #2743 Added client_sampleid to worksheet printview
 - #2729 Fix rejected analyses reassigned from profile
 - #2732 Added a sample invalidation form with support for entering a reason
 - #2740 Support for analysis conditions in results reports
