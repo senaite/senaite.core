@@ -35,12 +35,12 @@ from senaite.core.schema.uidreferencefield import get_backref_storage
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
+from senaite.core.upgrade.utils import remove_at_portal_types
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.utils import UpgradeUtils
 from zope.component import getMultiAdapter
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
-from senaite.core.upgrade.v02_06_000 import remove_at_portal_types
 from senaite.core.upgrade.v02_06_000 import get_setup_folder
 
 
@@ -122,7 +122,7 @@ def migrate_calculations_to_dx(tool):
     logger.info("Convert Calculations to Dexterity ...")
 
     # ensure old AT types are flushed first
-    remove_at_portal_types(tool)
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
