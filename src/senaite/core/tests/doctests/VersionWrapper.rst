@@ -153,7 +153,7 @@ We change it back again to the original value:
     >>> notify_edited(calc)
 
 
-Sample Calculaiton
+Sample Calculation
 ..................
 
 Create some Analysis Services with unique Keywords:
@@ -167,11 +167,11 @@ Create an new Sample:
     >>> sample = new_sample([TH])
     >>> receive_sample(sample)
 
-Get the contained `Cu` Analysis:
+Get the contained `TH` Analysis:
 
-    >>> ca = get_analysis(sample, Ca.getKeyword())
-    >>> mg = get_analysis(sample, Mg.getKeyword())
     >>> th = get_analysis(sample, TH.getKeyword())
+    >>> th
+    <Analysis at /plone/clients/client-1/Water-0001/TH>
 
 TODO: We need a history aware UID reference field to provide the right version wrapped calculation here:
 

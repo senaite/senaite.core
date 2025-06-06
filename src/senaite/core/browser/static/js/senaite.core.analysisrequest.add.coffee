@@ -263,6 +263,8 @@ class window.AnalysisRequestAdd
 
     # Analysis lock button clicked
     $("body").on "click", ".service-lockbtn", @on_analysis_lock_button_click
+    # Analysis restricted button clicked
+    $("body").on "click", ".service-restricted", @on_analysis_restricted_button_click
     # Analysis info button clicked
     $("body").on "click", ".service-infobtn", @on_analysis_details_click
     # Copy button clicked
@@ -388,6 +390,7 @@ class window.AnalysisRequestAdd
 
     # initially hide all service-related icons
     $(".service-lockbtn").hide()
+    $(".service-restricted").hide()
 
     # hide all holding time related icons and set checks enabled by default
     $(".analysisservice").show()
@@ -460,6 +463,20 @@ class window.AnalysisRequestAdd
         # hide checkbox container
         parent = service_cb.parent "div.analysisservice"
         parent.hide()
+
+      # disable(and uncheck) services that are not includes allowed categories
+      all_services = $("input[name='Analyses-#{arnum}:list']")
+      all_services.each (index_service, service) ->
+        service_element = $(service)
+        uid_service = service_element.val()
+        restricted = $("##{uid_service}-#{arnum}-restricted")
+        lock_btn = $("##{uid_service}-#{arnum}-lockbtn")
+        if not record.available_services.includes(uid_service)
+          service_element.prop "checked": no
+          service_element.prop "disabled": yes
+          restricted.show()
+          lock_btn.hide()
+
 
   ###*
    * Return the portal url (calculated in code)
@@ -1544,6 +1561,35 @@ class window.AnalysisRequestAdd
         $(@).dialog "destroy"
 
     dialog = @template_dialog "service-dependant-template", context, buttons
+
+
+  ###*
+   * Event handler when an Analysis Service restricted by category.
+   *
+   * @param event {Object} The event object
+  ###
+  on_analysis_restricted_button_click: (event) =>
+    console.debug "°°° on_analysis_restricted_button_click °°°"
+
+    me = this
+    el = event.currentTarget
+    $el = $(el)
+    uid = $el.attr "uid"
+    arnum = $el.attr "arnum"
+
+    record = me.records_snapshot[arnum]
+    service_title = $("[data-uid='#{uid}'] .service-title").text()
+
+    context = {}
+    context["service_title"] = service_title
+    context["client"] = Object.values(record.client_metadata)[0]
+    context["categories"] = record.available_categories
+
+    buttons =
+      OK: ->
+        $(@).dialog "destroy"
+
+    dialog = @template_dialog "service-not-allowed", context, buttons
 
 
   ###*

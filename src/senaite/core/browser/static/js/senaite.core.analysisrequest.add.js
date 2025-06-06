@@ -304,6 +304,12 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
      */
     this.on_analysis_lock_button_click = this.on_analysis_lock_button_click.bind(this);
     /**
+     * Event handler when an Analysis Service restricted by category.
+     *
+     * @param event {Object} The event object
+     */
+    this.on_analysis_restricted_button_click = this.on_analysis_restricted_button_click.bind(this);
+    /**
      * Event handler when an Analysis Template was selected.
      *
      * @param event {Object} The event object
@@ -625,6 +631,8 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     $("body").on("click", "tr[fieldname=Analyses] input[type='checkbox'].analysisservice-cb", this.on_analysis_checkbox_click);
     // Analysis lock button clicked
     $("body").on("click", ".service-lockbtn", this.on_analysis_lock_button_click);
+    // Analysis restricted button clicked
+    $("body").on("click", ".service-restricted", this.on_analysis_restricted_button_click);
     // Analysis info button clicked
     $("body").on("click", ".service-infobtn", this.on_analysis_details_click);
     // Copy button clicked
@@ -725,6 +733,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     me = this;
     // initially hide all service-related icons
     $(".service-lockbtn").hide();
+    $(".service-restricted").hide();
     // hide all holding time related icons and set checks enabled by default
     $(".analysisservice").show();
     $(".service-beyondholdingtime").hide();
@@ -733,6 +742,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     });
     // set all values for one record (a single column in the AR Add form)
     return $.each(records, function(arnum, record) {
+      var all_services;
       // Apply the values generically
       $.each(record, function(name, metadata) {
         if (!name.endsWith("_metadata")) {
@@ -788,7 +798,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
         return false;
       });
       // disable (and uncheck) services that are beyond sample holding time
-      return $.each(record.beyond_holding_time, function(index, uid) {
+      $.each(record.beyond_holding_time, function(index, uid) {
         var beyond_holding_time, parent, service_cb;
         // display the alert
         beyond_holding_time = $(`#${uid}-${arnum}-beyondholdingtime`);
@@ -801,6 +811,25 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
         // hide checkbox container
         parent = service_cb.parent("div.analysisservice");
         return parent.hide();
+      });
+      // disable(and uncheck) services that are not includes allowed categories
+      all_services = $(`input[name='Analyses-${arnum}:list']`);
+      return all_services.each(function(index_service, service) {
+        var lock_btn, restricted, service_element, uid_service;
+        service_element = $(service);
+        uid_service = service_element.val();
+        restricted = $(`#${uid_service}-${arnum}-restricted`);
+        lock_btn = $(`#${uid_service}-${arnum}-lockbtn`);
+        if (!record.available_services.includes(uid_service)) {
+          service_element.prop({
+            "checked": false
+          });
+          service_element.prop({
+            "disabled": true
+          });
+          restricted.show();
+          return lock_btn.hide();
+        }
       });
     });
   }
@@ -1780,6 +1809,28 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
       }
     };
     return dialog = this.template_dialog("service-dependant-template", context, buttons);
+  }
+
+  on_analysis_restricted_button_click(event) {
+    var $el, arnum, buttons, context, dialog, el, me, record, service_title, uid;
+    console.debug("°°° on_analysis_restricted_button_click °°°");
+    me = this;
+    el = event.currentTarget;
+    $el = $(el);
+    uid = $el.attr("uid");
+    arnum = $el.attr("arnum");
+    record = me.records_snapshot[arnum];
+    service_title = $(`[data-uid='${uid}'] .service-title`).text();
+    context = {};
+    context["service_title"] = service_title;
+    context["client"] = Object.values(record.client_metadata)[0];
+    context["categories"] = record.available_categories;
+    buttons = {
+      OK: function() {
+        return $(this).dialog("destroy");
+      }
+    };
+    return dialog = this.template_dialog("service-not-allowed", context, buttons);
   }
 
   on_analysis_template_selected(event) {

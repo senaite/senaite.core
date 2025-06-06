@@ -269,12 +269,22 @@ def to_service_uids(services=None, values=None):
     # Convert them to a list of service uids
     uids = filter(None, map(to_service_uid, uids))
 
-    # Extract and append the service UIDs from the profiles
+    # Extract and append the service UIDs from the profiles if contained
+    # into available services by category
     for profile in to_list(values.get("Profiles", [])):
         profile = api.get_object(profile, None)
         if not profile:
             continue
         uids.extend(profile.getServiceUIDs())
+
+    # TODO: add intersection between services from profiles and
+    #  available services for client and remove 'empty' profiles from values,
+    #  but running test is failed
+
+    # Exclude service uids if not available in categories for Client
+    client = values.get("Client")
+    available_uids = get_available_service_uids(client)
+    uids = [uid for uid in uids if uid in available_uids]
 
     # Get the service uids without duplicates, but preserving the order
     return list(OrderedDict.fromkeys(uids).keys())
@@ -314,6 +324,62 @@ def to_service_uid(uid_brain_obj_str):
             return api.get_uid(brains[0])
 
     return None
+
+
+def get_available_service_uids(client=None):
+    """Getting services by category for client or all available
+
+    :param client: A Client object, uid or brain
+    :returns: a list of Analyses Services UIDs
+    """
+    query = {
+        "portal_type": "AnalysisService",
+        "is_active": True,
+    }
+    setup_catalog = api.get_tool(SETUP_CATALOG)
+    service_brains = setup_catalog(query)
+    categories = get_categories(client)
+    if categories:
+        available_uids = []
+        cat_uids = list(map(lambda c: c.UID, categories))
+        for brain in service_brains:
+            cat_uid = brain.getCategoryUID
+            # also if services without category
+            # brain without category returned <BLANKLINE> that cast to bool
+            if not bool(cat_uid) or cat_uid in cat_uids:
+                available_uids.append(brain.UID)
+        return available_uids
+
+    return list(map(lambda s: s.UID, service_brains))
+
+
+def get_categories(for_client=None):
+    """Return service categories in the right order
+
+    :param for_client: A Client object, uid or brain
+    :returns: a list of brains for Categories
+    """
+    setup_catalog = api.get_tool(SETUP_CATALOG)
+    query = {
+        "portal_type": "AnalysisCategory",
+        "is_active": True,
+        "sort_on": "sortable_title",
+    }
+    categories = setup_catalog(query)
+    if not categories:
+        return []
+    if not for_client:
+        return categories
+    client = api.get_object(for_client, None)
+    if client:
+        restricted_categories = client.getRestrictedCategories()
+        restricted_category_ids = map(
+            lambda c: c.getId(), restricted_categories)
+        # keep correct order of categories
+        if restricted_category_ids:
+            categories = filter(
+                lambda c: c.getId in restricted_category_ids, categories)
+    return categories
 
 
 def create_retest(ar):

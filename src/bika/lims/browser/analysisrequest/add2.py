@@ -40,6 +40,8 @@ from bika.lims.interfaces import IAddSampleRecordsValidator
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
 from bika.lims.interfaces.field import IUIDReferenceField
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
+from bika.lims.utils.analysisrequest import get_categories
+from bika.lims.utils.analysisrequest import get_available_service_uids
 from BTrees.OOBTree import OOBTree
 from DateTime import DateTime
 from plone import protect
@@ -487,31 +489,14 @@ class AnalysisRequestAddView(BrowserView):
             out.append(field)
         return out
 
-    def get_service_categories(self, restricted=True):
+    def get_service_categories(self):
         """Return all service categories in the right order
 
-        :param restricted: Client settings restrict categories
-        :type restricted: bool
         :returns: Category catalog results
         :rtype: brains
         """
-        bsc = api.get_tool("senaite_catalog_setup")
-        query = {
-            "portal_type": "AnalysisCategory",
-            "is_active": True,
-            "sort_on": "sortable_title",
-        }
-        categories = bsc(query)
         client = self.get_client()
-        if client and restricted:
-            restricted_categories = client.getRestrictedCategories()
-            restricted_category_ids = map(
-                lambda c: c.getId(), restricted_categories)
-            # keep correct order of categories
-            if restricted_category_ids:
-                categories = filter(
-                    lambda c: c.getId in restricted_category_ids, categories)
-        return categories
+        return get_categories(client)
 
     def get_points_of_capture(self):
         items = POINTS_OF_CAPTURE.items()
@@ -525,35 +510,27 @@ class AnalysisRequestAddView(BrowserView):
         :returns: Mapping of category -> list of services
         :rtype: dict
         """
-        bsc = api.get_tool("senaite_catalog_setup")
+        setup_catalog = api.get_tool(SETUP_CATALOG)
         query = {
             "portal_type": "AnalysisService",
             "point_of_capture": poc,
             "is_active": True,
             "sort_on": "sortable_title",
         }
-        services = bsc(query)
-        categories = self.get_service_categories(restricted=False)
-        analyses = {key: [] for key in map(lambda c: c.Title, categories)}
-
-        # append the empty category as well
-        analyses[""] = []
+        services = setup_catalog(query)
+        analyses = {}
 
         for brain in services:
-            category = self.get_category_title(brain)
-            if category in analyses:
-                analyses[category].append(brain)
+            cat_uid = brain.getCategoryUID
+            cat_title = ""
+            if cat_uid:
+                cat_brain = api.get_brain_by_uid(cat_uid)
+                cat_title = cat_brain and api.get_title(cat_brain)
+            if cat_title not in analyses:
+                analyses[cat_title] = []
+            analyses[cat_title].append(brain)
         return analyses
 
-    def get_category_title(self, service):
-        """Return the title of the category the service is assigned to
-        """
-        service = api.get_object(service)
-        cat_uid = service.getRawCategory()
-        if not cat_uid:
-            return ""
-        cat = self.get_object_by_uid(cat_uid)
-        return api.get_title(cat)
 
     @cache(cache_key)
     def get_service_uid_from(self, analysis):
@@ -1268,6 +1245,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             dependencies = self.get_unmet_dependencies_info(metadata)
             metadata.update(dependencies)
 
+            # check available services by categories
+            available_services = self.get_available_services(metadata)
+            metadata.update(available_services)
+
+            # get available categories for client
+            available_categories = self.get_available_categories(metadata)
+            metadata.update(available_categories)
+
             # services conducted beyond the holding time limit
             beyond = self.get_services_beyond_holding_time(record)
             metadata["beyond_holding_time"] = beyond
@@ -1276,6 +1261,31 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             out[num_sample] = metadata
 
         return out
+
+    def get_available_services(self, metadata):
+        """Getting services by category for client or all available
+        """
+        client_metadata = metadata.get("client_metadata", None)
+        client_uid = client_metadata and client_metadata.items()[0][0]
+        uids = get_available_service_uids(client_uid)
+        return {
+            "available_services": uids,
+        }
+
+    def get_available_categories(self, metadata):
+        """Getting available categories by client from form
+        """
+        client_metadata = metadata.get("client_metadata", None)
+        client_uid = client_metadata and client_metadata.items()[0][0]
+        categories = []
+        for cat in get_categories(client_uid):
+            categories.append({
+                "uid": cat.UID,
+                "title": cat.Title,
+            })
+        return {
+            "available_categories": categories,
+        }
 
     @viewcache.memoize
     def get_services_max_holding_time(self):
