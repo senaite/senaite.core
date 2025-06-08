@@ -143,7 +143,7 @@ class InterimFields(DataGridField):
         kwargs["default"] = default or []
         super(InterimFields, self).__init__(**kwargs)
 
-    def set(self, object, value):
+    def set(self, object, val):
         # replace None values with empty string
-        new_value = [{k: v or "" for k, v in val.items()} for val in value]
-        super(DataGridField, self).set(object, new_value)
+        val = [{k: "" if v is None else v for k, v in i.items()} for i in val]
+        super(DataGridField, self).set(object, val)
