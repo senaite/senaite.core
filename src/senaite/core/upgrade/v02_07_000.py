@@ -19,8 +19,12 @@
 # Some rights reserved, see README and LICENSE.
 
 
+import json
+
 from bika.lims import api
+from bika.lims.api import snapshot as snap_api
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
+from bika.lims.interfaces import IAuditable
 from bika.lims.interfaces import IInvalidated
 from bika.lims.utils import tmpID
 from persistent.list import PersistentList
@@ -32,16 +36,15 @@ from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.schema.uidreferencefield import get_backref_storage
 from senaite.core.upgrade import upgradestep
+from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import remove_at_portal_types
 from senaite.core.upgrade.utils import uncatalog_object
-from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade.v02_06_000 import get_setup_folder
 from zope.component import getMultiAdapter
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
-from senaite.core.upgrade.v02_06_000 import get_setup_folder
-
 
 version = "2.7.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -200,10 +203,12 @@ def migrate_calculation_to_dx(src, destination=None):
 
     target_interims = []
     for src_interim in src.getInterimFields():
-        src_interim["unit"] = src_interim.get("unit") or ""
-        src_interim["result_type"] = src_interim.get("result_type") or "numeric"
-        src_interim["choices"] = src_interim.get("choices") or ""
-        target_interims.append(src_interim)
+        interim = src_interim.copy()
+        # ensure interim fields are unicode
+        interim["unit"] = src_interim.get("unit") or ""
+        interim["result_type"] = src_interim.get("result_type") or "numeric"
+        interim["choices"] = src_interim.get("choices") or ""
+        target_interims.append(interim)
     target.setInterimFields(target_interims)
 
     # Migrate the contents from AT to DX
@@ -225,17 +230,38 @@ def migrate_calculation_to_dx(src, destination=None):
     for ref in src_backreferences:
         target_backrefs.append(api.get_uid(ref))
 
-    # copy auditlog
-    migrator.copy_snapshots(src, target)
+    # NOTE: We need to create the correct snapshot versions based on the stored
+    # versions of the repository tool
+    # migrator.copy_snapshots(src, target)
+    pr = api.get_tool("portal_repository")
+    for record in pr.getHistory(src, oldestFirst=True):
+        # get the calculation object
+        obj = record.object
+        # create a snapshot for this object
+        snapshot = snap_api.take_snapshot(obj, store=False)
+        snapshot["__metadata__"].update({
+            "actor": obj.Creator() or "migrator",
+            "modified": obj.modified().ISO(),
+            "snapshot_created": obj.created().ISO(),
+            "comments": "Migrated from AT Calculation to DX Calculation",
+        })
+        # store the snapshot on the target object
+        storage = snap_api.get_storage(target)
+        # append the JSON snapshot to the storage
+        storage.append(json.dumps(snapshot))
+
+    # provide the IAuditable interface to the target object
+    alsoProvides(target, IAuditable)
+
+    # disable the IVersioned interface on the source object
+    if IVersioned.providedBy(src):
+        noLongerProvides(src, IVersioned)
 
     # copy creators
     migrator.copy_creators(src, target)
 
     # copy workflow history
     migrator.copy_workflow_history(src, target)
-
-    if IVersioned.providedBy(src):
-        noLongerProvides(src, IVersioned)
 
     # copy marker interfaces
     migrator.copy_marker_interfaces(src, target)
