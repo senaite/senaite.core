@@ -395,13 +395,13 @@ class TestCalculations(DataTestCase):
             interims = []
             result_types = f.get("result_types") or {}
             for k, v in f['interims'].items():
-                result_type = result_types.get(k)
+                result_type = result_types.get(k) or ""
                 interims.append({'keyword': k, 'title': k, 'value': v,
                                  'hidden': False,
                                  'result_type': result_type,
                                  'unit': ''})
             self.calculation.setInterimFields(interims)
-            self.assertEqual(self.calculation.getInterimFields(), interims)
+            self.assertTrue(self.calculation.getInterimFields() == interims)
 
             # Create the AR
             client = self.portal.clients['client-1']

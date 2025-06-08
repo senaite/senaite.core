@@ -147,3 +147,11 @@ class InterimFields(DataGridField):
         # replace None values with empty string
         val = [{k: "" if v is None else v for k, v in i.items()} for i in val]
         super(DataGridField, self).set(object, val)
+
+    def get(self, object):
+        # https://github.com/senaite/senaite.core/pull/2600
+        # currently, all values are returned as unicodes.
+        # Shall we convert them to strings?
+        # Or use ASCIIField instead of TextLine?
+        value = super(DataGridField, self).get(object)
+        return value
