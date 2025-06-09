@@ -51,9 +51,20 @@ class CalculationEditForm {
             });
     }
 
+    /**
+     * Overrides the native setter for the raw test input field to control the test parameter DataGrid.
+     *
+     * XXX: This feels a bit hacky and is dependent on how the editform.js sets the input value!
+     * E.g. if we use therer the `native_set_value` method, this will not work.
+     *
+     * Maybe it would be better to react on the `input` event or do this in a mutation observer
+     */
     wrapRawTestInput(parent) {
+        const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
         Object.defineProperty(this.rawTestInput, "value", {
             set: function(newValue) {
+                // prevent maximum call stack size exceeded error by using the native setter
+                nativeSetter.call(this, newValue);
                 parent.rawTestValue = newValue;
                 const keywords = newValue.split(",").filter(k => k);
                 const table = parent.getTestParamTable();

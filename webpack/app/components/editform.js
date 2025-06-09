@@ -639,8 +639,7 @@ class EditForm {
     }
     // set other field values
     else {
-      // field.value = value;
-      this.native_set_value(field, value);
+      field.value = value;
     }
   }
 
