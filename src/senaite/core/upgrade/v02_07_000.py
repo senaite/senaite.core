@@ -200,6 +200,7 @@ def migrate_calculation_to_dx(src, destination=None):
     target.setFormula(src.getFormula())
     target.setTestParameters(src.getTestParameters() or [])
     target.setTestResult(src.getTestResult() or "")
+    target.setDependentServices(src.getDependentServices() or [])
 
     target_interims = []
     for src_interim in src.getInterimFields():
