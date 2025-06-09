@@ -87,12 +87,12 @@ class EditForm(EditFormAdapterBase):
     def update_form(self, data):
         interim_kws = self.get_interimfields_keywords(data)
         formula_kws = self.get_formula_keywords(data)
-        dep_services_uids = map(
+        dep_services_uids = "\n".join(map(
             api.get_uid,
             get_by_keyword(
                 map(
                     lambda s: s.partition(".")[0],
-                    [k for k in formula_kws if k not in interim_kws])))
+                    [k for k in formula_kws if k not in interim_kws]))))
         self.add_update_field(FIELD_DEPENDENT_SERVICES, dep_services_uids)
         self.add_update_field(FIELD_RAW_TEST_KEYWORDS, ",".join(formula_kws))
         return self.data
