@@ -594,6 +594,10 @@ class EditForm {
 
     // set reference value
     if (this.is_reference(field)) {
+      // Fallback: Use raw value if selected is not set
+      if (value && selected.length == 0) {
+        selected = value.split("\n");
+      }
       // XXX: does not work for ReactJS components!
       // field.value = selected.join("\n");
       this.native_set_value(field, selected.join("\n"));
