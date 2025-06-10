@@ -894,6 +894,8 @@ class EditForm {
     if (!this.is_textarea(el)) {
       return false;
     }
+    // NOTE: This class is only used if the field is not hidden.
+    // Otherwise, it behaves like a normal textarea field.
     return el.classList.contains("queryselectwidget-value");
   }
 
