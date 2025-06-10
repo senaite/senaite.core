@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2600 Migrate Calculations to DX
+- #2745 Fix wrong labels for attachment "Render in Report" checkboxes
 - #2743 Added client_sampleid to worksheet printview
 - #2729 Fix rejected analyses reassigned from profile
 - #2732 Added a sample invalidation form with support for entering a reason
