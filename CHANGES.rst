@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2748 Add extra check to make sure a result is a true string before cgi.replace call
 - #2745 Fix wrong labels for attachment "Render in Report" checkboxes
 - #2743 Added client_sampleid to worksheet printview
 - #2729 Fix rejected analyses reassigned from profile
