@@ -162,6 +162,20 @@ class VersionWrapper(object):
         field = self.fields.get(key)
         if not field:
             return value
+        return self.to_field_value(field, value)
+
+    def to_field_value(self, field, value):
+        """Convert the snapshot value for the given field
+
+        Why not simply using json.loads?
+
+        Because we don't know what the field expects. E.g. we store always
+        numbers as strings and do not want them to be converted.
+
+        :param field: The field to convert the value for
+        :param value: The value to convert
+        :returns: Converted value for the field
+        """
 
         # directly convert empties, None and bool values
         if not value:
@@ -173,7 +187,6 @@ class VersionWrapper(object):
 
         # guess the required value type depending on the used field
         fieldclass = field.__class__.__name__.lower()
-        fieldtype = getattr(field, "type", None)
 
         if fieldclass.startswith("date"):
             # convert date value
@@ -191,9 +204,13 @@ class VersionWrapper(object):
         elif fieldclass == "emailsfield":
             # AT emails fields
             return value or ''
-        elif fieldtype == "record":
-            # AT record-like fields
-            return value or {}
+        # Process lists
+        elif isinstance(value, (list, tuple)):
+            return map(lambda v: self.to_field_value(field, v), value)
+        # Process dicitonaries
+        elif isinstance(value, dict):
+            return {k: self.to_field_value(field, v)
+                    for k, v in value.items()}
         return value
 
 
