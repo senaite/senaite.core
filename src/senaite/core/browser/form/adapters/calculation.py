@@ -90,10 +90,16 @@ class EditForm(EditFormAdapterBase):
         dep_services = get_by_keyword(map(
             lambda s: s.partition(".")[0],
             [k for k in formula_kws if k not in interim_kws]))
-        dep_services_uids = list(map(api.get_uid, dep_services))
+        dep_services_uids = map(api.get_uid, dep_services)
+        # NOTE: This reference field is hidden and therefore, behaves like a
+        # normal `textarea` field.
+        # This is why we need to pass the uids as '\n' joined string.
+        # self.add_update_field(
+        #     FIELD_DEPENDENT_SERVICES, {"selected": dep_services_uids})
         self.add_update_field(
-            FIELD_DEPENDENT_SERVICES, {"selected": dep_services_uids})
-        self.add_update_field(FIELD_RAW_TEST_KEYWORDS, ",".join(formula_kws))
+            FIELD_DEPENDENT_SERVICES, "\n".join(dep_services_uids))
+        self.add_update_field(
+            FIELD_RAW_TEST_KEYWORDS, ",".join(formula_kws))
         return self.data
 
     def get_interimfields_keywords(self, data):
