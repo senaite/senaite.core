@@ -83,7 +83,7 @@
           <small id="analyst-help"
                  i18n:translate=""
                  class="form-text text-muted">
-            The template that will be immediately assigned to the worksheet
+            The worksheet template to apply to unassigned analyses of the selected samples.
           </small>
         </div>
 
