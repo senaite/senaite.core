@@ -24,6 +24,8 @@ from bika.lims.interfaces import IInvalidated
 from senaite.core import logger
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.setuphandlers import setup_catalog_mappings
+from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from zope.interface import alsoProvides
@@ -92,3 +94,16 @@ def mark_invalidated_samples(tool):
         sample._p_deactivate()
 
     logger.info("Mark invalidated samples as IInvalidated [DONE]")
+
+
+@upgradestep(product, version)
+def upgrade_catalog_modified_index(tool):
+    """Update modified index in catalog
+    """
+    logger.info("Upgrade catalog modified index ...")
+    portal = api.get_portal()
+
+    setup_catalog_mappings(portal)
+    setup_core_catalogs(portal)
+
+    logger.info("Upgrade catalog modified index [DONE]")

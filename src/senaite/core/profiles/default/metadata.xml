@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <metadata>
-  <version>2703</version>
+  <version>2704</version>
   <dependencies>
     <dependency>profile-Products.ATContentTypes:base</dependency>
     <dependency>profile-Products.CMFEditions:CMFEditions</dependency>

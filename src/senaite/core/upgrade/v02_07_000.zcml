@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add modified index to catalog"
+      description="Add modified index to catalog to allow sorting by modified date"
+      source="2703"
+      destination="2704"
+      handler=".v02_07_000.upgrade_catalog_modified_index"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Mark invalidated samples as IInvalidated"
       description="Mark invalidated samples with IInvalidated interface"
       source="2702"
