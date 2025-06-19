@@ -79,10 +79,12 @@ document.addEventListener("DOMContentLoaded", () => {
     let transition = event.detail.transition;
     let items = event.detail.folderitems;
     let uids = event.detail.uids;
+    // filter items that weren't transitioned
+    items = items.filter((item) => uids.includes(item.uid));
+    // iterate over transitioned items and reload if flagged to do so
     for (let item of items) {
-      let uid = item.uid;
       let reload = item.hasOwnProperty("reload") ? item.reload : [];
-      if (uids.includes(uid) && reload.includes(transition)) {
+      if (reload.includes(transition)) {
         // this item was transitioned and flagged with "reload"
         location.reload();
         return;
