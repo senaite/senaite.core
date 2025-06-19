@@ -72,7 +72,20 @@ document.addEventListener("DOMContentLoaded", () => {
     // reload the entire page if workflow state of the view context changed
     if (old_workflow_state != new_workflow_state) {
       location.reload();
+      return;
     }
+
+    // reload if required by item or items involved with the transition
+    let transition = event.detail.transition;
+    let items = event.detail.folderitems;
+    for (let item of items) {
+      let reload = item.hasOwnProperty("reload") ? item.reload : [];
+      if (reload.includes(transition)) {
+        location.reload();
+        return;
+      }
+    }
+
   });
 
 
