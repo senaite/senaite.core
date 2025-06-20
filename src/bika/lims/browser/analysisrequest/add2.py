@@ -30,7 +30,6 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api.analysisservice import get_calculation_dependencies_for
-from bika.lims.api.analysisservice import get_service_dependencies_for
 from bika.lims.api.security import check_permission
 from bika.lims.decorators import returns_json
 from bika.lims.interfaces import IAddSampleConfirmation
