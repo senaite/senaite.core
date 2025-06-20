@@ -492,7 +492,8 @@ class EditForm {
         console.debug("EditForm::on_callback");
         let data = {
           name: name,
-          target: event.currentTarget
+          target: event.currentTarget.name || null,
+          value: event.currentTarget.value || null
         }
         this.ajax_send(form, data, "callback");
       }
