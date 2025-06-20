@@ -32,23 +32,6 @@
         </div>
       </script>
 
-      <!-- Add dependent services popup -->
-      <script id="dependency-add-template" type="text/x-handlebars-template">
-        <div title="Service dependencies" i18n:attributes="title">
-          {{#with service}}
-          <p i18n:translate="">{{title}} requires the following services to be selected:</p>
-          {{/with}}
-          <div class="dialog-dependencies dialog-listing">
-            {{#each dependencies}}
-            <div class="dialog-dependency">
-              <span>{{title}}</span>
-            </div>
-            {{/each}}
-          </div>
-          <p i18n:translate="">Do you want to apply these services now?</p>
-        </div>
-      </script>
-
       <!-- Dependant services popup -->
       <script id="service-dependant-template" type="text/x-handlebars-template">
         <div title="Service locked" i18n:attributes="title">
