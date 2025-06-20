@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2754 Fix template service partition selector update
 - #2753 Enable full view reload for specific item transitions in listings
 - #2751 Apply worksheet template only to analyses of selected samples
 - #2748 Add extra check to make sure a result is a true string before cgi.replace call
