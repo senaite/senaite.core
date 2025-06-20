@@ -488,7 +488,8 @@ class EditForm {
       let selector, event, name, rest;
       ({selector, event, name, ...rest} = record);
       // register local callback to apply additional data
-      let callback = (event) => {
+      let on_callback = (event) => {
+        console.debug("EditForm::on_callback");
         let data = {
           name: name,
           target: event.currentTarget
@@ -497,10 +498,10 @@ class EditForm {
       }
 
       if (selector === "document") {
-        document.addEventListener(event, callback);
+        document.addEventListener(event, on_callback);
       } else {
         document.querySelectorAll(selector).forEach((el) => {
-          el.addEventListener(event, callback);
+          el.addEventListener(event, on_callback);
         });
       }
     }
