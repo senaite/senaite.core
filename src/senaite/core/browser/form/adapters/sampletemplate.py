@@ -52,12 +52,17 @@ class EditForm(EditFormAdapterBase):
         fieldname = data.get("name")
         fieldvalue = data.get("value")
 
+        # Update the partition selection options
         if fieldname.startswith("Partition."):
             options = self.get_partition_options(data)
-            # Update the select options with available partitions
             self.add_update_field(fieldname, {
                 "selected": fieldvalue if fieldvalue else [],
                 "options": options})
+
+        elif fieldname.endswith(".part-id"):
+            # update all partition selectors if the part-id changed
+            self.update_partition_selectors(data)
+
         return self.data
 
     def added(self, data):
