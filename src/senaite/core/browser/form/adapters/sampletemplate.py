@@ -58,6 +58,10 @@ class EditForm(EditFormAdapterBase):
         return self.data
 
     def callback(self, data):
+        """Generic callback that proxies to a local method by name
+
+        see: senaite.core.browser.form.ajax.FormView
+        """
         name = data.get("name")
         if not name:
             return
