@@ -81,16 +81,6 @@ class EditForm(EditFormAdapterBase):
             return
         return method(data)
 
-    def get_partition_options(self, data):
-        """Returns a list of patition options to select from
-        """
-        # Prepare the options list
-        options = [{"title": "", "value": ""}]
-        options.extend(
-            map(lambda o: dict(title=o, value=o),
-                self.get_current_partition_ids(data, only_numbered=True)))
-        return options
-
     def get_current_service_settings(self):
         """Get the current service settings
         """
@@ -140,14 +130,21 @@ class EditForm(EditFormAdapterBase):
         unique_ids = self.get_current_partition_ids(data)
         return len(unique_ids)
 
-    def update_partition_selectors(self, data):
-        """Update all service partition selectors with the current settings
+    def get_partition_options(self, data):
+        """Returns a list of patition options to select from
         """
         # Prepare the options list
         options = [{"title": "", "value": ""}]
         options.extend(
             map(lambda o: dict(title=o, value=o),
                 self.get_current_partition_ids(data, only_numbered=True)))
+        return options
+
+    def update_partition_selectors(self, data):
+        """Update all service partition selectors with the current settings
+        """
+        # Prepare the options list
+        options = self.get_partition_options(data)
 
         # get the current selected service settings of the template (includes
         # partition/hidden settings)
