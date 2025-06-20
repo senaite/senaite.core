@@ -49,12 +49,18 @@ class EditForm(EditFormAdapterBase):
         return self.data
 
     def modified(self, data):
+        fieldname = data.get("name")
+        fieldvalue = data.get("value")
+
+        if fieldname.startswith("Partition."):
+            options = self.get_partition_options(data)
+            # Update the select options with available partitions
+            self.add_update_field(fieldname, {
+                "selected": fieldvalue if fieldvalue else [],
+                "options": options})
         return self.data
 
     def added(self, data):
-        # We need to update the partition selectors when rows get rendered,
-        # e.g. in categories.
-        self.update_partition_selectors(data)
         return self.data
 
     def callback(self, data):
@@ -70,34 +76,15 @@ class EditForm(EditFormAdapterBase):
             return
         return method(data)
 
-    def update_partition_selectors(self, data):
-        """Update all service partition selectors with the current settings
+    def get_partition_options(self, data):
+        """Returns a list of patition options to select from
         """
         # Prepare the options list
         options = [{"title": "", "value": ""}]
         options.extend(
             map(lambda o: dict(title=o, value=o),
                 self.get_current_partition_ids(data, only_numbered=True)))
-
-        # get the current selected service settings of the template (includes
-        # partition/hidden settings)
-        services = self.get_current_service_settings()
-
-        # iterate over all service UIDs to fill the partition selectors with
-        # the current (unsaved) partition scheme
-        for uid in self.get_all_service_uids():
-            # field name used in the listing widget for the partition select
-            fieldname = "Partition.{}:records".format(uid)
-            # current selected service settings
-            selected = services.get(uid)
-            # check if we have a partition assigned to this service
-            part_id = None
-            if selected:
-                part_id = selected.get("part_id")
-            # update the partition select box with the current settings
-            self.add_update_field(fieldname, {
-                "selected": [part_id] if part_id else [],
-                "options": options})
+        return options
 
     def get_current_service_settings(self):
         """Get the current service settings
@@ -148,6 +135,35 @@ class EditForm(EditFormAdapterBase):
         unique_ids = self.get_current_partition_ids(data)
         return len(unique_ids)
 
+    def update_partition_selectors(self, data):
+        """Update all service partition selectors with the current settings
+        """
+        # Prepare the options list
+        options = [{"title": "", "value": ""}]
+        options.extend(
+            map(lambda o: dict(title=o, value=o),
+                self.get_current_partition_ids(data, only_numbered=True)))
+
+        # get the current selected service settings of the template (includes
+        # partition/hidden settings)
+        services = self.get_current_service_settings()
+
+        # iterate over all service UIDs to fill the partition selectors with
+        # the current (unsaved) partition scheme
+        for uid in self.get_all_service_uids():
+            # field name used in the listing widget for the partition select
+            fieldname = "Partition.{}:records".format(uid)
+            # current selected service settings
+            selected = services.get(uid)
+            # check if we have a partition assigned to this service
+            part_id = None
+            if selected:
+                part_id = selected.get("part_id")
+            # update the partition select box with the current settings
+            self.add_update_field(fieldname, {
+                "selected": [part_id] if part_id else [],
+                "options": options})
+
     def on_partition_added(self, data):
         """Handle new partition rows
         """
@@ -156,6 +172,9 @@ class EditForm(EditFormAdapterBase):
         self.add_update_field(
             "form.widgets.partitions.AA.widgets.part_id",
             "part-{}".format(count + 1))
+
+        # update all partition selectors with the current settings
+        self.update_partition_selectors(data)
         return self.data
 
     def on_partition_removed(self, data):
@@ -166,4 +185,8 @@ class EditForm(EditFormAdapterBase):
         self.add_update_field(
             "form.widgets.partitions.AA.widgets.part_id",
             "part-{}".format(count))
+
+        # update all partition selectors with the current settings
+        self.update_partition_selectors(data)
+
         return self.data
