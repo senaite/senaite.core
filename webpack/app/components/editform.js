@@ -128,7 +128,9 @@ class EditForm {
     // observe the form with all contained elements
     observer.observe(form, {
       childList: true,
-      subtree: true
+      subtree: true,
+      attributes: false,
+      characterData: false
     });
   }
 
