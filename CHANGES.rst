@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2756 Fix reindex behavior in setup_core_catalogs
 - #2755 Remove dependency handling from sample add form
 - #2754 Fix template service partition selector update
 - #2753 Enable full view reload for specific item transitions in listings
