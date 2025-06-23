@@ -128,7 +128,9 @@ class EditForm {
     // observe the form with all contained elements
     observer.observe(form, {
       childList: true,
-      subtree: true
+      subtree: true,
+      attributes: false,
+      characterData: false
     });
   }
 
@@ -486,19 +488,21 @@ class EditForm {
       let selector, event, name, rest;
       ({selector, event, name, ...rest} = record);
       // register local callback to apply additional data
-      let callback = (event) => {
+      let on_callback = (event) => {
+        console.debug("EditForm::on_callback");
         let data = {
           name: name,
-          target: event.currentTarget
+          target: event.currentTarget.name || null,
+          value: event.currentTarget.value || null
         }
         this.ajax_send(form, data, "callback");
       }
 
       if (selector === "document") {
-        document.addEventListener(event, callback);
+        document.addEventListener(event, on_callback);
       } else {
         document.querySelectorAll(selector).forEach((el) => {
-          el.addEventListener(event, callback);
+          el.addEventListener(event, on_callback);
         });
       }
     }
