@@ -24,8 +24,9 @@ from bika.lims.interfaces import IInvalidated
 from senaite.core import logger
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
-from senaite.core.setuphandlers import setup_catalog_mappings
-from senaite.core.setuphandlers import setup_core_catalogs
+from senaite.core.interfaces.catalog import ISenaiteCatalogObject
+from senaite.core.setuphandlers import add_catalog_column
+from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from zope.interface import alsoProvides
@@ -103,7 +104,13 @@ def upgrade_catalog_modified_index(tool):
     logger.info("Upgrade catalog modified index ...")
     portal = api.get_portal()
 
-    setup_catalog_mappings(portal)
-    setup_core_catalogs(portal)
+    # Get all catalogs that implement ISenaiteCatalogObject
+    objects = portal.objectValues()
+    cats = [cat for cat in objects if ISenaiteCatalogObject.providedBy(cat)]
+
+    # Add the `modified` index and metadata
+    for cat in cats:
+        add_catalog_index(cat, "modified", "", "DateIndex")
+        add_catalog_column(cat, "modified")
 
     logger.info("Upgrade catalog modified index [DONE]")

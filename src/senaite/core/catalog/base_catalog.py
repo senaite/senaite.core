@@ -55,7 +55,6 @@ INDEXES = [
     ("review_state", "", "FieldIndex"),
     ("title", "", "FieldIndex"),
     ("UID", "", "UUIDIndex"),
-    ("modifed", "", "DateIndex"),
 ]
 
 COLUMNS = [
@@ -71,7 +70,6 @@ COLUMNS = [
     "portal_type",
     "review_state",
     "state_title",
-    "modified",
 ]
 
 TYPES = [
