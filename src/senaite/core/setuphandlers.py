@@ -347,10 +347,6 @@ def setup_core_catalogs(portal, catalog_classes=None, reindex=True):
         for column in catalog_columns:
             add_catalog_column(catalog, column)
 
-        if not reindex:
-            logger.info("*** Skipping reindex of new indexes")
-            return
-
         # map allowed types to this catalog in archetype_tool
         for portal_type in catalog_types:
             # check existing catalogs
@@ -361,6 +357,10 @@ def setup_core_catalogs(portal, catalog_classes=None, reindex=True):
                 at.setCatalogsByType(portal_type, new_catalogs)
                 logger.info("*** Mapped catalog '%s' for type '%s'"
                             % (catalog_id, portal_type))
+
+    if not reindex:
+        logger.info("*** Skipping reindex of new indexes")
+        return
 
     # reindex new indexes
     for catalog, idx_id in to_reindex:
