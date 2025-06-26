@@ -114,3 +114,7 @@ def upgrade_catalog_modified_index(tool):
         add_catalog_column(cat, "modified")
 
     logger.info("Upgrade catalog modified index [DONE]")
+    logger.warn(
+        "You may need to manually reindex the 'modified' index in existing "
+        "catalogs as required."
+    )
