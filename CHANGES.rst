@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2757 Fix return base URL for AJAX requests in the AR added form
 - #2752 Add modified index to catalog
 - #2756 Fix reindex behavior in setup_core_catalogs
 - #2755 Remove dependency handling from sample add form
