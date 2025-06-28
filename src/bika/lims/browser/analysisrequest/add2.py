@@ -51,7 +51,6 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.api import dtime
 from senaite.core.api.analysisservice import get_calculation_dependencies_for
-from senaite.core.api.analysisservice import get_service_dependencies_for
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.p3compat import cmp
