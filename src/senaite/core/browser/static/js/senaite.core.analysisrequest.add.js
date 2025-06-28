@@ -789,11 +789,6 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
   }
 
   get_base_url() {
-    var base_url;
-    base_url = window.location.href;
-    if (base_url.search("/portal_factory") >= 0) {
-      return base_url.split("/portal_factory")[0];
-    }
     return document.body.dataset.baseUrl;
   }
 
