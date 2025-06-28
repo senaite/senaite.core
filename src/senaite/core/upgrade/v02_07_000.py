@@ -302,8 +302,8 @@ def remove_calculations_from_repositorytool():
         rt.setVersionableContentTypes(versionable_types)
 
     logger.info("Remove auto versioning for Calculation... [DONE]")
-    
-    
+
+
 def upgrade_catalog_modified_index(tool):
     """Update modified index in catalog
     """
