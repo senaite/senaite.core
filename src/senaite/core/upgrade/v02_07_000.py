@@ -283,6 +283,20 @@ def migrate_calculation_to_dx(src, destination=None):
     # change the ID *after* the original object was removed
     migrator.copy_id(src, target)
 
+    # We need to migrate all Analyses that linked to this Calculation!
+    rc = api.get_tool("reference_catalog")
+    refs = rc.getBackReferences(src, relationship="AnalysisCalculation")
+    for ref in refs:
+        analysis = ref.getSourceObject()
+        if not analysis:
+            # When does this happen?
+            # Maybe if the Analysis was removed by "Manage Analyses"?
+            logger.warn("Cannot migrate Analysis {}. No source object found."
+                        .format(ref))
+            continue
+        analysis.setCalculation(target)
+        # XXX: where can we delete the reference?
+
     logger.info("Migrated Calculation from %s -> %s" % (src, target))
 
 
