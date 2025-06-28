@@ -5,8 +5,8 @@
    <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Move Calculations to Senaite setup"
       description="Migrate Calculations to Senaite setup"
-      source="2703"
-      destination="2704"
+      source="2704"
+      destination="2705"
       handler=".v02_07_000.migrate_calculations_to_dx"
       profile="senaite.core:default"/>
 
