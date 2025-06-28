@@ -83,9 +83,15 @@ class CreateWorksheetModal(Modal):
         :returns: new created Workshett
         """
         categories = map(api.get_object, categories)
+
         analyses = []
+        unassigned_analyses = []
         for sample in samples:
             for analysis in sample.getAnalyses(full_objects=True):
+                # collect all unassigned analyses
+                if analysis.getWorksheetUID() is None:
+                    unassigned_analyses.append(analysis)
+                # skip analyses that do not belong to the selsected categories
                 if analysis.getCategory() not in categories:
                     continue
                 analyses.append(analysis)
@@ -94,8 +100,13 @@ class CreateWorksheetModal(Modal):
         ws = api.create(self.worksheet_folder, "Worksheet")
         ws.setAnalyst(analyst)
         ws.addAnalyses(analyses)
-        ws.applyWorksheetTemplate(api.get_object(template, None))
         ws.setResultsLayout(self.worksheet_layout)
+
+        # apply the worksheet template to all unassigned analyses
+        wst = api.get_object(template, None)
+        if wst:
+            ws.applyWorksheetTemplate(wst, analyses=unassigned_analyses)
+
         return ws
 
     @property

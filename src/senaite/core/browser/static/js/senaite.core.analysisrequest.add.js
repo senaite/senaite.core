@@ -761,32 +761,6 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
       $.each(record.template_metadata, function(uid, template) {
         return me.set_template(arnum, template);
       });
-      // handle unmet dependencies, one at a time
-      $.each(record.unmet_dependencies, function(uid, dependencies) {
-        var context, dialog, service;
-        service = record.service_metadata[uid];
-        context = {
-          "service": service,
-          "dependencies": dependencies
-        };
-        dialog = me.template_dialog("dependency-add-template", context);
-        dialog.on("yes", function() {
-          // select the services
-          $.each(dependencies, function(index, service) {
-            return me.set_service(arnum, service.uid, true);
-          });
-          // trigger form:changed event
-          return $(me).trigger("form:changed");
-        });
-        dialog.on("no", function() {
-          // deselect the dependant service
-          me.set_service(arnum, uid, false);
-          // trigger form:changed event
-          return $(me).trigger("form:changed");
-        });
-        // break the iteration after the first loop to avoid multiple dialogs.
-        return false;
-      });
       // disable (and uncheck) services that are beyond sample holding time
       return $.each(record.beyond_holding_time, function(index, uid) {
         var beyond_holding_time, parent, service_cb;

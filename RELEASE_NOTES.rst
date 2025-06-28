@@ -1,6 +1,28 @@
 Release notes
 =============
 
+Update from 2.6.0 to 2.7.0
+--------------------------
+
+**IMPORTANT: Manual Reindexing of "modified" Index May Be Required**
+
+Version 2.7.0 introduces an update to the internal catalogs by adding a new `modified` index and metadata column. This change enables improved sorting and filtering by the last modification date for cataloged objects throughout SENAITE.
+
+**What does this mean for you?**
+
+- The upgrade process will attempt to add the `modified` index and column to all SENAITE catalogs automatically.
+- However, for existing catalogs, you may need to manually reindex the new `modified` index to ensure correct catalog behavior and search results.
+
+**How to manually reindex the "modified" index:**
+
+1. Click **Site Setup** in your SENAITE instance.
+2. Go to the **Management Interface**.
+3. Navigate to each catalog (e.g., `senaite_catalog`, `senaite_catalog_analysis`, etc.) that implements SENAITE catalog interfaces.
+4. In each catalog, select the "Indexes" tab.
+5. Find the `modified` index in the list.
+6. Click the **"Reindex"** button at the bottom of the page.
+
+
 Update from 2.5.0 to 2.6.0
 --------------------------
 

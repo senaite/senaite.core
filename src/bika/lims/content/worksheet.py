@@ -818,7 +818,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         layout = self.getLayout()
         return map(lambda l: (l["container_uid"], int(l["position"])), layout)
 
-    def _apply_worksheet_template_routine_analyses(self, wst):
+    def _apply_worksheet_template_routine_analyses(self, wst, analyses=None):
         """Add routine analyses to worksheet according to the worksheet template
         layout passed in w/o overwriting slots that are already filled.
 
@@ -829,6 +829,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         analyses that allows the method will be added
 
         :param wst: worksheet template used as the layout
+        :param analyses: list of analyses
         :returns: None
         """
         # Get the services from the Worksheet Template
@@ -839,19 +840,34 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                         .format(api.get_path(wst)))
             return
 
-        # Search for unassigned analyses
-        query = {
-            "portal_type": "Analysis",
-            "getServiceUID": service_uids,
-            "review_state": "unassigned",
-            "sort_on": "getPrioritySortkey"
-        }
-        analyses = api.search(query, ANALYSIS_CATALOG)
-        if not analyses:
-            return
+        if analyses is None:
+            # Search for unassigned analyses
+            query = {
+                "portal_type": "Analysis",
+                "getServiceUID": service_uids,
+                "review_state": "unassigned",
+                "sort_on": "getPrioritySortkey"
+            }
+            analyses = api.search(query, ANALYSIS_CATALOG)
+            if not analyses:
+                return
+        else:
+            assignable_analyses = []
+            # filter assigned analyses and those that do not belong to the WST
+            for analysis in analyses:
+                analysis = api.get_object(analysis)
+                # analysis must be unassigned
+                if analysis.getWorksheetUID():
+                    continue
+                service_uid = analysis.getRawAnalysisService()
+                # analysis must belong to the services of the WST
+                if service_uid not in service_uids:
+                    continue
+                assignable_analyses.append(analysis)
+            analyses = assignable_analyses
 
         # Available slots for routine analyses
-        available_slots = self.resolve_available_slots(wst, 'a')
+        available_slots = self.resolve_available_slots(wst, "a")
         available_slots.sort(reverse=True)
 
         # If there is an instrument assigned to this Worksheet Template, take
@@ -1053,22 +1069,26 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             services = reference['supported_services']
             self.addReferenceAnalyses(sample, services, slot)
 
-    def applyWorksheetTemplate(self, wst):
+    def applyWorksheetTemplate(self, wst, analyses=None):
         """ Add analyses to worksheet according to wst's layout.
             Will not overwrite slots which are filled already.
             If the selected template has an instrument assigned, it will
             only be applied to those analyses for which the instrument
             is allowed, the same happens with methods.
+
+        :param wst: worksheet template used as the layout
         """
+        wst = api.get_object(wst, default=None)
+
         # Store the Worksheet Template field and reindex it
-        self.getField('WorksheetTemplate').set(self, wst)
+        self.getField("WorksheetTemplate").set(self, wst)
         self.reindexObject(idxs=["getWorksheetTemplateTitle"])
-        
+
         if not wst:
             return
 
         # Apply the template for routine analyses
-        self._apply_worksheet_template_routine_analyses(wst)
+        self._apply_worksheet_template_routine_analyses(wst, analyses=analyses)
 
         # Apply the template for duplicate analyses
         self._apply_worksheet_template_duplicate_analyses(wst)

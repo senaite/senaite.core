@@ -935,6 +935,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # If string-like result, return without any formatting
         if result_type in ["string", "text"]:
             if html:
+                result = result if api.is_string(result) else str(result)
                 result = cgi.escape(result)
                 result = result.replace("\n", "<br/>")
             return result

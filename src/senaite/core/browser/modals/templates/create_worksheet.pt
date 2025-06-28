@@ -34,8 +34,8 @@
           </select>
           <small id="analyst-help"
                  i18n:translate=""
-                 class="form-text text-muted">
-            The worksheet will be assigned to this analyst
+                 class="form-text text-muted small">
+            The analyst responsible for completing the analyses in this worksheet
           </small>
         </div>
 
@@ -58,7 +58,7 @@
           <small id="analysis-categories-help"
                  i18n:translate=""
                  class="form-text text-muted">
-            Only analyses of the selected category will be added to the worksheet
+            Categories used to filter which analyses from the selected samples will be included in the worksheet
           </small>
         </div>
 
@@ -83,7 +83,9 @@
           <small id="analyst-help"
                  i18n:translate=""
                  class="form-text text-muted">
-            The template that will be immediately assigned to the worksheet
+            The worksheet includes all unassigned analyses specified in the chosen template
+            <br/>
+            <i class="fa-solid fa-circle-info"></i> Analyses from the selected categories will also be added.
           </small>
         </div>
 

@@ -35,6 +35,9 @@ from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.schema.uidreferencefield import get_backref_storage
+from senaite.core.interfaces.catalog import ISenaiteCatalogObject
+from senaite.core.setuphandlers import add_catalog_column
+from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import copy_snapshots
@@ -299,3 +302,25 @@ def remove_calculations_from_repositorytool():
         rt.setVersionableContentTypes(versionable_types)
 
     logger.info("Remove auto versioning for Calculation... [DONE]")
+    
+    
+def upgrade_catalog_modified_index(tool):
+    """Update modified index in catalog
+    """
+    logger.info("Upgrade catalog modified index ...")
+    portal = api.get_portal()
+
+    # Get all catalogs that implement ISenaiteCatalogObject
+    objects = portal.objectValues()
+    cats = [cat for cat in objects if ISenaiteCatalogObject.providedBy(cat)]
+
+    # Add the `modified` index and metadata
+    for cat in cats:
+        add_catalog_index(cat, "modified", "", "DateIndex")
+        add_catalog_column(cat, "modified")
+
+    logger.info("Upgrade catalog modified index [DONE]")
+    logger.warn(
+        "You may need to manually reindex the 'modified' index in existing "
+        "catalogs as required."
+    )
