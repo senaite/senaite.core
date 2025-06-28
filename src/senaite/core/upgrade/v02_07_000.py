@@ -289,8 +289,8 @@ def migrate_calculation_to_dx(src, destination=None):
     for ref in refs:
         analysis = ref.getSourceObject()
         if not analysis:
-            # When does this happen?
-            # Maybe if the Analysis was removed by "Manage Analyses"?
+            # This can happen for Analyses in stale Samples, i.e. those with
+            # with a temporary ID.
             logger.warn("Cannot migrate Analysis {}. No source object found."
                         .format(ref))
             continue
