@@ -295,7 +295,7 @@ def migrate_calculation_to_dx(src, destination=None):
                         .format(ref))
             continue
         analysis.setCalculation(target)
-        # XXX: where can we delete the reference?
+        analysis.deleteReferences(relationship="AnalysisCalculation")
 
     logger.info("Migrated Calculation from %s -> %s" % (src, target))
 
