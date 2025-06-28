@@ -789,16 +789,12 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
   }
 
   get_base_url() {
-    var base_url, paths, url;
+    var base_url;
     base_url = window.location.href;
     if (base_url.search("/portal_factory") >= 0) {
       return base_url.split("/portal_factory")[0];
     }
-    url = window.location.origin + window.location.pathname;
-    paths = url.split("/");
-    // delete current page path for getting current context
-    paths.pop();
-    return paths.join("/");
+    return document.body.dataset.baseUrl;
   }
 
   /**
