@@ -247,7 +247,7 @@ def migrate_calculation_to_dx(src, destination=None):
             "actor": obj.Creator() or "migrator",
             "modified": obj.modified().ISO(),
             "snapshot_created": obj.created().ISO(),
-            "comments": "Migrated stansphot from AT version {0}".format(
+            "comments": "Migrated snapshot from AT version {0}".format(
                 record.version_id),
         })
         # store the snapshot on the target object
