@@ -487,11 +487,11 @@ class TestCalculations(DataTestCase):
             # We need to take a new snapshot after the modifications
             modified(self.calculation)
 
-            for testcase in f['test_fixed_precision']:
+            for r in f['test_fixed_precision']:
                 # Define precision
                 services_obj = [s for s in self.services] + [self.calcservice]
                 for service in services_obj:
-                    service.setPrecision(testcase['fixed_precision'])
+                    service.setPrecision(r['fixed_precision'])
                 # Create the AR
                 client = self.portal.clients['client-1']
                 sampletype = self.portal.setup.sampletypes['sampletype-1']
@@ -545,7 +545,7 @@ class TestCalculations(DataTestCase):
                 # Let's go.. calculate and check result
                 calcanalysis.calculateResult(True, True)
                 self.assertEqual(
-                    calcanalysis.getFormattedResult(), case['expected_result'])
+                    calcanalysis.getFormattedResult(), r['expected_result'])
 
     def test_calculation_uncertainties_precision(self):
         # Input results
@@ -565,13 +565,17 @@ class TestCalculations(DataTestCase):
             self.calculation.setInterimFields(interims)
             self.assertEqual(self.calculation.getInterimFields(), interims)
 
-            for case in f['test_uncertainties_precision']:
+            # Test fixture
+            # We need to take a new snapshot after the modifications
+            modified(self.calculation)
+
+            for r in f['test_uncertainties_precision']:
                 # Define precision
                 services_obj = [s for s in self.services] + [self.calcservice]
 
                 for service in services_obj:
                     service.setPrecisionFromUncertainty(True)
-                    service.setUncertainties(case['uncertainties'])
+                    service.setUncertainties(r['uncertainties'])
                 # Create the AR
                 client = self.portal.clients['client-1']
                 sampletype = self.portal.setup.sampletypes['sampletype-1']
@@ -627,7 +631,7 @@ class TestCalculations(DataTestCase):
                 self.assertTrue(success, True)
                 self.assertEqual(
                     calcanalysis.getFormattedResult(),
-                    case['expected_result'])
+                    r['expected_result'])
 
 
 def test_suite():
