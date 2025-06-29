@@ -483,11 +483,15 @@ class TestCalculations(DataTestCase):
             self.calculation.setInterimFields(interims)
             self.assertEqual(self.calculation.getInterimFields(), interims)
 
-            for case in f['test_fixed_precision']:
+            # Test fixture
+            # We need to take a new snapshot after the modifications
+            modified(self.calculation)
+
+            for f in f['test_fixed_precision']:
                 # Define precision
                 services_obj = [s for s in self.services] + [self.calcservice]
                 for service in services_obj:
-                    service.setPrecision(case['fixed_precision'])
+                    service.setPrecision(f['fixed_precision'])
                 # Create the AR
                 client = self.portal.clients['client-1']
                 sampletype = self.portal.setup.sampletypes['sampletype-1']
