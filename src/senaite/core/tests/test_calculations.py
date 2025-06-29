@@ -487,11 +487,11 @@ class TestCalculations(DataTestCase):
             # We need to take a new snapshot after the modifications
             modified(self.calculation)
 
-            for f in f['test_fixed_precision']:
+            for testcase in f['test_fixed_precision']:
                 # Define precision
                 services_obj = [s for s in self.services] + [self.calcservice]
                 for service in services_obj:
-                    service.setPrecision(f['fixed_precision'])
+                    service.setPrecision(testcase['fixed_precision'])
                 # Create the AR
                 client = self.portal.clients['client-1']
                 sampletype = self.portal.setup.sampletypes['sampletype-1']
