@@ -134,14 +134,18 @@ class VersionWrapper(object):
         if not snapshot:
             raise KeyError("Version %s not found" % version)
 
+        # if the snapshot is empty, we return the original data
         for key, value in data.items():
 
-            # keep the original if we have no snapshot value
-            if key not in snapshot:
-                out[key] = value
-            else:
+            # NOTE: Old AT snapshots were created with capitalized field names,
+            # while new DX snapshots are all lowercase!
+            # -> this is a workaround to support both
+            if key in snapshot or key.capitalize() in snapshot:
                 # assigned the processed snapshot value
                 out[key] = self.process_snapshot_value(key, snapshot)
+            else:
+                # Keep the original if we have no snapshot value
+                out[key] = value
 
         return out
 
