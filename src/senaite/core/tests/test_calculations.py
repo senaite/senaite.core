@@ -25,6 +25,7 @@ from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import login
 from plone.app.testing import setRoles
 from senaite.core.tests.base import DataTestCase
+from zope.lifecycleevent import modified
 
 
 class TestCalculations(DataTestCase):
@@ -402,6 +403,10 @@ class TestCalculations(DataTestCase):
                                  'unit': ''})
             self.calculation.setInterimFields(interims)
             self.assertTrue(self.calculation.getInterimFields() == interims)
+
+            # Test fixture
+            # We need to take a new snapshot after the modifications
+            modified(self.calculation)
 
             # Create the AR
             client = self.portal.clients['client-1']
