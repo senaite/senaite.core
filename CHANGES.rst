@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2760 Fix UnicodeDecodeError in instrument importer when processing field values
 - #2757 Fix return base URL for AJAX requests in the AR add form
 - #2752 Add modified index to catalog
 - #2756 Fix reindex behavior in setup_core_catalogs
