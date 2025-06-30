@@ -677,8 +677,9 @@ class AnalysisResultsImporter(Logger):
         if date_captured:
             analysis.setResultCaptureDate(date_captured)
 
-        self.log(_("{sid} result for '{keyword}': '{result}'"
-                   .format(sid=sid, keyword=keyword, result=result)))
+        self.log(_(u"{sid} result for '{keyword}': '{result}'"
+                   .format(sid=sid, keyword=keyword,
+                           result=api.safe_unicode(result))))
 
         return True
 
@@ -727,8 +728,9 @@ class AnalysisResultsImporter(Logger):
                 field.set(analysis, value)
 
             updated = True
-            self.log(_("{sid} Updated field '{field}' with '{value}'"
-                       .format(sid=sid, field=key, value=value)))
+            self.log(_(u"{sid} Updated field '{field}' with '{value}'"
+                       .format(sid=sid, field=key,
+                               value=api.safe_unicode(value))))
         return updated
 
     def save_submit_analysis(self, analysis):
