@@ -331,8 +331,10 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
 
     @security.public
     def getDependents(self, with_retests=False, recursive=False):
-        """
-        Returns a list of siblings who depend on us to calculate their result.
+        """Returns a list of siblings who depend on us to calculate their result.
+
+        I.e. calculated analyses that contain our keyword in their formula.
+
         :param with_retests: If false, dependents with retests are dismissed
         :param recursive: If true, returns all dependents recursively down
         :type with_retests: bool
@@ -357,7 +359,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
             # Calculation must have the service I belong to
             services = calculation.getRawDependentServices()
             return self_service_uid in services
-        
+
         request = self.getRequest()
         if request.isPartition():
             parent = request.getParentAnalysisRequest()
@@ -379,8 +381,8 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
 
     @security.public
     def getDependencies(self, with_retests=False, recursive=False):
-        """
-        Return a list of siblings who we depend on to calculate our result.
+        """Return a list of siblings who we depend on to calculate our result.
+
         :param with_retests: If false, siblings with retests are dismissed
         :param recursive: If true, looks for dependencies recursively up
         :type with_retests: bool
