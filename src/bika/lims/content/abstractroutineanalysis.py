@@ -25,6 +25,7 @@ from datetime import timedelta
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
@@ -34,6 +35,8 @@ from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IDynamicResultsRange
 from bika.lims.interfaces import IInternalUse
+from bika.lims.interfaces import IRejected
+from bika.lims.interfaces import IRetracted
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.workflow import getTransitionDate
@@ -381,7 +384,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
 
     @security.public
     def getDependencies(self, with_retests=False, recursive=False):
-        """Return a list of siblings who we depend on to calculate our result.
+        """Return a list of analyses who we depend on to calculate our result.
 
         :param with_retests: If false, siblings with retests are dismissed
         :param recursive: If true, looks for dependencies recursively up
@@ -389,36 +392,50 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         :return: Analyses the current analysis depends on
         :rtype: list of IAnalysis
         """
-        calc = self.getCalculation()
-        if not calc:
-            return []
-
-        # If the calculation this analysis is bound does not have analysis
-        # keywords (only interims), no need to go further
-        service_uids = calc.getRawDependentServices()
-
-        # Ensure we exclude ourselves
-        service_uid = self.getRawAnalysisService()
-        service_uids = filter(lambda serv: serv != service_uid, service_uids)
-        if len(service_uids) == 0:
-            return []
-
         dependencies = []
-        for sibling in self.getSiblings(with_retests=with_retests):
-            # We get all analyses that depend on me, also if retracted (maybe
-            # I am one of those that are retracted!)
-            deps = map(api.get_uid, sibling.getDependents(with_retests=True))
-            if self.UID() in deps:
-                dependencies.append(sibling)
-                if recursive:
-                    # Append the dependencies of this dependency
-                    up_deps = sibling.getDependencies(with_retests=with_retests,
-                                                      recursive=True)
-                    dependencies.extend(up_deps)
 
-        # Exclude analyses of same service as me to prevent max recursion depth
-        return filter(lambda dep: dep.getRawAnalysisService() != service_uid,
-                      dependencies)
+        # get the service of the current analysis
+        service = self.getAnalysisService()
+        # get service dependencies/dependents
+        service_deps = get_calculation_dependencies_for(service)
+
+        sample = self.getRequest()
+        my_keyword = self.getKeyword()
+
+        # calculate first level dependencies, i.e. analyses *we* depend on
+        for uid, service in service_deps.items():
+            keyword = service.getKeyword()
+            if keyword == my_keyword:
+                continue  # skip myself
+            # how does this work with partitioned samples?
+            analyses = sample.getAnalyses(
+                getKeyword=keyword, full_objects=True)
+            dependencies.extend(analyses)
+
+        # calculate all dependencies for our dependencies
+        if recursive:
+            # iterate over all dependencies and get their dependencies
+            for dep in dependencies:
+                dependencies.extend(dep.getDependencies(
+                    with_retests=with_retests, recursive=recursive))
+
+        if not with_retests:
+            def is_restracted(analysis):
+                if IRetracted.providedBy(analysis):
+                    return True
+                if IRejected.providedBy(analysis):
+                    return True
+                return False
+
+            def is_retested(analysis):
+                return analysis.isRetested()
+
+            # filter out retracted analyses
+            dependencies = filter(lambda d: not is_restracted(d), dependencies)
+            # filter out rejected analyses
+            dependencies = filter(lambda d: not is_retested(d), dependencies)
+
+        return dependencies
 
     @security.public
     def getPrioritySortkey(self):
