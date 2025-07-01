@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2759 Fix UnicodeDecodeError on Specification Validation
+- #2758 Fix global auditlog error for objects without snapshots
 - #2757 Fix return base URL for AJAX requests in the AR add form
 - #2752 Add modified index to catalog
 - #2756 Fix reindex behavior in setup_core_catalogs
