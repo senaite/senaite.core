@@ -400,6 +400,9 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         service_deps = get_calculation_dependencies_for(service)
 
         sample = self.getRequest()
+        # get the root sample in case we are a partition
+        if sample.isPartition():
+            sample = sample.getParentAnalysisRequest()
         my_keyword = self.getKeyword()
 
         # calculate first level dependencies, i.e. analyses *we* depend on
