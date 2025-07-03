@@ -113,6 +113,12 @@ class AuditLogView(BikaListingView):
             }
         ]
 
+    def isItemAllowed(self, obj):
+        """Skip items without snapshots
+        """
+        obj = api.get_object(obj)
+        return get_last_snapshot(obj) is not None
+
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
         The use of this service prevents the extra-loops in child objects.
