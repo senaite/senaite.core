@@ -377,10 +377,11 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
                     with_retests=with_retests, recursive=recursive))
 
         if not with_retests:
+            # filter out retracted, rejected and retested analyses
             def is_retest(analysis):
                 return is_retracted(analysis) or is_rejected(analysis) \
                     or is_retested(analysis)
-            dependents = filter(is_retest, dependents)
+            dependents = filter(lambda d: not is_retest(d), dependents)
 
         return dependents
 
@@ -425,10 +426,11 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
                     with_retests=with_retests, recursive=recursive))
 
         if not with_retests:
+            # filter out retracted, rejected and retested analyses
             def is_retest(analysis):
                 return is_retracted(analysis) or is_rejected(analysis) \
                     or is_retested(analysis)
-            dependencies = filter(is_retest, dependencies)
+            dependencies = filter(lambda d: not is_retest(d), dependencies)
 
         return dependencies
 
