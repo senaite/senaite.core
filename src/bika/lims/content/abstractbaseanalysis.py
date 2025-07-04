@@ -23,6 +23,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets.decimal import DecimalWidget
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
@@ -47,7 +48,6 @@ from Products.Archetypes.Schema import Schema
 from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.utils import IntDisplayList
 from Products.Archetypes.Widget import BooleanWidget
-from Products.Archetypes.Widget import DecimalWidget
 from Products.Archetypes.Widget import IntegerWidget
 from Products.Archetypes.Widget import SelectionWidget
 from Products.Archetypes.Widget import StringWidget
