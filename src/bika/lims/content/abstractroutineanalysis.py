@@ -373,7 +373,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         if recursive:
             # iterate over all dependencies and get their dependencies
             for dep in dependents:
-                dependents.extend(dep.getDependets(
+                dependents.extend(dep.getDependents(
                     with_retests=with_retests, recursive=recursive))
 
         if not with_retests:
