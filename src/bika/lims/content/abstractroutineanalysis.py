@@ -25,6 +25,10 @@ from datetime import timedelta
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api.analysis import is_rejected
+from bika.lims.api.analysis import is_retested
+from bika.lims.api.analysis import is_retracted
+from bika.lims.api.analysisservice import get_calculation_dependants_for
 from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.content.abstractanalysis import AbstractAnalysis
@@ -35,8 +39,6 @@ from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IDynamicResultsRange
 from bika.lims.interfaces import IInternalUse
-from bika.lims.interfaces import IRejected
-from bika.lims.interfaces import IRetracted
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.workflow import getTransitionDate
@@ -344,43 +346,43 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         :return: Analyses the current analysis depends on
         :rtype: list of IAnalysis
         """
-        def is_dependent(analysis):
-            # Never consider myself as dependent
-            if analysis.UID() == self.UID():
-                return False
+        dependents = []
 
-            # Never consider analyses from same service as dependents
-            self_service_uid = self.getRawAnalysisService()
-            if analysis.getRawAnalysisService() == self_service_uid:
-                return False
+        # get the service of the current analysis
+        service = self.getAnalysisService()
+        # get service dependents
+        service_deps = get_calculation_dependants_for(service)
 
-            # Without calculation, no dependency relationship is possible
-            calculation = analysis.getCalculation()
-            if not calculation:
-                return False
+        sample = self.getRequest()
+        # get the root sample in case we are a partition
+        if sample.isPartition():
+            sample = sample.getParentAnalysisRequest()
+        my_keyword = self.getKeyword()
 
-            # Calculation must have the service I belong to
-            services = calculation.getRawDependentServices()
-            return self_service_uid in services
+        # calculate first level dependencies, i.e. analyses *we* depend on
+        for uid, service in service_deps.items():
+            keyword = service.getKeyword()
+            if keyword == my_keyword:
+                continue  # skip myself
+            # how does this work with partitioned samples?
+            analyses = sample.getAnalyses(
+                getKeyword=keyword, full_objects=True)
+            dependents.extend(analyses)
 
-        request = self.getRequest()
-        if request.isPartition():
-            parent = request.getParentAnalysisRequest()
-            siblings = parent.getAnalyses(full_objects=True)
-        else:
-            siblings = self.getSiblings(with_retests=with_retests)
+        # calculate all dependencies for our dependencies
+        if recursive:
+            # iterate over all dependencies and get their dependencies
+            for dep in dependents:
+                dependents.extend(dep.getDependets(
+                    with_retests=with_retests, recursive=recursive))
 
-        dependents = filter(lambda sib: is_dependent(sib), siblings)
-        if not recursive:
-            return dependents
+        if not with_retests:
+            def is_retest(analysis):
+                return is_retracted(analysis) or is_rejected(analysis) \
+                    or is_retested(analysis)
+            dependents = filter(is_retest, dependents)
 
-        # Return all dependents recursively
-        deps = dependents
-        for dep in dependents:
-            down_dependencies = dep.getDependents(with_retests=with_retests,
-                                                  recursive=True)
-            deps.extend(down_dependencies)
-        return deps
+        return dependents
 
     @security.public
     def getDependencies(self, with_retests=False, recursive=False):
@@ -423,20 +425,10 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
                     with_retests=with_retests, recursive=recursive))
 
         if not with_retests:
-            def is_restracted(analysis):
-                if IRetracted.providedBy(analysis):
-                    return True
-                if IRejected.providedBy(analysis):
-                    return True
-                return False
-
-            def is_retested(analysis):
-                return analysis.isRetested()
-
-            # filter out retracted analyses
-            dependencies = filter(lambda d: not is_restracted(d), dependencies)
-            # filter out rejected analyses
-            dependencies = filter(lambda d: not is_retested(d), dependencies)
+            def is_retest(analysis):
+                return is_retracted(analysis) or is_rejected(analysis) \
+                    or is_retested(analysis)
+            dependencies = filter(is_retest, dependencies)
 
         return dependencies
 

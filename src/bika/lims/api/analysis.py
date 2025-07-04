@@ -19,16 +19,20 @@
 # Some rights reserved, see README and LICENSE.
 
 from collections import Mapping
+
 from bika.lims import api
 from bika.lims.api import _marker
-from bika.lims.config import MIN_OPERATORS, MAX_OPERATORS
+from bika.lims.config import MAX_OPERATORS
+from bika.lims.config import MIN_OPERATORS
 from bika.lims.content.analysisspec import ResultsRangeDict
-from bika.lims.interfaces import IAnalysis, IReferenceAnalysis, \
-    IResultOutOfRange
-from zope.component._api import getAdapters
-
+from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.interfaces import IReferenceAnalysis
+from bika.lims.interfaces import IRejected
+from bika.lims.interfaces import IResultOutOfRange
+from bika.lims.interfaces import IRetracted
 from bika.lims.interfaces.analysis import IRequestAnalysis
+from zope.component._api import getAdapters
 
 
 def is_out_of_range(brain_or_object, result=_marker):
@@ -235,3 +239,64 @@ def is_result_range_compliant(analysis):
         return True
 
     return rr == sample_rr
+
+
+def is_analysis(brain_or_object):
+    """Checks if the object is an analysis
+
+    :param brain_or_object: A single catalog brain or content object
+    :returns: True if the object is a reference analysis, False otherwise
+    """
+    return IAnalysis.providedBy(api.get_object(brain_or_object))
+
+
+def is_reference_analysis(brain_or_object):
+    """Checks if the object is a routine analysis
+
+    :param brain_or_object: A single catalog brain or content object
+    :returns: True if the object is a reference analysis, False otherwise
+    """
+    return IReferenceAnalysis.providedBy(api.get_object(brain_or_object))
+
+
+def is_retracted(brain_or_object):
+    """Checks if the analysis is retracted
+
+    :param brain_or_object: A single catalog brain or content object
+    :returns: True if the analysis is retracted, False otherwise
+    """
+    analysis = api.get_object(brain_or_object)
+    if not is_analysis(analysis) and not is_reference_analysis(analysis):
+        api.fail("{} is not supported. Needs to be IAnalysis or "
+                 "IReferenceAnalysis".format(repr(analysis)))
+    if IRetracted.providedBy(analysis):
+        return True
+    return False
+
+
+def is_rejected(brain_or_object):
+    """Checks if the analysis is rejected
+
+    :param brain_or_object: A single catalog brain or content object
+    :returns: True if the analysis is rejected, False otherwise
+    """
+    analysis = api.get_object(brain_or_object)
+    if not is_analysis(analysis) and not is_reference_analysis(analysis):
+        api.fail("{} is not supported. Needs to be IAnalysis or "
+                 "IReferenceAnalysis".format(repr(analysis)))
+    if IRejected.providedBy(analysis):
+        return True
+    return False
+
+
+def is_retested(brain_or_object):
+    """Checks if the analysis is retested
+
+    :param brain_or_object: A single catalog brain or content object
+    :returns: True if the analysis is retested, False otherwise
+    """
+    analysis = api.get_object(brain_or_object)
+    if not is_analysis(analysis) and not is_reference_analysis(analysis):
+        api.fail("{} is not supported. Needs to be IAnalysis or "
+                 "IReferenceAnalysis".format(repr(analysis)))
+    return analysis.isRetested()

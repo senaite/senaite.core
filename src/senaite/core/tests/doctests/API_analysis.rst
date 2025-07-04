@@ -19,6 +19,11 @@ Needed Imports:
     >>> from bika.lims import api
     >>> from bika.lims.api.analysis import get_formatted_interval
     >>> from bika.lims.api.analysis import is_out_of_range
+    >>> from bika.lims.api.analysis import is_retracted
+    >>> from bika.lims.api.analysis import is_rejected
+    >>> from bika.lims.api.analysis import is_retested
+    >>> from bika.lims.api.analysis import is_analysis
+    >>> from bika.lims.api.analysis import is_reference_analysis
     >>> from bika.lims.content.analysisrequest import AnalysisRequest
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.utils import tmpID
@@ -61,6 +66,10 @@ We need to create some basic objects for the test:
     >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID(), DuplicateVariation="0.5")
     >>> Mg = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Magnesium", Keyword="Mg", Price="20", Category=category.UID(), DuplicateVariation="0.5")
     >>> service_uids = [api.get_uid(an) for an in [Cu, Fe, Au, Mg]]
+
+Allow self verification:
+
+    >>> bikasetup.setSelfVerificationEnabled(True)
 
 Create an Analysis Specification for `Water`:
 
@@ -759,3 +768,142 @@ Result is within range only if at least one of the options is within range:
     >>> fec.setResult(["6"])
     >>> is_out_of_range(fec)
     (True, True)
+
+
+Check if an object is an analysis
+.................................
+
+    >>> sample = create_analysisrequest(client, request, values, service_uids)
+
+Check for analyses:
+
+    >>> is_analysis(sample)
+    False
+
+    >>> is_analysis(controls[0])
+    False
+
+    >>> is_analysis(sample.Cu)
+    True
+
+
+Check if an object is a reference analysis
+..........................................
+
+    >>> sample = create_analysisrequest(client, request, values, service_uids)
+
+Check for reference analyses:
+
+    >>> is_reference_analysis(sample)
+    False
+
+    >>> is_reference_analysis(sample.Cu)
+    False
+
+    >>> is_reference_analysis(controls[0])
+    True
+
+
+Check if an analysis is retracted
+.................................
+
+    >>> sample = create_analysisrequest(client, request, values, service_uids)
+    >>> success = doActionFor(sample, "receive")
+
+    >>> cu = sample.Cu
+    >>> api.get_workflow_status_of(cu)
+    'unassigned'
+
+The analysis is not retracted:
+
+    >>> is_retracted(cu)
+    False
+
+Now we submit a result:
+
+    >>> cu.setResult(10)
+    >>> success = doActionFor(cu, "submit")
+    >>> api.get_workflow_status_of(cu)
+    'to_be_verified'
+
+The analysis is not retracted:
+
+    >>> is_retracted(cu)
+    False
+
+Now let's retract the result:
+
+    >>> success = doActionFor(cu, "retract")
+    >>> api.get_workflow_status_of(cu)
+    'retracted'
+
+Now the analysis is retracted:
+
+    >>> is_retracted(cu)
+    True
+
+
+Check if an analysis is rejected
+.................................
+
+    >>> sample = create_analysisrequest(client, request, values, service_uids)
+    >>> success = doActionFor(sample, "receive")
+
+    >>> cu = sample.Cu
+    >>> api.get_workflow_status_of(cu)
+    'unassigned'
+
+The analysis is not rejected:
+
+    >>> is_rejected(cu)
+    False
+
+Now let's reject the analysis:
+
+    >>> success = doActionFor(cu, "reject")
+    >>> api.get_workflow_status_of(cu)
+    'rejected'
+
+The analysis is now rejected:
+
+    >>> is_rejected(cu)
+    True
+
+
+Check if an analysis is retested
+.................................
+
+    >>> sample = create_analysisrequest(client, request, values, service_uids)
+    >>> success = doActionFor(sample, "receive")
+
+    >>> cu = sample.Cu
+    >>> api.get_workflow_status_of(cu)
+    'unassigned'
+
+The analysis is not retested:
+
+    >>> is_retested(cu)
+    False
+
+Now we submit a result:
+
+    >>> cu.setResult(10)
+    >>> success = doActionFor(cu, "submit")
+    >>> api.get_workflow_status_of(cu)
+    'to_be_verified'
+
+The analysis is not retested:
+
+    >>> is_retested(cu)
+    False
+
+Now let's retest the analysis:
+
+    >>> success = doActionFor(cu, "retest")
+    >>> api.get_workflow_status_of(cu)
+    'verified'
+
+The analysis is now retested:
+
+    >>> is_retested(cu)
+    True
