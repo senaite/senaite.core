@@ -247,7 +247,8 @@ def is_analysis(brain_or_object):
     :param brain_or_object: A single catalog brain or content object
     :returns: True if the object is a reference analysis, False otherwise
     """
-    return IAnalysis.providedBy(api.get_object(brain_or_object))
+    analysis = api.get_object(brain_or_object)
+    return IAnalysis.providedBy(analysis)
 
 
 def is_reference_analysis(brain_or_object):
@@ -256,7 +257,8 @@ def is_reference_analysis(brain_or_object):
     :param brain_or_object: A single catalog brain or content object
     :returns: True if the object is a reference analysis, False otherwise
     """
-    return IReferenceAnalysis.providedBy(api.get_object(brain_or_object))
+    analysis = api.get_object(brain_or_object)
+    return IReferenceAnalysis.providedBy(analysis)
 
 
 def is_retracted(brain_or_object):
@@ -269,9 +271,7 @@ def is_retracted(brain_or_object):
     if not is_analysis(analysis) and not is_reference_analysis(analysis):
         api.fail("{} is not supported. Needs to be IAnalysis or "
                  "IReferenceAnalysis".format(repr(analysis)))
-    if IRetracted.providedBy(analysis):
-        return True
-    return False
+    return IRetracted.providedBy(analysis)
 
 
 def is_rejected(brain_or_object):
@@ -284,9 +284,7 @@ def is_rejected(brain_or_object):
     if not is_analysis(analysis) and not is_reference_analysis(analysis):
         api.fail("{} is not supported. Needs to be IAnalysis or "
                  "IReferenceAnalysis".format(repr(analysis)))
-    if IRejected.providedBy(analysis):
-        return True
-    return False
+    return IRejected.providedBy(analysis)
 
 
 def is_retested(brain_or_object):
