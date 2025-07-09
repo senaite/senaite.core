@@ -26,6 +26,7 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.browser.widgets import RejectionSetupWidget
+from bika.lims.browser.widgets.decimal import DecimalWidget
 from bika.lims.browser.worksheet.tools import getWorksheetLayouts
 from bika.lims.config import CURRENCIES
 from bika.lims.config import DECIMAL_MARKS
@@ -39,7 +40,6 @@ from bika.lims.interfaces import IBikaSetup
 from plone.app.folder import folder
 from Products.Archetypes.atapi import BooleanField
 from Products.Archetypes.atapi import BooleanWidget
-from Products.Archetypes.atapi import DecimalWidget
 from Products.Archetypes.atapi import FixedPointField
 from Products.Archetypes.atapi import InAndOutWidget
 from Products.Archetypes.atapi import IntegerField

@@ -22,6 +22,7 @@ import six
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims import safe_unicode
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces import IRoutineAnalysis
 from plone.memoize.view import memoize_contextless
@@ -648,17 +649,16 @@ class AnalysisResultsImporter(Logger):
                        "'{sid}' with calculation '{calculation}'"
                        .format(keyword=keyword,
                                sid=sid,
-                               calculation=api.safe_unicode(
-                                   calculation.Title()))))
+                               calculation=safe_unicode(calculation.Title()))))
             return False
 
         # check if non-empty result can be overwritten
         if not self.can_override_analysis_result(analysis, result):
-            self.log(_("Analysis '{keyword}' of sample '{sid}' has the "
+            self.log(_(u"Analysis '{keyword}' of sample '{sid}' has the "
                        "result '{result}' set, which is kept due to the "
                        "selected override option"
                        .format(sid=sid,
-                               result=analysis.getResult(),
+                               result=safe_unicode(analysis.getResult()),
                                keyword=keyword)))
             return False
 
@@ -677,8 +677,9 @@ class AnalysisResultsImporter(Logger):
         if date_captured:
             analysis.setResultCaptureDate(date_captured)
 
-        self.log(_("{sid} result for '{keyword}': '{result}'"
-                   .format(sid=sid, keyword=keyword, result=result)))
+        self.log(_(u"{sid} result for '{keyword}': '{result}'"
+                   .format(sid=sid, keyword=keyword,
+                           result=safe_unicode(result))))
 
         return True
 
@@ -727,8 +728,9 @@ class AnalysisResultsImporter(Logger):
                 field.set(analysis, value)
 
             updated = True
-            self.log(_("{sid} Updated field '{field}' with '{value}'"
-                       .format(sid=sid, field=key, value=value)))
+            self.log(_(u"{sid} Updated field '{field}' with '{value}'"
+                       .format(sid=sid, field=key,
+                               value=safe_unicode(value))))
         return updated
 
     def save_submit_analysis(self, analysis):
