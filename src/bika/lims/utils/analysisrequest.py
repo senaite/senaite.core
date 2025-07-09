@@ -43,6 +43,7 @@ from bika.lims.workflow import doActionFor
 from DateTime import DateTime
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFPlone.utils import _createObjectByType
+from senaite.core.api.workflow import check_guard
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.idserver import renameAfterCreation
 from senaite.core.permissions.sample import can_receive
@@ -134,13 +135,12 @@ def create_analysisrequest(client, request, values, analyses=None,
     if not IReceived.providedBy(ar):
         setup = api.get_setup()
         auto_receive = setup.getAutoreceiveSamples()
-
         if ar.getSamplingRequired():
             # sample has not been collected yet
             changeWorkflowState(ar, SAMPLE_WORKFLOW, "to_be_sampled",
                                 action="to_be_sampled")
 
-        elif auto_receive and ar.getDateSampled() and can_receive(ar):
+        elif auto_receive and can_receive(ar) and check_guard(ar, "receive"):
             # auto-receive the sample, but only if the user (that might be
             # a client) has enough privileges and the sample has a value set
             # for DateSampled. Otherwise, sample_due

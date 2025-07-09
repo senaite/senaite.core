@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2762 Fix performance of analysis dependency calculations
+- #2764 Fix receive guard on sample creation is skipped if auto-receive enabled
 - #2761 Fix AT decimal widget allows commas
 - #2760 Fix UnicodeDecodeError in instrument importer when processing field values
 - #2759 Fix UnicodeDecodeError on Specification Validation
