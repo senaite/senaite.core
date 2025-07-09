@@ -17,13 +17,14 @@
 #
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
-from bika.lims import api
-from bika.lims.api import _marker
 from Products.DCWorkflow.DCWorkflow import DCWorkflowDefinition
+from Products.DCWorkflow.Expression import StateChangeInfo
+from Products.DCWorkflow.Expression import createExprContext
 from Products.DCWorkflow.Guard import Guard
 from Products.DCWorkflow.States import StateDefinition
 from Products.DCWorkflow.Transitions import TransitionDefinition
+from bika.lims import api
+from bika.lims.api import _marker
 from senaite.core import logger
 
 
@@ -424,3 +425,35 @@ def is_transition_allowed(obj, transition_id):
     if wf.isActionSupported(obj, transition_id):
         return True
     return False
+
+
+def check_guard(obj, transition_id):
+    """Returns whether the guard's expression for the given object and
+    transition evaluates to True
+
+    :param obj: object to evaluate the guard against
+    :type obj: ATContentType/DexterityContentType/CatalogBrain/UID
+    :param transition_id: Workflow transition id
+    :type transition_id: string
+    :returns: True if the guard expression evaluates to True
+    :rtype: bool
+    """
+    obj = api.get_object(obj)
+    wf = get_workflow(obj)
+
+    # get the transition for the given object and workflow
+    transition = get_transition(wf, transition_id)
+    guard = transition.guard
+    if not guard:
+        return True
+
+    # get the guard's TALES expression
+    expr = guard.expr
+    if not expr:
+        return True
+
+    # create the expression context to provide names for TALES expressions
+    context = createExprContext(StateChangeInfo(obj, wf))
+
+    # evaluate the expression
+    return True if expr(context) else False

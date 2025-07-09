@@ -477,3 +477,44 @@ Non-existing transitions are not possible neither:
 
     >>> wapi.is_transition_allowed(client, "receive")
     False
+
+
+Check the transition guard (expression)
+.......................................
+
+It is possible to directly check if the guard expression of a transition
+evaluates to `True` or `False`, regardless of roles and permissions.
+
+Create an analysis category:
+
+    >>> categories = portal.setup.analysiscategories
+    >>> cat = api.create(categories, "AnalysisCategory", title="Microbiology")
+
+This category can be deactivated:
+
+    >>> wapi.is_transition_allowed(cat, "deactivate")
+    True
+    >>> wapi.check_guard(cat, "deactivate")
+    True
+
+Create an analysis service assigned to this category:
+
+    >>> services = portal.bika_setup.bika_analysisservices
+    >>> cu = api.create(services, "AnalysisService", title="Copper",
+    ...                 Keyword="Cu", Category=cat)
+
+Since there is a service assigned to the category we've created, the guard
+blocks the transition 'deactivate':
+
+    >>> wapi.is_transition_allowed(cat, "deactivate")
+    False
+    >>> wapi.check_guard(cat, "deactivate")
+    False
+
+If we remove the service we created, the guard no longer blocks the transition:
+
+    >>> api.delete(cu, check_permissions=False)
+    >>> wapi.is_transition_allowed(cat, "deactivate")
+    True
+    >>> wapi.check_guard(cat, "deactivate")
+    True
