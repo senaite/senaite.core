@@ -135,7 +135,6 @@ def create_analysisrequest(client, request, values, analyses=None,
     if not IReceived.providedBy(ar):
         setup = api.get_setup()
         auto_receive = setup.getAutoreceiveSamples()
-        import pdb;pdb.set_trace()
         if ar.getSamplingRequired():
             # sample has not been collected yet
             changeWorkflowState(ar, SAMPLE_WORKFLOW, "to_be_sampled",
