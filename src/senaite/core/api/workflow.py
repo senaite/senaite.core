@@ -428,7 +428,16 @@ def is_transition_allowed(obj, transition_id):
 
 
 def check_guard(obj, transition_id):
-    """Returns whether the guards ass"""
+    """Returns whether the guard's expression for the given object and
+    transition evaluates to True
+
+    :param obj: object to evaluate the guard against
+    :type obj: ATContentType/DexterityContentType/CatalogBrain/UID
+    :param transition_id: Workflow transition id
+    :type transition_id: string
+    :returns: True if the guard expression evaluates to True
+    :rtype: bool
+    """
     obj = api.get_object(obj)
     wf = get_workflow(obj)
 
