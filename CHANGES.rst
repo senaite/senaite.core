@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2763 Updated intl-tel-input 17.0.19 -> 25.3.1
 - #2757 Fix return base URL for AJAX requests in the AR add form
 - #2752 Add modified index to catalog
 - #2756 Fix reindex behavior in setup_core_catalogs
