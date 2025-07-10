@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2765 DX address widget improvements and fixtures
 - #2763 Updated intl-tel-input 17.0.19 -> 25.3.1
 - #2764 Fix receive guard on sample creation is skipped if auto-receive enabled
 - #2761 Fix AT decimal widget allows commas
