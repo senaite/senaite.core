@@ -346,20 +346,15 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         :return: Analyses the current analysis depends on
         :rtype: list of IAnalysis
         """
-        # get the service of the current analysis
-        service = self.getAnalysisService()
-        # get service dependents
-        service_deps = get_calculation_dependents_for(service)
-
+        # get the sample (might be a partition)
         sample = self.getRequest()
-        # get the root sample in case we are a partition
-        if sample.isPartition():
-            sample = sample.getParentAnalysisRequest()
-
-        # get the keywords of the dependent services
-        my_keyword = self.getKeyword()
+        # get the analysis service
+        service = self.getAnalysisService()
+        # get the dependents of the service
+        # NOTE: this might be inconsistent if a calculation changed after
+        #       dependent analyses were created in this sample!
+        service_deps = get_calculation_dependents_for(service)
         keywords = [s.getKeyword() for s in service_deps.values()]
-        keywords = [keyword for keyword in keywords if keyword != my_keyword]
         dependents = sample.getAnalyses(getKeyword=keywords, full_objects=True)
 
         # calculate all dependencies for our dependencies
@@ -388,28 +383,17 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         :return: Analyses the current analysis depends on
         :rtype: list of IAnalysis
         """
-        dependencies = []
-
+        # get the sample (might be a partition)
+        sample = self.getRequest()
         # get the service of the current analysis
         service = self.getAnalysisService()
-        # get service dependencies/dependents
+        # get the dependencies of the service
+        # NOTE: this might be inconsistent if a calculation changed after
+        #       dependent analyses were created in this sample!
         service_deps = get_calculation_dependencies_for(service)
-
-        sample = self.getRequest()
-        # get the root sample in case we are a partition
-        if sample.isPartition():
-            sample = sample.getParentAnalysisRequest()
-        my_keyword = self.getKeyword()
-
-        # calculate first level dependencies, i.e. analyses *we* depend on
-        for uid, service in service_deps.items():
-            keyword = service.getKeyword()
-            if keyword == my_keyword:
-                continue  # skip myself
-            # how does this work with partitioned samples?
-            analyses = sample.getAnalyses(
-                getKeyword=keyword, full_objects=True)
-            dependencies.extend(analyses)
+        keywords = [s.getKeyword() for s in service_deps.values()]
+        dependencies = sample.getAnalyses(
+            getKeyword=keywords, full_objects=True)
 
         # calculate all dependencies for our dependencies
         if recursive:
