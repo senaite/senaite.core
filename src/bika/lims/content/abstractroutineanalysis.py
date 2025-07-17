@@ -28,7 +28,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.api.analysis import is_rejected
 from bika.lims.api.analysis import is_retested
 from bika.lims.api.analysis import is_retracted
-from bika.lims.api.analysisservice import get_calculation_dependants_for
+from bika.lims.api.analysisservice import get_calculation_dependents_for
 from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.content.abstractanalysis import AbstractAnalysis

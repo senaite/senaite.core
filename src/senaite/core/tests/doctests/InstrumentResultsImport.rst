@@ -662,7 +662,7 @@ It sums up the results of our metals:
     >>> calc.getFormula()
     '[Au] + [Cu] + [Fe]'
 
-And therefore, has the other analyses as dependants:
+And therefore, has the other analyses as dependents:
 
     >>> deps = TM.getServiceDependencies()
     >>> sorted(map(lambda d: d.getKeyword(), deps))

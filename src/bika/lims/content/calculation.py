@@ -209,8 +209,8 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         calculation_interim_keys = map(lambda i: i.get("keyword"), value)
 
         # update all service interims
-        for service in self.getCalculationDependants():
-            # get the interims of the dependant service
+        for service in self.getCalculationDependents():
+            # get the interims of the dependent service
             service_interims = service.getInterimFields()
             # extract the keywords from the service interims
             service_interim_keys = map(lambda i: i.get("keyword"),
@@ -300,7 +300,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
 
         return deps
 
-    def getCalculationDependants(self, deps=None):
+    def getCalculationDependents(self, deps=None):
         """Return a flat list of services who depend on this calculation.
 
         This refers only to services who's Calculation UIDReferenceField have
@@ -316,7 +316,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         for service in services:
             calc = service.getCalculation()
             if calc and calc.UID() != self.UID():
-                calc.getCalculationDependants(deps)
+                calc.getCalculationDependents(deps)
             deps.append(service)
         return deps
 

@@ -356,7 +356,7 @@ partition, nothing will happen:
     [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>, <Analysis at /plone/clients/client-1/W-0001-P01/Fe>, <Analysis at /plone/clients/client-1/W-0001-P01/Au>]
 
 
-Test calculation when dependant service assigned to a partition subsample:
+Test calculation when dependent service assigned to a partition subsample:
 ..........................................................................
 
 Create a Sample and receive:
@@ -376,7 +376,7 @@ Set result values to analysis (Ca, Mg)
     >>> ca_analysis.setResult(10)
     >>> mg_analysis.setResult(10)
 
-Calculate dependant result and make sure it's correct:
+Calculate dependent result and make sure it's correct:
     >>> th_analysis = filter(lambda an: an.getKeyword()=="THCaCO3", analyses)[0]
     >>> th_analysis.calculateResult()
     True

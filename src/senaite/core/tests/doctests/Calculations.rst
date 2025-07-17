@@ -92,7 +92,7 @@ The `Calculation` depends now on the two Analysis Services::
 It is also possible to find out if an `AnalysisService` depends on the calculation::
 
     >>> as1.setCalculation(calc)
-    >>> calc.getCalculationDependants()
+    >>> calc.getCalculationDependents()
     [<AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>]
 
 Or to find out which services have selected a particular calculation as their

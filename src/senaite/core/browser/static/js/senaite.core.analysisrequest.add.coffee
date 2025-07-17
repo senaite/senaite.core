@@ -1515,7 +1515,7 @@ class window.AnalysisRequestAdd
       OK: ->
         $(@).dialog "destroy"
 
-    dialog = @template_dialog "service-dependant-template", context, buttons
+    dialog = @template_dialog "service-dependent-template", context, buttons
 
 
   ###*
