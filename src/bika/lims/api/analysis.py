@@ -245,14 +245,14 @@ def is_analysis(brain_or_object):
     """Checks if the object is an analysis
 
     :param brain_or_object: A single catalog brain or content object
-    :returns: True if the object is a reference analysis, False otherwise
+    :returns: True if the object is an analysis, False otherwise
     """
     analysis = api.get_object(brain_or_object)
     return IAnalysis.providedBy(analysis)
 
 
 def is_reference_analysis(brain_or_object):
-    """Checks if the object is a routine analysis
+    """Checks if the object is a reference analysis
 
     :param brain_or_object: A single catalog brain or content object
     :returns: True if the object is a reference analysis, False otherwise
@@ -262,7 +262,7 @@ def is_reference_analysis(brain_or_object):
 
 
 def is_retracted(brain_or_object):
-    """Checks if the analysis is retracted
+    """Checks if an analysis is retracted
 
     :param brain_or_object: A single catalog brain or content object
     :returns: True if the analysis is retracted, False otherwise
