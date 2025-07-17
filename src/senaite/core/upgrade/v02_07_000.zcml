@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Update analysis catalog indexes"
+      description="Add boolean 'has_calculation' index to analysis catalog"
+      source="2704"
+      destination="2705"
+      handler=".v02_07_000.update_analysis_catalog_indexes"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Add modified index to catalog"
       description="Add modified index to catalog to allow sorting by modified date"
       source="2703"
