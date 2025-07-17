@@ -311,7 +311,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         """
         if deps is None:
             deps = []
-        backrefs = get_backreferences(self, 'AnalysisServiceCalculation')
+        backrefs = get_backreferences(self, "AnalysisServiceCalculation")
         services = map(get_object_by_uid, backrefs)
         for service in services:
             calc = service.getCalculation()
