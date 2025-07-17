@@ -12,12 +12,12 @@ class LocationSelector extends React.Component {
     let options = [];
     let locations = this.props.locations;
     options.push(
-      <option value=''></option>
+      <option key="novalue" value=''></option>
     );
     if (Array.isArray(locations)) {
       for (let location of locations) {
         options.push(
-          <option value={location}>{location}</option>
+          <option key={location} value={location}>{location}</option>
         )
       }
     }
@@ -26,7 +26,7 @@ class LocationSelector extends React.Component {
 
   render() {
     return (
-      <select
+      <select className="form-control"
         id={this.props.id}
         name={this.props.name}
         value={this.props.value}
