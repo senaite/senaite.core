@@ -34,7 +34,6 @@ from Products.Archetypes.event import ObjectEditedEvent
 from Products.Archetypes.interfaces import IField as IATField
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.core import logger
 from senaite.core.interfaces import IDataManager
 from zope import event
 from zope.component import queryAdapter
@@ -47,6 +46,11 @@ class SampleHeaderViewlet(ViewletBase):
     """Header table with editable sample fields
     """
     template = ViewPageTemplateFile("templates/sampleheader.pt")
+
+    def __init__(self, context, request, view, manager=None):
+        super(SampleHeaderViewlet, self).__init__(
+            context, request, view, manager=manager)
+        self.show_save = False
 
     def render(self):
         """Renders the viewlet and handles form submission
@@ -239,10 +243,7 @@ class SampleHeaderViewlet(ViewletBase):
         mode = "view"
         if field.checkPermission("edit", self.context):
             mode = "edit"
-            if not self.is_edit_allowed():
-                logger.warn("Permission '{}' granted for the edition of '{}', "
-                            "but 'Modify portal content' not granted"
-                            .format(field.write_permission, field.getName()))
+            self.show_save = True
         elif field.checkPermission("view", self.context):
             mode = "view"
 

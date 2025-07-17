@@ -128,6 +128,7 @@ window.SiteView = class SiteView {
     const isDigit = key >= 48 && key <= 57;
     const isComma = char === ',';
     const isDot = char === '.';
+    const isMinus = char === '-';
     const isAllowed = this.allowed_keys.includes(key);
 
     // Allow digits and control keys
@@ -135,6 +136,9 @@ window.SiteView = class SiteView {
 
     // Allow one comma or one dot (handled later)
     if ((isComma || isDot) && !value.includes('.')) return;
+
+    // Allow one minus at the beginning of the line
+    if (isMinus && $el[0].selectionStart === 0 && !value.includes('-')) return;
 
     // Block everything else
     e.preventDefault();
@@ -147,14 +151,21 @@ window.SiteView = class SiteView {
     // Replace comma with dot
     val = val.replace(',', '.');
 
+    // Keep only digits, dot, and minus
+    val = val.replace(/[^0-9.-]/g, '');
+
+    // Allow only one leading minus
+    if (val.indexOf('-') > 0) {
+      val = val.replace(/-/g, '');
+    } else if ((val.match(/-/g) || []).length > 1) {
+      val = '-' + val.replace(/-/g, '');
+    }
+
     // Remove all but the first dot
     const firstDotIndex = val.indexOf('.');
     if (firstDotIndex !== -1) {
       val = val.slice(0, firstDotIndex + 1) + val.slice(firstDotIndex + 1).replace(/\./g, '');
     }
-
-    // Optional: strip non-numeric characters
-    val = val.replace(/[^0-9.]/g, '');
 
     $el.val(val);
   }

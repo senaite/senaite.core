@@ -13,6 +13,10 @@ class AddressField extends React.Component {
     return Array.isArray(this.props.locations);
   }
 
+  is_textarea() {
+    return this.props.type === "textarea";
+  }
+
   is_visible() {
     let visible = true;
     if (this.is_location_selector()) {
@@ -31,15 +35,30 @@ class AddressField extends React.Component {
           locations={this.props.locations}
           onChange={this.props.onChange} />
       )
-    } else {
+    }
+
+    if (this.is_textarea()) {
       return (
-        <input type="text"
+        <textarea
           id={this.props.id}
+          cols={this.props.cols}
+          rows={this.props.rows}
           name={this.props.name}
           value={this.props.value}
-          onChange={this.props.onChange} />
+          className={this.props.className}
+          style={{ resize: "both" }}
+          onChange={this.props.onChange}></textarea>
       )
     }
+
+    return (
+      <input type="text"
+        id={this.props.id}
+        name={this.props.name}
+        value={this.props.value}
+        className={this.props.className}
+        onChange={this.props.onChange} />
+    )
   }
 
   render() {
@@ -52,14 +71,11 @@ class AddressField extends React.Component {
       )
     }
     return (
-      <div class="form-group form-row mb-2">
-        <div class="col input-group input-group-sm">
-          <div class="input-group-prepend">
-            <label class="input-group-text"
-              for={this.props.id}>
-              {this.props.label}
-            </label>
-          </div>
+      <div className="form-group row">
+        <div className="col-sm-4">
+          {this.props.label}
+        </div>
+        <div className="col-sm-8">
           {this.render_element()}
         </div>
       </div>
