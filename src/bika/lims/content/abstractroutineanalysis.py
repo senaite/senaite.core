@@ -28,8 +28,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.api.analysis import is_rejected
 from bika.lims.api.analysis import is_retested
 from bika.lims.api.analysis import is_retracted
-from bika.lims.api.analysisservice import get_calculation_dependents_for
-from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
@@ -346,22 +344,30 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         :return: Analyses the current analysis depends on
         :rtype: list of IAnalysis
         """
+        dependents = set()
+
+        # get the service of the current analysis
+        service = self.getAnalysisService()
+
         # get the sample (might be a partition)
         sample = self.getRequest()
-        # get the analysis service
-        service = self.getAnalysisService()
-        # get the dependents of the service
-        # NOTE: this might be inconsistent if a calculation changed after
-        #       dependent analyses were created in this sample!
-        service_deps = get_calculation_dependents_for(service)
-        keywords = [s.getKeyword() for s in service_deps.values()]
-        dependents = sample.getAnalyses(getKeyword=keywords, full_objects=True)
 
-        # calculate all dependencies for our dependencies
+        # get all analyses with calculations
+        analyses_with_calcs = sample.getAnalyses(
+            has_calculation=True, full_objects=True)
+
+        # Now we check if we are part of any calculation
+        for analysis in analyses_with_calcs:
+            calc = analysis.getCalculation()
+            dependencies = calc.getDependentServices()
+            # check if our service is a dependency
+            if service in dependencies:
+                # remember the analysis that depends on us
+                dependents.add(analysis)
+
         if recursive:
-            # iterate over all dependencies and get their dependencies
-            for dep in dependents:
-                dependents.extend(dep.getDependents(
+            for dep in dependents[:]:
+                dependents.update(dep.getDependents(
                     with_retests=with_retests, recursive=recursive))
 
         if not with_retests:
@@ -371,7 +377,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
                     or is_retested(analysis)
             dependents = filter(lambda d: not is_retest(d), dependents)
 
-        return dependents
+        return list(dependents)
 
     @security.public
     def getDependencies(self, with_retests=False, recursive=False):
@@ -383,23 +389,31 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         :return: Analyses the current analysis depends on
         :rtype: list of IAnalysis
         """
+        # no calculation, no dependencies
+        calc = self.getCalculation()
+        if not calc:
+            return []
+
+        dependencies = set()
+
         # get the sample (might be a partition)
         sample = self.getRequest()
-        # get the service of the current analysis
-        service = self.getAnalysisService()
-        # get the dependencies of the service
-        # NOTE: this might be inconsistent if a calculation changed after
-        #       dependent analyses were created in this sample!
-        service_deps = get_calculation_dependencies_for(service)
-        keywords = [s.getKeyword() for s in service_deps.values()]
-        dependencies = sample.getAnalyses(
-            getKeyword=keywords, full_objects=True)
+        # get calculation dependencies
+        service_deps = calc.getDependentServices()
+        # get the keywords of the dependent services
+        keywords = [s.getKeyword() for s in service_deps]
+
+        # collect the analyses
+        for keyword in keywords:
+            # check if we contain analyses of these services
+            dependencies.update(sample.getAnalyses(
+                getKeyword=keyword, full_objects=True))
 
         # calculate all dependencies for our dependencies
         if recursive:
             # iterate over all dependencies and get their dependencies
-            for dep in dependencies:
-                dependencies.extend(dep.getDependencies(
+            for dep in dependencies[:]:
+                dependencies.update(dep.getDependencies(
                     with_retests=with_retests, recursive=recursive))
 
         if not with_retests:
@@ -409,7 +423,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
                     or is_retested(analysis)
             dependencies = filter(lambda d: not is_retest(d), dependencies)
 
-        return dependencies
+        return list(dependencies)
 
     @security.public
     def getPrioritySortkey(self):
