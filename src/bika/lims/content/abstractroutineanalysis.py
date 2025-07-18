@@ -366,7 +366,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
                 dependents.add(analysis)
 
         if recursive:
-            for dep in dependents[:]:
+            for dep in list(dependents):
                 dependents.update(dep.getDependents(
                     with_retests=with_retests, recursive=recursive))
 
@@ -412,7 +412,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         # calculate all dependencies for our dependencies
         if recursive:
             # iterate over all dependencies and get their dependencies
-            for dep in dependencies[:]:
+            for dep in list(dependencies):
                 dependencies.update(dep.getDependencies(
                     with_retests=with_retests, recursive=recursive))
 
