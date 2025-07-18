@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 import copy
-import time
 from collections import OrderedDict
 from datetime import timedelta
 
@@ -55,12 +54,11 @@ from zope.interface import implements
 from zope.interface import noLongerProvides
 
 
-def deps_cache_key(func, analysis, *args, **kwargs):
+def deps_cache_key(func, analysis, *args, **kw):
     """Cache key for the dependencies cache"""
     sample = analysis.getRequest()
     keywords = "".join(sample.objectIds())
-    ts = time.time() // 60
-    return "{}-{}-{}".format(ts, analysis.UID(), keywords)
+    return "{}-{}-{}".format(analysis.UID(), repr(kw), keywords)
 
 
 # The actual uncertainty for this analysis' result, populated when the result
