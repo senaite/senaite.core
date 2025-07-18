@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import copy
+import time
 from collections import OrderedDict
 from datetime import timedelta
 
@@ -40,6 +41,7 @@ from bika.lims.interfaces import IInternalUse
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.workflow import getTransitionDate
+from plone.memoize.ram import cache
 from Products.Archetypes.Field import BooleanField
 from Products.Archetypes.Field import StringField
 from Products.Archetypes.Schema import Schema
@@ -51,6 +53,15 @@ from senaite.core.permissions import FieldEditAnalysisResult
 from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.interface import noLongerProvides
+
+
+def deps_cache_key(func, analysis, *args, **kwargs):
+    """Cache key for the dependencies cache"""
+    sample = analysis.getRequest()
+    keywords = "".join(sample.objectIds())
+    ts = time.time() // 60
+    return "{}-{}-{}".format(ts, analysis.UID(), keywords)
+
 
 # The actual uncertainty for this analysis' result, populated when the result
 # is submitted.
@@ -332,17 +343,9 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         interim_fields = copy.deepcopy(self.getInterimFields())
         self.setInterimFields(interim_fields)
 
-    @security.public
-    def getDependents(self, with_retests=False, recursive=False):
-        """Returns a list of siblings who depend on us to calculate their result.
-
-        I.e. calculated analyses that contain our keyword in their formula.
-
-        :param with_retests: If false, dependents with retests are dismissed
-        :param recursive: If true, returns all dependents recursively down
-        :type with_retests: bool
-        :return: Analyses the current analysis depends on
-        :rtype: list of IAnalysis
+    @cache(deps_cache_key)
+    def get_raw_dependents(self, with_retests=False, recursive=False):
+        """Returns a list of analysis UIDs that depend on this analysis
         """
         dependents = set()
 
@@ -377,17 +380,27 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
                     or is_retested(analysis)
             dependents = filter(lambda d: not is_retest(d), dependents)
 
-        return list(dependents)
+        return map(api.get_uid, dependents)
 
     @security.public
-    def getDependencies(self, with_retests=False, recursive=False):
-        """Return a list of analyses who we depend on to calculate our result.
+    def getDependents(self, with_retests=False, recursive=False):
+        """Returns a list of analyses who depend on us to calculate their result.
 
-        :param with_retests: If false, siblings with retests are dismissed
-        :param recursive: If true, looks for dependencies recursively up
+        I.e. calculated analyses that contain our keyword in their formula.
+
+        :param with_retests: If false, dependents with retests are dismissed
+        :param recursive: If true, returns all dependents recursively down
         :type with_retests: bool
         :return: Analyses the current analysis depends on
         :rtype: list of IAnalysis
+        """
+        dependents = self.get_raw_dependents(
+            with_retests=with_retests, recursive=recursive)
+        return map(api.get_object, dependents)
+
+    @cache(deps_cache_key)
+    def get_raw_dependencies(self, with_retests=False, recursive=False):
+        """Returns a list of analysis UIDs that this analysis depends on
         """
         # no calculation, no dependencies
         calc = self.getCalculation()
@@ -407,7 +420,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         for keyword in keywords:
             # check if we contain analyses of these services
             dependencies.update(sample.getAnalyses(
-                getKeyword=keyword, full_objects=True))
+                getKeyword=keyword, full_objects=False))
 
         # calculate all dependencies for our dependencies
         if recursive:
@@ -423,7 +436,21 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
                     or is_retested(analysis)
             dependencies = filter(lambda d: not is_retest(d), dependencies)
 
-        return list(dependencies)
+        return map(api.get_uid, dependencies)
+
+    @security.public
+    def getDependencies(self, with_retests=False, recursive=False):
+        """Return a list of analyses who we depend on to calculate our result.
+
+        :param with_retests: If false, siblings with retests are dismissed
+        :param recursive: If true, looks for dependencies recursively up
+        :type with_retests: bool
+        :return: Analyses the current analysis depends on
+        :rtype: list of IAnalysis
+        """
+        dependencies = self.get_raw_dependencies(
+            with_retests=with_retests, recursive=recursive)
+        return map(api.get_object, dependencies)
 
     @security.public
     def getPrioritySortkey(self):
