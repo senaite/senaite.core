@@ -25,9 +25,8 @@ from datetime import timedelta
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.api.analysis import is_rejected
-from bika.lims.api.analysis import is_retested
-from bika.lims.api.analysis import is_retracted
+from bika.lims.api.analysis import get_dependencies
+from bika.lims.api.analysis import get_dependents
 from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
@@ -40,7 +39,6 @@ from bika.lims.interfaces import IInternalUse
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.workflow import getTransitionDate
-from plone.memoize.ram import cache
 from Products.Archetypes.Field import BooleanField
 from Products.Archetypes.Field import StringField
 from Products.Archetypes.Schema import Schema
@@ -52,14 +50,6 @@ from senaite.core.permissions import FieldEditAnalysisResult
 from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.interface import noLongerProvides
-
-
-def deps_cache_key(func, analysis, *args, **kw):
-    """Cache key for the dependencies cache"""
-    sample = analysis.getRequest()
-    keywords = "".join(sample.objectIds())
-    return "{}-{}-{}".format(analysis.UID(), repr(kw), keywords)
-
 
 # The actual uncertainty for this analysis' result, populated when the result
 # is submitted.
@@ -341,45 +331,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         interim_fields = copy.deepcopy(self.getInterimFields())
         self.setInterimFields(interim_fields)
 
-    @cache(deps_cache_key)
-    def get_raw_dependents(self, with_retests=False, recursive=False):
-        """Returns a list of analysis UIDs that depend on this analysis
-        """
-        dependents = set()
-
-        # get the service of the current analysis
-        service = self.getAnalysisService()
-
-        # get the sample (might be a partition)
-        sample = self.getRequest()
-
-        # get all analyses with calculations
-        analyses_with_calcs = sample.getAnalyses(
-            has_calculation=True, full_objects=True)
-
-        # Now we check if we are part of any calculation
-        for analysis in analyses_with_calcs:
-            calc = analysis.getCalculation()
-            dependencies = calc.getDependentServices()
-            # check if our service is a dependency
-            if service in dependencies:
-                # remember the analysis that depends on us
-                dependents.add(analysis)
-
-        if recursive:
-            for dep in list(dependents):
-                dependents.update(dep.getDependents(
-                    with_retests=with_retests, recursive=recursive))
-
-        if not with_retests:
-            # filter out retracted, rejected and retested analyses
-            def is_retest(analysis):
-                return is_retracted(analysis) or is_rejected(analysis) \
-                    or is_retested(analysis)
-            dependents = filter(lambda d: not is_retest(d), dependents)
-
-        return map(api.get_uid, dependents)
-
     @security.public
     def getDependents(self, with_retests=False, recursive=False):
         """Returns a list of analyses who depend on us to calculate their result.
@@ -392,49 +343,9 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         :return: Analyses the current analysis depends on
         :rtype: list of IAnalysis
         """
-        dependents = self.get_raw_dependents(
-            with_retests=with_retests, recursive=recursive)
+        dependents = get_dependents(
+            self, with_retests=with_retests, recursive=recursive)
         return map(api.get_object, dependents)
-
-    @cache(deps_cache_key)
-    def get_raw_dependencies(self, with_retests=False, recursive=False):
-        """Returns a list of analysis UIDs that this analysis depends on
-        """
-        # no calculation, no dependencies
-        calc = self.getCalculation()
-        if not calc:
-            return []
-
-        dependencies = set()
-
-        # get the sample (might be a partition)
-        sample = self.getRequest()
-        # get calculation dependencies
-        service_deps = calc.getDependentServices()
-        # get the keywords of the dependent services
-        keywords = [s.getKeyword() for s in service_deps]
-
-        # collect the analyses
-        for keyword in keywords:
-            # check if we contain analyses of these services
-            dependencies.update(sample.getAnalyses(
-                getKeyword=keyword, full_objects=False))
-
-        # calculate all dependencies for our dependencies
-        if recursive:
-            # iterate over all dependencies and get their dependencies
-            for dep in list(dependencies):
-                dependencies.update(dep.getDependencies(
-                    with_retests=with_retests, recursive=recursive))
-
-        if not with_retests:
-            # filter out retracted, rejected and retested analyses
-            def is_retest(analysis):
-                return is_retracted(analysis) or is_rejected(analysis) \
-                    or is_retested(analysis)
-            dependencies = filter(lambda d: not is_retest(d), dependencies)
-
-        return map(api.get_uid, dependencies)
 
     @security.public
     def getDependencies(self, with_retests=False, recursive=False):
@@ -446,8 +357,8 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         :return: Analyses the current analysis depends on
         :rtype: list of IAnalysis
         """
-        dependencies = self.get_raw_dependencies(
-            with_retests=with_retests, recursive=recursive)
+        dependencies = get_dependencies(
+            self, with_retests=with_retests, recursive=recursive)
         return map(api.get_object, dependencies)
 
     @security.public

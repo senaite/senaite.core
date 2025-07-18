@@ -32,7 +32,18 @@ from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.interfaces import IRetracted
 from bika.lims.interfaces.analysis import IRequestAnalysis
+from plone.memoize.ram import cache
 from zope.component._api import getAdapters
+
+
+def deps_cache_key(func, brain_or_object, **kwargs):
+    """Cache key for the dependencies cache"""
+    analysis = api.get_object(brain_or_object)
+    sample = analysis.getRequest()
+    uid = api.get_uid(analysis)
+    keywords = ",".join(sample.objectIds())
+    kw = frozenset(kwargs.items())
+    return "{}-{}-{}".format(uid, keywords, kw)
 
 
 def is_out_of_range(brain_or_object, result=_marker):
@@ -298,3 +309,98 @@ def is_retested(brain_or_object):
         api.fail("{} is not supported. Needs to be IAnalysis or "
                  "IReferenceAnalysis".format(repr(analysis)))
     return analysis.isRetested()
+
+
+@cache(deps_cache_key)
+def get_dependencies(brain_or_object, with_retests=False, recursive=False):
+    """Returns the list of dependent analysis UIDs for the analysis passed in
+
+    :param brain_or_object: A single catalog brain or content object
+    :returns: List analysis UIDs that this analysis depends on
+    """
+    if not is_analysis(brain_or_object):
+        return []
+
+    dependencies = set()
+    analysis = api.get_object(brain_or_object)
+
+    # no calculation, no dependencies
+    calc = analysis.getCalculation()
+    if not calc:
+        return []
+
+    # get the sample (might be a partition)
+    sample = analysis.getRequest()
+    # get calculation dependencies
+    service_deps = calc.getDependentServices()
+    # get the keywords of the dependent services
+    keywords = [s.getKeyword() for s in service_deps]
+
+    # collect the analyses
+    for keyword in keywords:
+        # check if we contain analyses of these services
+        dependencies.update(sample.getAnalyses(
+            getKeyword=keyword, full_objects=False))
+
+    # calculate all dependencies for our dependencies
+    if recursive:
+        # iterate over all dependencies and get their dependencies
+        for dep in list(dependencies):
+            dependencies.update(get_dependencies(
+                dep, with_retests=with_retests, recursive=recursive))
+
+    if not with_retests:
+        # filter out retracted, rejected and retested analyses
+        def is_retest(analysis):
+            return is_retracted(analysis) or is_rejected(analysis) \
+                or is_retested(analysis)
+        dependencies = filter(lambda d: not is_retest(d), dependencies)
+
+    return map(api.get_uid, dependencies)
+
+
+@cache(deps_cache_key)
+def get_dependents(brain_or_object, with_retests=False, recursive=False):
+    """Returns the list of analysis UIDs that depend on the current
+
+    :param brain_or_object: A single catalog brain or content object
+    :returns: List of analysis UIDs that depend on the current analysis
+    """
+    if not is_analysis(brain_or_object):
+        return []
+
+    dependents = set()
+    analysis = api.get_object(brain_or_object)
+
+    # get the service of the current analysis
+    service = analysis.getAnalysisService()
+
+    # get the sample (might be a partition)
+    sample = analysis.getRequest()
+
+    # get all analyses with calculations
+    analyses_with_calcs = sample.getAnalyses(
+        has_calculation=True, full_objects=True)
+
+    # Now we check if we are part of any calculation
+    for analysis in analyses_with_calcs:
+        calc = analysis.getCalculation()
+        dependencies = calc.getDependentServices()
+        # check if our service is a dependency
+        if service in dependencies:
+            # remember the analysis that depends on us
+            dependents.add(analysis)
+
+    if recursive:
+        for dep in list(dependents):
+            dependents.update(get_dependents(
+                dep, with_retests=with_retests, recursive=recursive))
+
+    if not with_retests:
+        # filter out retracted, rejected and retested analyses
+        def is_retest(analysis):
+            return is_retracted(analysis) or is_rejected(analysis) \
+                or is_retested(analysis)
+        dependents = filter(lambda d: not is_retest(d), dependents)
+
+    return map(api.get_uid, dependents)
