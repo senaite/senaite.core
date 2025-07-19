@@ -1038,7 +1038,7 @@ The retest should of `Cu` is now a dependent of the `Fe` and `Au` retests:
     ['Au-1', 'Fe-1']
 
 
-The same should work for dependencies
+The same should work for dependencies:
 
     >>> dependencies = get_dependencies(au_analysis, recursive=True)
     >>> list(sorted(map(api.get_id, dependencies)))
