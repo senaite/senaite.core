@@ -1430,6 +1430,10 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         from bika.lims.catalog import getCatalog
         return getCatalog(self)
 
+    @property
+    def bika_setup(self):
+        return api.get_bika_setup()
+
     def Title(self):
         """ Return the Request ID as title """
         return self.getId()
