@@ -45,9 +45,13 @@ def deps_cache_key(func, brain_or_object, **kwargs):
     analysis = api.get_object(brain_or_object)
     sample = analysis.getRequest()
     uid = api.get_uid(analysis)
+    formula = ""
+    calc = analysis.getCalculation()
+    if calc:
+        formula = calc.getMinifiedFormula()
     keywords = ",".join(sample.objectIds())
     kw = frozenset(kwargs.items())
-    return "{}-{}-{}".format(uid, keywords, kw)
+    return "{}-{}-{}-{}".format(uid, formula, keywords, kw)
 
 
 def store_on_request(func, brain_or_object, **kwargs):
