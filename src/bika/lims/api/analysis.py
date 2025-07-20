@@ -32,19 +32,7 @@ from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.interfaces import IRetracted
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from plone.memoize.ram import cache
 from zope.component._api import getAdapters
-
-
-def deps_cache_key(func, brain_or_object, **kwargs):
-    """Cache key for the dependencies cache"""
-    analysis = api.get_object(brain_or_object)
-    sample = analysis.getRequest()
-    uid = api.get_uid(analysis)
-    state = api.get_workflow_status_of(analysis)
-    keywords = ",".join(sample.objectIds())
-    kw = frozenset(kwargs.items())
-    return "{}-{}-{}-{}".format(uid, state, keywords, kw)
 
 
 def is_out_of_range(brain_or_object, result=_marker):
@@ -312,7 +300,6 @@ def is_retested(brain_or_object):
     return analysis.isRetested()
 
 
-@cache(deps_cache_key)
 def get_dependencies(brain_or_object, with_retests=False, recursive=False):
     """Returns the list of dependent analysis UIDs for the analysis passed in
 
@@ -360,7 +347,6 @@ def get_dependencies(brain_or_object, with_retests=False, recursive=False):
     return map(api.get_uid, dependencies)
 
 
-@cache(deps_cache_key)
 def get_dependents(brain_or_object, with_retests=False, recursive=False):
     """Returns the list of analysis UIDs that depend on the current
 
