@@ -41,9 +41,10 @@ def deps_cache_key(func, brain_or_object, **kwargs):
     analysis = api.get_object(brain_or_object)
     sample = analysis.getRequest()
     uid = api.get_uid(analysis)
+    state = api.get_workflow_status_of(analysis)
     keywords = ",".join(sample.objectIds())
     kw = frozenset(kwargs.items())
-    return "{}-{}-{}".format(uid, keywords, kw)
+    return "{}-{}-{}-{}".format(uid, state, keywords, kw)
 
 
 def is_out_of_range(brain_or_object, result=_marker):
