@@ -373,6 +373,9 @@ def get_dependents(brain_or_object, with_retests=False, recursive=False):
     # Now we check if we are part of any calculation
     for analysis in analyses_with_calcs:
         calc = analysis.getCalculation()
+        if not calc:
+            # in case the `has_calculation` index is not there yet
+            continue
         dependencies = calc.getDependentServices()
         # check if our service is a dependency
         if service in dependencies:
