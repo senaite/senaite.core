@@ -31,7 +31,6 @@ from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.interfaces import IRetracted
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from plone.memoize.volatile import cache
 from zope.component._api import getAdapters
 
 _marker = object()
