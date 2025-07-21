@@ -44,14 +44,11 @@ def deps_cache_key(func, brain_or_object, **kwargs):
     """Cache key for the dependencies cache"""
     analysis = api.get_object(brain_or_object)
     sample = analysis.getRequest()
+    funcname = func.__name__
     uid = api.get_uid(analysis)
-    formula = ""
-    calc = analysis.getCalculation()
-    if calc:
-        formula = calc.getMinifiedFormula()
     keywords = ",".join(sample.objectIds())
     kw = frozenset(kwargs.items())
-    return "{}-{}-{}-{}".format(uid, formula, keywords, kw)
+    return "{}-{}-{}-{}".format(funcname, uid, keywords, kw)
 
 
 def store_on_request(func, brain_or_object, **kwargs):
