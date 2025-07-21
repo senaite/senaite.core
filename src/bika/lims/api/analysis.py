@@ -349,7 +349,6 @@ def get_dependencies(brain_or_object, with_retests=False, recursive=False):
     return map(api.get_object, dependencies)
 
 
-@cache(deps_cache_key, store_on_request)
 def get_dependents(brain_or_object, with_retests=False, recursive=False):
     """Returns the list of analysis UIDs that depend on the current
 
