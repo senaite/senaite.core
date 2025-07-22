@@ -324,12 +324,11 @@ def get_dependencies(brain_or_object, with_retests=False, recursive=False):
     service_deps = calc.getDependentServices()
     # get the keywords of the dependent services
     keywords = [s.getKeyword() for s in service_deps]
-
+    # emtpy sample/partition
+    if not keywords:
+        return []
     # collect the analyses
-    for keyword in keywords:
-        # check if we contain analyses of these services
-        dependencies.update(sample.getAnalyses(
-            getKeyword=keyword, full_objects=False))
+    dependencies.update(sample.getAnalyses(getKeyword=keywords))
 
     # calculate all dependencies for our dependencies
     if recursive:
