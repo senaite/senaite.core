@@ -324,7 +324,7 @@ def get_dependencies(brain_or_object, with_retests=False, recursive=False):
     service_deps = calc.getDependentServices()
     # get the keywords of the dependent services
     keywords = [s.getKeyword() for s in service_deps]
-    # emtpy sample/partition
+    # no dependencies to other services, nothing to do
     if not keywords:
         return []
     # collect the analyses
