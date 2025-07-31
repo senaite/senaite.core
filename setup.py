@@ -95,6 +95,8 @@ setup(
         "pycountry==18.12.8",
         # et-xmlfile >= 2.0.0 does not support Python 2.x anymore
         "et-xmlfile<2.0.0",
+        # magnitude > 1.0.1 does ot support Python 2.x anymore
+        "magnitude==1.0.1",
     ],
     extras_require={
         "test": [
