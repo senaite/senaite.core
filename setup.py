@@ -52,7 +52,6 @@ setup(
     zip_safe=False,
     install_requires=[
         "collective.monkeypatcher",
-        "magnitude",
         "plone.api",
         "plone.app.dexterity",
         "plone.app.iterate",
