@@ -1806,6 +1806,12 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     msg = _("Contact does not belong to the selected client")
                     fielderrors["Contact"] = msg
 
+            # Auto-add CCContact when hidden on Sample Add form
+            if not record['CCContact'] and contact_obj:
+                cc_contacts = contact_obj.getCCContact()
+                if cc_contacts:
+                    record["CCContact"] = [cc.UID() for cc in cc_contacts]
+
             # Check if the number of samples per record is permitted
             num_samples = self.get_num_samples(record)
             if num_samples > max_samples_record:
