@@ -2023,7 +2023,7 @@ class Worksheet_Templates(WorksheetImporter):
                     "pos": int(row["pos"]),
                     "type": analysis_type[0].lower(), # if 'type' is full word
                     "blank_ref": [blank_uid] if blank_uid else [],
-                    "control_ref": [control_uid] if blank_uid else [],
+                    "control_ref": [control_uid] if control_uid else [],
                     "reference_proxy": ref_proxy,
                     "dup": dup,
                     "dup_proxy": dup,
