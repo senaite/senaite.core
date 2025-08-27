@@ -270,5 +270,14 @@ class Batch(ATFolder, ClientAwareMixin):
             total_progress = sum(sample_progresses) / total
         return total_progress
 
+    def getNumberOfSamples(self):
+        """
+        Returns the number of samples.
+        :returns: number of samples
+        :rtype: integer
+        """
+        samples = self.getAnalysisRequests()
+        return len(samples)
+
 
 registerType(Batch, PROJECTNAME)

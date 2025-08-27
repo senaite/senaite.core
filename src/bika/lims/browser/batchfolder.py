@@ -83,6 +83,8 @@ class BatchFolderContentsView(ListingView):
             ("ClientBatchID", {
                 "title": _("Client Batch ID"),
                 "index": "getClientBatchID", }),
+            ("getNumberOfSamples", {
+                "title": _("Samples"), }),
             ("state_title", {
                 "title": _("State"),
                 "sortable": False, }),
@@ -205,6 +207,9 @@ class BatchFolderContentsView(ListingView):
         item["created"] = self.ulocalized_time(created, long_format=True)
         item["BatchDate"] = self.ulocalized_time(date, long_format=True)
         item["BatchLabels"] = ""
+
+        item["getNumberOfSamples"] = str(
+            obj.getNumberOfSamples())
 
         if batch_labels:
             item["BatchLabels"] = ",".join(batch_labels)
