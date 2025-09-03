@@ -1202,6 +1202,19 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
             return {}
         return max_hold_time
 
+    def getResultOptionTextByValue(self, value, default=""):
+        """Returns the ResultText for a given ResultValue from the ResultOptions
+
+        :param value: The ResultValue of the option to be retrieved
+        :type value: str
+        :return: Result text
+        """
+        options = self.getResultOptions() or []
+        for option in options:
+            if option.get("ResultValue") == value:
+                return option.get("ResultText", default)
+        return default
+
     # TODO Remove. ResultOptionsType field was replaced by ResulType field
     def getResultOptionsType(self):
         if self.getStringResult():
