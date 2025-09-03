@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2781 Fix formatted specification interval for result options
 - #2780 Fix result options text not displayed if it contains character entities
 - #2768 Pin magnitude to a Python 2 compatible version
 - #2762 Fix performance of analysis dependency calculations
