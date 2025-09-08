@@ -37,6 +37,8 @@ Imports:
     >>> from bika.lims.utils.analysisrequest import create_partition
     >>> from bika.lims.api.analysis import is_out_of_range
 
+    >>> from senaite.core.registry import set_registry_record
+
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
@@ -237,7 +239,6 @@ Allow the instrument for our services and controls:
 
 Attach import file to each analysis that is attached to a worksheet:
 
-    >>> from senaite.core.registry import set_registry_record
     >>> set_registry_record("import_analysis_attach_importfile", True)
 
 
@@ -276,6 +277,61 @@ Run the auto import:
     '2.0'
     >>> sample.Cu.getResult()
     '1.0'
+
+The results should be all submitted:
+
+    >>> api.get_workflow_status_of(sample.Au)
+    'to_be_verified'
+
+    >>> api.get_workflow_status_of(sample.Fe)
+    'to_be_verified'
+
+    >>> api.get_workflow_status_of(sample.Cu)
+    'to_be_verified'
+
+
+Basic Instrument Results Import with manual Analysis submission
+...............................................................
+
+Disable auto submission upon import:
+
+    >>> set_registry_record("import_analysis_submit", False)
+
+Add a new sample:
+
+    >>> sample = new_sample([Au, Cu, Fe], client, contact, sampletype)
+
+Setup the import file:
+
+    >>> data = """
+    ... ID,Cu,Fe,Au,end
+    ... {},1,2,3,end
+    ... """.strip().format(sample.getId())
+
+    >>> with open(os.path.join(resultsfolder, new_import_filename()), "w") as f:
+    ...     f.write(data)
+
+Run the auto import:
+
+    >>> import_log = auto_import()
+
+    >>> sample.Au.getResult()
+    '3.0'
+    >>> sample.Fe.getResult()
+    '2.0'
+    >>> sample.Cu.getResult()
+    '1.0'
+
+The results should be **not** submitted:
+
+    >>> api.get_workflow_status_of(sample.Au)
+    'unassigned'
+
+    >>> api.get_workflow_status_of(sample.Fe)
+    'unassigned'
+
+    >>> api.get_workflow_status_of(sample.Cu)
+    'unassigned'
 
 
 Basic Instrument Results Import with Interims
@@ -478,12 +534,12 @@ Test the results:
 The import CSV file should be attached to each analysis:
 
     >>> sample1.Au.getAttachment()[0].getFilename()
-    'import6.csv'
+    'import....csv'
 
     >>> print(sample1.Au.getAttachment()[0].getAttachmentFile().data)
     ID,Au,end
-    W-0010,1,end
-    W-0011,2,end
+    W-...,1,end
+    W-...,2,end
 
 
 Instrument Results Import with Worksheet assigned Analyses and QCs
