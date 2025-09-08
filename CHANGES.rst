@@ -4,6 +4,10 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2781 Fix formatted specification interval for result options
+- #2780 Fix result options text not displayed if it contains character entities
+- #2778 Allow manual submission for imported results
+- #2768 Pin magnitude to a Python 2 compatible version
 - #2762 Fix performance of analysis dependency calculations
 - #2767 Show "Save" button in sample header if at least one field is editable
 - #2766 Allow negative numbers in numeric fields
