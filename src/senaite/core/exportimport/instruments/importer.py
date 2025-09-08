@@ -736,6 +736,10 @@ class AnalysisResultsImporter(Logger):
     def save_submit_analysis(self, analysis):
         """Submit analysis and ignore errors
         """
+        # Allow manual submission if this setting is disabled
+        submit = get_registry_record("import_analysis_submit")
+        if submit is False:
+            return
         try:
             api.do_transition_for(analysis, "submit")
         except api.APIError:
