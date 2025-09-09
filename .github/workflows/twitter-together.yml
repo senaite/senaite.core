@@ -12,7 +12,8 @@ jobs:
   tweet:
     name: Tweet
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/2.x'
+    # if: github.event_name == 'push' && github.ref == 'refs/heads/2.x'
+    if: github.event_name == 'pull_request'
     steps:
       - name: checkout 2.x
         uses: actions/checkout@v3
