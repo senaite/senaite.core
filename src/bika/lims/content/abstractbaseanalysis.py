@@ -1209,9 +1209,11 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         :type value: str
         :return: Result text
         """
+        if value is None:
+            return default
         options = self.getResultOptions() or []
         for option in options:
-            if option.get("ResultValue") == value:
+            if api.to_float(option.get("ResultValue")) == api.to_float(value):
                 return option.get("ResultText", default)
         return default
 

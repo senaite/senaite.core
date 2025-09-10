@@ -201,9 +201,9 @@ def get_formatted_interval(analysis_or_results_range, default=_marker):
 
     if analysis:
         min_text = analysis.getResultOptionTextByValue(min_str)
-        min_str = cgi.escape(min_text) if min_text else None
+        min_str = cgi.escape(min_text) if min_text else min_str
         max_text = analysis.getResultOptionTextByValue(max_str)
-        max_str = cgi.escape(max_text) if max_text else None
+        max_str = cgi.escape(max_text) if max_text else max_str
 
     if min_str is None and max_str is None:
         if default is not _marker:
