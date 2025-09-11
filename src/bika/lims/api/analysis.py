@@ -184,7 +184,7 @@ def get_formatted_interval(analysis_or_results_range, default=_marker):
     :param analysis_or_results_range: analysis, dict or ResultsRangeDict
     """
     analysis = None
-    if IAnalysis.providedBy(analysis_or_results_range):
+    if IAnalysis.providedBy(analysis_or_results_range) or IReferenceAnalysis.providedBy(analysis_or_results_range):
         analysis = analysis_or_results_range
         results_range = analysis.getResultsRange()
     else:

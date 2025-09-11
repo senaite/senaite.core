@@ -3,7 +3,7 @@ Changelog
 
 2.7.0 (unreleased)
 ------------------
-- #2785 Fix Formatted specification interval rendering is not shown
+- #2785 Fix Formatted specification interval rendering is not shown for analyses and reference analyses
 - #2776 Fix Imported Worksheet Templates not editable after Load Setup Data
 - #2781 Fix formatted specification interval for result options
 - #2780 Fix result options text not displayed if it contains character entities
