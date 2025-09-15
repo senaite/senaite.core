@@ -173,7 +173,8 @@ class AnalysesView(ListingView):
                 "title": _("SubInstruments"),
                 "ajax": True,
                 "sortable": False,
-                "toggle": True}),
+                "toggle": True,
+                "type": "multiselect"}),
             ("Calculation", {
                 "title": _("Calculation"),
                 "sortable": False,

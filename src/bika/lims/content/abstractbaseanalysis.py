@@ -1202,7 +1202,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """
         subinstruments = self.getSubInstruments()
         if subinstruments:
-            return [i.getRaw(self) for i in subinstruments]
+            return [i.UID() for i in subinstruments]
         return []
     
     @security.public
