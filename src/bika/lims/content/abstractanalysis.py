@@ -866,6 +866,27 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not service:
             return []
         return service.getRawInstruments()
+    
+    @security.public
+    def getAllowedSubInstruments(self):
+        """Returns the allowed sub instruments from the service
+
+        :return: A list of sub instruments allowed for this Analysis
+        :rtype: list of sub instruments
+        """
+        service = self.getAnalysisService()
+        if not service:
+            return []
+        return service.getSubInstrumentsAllowed()
+    
+    @security.public
+    def getRawAllowedSubInstruments(self):
+        """Returns the UIDS of the allowed sub instruments from the service
+        """
+        service = self.getAnalysisService()
+        if not service:
+            return []
+        return service.getRawSubInstrumentsAllowed()
 
     @security.public
     def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1,

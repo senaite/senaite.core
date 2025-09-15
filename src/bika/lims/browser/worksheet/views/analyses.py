@@ -105,6 +105,10 @@ class AnalysesView(BaseView):
                 "sortable": False,
                 "ajax": True,
                 "title": _("Instrument")}),
+            ("SubInstruments", {
+                "sortable": False,
+                "ajax": True,
+                "title": _("SubInstruments")}),
             ("Attachments", {
                 "sortable": False,
                 "title": _("Attachments")}),

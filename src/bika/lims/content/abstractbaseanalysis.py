@@ -32,6 +32,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IBaseAnalysis
 from bika.lims.interfaces import IHaveDepartment
 from bika.lims.interfaces import IHaveInstrument
+from bika.lims.interfaces import IHaveSubInstruments
 from senaite.core.interfaces import IHaveAnalysisCategory
 from senaite.core.permissions import FieldEditAnalysisHidden
 from senaite.core.permissions import FieldEditAnalysisRemarks
@@ -50,6 +51,7 @@ from Products.Archetypes.utils import IntDisplayList
 from Products.Archetypes.Widget import BooleanWidget
 from Products.Archetypes.Widget import IntegerWidget
 from Products.Archetypes.Widget import SelectionWidget
+from Products.Archetypes.public import MultiSelectionWidget
 from Products.Archetypes.Widget import StringWidget
 from Products.CMFCore.permissions import View
 from senaite.core.browser.fields.records import RecordsField
@@ -394,6 +396,25 @@ Instrument = UIDReferenceField(
         format="select",
         label=_("Default Instrument"),
         description=_("Default instrument used for analyses of this type"),
+    )
+)
+
+SubInstruments = UIDReferenceField(
+    "SubInstruments",
+    read_permission=View,
+    write_permission=FieldEditAnalysisResult,
+    schemata="Method",
+    multiValued=1,
+    searchable=True,
+    required=0,
+    vocabulary="_default_sub_instrument_vocabulary",
+    allowed_types=("Instrument",),
+    accessor="getSubInstrumentsUID",
+    widget=MultiSelectionWidget(
+        format="select",
+        visible=True,
+        label=_("Default Sub Instruments"),
+        description=_("Default Sub instruments used for analyses of this type"),
     )
 )
 
@@ -877,6 +898,7 @@ schema = BikaSchema.copy() + Schema((
     ManualEntryOfResults,
     InstrumentEntryOfResults,
     Instrument,
+    SubInstruments,
     Method,
     MaxTimeAllowed,
     MaxHoldingTime,
@@ -914,7 +936,7 @@ schema['title']._validationLayer()
 
 
 class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
-    implements(IBaseAnalysis, IHaveAnalysisCategory, IHaveDepartment, IHaveInstrument)
+    implements(IBaseAnalysis, IHaveAnalysisCategory, IHaveDepartment, IHaveInstrument, IHaveSubInstruments)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
@@ -1164,6 +1186,44 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         instrument = self.getInstrument()
         if instrument:
             return instrument.absolute_url_path()
+    
+    @security.public
+    def getSubInstruments(self):
+        """Returns the assigned sub instruments
+
+        :returns: list of Instruments object
+        """
+        return self.getField("SubInstruments").get(self)
+    
+    def getRawSubInstruments(self):
+        """Returns the UID of the assigned sub instrument
+
+        :returns: sub Instrument(s) UID
+        """
+        subinstruments = self.getSubInstruments()
+        if subinstruments:
+            return [i.getRaw(self) for i in subinstruments]
+        return []
+    
+    @security.public
+    def getSubInstrumentsUID(self):
+        """Returns the UID of the assigned sub instruments
+
+        NOTE: This is the default accessor of the sub `Instrument` schema field
+        and needed for the selection widget to render the selected value
+        properly in _view_ mode.
+
+        :returns: SubInstruments UIDs
+        """
+        return self.getRawSubInstruments()
+    
+    @security.public
+    def getSubInstrumentsURL(self):
+        """Used to populate catalog values
+        """
+        subinstruments = self.getSubInstrument()
+        if subinstruments:
+            return [si.absolute_url_path() for si in subinstruments]
 
     @security.public
     def getCategoryTitle(self):

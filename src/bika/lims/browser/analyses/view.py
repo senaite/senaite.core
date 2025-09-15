@@ -169,6 +169,11 @@ class AnalysesView(ListingView):
                 "ajax": True,
                 "sortable": False,
                 "toggle": True}),
+            ("SubInstruments", {
+                "title": _("SubInstruments"),
+                "ajax": True,
+                "sortable": False,
+                "toggle": True}),
             ("Calculation", {
                 "title": _("Calculation"),
                 "sortable": False,
@@ -474,6 +479,15 @@ class AnalysesView(ListingView):
         """
         obj = self.get_object(analysis_brain)
         return obj.getInstrument()
+    
+    def get_sub_instruments(self, analysis_brain):
+        """Returns the sub instruments assigned to the analysis passed in, if any
+
+        :param analysis_brain: Brain that represents an analysis
+        :return: Sub Instrument object or None
+        """
+        obj = self.get_object(analysis_brain)
+        return obj.getSubInstruments()
 
     def get_calculation(self, analysis_brain):
         """Returns the calculation assigned to the analysis passed in, if any
@@ -627,7 +641,82 @@ class AnalysesView(ListingView):
         vocab = [{"ResultValue": "", "ResultText": _("None")}] + vocab
 
         return vocab
+    
+    def get_sub_instruments_vocabulary(self, analysis, method=None):
+        """Returns a vocabulary with the valid and active sub instruments available
+        for the analysis passed in.
 
+        If the option "Allow sub instrument entry of results" for the Analysis
+        is disabled, the function returns an empty vocabulary.
+
+        If the analysis passed in is a Reference Analysis (Blank or Control),
+        the vocabulary, the invalid instruments will be included in the
+        vocabulary too.
+
+        The vocabulary is a list of dictionaries. Each dictionary has the
+        following structure:
+
+            {'ResultValue': <instrument_UID>,
+             'ResultText': <instrument_Title>}
+
+        :param analysis: A single Analysis or ReferenceAnalysis
+        :type analysis_brain: Analysis or.ReferenceAnalysis
+        :return: A vocabulary with the sub instruments for the analysis
+        :rtype: A list of dicts: [{'ResultValue':UID, 'ResultText':Title}]
+        """
+        obj = self.get_object(analysis)
+        # get the allowed interfaces from the analysis service
+        subinstruments = obj.getAllowedSubInstruments()
+        # if no method is passed, get the assigned method of the analyis
+        if method is None:
+            method = obj.getMethod()
+
+        # check if the analysis has a method
+        if method:
+            # supported instrument from the method
+            method_instruments = method.getInstruments()
+            # allow only method instruments that are set in service
+            subinstruments = list(
+                set(subinstruments).intersection(method_instruments))
+
+        # If the analysis is a QC analysis, display all instruments, including
+        # those uncalibrated or for which the last QC test failed.
+        is_qc = api.get_portal_type(obj) == "ReferenceAnalysis"
+
+        vocab = []
+        for subinstrument in subinstruments:
+            uid = api.get_uid(subinstrument)
+            title = api.safe_unicode(api.get_title(subinstrument))
+            # append all valid instruments
+            if subinstrument.isValid():
+                vocab.append({
+                    "ResultValue": uid,
+                    "ResultText": title,
+                })
+            elif is_qc:
+                # Is a QC analysis, include instrument also if is not valid
+                if subinstrument.isOutOfDate():
+                    title = _(u"{} (Out of date)".format(title))
+                vocab.append({
+                    "ResultValue": uid,
+                    "ResultText": title,
+                })
+            elif subinstrument.isOutOfDate():
+                # disable out of date instruments
+                title = _(u"{} (Out of date)".format(title))
+                vocab.append({
+                    "disabled": True,
+                    "ResultValue": None,
+                    "ResultText": title,
+                })
+
+        # sort the vocabulary
+        vocab = list(sorted(vocab, key=itemgetter("ResultText")))
+        # prepend empty item
+        vocab = [{"ResultValue": "", "ResultText": _("None")}] + vocab
+
+        return vocab
+    
     def load_analysis_categories(self):
         # Getting analysis categories
         bsc = api.get_tool('senaite_catalog_setup')
@@ -768,6 +857,8 @@ class AnalysesView(ListingView):
         self._folder_item_method(obj, item)
         # Fill instrument
         self._folder_item_instrument(obj, item)
+        # Fill subinstruments
+        self._folder_item_sub_instruments(obj, item)
         # Fill analyst
         self._folder_item_analyst(obj, item)
         # Fill submitted by
@@ -871,6 +962,10 @@ class AnalysesView(ListingView):
         show_instrument_column = self.is_instrument_column_required(items)
         if "Instrument" in self.columns:
             self.columns["Instrument"]["toggle"] = show_instrument_column
+        
+        show_sub_instruments_column = self.is_sub_instruments_column_required(items)
+        if "SubInstruments" in self.columns:
+            self.columns["SubInstruments"]["toggle"] = show_sub_instruments_column
 
         # show unit selection column only if required
         show_unit_column = self.is_unit_selection_column_required(items)
@@ -1259,6 +1354,9 @@ class AnalysesView(ListingView):
         # update the available instruments
         inst_vocab = self.get_instruments_vocabulary(obj, method=method)
         item["choices"]["Instrument"] = inst_vocab
+        
+        sub_inst_vocab = self.get_sub_instruments_vocabulary(obj, method=method)
+        item["choices"]["SubInstruments"] = sub_inst_vocab
 
         return item
 
@@ -1290,6 +1388,41 @@ class AnalysesView(ListingView):
         else:
             item["Instrument"] = _("Manual")
 
+    def _folder_item_sub_instruments(self, analysis_brain, item):
+        """Fills the analysis' sub instrument to the item passed in.
+
+        :param analysis_brain: Brain that represents an analysis
+        :param item: analysis' dictionary counterpart that represents a row
+        """
+        logger.info("Foldering sub instrument")
+        item["SubInstruments"] = ""
+
+        # SubInstruments can be assigned to this analysis
+        is_editable = self.is_analysis_edition_allowed(analysis_brain)
+        subinstruments = self.get_sub_instruments(analysis_brain)
+
+        if is_editable:
+            # Edition allowed
+            voc = self.get_sub_instruments_vocabulary(analysis_brain)
+            item["SubInstruments"] = [i.UID() for i in subinstruments]
+            item["choices"]["SubInstruments"] = voc
+            item["allow_edit"].append("SubInstruments")
+
+        elif subinstruments:
+            subinstruments_names = []
+            subinstruments_links = []
+            for subinstrument in analysis_brain.getSubInstruments():
+                link = self.get_link_for(subinstrument, tabindex="-1")
+                subinstruments_links.append(link)
+                name = api.get_title(subinstrument)
+                subinstruments_names.append(name)
+            if subinstruments_links:
+                item["replace"]["SubInstruments"] = "<br/>".join(subinstruments_links)
+                item["SubInstruments"] = ", ".join(subinstruments_names)
+
+        else:
+            item["SubInstruments"] = _("Manual")
+            
     def _on_unit_change(self, uid=None, value=None, item=None, **kw):
         """ updates the rendered unit on selection of unit.
         """
@@ -1825,6 +1958,28 @@ class AnalysesView(ListingView):
         # selection list are always a subset of the allowed instruments when
         # a method is selected
         return len(instruments) > 0
+    
+    def is_sub_instruments_required(self, analysis):
+        """Returns whether the render of the selection list with sub instruments is
+        required for the analysis passed-in, even if only option "None" is
+        displayed for selection.
+        :param analysis: Brain or object that represents an analysis
+        """
+        # If method selection list is required, the instrument selection too
+        if self.is_method_required(analysis):
+            return True
+
+        # Always return true if the analysis has an instrument assigned
+        analysis = self.get_object(analysis)
+        if analysis.getRawSubInstruments():
+            return True
+
+        subinstruments = analysis.getRawAllowedSubInstruments()
+        # There is no need to check for the instruments of the method assigned
+        # to # the analysis (if any), because the instruments rendered in the
+        # selection list are always a subset of the allowed instruments when
+        # a method is selected
+        return len(subinstruments) > 0
 
     def is_unit_choices_required(self, analysis):
         """Returns whether the render of the unit choice selection list is
@@ -1856,6 +2011,17 @@ class AnalysesView(ListingView):
         for item in items:
             obj = item.get("obj")
             if self.is_instrument_required(obj):
+                return True
+        return False
+    
+    def is_sub_instruments_column_required(self, items):
+        """Returns whether the sub instrument column has to be rendered or not.
+        Returns True if at least one of the analyses from the listing requires
+        the list for sub instrument selection to be rendered
+        """
+        for item in items:
+            obj = item.get("obj")
+            if self.is_sub_instruments_required(obj):
                 return True
         return False
 

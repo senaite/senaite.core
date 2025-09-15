@@ -1024,6 +1024,13 @@ class IHaveInstrument(Interface):
         """Returns the instrument or instruments the instance is assigned to
         """
 
+class IHaveSubInstruments(Interface):
+    """Marker interface for objects that have sub Instrument(s) assigned
+    """
+
+    def getSubInstruments(self):
+        """Returns the sub instrument or sub instruments the instance is assigned to
+        """
 
 class IHaveDepartment(Interface):
     """Marker interface for objects that have Department(s) assigned
