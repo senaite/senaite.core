@@ -1412,8 +1412,8 @@ class AnalysesView(ListingView):
         elif subinstruments:
             subinstruments_names = []
             subinstruments_links = []
-            for subinstrument in analysis_brain.getSubInstruments():
-                link = self.get_link_for(subinstrument, tabindex="-1")
+            for subinstrument in self.get_sub_instruments(analysis_brain):
+                link = get_link_for(subinstrument, tabindex="-1")
                 subinstruments_links.append(link)
                 name = api.get_title(subinstrument)
                 subinstruments_names.append(name)
