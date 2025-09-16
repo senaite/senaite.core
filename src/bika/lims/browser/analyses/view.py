@@ -1966,9 +1966,6 @@ class AnalysesView(ListingView):
         displayed for selection.
         :param analysis: Brain or object that represents an analysis
         """
-        # If method selection list is required, the instrument selection too
-        if self.is_method_required(analysis):
-            return True
 
         # Always return true if the analysis has an instrument assigned
         analysis = self.get_object(analysis)
