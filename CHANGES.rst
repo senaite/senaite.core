@@ -3,7 +3,11 @@ Changelog
 
 2.7.0 (unreleased)
 ------------------
-
+- #2785 Fix Formatted specification interval rendering is not shown for analyses and reference analyses
+- #2776 Fix Imported Worksheet Templates not editable after Load Setup Data
+- #2781 Fix formatted specification interval for result options
+- #2780 Fix result options text not displayed if it contains character entities
+- #2778 Allow manual submission for imported results
 - #2768 Pin magnitude to a Python 2 compatible version
 - #2762 Fix performance of analysis dependency calculations
 - #2767 Show "Save" button in sample header if at least one field is editable

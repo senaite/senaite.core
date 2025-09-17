@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add registry key for instrument import submit handling"
+      description="Allow to submit imported analysis manually"
+      source="2705"
+      destination="2706"
+      handler=".v02_07_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Update analysis catalog indexes"
       description="Add boolean 'has_calculation' index to analysis catalog"
       source="2704"

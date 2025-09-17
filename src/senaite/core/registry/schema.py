@@ -409,6 +409,7 @@ class IImportRegistry(ISenaiteRegistry):
         ),
         fields=[
             "import_analysis_attach_importfile",
+            "import_analysis_submit",
         ],
     )
 
@@ -422,5 +423,18 @@ class IImportRegistry(ISenaiteRegistry):
             default=u"Attach import file to all Worksheet assigned analyses"
         ),
         default=False,
+        required=False,
+    )
+
+    import_analysis_submit = schema.Bool(
+        title=_(
+            u"label_registry_import_analysis_submit",
+            default=u"Submit Analyses upon import"
+        ),
+        description=_(
+            u"description_registry_import_analysis_submit",
+            default=u"Automatically submit analyses upon import"
+        ),
+        default=True,
         required=False,
     )
