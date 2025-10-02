@@ -1395,7 +1395,7 @@ class AnalysesView(ListingView):
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
-        logger.info("Foldering sub instrument")
+
         item["SubInstruments"] = ""
 
         # SubInstruments can be assigned to this analysis
