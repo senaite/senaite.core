@@ -86,8 +86,8 @@ SubInstrumentsAllowed = UIDReferenceField(
     allowed_types=("Instrument", ),
     accessor="getRawSubInstrumentsAllowed",
     widget=PicklistWidget(
-        label=_("SubInstruments"),
-        description=_("Available instruments based on the selected methods."),
+        label=_("SubInstruments Allowed"),
+        description=_("Available sub-instruments allowed based on the selected methods."),
     )
 )
 
@@ -311,6 +311,7 @@ schema.moveField("Method", after="Methods")
 schema.moveField("Instrument", after="Instruments")
 # Move default result field after Result Options
 schema.moveField("DefaultResult", after="ResultOptions")
+schema.moveField("SubInstruments", after="SubInstrumentsAllowed")
 
 
 class AnalysisService(AbstractBaseAnalysis):
@@ -416,7 +417,7 @@ class AnalysisService(AbstractBaseAnalysis):
     def getRawSubInstrumentsAllowed(self):
         """List of assigned allowed sub Instrument UIDs
         """
-        return [si.UID() for si in self.getField("SubInstrumentsAllowed")]
+        return [si.UID() for si in self.getSubInstrumentsAllowed()]
 
     def getCalculation(self):
         """Get the default calculation
@@ -583,7 +584,6 @@ class AnalysisService(AbstractBaseAnalysis):
         items = [(api.get_uid(i), api.get_title(i)) for i in instruments]
         dlist = DisplayList(items).sortedByValue()
         # allow to leave this field empty
-        dlist.add("", _("None"))
         return dlist
 
     def query_available_calculations(self):

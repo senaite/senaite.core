@@ -51,7 +51,7 @@ from Products.Archetypes.utils import IntDisplayList
 from Products.Archetypes.Widget import BooleanWidget
 from Products.Archetypes.Widget import IntegerWidget
 from Products.Archetypes.Widget import SelectionWidget
-from Products.Archetypes.public import MultiSelectionWidget
+from Products.Archetypes.atapi import PicklistWidget
 from Products.Archetypes.Widget import StringWidget
 from Products.CMFCore.permissions import View
 from senaite.core.browser.fields.records import RecordsField
@@ -410,9 +410,8 @@ SubInstruments = UIDReferenceField(
     vocabulary="_default_sub_instrument_vocabulary",
     allowed_types=("Instrument",),
     accessor="getSubInstrumentsUID",
-    widget=MultiSelectionWidget(
+    widget=PicklistWidget(
         format="select",
-        visible=True,
         label=_("Default Sub Instruments"),
         description=_("Default Sub instruments used for analyses of this type"),
     )
@@ -1200,10 +1199,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
 
         :returns: sub Instrument(s) UID
         """
-        subinstruments = self.getSubInstruments()
-        if subinstruments:
-            return [i.UID() for i in subinstruments]
-        return []
+        return [i.UID() for i in self.getSubInstruments()]
     
     @security.public
     def getSubInstrumentsUID(self):
