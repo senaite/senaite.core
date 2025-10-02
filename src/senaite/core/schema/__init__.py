@@ -40,6 +40,7 @@ from .phonefield import PhoneField
 from .richtextfield import RichTextField
 from .selectotherfield import ISelectOtherField
 from .selectotherfield import SelectOtherField
+from .textlinefield import TextLineField
 from .uidreferencefield import IUIDReferenceField
 from .uidreferencefield import UIDReferenceField
 
