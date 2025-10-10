@@ -24,7 +24,6 @@ import re
 from collections import OrderedDict
 from datetime import datetime
 from datetime import timedelta
-from functools import reduce
 from itertools import groupby
 
 import Missing
@@ -2089,9 +2088,13 @@ def deep_get(dictionary, *keys):
     :param keys: enumeration of keys to traverse and return value
     :returns: the retrieved value or None
     """
-    def _inner_get(d, key):
-        return d.get(key, None) if isinstance(d, dict) else None
-    return reduce(lambda d, key: _inner_get(d, key), keys, dictionary)
+    current = dictionary
+    for key in keys:
+        if isinstance(current, dict):
+            current = current.get(key)
+        else:
+            return None
+    return current
 
 
 def validate(obj, invariants=True):
