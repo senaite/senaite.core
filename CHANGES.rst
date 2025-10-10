@@ -5,6 +5,24 @@ Changelog
 ------------------
 
 - #2600 Migrate Calculations to DX
+- #2791 Add TextLineField that strips the value and properly handle encodings
+- #2790 Fix "Show more" button does not appear for the 2nd and 3rd sample remarks
+- #2785 Fix Formatted specification interval rendering is not shown for analyses and reference analyses
+- #2776 Fix Imported Worksheet Templates not editable after Load Setup Data
+- #2781 Fix formatted specification interval for result options
+- #2780 Fix result options text not displayed if it contains character entities
+- #2778 Allow manual submission for imported results
+- #2768 Pin magnitude to a Python 2 compatible version
+- #2762 Fix performance of analysis dependency calculations
+- #2767 Show "Save" button in sample header if at least one field is editable
+- #2766 Allow negative numbers in numeric fields
+- #2765 DX address widget improvements and fixtures
+- #2763 Updated intl-tel-input 17.0.19 -> 25.3.1
+- #2764 Fix receive guard on sample creation is skipped if auto-receive enabled
+- #2761 Fix AT decimal widget allows commas
+- #2760 Fix UnicodeDecodeError in instrument importer when processing field values
+- #2759 Fix UnicodeDecodeError on Specification Validation
+- #2758 Fix global auditlog error for objects without snapshots
 - #2757 Fix return base URL for AJAX requests in the AR add form
 - #2752 Add modified index to catalog
 - #2756 Fix reindex behavior in setup_core_catalogs

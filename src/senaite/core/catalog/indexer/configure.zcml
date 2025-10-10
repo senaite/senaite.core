@@ -49,6 +49,9 @@
   <!-- BaseAnalysis Indexer -->
   <adapter name="sortable_title" factory=".baseanalysis.sortable_title"/>
 
+  <!-- RoutineAnalysis Indexer -->
+  <adapter name="has_calculation" factory=".routineanalysis.has_calculation"/>
+
   <!-- Setup indexer -->
   <adapter name="category_uid" factory=".senaitesetup.category_uid"/>
   <adapter name="department_id" factory=".senaitesetup.department_id"/>

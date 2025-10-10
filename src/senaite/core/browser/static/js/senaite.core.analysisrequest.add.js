@@ -1748,7 +1748,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
         return $(this).dialog("destroy");
       }
     };
-    return dialog = this.template_dialog("service-dependant-template", context, buttons);
+    return dialog = this.template_dialog("service-dependent-template", context, buttons);
   }
 
   on_analysis_template_selected(event) {

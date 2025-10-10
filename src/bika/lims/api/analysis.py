@@ -18,17 +18,23 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import cgi
 from collections import Mapping
+
 from bika.lims import api
-from bika.lims.api import _marker
-from bika.lims.config import MIN_OPERATORS, MAX_OPERATORS
+from bika.lims.config import MAX_OPERATORS
+from bika.lims.config import MIN_OPERATORS
 from bika.lims.content.analysisspec import ResultsRangeDict
-from bika.lims.interfaces import IAnalysis, IReferenceAnalysis, \
-    IResultOutOfRange
+from bika.lims.interfaces import IAnalysis
+from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.interfaces import IReferenceAnalysis
+from bika.lims.interfaces import IRejected
+from bika.lims.interfaces import IResultOutOfRange
+from bika.lims.interfaces import IRetracted
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from zope.component._api import getAdapters
 
-from bika.lims.interfaces import IDuplicateAnalysis
-from bika.lims.interfaces.analysis import IRequestAnalysis
+_marker = object()
 
 
 def is_out_of_range(brain_or_object, result=_marker):
@@ -171,18 +177,34 @@ def is_out_of_range(brain_or_object, result=_marker):
     return True, not in_shoulder
 
 
-def get_formatted_interval(results_range, default=_marker):
+def get_formatted_interval(analysis_or_results_range, default=_marker):
     """Returns a string representation of the interval defined by the results
     range passed in
-    :param results_range: a dict or a ResultsRangeDict
+
+    :param analysis_or_results_range: analysis, dict or ResultsRangeDict
     """
+    analysis = None
+    if IAnalysis.providedBy(analysis_or_results_range) or IReferenceAnalysis.providedBy(analysis_or_results_range):
+        analysis = analysis_or_results_range
+        results_range = analysis.getResultsRange()
+    else:
+        results_range = analysis_or_results_range
+
     if not isinstance(results_range, Mapping):
         if default is not _marker:
             return default
         api.fail("Type not supported")
+
     results_range = ResultsRangeDict(results_range)
     min_str = results_range.min if api.is_floatable(results_range.min) else None
     max_str = results_range.max if api.is_floatable(results_range.max) else None
+
+    if analysis:
+        min_text = analysis.getResultOptionTextByValue(min_str)
+        min_str = cgi.escape(min_text) if min_text else min_str
+        max_text = analysis.getResultOptionTextByValue(max_str)
+        max_str = cgi.escape(max_text) if max_text else max_str
+
     if min_str is None and max_str is None:
         if default is not _marker:
             return default
@@ -235,3 +257,157 @@ def is_result_range_compliant(analysis):
         return True
 
     return rr == sample_rr
+
+
+def is_analysis(brain_or_object):
+    """Checks if the object is an analysis
+
+    :param brain_or_object: A single catalog brain or content object
+    :returns: True if the object is an analysis, False otherwise
+    """
+    analysis = api.get_object(brain_or_object)
+    return IAnalysis.providedBy(analysis)
+
+
+def is_reference_analysis(brain_or_object):
+    """Checks if the object is a reference analysis
+
+    :param brain_or_object: A single catalog brain or content object
+    :returns: True if the object is a reference analysis, False otherwise
+    """
+    analysis = api.get_object(brain_or_object)
+    return IReferenceAnalysis.providedBy(analysis)
+
+
+def is_retracted(brain_or_object):
+    """Checks if an analysis is retracted
+
+    :param brain_or_object: A single catalog brain or content object
+    :returns: True if the analysis is retracted, False otherwise
+    """
+    analysis = api.get_object(brain_or_object)
+    if not is_analysis(analysis) and not is_reference_analysis(analysis):
+        api.fail("{} is not supported. Needs to be IAnalysis or "
+                 "IReferenceAnalysis".format(repr(analysis)))
+    return IRetracted.providedBy(analysis)
+
+
+def is_rejected(brain_or_object):
+    """Checks if the analysis is rejected
+
+    :param brain_or_object: A single catalog brain or content object
+    :returns: True if the analysis is rejected, False otherwise
+    """
+    analysis = api.get_object(brain_or_object)
+    if not is_analysis(analysis) and not is_reference_analysis(analysis):
+        api.fail("{} is not supported. Needs to be IAnalysis or "
+                 "IReferenceAnalysis".format(repr(analysis)))
+    return IRejected.providedBy(analysis)
+
+
+def is_retested(brain_or_object):
+    """Checks if the analysis is retested
+
+    :param brain_or_object: A single catalog brain or content object
+    :returns: True if the analysis is retested, False otherwise
+    """
+    analysis = api.get_object(brain_or_object)
+    if not is_analysis(analysis) and not is_reference_analysis(analysis):
+        api.fail("{} is not supported. Needs to be IAnalysis or "
+                 "IReferenceAnalysis".format(repr(analysis)))
+    return analysis.isRetested()
+
+
+def get_dependencies(brain_or_object, with_retests=False, recursive=False):
+    """Returns the list of dependent analysis UIDs for the analysis passed in
+
+    :param brain_or_object: A single catalog brain or content object
+    :returns: List analysis objects that this analysis depends on
+    """
+    if not is_analysis(brain_or_object):
+        return []
+
+    dependencies = set()
+    analysis = api.get_object(brain_or_object)
+
+    # no calculation, no dependencies
+    calc = analysis.getCalculation()
+    if not calc:
+        return []
+
+    # get the sample (might be a partition)
+    sample = analysis.getRequest()
+    # get calculation dependencies
+    service_deps = calc.getDependentServices()
+    # get the keywords of the dependent services
+    keywords = [s.getKeyword() for s in service_deps]
+    # no dependencies to other services, nothing to do
+    if not keywords:
+        return []
+    # collect the analyses
+    dependencies.update(sample.getAnalyses(getKeyword=keywords))
+
+    # calculate all dependencies for our dependencies
+    if recursive:
+        # iterate over all dependencies and get their dependencies
+        for dep in list(dependencies):
+            dependencies.update(get_dependencies(
+                dep, with_retests=with_retests, recursive=recursive))
+
+    if not with_retests:
+        # filter out retracted, rejected and retested analyses
+        def is_retest(analysis):
+            return is_retracted(analysis) or is_rejected(analysis) \
+                or is_retested(analysis)
+        dependencies = filter(lambda d: not is_retest(d), dependencies)
+
+    return map(api.get_object, dependencies)
+
+
+def get_dependents(brain_or_object, with_retests=False, recursive=False):
+    """Returns the list of analysis UIDs that depend on the current
+
+    :param brain_or_object: A single catalog brain or content object
+    :returns: List of analysis object that depend on the current analysis
+    """
+    if not is_analysis(brain_or_object):
+        return []
+
+    dependents = set()
+    analysis = api.get_object(brain_or_object)
+
+    # get the service of the current analysis
+    service = analysis.getAnalysisService()
+
+    # get the sample (might be a partition)
+    sample = analysis.getRequest()
+
+    # get all analyses with calculations
+    analyses_with_calcs = sample.getAnalyses(
+        has_calculation=True, full_objects=True)
+
+    # Now we check if we are part of any calculation
+    for analysis in analyses_with_calcs:
+        calc = analysis.getCalculation()
+        if not calc:
+            # in case the `has_calculation` index is not there yet
+            continue
+        dependencies = calc.getDependentServices()
+        # check if our service is a dependency
+        if service in dependencies:
+            # remember the analysis that depends on us
+            dependents.add(analysis)
+
+    if recursive:
+        for dep in list(dependents):
+            dependents.update(get_dependents(
+                dep, with_retests=with_retests, recursive=recursive))
+
+    if not with_retests:
+        # filter out retracted, rejected and retested analyses
+        def is_retest(analysis):
+            return is_retracted(analysis) or is_rejected(analysis) \
+                or is_retested(analysis)
+        dependents = filter(lambda d: not is_retest(d), dependents)
+
+    return map(api.get_object, dependents)

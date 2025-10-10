@@ -25,6 +25,8 @@ from datetime import timedelta
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api.analysis import get_dependencies
+from bika.lims.api.analysis import get_dependents
 from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
@@ -331,92 +333,33 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
 
     @security.public
     def getDependents(self, with_retests=False, recursive=False):
-        """
-        Returns a list of siblings who depend on us to calculate their result.
+        """Returns a list of analyses who depend on us to calculate their result.
+
+        I.e. calculated analyses that contain our keyword in their formula.
+
         :param with_retests: If false, dependents with retests are dismissed
         :param recursive: If true, returns all dependents recursively down
         :type with_retests: bool
         :return: Analyses the current analysis depends on
         :rtype: list of IAnalysis
         """
-        def is_dependent(analysis):
-            # Never consider myself as dependent
-            if analysis.UID() == self.UID():
-                return False
-
-            # Never consider analyses from same service as dependents
-            self_service_uid = self.getRawAnalysisService()
-            if analysis.getRawAnalysisService() == self_service_uid:
-                return False
-
-            # Without calculation, no dependency relationship is possible
-            calculation = analysis.getCalculation()
-            if not calculation:
-                return False
-
-            # Calculation must have the service I belong to
-            services = calculation.getRawDependentServices()
-            return self_service_uid in services
-        
-        request = self.getRequest()
-        if request.isPartition():
-            parent = request.getParentAnalysisRequest()
-            siblings = parent.getAnalyses(full_objects=True)
-        else:
-            siblings = self.getSiblings(with_retests=with_retests)
-
-        dependents = filter(lambda sib: is_dependent(sib), siblings)
-        if not recursive:
-            return dependents
-
-        # Return all dependents recursively
-        deps = dependents
-        for dep in dependents:
-            down_dependencies = dep.getDependents(with_retests=with_retests,
-                                                  recursive=True)
-            deps.extend(down_dependencies)
-        return deps
+        dependents = get_dependents(
+            self, with_retests=with_retests, recursive=recursive)
+        return map(api.get_object, dependents)
 
     @security.public
     def getDependencies(self, with_retests=False, recursive=False):
-        """
-        Return a list of siblings who we depend on to calculate our result.
+        """Return a list of analyses who we depend on to calculate our result.
+
         :param with_retests: If false, siblings with retests are dismissed
         :param recursive: If true, looks for dependencies recursively up
         :type with_retests: bool
         :return: Analyses the current analysis depends on
         :rtype: list of IAnalysis
         """
-        calc = self.getCalculation()
-        if not calc:
-            return []
-
-        # If the calculation this analysis is bound does not have analysis
-        # keywords (only interims), no need to go further
-        service_uids = calc.getRawDependentServices()
-
-        # Ensure we exclude ourselves
-        service_uid = self.getRawAnalysisService()
-        service_uids = filter(lambda serv: serv != service_uid, service_uids)
-        if len(service_uids) == 0:
-            return []
-
-        dependencies = []
-        for sibling in self.getSiblings(with_retests=with_retests):
-            # We get all analyses that depend on me, also if retracted (maybe
-            # I am one of those that are retracted!)
-            deps = map(api.get_uid, sibling.getDependents(with_retests=True))
-            if self.UID() in deps:
-                dependencies.append(sibling)
-                if recursive:
-                    # Append the dependencies of this dependency
-                    up_deps = sibling.getDependencies(with_retests=with_retests,
-                                                      recursive=True)
-                    dependencies.extend(up_deps)
-
-        # Exclude analyses of same service as me to prevent max recursion depth
-        return filter(lambda dep: dep.getRawAnalysisService() != service_uid,
-                      dependencies)
+        dependencies = get_dependencies(
+            self, with_retests=with_retests, recursive=recursive)
+        return map(api.get_object, dependencies)
 
     @security.public
     def getPrioritySortkey(self):

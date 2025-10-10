@@ -48,6 +48,7 @@ INDEXES = BASE_INDEXES + [
     ("getServiceUID", "", "FieldIndex"),
     ("getWorksheetUID", "", "FieldIndex"),
     ("sortable_title", "", "FieldIndex"),
+    ("has_calculation", "", "BooleanIndex"),
 ]
 
 COLUMNS = BASE_COLUMNS + [

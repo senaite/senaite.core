@@ -17,7 +17,7 @@ window.SiteView = class SiteView {
     this.notify_in_panel = this.notify_in_panel.bind(this);
     this.on_at_integer_field_keyup = this.on_at_integer_field_keyup.bind(this);
     this.on_at_float_field_keyup = this.on_at_float_field_keyup.bind(this);
-    this.on_numeric_field_paste = this.on_numeric_field_paste.bind(this);
+    this.on_numeric_field_input = this.on_numeric_field_input.bind(this);
     this.on_numeric_field_keypress = this.on_numeric_field_keypress.bind(this);
     this.on_overlay_panel_click = this.on_overlay_panel_click.bind(this);
   }
@@ -32,7 +32,7 @@ window.SiteView = class SiteView {
     console.debug("SiteView::bind_eventhandler");
 
     $(document).on("keypress", ".numeric", this.on_numeric_field_keypress);
-    $(document).on("paste", ".numeric", this.on_numeric_field_paste);
+    $(document).on("input", ".numeric", this.on_numeric_field_input);
 
     // Integer and float fields using attribute checks instead of problematic selectors
     $(document).on("keyup", "input", (e) => {
@@ -119,26 +119,55 @@ window.SiteView = class SiteView {
     }
   }
 
-  on_numeric_field_paste(e) {
+  on_numeric_field_keypress(e) {
+    const key = e.which || e.keyCode;
+    const char = String.fromCharCode(key);
     const $el = $(e.currentTarget);
-    setTimeout(() => {
-      $el.val($el.val().replace(',', '.'));
-    }, 0);
+    const value = $el.val();
+
+    const isDigit = key >= 48 && key <= 57;
+    const isComma = char === ',';
+    const isDot = char === '.';
+    const isMinus = char === '-';
+    const isAllowed = this.allowed_keys.includes(key);
+
+    // Allow digits and control keys
+    if (isDigit || isAllowed) return;
+
+    // Allow one comma or one dot (handled later)
+    if ((isComma || isDot) && !value.includes('.')) return;
+
+    // Allow one minus at the beginning of the line
+    if (isMinus && $el[0].selectionStart === 0 && !value.includes('-')) return;
+
+    // Block everything else
+    e.preventDefault();
   }
 
-  on_numeric_field_keypress(e) {
-    const key = e.which;
-    const isAllowed = this.allowed_keys.includes(key);
-    const isDigit = key >= 48 && key <= 57;
+  on_numeric_field_input(e) {
+    const $el = $(e.currentTarget);
+    let val = $el.val();
 
-    if (!isDigit && !isAllowed) {
-      e.preventDefault();
-    } else {
-      const $el = $(e.currentTarget);
-      setTimeout(() => {
-        $el.val($el.val().replace(',', '.'));
-      }, 0);
+    // Replace comma with dot
+    val = val.replace(',', '.');
+
+    // Keep only digits, dot, and minus
+    val = val.replace(/[^0-9.-]/g, '');
+
+    // Allow only one leading minus
+    if (val.indexOf('-') > 0) {
+      val = val.replace(/-/g, '');
+    } else if ((val.match(/-/g) || []).length > 1) {
+      val = '-' + val.replace(/-/g, '');
     }
+
+    // Remove all but the first dot
+    const firstDotIndex = val.indexOf('.');
+    if (firstDotIndex !== -1) {
+      val = val.slice(0, firstDotIndex + 1) + val.slice(firstDotIndex + 1).replace(/\./g, '');
+    }
+
+    $el.val(val);
   }
 
   on_overlay_panel_click(e) {

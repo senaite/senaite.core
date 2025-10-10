@@ -16,19 +16,30 @@ Needed Imports:
 
     >>> import re
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
-    >>> from bika.lims import api
-    >>> from bika.lims.api.analysis import get_formatted_interval
-    >>> from bika.lims.api.analysis import is_out_of_range
-    >>> from bika.lims.content.analysisrequest import AnalysisRequest
-    >>> from bika.lims.utils.analysisrequest import create_analysisrequest
-    >>> from bika.lims.utils import tmpID
-    >>> from bika.lims.workflow import doActionFor
-    >>> from bika.lims.workflow import getCurrentState
-    >>> from bika.lims.workflow import getAllowedTransitions
     >>> from DateTime import DateTime
+    >>> from bika.lims import api
+    >>> from bika.lims.api.analysis import get_dependencies
+    >>> from bika.lims.api.analysis import get_dependents
+    >>> from bika.lims.api.analysis import get_formatted_interval
+    >>> from bika.lims.api.analysis import is_analysis
+    >>> from bika.lims.api.analysis import is_out_of_range
+    >>> from bika.lims.api.analysis import is_reference_analysis
+    >>> from bika.lims.api.analysis import is_rejected
+    >>> from bika.lims.api.analysis import is_retested
+    >>> from bika.lims.api.analysis import is_retracted
+    >>> from bika.lims.content.analysisrequest import AnalysisRequest
+    >>> from bika.lims.utils import tmpID
+    >>> from bika.lims.utils.analysisrequest import create_analysisrequest
+    >>> from bika.lims.workflow import doActionFor
+    >>> from bika.lims.workflow import doActionFor as do_action_for
+    >>> from bika.lims.workflow import doActionFor as do_action_for
+    >>> from bika.lims.workflow import getAllowedTransitions
+    >>> from bika.lims.workflow import getCurrentState
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
     >>> from plone.app.testing import setRoles
+    >>> from senaite.core.interfaces import IDataManager
+    >>> from zope.component import queryAdapter
 
 Functional Helpers:
 
@@ -36,6 +47,36 @@ Functional Helpers:
     ...     from Testing.ZopeTestCase.utils import startZServer
     ...     ip, port = startZServer()
     ...     return "http://{}:{}/{}".format(ip, port, portal.id)
+
+    >>> def new_sample(services):
+    ...     values = {
+    ...         'Client': client.UID(),
+    ...         'Contact': contact.UID(),
+    ...         'DateSampled': date_now,
+    ...         'SampleType': sampletype.UID()}
+    ...     ar = create_analysisrequest(client, request, values, services)
+    ...     success = do_action_for(ar, "receive")
+    ...     return ar
+
+    >>> def submit(analysis):
+    ...    try:
+    ...        success = do_action_for(analysis, "submit")
+    ...    except Exception:
+    ...        return False
+    ...    return True
+
+    >>> def retract(analysis):
+    ...    try:
+    ...        success = do_action_for(analysis, "retract")
+    ...    except Exception:
+    ...        return False
+    ...    return True
+
+    >>> def set_result(analysis, result):
+    ...    dm = queryAdapter(analysis, interface=IDataManager)
+    ...    if dm is None:
+    ...        analysis.setResult(result)
+    ...    dm.set("Result", result)
 
 Variables:
 
@@ -61,6 +102,10 @@ We need to create some basic objects for the test:
     >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID(), DuplicateVariation="0.5")
     >>> Mg = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Magnesium", Keyword="Mg", Price="20", Category=category.UID(), DuplicateVariation="0.5")
     >>> service_uids = [api.get_uid(an) for an in [Cu, Fe, Au, Mg]]
+
+Allow self verification:
+
+    >>> bikasetup.setSelfVerificationEnabled(True)
 
 Create an Analysis Specification for `Water`:
 
@@ -759,3 +804,242 @@ Result is within range only if at least one of the options is within range:
     >>> fec.setResult(["6"])
     >>> is_out_of_range(fec)
     (True, True)
+
+
+Check if an object is an analysis
+.................................
+
+    >>> sample = create_analysisrequest(client, request, values, service_uids)
+
+Check for analyses:
+
+    >>> is_analysis(sample)
+    False
+
+    >>> is_analysis(controls[0])
+    False
+
+    >>> is_analysis(sample.Cu)
+    True
+
+
+Check if an object is a reference analysis
+..........................................
+
+    >>> sample = create_analysisrequest(client, request, values, service_uids)
+
+Check for reference analyses:
+
+    >>> is_reference_analysis(sample)
+    False
+
+    >>> is_reference_analysis(sample.Cu)
+    False
+
+    >>> is_reference_analysis(controls[0])
+    True
+
+
+Check if an analysis is retracted
+.................................
+
+    >>> sample = create_analysisrequest(client, request, values, service_uids)
+    >>> success = doActionFor(sample, "receive")
+
+    >>> cu = sample.Cu
+    >>> api.get_workflow_status_of(cu)
+    'unassigned'
+
+The analysis is not retracted:
+
+    >>> is_retracted(cu)
+    False
+
+Now we submit a result:
+
+    >>> cu.setResult(10)
+    >>> success = doActionFor(cu, "submit")
+    >>> api.get_workflow_status_of(cu)
+    'to_be_verified'
+
+The analysis is not retracted:
+
+    >>> is_retracted(cu)
+    False
+
+Now let's retract the result:
+
+    >>> success = doActionFor(cu, "retract")
+    >>> api.get_workflow_status_of(cu)
+    'retracted'
+
+Now the analysis is retracted:
+
+    >>> is_retracted(cu)
+    True
+
+
+Check if an analysis is rejected
+.................................
+
+    >>> sample = create_analysisrequest(client, request, values, service_uids)
+    >>> success = doActionFor(sample, "receive")
+
+    >>> cu = sample.Cu
+    >>> api.get_workflow_status_of(cu)
+    'unassigned'
+
+The analysis is not rejected:
+
+    >>> is_rejected(cu)
+    False
+
+Now let's reject the analysis:
+
+    >>> success = doActionFor(cu, "reject")
+    >>> api.get_workflow_status_of(cu)
+    'rejected'
+
+The analysis is now rejected:
+
+    >>> is_rejected(cu)
+    True
+
+
+Check if an analysis is retested
+.................................
+
+    >>> sample = create_analysisrequest(client, request, values, service_uids)
+    >>> success = doActionFor(sample, "receive")
+
+    >>> cu = sample.Cu
+    >>> api.get_workflow_status_of(cu)
+    'unassigned'
+
+The analysis is not retested:
+
+    >>> is_retested(cu)
+    False
+
+Now we submit a result:
+
+    >>> cu.setResult(10)
+    >>> success = doActionFor(cu, "submit")
+    >>> api.get_workflow_status_of(cu)
+    'to_be_verified'
+
+The analysis is not retested:
+
+    >>> is_retested(cu)
+    False
+
+Now let's retest the analysis:
+
+    >>> success = doActionFor(cu, "retest")
+    >>> api.get_workflow_status_of(cu)
+    'verified'
+
+The analysis is now retested:
+
+    >>> is_retested(cu)
+    True
+
+
+
+Calculation dependencies
+........................
+
+In an analysis has a calculation assigned, it might have dependencies to other
+analyses, which are in turn dependents of us.
+
+Prepare a calculation that depends on `Cu` and assign it to `Fe` analysis:
+
+    >>> calc_fe = api.create(bikasetup.bika_calculations, "Calculation", title="Calc for Fe")
+    >>> calc_fe.setFormula("[Cu]*10")
+    >>> Fe.setCalculation(calc_fe)
+
+Prepare a calculation that depends on `Fe` and assign it to `Au` analysis:
+
+    >>> calc_au = api.create(bikasetup.bika_calculations, "Calculation", title="Calc for Au")
+    >>> calc_au.setFormula("([Fe])/2")
+    >>> Au.setCalculation(calc_au)
+
+Create a new Sample:
+
+    >>> sample = new_sample([Cu, Fe, Au])
+    >>> cu_analysis = sample["Cu"]
+    >>> fe_analysis = sample["Fe"]
+    >>> au_analysis = sample["Au"]
+
+The `Fe` analysis should have now a dependency to `Cu`:
+
+    >>> dependencies = get_dependencies(fe_analysis)
+    >>> map(api.get_id, dependencies)
+    ['Cu']
+
+The `Cu` analysis is therefore a dependent of `Fe`:
+
+    >>> dependents = get_dependents(cu_analysis)
+    >>> map(api.get_id, dependents)
+    ['Fe']
+
+
+Recursive depencies and dependents
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Since the `Au` calculation depends on `Fe`, it recursively depends also on `Cu`:
+
+    >>> dependencies = get_dependencies(au_analysis, recursive=True)
+    >>> list(sorted(map(api.get_id, dependencies)))
+    ['Cu', 'Fe']
+
+Therefore, the `Cu` analysis is recursive dependent of `Au`:
+
+    >>> dependents = get_dependents(cu_analysis, recursive=True)
+    >>> list(sorted(map(api.get_id, dependents)))
+    ['Au', 'Fe']
+
+Consequently, setting a result for `Cu` calculates the results for `Fe` and `Au`:
+
+    >>> set_result(cu_analysis, 100)
+
+    >>> fe_analysis.getResult()
+    '1000.0'
+
+    >>> au_analysis.getResult()
+    '500.0'
+
+
+Retests
+~~~~~~~
+
+Retests are ignored when resolving dependencies.
+
+Let's first ensure that all analyses are submitted:
+
+    >>> submitted = submit(cu_analysis)
+    >>> submitted = submit(fe_analysis)
+    >>> submitted = submit(au_analysis)
+
+ and then retract the result for `Cu`, which should also retract `Fe` and `Au` and create retests:
+
+    >>> retracted = retract(cu_analysis)
+
+    >>> api.get_workflow_status_of(fe_analysis)
+    'retracted'
+
+    >>> api.get_workflow_status_of(au_analysis)
+    'retracted'
+
+The retest should of `Cu` is now a dependent of the `Fe` and `Au` retests:
+
+    >>> dependents = get_dependents(cu_analysis, recursive=True)
+    >>> list(sorted(map(api.get_id, dependents)))
+    ['Au-1', 'Fe-1']
+
+
+The same should work for dependencies:
+
+    >>> dependencies = get_dependencies(au_analysis, recursive=True)
+    >>> list(sorted(map(api.get_id, dependencies)))
+    ['Cu-1', 'Fe-1']

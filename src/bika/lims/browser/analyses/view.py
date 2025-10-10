@@ -1425,13 +1425,14 @@ class AnalysesView(ListingView):
         results_range = analysis.getResultsRange()
 
         # get the results range interval properly formatted
-        value = get_formatted_interval(results_range, "")
+        value = get_formatted_interval(analysis, "")
 
-        # for non-floatable analyses, display the comment instead
-        result_type = analysis.getResultType()
-        if result_type not in ["numeric", "string"]:
-            comment = results_range.get("rangecomment")
-            value = comment if comment else value
+        # show comment if the result is out of range
+        out_range, out_shoulders = is_out_of_range(analysis)
+        comment = results_range.get("rangecomment")
+        if out_range and comment:
+            img = get_image("comment_ico.png", title=comment)
+            self._append_html_element(item, "Specification", img)
 
         item["Specification"] = value
 

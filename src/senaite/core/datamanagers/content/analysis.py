@@ -28,7 +28,7 @@ from senaite.core.datamanagers.base import DataManager
 from zope.component import adapter
 
 
-# Fields that cause a recalculation of dependants
+# Fields that cause a recalculation of dependents
 TRIGGER_RECALCULATE_FIELDS = ["Result", "Uncertainty"]
 
 

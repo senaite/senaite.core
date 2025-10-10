@@ -852,7 +852,7 @@ class AnalysisSpecificationsValidator:
 
             err_msg = "{}: {}".format(title, _(err_msg))
             translate = api.get_tool("translation_service").translate
-            instance.REQUEST[key] = to_utf8(translate(safe_unicode(err_msg)))
+            instance.REQUEST[key] = translate(safe_unicode(err_msg))
             return instance.REQUEST[key]
 
         instance.REQUEST[key] = True

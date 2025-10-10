@@ -32,15 +32,15 @@
         </div>
       </script>
 
-      <!-- Dependant services popup -->
-      <script id="service-dependant-template" type="text/x-handlebars-template">
+      <!-- Dependent services popup -->
+      <script id="service-dependent-template" type="text/x-handlebars-template">
         <div title="Service locked" i18n:attributes="title">
           {{#with service}}
           <p i18n:translate="">{{title}} cannot be deselected, because it is included in:</p>
           {{/with}}
-          <div class="dialog-dependants dialog-listing">
+          <div class="dialog-dependents dialog-listing">
             {{#if profiles}}
-              <dl class="service-profile-dependants">
+              <dl class="service-profile-dependents">
                 <dt i18n:translate="">Analysis Profiles</dt>
                 {{#each profiles}}
                 <dd>{{title}}</dd>
@@ -48,7 +48,7 @@
               </dl>
             {{/if}}
             {{#if templates}}
-              <dl class="service-template-dependants">
+              <dl class="service-template-dependents">
                 <dt i18n:translate="">AR Templates</dt>
                 {{#each templates}}
                 <dd>{{title}}</dd>
@@ -56,7 +56,7 @@
               </dl>
             {{/if}}
           </div>
-          <p i18n:translate="">Please deselect these dependants first.</p>
+          <p i18n:translate="">Please deselect these dependents first.</p>
         </div>
       </script>
 
@@ -149,7 +149,7 @@
           {{#if dependendants}}
           <tr>
             <td class="service-info-key"
-                i18n:translate="">Dependants</td>
+                i18n:translate="">Dependents</td>
             <td class="service-info-value">
               <ul class="service-dependency">
                 {{#each dependendants}}

@@ -23,6 +23,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets.decimal import DecimalWidget
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
@@ -47,7 +48,6 @@ from Products.Archetypes.Schema import Schema
 from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.utils import IntDisplayList
 from Products.Archetypes.Widget import BooleanWidget
-from Products.Archetypes.Widget import DecimalWidget
 from Products.Archetypes.Widget import IntegerWidget
 from Products.Archetypes.Widget import SelectionWidget
 from Products.Archetypes.Widget import StringWidget
@@ -1201,6 +1201,21 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         if api.to_minutes(**max_hold_time) <= 0:
             return {}
         return max_hold_time
+
+    def getResultOptionTextByValue(self, value, default=""):
+        """Returns the ResultText for a given ResultValue from the ResultOptions
+
+        :param value: The ResultValue of the option to be retrieved
+        :type value: str
+        :return: Result text
+        """
+        if value is None:
+            return default
+        options = self.getResultOptions() or []
+        for option in options:
+            if api.to_float(option.get("ResultValue")) == api.to_float(value):
+                return option.get("ResultText", default)
+        return default
 
     # TODO Remove. ResultOptionsType field was replaced by ResulType field
     def getResultOptionsType(self):

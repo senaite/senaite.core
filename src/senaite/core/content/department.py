@@ -32,6 +32,7 @@ from senaite.core.config.widgets import get_labcontact_columns
 from senaite.core.content.base import Container
 from senaite.core.interfaces import IDepartment
 from senaite.core.schema import UIDReferenceField
+from senaite.core.schema import TextLineField
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from zope import schema
 from zope.interface import Invalid
@@ -43,7 +44,7 @@ class IDepartmentSchema(model.Schema):
     """Schema interface
     """
 
-    title = schema.TextLine(
+    title = TextLineField(
         title=_(
             u"title_department_title",
             default=u"Name"
@@ -71,7 +72,7 @@ class IDepartmentSchema(model.Schema):
                       widget_css_input="text-primary text-monospace",
                       after_text_input="<i class='fas fa-id-card'></i>",
                       after_css_input="text-primary")
-    department_id = schema.TextLine(
+    department_id = TextLineField(
         title=_(
             u"title_department_id",
             default=u"Department ID"
@@ -145,13 +146,12 @@ class Department(Container):
     @security.protected(permissions.View)
     def getDepartmentID(self):
         accessor = self.accessor("department_id")
-        value = accessor(self) or ""
-        return value.encode("utf-8")
+        return accessor(self) or ""
 
     @security.protected(permissions.ModifyPortalContent)
     def setDepartmentID(self, value):
         mutator = self.mutator("department_id")
-        mutator(self, api.safe_unicode(value))
+        mutator(self, value)
 
     # BBB: AT schema field property
     DepartmentID = property(getDepartmentID, setDepartmentID)

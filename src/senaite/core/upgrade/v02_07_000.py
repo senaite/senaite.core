@@ -31,7 +31,9 @@ from persistent.list import PersistentList
 from plone.dexterity.utils import createContent
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
+from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.schema.uidreferencefield import get_backref_storage
@@ -338,3 +340,20 @@ def upgrade_catalog_modified_index(tool):
         "You may need to manually reindex the 'modified' index in existing "
         "catalogs as required."
     )
+
+
+def update_analysis_catalog_indexes(tool):
+    """Update analysis catalog indexes
+    """
+    logger.info("Update analysis catalog indexes ...")
+    to_reindex = []
+    catalog = api.get_tool(ANALYSIS_CATALOG)
+    for record in ANALYSIS_INDEXES:
+        if add_catalog_index(catalog, *record):
+            to_reindex.append(record[0])
+
+    for index_id in to_reindex:
+        logger.info("Reindexing index '%s'" % index_id)
+        catalog.reindexIndex(index_id, api.get_request())
+
+    logger.info("Update analysis catalog indexes [DONE]")
