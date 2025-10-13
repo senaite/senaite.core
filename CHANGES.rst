@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2792 Add setting to trigger transition events on sample creation
 - #2791 Add TextLineField that strips the value and properly handle encodings
 - #2790 Fix "Show more" button does not appear for the 2nd and 3rd sample remarks
 - #2785 Fix Formatted specification interval rendering is not shown for analyses and reference analyses
