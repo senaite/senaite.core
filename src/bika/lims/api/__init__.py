@@ -2080,7 +2080,7 @@ def to_list(value):
     return list(value)
 
 
-def validate(obj, invariants=True):
+def validate(obj):
     """Validates the full object
 
     :param obj: the object to validate the data against
@@ -2116,8 +2116,9 @@ def validate(obj, invariants=True):
         if isinstance(value, six.string_types):
             value = safe_unicode(value)
         if is_string_field(field):
-            # provide UTF8 encoded strings for stringfields, e.g. the ID field.
-            value = to_utf8(value)
+            # provide UTF8 encoded strings for e.g. the ID field.
+            missing_value = getattr(field, "missing_value", None)
+            value = to_utf8(value, default=None) or missing_value
 
         try:
             field.validate(value)
@@ -2128,7 +2129,7 @@ def validate(obj, invariants=True):
             if value is not None:
                 errors[field_name] = "wrong type"
         except Invalid as ex:
-            errors[field_name] = translate(ex.message)
+            errors[field_name] = translate(ex.message) or type(ex).__name__
 
     # validate invariants from schema
     sch = get_schema(obj)
