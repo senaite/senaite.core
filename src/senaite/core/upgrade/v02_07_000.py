@@ -21,20 +21,30 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IInvalidated
+from bika.lims.utils import tmpID
+from plone.dexterity.fti import DexterityFTI
+from plone.dexterity.utils import createContent
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.interfaces import IContentMigrator
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
 from senaite.core.setuphandlers import add_catalog_column
 from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
+from zope.component import getMultiAdapter
 from zope.interface import alsoProvides
 
 version = "2.7.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
+
+REMOVE_AT_TYPES = [
+    "Contact",
+]
 
 
 @upgradestep(product, version)
@@ -137,3 +147,156 @@ def update_analysis_catalog_indexes(tool):
         catalog.reindexIndex(index_id, api.get_request())
 
     logger.info("Update analysis catalog indexes [DONE]")
+
+
+def remove_at_portal_types(tool):
+    """Remove obsolete AT portal type information
+    """
+    logger.info("Remove AT types from portal_types tool ...")
+    pt = api.get_tool("portal_types")
+    for type_name in REMOVE_AT_TYPES:
+        fti = pt.getTypeInfo(type_name)
+        # keep DX FTIs
+        if isinstance(fti, DexterityFTI):
+            logger.info("Type '{}' is already a DX FTI".format(fti))
+            continue
+        elif not fti:
+            # Removed already
+            continue
+        pt.manage_delObjects(fti.getId())
+
+    # remove from AT's factory tool as well. This is necessary for the AT's
+    # factory_tool to not shortcut `createObject?type_name=` on object creation
+    ft = api.get_tool("portal_factory")
+    at_types = ft.getFactoryTypes().keys()
+    at_types = filter(lambda name: name not in REMOVE_AT_TYPES, at_types)
+    ft.manage_setPortalFactoryTypes(listOfTypeIds=at_types)
+
+    logger.info("Remove AT types from portal_types tool ... [DONE]")
+
+
+def migrate_contacts_to_dx(tool):
+    """Migrate Contact objects from Archetypes to Dexterity
+    """
+    logger.info("Migrating Contacts to Dexterity ...")
+
+    # Ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+    # Find all Contact objects (excluding LabContact and SupplierContact)
+    query = {
+        "portal_type": "Contact",
+    }
+    brains = api.search(query, CONTACT_CATALOG)
+    total = len(brains)
+    logger.info("Found {} Contact objects to migrate".format(total))
+
+    for num, brain in enumerate(brains, start=1):
+        # Get the object
+        contact = api.get_object(brain)
+
+        if num % 100 == 0:
+            logger.info("Progress: {}/{} contacts migrated".format(num, total))
+
+        # Skip if already migrated to Dexterity
+        if not api.is_at_content(contact):
+            logger.info("[{}/{}] Already migrated: {}".format(
+                num, total, api.get_path(contact)))
+            continue
+
+        migrate_contact_to_dx(contact)
+
+    logger.info("Migrating Contacts to Dexterity [DONE]")
+
+
+def migrate_contact_to_dx(src, destination=None):
+    """Migrate an AT contact to DX in the destination folder
+
+    :param src: The source AT object
+    :param destination: The destination folder. If `None`, the parent folder of
+                        the source object is taken
+    """
+    # migrate the contents from the old AT container to the new one
+    portal_type = "Contact"
+
+    if api.get_portal_type(src) != portal_type:
+        logger.error("Not a '{}' object: {}".format(portal_type, src))
+        return
+
+    # Create the object if it does not exist yet
+    src_id = src.getId()
+    target_id = src_id
+
+    # check if we migrate within the same folder
+    if destination is None:
+        # use a temporary ID for the migrated content
+        target_id = tmpID()
+        # set the destination to the source parent
+        destination = api.get_parent(src)
+
+    target = destination.get(target_id)
+    if not target:
+        # Don't use the api to skip the auto-id generation
+        target = createContent(portal_type, id=target_id)
+        destination._setObject(target_id, target)
+        target = destination._getOb(target_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = api.safe_unicode(src.Title() or "")
+    target.description = api.safe_unicode(src.Description() or "")
+    target.salutation = api.safe_unicode(src.getSalutation() or "")
+    target.firstname = api.safe_unicode(src.getFirstname() or "")
+    target.middleinitial = api.safe_unicode(src.getMiddleinitial() or "")
+    target.middlename = api.safe_unicode(src.getMiddlename() or "")
+    target.surname = api.safe_unicode(src.getSurname() or "")
+    target.username = api.safe_unicode(src.getUsername() or "")
+    target.email_address = api.safe_unicode(src.getEmailAddress() or "")
+    target.business_phone = api.safe_unicode(src.getBusinessPhone() or "")
+    target.business_fax = api.safe_unicode(src.getBusinessFax() or "")
+    target.home_phone = api.safe_unicode(src.getHomePhone() or "")
+    target.mobile_phone = api.safe_unicode(src.getMobilePhone() or "")
+    target.job_title = api.safe_unicode(src.getJobTitle() or "")
+    target.department = api.safe_unicode(src.getDepartment() or "")
+    target.physical_address = src.getPhysicalAddress() or {}
+    target.postal_address = src.getPostalAddress() or {}
+    target.cc_contact = src.getRawCCContact() or []
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter(
+        (src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID
+    migrator.copy_uid(src, target)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    logger.info("Migrated Contact from %s -> %s" % (src, target))
