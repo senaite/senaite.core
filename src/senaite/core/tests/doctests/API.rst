@@ -2522,9 +2522,49 @@ It also takes invariants into consideration:
     >>> api.validate(category)
     {}
 
-It is also possible to validate standard DX content types:
+    >>> category.sort_key = None
+    >>> api.validate(category)
+    {}
+
+And handles missing values for native string fields gracefully:
+
+    >>> suppliers = self.portal.setup.suppliers
+    >>> data = {
+    ...     "title": "My supplier",
+    ... }
+    >>> supplier = api.create(suppliers, "Supplier", **data)
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.phone = ""
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.phone = None
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.email = "my@email.com"
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.email = "wrong"
+    >>> api.validate(supplier)
+    {'email': u'wrong'}
+
+    >>> supplier.email = ""
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.email = None
+    >>> api.validate(supplier)
+    {}
+
+It is also possible to validate standard AT content types:
 
     >>> client = self.portal.clients["client-1"]
+    >>> api.validate(client)
+    {'ClientID': u'Client ID is required, please correct.'}
 
 A standard Plone folder:
 
