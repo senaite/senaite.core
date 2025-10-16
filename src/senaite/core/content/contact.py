@@ -27,6 +27,7 @@ from bika.lims import logger
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.api import get_path
 from bika.lims.api import is_active
+from bika.lims.api import search
 from bika.lims.api import security as sec_api
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IContact
@@ -116,9 +117,8 @@ class Contact(Person):
         """Convenience Classmethod which returns a Contact by a Username
         """
         # Check if the User is linked already
-        cat = api.portal.get_tool(CONTACT_CATALOG)
-        contacts = cat(portal_type=cls.__name__,
-                       getUsername=username)
+        query = {"portal_type": cls.__name__, "getUsername": username}
+        contacts = search(query, CONTACT_CATALOG)
 
         # No Contact assigned to this username
         if len(contacts) == 0:
