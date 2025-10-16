@@ -261,9 +261,18 @@ def migrate_contact_to_dx(src, destination=None):
     target.mobile_phone = api.safe_unicode(src.getMobilePhone() or "")
     target.job_title = api.safe_unicode(src.getJobTitle() or "")
     target.department = api.safe_unicode(src.getDepartment() or "")
-    target.physical_address = src.getPhysicalAddress() or {}
-    target.postal_address = src.getPostalAddress() or {}
     target.cc_contact = src.getRawCCContact() or []
+
+    # NOTE: Addresses behave differently in AT and DX
+    physical_address = src.getPhysicalAddress() or {}
+    if physical_address:
+        physical_address["type"] = "naive"
+        target.physical_address = [physical_address]
+
+    postal_address = src.getPostalAddress() or {}
+    if postal_address:
+        postal_address["type"] = "naive"
+        target.postal_address = [postal_address]
 
     # Migrate the contents from AT to DX
     migrator = getMultiAdapter(
