@@ -83,4 +83,15 @@
     <permission value="Modify portal content"/>
   </action>
 
+  <!-- Login -->
+  <action title="Login details"
+          action_id="access"
+          category="object"
+          condition_expr=""
+          url_expr="string:${object_url}/login_details"
+          i18n:attributes="title"
+          visible="True">
+    <permission value="senaite.core: Manage Login Details"/>
+  </action>
+
 </object>
