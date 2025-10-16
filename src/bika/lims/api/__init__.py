@@ -86,6 +86,7 @@ from zope.interface import noLongerProvides
 from zope.lifecycleevent import ObjectMovedEvent
 from zope.publisher.browser import TestRequest
 from zope.schema import getFieldsInOrder
+from zope.schema import List
 from zope.schema.interfaces import RequiredMissing
 from zope.schema.interfaces import WrongType
 from zope.security.interfaces import Unauthorized
@@ -2118,6 +2119,22 @@ def validate(obj):
             # provide UTF8 encoded strings for e.g. the ID field.
             missing_value = getattr(field, "missing_value", None)
             value = to_utf8(value, default=None) or missing_value
+
+        # Handle DataGridFields with string columns
+        if isinstance(field, List):
+            value_type = getattr(field, "value_type", None)
+            if value_type and is_dexterity_content(obj):
+                schema = getattr(field.value_type, "schema", None)
+                if schema:
+                    string_fields = [
+                        name for name, subfield in getFieldsInOrder(schema)
+                        if is_string_field(subfield)
+                    ]
+                    for row in value:
+                        if isinstance(row, dict):
+                            for name in string_fields:
+                                raw_value = row.get(name)
+                                row[name] = to_utf8(raw_value, default=None)
 
         # update obj_data for later use with invariants
         obj_data[field_name] = value
