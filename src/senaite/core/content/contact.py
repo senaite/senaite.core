@@ -117,7 +117,7 @@ class Contact(Person):
         """
         # Check if the User is linked already
         cat = api.portal.get_tool(CONTACT_CATALOG)
-        contacts = cat(portal_type=cls.portal_type,
+        contacts = cat(portal_type=cls.__name__,
                        getUsername=username)
 
         # No Contact assigned to this username
