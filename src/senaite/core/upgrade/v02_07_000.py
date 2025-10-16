@@ -246,8 +246,8 @@ def migrate_contact_to_dx(src, destination=None):
 
     # Manually set the fields
     # NOTE: always convert string values to unicode for dexterity fields!
-    target.title = api.safe_unicode(src.Title() or "")
-    target.description = api.safe_unicode(src.Description() or "")
+    target.title = u""  # calculated
+    target.description = u""  # not used
     target.salutation = api.safe_unicode(src.getSalutation() or "")
     target.firstname = api.safe_unicode(src.getFirstname() or "")
     target.middleinitial = api.safe_unicode(src.getMiddleinitial() or "")
