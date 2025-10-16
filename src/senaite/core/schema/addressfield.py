@@ -81,9 +81,13 @@ class AddressField(List, BaseField):
         # Value is a list of dicts
         value = self.to_list(value)
 
-        # Bail out non-supported address types
+        # Ensure we have supported address types
         address_types = self.get_address_types()
-        value = filter(lambda ad: ad["type"] in address_types, value)
+        for v in value:
+            address_type = v.get("type", None)
+            # address type is not set or not supported
+            if address_type is None or address_type not in address_types:
+                v["type"] = NAIVE_ADDRESS
 
         # Set the value
         super(AddressField, self).set(object, value)
@@ -94,13 +98,14 @@ class AddressField(List, BaseField):
         :returns: list of dicts with address information for each address type
         """
         addresses = super(AddressField, self).get(object) or []
-
+        addr_dicts = dict([(addr.get("type", NAIVE_ADDRESS), addr)
+                           for addr in addresses])
         # Sort and extend with non-existing address types
         output = []
         for address_type in self.get_address_types():
-            address = filter(lambda rec: rec["type"] == address_type, addresses)
+            address = addr_dicts.get(address_type, None)
             if address:
-                address = copy.deepcopy(address[0])
+                address = dict(address)  # copy
             else:
                 address = self.get_empty_address(address_type)
             output.append(address)
