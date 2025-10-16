@@ -40,21 +40,25 @@ class IPersonSchema(model.Schema):
     """Base schema for Person-based content types
     """
 
-    model.fieldset(
-        "personal_information",
-        label=_(
-            u"label_personal_information",
-            default=u"Personal Information"
+    # Hidden fields
+    directives.omitted("title")
+    directives.omitted("description")
+    directives.omitted("username")
+
+    title = schema.TextLine(
+        title=_(
+            u"label_person_title",
+            default=u"Title"
         ),
-        fields=[
-            "salutation",
-            "firstname",
-            "middleinitial",
-            "middlename",
-            "surname",
-            "job_title",
-            "department",
-        ]
+        required=False,
+    )
+
+    description = schema.Text(
+        title=_(
+            "label_person_description",
+            default="Description",
+        ),
+        required=False,
     )
 
     salutation = schema.TextLine(

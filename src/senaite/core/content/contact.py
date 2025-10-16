@@ -41,8 +41,6 @@ from senaite.core.content.person import IPersonSchema
 from senaite.core.content.person import Person
 from senaite.core.schema import UIDReferenceField
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
-from z3c.form.interfaces import IEditForm
-from zope import schema
 from zope.interface import implementer
 
 CONTACT_UID_KEY = "linked_contact_uid"
@@ -51,19 +49,6 @@ CONTACT_UID_KEY = "linked_contact_uid"
 class IContactSchema(IPersonSchema):
     """Contact Schema extending Person
     """
-
-    # Hide username field from edit form (inherited from IPersonSchema)
-    directives.omitted(IEditForm, "username")
-
-    # Hide title field from edit form
-    directives.omitted(IEditForm, "title")
-    title = schema.TextLine(
-        title=_(
-            u"label_contact_title",
-            default=u"Title"
-        ),
-        required=False,
-    )
 
     # Publication preference
     model.fieldset(
