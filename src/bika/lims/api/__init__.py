@@ -71,6 +71,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
 from senaite.core.interfaces import ITemporaryObject
+from z3c.form.validator import Data as ValidatorData
 from zope import globalrequest
 from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.component import getUtility
@@ -2100,16 +2101,14 @@ def validate(obj):
             getattr(field, "_type", None) in [str]
 
     errors = {}
+    obj_data = {}
 
     # iterate through object fields and validate each
     fields = get_fields(obj)
-
     for field_name, field in fields.items():
-        if field_name in SKIP_VALIDATION_FIELDS:
-            continue
 
+        # extract the field value
         value = getattr(obj, field_name, None)
-
         if callable(value):
             # Handle callable values, e.g. effective, expired etc.
             value = value()
@@ -2119,6 +2118,12 @@ def validate(obj):
             # provide UTF8 encoded strings for e.g. the ID field.
             missing_value = getattr(field, "missing_value", None)
             value = to_utf8(value, default=None) or missing_value
+
+        # update obj_data for later use with invariants
+        obj_data[field_name] = value
+
+        if field_name in SKIP_VALIDATION_FIELDS:
+            continue
 
         try:
             field.validate(value)
@@ -2134,17 +2139,18 @@ def validate(obj):
     # validate invariants from schema
     sch = get_schema(obj)
     try:
-        sch.validateInvariants(obj)
+        sch.validateInvariants(ValidatorData(sch, obj_data, obj))
     except Invalid as ex:
-        errors[sch.getName()] = translate(ex.message)
+        errors[sch.getName()] = translate(ex.message) or type(ex).__name__
 
     # validate invariants from behaviors
     for behavior_id in get_behaviors(obj):
         behavior = lookup_behavior_registration(behavior_id)
+        sch = behavior.interface
         try:
-            behavior.interface.validateInvariants(obj)
+            sch.validateInvariants(ValidatorData(sch, obj_data, obj))
         except Invalid as ex:
-            errors[behavior_id] = translate(ex.message)
+            errors[behavior_id] = translate(ex.message) or type(ex).__name__
 
     return errors
 
