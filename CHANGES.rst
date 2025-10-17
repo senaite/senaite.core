@@ -3,7 +3,7 @@ Changelog
 
 2.7.0 (unreleased)
 ------------------
-
+- #2799 Fix Reference Sample import supplier data
 - #2797 Fix sticker rendering error when no configured template was found
 - #2793 Fix APIError: Expected string type, got '<type 'NoneType'>'
 - #2792 Add setting to trigger transition events on sample creation
