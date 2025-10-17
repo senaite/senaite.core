@@ -297,11 +297,6 @@ class Person(Container):
                 fullname = "%s %s" % (self.getFirstname(), self.getSurname())
         return fullname.strip()
 
-    def Title(self):
-        """Return the person's Fullname as title
-        """
-        return safe_unicode(self.getFullname()).encode("utf-8")
-
     @security.protected(permissions.View)
     def getSalutation(self):
         accessor = self.accessor("salutation")
