@@ -638,7 +638,7 @@ class Client_Contacts(WorksheetImporter):
                 names = [x.strip() for x in row["CCContacts"].split(",")]
                 for _fullname in names:
                     self.defer(src_obj=contact,
-                               src_field="CCContact",
+                               src_field="cc_contact",
                                dest_catalog=CONTACT_CATALOG,
                                dest_query={
                                    "portal_type": "Contact",
