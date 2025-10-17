@@ -36,7 +36,6 @@ from plone import api
 from plone.autoform import directives
 from plone.supermodel import model
 from Products.CMFCore import permissions
-from Products.CMFPlone.utils import safe_unicode
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.content.person import IPersonSchema
 from senaite.core.content.person import Person
