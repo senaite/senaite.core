@@ -95,7 +95,6 @@ class Contact(Person):
     _catalogs = [CONTACT_CATALOG]
 
     security = ClassSecurityInfo()
-    _at_rename_after_creation = True
 
     def get_widget_cccontact_query(self, **kw):
         """Return the query for the CCContact field
@@ -212,10 +211,6 @@ class Contact(Person):
 
     def getParent(self):
         return aq_parent(aq_inner(self))
-
-    def _renameAfterCreation(self, check_auto_id=False):
-        from senaite.core.idserver import renameAfterCreation
-        renameAfterCreation(self)
 
     @security.private
     def _linkUser(self, user):
