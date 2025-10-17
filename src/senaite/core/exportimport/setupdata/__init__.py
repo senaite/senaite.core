@@ -269,25 +269,25 @@ class WorksheetImporter(object):
             PhysicalAddress, PostalAddress, CountryState, BillingAddress
         """
         addresses = {}
-        for add_type in ['Physical', 'Postal', 'Billing', 'CountryState']:
+        for add_type in ["Physical", "Postal", "Billing", "CountryState"]:
             addresses[add_type] = {}
-            for key in ['Address', 'City', 'State', 'District', 'Zip', 'Country']:
+            for key in ["Address", "City", "State", "District", "Zip", "Country"]:
                 addresses[add_type][key.lower()] = str(
-                    row.get("%s_%s" % (add_type, key), ''))
+                    row.get("%s_%s" % (add_type, key), ""))
 
-        if addresses['CountryState']['country'] == '' \
-                and addresses['CountryState']['state'] == '':
-            addresses['CountryState']['country'] = addresses['Physical']['country']
-            addresses['CountryState']['state'] = addresses['Physical']['state']
+        if addresses["CountryState"]["country"] == "" \
+                and addresses["CountryState"]["state"] == "":
+            addresses["CountryState"]["country"] = addresses["Physical"]["country"]
+            addresses["CountryState"]["state"] = addresses["Physical"]["state"]
 
-        if hasattr(obj, 'setPhysicalAddress'):
-            obj.setPhysicalAddress(addresses['Physical'])
-        if hasattr(obj, 'setPostalAddress'):
-            obj.setPostalAddress(addresses['Postal'])
-        if hasattr(obj, 'setCountryState'):
-            obj.setCountryState(addresses['CountryState'])
-        if hasattr(obj, 'setBillingAddress'):
-            obj.setBillingAddress(addresses['Billing'])
+        if hasattr(obj, "setPhysicalAddress"):
+            obj.setPhysicalAddress(addresses["Physical"])
+        if hasattr(obj, "setPostalAddress"):
+            obj.setPostalAddress(addresses["Postal"])
+        if hasattr(obj, "setCountryState"):
+            obj.setCountryState(addresses["CountryState"])
+        if hasattr(obj, "setBillingAddress"):
+            obj.setBillingAddress(addresses["Billing"])
 
     def fill_contactfields(self, row, obj):
         """ Fills the contact fields for the specified object if allowed:
@@ -617,19 +617,17 @@ class Client_Contacts(WorksheetImporter):
                 continue
             client = client[0].getObject()
 
-            fullname = "%(Firstname)s %(Surname)s" % row
-            pub_pref = [x.strip() for x in
-                        row.get("PublicationPreference", "").split(",")]
+            def u_row_get(name):
+                return api.safe_unicode(row.get(name, ""))
 
             contact = api.create(
                 client, "Contact",
-                salutation=row.get("Salutation", ""),
-                firstname=row.get("Firstname", ""),
-                surname=row.get("Surname", ""),
-                username=row.get("Username", ""),
-                job_title=row.get("JobTitle", ""),
-                department=row.get("Department", ""),
-                publication_preference=pub_pref,
+                salutation=u_row_get("Salutation"),
+                firstname=u_row_get("Firstname"),
+                surname=u_row_get("Surname"),
+                username=u_row_get("Username"),
+                job_title=u_row_get("JobTitle"),
+                department=u_row_get("Department"),
             )
 
             self.fill_contactfields(row, contact)
@@ -647,8 +645,9 @@ class Client_Contacts(WorksheetImporter):
                                    "getFullname": _fullname,
                                })
             # Create Plone user
-            username = safe_unicode(row["Username"]).encode("utf-8")
-            password = safe_unicode(row["Password"]).encode("utf-8")
+            username = u_row_get("Username").encode("utf-8")
+            password = u_row_get("Password").encode("utf-8")
+            fullname = "%(Firstname)s %(Surname)s" % row
             if (username):
                 try:
                     self.context.portal_registration.addMember(
@@ -657,7 +656,8 @@ class Client_Contacts(WorksheetImporter):
                         properties={
                             "username": username,
                             "email": row["EmailAddress"],
-                            "fullname": fullname}
+                            "fullname": fullname,
+                        }
                     )
                 except Exception as msg:
                     logger.info("Error adding user (%s): %s" % (msg, username))
