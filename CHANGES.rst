@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2797 Fix sticker rendering error when no configured template was found
 - #2793 Fix APIError: Expected string type, got '<type 'NoneType'>'
 - #2792 Add setting to trigger transition events on sample creation
 - #2791 Add TextLineField that strips the value and properly handle encodings
