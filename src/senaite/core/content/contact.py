@@ -133,11 +133,6 @@ class Contact(Person):
         # Return the found Contact object
         return contacts[0].getObject()
 
-    def Title(self):
-        """Return the contact's Fullname as title
-        """
-        return safe_unicode(self.getFullname()).encode("utf-8")
-
     def isActive(self):
         """Checks if the Contact is active
         """

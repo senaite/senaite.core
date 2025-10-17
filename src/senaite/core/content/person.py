@@ -239,6 +239,11 @@ class Person(Container):
 
     security = ClassSecurityInfo()
 
+    def Title(self):
+        """Return the contact's Fullname as title
+        """
+        return safe_unicode(self.getFullname()).encode("utf-8")
+
     def getPossibleAddresses(self):
         """Return possible address types
         """
