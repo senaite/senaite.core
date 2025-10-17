@@ -18,9 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import copy
 import six
-
 from senaite.core.schema.fields import BaseField
 from senaite.core.schema.interfaces import IAddressField
 from zope.interface import implementer
