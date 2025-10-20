@@ -417,7 +417,7 @@ class AnalysisService(AbstractBaseAnalysis):
     def getRawSubInstrumentsAllowed(self):
         """List of assigned allowed sub Instrument UIDs
         """
-        return [si.UID() for si in self.getSubInstrumentsAllowed()]
+        return self.getField("SubInstrumentsAllowed").getRaw(self)
 
     def getCalculation(self):
         """Get the default calculation
