@@ -193,9 +193,36 @@ The view should show all contacts:
     >>> view.catalog
     'senaite_catalog_contact'
 
-
     >>> len(view.folderitems())
     4
+
+The view should include the Location column:
+
+    >>> "Location" in view.columns
+    True
+
+The Location column should show the client name for client contacts:
+
+    >>> items = view.folderitems()
+    >>> client1_contact_items = [i for i in items if i.get("getFullname") == "Jordi Puiggene"]
+    >>> len(client1_contact_items)
+    1
+    >>> client1_contact_items[0]["Location"]
+    'NARALABS'
+
+    >>> client2_contact_items = [i for i in items if i.get("getFullname") == "Ramon Bartl"]
+    >>> len(client2_contact_items)
+    1
+    >>> client2_contact_items[0]["Location"]
+    'RIDING BYTES'
+
+The Location column should show the contacts folder name for global contacts:
+
+    >>> global_contact_items = [i for i in items if i.get("getFullname") == "Lab Manager"]
+    >>> len(global_contact_items)
+    1
+    >>> global_contact_items[0]["Location"]
+    'Contacts'
 
 
 Contact Workflow
