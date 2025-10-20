@@ -26,6 +26,8 @@ from zope.schema.interfaces import IField
 from zope.schema.interfaces import IInt
 from zope.schema.interfaces import IList
 from zope.schema.interfaces import INativeString
+from zope.schema.interfaces import INativeStringLine
+from zope.schema.interfaces import ITextLine
 from zope.schema.interfaces import ITimedelta
 
 
@@ -74,7 +76,7 @@ class IRichTextField(IRichText):
     """
 
 
-class IPhoneField(INativeString):
+class IPhoneField(ITextLine):
     """Input type "phone" widget
     """
 
