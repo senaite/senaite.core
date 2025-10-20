@@ -2560,6 +2560,24 @@ And handles missing values for native string fields gracefully:
     >>> api.validate(supplier)
     {}
 
+Empties and unicode types are supported:
+
+    >>> supplier.phone = u""
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.phone=u"612345678"
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.email = u""
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.email=u"my@email.com"
+    >>> api.validate(supplier)
+    {}
+
 It is also possible to validate standard AT content types:
 
     >>> client = self.portal.clients["client-1"]
