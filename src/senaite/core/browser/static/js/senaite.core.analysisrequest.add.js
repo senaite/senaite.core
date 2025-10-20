@@ -928,7 +928,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
    * @param values {Object, Array} The value to be set
    */
   apply_dependent_value(arnum, field_name, values) {
-    var field, manually_deselected, me, uids, values_json;
+    var current_value, field, manually_deselected, me, to_set, values_json;
     // always handle values as array internally
     if (!this.is_array(values)) {
       values = [values];
@@ -944,21 +944,26 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     // (multi-) reference fields, e.g. CC Contacts of selected Contact
     if (this.is_reference_field(field)) {
       manually_deselected = this.deselected_uids[field_name] || [];
-      // filter out values that were manually deselected
-      values = values.filter(function(value) {
-        var ref;
-        return ref = value.uid, indexOf.call(manually_deselected, ref) < 0;
-      });
-      // get a list of uids
-      uids = values.map(function(value) {
-        return value.uid;
-      });
-      // update reference field data records
-      values.forEach((value) => {
-        return this.set_reference_field_records(field, value);
+      current_value = this.get_reference_field_value(field);
+      to_set = [];
+      values.forEach(function(value, index) {
+        var if_empty, ref;
+        // skip manually deselected references
+        if (ref = value.uid, indexOf.call(manually_deselected, ref) >= 0) {
+          return;
+        }
+        // skip if the `if_empty` flag is set and the field is not empty
+        if_empty = (value.if_empty != null) && value.if_empty === true;
+        if (if_empty && current_value.length > 0) {
+          return;
+        }
+        // remember the others
+        return to_set.push(value.uid);
       });
       // update reference field values
-      return this.set_reference_field(field, uids);
+      if (to_set.length > 0) {
+        return this.set_reference_field(field, to_set);
+      }
     } else {
       // other fields, e.g. default CC Emails of Client
       return values.forEach(function(value, index) {
