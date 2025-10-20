@@ -66,7 +66,7 @@ class ClientContactsView(BikaListingView):
         }
         self.context_actions = {
             _("Add"):
-                {"url": "createObject?type_name=Contact",
+                {"url": "++add++Contact",
                  "permission": "Add portal content",
                  "icon": "++resource++bika.lims.images/add.png"}}
 
