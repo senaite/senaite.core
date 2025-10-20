@@ -17,7 +17,7 @@
 #
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
-from senaite.core.schema.interfaces import IEmailField
+
 from zope.interface import classImplementsFirst
 
 from .addressfield import AddressField
@@ -33,6 +33,7 @@ from .gpscoordinatesfield import GPSCoordinatesField
 from .interfaces import ICoordinateField
 from .interfaces import IDatetimeField
 from .interfaces import IDurationField
+from .interfaces import IEmailField
 from .interfaces import IGPSCoordinatesField
 from .interfaces import IIntField
 from .interfaces import IRichTextField
