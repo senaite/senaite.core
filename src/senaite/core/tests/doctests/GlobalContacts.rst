@@ -188,18 +188,36 @@ The Contacts container should have a view:
     >>> view
     <...ContactsView object at ...>
 
-The view should show all contacts:
+The view should use the contact catalog:
 
     >>> view.catalog
     'senaite_catalog_contact'
 
+By default, the view shows only global contacts:
+
     >>> len(view.folderitems())
-    4
+    2
 
 The view should include the Location column:
 
     >>> "Location" in view.columns
     True
+
+The Location column should show the contacts folder name for global contacts:
+
+    >>> items = view.folderitems()
+    >>> global_contact_items = [i for i in items if i.get("getFullname") == "Lab Manager"]
+    >>> len(global_contact_items)
+    1
+    >>> global_contact_items[0]["Location"]
+    'Contacts'
+
+When the include_client_contacts cookie is set, the view shows all contacts:
+
+    >>> request.cookies["include_client_contacts"] = "1"
+    >>> view = api.get_view("view", contacts_folder, request)
+    >>> len(view.folderitems())
+    4
 
 The Location column should show the client name for client contacts:
 
@@ -215,14 +233,6 @@ The Location column should show the client name for client contacts:
     1
     >>> client2_contact_items[0]["Location"]
     'RIDING BYTES'
-
-The Location column should show the contacts folder name for global contacts:
-
-    >>> global_contact_items = [i for i in items if i.get("getFullname") == "Lab Manager"]
-    >>> len(global_contact_items)
-    1
-    >>> global_contact_items[0]["Location"]
-    'Contacts'
 
 
 Contact Workflow

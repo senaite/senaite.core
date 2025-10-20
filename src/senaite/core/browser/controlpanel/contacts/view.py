@@ -34,7 +34,7 @@ class ContactsView(ClientContactsView):
 
     def __init__(self, context, request):
         super(ContactsView, self).__init__(context, request)
-        # Override the content filter to show all contacts, not just those in a specific path
+
         self.contentFilter = {
             "portal_type": "Contact",
             "sort_on": "sortable_title",
@@ -59,23 +59,39 @@ class ContactsView(ClientContactsView):
                 "sortable": False, }),
         ))
 
-        # Update review states to include the Location column
-        self.review_states = [
-            {"id": "default",
-             "title": _("Active"),
-             "contentFilter": {"is_active": True},
-             "transitions": [{"id": "deactivate"}, ],
-             "columns": self.columns.keys()},
-            {"id": "inactive",
-             "title": _("Inactive"),
-             "contentFilter": {"is_active": False},
-             "transitions": [{"id": "activate"}, ],
-             "columns": self.columns.keys()},
-            {"id": "all",
-             "title": _("All"),
-             "contentFilter": {},
-             "columns": self.columns.keys()},
-        ]
+    def update(self):
+        """Update the view with content filter and columns based on cookie
+        """
+        super(ContactsView, self).update()
+
+        global_contacts_path = "/".join(self.context.getPhysicalPath())
+
+        # Override the content filter based on the cookie
+        if self.include_client_contacts:
+            self.contentFilter.pop("path", None)
+        else:
+            # Show only global contacts
+            self.contentFilter = {
+                "portal_type": "Contact",
+                "sort_on": "sortable_title",
+                "path": {"query": global_contacts_path, "level": 0}
+            }
+
+        for review_state in self.review_states:
+            if self.include_client_contacts:
+                # remove the path query
+                review_state["contentFilter"].pop("path", None)
+            else:
+                review_state["contentFilter"]["path"] = {
+                    "query": global_contacts_path,
+                    "level": 0
+                }
+
+    @property
+    def include_client_contacts(self):
+        """Returns if client contacts should be included or not
+        """
+        return self.request.cookies.get("include_client_contacts", "") == "1"
 
     def folderitem(self, obj, item, index):
         """Augment folder item with Location information
