@@ -34,6 +34,7 @@ from senaite.core.interfaces import IContentMigrator
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
 from senaite.core.setuphandlers import add_catalog_column
 from senaite.core.setuphandlers import add_catalog_index
+from senaite.core.setuphandlers import add_dexterity_items
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from zope.component import getMultiAdapter
@@ -309,3 +310,24 @@ def migrate_contact_to_dx(src, destination=None):
     migrator.copy_id(src, target)
 
     logger.info("Migrated Contact from %s -> %s" % (src, target))
+
+
+def create_setup_contacts_folder(tool):
+    """Create the Contacts container in the setup folder
+    """
+    logger.info("Creating Contacts container in setup folder ...")
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+    setup = api.get_senaite_setup()
+
+    # Check if contacts folder already exists
+    if not setup.get("contacts"):
+        items = [("contacts", "Contacts", "Contacts")]
+        add_dexterity_items(setup, items)
+        logger.info("Contacts container created")
+    else:
+        logger.info("Contacts folder already exists [SKIP]")
+
+    logger.info("Creating Contacts container in setup folder [DONE]")
