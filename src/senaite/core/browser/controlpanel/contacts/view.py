@@ -78,10 +78,13 @@ class ContactsView(ClientContactsView):
             }
 
         for review_state in self.review_states:
+            # ensure all columns are included
+            review_state["columns"] = self.columns.keys()
             if self.include_client_contacts:
                 # remove the path query
                 review_state["contentFilter"].pop("path", None)
             else:
+                # add the path query
                 review_state["contentFilter"]["path"] = {
                     "query": global_contacts_path,
                     "level": 0
