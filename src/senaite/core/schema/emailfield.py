@@ -26,7 +26,7 @@ class EmailField(TextLineField):
 
     def _validate(self, value):
         super(EmailField, self)._validate(value)
-        if _isemail(value):
+        if not value or _isemail(value):
             return
 
         raise InvalidEmail(value)
