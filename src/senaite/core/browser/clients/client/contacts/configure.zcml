@@ -30,4 +30,13 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Redirect to user's organization view -->
+  <browser:page
+      for="*"
+      name="my_organization"
+      class=".myorganization.MyOrganizationView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
 </configure>

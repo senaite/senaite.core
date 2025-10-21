@@ -40,7 +40,7 @@ class MyOrganizationView(BrowserView):
 
         current_user = api.get_current_user()
         contact = api.get_user_contact(current_user)
-        if contact:
+        if contact and not contact.isGlobal():
             # Redirect to the contact's container
             parent = api.get_parent(contact)
             url = api.get_url(parent)
