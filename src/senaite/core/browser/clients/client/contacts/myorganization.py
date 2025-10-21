@@ -49,3 +49,12 @@ class MyOrganizationView(BrowserView):
         # Not a contact, redirect to portal
         url = api.get_url(api.get_portal())
         return self.request.response.redirect(url)
+
+    def available(self):
+        user = api.get_current_user()
+        if not user:
+            return False
+        contact = api.get_user_contact(user)
+        if contact and contact.isGlobal():
+            return False
+        return True
