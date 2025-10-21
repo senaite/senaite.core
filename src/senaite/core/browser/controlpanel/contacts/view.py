@@ -105,14 +105,8 @@ class ContactsView(ClientContactsView):
         contact = api.get_object(obj)
         parent = api.get_parent(contact)
 
-        # Determine the location based on parent type
-        if IClient.providedBy(parent):
-            # Contact is under a client
-            location = parent.Title()
-        else:
-            # Contact is global (under setup/contacts)
-            location = parent.Title()
-
+        # Set the parent location (either Client or global)
+        location = parent.Title()
         item["Location"] = location
 
         # Make the location a clickable link
