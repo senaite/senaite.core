@@ -102,6 +102,13 @@ Client-Specific Contacts
 Create a client with its own contact:
 
     >>> client1 = api.create(portal.clients, "Client", Name="NARALABS", ClientID="NL")
+
+Test fixture - why is the `Name` not set?
+
+    >>> client1.setName("NARALABS")
+
+Test continuation:
+
     >>> client_contact1 = api.create(
     ...     client1,
     ...     "Contact",
@@ -116,6 +123,13 @@ Create a client with its own contact:
 Create another client with a contact:
 
     >>> client2 = api.create(portal.clients, "Client", Name="RIDING BYTES", ClientID="RB")
+
+Test fixture - why is the `Name` not set?
+
+    >>> client2.setName("RIDING BYTES")
+
+Test continuation:
+
     >>> client_contact2 = api.create(
     ...     client2,
     ...     "Contact",
@@ -272,4 +286,197 @@ Reactivate the contact:
     'active'
 
     >>> api.is_active(global_contact1)
+    True
+
+
+User Linking for Global Contacts
+..................................
+
+Global contacts can be linked to source users, similar to client contacts.
+However, linking a user to a global contact does NOT grant the Client role,
+since global contacts are not associated with a specific client.
+
+First, verify that global contacts are identified as global:
+
+    >>> global_contact1.isGlobal()
+    True
+
+    >>> client_contact1.isGlobal()
+    False
+
+Create test users for linking:
+
+    >>> from plone import api as ploneapi
+    >>> import transaction
+    >>> from plone.app.testing import TEST_USER_PASSWORD
+
+    >>> global_user1 = ploneapi.user.create(
+    ...     email="global.user1@example.com",
+    ...     username="global-user-1",
+    ...     password=TEST_USER_PASSWORD,
+    ...     properties=dict(fullname="Global User 1")
+    ... )
+    >>> global_user2 = ploneapi.user.create(
+    ...     email="global.user2@example.com",
+    ...     username="global-user-2",
+    ...     password=TEST_USER_PASSWORD,
+    ...     properties=dict(fullname="Global User 2")
+    ... )
+    >>> transaction.commit()
+
+Initially, the global contact has no linked user:
+
+    >>> global_contact1.hasUser()
+    False
+
+    >>> global_contact1.getUser() is None
+    True
+
+Link a user to the global contact:
+
+    >>> global_contact1.setUser(global_user1)
+    True
+
+    >>> global_contact1.hasUser()
+    True
+
+The linked user should now be associated with the contact:
+
+    >>> user_obj = global_contact1.getUser()
+    >>> user_obj is not None
+    True
+
+    >>> user_obj.getId()
+    'global-user-1'
+
+Verify the username is stored on the contact:
+
+    >>> global_contact1.getUsername()
+    'global-user-1'
+
+Global contacts do NOT grant Client role to linked users:
+
+    >>> sorted(ploneapi.user.get_roles(user=global_user1))
+    ['Authenticated', 'Member']
+
+Global contacts are not associated with a client group:
+
+    >>> 'Client' in ploneapi.user.get_roles(user=global_user1)
+    False
+
+Unlink the user from the global contact:
+
+    >>> global_contact1._unlinkUser()
+    True
+
+    >>> global_contact1.hasUser()
+    False
+
+    >>> global_contact1.getUser() is None
+    True
+
+    >>> global_contact1.getUsername()
+    ''
+
+
+Login Details View for Global Contacts
+........................................
+
+The login_details view manages linking/unlinking users to global contacts.
+
+Get the login_details view for the global contact:
+
+    >>> login_details_view = global_contact1.restrictedTraverse("login_details")
+
+The form expects a searchstring from the request. We fake it here:
+
+    >>> login_details_view.searchstring = ""
+
+Check if this is a global contact (not a client contact):
+
+    >>> login_details_view.is_contact()
+    True
+
+    >>> login_details_view.is_labcontact()
+    False
+
+Search for linkable users (users not already linked to a contact):
+
+    >>> linkable_users = login_details_view.linkable_users()
+    >>> linkable_user_ids = [u.get("id") for u in linkable_users]
+
+Our test users should be in the search results:
+
+    >>> global_user1.getId() in linkable_user_ids
+    True
+
+    >>> global_user2.getId() in linkable_user_ids
+    True
+
+Link a user via the view:
+
+    >>> login_details_view._link_user(global_user1.getId())
+
+The contact should now have a linked user:
+
+    >>> global_contact1.hasUser()
+    True
+
+The linked user should be omitted from the search results:
+
+    >>> linkable_users = login_details_view.linkable_users()
+    >>> linkable_user_ids = [u.get("id") for u in linkable_users]
+    >>> global_user1.getId() in linkable_user_ids
+    False
+
+Unlink the user via the view:
+
+    >>> login_details_view._unlink_user()
+
+    >>> global_contact1.hasUser()
+    False
+
+
+My Organization View Availability
+...................................
+
+The my_organization view has an available() method that determines if it should
+be shown in the navigation. It should NOT be available for global contacts.
+
+First, link a user to a global contact:
+
+    >>> global_contact1.setUser(global_user1)
+    True
+
+Get the my_organization view:
+
+    >>> my_org_view = global_contact1.restrictedTraverse("my_organization")
+
+The view should NOT be available for users linked to global contacts:
+
+    >>> my_org_view.available()
+    False
+
+Now test with a client contact user. First, create a new user for the client contact:
+
+    >>> client_user1 = ploneapi.user.create(
+    ...     email="client.user1@example.com",
+    ...     username="client-user-1",
+    ...     password=TEST_USER_PASSWORD,
+    ...     properties=dict(fullname="Client User 1")
+    ... )
+    >>> transaction.commit()
+
+Link the user to the client contact:
+
+    >>> client_contact1.setUser(client_user1)
+    True
+
+Get the my_organization view for the client contact:
+
+    >>> client_my_org_view = client_contact1.restrictedTraverse("my_organization")
+
+The view should be available for users linked to client contacts:
+
+    >>> client_my_org_view.available()
     True
