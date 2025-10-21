@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2801 Global Contacts
 - #2795 Migrate Client Contacts to Dexterity
 - #2797 Fix sticker rendering error when no configured template was found
 - #2793 Fix APIError: Expected string type, got '<type 'NoneType'>'
