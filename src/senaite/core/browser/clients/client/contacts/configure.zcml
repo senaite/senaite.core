@@ -16,7 +16,7 @@
   <browser:page
       for="senaite.core.interfaces.IContact"
       name="login_details"
-      class=".view.ContactLoginDetailsView"
+      class=".login_details.ContactLoginDetailsView"
       permission="cmf.ModifyPortalContent"
       layer="senaite.core.interfaces.ISenaiteCore"
       />
@@ -25,7 +25,7 @@
   <browser:page
       for="bika.lims.interfaces.ILabContact"
       name="login_details"
-      class=".view.ContactLoginDetailsView"
+      class=".login_details.ContactLoginDetailsView"
       permission="senaite.core.permissions.ManageLoginDetails"
       layer="senaite.core.interfaces.ISenaiteCore"
       />
