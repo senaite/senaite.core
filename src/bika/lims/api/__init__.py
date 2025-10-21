@@ -35,7 +35,6 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from bika.lims import logger
 from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
 from DateTime import DateTime
 from OFS.event import ObjectWillBeMovedEvent
@@ -70,6 +69,7 @@ from Products.CMFPlone.utils import base_hasattr
 from Products.CMFPlone.utils import safe_unicode
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
+from senaite.core.interfaces import IContact
 from senaite.core.interfaces import ITemporaryObject
 from z3c.form.validator import Data as ValidatorData
 from zope import globalrequest
