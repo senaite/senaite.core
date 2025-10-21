@@ -34,6 +34,7 @@
   <browser:page
       for="*"
       name="my_organization"
+      allowed_attributes="available"
       class=".myorganization.MyOrganizationView"
       permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore"

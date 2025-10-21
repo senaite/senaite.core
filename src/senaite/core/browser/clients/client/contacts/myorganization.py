@@ -51,6 +51,8 @@ class MyOrganizationView(BrowserView):
         return self.request.response.redirect(url)
 
     def available(self):
+        """Available expression for the menu action
+        """
         user = api.get_current_user()
         if not user:
             return False
