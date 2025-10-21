@@ -40,6 +40,19 @@ class ContactsView(ClientContactsView):
             "sort_on": "sortable_title",
         }
 
+        global_contacts_path = "/".join(self.context.getPhysicalPath())
+
+        # Override the content filter based on the cookie
+        if self.include_client_contacts:
+            self.contentFilter.pop("path", None)
+        else:
+            # Show only global contacts
+            self.contentFilter = {
+                "portal_type": "Contact",
+                "sort_on": "sortable_title",
+                "path": {"query": global_contacts_path, "level": 0}
+            }
+
         # Add Location column after Full Name
         self.columns = OrderedDict((
             ("getFullname", {
@@ -59,24 +72,6 @@ class ContactsView(ClientContactsView):
                 "sortable": False, }),
         ))
 
-    def update(self):
-        """Update the view with content filter and columns based on cookie
-        """
-        super(ContactsView, self).update()
-
-        global_contacts_path = "/".join(self.context.getPhysicalPath())
-
-        # Override the content filter based on the cookie
-        if self.include_client_contacts:
-            self.contentFilter.pop("path", None)
-        else:
-            # Show only global contacts
-            self.contentFilter = {
-                "portal_type": "Contact",
-                "sort_on": "sortable_title",
-                "path": {"query": global_contacts_path, "level": 0}
-            }
-
         for review_state in self.review_states:
             # ensure all columns are included
             review_state["columns"] = self.columns.keys()
@@ -89,6 +84,11 @@ class ContactsView(ClientContactsView):
                     "query": global_contacts_path,
                     "level": 0
                 }
+
+    def update(self):
+        """Update hook
+        """
+        super(ContactsView, self).update()
 
     @property
     def include_client_contacts(self):
