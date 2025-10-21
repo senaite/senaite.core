@@ -113,6 +113,9 @@ class Contact(Person):
     @classmethod
     def getContactByUsername(cls, username):
         """Convenience Classmethod which returns a Contact by a Username
+
+        NOTE: This method used the contact catalog to search for Contacts by the
+        index `getUsername`.
         """
         # Check if the User is linked already
         query = {"portal_type": cls.__name__, "getUsername": username}
@@ -212,6 +215,14 @@ class Contact(Person):
     def getParent(self):
         return aq_parent(aq_inner(self))
 
+    def isGlobal(self):
+        """Check if Contact is global (not under a Client)
+        """
+        parent = self.getParent()
+        if IClient.providedBy(parent):
+            return False
+        return True
+
     @security.private
     def _linkUser(self, user):
         """Set the UID of the current Contact in the User properties and update
@@ -256,6 +267,10 @@ class Contact(Person):
         # grant the owner role
         sec_api.grant_local_roles_for(self, roles=["Owner"], user=user)
 
+        # Allow modificiations
+        sec_api.grant_permission_for(self, permissions.ModifyPortalContent,
+                                     ["Owner"], acquire=False)
+
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
 
@@ -292,6 +307,10 @@ class Contact(Person):
 
         # revoke the owner role
         sec_api.revoke_local_roles_for(self, roles=["Owner"], user=user)
+
+        # Disallow modificiations
+        sec_api.revoke_permission_for(self, permissions.ModifyPortalContent,
+                                      ["Owner"], acquire=False)
 
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
