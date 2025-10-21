@@ -14,7 +14,7 @@
 
   <!-- Contact Login Details view -->
   <browser:page
-      for="bika.lims.interfaces.IContact"
+      for="senaite.core.interfaces.IContact"
       name="login_details"
       class=".view.ContactLoginDetailsView"
       permission="cmf.ModifyPortalContent"

@@ -30,7 +30,7 @@ from bika.lims.api import security
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.labcontact import LabContact
-from bika.lims.interfaces import IContacts
+from senaite.core.interfaces import IContacts
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
 from bika.lims.vocabularies import CatalogVocabulary
