@@ -8,7 +8,7 @@
       for="senaite.core.interfaces.IContacts"
       name="view"
       class=".view.ContactsView"
-      permission="zope2.View"
+      permission="senaite.core.permissions.ManageBika"
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
