@@ -4,7 +4,7 @@
 
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Create global Contacts container"
-      description="Create Contacts container in setup folder and add getClient index to contact catalog"
+      description="Create Contacts container in setup folder"
       source="2708"
       destination="2709"
       handler=".v02_07_000.create_setup_contacts_folder"
