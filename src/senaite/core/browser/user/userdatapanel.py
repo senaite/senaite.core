@@ -20,8 +20,8 @@
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
-from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
+from senaite.core.interfaces import IContact
 from bika.lims.utils import get_link_for
 from plone.app.users.browser.account import getSchema
 from plone.app.users.browser.userdatapanel import UserDataPanel as Base

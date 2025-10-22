@@ -35,7 +35,6 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from bika.lims import logger
 from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
 from DateTime import DateTime
 from OFS.event import ObjectWillBeMovedEvent
@@ -70,6 +69,7 @@ from Products.CMFPlone.utils import base_hasattr
 from Products.CMFPlone.utils import safe_unicode
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
+from senaite.core.interfaces import IContact
 from senaite.core.interfaces import ITemporaryObject
 from z3c.form.validator import Data as ValidatorData
 from zope import globalrequest
@@ -228,6 +228,7 @@ def copy_object(source, container=None, portal_type=None, *args, **kwargs):
     """
     # Prevent circular dependencies
     from security import check_permission
+
     # Use same container as source unless explicitly set
     source = get_object(source)
     if not container:
@@ -1512,7 +1513,7 @@ def get_current_user():
     return ploneapi.user.get_current()
 
 
-def get_user_contact(user, contact_types=['Contact', 'LabContact']):
+def get_user_contact(user, contact_types=None):
     """Returns the associated contact of a Plone user
 
     If the user passed in has no contact associated, return None.
@@ -1526,6 +1527,10 @@ def get_user_contact(user, contact_types=['Contact', 'LabContact']):
         return None
 
     from senaite.core.catalog import CONTACT_CATALOG  # Avoid circular import
+
+    if contact_types is None:
+        contact_types = ["Contact", "LabContact"]
+
     query = {"portal_type": contact_types, "getUsername": user.getId()}
     brains = search(query, catalog=CONTACT_CATALOG)
     if not brains:
@@ -1551,13 +1556,13 @@ def get_user_client(user_or_contact):
     :param: Plone user or contact
     :returns: Client the contact of the Plone user belongs to
     """
-    if not user_or_contact or ILabContact.providedBy(user_or_contact):
+    if not user_or_contact or is_lab_contact(user_or_contact):
         # Lab contacts cannot belong to a client
         return None
 
-    if not IContact.providedBy(user_or_contact):
-        contact = get_user_contact(user_or_contact, contact_types=['Contact'])
-        if IContact.providedBy(contact):
+    if not is_contact(user_or_contact):
+        contact = get_user_contact(user_or_contact, contact_types=["Contact"])
+        if is_client_contact(contact):
             return get_user_client(contact)
         return None
 
@@ -1577,7 +1582,7 @@ def get_user_fullname(user_or_contact):
     :param: Plone user or contact
     :returns: Fullname of the contact or user
     """
-    if IContact.providedBy(user_or_contact):
+    if is_contact(user_or_contact):
         return user_or_contact.getFullname()
 
     user = get_user(user_or_contact)
@@ -1599,7 +1604,7 @@ def get_user_email(user_or_contact):
     :param: Plone user or contact
     :returns: Fullname of the contact or user
     """
-    if IContact.providedBy(user_or_contact):
+    if is_contact(user_or_contact):
         return user_or_contact.getEmailAddress()
 
     user = get_user(user_or_contact)
@@ -1612,6 +1617,40 @@ def get_user_email(user_or_contact):
         return user.getProperty("email", default="")
 
     return contact.getEmailAddress()
+
+
+def is_lab_contact(brain_or_object):
+    """Checks if the brain or object is a Lab Contact
+
+    :returns: True if the brain or object is a Lab Contact, False otherwise
+    """
+    if not is_object(brain_or_object):
+        return False
+    obj = get_object(brain_or_object)
+    return ILabContact.providedBy(obj)
+
+
+def is_client_contact(brain_or_object):
+    """Checks if the brain or object is a Client Contact
+
+    :returns: True if the brain or object is a Client Contact, False otherwise
+    """
+    if not is_object(brain_or_object):
+        return False
+    obj = get_object(brain_or_object)
+    return IContact.providedBy(obj)
+
+
+def is_contact(brain_or_object):
+    """Checks if the brain or object is a Client Contact or Lab Contact
+
+    :returns: True if the brain or object is a Contact, False otherwise
+    """
+    if is_client_contact(brain_or_object):
+        return True
+    if is_lab_contact(brain_or_object):
+        return True
+    return False
 
 
 def get_current_client():

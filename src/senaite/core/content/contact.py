@@ -30,7 +30,6 @@ from bika.lims.api import is_active
 from bika.lims.api import search
 from bika.lims.api import security as sec_api
 from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IContact
 from bika.lims.interfaces import IDeactivable
 from plone import api
 from plone.autoform import directives
@@ -39,6 +38,7 @@ from Products.CMFCore import permissions
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.content.person import IPersonSchema
 from senaite.core.content.person import Person
+from senaite.core.interfaces import IContact
 from senaite.core.schema import UIDReferenceField
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from zope.interface import implementer

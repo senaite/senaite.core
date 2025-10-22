@@ -23,11 +23,11 @@ from collections import OrderedDict
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.interfaces import IContacts
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
 from bika.lims.vocabularies import CatalogVocabulary
 from senaite.core.catalog import CONTACT_CATALOG
+from senaite.core.interfaces import IContacts
 from zope.interface import implements
 
 

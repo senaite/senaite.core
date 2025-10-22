@@ -33,7 +33,7 @@
       provides="senaite.core.interfaces.IReferenceWidgetVocabulary" />
 
   <adapter
-      for="bika.lims.interfaces.IContact
+      for="senaite.core.interfaces.IContact
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".vocabularies.ClientAwareReferenceWidgetVocabulary"
       provides="senaite.core.interfaces.IReferenceWidgetVocabulary" />
