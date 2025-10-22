@@ -84,6 +84,33 @@ def import_registry(tool):
     portal = tool.aq_inner.aq_parent
     setup = portal.portal_setup
 
+    # XXX: The plone.app.registry step depends on the typeinfo step, which
+    # causes this error if executed w/o AT portal type removal first:
+    #
+    # Traceback (innermost last):
+    #   Module ZPublisher.WSGIPublisher, line 176, in transaction_pubevents
+    #   Module ZPublisher.WSGIPublisher, line 385, in publish_module
+    #   Module ZPublisher.WSGIPublisher, line 288, in publish
+    #   Module ZPublisher.mapply, line 85, in mapply
+    #   Module ZPublisher.WSGIPublisher, line 63, in call_object
+    #   Module Products.GenericSetup.tool, line 1135, in manage_doUpgrades
+    #   Module Products.GenericSetup.upgrade, line 185, in doStep
+    #   Module senaite.core.upgrade, line 39, in wrap_func_args
+    #   Module senaite.core.upgrade.v02_07_000, line 86, in import_registry
+    #   Module Products.GenericSetup.tool, line 375, in runImportStepFromProfile
+    #   Module Products.GenericSetup.tool, line 1323, in _doRunImportStep
+    #    - __traceback_info__: typeinfo
+    #   Module Products.CMFCore.exportimport.typeinfo, line 222, in importTypesTool
+    #   Module Products.GenericSetup.utils, line 934, in importObjects
+    #    - __traceback_info__: portal_types
+    #   Module Products.GenericSetup.utils, line 930, in importObjects
+    #    - __traceback_info__: types/Contact
+    #   Module Products.GenericSetup.utils, line 530, in _importBody
+    #   Module Products.CMFCore.exportimport.typeinfo, line 61, in _importNode
+    #   Module Products.GenericSetup.utils, line 763, in _initProperties
+    # ValueError: undefined property 'add_permission'
+    remove_at_portal_types(tool)
+
     setup.runImportStepFromProfile(profile, "plone.app.registry")
 
 
