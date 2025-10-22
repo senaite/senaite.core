@@ -269,7 +269,7 @@ class Contact(Person):
 
         # Allow modificiations
         sec_api.grant_permission_for(self, permissions.ModifyPortalContent,
-                                     ["Owner"], acquire=False)
+                                     ["Owner"], acquire=True)
 
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
@@ -310,7 +310,7 @@ class Contact(Person):
 
         # Disallow modificiations
         sec_api.revoke_permission_for(self, permissions.ModifyPortalContent,
-                                      ["Owner"], acquire=False)
+                                      ["Owner"], acquire=True)
 
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
