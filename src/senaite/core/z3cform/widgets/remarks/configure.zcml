@@ -1,0 +1,38 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="z3c.form">
+
+    <!-- Remarks Widget -->
+    <adapter
+        factory=".remarks.RemarksWidgetFactory"
+        for="senaite.core.schema.interfaces.IRemarksField
+             senaite.core.interfaces.ISenaiteFormLayer"
+    />
+
+    <!-- Remarks input widget template -->
+    <z3c:widgetTemplate
+        mode="input"
+        widget=".remarks.RemarksWidget"
+        template="remarks_input.pt"
+        layer="senaite.core.interfaces.ISenaiteFormLayer"
+    />
+
+    <!-- Remarks display widget template -->
+    <z3c:widgetTemplate
+        mode="display"
+        widget=".remarks.RemarksWidget"
+        template="remarks_display.pt"
+        layer="senaite.core.interfaces.ISenaiteFormLayer"
+    />
+
+    <!-- Remarks hidden widget template -->
+    <z3c:widgetTemplate
+        mode="hidden"
+        widget=".remarks.RemarksWidget"
+        template="remarks_hidden.pt"
+        layer="senaite.core.interfaces.ISenaiteFormLayer"
+    />
+
+</configure>

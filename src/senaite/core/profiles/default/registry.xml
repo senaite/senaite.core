@@ -13,6 +13,9 @@
   <!-- Registry for worksheet view configuration -->
   <records interface="senaite.core.registry.schema.IWorksheetViewRegistry" />
 
+  <!-- Registry for results reports configuration -->
+  <records interface="senaite.core.registry.schema.IResultsReportsRegistry" />
+
   <!-- Registry for sample view configuration -->
   <records interface="senaite.core.registry.schema.ISampleViewRegistry" />
 
@@ -69,7 +72,7 @@
   <record name="plone.displayed_types" interface="Products.CMFPlone.interfaces.controlpanel.INavigationSchema" field="displayed_types">
     <field type="plone.registry.field.Tuple">
       <default>
-        <element>WorksheetFolder</element>
+        <element>Worksheets</element>
         <element>BatchFolder</element>
         <element>ClientFolder</element>
         <element>Methods</element>
@@ -91,7 +94,7 @@
       <element>ClientFolder</element>
       <element>Folder</element>
       <element>Methods</element>
-      <element>WorksheetFolder</element>
+      <element>Worksheets</element>
       <!-- Setup Items -->
       <element>AnalysisCategories</element>
       <element>AnalysisProfiles</element>

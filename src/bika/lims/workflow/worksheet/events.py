@@ -18,8 +18,17 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from Products.CMFCore.utils import getToolByName
 from bika.lims import api
 from bika.lims import workflow as wf
+from bika.lims.api import analysis as api_analysis
+from bika.lims.utils import changeWorkflowState
+from bika.lims.utils import tmpID
+from bika.lims.utils.analysis import create_analysis
+from bika.lims.utils.analysis import create_duplicate
+from bika.lims.utils.analysis import create_reference_analysis
+from bika.lims.workflow import skip
+from senaite.core.workflow import ANALYSIS_WORKFLOW
 
 
 def after_retract(worksheet):
@@ -38,3 +47,149 @@ def after_remove(worksheet):
     # worksheets can be removed. Therefore, better keep the "Delete objects"
     # permission at Worksheets folder level as false, because is less specific
     api.delete(worksheet, check_permissions=False)
+
+
+def after_reject(worksheet):
+    """Copy real analyses to RejectAnalysis, with link to real
+    create a new worksheet, with the original analyses, and new
+    duplicates and references to match the rejected
+    worksheet.
+    """
+    if skip(worksheet, "reject"):
+        return
+    workflow = getToolByName(obj, "portal_workflow")
+    analysis_positions = {}
+    for item in worksheet.getLayout():
+        analysis_positions[item["analysis_uid"]] = item["position"]
+    old_layout = []
+    new_layout = []
+
+    # New worksheet
+    portal = api.get_portal()
+    kwargs = {
+        "container": portal.get("Worksheets"),
+        "portal_type": "Worksheet",
+        "skip": ignore_fields,
+    }
+    new_ws = api.copy_object(worksheet, **kwargs)
+
+    # Objects are being created inside other contexts, but we want their
+    # workflow handlers to be aware of which worksheet this is occurring in.
+    # We save the worksheet in request['context_uid'].
+    # We reset it again below....  be very sure that this is set to the
+    # UID of the containing worksheet before invoking any transitions on
+    # analyses.
+    worksheet.REQUEST["context_uid"] = new_ws.UID()
+
+    # loop all analyses
+    analyses = worksheet.getAnalyses()
+    new_ws_analyses = []
+    old_ws_analyses = []
+    for analysis in analyses:
+        # Skip published or verified analyses
+        review_state = workflow.getInfoFor(analysis, "review_state", "")
+        if review_state in ["published", "verified", "retracted"]:
+            old_ws_analyses.append(analysis.UID())
+            old_layout.append({
+                "type": "a",
+                "analysis_uid": analysis.UID(),
+                "container_uid": analysis.aq_parent.UID()
+            })
+            continue
+        # Normal analyses:
+        # - Create matching RejectAnalysis inside old WS
+        # - Link analysis to new WS in same position
+        # - Copy all field values
+        # - Clear analysis result, and set Retested flag
+        if api_analysis.is_analysis(analysis):
+            reject = _createObjectByType("RejectAnalysis", self, tmpID())
+            reject.unmarkCreationFlag()
+            copy_src_fields_to_dst(analysis, reject)
+            reject.setAnalysis(analysis)
+            reject.reindexObject()
+            analysis.edit(
+                Result=None,
+                Retested=True,
+            )
+            analysis.reindexObject()
+            position = analysis_positions[analysis.UID()]
+            old_ws_analyses.append(reject.UID())
+            old_layout.append({
+                "position": position,
+                "type": "r",
+                "analysis_uid": reject.UID(),
+                "container_uid": worksheet.UID()
+            })
+            new_ws_analyses.append(analysis.UID())
+            new_layout.append({
+                "position": position,
+                "type": "a",
+                "analysis_uid": analysis.UID(),
+                "container_uid": analysis.aq_parent.UID()
+            })
+        # Reference analyses
+        # - Create a new reference analysis in the new worksheet
+        # - Transition the original analysis to 'rejected' state
+        if api_analysis.is_reference_analysis(analysis):
+            service_uid = analysis.getServiceUID()
+            reference = analysis.aq_parent
+            new_reference = create_reference_analysis(reference, service_uid)
+            reference_type = new_reference.getReferenceType()
+            new_analysis_uid = api.get_uid(new_reference)
+            position = analysis_positions[analysis.UID()]
+            old_ws_analyses.append(analysis.UID())
+            old_layout.append({
+                "position": position,
+                "type": reference_type,
+                "analysis_uid": analysis.UID(),
+                "container_uid": reference.UID()
+            })
+            new_ws_analyses.append(new_analysis_uid)
+            new_layout.append({
+                "position": position,
+                "type": reference_type,
+                "analysis_uid": new_analysis_uid,
+                "container_uid": reference.UID()
+            })
+            workflow.doActionFor(analysis, "reject")
+            analysis.reindexObject()
+        # Duplicate analyses
+        # - Create a new duplicate inside the new worksheet
+        # - Transition the original analysis to 'rejected' state
+        if api_analysis.is_duplicate_analysis(analysis):
+            duplicate_id = new_ws.generateUniqueId("DuplicateAnalysis")
+            new_duplicate = _createObjectByType("DuplicateAnalysis",
+                                                new_ws, duplicate_id)
+            new_duplicate.unmarkCreationFlag()
+            copy_src_fields_to_dst(analysis, new_duplicate)
+            new_duplicate.reindexObject()
+            position = analysis_positions[analysis.UID()]
+            old_ws_analyses.append(analysis.UID())
+            old_layout.append({
+                "position": position,
+                "type": "d",
+                "analysis_uid": analysis.UID(),
+                "container_uid": worksheet.UID()
+            })
+            new_ws_analyses.append(new_duplicate.UID())
+            new_layout.append({
+                "position": position,
+                "type": "d",
+                "analysis_uid": new_duplicate.UID(),
+                "container_uid": new_ws.UID()
+            })
+            workflow.doActionFor(analysis, "reject")
+            analysis.reindexObject()
+
+    new_ws.setAnalyses(new_ws_analyses)
+    new_ws.setLayout(new_layout)
+    new_ws.setReplacesRejectedWorksheet(worksheet)
+    for analysis in new_ws.getAnalyses():
+        review_state = api.get_review_status(analysis)
+        if review_state == "to_be_verified":
+            # TODO Workflow - Analysis Retest transition within a Worksheet
+            changeWorkflowState(analysis, ANALYSIS_WORKFLOW, "assigned")
+    worksheet.REQUEST["context_uid"] = worksheet.UID()
+    worksheet.setLayout(old_layout)
+    worksheet.setAnalyses(old_ws_analyses)
+    worksheet.setReplacedBy(new_ws)

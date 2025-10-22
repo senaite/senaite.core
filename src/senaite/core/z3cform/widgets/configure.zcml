@@ -9,6 +9,7 @@
   <include package=".gpscoordinates" />
   <include package=".listing" />
   <include package=".queryselect" />
+  <include package=".remarks" />
   <include package=".selectother" />
   <include package=".uidreference" />
 

@@ -1,0 +1,19 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     tal:omit-tag=""
+     tal:define="
+         field_id python:view.id;
+         field_name python:view.name;">
+
+  <tal:address repeat="address python:view.value;">
+
+    <input type="hidden"
+           tal:repeat="key python:address.keys()"
+           tal:attributes="
+               id    string:${field_id}_${key}:records:ignore_empty;
+               name  string:${field_name}_${key}:records:ignore_empty;
+               value python:address.get(key, '')"/>
+
+  </tal:address>
+
+</div>

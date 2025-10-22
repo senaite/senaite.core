@@ -26,4 +26,12 @@
       component=".analysis_types.DuplicateVocabularyFactory"
       name="senaite.core.vocabularies.duplicate" />
 
+  <utility
+      component=".methods.AvailableMethodsFactory"
+      name="senaite.core.vocabularies.available_methods" />
+
+  <utility
+      component=".methods.WorksheetLayoutsFactory"
+      name="senaite.core.vocabularies.worksheet_layouts" />
+
 </configure>

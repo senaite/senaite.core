@@ -496,6 +496,31 @@ class ISampleTypes(Interface):
     """
 
 
+class IRemarksField(Interface):
+    """An append-only TextField which saves information about each edit
+    """
+
+
+class IWorksheet(Interface):
+    """Marker interface for Worksheet
+    """
+
+
+class IWorksheets(Interface):
+    """Marker interface for worksheets folder
+    """
+
+
+class IWorksheetLayouts(Interface):
+    """Marker interface for additional Worksheet layouts
+    """
+
+    def getLayouts(self):
+        """Returns tuples of layouts where key is the name of the view and
+        value is name of layout
+        """
+
+
 class IWorksheetTemplates(Interface):
     """Marker interface for Worksheet Templates
     """

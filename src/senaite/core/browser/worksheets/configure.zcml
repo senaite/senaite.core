@@ -1,0 +1,91 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheets"
+      name="view"
+      class=".views.WorksheetsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="add_analyses"
+      class=".views.AddAnalysesView"
+      permission="senaite.core.permissions.ViewResults"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="add_blank"
+      class=".views.AddBlankView"
+      permission="senaite.core.permissions.ViewResults"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="add_control"
+      class=".views.AddControlView"
+      permission="senaite.core.permissions.ViewResults"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="add_duplicate"
+      class=".views.AddDuplicateView"
+      permission="senaite.core.permissions.ViewResults"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheets"
+      name="worksheet_add"
+      class=".views.AddWorksheetView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="export"
+      class=".views.ExportView"
+      permission="senaite.core.permissions.ViewResults"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="print"
+      class=".views.PrintView"
+      permission="senaite.core.permissions.ViewResults"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="manage_results"
+      class=".views.ManageResultsView"
+      permission="senaite.core.permissions.ViewResults"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
+  <!-- Default worksheet layouts (classic and transposed view) -->
+  <utility
+      name="default_worksheet_layouts"
+      factory=".utility.DefaultWorksheetLayouts"
+      provides="senaite.core.interfaces.IWorksheetLayouts"
+  />
+
+  <plone:static
+      directory="templates/print"
+      type="worksheets"
+      name="Worksheet Print Templates"
+  />
+
+</configure>
+
