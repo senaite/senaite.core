@@ -53,10 +53,8 @@ class MyOrganizationView(BrowserView):
     def available(self):
         """Available expression for the menu action
         """
-        user = api.get_current_user()
-        if not user:
+        if not api.is_client_contact(self.context):
             return False
-        contact = api.get_user_contact(user)
-        if contact and contact.isGlobal():
+        if self.context.isGlobal():
             return False
         return True
