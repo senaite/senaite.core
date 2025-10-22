@@ -22,7 +22,6 @@ from collections import OrderedDict
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.interfaces import IClient
 from bika.lims.utils import get_link
 from senaite.core.browser.clients.client.contacts.view import \
     ClientContactsView
