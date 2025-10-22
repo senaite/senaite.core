@@ -23,6 +23,7 @@ import copy
 from AccessControl import ClassSecurityInfo
 from bika.lims import senaiteMessageFactory as _
 from senaite.core.schema import AddressField
+from senaite.core.schema import EmailField
 from senaite.core.schema import PhoneField
 from senaite.core.schema.addressfield import BILLING_ADDRESS
 from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
@@ -30,7 +31,6 @@ from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from senaite.core.z3cform.widgets.address import AddressWidget
 from senaite.core.content.base import Container
 from plone.supermodel import model
-from plone.schema.email import Email
 from plone.autoform import directives
 from Products.CMFCore import permissions
 from Products.CMFPlone.utils import safe_unicode
@@ -89,7 +89,7 @@ class IOrganizationSchema(model.Schema):
         ]
     )
 
-    email = Email(
+    email = EmailField(
         title=_(
             u"title_organization_email",
             default=u"Email"
