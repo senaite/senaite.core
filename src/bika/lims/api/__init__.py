@@ -228,6 +228,7 @@ def copy_object(source, container=None, portal_type=None, *args, **kwargs):
     """
     # Prevent circular dependencies
     from security import check_permission
+
     # Use same container as source unless explicitly set
     source = get_object(source)
     if not container:

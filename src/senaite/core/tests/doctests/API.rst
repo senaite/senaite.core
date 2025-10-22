@@ -1293,7 +1293,7 @@ But fails if we specify only `Contact` type:
 
 
 Getting the fullname of the user and/or contact
-..............................................
+...............................................
 
 Getting the fullname of the contact::
 
