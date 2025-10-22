@@ -44,9 +44,11 @@ from DateTime import DateTime
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFPlone.utils import _createObjectByType
 from senaite.core.api.workflow import check_guard
+from senaite.core.api.workflow import get_transition
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.idserver import renameAfterCreation
 from senaite.core.permissions.sample import can_receive
+from senaite.core.registry import get_registry_record
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope import event
@@ -147,9 +149,18 @@ def create_analysisrequest(client, request, values, analyses=None,
             receive_sample(ar)
 
         else:
-            # sample_due is the default initial status of the sample
-            changeWorkflowState(ar, SAMPLE_WORKFLOW, "sample_due",
-                                action="no_sampling_workflow")
+            # find out if is necessary to trigger events. It is always more
+            # performant if no events are triggered, but some instances might
+            # need them to work properly
+            key = "trigger_events_on_sample_creation"
+            trigger_events = get_registry_record(key)
+
+            # transition to the default initial status of the sample
+            action = "no_sampling_workflow"
+            tr = get_transition(SAMPLE_WORKFLOW, action)
+            changeWorkflowState(ar, SAMPLE_WORKFLOW, tr.new_state_id,
+                                trigger_events=trigger_events,
+                                action=action)
 
     renameAfterCreation(ar)
     # AT only

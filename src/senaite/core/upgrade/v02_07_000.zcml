@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add registry key for trigger events on sample creation"
+      description="Allows to define if after and before events have to be triggered on sample creation"
+      source="2706"
+      destination="2707"
+      handler=".v02_07_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Add registry key for instrument import submit handling"
       description="Allow to submit imported analysis manually"
       source="2705"
