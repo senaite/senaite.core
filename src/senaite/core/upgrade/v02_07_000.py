@@ -326,6 +326,11 @@ def migrate_contact_to_dx(src, destination=None):
     # copy dates
     migrator.copy_dates(src, target)
 
+    # move eventual contents from source to target
+    if api.is_folderish(src):
+        cp = src.manage_cutObjects(ids=src.objectIds())
+        target.manage_pasteObjects(cp)
+
     # uncatalog the source object
     migrator.uncatalog_object(src)
 
