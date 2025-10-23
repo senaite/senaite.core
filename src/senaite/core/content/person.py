@@ -301,7 +301,7 @@ class Person(Container):
     def getSalutation(self):
         accessor = self.accessor("salutation")
         value = accessor(self) or ""
-        return value.encode("utf-8")
+        return safe_unicode(value).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setSalutation(self, value):
@@ -315,7 +315,7 @@ class Person(Container):
     def getFirstname(self):
         accessor = self.accessor("firstname")
         value = accessor(self) or ""
-        return value.encode("utf-8")
+        return safe_unicode(value).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setFirstname(self, value):
@@ -329,7 +329,7 @@ class Person(Container):
     def getMiddleinitial(self):
         accessor = self.accessor("middleinitial")
         value = accessor(self) or ""
-        return value.encode("utf-8")
+        return safe_unicode(value).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setMiddleinitial(self, value):
@@ -343,7 +343,7 @@ class Person(Container):
     def getMiddlename(self):
         accessor = self.accessor("middlename")
         value = accessor(self) or ""
-        return value.encode("utf-8")
+        return safe_unicode(value).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setMiddlename(self, value):
@@ -357,7 +357,7 @@ class Person(Container):
     def getSurname(self):
         accessor = self.accessor("surname")
         value = accessor(self) or ""
-        return value.encode("utf-8")
+        return safe_unicode(value).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setSurname(self, value):
@@ -374,7 +374,7 @@ class Person(Container):
     def getUsername(self):
         accessor = self.accessor("username")
         value = accessor(self) or ""
-        return value.encode("utf-8")
+        return safe_unicode(value).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setUsername(self, value):
@@ -388,7 +388,7 @@ class Person(Container):
     def getEmailAddress(self):
         accessor = self.accessor("email_address")
         value = accessor(self) or ""
-        return value.encode("utf-8")
+        return safe_unicode(value).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setEmailAddress(self, value):
@@ -402,7 +402,7 @@ class Person(Container):
     def getBusinessPhone(self):
         accessor = self.accessor("business_phone")
         value = accessor(self) or ""
-        return value.encode("utf-8")
+        return safe_unicode(value).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setBusinessPhone(self, value):
@@ -416,7 +416,7 @@ class Person(Container):
     def getBusinessFax(self):
         accessor = self.accessor("business_fax")
         value = accessor(self) or ""
-        return value.encode("utf-8")
+        return safe_unicode(value).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setBusinessFax(self, value):
@@ -430,7 +430,7 @@ class Person(Container):
     def getHomePhone(self):
         accessor = self.accessor("home_phone")
         value = accessor(self) or ""
-        return value.encode("utf-8")
+        return safe_unicode(value).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setHomePhone(self, value):
@@ -444,7 +444,7 @@ class Person(Container):
     def getMobilePhone(self):
         accessor = self.accessor("mobile_phone")
         value = accessor(self) or ""
-        return value.encode("utf-8")
+        return safe_unicode(value).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setMobilePhone(self, value):
@@ -458,7 +458,7 @@ class Person(Container):
     def getJobTitle(self):
         accessor = self.accessor("job_title")
         value = accessor(self) or ""
-        return value.encode("utf-8")
+        return safe_unicode(value).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setJobTitle(self, value):
@@ -472,7 +472,7 @@ class Person(Container):
     def getDepartment(self):
         accessor = self.accessor("department")
         value = accessor(self) or ""
-        return value.encode("utf-8")
+        return safe_unicode(value).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setDepartment(self, value):
