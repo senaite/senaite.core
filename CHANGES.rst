@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2795 Migrate Client Contacts to Dexterity
+- #2800 Fix WrongContainedType on object creation/update via jsonapi
 - #2799 Fix Reference Sample import supplier data
 - #2797 Fix sticker rendering error when no configured template was found
 - #2793 Fix APIError: Expected string type, got '<type 'NoneType'>'
