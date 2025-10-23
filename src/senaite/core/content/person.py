@@ -485,7 +485,12 @@ class Person(Container):
     @security.protected(permissions.View)
     def getPhysicalAddress(self):
         accessor = self.accessor("physical_address")
-        value = accessor(self) or {}
+        value = accessor(self)
+        # The address field returns a list of address dicts
+        if value and isinstance(value, list):
+            value = value[0]
+        if not isinstance(value, dict):
+            value = {}
         return value
 
     @security.protected(permissions.ModifyPortalContent)
@@ -499,7 +504,12 @@ class Person(Container):
     @security.protected(permissions.View)
     def getPostalAddress(self):
         accessor = self.accessor("postal_address")
-        value = accessor(self) or {}
+        value = accessor(self)
+        # The address field returns a list of address dicts
+        if value and isinstance(value, list):
+            value = value[0]
+        if not isinstance(value, dict):
+            value = {}
         return value
 
     @security.protected(permissions.ModifyPortalContent)
@@ -514,22 +524,34 @@ class Person(Container):
     def getCity(self):
         """Return city from physical address
         """
-        return self.getPhysicalAddress().get('city', '')
+        address = self.getPhysicalAddress()
+        if not address:
+            return ""
+        return address.get("city", "")
 
     def getDistrict(self):
         """Return district from physical address
         """
-        return self.getPhysicalAddress().get('district', '')
+        address = self.getPhysicalAddress()
+        if not address:
+            return ""
+        return address.get("district", "")
 
     def getPostalCode(self):
         """Return postal code from physical address
         """
-        return self.getPhysicalAddress().get('postalCode', '')
+        address = self.getPhysicalAddress()
+        if not address:
+            return ""
+        return address.get("postalCode", "")
 
     def getCountry(self):
         """Return country from physical address
         """
-        return self.getPhysicalAddress().get('country', '')
+        address = self.getPhysicalAddress()
+        if not address:
+            return ""
+        return address.get("country", "")
 
     @security.protected(permissions.ManagePortal)
     def hasUser(self):
