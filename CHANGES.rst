@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2802 Fix KeyError in DX address widget country lookup
 - #2797 Fix sticker rendering error when no configured template was found
 - #2793 Fix APIError: Expected string type, got '<type 'NoneType'>'
 - #2792 Add setting to trigger transition events on sample creation
