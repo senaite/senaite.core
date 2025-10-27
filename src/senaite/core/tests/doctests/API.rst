@@ -2552,11 +2552,33 @@ And handles missing values for native string fields gracefully:
     >>> api.validate(supplier)
     {'email': u'wrong'}
 
+    >>> supplier.email = "wrong@email"
+    >>> api.validate(supplier)
+    {'email': u'wrong@email'}
+
     >>> supplier.email = ""
     >>> api.validate(supplier)
     {}
 
     >>> supplier.email = None
+    >>> api.validate(supplier)
+    {}
+
+Empties and unicode types are supported:
+
+    >>> supplier.phone = u""
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.phone=u"612345678"
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.email = u""
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.email=u"my@email.com"
     >>> api.validate(supplier)
     {}
 
