@@ -403,18 +403,11 @@ class AnalysisRequestAddView(BrowserView):
                     value = self.get_default_value(
                         field, ar_context, arnum=arnum)
 
+                # Filter out analyses in certain workflow states when copying
                 if fieldname == "Analyses" and value:
                     skip_states = self.get_skip_analyses_states()
-                    # filter out analyses in defined WF states, e.g. rejected
-                    filtered = []
-                    # NOTE: we use a for loop here, because the filter() with a
-                    # lambda creates a closure which holds references to
-                    # persistent objects, which makes the tests fail
-                    for analysis in value:
-                        status = api.get_review_status(analysis)
-                        if status not in skip_states:
-                            filtered.append(analysis)
-                    value = filtered
+                    value = self.filter_objs_with_states(
+                        value, filter_states=skip_states)
 
                 # store the value on the new fieldname
                 new_fieldname = self.get_fieldname(field, arnum)
@@ -632,6 +625,24 @@ class AnalysisRequestAddView(BrowserView):
             return []
         # convert to plain list to avoid persistent references
         return list(record)
+
+    def filter_objs_with_states(self, objs, filter_states=None):
+        """Filter out objects that are in the given workflow states
+
+        :param objs: List of objects to filter
+        :param filter_states: List of workflow state IDs to exclude
+        :return: List of objects not in the filter_states
+        """
+        if not filter_states:
+            return objs
+        if not isinstance(filter_states, (list, tuple)):
+            return objs
+        filtered = []
+        for obj in objs:
+            status = api.get_review_status(obj)
+            if status not in filter_states:
+                filtered.append(obj)
+        return filtered
 
 
 class AnalysisRequestManageView(BrowserView):
