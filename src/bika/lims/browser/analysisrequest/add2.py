@@ -403,11 +403,18 @@ class AnalysisRequestAddView(BrowserView):
                     value = self.get_default_value(
                         field, ar_context, arnum=arnum)
 
-                if fieldname == "Analyses":
+                if fieldname == "Analyses" and value:
                     skip_states = self.get_skip_analyses_states()
                     # filter out analyses in defined WF states, e.g. rejected
-                    value = filter(lambda x: api.get_review_status(x)
-                                   not in skip_states, value)
+                    filtered = []
+                    # NOTE: we use a for loop here, because the filter() with a
+                    # lambda creates a closure which holds references to
+                    # persistent objects, which makes the tests fail
+                    for analysis in value:
+                        status = api.get_review_status(analysis)
+                        if status not in skip_states:
+                            filtered.append(analysis)
+                    value = filtered
 
                 # store the value on the new fieldname
                 new_fieldname = self.get_fieldname(field, arnum)
@@ -606,7 +613,6 @@ class AnalysisRequestAddView(BrowserView):
             widget_type = None
         return widget_type in ALLOW_MULTI_PASTE_WIDGET_TYPES
 
-    @viewcache.memoize
     def get_allowed_multi_paste_fields(self):
         """Returns a list of fields that allow multi paste
         """
@@ -614,7 +620,8 @@ class AnalysisRequestAddView(BrowserView):
         record = get_registry_record(key)
         if not record:
             return []
-        return record
+        # convert to plain list to avoid persistent references
+        return list(record)
 
     def get_skip_analyses_states(self):
         """Returns a list of analyses WF states to skip on copy
@@ -623,7 +630,8 @@ class AnalysisRequestAddView(BrowserView):
         record = get_registry_record(key)
         if not record:
             return []
-        return record
+        # convert to plain list to avoid persistent references
+        return list(record)
 
 
 class AnalysisRequestManageView(BrowserView):
