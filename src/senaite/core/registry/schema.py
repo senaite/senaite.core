@@ -21,8 +21,8 @@
 from bika.lims import senaiteMessageFactory as _
 from plone.autoform import directives
 from plone.supermodel import model
+from senaite.core.config.registry import SKIP_ANALYSES_STATES_ON_COPY
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
-
 from zope import schema
 
 
@@ -376,9 +376,26 @@ class ISampleRegistry(ISenaiteRegistry):
             default=u"Samples"
         ),
         fields=[
+            "sample_add_form_skip_analyses_in_states",
             "sample_add_form_allow_multi_paste",
             "trigger_events_on_sample_creation",
         ],
+    )
+
+    sample_add_form_skip_analyses_in_states = schema.List(
+        title=_(
+            u"label_registry_sample_add_skip_analyses_in_states",
+            default=u"Skip analyses workflow states on copy"
+        ),
+        description=_(
+            u"description_registry_sample_add_skip_analyses_in_states",
+            default=u"Add all analyses workflow states that should be "
+                    u"skipped when copying analyses to a new sample in the "
+                    u"sample add form."
+        ),
+        value_type=schema.ASCIILine(),
+        required=False,
+        default=SKIP_ANALYSES_STATES_ON_COPY,
     )
 
     sample_add_form_allow_multi_paste = schema.List(

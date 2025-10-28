@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add registry key to skip analyses in defined WF states"
+      description="Allows to define WF states for Analyses to skip for new copies, e.g. rejected etc."
+      source="2707"
+      destination="2708"
+      handler=".v02_07_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Add registry key for trigger events on sample creation"
       description="Allows to define if after and before events have to be triggered on sample creation"
       source="2706"

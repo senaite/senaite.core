@@ -402,6 +402,13 @@ class AnalysisRequestAddView(BrowserView):
                     # get the default value of this field
                     value = self.get_default_value(
                         field, ar_context, arnum=arnum)
+
+                if fieldname == "Analyses":
+                    skip_states = self.get_skip_analyses_states()
+                    # filter out analyses in defined WF states, e.g. rejected
+                    value = filter(lambda x: api.get_review_status(x)
+                                   not in skip_states, value)
+
                 # store the value on the new fieldname
                 new_fieldname = self.get_fieldname(field, arnum)
                 out[new_fieldname] = value
@@ -604,6 +611,16 @@ class AnalysisRequestAddView(BrowserView):
         """Returns a list of fields that allow multi paste
         """
         key = "sample_add_form_allow_multi_paste"
+        record = get_registry_record(key)
+        if not record:
+            return []
+        return record
+
+    @viewcache.memoize
+    def get_skip_analyses_states(self):
+        """Returns a list of analyses WF states to skip on copy
+        """
+        key = "sample_add_form_skip_analyses_in_states"
         record = get_registry_record(key)
         if not record:
             return []
