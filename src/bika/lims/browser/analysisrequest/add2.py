@@ -616,7 +616,6 @@ class AnalysisRequestAddView(BrowserView):
             return []
         return record
 
-    @viewcache.memoize
     def get_skip_analyses_states(self):
         """Returns a list of analyses WF states to skip on copy
         """
