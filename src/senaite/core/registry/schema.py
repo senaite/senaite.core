@@ -376,10 +376,26 @@ class ISampleRegistry(ISenaiteRegistry):
             default=u"Samples"
         ),
         fields=[
+            "sample_add_form_skip_partition_analyses",
             "sample_add_form_skip_analyses_in_states",
             "sample_add_form_allow_multi_paste",
             "trigger_events_on_sample_creation",
         ],
+    )
+
+    sample_add_form_skip_partition_analyses = schema.Bool(
+        title=_(
+            u"label_registry_sample_add_skip_partition_analyses",
+            default=u"Skip partition analyses on copy"
+        ),
+        description=_(
+            u"description_registry_sample_add_skip_partition_analyses",
+            default=u"When enabled, analyses from partitions will be excluded "
+                    u"when copying a sample. Only analyses that directly belong "
+                    u"to the source sample will be copied to the new sample."
+        ),
+        default=False,
+        required=False,
     )
 
     sample_add_form_skip_analyses_in_states = schema.List(
