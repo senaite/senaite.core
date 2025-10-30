@@ -1,43 +1,73 @@
 # -*- coding: utf-8 -*-
 
+from bika.lims import api
 from bika.lims.utils.analysisrequest import create_partition
+from senaite.core import logger
 from senaite.core.interfaces import IAfterCreateSampleHook
 from senaite.core.registry import get_registry_record
 from zope.interface import implementer
-from bika.lims.utils.analysisrequest import receive_sample
+
+# Registry key constants
+REGISTRY_KEY_COPY_PARTITIONS = "sample_add_form_copy_partitions"
 
 
 @implementer(IAfterCreateSampleHook)
 class AfterCreateSampleHook(object):
-    """Copy samples structure with partitions
-    +"""
+    """Copy sample structure with partitions
+    """
+
     def __init__(self, sample, request):
         self.sample = sample
         self.request = request
 
     def update(self, sample, source=None):
         """Update handler
-        """
 
+        :param sample: The newly created sample
+        :param source: The source sample to copy from (optional)
+        """
         # Return immediately if we do not have a source sample
         # or the registry settings is set to False
         if not source or not self.get_copy_partitions():
             return
 
-        # get the partition config from the source sample
-        configs = self.get_partition_configurations(source)
-        # create the partitions in the created sample
-        self.create_partitions_from_config(sample, configs)
+        # Check if the source sample has partitions
+        if not self.has_partitions(source):
+            return
 
-        # immediately receive the sample
-        receive_sample(sample)
+        # Get the partition config from the source sample
+        configs = self.get_partition_configurations(source)
+
+        # Nothing to do if we have no configs
+        if not configs:
+            return
+
+        # Create the partitions in the target sample
+        self.create_partitions_from_config(sample, configs)
 
     def get_copy_partitions(self):
         """Returns whether to copy the sample structure with partitions
+
+        :return: Boolean indicating if partition copying is enabled
         """
-        key = "sample_add_form_copy_partitions"
-        record = get_registry_record(key)
+        record = get_registry_record(REGISTRY_KEY_COPY_PARTITIONS)
         return bool(record)
+
+    def has_partitions(self, sample):
+        """Check if the sample has partitions
+
+        :param source: The source sample object
+        :return: True if valid, False otherwise
+        """
+        if not sample:
+            return False
+
+        partitions = sample.getDescendantsUIDs()
+
+        if not partitions:
+            return False
+
+        return True
 
     def get_partition_configurations(self, source):
         """Extract partition configurations from the source sample
@@ -92,13 +122,17 @@ class AfterCreateSampleHook(object):
             return []
 
         created_partitions = []
-        for config in configurations:
+        for idx, config in enumerate(configurations):
             analyses = config.get("analyses", [])
-
             sample_type = config.get("sample_type")
             container = config.get("container")
             preservation = config.get("preservation")
             internal_use = config.get("internal_use")
+
+            logger.debug(
+                "Creating partition {} of {} for sample {}".format(
+                    idx + 1, len(configurations), api.get_id(primary_sample))
+            )
 
             # Create the partition
             partition = create_partition(
