@@ -504,3 +504,15 @@ class IWorksheetTemplates(Interface):
 class IWorksheetTemplate(Interface):
     """Marker interface for Worksheet Template
     """
+
+
+class IAfterCreateSampleHook(Interface):
+    """Subscription adapter after the sample was created
+    """
+    def update(sample, source=None):
+        """Update the sample after it was created
+
+        :param sample: The new created sample
+        :param source: The source sample from where this sample was copied,
+                       otherwise None
+        """

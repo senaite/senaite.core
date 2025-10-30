@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add registry key to copy sample structure with partitions"
+      description="Allows to copy the entire sample structure including partitions when copying a sample"
+      source="2709"
+      destination="2710"
+      handler=".v02_07_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Add registry key to skip partition analyses on copy"
       description="Allows to skip analyses from partitions when copying a sample"
       source="2708"

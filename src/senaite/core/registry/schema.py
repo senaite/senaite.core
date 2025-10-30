@@ -376,11 +376,28 @@ class ISampleRegistry(ISenaiteRegistry):
             default=u"Samples"
         ),
         fields=[
+            "sample_add_form_copy_partitions",
             "sample_add_form_skip_partition_analyses",
             "sample_add_form_skip_analyses_in_states",
             "sample_add_form_allow_multi_paste",
             "trigger_events_on_sample_creation",
         ],
+    )
+
+    sample_add_form_copy_partitions = schema.Bool(
+        title=_(
+            u"label_registry_sample_add_copy_partitions",
+            default=u"Copy sample structure with partitions"
+        ),
+        description=_(
+            u"description_registry_sample_add_copy_partitions",
+            default=u"When enabled, copying a sample will also create partitions "
+                    u"matching the source sample structure. Each partition will be "
+                    u"created with the same configuration (sample type, container, "
+                    u"preservation) and analyses as the source partition."
+        ),
+        default=False,
+        required=False,
     )
 
     sample_add_form_skip_partition_analyses = schema.Bool(
