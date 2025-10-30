@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2807 Fix traceback when emailing results report and email 'From' not set
 - #2806 Allow to create sample partitions on copy
 - #2804 Allow to skip analyses from partitions on copy
 - #2803 Allow to skip analyses in WF states on copy
