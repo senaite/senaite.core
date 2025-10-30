@@ -2115,7 +2115,15 @@ def validate(obj):
         if isinstance(value, six.string_types):
             value = safe_unicode(value)
         if is_string_field(field):
-            # provide UTF8 encoded strings for e.g. the ID field.
+            # Provide UTF-8 encoded strings for StringField or NativeString.
+            # This prevents a WrongType error when the value is unicode instead
+            # of str. For example, the field used to store an object's ID is a
+            # StringField, which only accepts str. However, in Senaite, values
+            # are stored as unicode and returned as UTF-8 to maintain AT legacy
+            # behavior.
+            # Note that this "trick" only applies to top-level fields: a
+            # WrongContainedType error will be raised if the field is, e.g., a
+            # DataGridField whose subfield inherits from NativeString.
             missing_value = getattr(field, "missing_value", None)
             value = to_utf8(value, default=None) or missing_value
 

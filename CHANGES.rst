@@ -3,6 +3,11 @@ Changelog
 
 2.7.0 (unreleased)
 ------------------
+
+- #2804 Allow to skip analyses from partitions on copy
+- #2803 Allow to skip analyses in WF states on copy
+- #2802 Fix KeyError in DX address widget country lookup
+- #2800 Fix WrongContainedType on object creation/update via jsonapi
 - #2799 Fix Reference Sample import supplier data
 - #2797 Fix sticker rendering error when no configured template was found
 - #2793 Fix APIError: Expected string type, got '<type 'NoneType'>'

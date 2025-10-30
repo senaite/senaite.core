@@ -22,4 +22,6 @@ CLIENT_LANDING_PAGE = "client_landing_page"
 
 WS_PRINT_TMPL_RECORD = "worksheet_print_templates_order"
 
+SKIP_ANALYSES_STATES_ON_COPY = ["rejected"]
+
 RR_SCINOTATION_RECORD = "scientific_notation_report"
