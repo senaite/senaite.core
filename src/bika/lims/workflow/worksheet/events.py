@@ -24,8 +24,6 @@ from bika.lims import workflow as wf
 from bika.lims.api import analysis as api_analysis
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import tmpID
-from bika.lims.utils.analysis import create_analysis
-from bika.lims.utils.analysis import create_duplicate
 from bika.lims.utils.analysis import create_reference_analysis
 from bika.lims.workflow import skip
 from senaite.core.workflow import ANALYSIS_WORKFLOW

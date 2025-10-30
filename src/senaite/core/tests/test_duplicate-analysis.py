@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import unittest2 as unittest
+from bika.lims import api
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest
 from plone.app.testing import TEST_USER_ID
@@ -26,9 +27,9 @@ from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import login
 from plone.app.testing import setRoles
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
 from senaite.core.tests.base import DataTestCase
 from senaite.core.catalog import CONTACT_CATALOG
+from senaite.core.config.worksheet import WORKSHEETS_FOLDER_ID
 
 
 class TestAddDuplicateAnalysis(DataTestCase):
@@ -70,9 +71,8 @@ class TestAddDuplicateAnalysis(DataTestCase):
         wf.doActionFor(ar, 'receive')
 
         # Worksheet creation
-        wsfolder = self.portal.worksheets
-        ws = _createObjectByType("Worksheet", wsfolder, tmpID())
-        ws.processForm()
+        wsfolder = self.portal[WORKSHEETS_FOLDER_ID]
+        ws = api.create(wsfolder, "Worksheet", id=tmpID())
         cat = getToolByName(self.portal, CONTACT_CATALOG)
         lab_contacts = [o.getObject() for o in cat(portal_type="LabContact")]
         lab_contact = [o for o in lab_contacts if o.getUsername() == 'analyst1']

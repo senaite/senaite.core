@@ -34,8 +34,6 @@ from bika.lims.interfaces import IRetracted
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from zope.component._api import getAdapters
 
-from bika.lims.workflow.analysis.events import before_reject
-
 _marker = object()
 
 
