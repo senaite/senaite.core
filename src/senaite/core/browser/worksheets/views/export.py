@@ -28,7 +28,7 @@ class ExportView(BrowserView):
     """
 
     def __init__(self, context, request):
-        super(AddWorksheetView, self).__init__(context, request)
+        super(ExportView, self).__init__(context, request)
 
     def __call__(self):
         instrument = self.context.getInstrument()

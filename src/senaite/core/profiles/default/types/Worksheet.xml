@@ -34,7 +34,7 @@
     <property name="default_view">view</property>
     <!-- the view methods below will be selectable via the display tab -->
     <property name="view_methods">
-    <element value="view"/>
+        <element value="view"/>
     </property>
     <property name="default_view_fallback">False</property>
 
@@ -66,8 +66,21 @@
             icon_expr=""
             link_target=""
             url_expr="string:${object_url}"
-            visible="True">
-        <permission value="View"/>
+            visible="False">
+        <permission value="senaite.core: View Results"/>
+    </action>
+
+    <!-- Edit -->
+    <action title="Edit"
+            action_id="edit"
+            category="object"
+            condition_expr=""
+            description=""
+            icon_expr=""
+            link_target=""
+            url_expr="string:${object_url}/edit"
+            visible="False">
+        <permission value="Modify portal content"/>
     </action>
 
     <!-- Manage results -->
@@ -86,7 +99,7 @@
     <action title="Add Analyses"
             action_id="add_analyses"
             category="object"
-            condition_expr="python:context.portal_workflow.getInfoFor(context, 'review_state') not in ['verified', 'published'] and context.checkUserManage()"
+            condition_expr="python:context.portal_workflow.getInfoFor(context, 'review_state') not in ['verified', 'published']"
             icon_expr=""
             link_target=""
             url_expr="string:${object_url}/add_analyses"
@@ -99,7 +112,7 @@
     <action title="Add Blank Reference"
             action_id="add_blank"
             category="object"
-            condition_expr="python:context.portal_workflow.getInfoFor(context, 'review_state') not in ['verified', 'published'] and context.checkUserManage()"
+            condition_expr="python:context.portal_workflow.getInfoFor(context, 'review_state') not in ['verified', 'published']"
             icon_expr=""
             link_target=""
             url_expr="string:${object_url}/add_blank"
@@ -112,7 +125,7 @@
     <action title="Add Control Reference"
             action_id="add_control"
             category="object"
-            condition_expr="python:context.portal_workflow.getInfoFor(context, 'review_state') not in ['verified', 'published'] and context.checkUserManage()"
+            condition_expr="python:context.portal_workflow.getInfoFor(context, 'review_state') not in ['verified', 'published']"
             icon_expr=""
             link_target=""
             url_expr="string:${object_url}/add_control"
@@ -125,7 +138,7 @@
     <action title="Add Duplicate"
             action_id="add_duplicate"
             category="object"
-            condition_expr="python:context.portal_workflow.getInfoFor(context, 'review_state') not in ['verified', 'published'] and context.checkUserManage()"
+            condition_expr="python:context.portal_workflow.getInfoFor(context, 'review_state') not in ['verified', 'published']"
             icon_expr=""
             link_target=""
             url_expr="string:${object_url}/add_duplicate"

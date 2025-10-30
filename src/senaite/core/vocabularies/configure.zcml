@@ -31,7 +31,11 @@
       name="senaite.core.vocabularies.available_methods" />
 
   <utility
-      component=".methods.WorksheetLayoutsFactory"
+      component=".worksheet.WorksheetLayoutsFactory"
       name="senaite.core.vocabularies.worksheet_layouts" />
+
+  <utility
+      component=".scinotation.ScinotationVocabularyFactory"
+      name="senaite.core.vocabularies.scinotation_options" />
 
 </configure>

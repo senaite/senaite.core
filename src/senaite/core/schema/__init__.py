@@ -35,9 +35,9 @@ from .interfaces import IDurationField
 from .interfaces import IGPSCoordinatesField
 from .interfaces import IIntField
 from .interfaces import IRichTextField
+from .interfaces import IRemarksField
 from .phonefield import IPhoneField
 from .phonefield import PhoneField
-from .remarksfield import IRemarksField
 from .remarksfield import RemarksField
 from .richtextfield import RichTextField
 from .selectotherfield import ISelectOtherField

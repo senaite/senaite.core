@@ -21,9 +21,13 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IInvalidated
-from bika.lims.utils import tmpID
+from persistent.list import PersistentList
+from plone import api as plone_api
 from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
+
+from bika.lims.utils import tmpID
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
@@ -31,9 +35,11 @@ from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.config.worksheet import DEFAULT_WORKSHEET_LAYOUT
+from senaite.core.config.worksheet import WORKSHEETS_FOLDER_ID
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
 from senaite.core.registry import set_registry_record
+from senaite.core.schema.uidreferencefield import get_backref_storage
 from senaite.core.setuphandlers import add_catalog_column
 from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.setuphandlers import add_dexterity_items
@@ -53,6 +59,7 @@ REMOVE_AT_TYPES = [
 PORTAL_FOLDER_ITEMS = {
     # ID: ID, Title, FTI
     "worksheets": ("worksheets", "Worksheets", "Worksheets"),
+    "worksheets-tmp": (WORKSHEETS_FOLDER_ID, "Worksheets Temp", "Worksheets"),
 }
 
 
@@ -113,8 +120,8 @@ def get_destination_folder(folder_id):
             raise Exception(
                 "Not found data for create folder by: {}".format(folder_id))
 
-        folder_data = PORTAL_FOLDER_ITEMS[folder_id]
-        add_dexterity_items(portal, folder_data)
+        items = [PORTAL_FOLDER_ITEMS[folder_id]]
+        add_dexterity_items(portal, items)
         folder = portal.get(folder_id)
     return folder
 
@@ -126,7 +133,7 @@ def copy_from_bika_setup_to_senaite_registry(fields):
     """
     bika_setup = api.get_bika_setup()
     for old, new, default_value in fields:
-        value = bika_setup.getField(old_field).get(bika_setup)
+        value = bika_setup.getField(old).get(bika_setup)
         if not value:
             value = default_value
         logger.info("Copy field {}({}) -> {}".format(old, value, new))
@@ -228,6 +235,8 @@ def migrate_worksheets_to_dx(tool):
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
     tool.runImportStepFromProfile(profile, "workflow")
+    tool.runImportStepFromProfile(profile, "plone.app.registry")
+    # import_registry(tool)
 
     registry_fields = [
         ("WorksheetLayout", "worksheet_layout", DEFAULT_WORKSHEET_LAYOUT),
@@ -246,7 +255,7 @@ def migrate_worksheets_to_dx(tool):
     total = len(brains)
     logger.info("Found {} Worksheet objects to migrate".format(total))
 
-    destination_folder = get_destination_folder("worksheets")
+    temp_folder = get_destination_folder("worksheets-tmp")
 
     for num, brain in enumerate(brains, start=1):
         # Get the object
@@ -255,9 +264,48 @@ def migrate_worksheets_to_dx(tool):
         if num % 100 == 0:
             logger.info(
                 "Progress: {}/{} worksheets migrated".format(num, total))
-        migrate_worksheet_to_dx(worksheet, destination_folder)
+        migrate_worksheet_to_dx(worksheet, temp_folder)
+
+    # delete old AT folder
+    # delete_folder("worksheets")
+
+    # create new DX folder and move migrated Worksheet's
+    # folder = get_destination_folder("worksheets")
+    # move_worksheets(folder)
+
+    # delete temp DX folder
+    # delete_folder("worksheets-tmp")
 
     logger.info("Convert Worksheet's to Dexterity [DONE]")
+
+
+def delete_folder(folder_id):
+    portal = plone_api.portal.get()
+    if folder_id not in portal:
+        logger.warn("Folder '{}' not found for delete".format(folder_id))
+        return
+    folder = portal[folder_id]
+    logger.info("Delete folder '{}'".format(folder))
+    plone_api.content.delete(obj=folder, check_linkintegrity=False)
+
+
+def move_worksheets(destination):
+    logger.info("Moving migrated DX worksheet's to new folder")
+
+    query = {
+        "portal_type": "Worksheet",
+    }
+    brains = api.search(query, WORKSHEET_CATALOG)
+    total = len(brains)
+
+    for num, brain in enumerate(brains, start=1):
+        # Get the object
+        worksheet = api.get_object(brain)
+
+        if num % 100 == 0:
+            logger.info(
+                "Progress: {}/{} worksheets moved".format(num, total))
+        api.move_object(worksheet, destination, check_constraints=False)
 
 
 def migrate_worksheet_to_dx(src, destination):
@@ -266,9 +314,8 @@ def migrate_worksheet_to_dx(src, destination):
     :param src: The source AT object
     :param destination: The destination folder
     """
-    # Create the object if it does not exist yet
     src_id = src.getId()
-    target_id = src_id
+    target_id = tmpID()
 
     target = destination.get(target_id)
     if not target:
@@ -283,7 +330,7 @@ def migrate_worksheet_to_dx(src, destination):
     target.description = api.safe_unicode(src.Description() or "")
     target.worksheet_template = src.getRawWorksheetTemplate()
     target.method = src.getRawMethod()
-    target.analyst = src.getAnalystName()
+    target.analyst = src.getAnalyst()
     target.instrument = src.getRawInstrument()
     target.results_layout = src.getResultsLayout()
     target.analyses = src.getAnalysesUIDs()
@@ -292,8 +339,30 @@ def migrate_worksheet_to_dx(src, destination):
     if hasattr(src, "replaces_rejected_worksheet"):
         replaces_uid = getattr(src, "replaces_rejected_worksheet")
         target.replaces_rejected_worksheet = replaces_uid
-    # layout
+    layout = []
+    for slot in src.getLayout():
+        layout.append({
+            "position": int(slot["position"]),
+            "type": slot["type"],
+            "container_uid": slot["container_uid"],
+            "analysis_uid": slot["analysis_uid"],
+        })
+    target.layout_view = layout
     # remarks
+
+    # create backrefs storage for newly created Worksheet and
+    # move there uids of Analyses dependendent on this worksheet
+    key = "WorksheetAnalysis"
+    for an in target.getAnalyses():
+        old_an_backrefs = get_backreferences(an, relationship=key)
+        an_new_storage = get_backref_storage(an)
+        new_an_backrefs = an_new_storage[key] = PersistentList()
+        for ref in old_an_backrefs:
+            new_an_backrefs.append(api.get_uid(ref))
+
+    # move duplicate analyses to new worksheet
+    for dup in src.getDuplicateAnalyses():
+        api.move_object(dup, target, False)
 
     # Migrate the contents from AT to DX
     migrator = getMultiAdapter((src, target), interface=IContentMigrator)

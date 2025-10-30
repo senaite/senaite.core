@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import senaiteMessageFactory as _
-from senaite.core.config.vocabularies import SCINOTATION_OPTIONS
 from senaite.core.config.worksheet import DEFAULT_WORKSHEET_LAYOUT
 from plone.autoform import directives
 from plone.supermodel import model
@@ -221,7 +220,7 @@ class IResultsReportsRegistry(ISenaiteRegistry):
     )
 
     scientific_notation_report = schema.Choice(
-        label=_(
+        title=_(
             u"results_reports_settings_scientific_notation_title",
             default=u"Default scientific notation format for reports"
         ),
@@ -229,7 +228,7 @@ class IResultsReportsRegistry(ISenaiteRegistry):
             u"results_reports_settings_scientific_notation_description",
             default=u"Preferred scientific notation format for reports"
         ),
-        vocabulary=SCINOTATION_OPTIONS,
+        vocabulary="senaite.core.vocabularies.scinotation_options",
         required=False,
         default="1",
     )

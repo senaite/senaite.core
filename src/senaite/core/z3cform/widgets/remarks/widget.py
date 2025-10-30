@@ -18,7 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from senaite.core.interfaces import IRemarksField
+from senaite.core.schema.interfaces import IRemarksField
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.z3cform.interfaces import IRemarksWidget
 from z3c.form.browser.widget import HTMLFormElement

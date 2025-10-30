@@ -496,11 +496,6 @@ class ISampleTypes(Interface):
     """
 
 
-class IRemarksField(Interface):
-    """An append-only TextField which saves information about each edit
-    """
-
-
 class IWorksheet(Interface):
     """Marker interface for Worksheet
     """

@@ -325,7 +325,7 @@ class AnalysesView(BaseView):
                   all analyses defined in the current layout.
         """
         uids_positions = dict()
-        layout = self.context.getLayout()
+        layout = self.context.getLayoutView()
         layout = layout and layout or []
         # Map the analysis uids with their positions.
         occupied = []

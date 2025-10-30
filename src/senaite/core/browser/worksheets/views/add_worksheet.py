@@ -22,6 +22,8 @@ from Products.Five.browser import BrowserView
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from senaite.core.config.worksheet import DEFAULT_WORKSHEET_LAYOUT
+from senaite.core.config.worksheet import WORKSHEETS_FOLDER_ID
+from senaite.core.idserver import generateUniqueId
 from senaite.core.registry import get_registry_record
 
 
@@ -49,8 +51,9 @@ class AddWorksheetView(BrowserView):
             return
 
         portal = api.get_portal()
-        ws_container = portal.get("Worksheets")
+        ws_container = portal.get(WORKSHEETS_FOLDER_ID)
         ws = api.create(ws_container, "Worksheet")
+        ws.setTitle(ws.getId())
 
         # Set analyst and instrument
         ws.setAnalyst(analyst)
@@ -70,9 +73,10 @@ class AddWorksheetView(BrowserView):
             self.request.RESPONSE.redirect(ws_url + "/add_analyses")
             return
 
-        ws.applyWorksheetTemplate(wst)
+        ws.applyWorksheetTemplate(template)
+        ws.reindexObject()
 
-        if ws.getLayout():
+        if ws.getLayoutView():
             self.request.RESPONSE.redirect(ws_url + "/manage_results")
         else:
             msg = _(

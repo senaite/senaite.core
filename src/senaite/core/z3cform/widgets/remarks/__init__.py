@@ -18,4 +18,4 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from remarks_widget import RemarksWidget
+from .widget import RemarksWidget

@@ -315,8 +315,9 @@ def remove_analysis_from_worksheet(analysis):
         # with the current states of the analyses it contains.
         doActionFor(worksheet, "submit")
         doActionFor(worksheet, "verify")
-    else:
-        # We've removed all analyses. Rollback to "open"
+    elif api.get_review_status(worksheet) != "open":
+        # We've removed all analyses.
+        # Rollback to "open" if this worksheet has no status "open"
         doActionFor(worksheet, "rollback_to_open")
 
     # Reindex the Worksheet

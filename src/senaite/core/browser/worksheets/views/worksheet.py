@@ -18,15 +18,25 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from add_analyses import AddAnalysesView
-from add_blank import AddBlankView
-from add_control import AddControlView
-from add_duplicate import AddDuplicateView
-from add_worksheet import AddWorksheetView
-from analyses_listing import AnalysesView
-from analyses_transposed_listing import AnalysesTransposedView
-from export import ExportView
-from folder import WorksheetsView
-from manage_results import ManageResultsView
-from printview import PrintView
-from worksheet import WorksheetView
+from bika.lims import api
+from Products.Five.browser import BrowserView
+
+
+class WorksheetView(BrowserView):
+    """Base view for Worksheet
+    """
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        view = "add_analyses"
+        if self.context.getLayoutView():
+            view = "manage_results"
+
+        redirect_url = "{}/{}".format(api.get_url(self.context), view)
+        self.request.response.redirect(redirect_url)
+        return
+
+

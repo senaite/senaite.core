@@ -29,6 +29,7 @@ from bika.lims.utils.analysis import create_duplicate
 from bika.lims.utils.analysis import create_reference_analysis
 from bika.lims.workflow import skip
 from senaite.core.workflow import ANALYSIS_WORKFLOW
+from senaite.core.config.worksheet import WORKSHEETS_FOLDER_ID
 
 
 def after_retract(worksheet):
@@ -59,7 +60,7 @@ def after_reject(worksheet):
         return
     workflow = getToolByName(obj, "portal_workflow")
     analysis_positions = {}
-    for item in worksheet.getLayout():
+    for item in worksheet.getLayoutView():
         analysis_positions[item["analysis_uid"]] = item["position"]
     old_layout = []
     new_layout = []
@@ -67,7 +68,7 @@ def after_reject(worksheet):
     # New worksheet
     portal = api.get_portal()
     kwargs = {
-        "container": portal.get("Worksheets"),
+        "container": portal.get(WORKSHEETS_FOLDER_ID),
         "portal_type": "Worksheet",
         "skip": ignore_fields,
     }
@@ -182,7 +183,7 @@ def after_reject(worksheet):
             analysis.reindexObject()
 
     new_ws.setAnalyses(new_ws_analyses)
-    new_ws.setLayout(new_layout)
+    new_ws.setLayoutView(new_layout)
     new_ws.setReplacesRejectedWorksheet(worksheet)
     for analysis in new_ws.getAnalyses():
         review_state = api.get_review_status(analysis)
@@ -190,6 +191,6 @@ def after_reject(worksheet):
             # TODO Workflow - Analysis Retest transition within a Worksheet
             changeWorkflowState(analysis, ANALYSIS_WORKFLOW, "assigned")
     worksheet.REQUEST["context_uid"] = worksheet.UID()
-    worksheet.setLayout(old_layout)
+    worksheet.setLayoutView(old_layout)
     worksheet.setAnalyses(old_ws_analyses)
     worksheet.setReplacedBy(new_ws)

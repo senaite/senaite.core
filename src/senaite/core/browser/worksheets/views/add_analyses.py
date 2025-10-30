@@ -187,11 +187,6 @@ class AddAnalysesView(ListingView):
         for msg in self.context.getRejectionMessages():
             self.add_status_message(msg)
 
-    def add_status_message(self, message, level="info"):
-        """Set a portal status message
-        """
-        return self.context.plone_utils.addPortalMessage(message, level)
-
     def update(self):
         """Update hook
         """
@@ -247,13 +242,13 @@ class AddAnalysesView(ListingView):
         if not wst_uid:
             return False
 
-        layout = self.context.getLayout()
+        layout = self.context.getLayoutView()
         wst = api.get_object_by_uid(wst_uid)
 
         self.request["context_uid"] = api.get_uid(self.context)
         self.context.applyWorksheetTemplate(wst)
 
-        if len(self.context.getLayout()) == len(layout):
+        if len(self.context.getLayoutView()) == len(layout):
             return False
         return True
 

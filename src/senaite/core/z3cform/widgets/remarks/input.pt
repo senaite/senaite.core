@@ -2,16 +2,15 @@
      xmlns:tal="http://xml.zope.org/namespaces/tal"
      tal:omit-tag="">
 
-  <tal:static define="static_path string:${portal/absolute_url}/senaite_widgets">
-      <script type="text/javascript"
-              tal:attributes="src string:${static_path}/remarkswidget.js"></script>
-      <link rel="stylesheet" type="text/css" media="all"
-            tal:attributes="href string:${static_path}/remarkswidget.css"/>
-    </tal:static>
+<!--   <tal:static define="static_path string:${portal/absolute_url}/senaite_widgets"> -->
+<!--       <script type="text/javascript" -->
+<!--               tal:attributes="src string:${static_path}/remarkswidget.js"></script> -->
+<!--       <link rel="stylesheet" type="text/css" media="all" -->
+<!--             tal:attributes="href string:${static_path}/remarkswidget.css"/> -->
+<!--     </tal:static> -->
 
     <div class="remarks-widget my-4">
-      <textarea class="form-control"
-                tal:attributes="name fieldName; id fieldName;"></textarea>
+      <textarea class="form-control"></textarea>
 
       <div tal:condition="python: 'portal_factory' not in context.absolute_url()">
         <input class="saveRemarks allowMultiSubmit btn btn-primary btn-sm mt-2 mb-4"

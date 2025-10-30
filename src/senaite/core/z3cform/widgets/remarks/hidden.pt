@@ -1,0 +1,10 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     tal:omit-tag=""
+     tal:define="
+         field_id python:view.id;
+         field_name python:view.name;">
+
+
+
+</div>

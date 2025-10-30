@@ -31,32 +31,30 @@ from plone.memoize import view
 from senaite.core.config.worksheet import DEFAULT_WORKSHEET_LAYOUT
 from senaite.core.p3compat import cmp
 from senaite.core.permissions.worksheet import can_manage_worksheets
-from senaite.core.vocabularies.worksheet import WorksheetLayoutsFactory
 from zope.interface import implements
+from zope.schema.interfaces import IVocabularyFactory
+from zope.component import getUtility
 
 
 class ManageResultsView(BrowserView):
     """Worksheet Manage Results View
     """
-    implements(IViewView)
-    template = ViewPageTemplateFile("../templates/results.pt")
+    template = ViewPageTemplateFile("../templates/manage_results.pt")
 
     def __init__(self, context, request):
         super(ManageResultsView, self).__init__(context, request)
-        self.icon = "{}/{}".format(
-            self.portal_url,
-            "/++plone++senaite.core.static/assets/icons/worksheet.svg"
-        )
 
     def __call__(self):
         self.rejection_message()
 
+        self.icon = api.get_icon("Worksheets", html_tag=False)
+
         # Save the results layout
-        layout_list = self.layout_displaylist.keys()
+        layout_names = [term.token for term in self.layout_displaylist]
         current_layout = self.context.getResultsLayout()
-        r_layout = self.request.get("resultslayout", "")
-        if r_layout in layout_list and r_layout != current_layout:
-            self.context.setResultsLayout(r_layout)
+        request_layout = self.request.get("resultslayout", "")
+        if request_layout in layout_names and request_layout != current_layout:
+            self.context.setResultsLayout(request_layout)
             message = _(
                 u"change_worksheet_result_layout_message",
                 default=u"Changes saved.",
@@ -64,23 +62,19 @@ class ManageResultsView(BrowserView):
             self.add_status_message(message, "info")
 
         # Classic/Transposed or additional View Switch
-        view = self.context.getResultsLayout()
-        if view not in self.layout_displaylist.keys():
+        view_name = self.context.getResultsLayout()
+        if view_name not in layout_names:
             message = _(
                 u"not_found_worksheet_layout_message",
                 default=u"Layout view '${view}' not found. "
                         u"Set '${default}' as layout view.",
                 mapping={
-                    "view": view,
+                    "view": view_name,
                     "default": DEFAULT_WORKSHEET_LAYOUT,
                 },
             )
             self.add_status_message(message, "warning")
-            view = DEFAULT_WORKSHEET_LAYOUT
-            self.context.setResultsLayout(view)
-
-        self.Analyses = api.get_view(
-            view, context=self.context, request=self.request)
+            self.context.setResultsLayout(DEFAULT_WORKSHEET_LAYOUT)
 
         self.analystname = self.context.getAnalystName()
         self.instrumenttitle = self.get_instrument_title()
@@ -89,6 +83,14 @@ class ManageResultsView(BrowserView):
         self.checkInstrumentsValidity()
 
         return self.template()
+
+    def contents_table(self):
+        view_name = self.context.getResultsLayout()
+        layout_view = api.get_view(
+            view_name, context=self.context, request=self.request)
+        layout_view.update()
+        layout_view.before_render()
+        return layout_view.contents_table()
 
     def rejection_message(self):
         for msg in self.context.getRejectionMessages():
@@ -101,7 +103,13 @@ class ManageResultsView(BrowserView):
 
     @property
     def layout_displaylist(self):
-        return WorksheetLayoutsFactory
+        vocab_key = "senaite.core.vocabularies.worksheet_layouts"
+        vocab_factory = getUtility(IVocabularyFactory, vocab_key)
+        return vocab_factory(self.context)
+
+    @property
+    def layout_list(self):
+        return [(t.token, t.title) for t in self.layout_displaylist]
 
     def get_analysts(self):
         """Returns Analysts

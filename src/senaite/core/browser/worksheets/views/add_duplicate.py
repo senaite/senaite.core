@@ -106,10 +106,7 @@ class AddDuplicateView(ListingView):
                 "custom_transitions": [
                     {
                         "id": "add",
-                        "title": _(
-                            u"listing_add_duplicate_transition_add",
-                            default=u"Add"
-                        ),
+                        "title": _("Add"),
                         "url": self.__name__,
                     }
                 ],
@@ -153,9 +150,9 @@ class AddDuplicateView(ListingView):
 
     @view.memoize
     def get_container_mapping(self):
-        """Returns a mapping of container -> postition
+        """Returns a mapping of container -> position
         """
-        layout = self.context.getLayout()
+        layout = self.context.getLayoutView()
         container_mapping = {}
         for slot in layout:
             if slot["type"] != "a":

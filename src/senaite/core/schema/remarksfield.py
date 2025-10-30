@@ -18,16 +18,34 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from senaite.core.interfaces import IRemarksField
+from senaite.core.schema.interfaces import IRemarksField
 from senaite.core.schema.fields import BaseField
 from zope.interface import implementer
 from zope.schema import List
+from zope.schema.interfaces import IFromUnicode
 
 
-@implementer(IRemarksField)
+@implementer(IRemarksField, IFromUnicode)
 class RemarksField(List, BaseField):
-    """A field that handles a remarks
+    """A field that handles a remarks for DX content types
     """
 
     def __init__(self, **kw):
         super(RemarksField, self).__init__(**kw)
+
+    def set(self, object, value):
+        """Set a remarks record or records
+        :param object: the instance of the field
+        :param value: dict with remark information or list of dicts
+        :type value: list/tuple/dict
+        """
+        if not isinstance(value, list):
+            value = [value]
+        super(RemarksField, self).set(object, value)
+
+    def get(self, object):
+        """Returns the remarks records
+        :param object: the instance of this field
+        :returns: list of dicts with remark information for each remark item
+        """
+        return super(RemarksField, self).get(object) or []

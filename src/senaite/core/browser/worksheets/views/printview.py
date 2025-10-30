@@ -335,7 +335,7 @@ class PrintView(BrowserView):
             assigned to the worksheet
         """
         ans = ws.getAnalyses()
-        layout = ws.getLayout()
+        layout = ws.getLayoutView()
         pos_count = 0
         prev_pos = 0
         ars = {}

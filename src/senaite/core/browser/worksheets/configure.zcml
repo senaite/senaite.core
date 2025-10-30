@@ -1,12 +1,58 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    xmlns:browser="http://namespaces.zope.org/browser">
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
 
   <browser:page
       for="senaite.core.interfaces.IWorksheets"
       name="view"
       class=".views.WorksheetsView"
-      permission="senaite.core.permissions.ManageBika"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="view"
+      class=".views.WorksheetView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
+  <!-- Analyses Classic View -->
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="analyses_classic_view"
+      class=".views.AnalysesView"
+      permission="senaite.core.permissions.ViewResults"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
+  <!-- Analyses Transposed View -->
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="analyses_transposed_view"
+      class=".views.AnalysesTransposedView"
+      permission="senaite.core.permissions.ViewResults"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
+  <!-- Ajax signatures -->
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="set_analyst"
+      class=".ajax.SetAnalyst"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="set_instrument"
+      class=".ajax.SetInstrument"
+      permission="zope.Public"
       layer="senaite.core.interfaces.ISenaiteCore"
   />
 

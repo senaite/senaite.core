@@ -21,20 +21,29 @@
 import collections
 import json
 
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
+from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import get_display_list
+from bika.lims.utils import get_link
 from bika.lims.utils import get_progress_bar_html
+from bika.lims.utils import getUsers
 from senaite.app.listing import ListingView
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.i18n import translate
 from senaite.core.permissions import AddWorksheet
+from senaite.core.permissions.worksheet import can_add_worksheet
+from senaite.core.permissions.worksheet import can_edit_worksheet
+from senaite.core.permissions.worksheet import can_manage_worksheets
 from senaite.core.registry import get_registry_record
+from plone.memoize.view import memoize
 
 
 class WorksheetsView(ListingView):
     """Listing View for Worksheets
     """
+    template = ViewPageTemplateFile("../templates/folder.pt")
 
     def __init__(self, context, request):
         super(WorksheetsView, self).__init__(context, request)
@@ -63,12 +72,26 @@ class WorksheetsView(ListingView):
         self.description = ""
         self.icon = api.get_icon("Worksheets", html_tag=False)
         self.show_select_column = True
+        self.show_select_all_checkbox = True
 
         self.selected_state = "default"
         self.allow_edit = False
         self.can_manage = False
         self.can_reassign = False
         self.show_workflow_action_buttons = False
+        self.analyst_choices = []
+        self.can_reassign = False
+        self.can_manage = False
+
+        # this is a property of self, because self.getAnalysts returns it
+        self.analysts = getUsers(self, ["Manager", "LabManager", "Analyst"])
+        self.analysts = self.analysts.sortedByValue()
+        self.analyst_choices = []
+        for a in self.analysts:
+            self.analyst_choices.append({
+                "ResultValue": a,
+                "ResultText": self.analysts.getValue(a),
+            })
 
         self.columns = collections.OrderedDict((
             ("getProgressPercentage", {
@@ -357,17 +380,15 @@ class WorksheetsView(ListingView):
         :index: current index of the item
         """
 
-        title = api.get_title(obj)
         url = api.get_url(obj)
-
-        item["CreationDate"] = self.ulocalized_time(obj.created)
-
-        title_link = "{}/{}".format(url, "add_analyses")
-        if len(obj.getAnalysesUIDs) > 0:
-            title_link = "{}/{}".format(url, "manage_results")
+        title = api.get_title(obj)
+        if not title:
+            title = api.get_object(obj).Title()
 
         item["Title"] = title
-        item["replace"]["Title"] = get_link(title_link, value=title)
+        item["replace"]["Title"] = get_link(url, value=title)
+
+        item["CreationDate"] = self.ulocalized_time(obj.created)
 
         # Total QC Analyses
         item["getNumberOfQCAnalyses"] = str(obj.getNumberOfQCAnalyses)

@@ -109,7 +109,7 @@
                             data-style="dropdown-toggle btn-sm btn-light border rounded-0"
                             class="selectpicker"
                             name="resultslayout">
-                      <tal:layoutoption repeat="option python:view.layout_displaylist.items()">
+                      <tal:layoutoption repeat="option python:view.layout_list">
                         <option selected tal:condition="python: option[0] == context.getResultsLayout()"
                                 tal:attributes="value python:option[0]"
                                 tal:content="python:option[1]">
@@ -229,27 +229,25 @@
       <tal:ws_analyses>
         <div class="row">
           <div class="col-sm-12">
-            <span tal:replace="structure view/Analyses/contents_table"/>
+            <span tal:replace="structure python:view.contents_table()"/>
           </div>
         </div>
       </tal:ws_analyses>
 
       <!-- Remarks Widget
            https://github.com/senaite/senaite.core/pull/920 -->
+      <!--
       <div class="row">
         <div id="remarks-widget"
-             class="col-sm-12 remarks-widget"
-             tal:define="checkPermission nocall: context/portal_membership/checkPermission;
-                 mode python:'edit' if checkPermission('senaite.core: Field: Edit Remarks', context) else 'view';
-                 field python:context.Schema()['Remarks'];
-                 errors python:{};">
+             class="col-sm-12 remarks-widget">
           <h3>
             <i class="fas fa-comment"></i>
             <span i18n:translate="">Remarks</span>
           </h3>
-          <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
+          <metal:widget use-macro="python:context.widget('remarks', mode='edit')"/>
         </div>
       </div>
+      -->
       <!-- /Remarks Widget -->
 
     </metal:content-core>

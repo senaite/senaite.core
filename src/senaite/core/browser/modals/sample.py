@@ -23,6 +23,9 @@ from bika.lims import senaiteMessageFactory as _
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.browser.modals import Modal
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.config.worksheet import WORKSHEETS_FOLDER_ID
+from senaite.core.config.worksheet import DEFAULT_WORKSHEET_LAYOUT
+from senaite.core.registry import get_registry_record
 from six import string_types
 
 
@@ -74,13 +77,13 @@ class CreateWorksheetModal(Modal):
     def create_worksheet_for(self, samples, analyst, categories, template):
         """Create a new worksheet
 
-        The new worksheet contains the analyses of all samples which match the
-        are in the given categories.
+        The new worksheet contains the analyses of all samples that are in
+        the given categories.
 
-        :param samples: Sample obejects or UIDs
+        :param samples: Sample objects or UIDs
         :param categories: Category objects or UIDs
         :param template: Worksheet template
-        :returns: new created Workshett
+        :returns: new created Worksheet
         """
         categories = map(api.get_object, categories)
 
@@ -91,13 +94,14 @@ class CreateWorksheetModal(Modal):
                 # collect all unassigned analyses
                 if analysis.getWorksheetUID() is None:
                     unassigned_analyses.append(analysis)
-                # skip analyses that do not belong to the selsected categories
+                # skip analyses that do not belong to the selected categories
                 if analysis.getCategory() not in categories:
                     continue
                 analyses.append(analysis)
 
         # create the new worksheet
         ws = api.create(self.worksheet_folder, "Worksheet")
+        ws.setTitle(ws.getId())
         ws.setAnalyst(analyst)
         ws.addAnalyses(analyses)
         ws.setResultsLayout(self.worksheet_layout)
@@ -114,14 +118,14 @@ class CreateWorksheetModal(Modal):
         """Return the worksheet root folder
         """
         portal = api.get_portal()
-        return portal.restrictedTraverse("worksheets")
+        return portal.restrictedTraverse(WORKSHEETS_FOLDER_ID)
 
     @property
     def worksheet_layout(self):
-        """Return the configured workheet layout
+        """Return the configured worksheet layout
         """
-        setup = api.get_setup()
-        return setup.getWorksheetLayout()
+        return get_registry_record("worksheet_layout",
+                                   DEFAULT_WORKSHEET_LAYOUT)
 
     def get_analysis_categories(self):
         """Return analysis categories of the selected samples
@@ -174,7 +178,7 @@ class CreateWorksheetModal(Modal):
                 "username": username,
                 "fullname": fullname or username,
             })
-        # sort by fulname
+        # sort by fullname
         return sorted(analysts, key=lambda x: x.get("fullname").lower())
 
     def get_worksheet_templates(self):
@@ -183,7 +187,7 @@ class CreateWorksheetModal(Modal):
         This function searches for worksheet templates and prepares a list of
         dictionaries for each template containing the UID and the title.
 
-        :returns_ List of worksheet template data dictionaries
+        :returns: List of worksheet template data dictionaries
         """
         templates = [{"uid": "", "title": ""}]
         query = {

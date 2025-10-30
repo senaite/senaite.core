@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from senaite.core.interfaces import ISenaiteRegistryFactory
+from senaite.core.config.worksheet import DEFAULT_WORKSHEET_LAYOUT
 from senaite.core.config.worksheet import WS_TEMPLATES_ADDON_DIR
 from plone.resource.utils import iterDirectoriesOfType
 from plone.registry.recordsproxy import RecordsProxy
@@ -58,3 +59,15 @@ class WSTemplatesPrintFactory(RecordsProxy):
 
         templates = sorted(all_templates, key=sort_templates)
         return list(filter(None, templates))
+
+    @property
+    def worksheet_layout(self):
+        return self.__getattr__("worksheet_layout") or DEFAULT_WORKSHEET_LAYOUT
+
+    @property
+    def restrict_worksheet_users_access(self):
+        return self.__getattr__("restrict_worksheet_users_access") or True
+
+    @property
+    def restrict_worksheet_management(self):
+        return self.__getattr__("restrict_worksheet_management") or True

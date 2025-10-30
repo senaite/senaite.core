@@ -92,3 +92,8 @@ class IGPSCoordinatesField(IDict):
 class ISelectOtherField(INativeString):
     """Senaite SelectOther field
     """
+
+
+class IRemarksField(IList):
+    """An append-only TextField which saves information about each edit
+    """

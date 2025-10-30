@@ -18,6 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore import permissions
 from bika.lims import api
@@ -25,24 +26,33 @@ from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces import IReferenceAnalysis
+from bika.lims.interfaces import IReferenceSample
+from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import to_int
+from bika.lims.utils.analysis import create_duplicate
+from bika.lims.utils.analysis import create_reference_analysis
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import isTransitionAllowed
 from plone.autoform import directives
 from plone.supermodel import model
+from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.config.worksheet import DEFAULT_WORKSHEET_LAYOUT
 from senaite.core.schema import UIDReferenceField
+from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
 from senaite.core.schema.remarksfield import RemarksField
 from senaite.core.z3cform.widgets.remarks import RemarksWidget
 from senaite.core.interfaces import IWorksheet
 from senaite.core.interfaces import IWorksheetLayouts
+from zope import schema
 from zope.component import getUtilitiesFor
+from zope.interface import Interface
 from zope.interface import implementer
 
 ALL_ANALYSES_TYPES = "all"
@@ -59,18 +69,6 @@ def get_worksheet_layouts():
     return DisplayList(tuple(layouts))
 
 
-def default_layout_factory():
-    """Generate preset for Layout field for new Worksheet
-    """
-
-    return [{
-        "position": 1,
-        "type": "",
-        "container_uid": None,
-        "analysis_uid": None,
-    }]
-
-
 class IWorksheetLayoutSchema(Interface):
     """Schema for worksheet layout
     """
@@ -80,7 +78,7 @@ class IWorksheetLayoutSchema(Interface):
             u"title_worksheet_layout_position",
             default=u"Position"
         ),
-        required=True,
+        required=False,
         default=1,
     )
 
@@ -89,8 +87,9 @@ class IWorksheetLayoutSchema(Interface):
             u"title_worksheet_layout_analysis_type",
             default=u"Analysis Type"
         ),
-        vocabulary="senaite.core.vocabularies.methods",
-        required=True,
+        source="senaite.core.vocabularies.analysis_types",
+        required=False,
+        default=u"a",
     )
 
     container_uid = UIDReferenceField(
@@ -98,7 +97,7 @@ class IWorksheetLayoutSchema(Interface):
             u"title_worksheet_layout_container",
             default=u"Container"
         ),
-        allowed_types=("ReferenceDefinition",),
+        allowed_types=("ReferenceSample", "AnalysisRequest",),
         multi_valued=False,
         required=False,
     )
@@ -145,14 +144,14 @@ class IWorksheetSchema(model.Schema):
         required=False,
     )
 
-    layout = schema.List(
+    layout_view = DataGridField(
         title=_(
             u"title_worksheet_layout",
             default=u"Layout"
         ),
         value_type=DataGridRow(schema=IWorksheetLayoutSchema),
-        defaultFactory=default_layout_factory,
-        required=True,
+        default=[],
+        required=False,
     )
 
     # all layout info lives in Layout; Analyses is used for back references.
@@ -163,6 +162,7 @@ class IWorksheetSchema(model.Schema):
         ),
         allowed_types=("Analysis", "DuplicateAnalysis", "ReferenceAnalysis",
                        "RejectAnalysis"),
+        relationship="WorksheetAnalysis",
         multi_valued=True,
         required=True,
     )
@@ -199,7 +199,7 @@ class IWorksheetSchema(model.Schema):
         required=False,
     )
 
-    directives("remarks", RemarksWidget)
+    directives.widget("remarks", RemarksWidget)
     remarks = RemarksField(
         title=_(
             u"title_worksheet_remarks",
@@ -249,6 +249,16 @@ class Worksheet(Container):
     security = ClassSecurityInfo()
 
     @security.protected(permissions.View)
+    def Title(self):
+        accessor = self.accessor("title")
+        title = accessor(self)
+        if not title:
+            title = api.get_id(self)
+            mutator = self.mutator("title")
+            mutator(self, title)
+        return title.encode("utf-8")
+
+    @security.protected(permissions.View)
     def getWorksheetTemplate(self):
         accessor = self.accessor("worksheet_template")
         return accessor(self)
@@ -262,18 +272,18 @@ class Worksheet(Container):
     WorksheetTemplate = property(getWorksheetTemplate, setWorksheetTemplate)
 
     @security.protected(permissions.View)
-    def getLayout(self):
-        accessor = self.accessor("layout")
+    def getLayoutView(self):
+        accessor = self.accessor("layout_view")
         return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
-    def setLayout(self, value):
+    def setLayoutView(self, value):
         sorted_layout = sorted(value, key=lambda k: k["position"])
-        mutator = self.mutator("layout")
+        mutator = self.mutator("layout_view")
         mutator(self, sorted_layout)
 
     # BBB: AT schema field property
-    Layout = property(getLayout, setLayout)
+    # Layout = property(getLayoutView, setLayoutView)
 
     @security.protected(permissions.View)
     def getAnalyses(self):
@@ -346,7 +356,7 @@ class Worksheet(Container):
     Method = property(getMethod, setMethod)
 
     @security.protected(permissions.View)
-    def getIstrument(self):
+    def getInstrument(self):
         accessor = self.accessor("instrument")
         return accessor(self)
 
@@ -398,7 +408,7 @@ class Worksheet(Container):
         return total
 
     # BBB: AT schema field property
-    Instrument = property(getIstrument, setInstrument)
+    Instrument = property(getInstrument, setInstrument)
 
     @security.protected(permissions.View)
     def getRemarks(self):
@@ -412,6 +422,19 @@ class Worksheet(Container):
 
     # BBB: AT schema field property
     Remarks = property(getRemarks, setRemarks)
+
+    @security.protected(permissions.View)
+    def getResultsLayout(self):
+        accessor = self.accessor("results_layout")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setResultsLayout(self, value):
+        mutator = self.mutator("results_layout")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    ResultsLayout = property(getResultsLayout, setResultsLayout)
 
     @security.protected(permissions.View)
     def getReplacedBy(self):
@@ -429,9 +452,6 @@ class Worksheet(Container):
         mutator = self.mutator("replaced_by")
         mutator(self, value)
 
-    # BBB: AT schema field property
-    replaced_by = property(getReplacedBy, setReplacedBy)
-
     @security.protected(permissions.View)
     def getReplacesRejectedWorksheet(self):
         accessor = self.accessor("replaces_rejected_worksheet")
@@ -447,10 +467,6 @@ class Worksheet(Container):
     def setReplacesRejectedWorksheet(self, value):
         mutator = self.mutator("replaces_rejected_worksheet")
         mutator(self, value)
-
-    # BBB: AT schema field property
-    replaces_rejected_worksheet = property(getRawReplacesRejectedWorksheet,
-                                           setReplacesRejectedWorksheet)
 
     def addAnalyses(self, analyses):
         """Adds a collection of analyses to the Worksheet at once
@@ -511,8 +527,9 @@ class Worksheet(Container):
         self.setAnalyses(analyses + [analysis])
         self.addToLayout(analysis, position)
 
-        # Try to rollback the worksheet to prevent inconsistencies
-        doActionFor(self, "rollback_to_open")
+        if api.get_review_status(self) != "open":
+            # Try to rollback the worksheet to prevent inconsistencies
+            doActionFor(self, "rollback_to_open")
 
         # Reindex Analysis
         analysis.reindexObject()
@@ -886,7 +903,7 @@ class Worksheet(Container):
             return list()
 
         analyses = list()
-        layout = self.getLayout()
+        layout = self.getLayoutView()
 
         for pos in layout:
             layout_slot = to_int(pos["position"])
@@ -911,7 +928,7 @@ class Worksheet(Container):
         if slot < 1:
             return None
 
-        layout = self.getLayout()
+        layout = self.getLayoutView()
 
         for pos in layout:
             layout_slot = to_int(pos["position"])
@@ -939,7 +956,7 @@ class Worksheet(Container):
         if type not in ALLOWED_ANALYSES_TYPES and type != ALL_ANALYSES_TYPES:
             return list()
 
-        layout = self.getLayout()
+        layout = self.getLayoutView()
         slots = list()
 
         for pos in layout:
@@ -962,7 +979,7 @@ class Worksheet(Container):
         if not container or type not in ALLOWED_ANALYSES_TYPES:
             return None
         uid = api.get_uid(container)
-        layout = self.getLayout()
+        layout = self.getLayoutView()
 
         for pos in layout:
             if pos["type"] != type or pos["container_uid"] != uid:
@@ -994,7 +1011,7 @@ class Worksheet(Container):
         If not found, returns None
         """
         uid = api.get_uid(instance)
-        slot = filter(lambda s: s["analysis_uid"] == uid, self.getLayout())
+        slot = filter(lambda s: s["analysis_uid"] == uid, self.getLayoutView())
         if not slot:
             return None
         return to_int(slot[0]["position"])
@@ -1039,7 +1056,7 @@ class Worksheet(Container):
     def get_containers_slots(self):
         """Returns a list of tuple (container_uid, slot)
         """
-        layout = self.getLayout()
+        layout = self.getLayoutView()
         return map(lambda lo: (lo["container_uid"], to_int(lo["position"])),
                    layout)
 
@@ -1209,7 +1226,7 @@ class Worksheet(Container):
         if not type or type not in ['b', 'c']:
             return []
 
-        bc = api.get_tool("senaite_catalog")
+        bc = api.get_tool(SENAITE_CATALOG)
         wst_type = type == 'b' and 'blank_ref' or 'control_ref'
 
         slots_sample = list()
@@ -1285,7 +1302,7 @@ class Worksheet(Container):
         wst = api.get_object(wst, default=None)
 
         # Store the Worksheet Template field and reindex it
-        self.getField("WorksheetTemplate").set(self, wst)
+        self.setWorksheetTemplate(wst)
         self.reindexObject(idxs=["getWorksheetTemplateTitle"])
 
         if not wst:
@@ -1346,7 +1363,7 @@ class Worksheet(Container):
         """ Adds the analysis passed in to the worksheet's layout
         """
         # TODO Redux
-        layout = self.getLayout()
+        layout = self.getLayoutView()
         container_uid = self.get_container_for(analysis)
         if IRequestAnalysis.providedBy(analysis) and \
                 not IDuplicateAnalysis.providedBy(analysis):
@@ -1367,15 +1384,15 @@ class Worksheet(Container):
             "container_uid": container_uid,
             "analysis_uid": api.get_uid(analysis)
         }
-        self.setLayout(layout + [slot])
+        self.setLayoutView(layout + [slot])
 
     def purgeLayout(self):
         """ Purges the layout of not assigned analyses
         """
         uids = self.getRawAnalyses()
         layout = filter(lambda slot: slot.get("analysis_uid", None) in uids,
-                        self.getLayout())
-        self.setLayout(layout)
+                        self.getLayoutView())
+        self.setLayoutView(layout)
 
     def getQCAnalyses(self):
         """Return the Quality Control analyses.

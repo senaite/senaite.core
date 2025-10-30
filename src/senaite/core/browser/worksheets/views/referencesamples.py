@@ -105,10 +105,7 @@ class ReferenceSamplesView(ListingView):
                 "custom_transitions": [
                     {
                         "id": "add",
-                        "title": _(
-                            u"listing_reference_samples_transition_add",
-                            default=u"Add"
-                        ),
+                        "title": _("Add"),
                         "url": self.__name__,
                     }
                 ],
@@ -228,7 +225,7 @@ class ReferenceSamplesView(ListingView):
         """Return a list of empty slot numbers
         """
         available_positions = ["new"]
-        layout = self.context.getLayout()
+        layout = self.context.getLayoutView()
         used_positions = [int(slot["position"]) for slot in layout]
         if used_positions:
             used = [
