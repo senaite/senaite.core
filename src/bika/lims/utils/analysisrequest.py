@@ -132,7 +132,8 @@ def create_analysisrequest(client, request, values, analyses=None,
     if parent_sample:
         # Always set partition to received
         date_received = parent_sample.getDateReceived()
-        receive_sample(ar, date_received=date_received)
+        if date_received:
+            receive_sample(ar, date_received=date_received)
 
     if not IReceived.providedBy(ar):
         setup = api.get_setup()

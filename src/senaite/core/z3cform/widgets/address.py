@@ -230,7 +230,7 @@ class AddressWidget(HTMLFormElement, Widget):
         sub2 = {}
 
         for item in self.get_value():
-            country = item.get("country")
+            country = api.safe_unicode(item.get("country", ""))
             if country and country not in sub1:
                 subdivisions = geo.get_subdivisions(country, [])
                 sub1[country] = map(lambda sub: sub.name, subdivisions)

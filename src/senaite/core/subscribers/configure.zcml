@@ -14,4 +14,11 @@
            Products.Archetypes.interfaces.IObjectInitializedEvent"
     handler=".client.on_client_created"/>
 
+  <!-- Sample subscription adapter to update the sample after it was created -->
+  <subscriber
+    for="bika.lims.interfaces.IAnalysisRequest
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    provides="senaite.core.interfaces.IAfterCreateSampleHook"
+    factory=".sample.AfterCreateSampleHook"/>
+
 </configure>
