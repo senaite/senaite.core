@@ -314,7 +314,7 @@ def migrate_worksheet_to_dx(src, destination):
     :param src: The source AT object
     :param destination: The destination folder
     """
-    src_id = src.getId()
+    # src_id = src.getId()
     target_id = tmpID()
 
     target = destination.get(target_id)

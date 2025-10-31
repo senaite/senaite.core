@@ -18,11 +18,14 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import re
+
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore import permissions
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
+from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces import IReferenceAnalysis
@@ -339,12 +342,12 @@ class Worksheet(Container):
         analyses = [an for an in self.getAnalyses()
                     if (not an.getMethod() or
                         not an.getInstrument() or
-                        override_analyses) and an.isMethodAllowed(method)]
+                        override_analyses) and an.isMethodAllowed(value)]
         total = 0
         for an in analyses:
             success = False
-            if an.isMethodAllowed(method):
-                success = an.setMethod(method)
+            if an.isMethodAllowed(value):
+                success = an.setMethod(value)
             if success is True:
                 total += 1
 
@@ -620,14 +623,14 @@ class Worksheet(Container):
             return None
 
         if not IReferenceSample.providedBy(reference):
-            logger.warning('Cannot create reference analysis from a non '
-                           'reference sample: {}'.format(reference.getId()))
+            logger.warning("Cannot create reference analysis from a non "
+                           "reference sample: {}".format(reference.getId()))
             return None
 
         calc = service.getCalculation()
         if calc and calc.getDependentServices():
-            logger.warning('Cannot create reference analyses with dependent'
-                           'services: {}'.format(service.getId()))
+            logger.warning("Cannot create reference analyses with dependent"
+                           "services: {}".format(service.getId()))
             return None
 
         # Create the reference analysis
@@ -674,7 +677,7 @@ class Worksheet(Container):
         if not IReferenceSample.providedBy(reference):
             # Not a ReferenceSample, so this is a duplicate
             suffix = str(_id + 1).zfill(2)
-        return '%s%s' % (prefix, suffix)
+        return "%s%s" % (prefix, suffix)
 
     def addDuplicateAnalyses(self, src_slot, dest_slot=None):
         """ Creates and add duplicate analyses from the src_slot to
@@ -736,13 +739,13 @@ class Worksheet(Container):
             return None
 
         if not IRoutineAnalysis.providedBy(src_analysis):
-            logger.warning('Cannot create duplicate analysis from a non '
-                           'routine analysis: {}'.format(src_analysis.getId()))
+            logger.warning("Cannot create duplicate analysis from a non "
+                           "routine analysis: {}".format(src_analysis.getId()))
             return None
 
-        if api.get_review_status(src_analysis) == 'retracted':
-            logger.warning('Cannot create duplicate analysis from a retracted'
-                           'analysis: {}'.format(src_analysis.getId()))
+        if api.get_review_status(src_analysis) == "retracted":
+            logger.warning("Cannot create duplicate analysis from a retracted"
+                           "analysis: {}".format(src_analysis.getId()))
             return None
 
         # TODO Workflow - Duplicate Analyses - Consider duplicates with deps
@@ -752,8 +755,8 @@ class Worksheet(Container):
         # routine analyses from same WS) should be almost enough
         calc = src_analysis.getCalculation()
         if calc and calc.getDependentServices():
-            logger.warning('Cannot create duplicate analysis from an'
-                           'analysis with dependent services: {}'
+            logger.warning("Cannot create duplicate analysis from an"
+                           "analysis with dependent services: {}"
                            .format(src_analysis.getId()))
             return None
 
@@ -796,7 +799,7 @@ class Worksheet(Container):
             # routine ones, those that belong to an Analysis Request.
             return -1
 
-        occupied = self.get_slot_positions(type='all')
+        occupied = self.get_slot_positions(type="all")
         wst = self.getWorksheetTemplate()
         if not wst:
             # No worksheet template assigned, add a new slot at the end of
@@ -809,9 +812,9 @@ class Worksheet(Container):
         # the worksheet
         layout = wst.getTemplateLayout()
         for pos in layout:
-            if pos['type'] != 'd' or to_int(pos['dup']) != slot_from:
+            if pos["type"] != "d" or to_int(pos["dup"]) != slot_from:
                 continue
-            slot_to = int(pos['pos'])
+            slot_to = int(pos["pos"])
             if slot_to in occupied:
                 # Not an empty slot
                 continue
@@ -841,7 +844,7 @@ class Worksheet(Container):
         if not IReferenceSample.providedBy(reference):
             return -1
 
-        occupied = self.get_slot_positions(type='all') or [0]
+        occupied = self.get_slot_positions(type="all") or [0]
         wst = self.getWorksheetTemplate()
         if not wst:
             # No worksheet template assigned, add a new slot at the end of the
@@ -852,13 +855,13 @@ class Worksheet(Container):
         # If there is a match with the layout defined in
         # the Worksheet Template, use that slot instead of adding
         # a new one at the end of the worksheet
-        slot_type = reference.getBlank() and 'b' or 'c'
+        slot_type = reference.getBlank() and "b" or "c"
         layout = wst.getTemplateLayout()
 
         for pos in layout:
-            if pos['type'] != slot_type:
+            if pos["type"] != slot_type:
                 continue
-            slot_to = int(pos['pos'])
+            slot_to = int(pos["pos"])
             if slot_to in occupied:
                 # Not an empty slot
                 continue
@@ -1016,7 +1019,7 @@ class Worksheet(Container):
             return None
         return to_int(slot[0]["position"])
 
-    def resolve_available_slots(self, worksheet_template, type='a'):
+    def resolve_available_slots(self, worksheet_template, type="a"):
         """Returns the available slots from the current worksheet that fits
         with the layout defined in the worksheet_template and type of analysis
         passed in.
@@ -1041,10 +1044,10 @@ class Worksheet(Container):
 
         for row in layout:
             # skip rows that do not match with the given type
-            if row['type'] != type:
+            if row["type"] != type:
                 continue
 
-            slot = to_int(row['pos'])
+            slot = to_int(row["pos"])
 
             if slot in ws_slots:
                 # We only want those that are empty
@@ -1223,17 +1226,17 @@ class Worksheet(Container):
         :param type: type of analyses ('b' for blanks, 'c' for controls)
         :return: list of dictionaries
         """
-        if not type or type not in ['b', 'c']:
+        if not type or type not in ["b", "c"]:
             return []
 
-        bc = api.get_tool(SENAITE_CATALOG)
-        wst_type = type == 'b' and 'blank_ref' or 'control_ref'
+        sc = api.get_tool(SENAITE_CATALOG)
+        wst_type = type == "b" and "blank_ref" or "control_ref"
 
         slots_sample = list()
         available_slots = self.resolve_available_slots(wst, type)
         wst_layout = wst.getTemplateLayout()
         for row in wst_layout:
-            slot = int(row['pos'])
+            slot = int(row["pos"])
             if slot not in available_slots:
                 continue
 
@@ -1243,8 +1246,8 @@ class Worksheet(Container):
                 # in worksheet templates
                 continue
 
-            samples = bc(portal_type='ReferenceSample',
-                         review_state='current',
+            samples = sc(portal_type="ReferenceSample",
+                         review_state="current",
                          is_active=True,
                          getReferenceDefinitionUID=ref_definition_uid)
 
@@ -1255,39 +1258,39 @@ class Worksheet(Container):
             candidates = list()
             for sample in samples:
                 obj = api.get_object(sample)
-                if (type == 'b' and obj.getBlank()) or \
-                        (type == 'c' and not obj.getBlank()):
+                if (type == "b" and obj.getBlank()) or \
+                        (type == "c" and not obj.getBlank()):
                     candidates.append(obj)
 
             sample, uids = self._resolve_reference_sample(candidates, services)
             if not sample:
                 continue
 
-            slots_sample.append({'slot': slot,
-                                 'sample': sample,
-                                 'supported_services': uids})
+            slots_sample.append({"slot": slot,
+                                 "sample": sample,
+                                 "supported_services": uids})
 
         return slots_sample
 
-    def _apply_worksheet_template_reference_analyses(self, wst, type='all'):
+    def _apply_worksheet_template_reference_analyses(self, wst, type="all"):
         """
         Add reference analyses to worksheet according to the worksheet template
         layout passed in. Does not overwrite slots that are already filled.
         :param wst: worksheet template used as the layout
         """
-        if type == 'all':
-            self._apply_worksheet_template_reference_analyses(wst, 'b')
-            self._apply_worksheet_template_reference_analyses(wst, 'c')
+        if type == "all":
+            self._apply_worksheet_template_reference_analyses(wst, "b")
+            self._apply_worksheet_template_reference_analyses(wst, "c")
             return
 
-        if type not in ['b', 'c']:
+        if type not in ["b", "c"]:
             return
 
         references = self._resolve_reference_samples(wst, type)
         for reference in references:
-            slot = reference['slot']
-            sample = reference['sample']
-            services = reference['supported_services']
+            slot = reference["slot"]
+            sample = reference["sample"]
+            services = reference["supported_services"]
             self.addReferenceAnalyses(sample, services, slot)
 
     def applyWorksheetTemplate(self, wst, analyses=None):
@@ -1342,11 +1345,11 @@ class Worksheet(Container):
         wst_layout = wst.getTemplateLayout()
 
         for row in wst_layout:
-            if row['type'] != 'd':
+            if row["type"] != "d":
                 continue
 
-            src_pos = to_int(row['dup'])
-            dest_pos = to_int(row['pos'])
+            src_pos = to_int(row["dup"])
+            dest_pos = to_int(row["pos"])
 
             self.addDuplicateAnalyses(src_pos, dest_pos)
 
