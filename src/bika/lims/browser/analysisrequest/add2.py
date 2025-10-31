@@ -53,12 +53,14 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.api import dtime
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.interfaces import IAfterCreateSampleHook
 from senaite.core.p3compat import cmp
 from senaite.core.permissions import TransitionMultiResults
 from senaite.core.registry import get_registry_record
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getAdapters
 from zope.component import queryAdapter
+from zope.component import subscribers
 from zope.i18n.locales import locales
 from zope.i18nmessageid import Message
 from zope.interface import alsoProvides
@@ -391,6 +393,7 @@ class AnalysisRequestAddView(BrowserView):
             parent = None
             if source is not None:
                 parent = self.get_parent_ar(source)
+
             for field in fields:
                 value = None
                 fieldname = field.getName()
@@ -402,6 +405,17 @@ class AnalysisRequestAddView(BrowserView):
                     # get the default value of this field
                     value = self.get_default_value(
                         field, ar_context, arnum=arnum)
+
+                # Filter out analyses in certain workflow states when copying
+                if fieldname == "Analyses" and value:
+                    skip_states = self.get_skip_analyses_states()
+                    value = self.filter_objs_with_states(
+                        value, filter_states=skip_states)
+
+                    # Filter out partition analyses if configured
+                    if self.get_skip_partition_analyses() and source:
+                        value = self.filter_partition_analyses(value, source)
+
                 # store the value on the new fieldname
                 new_fieldname = self.get_fieldname(field, arnum)
                 out[new_fieldname] = value
@@ -599,7 +613,6 @@ class AnalysisRequestAddView(BrowserView):
             widget_type = None
         return widget_type in ALLOW_MULTI_PASTE_WIDGET_TYPES
 
-    @viewcache.memoize
     def get_allowed_multi_paste_fields(self):
         """Returns a list of fields that allow multi paste
         """
@@ -607,7 +620,72 @@ class AnalysisRequestAddView(BrowserView):
         record = get_registry_record(key)
         if not record:
             return []
-        return record
+        # convert to plain list to avoid persistent references
+        return list(record)
+
+    def get_skip_analyses_states(self):
+        """Returns a list of analyses WF states to skip on copy
+        """
+        key = "sample_add_form_skip_analyses_in_states"
+        record = get_registry_record(key)
+        if not record:
+            return []
+        # convert to plain list to avoid persistent references
+        return list(record)
+
+    def get_skip_partition_analyses(self):
+        """Returns whether to skip partition analyses on copy
+        """
+        key = "sample_add_form_skip_partition_analyses"
+        record = get_registry_record(key)
+        return bool(record)
+
+    def filter_objs_with_states(self, objs, filter_states=None):
+        """Filter out objects that are in the given workflow states
+
+        :param objs: List of objects to filter
+        :param filter_states: List of workflow state IDs to exclude
+        :return: List of objects not in the filter_states
+        """
+        if not filter_states:
+            return objs
+        if not isinstance(filter_states, (list, tuple)):
+            return objs
+        filtered = []
+        for obj in objs:
+            status = api.get_review_status(obj)
+            if status not in filter_states:
+                filtered.append(obj)
+        return filtered
+
+    def filter_partition_analyses(self, analyses, source):
+        """Filter out analyses that belong to partitions
+
+        Only keeps analyses that directly belong to the source sample.
+        Analyses from partitions are identified by checking if they are
+        direct children of the source sample.
+
+        :param analyses: List of analysis brains/objects to filter
+        :param source: The source sample object
+        :return: List of analyses that belong directly to the source sample
+        """
+        if not analyses or not source:
+            return analyses
+
+        # Get the physical paths of analyses that directly belong to the source
+        source_analysis_paths = set()
+        for analysis in source.objectValues("Analysis"):
+            source_analysis_paths.add(api.get_path(analysis))
+
+        # Filter the analyses to keep only those in the source
+        filtered = []
+        for analysis in analyses:
+            # Get the object if it's a brain
+            analysis_path = api.get_path(analysis)
+            if analysis_path in source_analysis_paths:
+                filtered.append(analysis)
+
+        return filtered
 
 
 class AnalysisRequestManageView(BrowserView):
@@ -1880,6 +1958,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # add the attachments to the record
             valid_record["attachments"] = filter(None, attachments)
 
+            # keep the `_source_uid` in the record for the create process
+            valid_record["_source_uid"] = record.get("_source_uid")
+
             # append the valid record to the list of valid records
             valid_records.append(valid_record)
 
@@ -1932,6 +2013,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Creates samples for the given records
         """
         samples = []
+        request = self.request
         for record in records:
             client_uid = record.get("Client")
             client = self.get_object_by_uid(client_uid)
@@ -1941,6 +2023,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Pop the attachments
             attachments = record.pop("attachments", [])
 
+            # Pop the source UID
+            source_uid = record.pop("_source_uid", None)
+
+            # Fetch the source object
+            source = None
+            if source_uid:
+                source = api.get_object(source_uid)
+
             # Create as many samples as required
             num_samples = self.get_num_samples(record)
             for idx in range(num_samples):
@@ -1949,6 +2039,11 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 # Create the attachments
                 for attachment_record in attachments:
                     self.create_attachment(sample, attachment_record)
+
+                # Pass the new sample to all subscription hooks
+                hooks = subscribers((sample, request), IAfterCreateSampleHook)
+                for hook in hooks:
+                    hook.update(sample, source=source)
 
                 transaction.savepoint(optimistic=True)
                 samples.append(sample)

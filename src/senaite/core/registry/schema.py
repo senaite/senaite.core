@@ -21,8 +21,8 @@
 from bika.lims import senaiteMessageFactory as _
 from plone.autoform import directives
 from plone.supermodel import model
+from senaite.core.config.registry import SKIP_ANALYSES_STATES_ON_COPY
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
-
 from zope import schema
 
 
@@ -376,9 +376,59 @@ class ISampleRegistry(ISenaiteRegistry):
             default=u"Samples"
         ),
         fields=[
+            "sample_add_form_copy_partitions",
+            "sample_add_form_skip_partition_analyses",
+            "sample_add_form_skip_analyses_in_states",
             "sample_add_form_allow_multi_paste",
             "trigger_events_on_sample_creation",
         ],
+    )
+
+    sample_add_form_copy_partitions = schema.Bool(
+        title=_(
+            u"label_registry_sample_add_copy_partitions",
+            default=u"Copy sample structure with partitions"
+        ),
+        description=_(
+            u"description_registry_sample_add_copy_partitions",
+            default=u"When enabled, copying a sample will also create partitions "
+                    u"matching the source sample structure. Each partition will be "
+                    u"created with the same configuration (sample type, container, "
+                    u"preservation) and analyses as the source partition."
+        ),
+        default=False,
+        required=False,
+    )
+
+    sample_add_form_skip_partition_analyses = schema.Bool(
+        title=_(
+            u"label_registry_sample_add_skip_partition_analyses",
+            default=u"Skip partition analyses on copy"
+        ),
+        description=_(
+            u"description_registry_sample_add_skip_partition_analyses",
+            default=u"When enabled, analyses from partitions will be excluded "
+                    u"when copying a sample. Only analyses that directly belong "
+                    u"to the source sample will be copied to the new sample."
+        ),
+        default=False,
+        required=False,
+    )
+
+    sample_add_form_skip_analyses_in_states = schema.List(
+        title=_(
+            u"label_registry_sample_add_skip_analyses_in_states",
+            default=u"Skip analyses workflow states on copy"
+        ),
+        description=_(
+            u"description_registry_sample_add_skip_analyses_in_states",
+            default=u"Add all analyses workflow states that should be "
+                    u"skipped when copying analyses to a new sample in the "
+                    u"sample add form."
+        ),
+        value_type=schema.ASCIILine(),
+        required=False,
+        default=SKIP_ANALYSES_STATES_ON_COPY,
     )
 
     sample_add_form_allow_multi_paste = schema.List(

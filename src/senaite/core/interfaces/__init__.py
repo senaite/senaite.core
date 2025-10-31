@@ -514,3 +514,15 @@ class IContacts(Interface):
 class IContact(Interface):
     """Marker interface for a single Contact
     """
+
+
+class IAfterCreateSampleHook(Interface):
+    """Subscription adapter after the sample was created
+    """
+    def update(sample, source=None):
+        """Update the sample after it was created
+
+        :param sample: The new created sample
+        :param source: The source sample from where this sample was copied,
+                       otherwise None
+        """
