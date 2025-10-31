@@ -18,6 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFCore.utils import getToolByName
 from bika.lims import api
 from bika.lims import workflow as wf
@@ -28,6 +29,44 @@ from bika.lims.utils.analysis import create_reference_analysis
 from bika.lims.workflow import skip
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.config.worksheet import WORKSHEETS_FOLDER_ID
+
+IGNORE_FIELDS = [
+    "UID",
+    "id",
+    "title",
+    "allowDiscussion",
+    "subject",
+    "description",
+    "location",
+    "contributors",
+    "creators",
+    "effectiveDate",
+    "expirationDate",
+    "language",
+    "rights",
+    "creation_date",
+    "modification_date",
+    "layout_view",  # ws
+    "analyses",  # ws
+]
+
+
+def copy_src_fields_to_dst(src, dst):
+    # These will be ignored when copying field values between analyses
+
+    fields = src.Schema().fields()
+    for field in fields:
+        fieldname = field.getName()
+        if fieldname in IGNORE_FIELDS:
+            continue
+        getter = getattr(src, 'get' + fieldname,
+                         src.Schema().getField(fieldname).getAccessor(src))
+        setter = getattr(dst, 'set' + fieldname,
+                         dst.Schema().getField(fieldname).getMutator(dst))
+        if getter is None or setter is None:
+            # ComputedField
+            continue
+        setter(getter())
 
 
 def after_retract(worksheet):
@@ -56,7 +95,7 @@ def after_reject(worksheet):
     """
     if skip(worksheet, "reject"):
         return
-    workflow = getToolByName(obj, "portal_workflow")
+    workflow = getToolByName(worksheet, "portal_workflow")
     analysis_positions = {}
     for item in worksheet.getLayoutView():
         analysis_positions[item["analysis_uid"]] = item["position"]
@@ -68,7 +107,7 @@ def after_reject(worksheet):
     kwargs = {
         "container": portal.get(WORKSHEETS_FOLDER_ID),
         "portal_type": "Worksheet",
-        "skip": ignore_fields,
+        "skip": IGNORE_FIELDS,
     }
     new_ws = api.copy_object(worksheet, **kwargs)
 
@@ -101,7 +140,7 @@ def after_reject(worksheet):
         # - Copy all field values
         # - Clear analysis result, and set Retested flag
         if api_analysis.is_analysis(analysis):
-            reject = _createObjectByType("RejectAnalysis", self, tmpID())
+            reject = _createObjectByType("RejectAnalysis", worksheet, tmpID())
             reject.unmarkCreationFlag()
             copy_src_fields_to_dst(analysis, reject)
             reject.setAnalysis(analysis)
