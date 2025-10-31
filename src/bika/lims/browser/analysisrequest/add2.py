@@ -53,12 +53,14 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.api import dtime
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.interfaces import IAfterCreateSampleHook
 from senaite.core.p3compat import cmp
 from senaite.core.permissions import TransitionMultiResults
 from senaite.core.registry import get_registry_record
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getAdapters
 from zope.component import queryAdapter
+from zope.component import subscribers
 from zope.i18n.locales import locales
 from zope.i18nmessageid import Message
 from zope.interface import alsoProvides
@@ -391,6 +393,7 @@ class AnalysisRequestAddView(BrowserView):
             parent = None
             if source is not None:
                 parent = self.get_parent_ar(source)
+
             for field in fields:
                 value = None
                 fieldname = field.getName()
@@ -1955,6 +1958,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # add the attachments to the record
             valid_record["attachments"] = filter(None, attachments)
 
+            # keep the `_source_uid` in the record for the create process
+            valid_record["_source_uid"] = record.get("_source_uid")
+
             # append the valid record to the list of valid records
             valid_records.append(valid_record)
 
@@ -2007,6 +2013,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Creates samples for the given records
         """
         samples = []
+        request = self.request
         for record in records:
             client_uid = record.get("Client")
             client = self.get_object_by_uid(client_uid)
@@ -2016,6 +2023,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Pop the attachments
             attachments = record.pop("attachments", [])
 
+            # Pop the source UID
+            source_uid = record.pop("_source_uid", None)
+
+            # Fetch the source object
+            source = None
+            if source_uid:
+                source = api.get_object(source_uid)
+
             # Create as many samples as required
             num_samples = self.get_num_samples(record)
             for idx in range(num_samples):
@@ -2024,6 +2039,11 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 # Create the attachments
                 for attachment_record in attachments:
                     self.create_attachment(sample, attachment_record)
+
+                # Pass the new sample to all subscription hooks
+                hooks = subscribers((sample, request), IAfterCreateSampleHook)
+                for hook in hooks:
+                    hook.update(sample, source=source)
 
                 transaction.savepoint(optimistic=True)
                 samples.append(sample)
