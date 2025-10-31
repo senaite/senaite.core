@@ -40,7 +40,6 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
-from senaite.core.config.registry import RR_SCINOTATION_RECORD
 from senaite.core.config.registry import WS_PRINT_TMPL_RECORD
 from senaite.core.config.worksheet import WS_TEMPLATES_ADDON_DIR
 from senaite.core.p3compat import cmp

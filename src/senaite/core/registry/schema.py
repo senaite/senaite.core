@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import senaiteMessageFactory as _
-from senaite.core.config.worksheet import DEFAULT_WORKSHEET_LAYOUT
 from plone.autoform import directives
 from plone.supermodel import model
 from senaite.core.config.registry import SKIP_ANALYSES_STATES_ON_COPY
