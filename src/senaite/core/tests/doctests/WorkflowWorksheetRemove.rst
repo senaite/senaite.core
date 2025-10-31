@@ -88,10 +88,12 @@ And is not possible to remove unless empty:
 If we do "remove", the Worksheet object is deleted:
 
     >>> container = ws.aq_parent
-    >>> len(container.objectValues("Worksheet"))
+    >>> objects = container.objectValues()
+    >>> len(filter(lambda w: w.portal_type == "Worksheet", objects))
     1
     >>> success = do_action_for(ws, "remove")
-    >>> len(container.objectValues("Worksheet"))
+    >>> objects = container.objectValues()
+    >>> len(filter(lambda w: w.portal_type == "Worksheet", objects))
     0
 
 Try now for all possible statuses:

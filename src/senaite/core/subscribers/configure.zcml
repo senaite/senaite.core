@@ -21,4 +21,10 @@
     provides="senaite.core.interfaces.IAfterCreateSampleHook"
     factory=".sample.AfterCreateSampleHook"/>
 
+  <!-- Senaite Setup *modified* event handler -->
+  <subscriber
+    for="senaite.core.interfaces.ISetup
+         zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+    handler=".senaite_setup.on_senaite_setup_modified"/>
+
 </configure>

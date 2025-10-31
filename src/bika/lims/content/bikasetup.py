@@ -163,6 +163,7 @@ schema = BikaFolderSchema.copy() + Schema((
                 "0 disables automatic log-off"),
         )
     ),
+    # NOTE: This is a Proxy Field which delegates to senaite_setup DX
     BooleanField(
         'RestrictWorksheetUsersAccess',
         schemata="Security",
@@ -186,6 +187,7 @@ schema = BikaFolderSchema.copy() + Schema((
                 "setting does not apply to users with role Lab Manager")
         )
     ),
+    # NOTE: This is a Proxy Field which delegates to senaite_setup DX
     BooleanField(
         'RestrictWorksheetManagement',
         schemata="Security",
@@ -280,6 +282,7 @@ schema = BikaFolderSchema.copy() + Schema((
             format='select',
         )
     ),
+    # NOTE: This is a Proxy Field which delegates to senaite_setup DX
     StringField(
         'ScientificNotationReport',
         schemata="Results Reports",
@@ -480,6 +483,7 @@ schema = BikaFolderSchema.copy() + Schema((
             format='select',
         )
     ),
+    # NOTE: This is a Proxy Field which delegates to senaite_setup DX
     StringField(
         'WorksheetLayout',
         schemata="Appearance",
@@ -1394,6 +1398,58 @@ class BikaSetup(folder.ATFolder):
         # setup is `None` during initial site content structure installation
         if setup:
             setup.setInvalidationReasonRequired(value)
+
+    def getWorksheetLayout(self):
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getWorksheetLayout()
+        return self.getField("WorksheetLayout").default
+
+    def setWorksheetLayout(self, value):
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setWorksheetLayout(value)
+
+    def getRestrictWorksheetUsersAccess(self):
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getRestrictWorksheetUsersAccess()
+        return self.getField("RestrictWorksheetUsersAccess").default
+
+    def setRestrictWorksheetUsersAccess(self, value):
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setRestrictWorksheetUsersAccess(value)
+
+    def getRestrictWorksheetManagement(self):
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getRestrictWorksheetManagement()
+        return self.getField("RestrictWorksheetManagement").default
+
+    def setRestrictWorksheetManagement(self, value):
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setRestrictWorksheetManagement(value)
+
+    def getScientificNotationReport(self):
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getScientificNotationReport()
+        return self.getField("ScientificNotationReport").default
+
+    def setScientificNotationReport(self, value):
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setScientificNotationReport(value)
 
 
 registerType(BikaSetup, PROJECTNAME)

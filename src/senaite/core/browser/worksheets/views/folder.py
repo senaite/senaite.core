@@ -36,7 +36,6 @@ from senaite.core.permissions import AddWorksheet
 from senaite.core.permissions.worksheet import can_add_worksheet
 from senaite.core.permissions.worksheet import can_edit_worksheet
 from senaite.core.permissions.worksheet import can_manage_worksheets
-from senaite.core.registry import get_registry_record
 from plone.memoize.view import memoize
 
 
@@ -320,8 +319,7 @@ class WorksheetsView(ListingView):
         # do not filter if user is a privileged member
         if self.is_privileged_user():
             return False
-
-        return get_registry_record("restrict_worksheet_users_access", True)
+        return api.get_senaite_setup().getRestrictWorksheetUsersAccess()
 
     def is_analyst_assignment_allowed(self):
         """Check if the analyst can be assigned

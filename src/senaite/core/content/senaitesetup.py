@@ -29,6 +29,7 @@ from plone.supermodel import model
 from Products.CMFCore import permissions
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.catalog import AUDITLOG_CATALOG
+from senaite.core.config.worksheet import DEFAULT_WORKSHEET_LAYOUT
 from senaite.core.content.base import Container
 from senaite.core.interfaces import IHideActionsMenu
 from senaite.core.interfaces import ISetup
@@ -217,6 +218,22 @@ class ISetupSchema(model.Schema):
         default=False,
     )
 
+    worksheet_layout = schema.Choice(
+        title=_(
+            u"title_senaitesetup_worksheet_layout",
+            default=u"Default layout in worksheet view"
+        ),
+        description=_(
+            u"description_senaitesetup_worksheet_layout",
+            default=u"Preferred layout of the results entry table "
+                    u"in the Worksheet view. Classic layout displays "
+                    u"the Samples in rows and the analyses in columns. "
+                    u"Transposed layout displays the Samples in columns and "
+                    u"the analyses in rows."),
+        vocabulary="senaite.core.vocabularies.worksheet_layouts",
+        default=DEFAULT_WORKSHEET_LAYOUT
+    )
+
     invalidation_reason_required = schema.Bool(
         title=_(
             u"title_senaitesetup_invalidation_reason_required",
@@ -231,9 +248,60 @@ class ISetupSchema(model.Schema):
         default=True,
     )
 
+    restrict_worksheet_users_access = schema.Bool(
+        title=_(
+            u"title_senaitesetup_restrict_worksheet_users_access",
+            default=u"Allow access to worksheets only to assigned analysts"
+        ),
+        description=_(
+            u"description_senaitesetup_restrict_worksheet_users_access",
+            default=u"If unchecked, analysts will have access to "
+                    u"all worksheets."
+        ),
+        default=True,
+    )
+
+    restrict_worksheet_management = schema.Bool(
+        title=_(
+            u"title_senaitesetup_restrict_worksheet_management",
+            default=u"Only lab managers can create and manage worksheets"
+        ),
+        description=_(
+            u"description_senaitesetup_restrict_worksheet_management",
+            default=u"If unchecked, analysts and lab clerks will "
+                    u"be able to manage Worksheets, too. If the "
+                    u"users have restricted access only to those "
+                    u"worksheets for which they are assigned, "
+                    u"this option will be checked and readonly."
+        ),
+        default=True,
+    )
+
+    scientific_notation_report = schema.Choice(
+        title=_(
+            u"title_senaitesetup_results_reports",
+            default=u"Default scientific notation format for reports"
+        ),
+        description=_(
+            u"description_senaitesetup_results_reports",
+            default=u"Preferred scientific notation format for reports"
+        ),
+        vocabulary="senaite.core.vocabularies.scinotation_options",
+        required=False,
+        default="1",
+    )
+
     ###
     # Fieldsets
     ###
+    model.fieldset(
+        "security",
+        label=_("label_senaitesetup_fieldset_security", default=u"Security"),
+        fields=[
+            "restrict_worksheet_users_access",
+            "restrict_worksheet_management",
+        ]
+    )
     model.fieldset(
         "samples",
         label=_("label_senaitesetup_fieldset_samples", default=u"Samples"),
@@ -271,7 +339,19 @@ class ISetupSchema(model.Schema):
             "site_logo",
             "site_logo_css",
             "show_lab_name_in_login",
+            "worksheet_layout",
         ]
+    )
+
+    model.fieldset(
+        "results_reports",
+        label=_(
+            u"label_senaitesetup_fieldset_results_reports",
+            default=u"Result Reports"
+        ),
+        fields=[
+            "scientific_notation_report",
+        ],
     )
 
 
@@ -497,4 +577,44 @@ class Setup(Container):
         invalidating a sample
         """
         mutator = self.mutator("invalidation_reason_required")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getWorksheetLayout(self):
+        accessor = self.accessor("worksheet_layout")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setWorksheetLayout(self, value):
+        mutator = self.mutator("restrict_worksheet_users_access")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getRestrictWorksheetUsersAccess(self):
+        accessor = self.accessor("restrict_worksheet_users_access")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setRestrictWorksheetUsersAccess(self, value):
+        mutator = self.mutator("worksheet_layout")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getRestrictWorksheetManagement(self):
+        accessor = self.accessor("restrict_worksheet_management")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setRestrictWorksheetManagement(self, value):
+        mutator = self.mutator("restrict_worksheet_management")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getScientificNotationReport(self):
+        accessor = self.accessor("scientific_notation_report")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setScientificNotationReport(self, value):
+        mutator = self.mutator("scientific_notation_report")
         return mutator(self, value)

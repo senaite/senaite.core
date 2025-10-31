@@ -66,7 +66,8 @@ class PrintView(BrowserView):
         super(PrintView, self).__init__(context, request)
         self._worksheets = [self.context]
         self._TEMPLATES_LIST = get_registry_record(WS_PRINT_TMPL_RECORD)
-        self.scinot = int(get_registry_record(RR_SCINOTATION_RECORD, 1))
+        senaite_setup = api.get_senaite_setup()
+        self.scinot = int(senaite_setup.getScientificNotationReport())
 
     def __call__(self):
         """ Entry point of PrintView.

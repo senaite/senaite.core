@@ -12,12 +12,16 @@ Required Imports:
 
     >>> from senaite.core.config.worksheet import WORKSHEET_LAYOUT_OPTIONS
     >>> from senaite.core.vocabularies.worksheet import WorksheetLayoutsFactory
-    >>> from Products.Archetypes.public import DisplayList
+    >>> from zope.schema.interfaces import IVocabularyFactory
+    >>> from zope.component import getUtility
 
 Check layouts:
 
-    >>> layouts = set(WorksheetLayoutsFactory.keys())
-    >>> config_layouts = set(DisplayList(WORKSHEET_LAYOUT_OPTIONS).keys())
-    >>> intersection = layouts.intersection(config_layouts)
+    >>> vocab_key = "senaite.core.vocabularies.worksheet_layouts"
+    >>> vocab_factory = getUtility(IVocabularyFactory, vocab_key)
+    >>> vocab = vocab_factory()
+    >>> layout_names = set([term.token for term in vocab])
+    >>> config_layouts = set([i[0] for i in WORKSHEET_LAYOUT_OPTIONS])
+    >>> intersection = layout_names.intersection(config_layouts)
     >>> len(intersection)
     2

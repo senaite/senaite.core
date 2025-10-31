@@ -498,7 +498,7 @@ class Worksheet(Container):
             analyses = filter(lambda an: an != analysis, analyses)
             self.setAnalyses(analyses)
             # ???
-            self.updateLayout()
+            # self.updateLayout()
 
         # Cannot add an analysis if the assign transition is not possible
         # We need to bypass the guard's check for current context!

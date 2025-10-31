@@ -21,9 +21,7 @@
 from Products.Five.browser import BrowserView
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from senaite.core.config.worksheet import DEFAULT_WORKSHEET_LAYOUT
 from senaite.core.config.worksheet import WORKSHEETS_FOLDER_ID
-from senaite.core.registry import get_registry_record
 
 
 class AddWorksheetView(BrowserView):
@@ -60,8 +58,7 @@ class AddWorksheetView(BrowserView):
             ws.setInstrument(instrument)
 
         # Set the default layout for results display
-        ws_layout = get_registry_record("worksheet_layout",
-                                        DEFAULT_WORKSHEET_LAYOUT)
+        ws_layout = api.get_senaite_setup().getWorksheetLayout()
         ws.setResultsLayout(ws_layout)
         ws_url = ws.absolute_url()
         # overwrite saved context UID for event subscribers

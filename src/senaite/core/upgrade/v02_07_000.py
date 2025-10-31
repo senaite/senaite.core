@@ -34,11 +34,9 @@ from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
 from senaite.core.config import PROJECTNAME as product
-from senaite.core.config.worksheet import DEFAULT_WORKSHEET_LAYOUT
 from senaite.core.config.worksheet import WORKSHEETS_FOLDER_ID
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
-from senaite.core.registry import set_registry_record
 from senaite.core.schema.uidreferencefield import get_backref_storage
 from senaite.core.setuphandlers import add_catalog_column
 from senaite.core.setuphandlers import add_catalog_index
@@ -124,20 +122,6 @@ def get_destination_folder(folder_id):
         add_dexterity_items(portal, items)
         folder = portal.get(folder_id)
     return folder
-
-
-def copy_from_bika_setup_to_senaite_registry(fields):
-    """Copy fields from BIKA Setup content to SENAITE registry
-
-    :param fields: list of tuple (old_field, new_field, default_value)
-    """
-    bika_setup = api.get_bika_setup()
-    for old, new, default_value in fields:
-        value = bika_setup.getField(old).get(bika_setup)
-        if not value:
-            value = default_value
-        logger.info("Copy field {}({}) -> {}".format(old, value, new))
-        set_registry_record(new, value)
 
 
 @upgradestep(product, version)
@@ -235,17 +219,7 @@ def migrate_worksheets_to_dx(tool):
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
     tool.runImportStepFromProfile(profile, "workflow")
-    tool.runImportStepFromProfile(profile, "plone.app.registry")
     # import_registry(tool)
-
-    registry_fields = [
-        ("WorksheetLayout", "worksheet_layout", DEFAULT_WORKSHEET_LAYOUT),
-        ("RestrictWorksheetUsersAccess",
-         "restrict_worksheet_users_access", True),
-        ("RestrictWorksheetManagement", "restrict_worksheet_management", True),
-        ("ScientificNotationReport", "scientific_notation_report", "1"),
-    ]
-    copy_from_bika_setup_to_senaite_registry(registry_fields)
 
     # Find all Worksheet objects
     query = {

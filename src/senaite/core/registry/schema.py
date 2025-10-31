@@ -119,55 +119,7 @@ class IWorksheetViewRegistry(ISenaiteRegistry):
         fields=[
             "worksheetview_analysis_columns_order",
             "worksheet_print_templates_order",
-            "worksheet_layout",
-            "restrict_worksheet_users_access",
-            "restrict_worksheet_management",
         ],
-    )
-
-    worksheet_layout = schema.Choice(
-        title=_(
-            u"registry_worksheet_settings_layout_title",
-            default=u"Default layout in worksheet view"
-        ),
-        description=_(
-            u"registry_worksheet_settings_layout_description",
-            default=u"Preferred layout of the results entry table "
-                    u"in the Worksheet view. Classic layout displays "
-                    u"the Samples in rows and the analyses in columns. "
-                    u"Transposed layout displays the Samples in columns and "
-                    u"the analyses in rows."),
-        vocabulary="senaite.core.vocabularies.worksheet_layouts",
-        default=DEFAULT_WORKSHEET_LAYOUT
-    )
-
-    restrict_worksheet_users_access = schema.Bool(
-        title=_(
-            u"registry_worksheet_settings_users_access_title",
-            default=u"Allow access to worksheets only to assigned analysts"
-        ),
-        description=_(
-            u"registry_worksheet_settings_users_access_description",
-            default=u"If unchecked, analysts will have access to "
-                    u"all worksheets."
-        ),
-        default=True,
-    )
-
-    restrict_worksheet_management = schema.Bool(
-        title=_(
-            u"registry_worksheet_settings_management_title",
-            default=u"Only lab managers can create and manage worksheets"
-        ),
-        description=_(
-            u"registry_worksheet_settings_management_description",
-            default=u"If unchecked, analysts and lab clerks will "
-                    u"be able to manage Worksheets, too. If the "
-                    u"users have restricted access only to those "
-                    u"worksheets for which they are assigned, "
-                    u"this option will be checked and readonly."
-        ),
-        default=True,
     )
 
     worksheetview_analysis_columns_order = schema.List(
@@ -202,35 +154,6 @@ class IWorksheetViewRegistry(ISenaiteRegistry):
         value_type=schema.ASCIILine(title=u"Column"),
         required=False,
         default=[],
-    )
-
-
-class IResultsReportsRegistry(ISenaiteRegistry):
-    """View settings for results reports
-    """
-    model.fieldset(
-        "result_reports_settings",
-        label=_(
-            u"label_registry_results_reports",
-            default=u"Result Reports"
-        ),
-        fields=[
-            "scientific_notation_report",
-        ],
-    )
-
-    scientific_notation_report = schema.Choice(
-        title=_(
-            u"results_reports_settings_scientific_notation_title",
-            default=u"Default scientific notation format for reports"
-        ),
-        description=_(
-            u"results_reports_settings_scientific_notation_description",
-            default=u"Preferred scientific notation format for reports"
-        ),
-        vocabulary="senaite.core.vocabularies.scinotation_options",
-        required=False,
-        default="1",
     )
 
 

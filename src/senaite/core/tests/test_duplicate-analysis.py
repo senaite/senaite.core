@@ -29,7 +29,6 @@ from plone.app.testing import setRoles
 from Products.CMFCore.utils import getToolByName
 from senaite.core.tests.base import DataTestCase
 from senaite.core.catalog import CONTACT_CATALOG
-from senaite.core.config.worksheet import WORKSHEETS_FOLDER_ID
 
 
 class TestAddDuplicateAnalysis(DataTestCase):
@@ -71,7 +70,7 @@ class TestAddDuplicateAnalysis(DataTestCase):
         wf.doActionFor(ar, 'receive')
 
         # Worksheet creation
-        wsfolder = self.portal[WORKSHEETS_FOLDER_ID]
+        wsfolder = self.portal.worksheets
         ws = api.create(wsfolder, "Worksheet", id=tmpID())
         cat = getToolByName(self.portal, CONTACT_CATALOG)
         lab_contacts = [o.getObject() for o in cat(portal_type="LabContact")]

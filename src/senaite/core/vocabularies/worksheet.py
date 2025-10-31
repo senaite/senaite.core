@@ -30,7 +30,7 @@ class WorksheetLayouts(object):
     """Getting additional layouts for Worksheet
     """
 
-    def __call__(self, context):
+    def __call__(self, context=None):
         layouts = []
         for name, layout_utility in getUtilitiesFor(IWorksheetLayouts):
             [layouts.append(layout) for layout in layout_utility.getLayouts()]

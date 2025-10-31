@@ -13,9 +13,6 @@
   <!-- Registry for worksheet view configuration -->
   <records interface="senaite.core.registry.schema.IWorksheetViewRegistry" />
 
-  <!-- Registry for results reports configuration -->
-  <records interface="senaite.core.registry.schema.IResultsReportsRegistry" />
-
   <!-- Registry for sample view configuration -->
   <records interface="senaite.core.registry.schema.ISampleViewRegistry" />
 

@@ -24,8 +24,6 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.browser.modals import Modal
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config.worksheet import WORKSHEETS_FOLDER_ID
-from senaite.core.config.worksheet import DEFAULT_WORKSHEET_LAYOUT
-from senaite.core.registry import get_registry_record
 from six import string_types
 
 
@@ -124,8 +122,8 @@ class CreateWorksheetModal(Modal):
     def worksheet_layout(self):
         """Return the configured worksheet layout
         """
-        return get_registry_record("worksheet_layout",
-                                   DEFAULT_WORKSHEET_LAYOUT)
+        setup = api.get_senaite_setup()
+        return setup.getWorksheetLayout()
 
     def get_analysis_categories(self):
         """Return analysis categories of the selected samples
