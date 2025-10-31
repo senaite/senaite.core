@@ -26,12 +26,10 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import getUsers
-from plone.app.layout.globals.interfaces import IViewView
 from plone.memoize import view
 from senaite.core.config.worksheet import DEFAULT_WORKSHEET_LAYOUT
 from senaite.core.p3compat import cmp
 from senaite.core.permissions.worksheet import can_manage_worksheets
-from zope.interface import implements
 from zope.schema.interfaces import IVocabularyFactory
 from zope.component import getUtility
 

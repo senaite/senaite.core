@@ -34,7 +34,6 @@ from senaite.app.listing import ListingView
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.i18n import translate
-from senaite.core.permissions.worksheet import can_edit_worksheet
 from senaite.core.permissions.worksheet import can_manage_worksheets
 
 

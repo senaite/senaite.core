@@ -23,7 +23,6 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from senaite.core.config.worksheet import DEFAULT_WORKSHEET_LAYOUT
 from senaite.core.config.worksheet import WORKSHEETS_FOLDER_ID
-from senaite.core.idserver import generateUniqueId
 from senaite.core.registry import get_registry_record
 
 

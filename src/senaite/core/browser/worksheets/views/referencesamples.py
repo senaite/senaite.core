@@ -29,8 +29,6 @@ from plone.protect import CheckAuthenticator
 from senaite.app.listing import ListingView
 from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.i18n import translate
-from senaite.core.permissions.worksheet import can_edit_worksheet
-from senaite.core.permissions.worksheet import can_manage_worksheets
 
 
 class ReferenceSamplesView(ListingView):
