@@ -18,6 +18,8 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import copy
+
 from AccessControl import ClassSecurityInfo
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.api import mail
@@ -28,6 +30,8 @@ from Products.CMFPlone.utils import safe_unicode
 from senaite.core.content.base import Container
 from senaite.core.schema import AddressField
 from senaite.core.schema import PhoneField
+from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
+from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from senaite.core.z3cform.widgets.address import AddressWidget
 from senaite.core.z3cform.widgets.phone import PhoneWidget
 from zope import schema
@@ -191,31 +195,20 @@ class IPersonSchema(model.Schema):
 
     # Address
     model.fieldset(
-        "address",
+        "addresses",
         label=_(
             u"label_address",
             default=u"Address"
         ),
         fields=[
-            "physical_address",
-            "postal_address",
+            "address",
         ]
     )
 
-    directives.widget("physical_address", AddressWidget)
-    physical_address = AddressField(
-        title=_(
-            u"label_person_physical_address",
-            default=u"Physical address"
-        ),
-        required=False,
-    )
-
-    directives.widget("postal_address", AddressWidget)
-    postal_address = AddressField(
-        title=_(
-            u"label_person_postal_address",
-            default=u"Postal address"
+    directives.widget("address", AddressWidget)
+    address = AddressField(
+        address_types=(
+            PHYSICAL_ADDRESS, POSTAL_ADDRESS
         ),
         required=False,
     )
@@ -483,39 +476,51 @@ class Person(Container):
     Department = property(getDepartment, setDepartment)
 
     @security.protected(permissions.View)
-    def getPhysicalAddress(self):
-        accessor = self.accessor("physical_address")
-        value = accessor(self)
-        # The address field returns a list of address dicts
-        if value and isinstance(value, list):
-            value = value[0]
-        if not isinstance(value, dict):
-            value = {}
+    def getAddress(self):
+        accessor = self.accessor("address")
+        value = accessor(self) or []
         return value
 
     @security.protected(permissions.ModifyPortalContent)
-    def setPhysicalAddress(self, value):
-        mutator = self.mutator("physical_address")
+    def setAddress(self, value):
+        mutator = self.mutator("address")
         mutator(self, value)
+
+    # BBB: AT schema field property
+    Address = property(getAddress, setAddress)
+
+    @security.protected(permissions.View)
+    def getPhysicalAddress(self):
+        for address in self.getAddress():
+            if address.get("type") == PHYSICAL_ADDRESS:
+                return copy.deepcopy(address)
+        return self.get_empty_address(PHYSICAL_ADDRESS)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setPhysicalAddress(self, value):
+        addresses = self.getAddress()
+        for address in addresses:
+            if address.get("type") == PHYSICAL_ADDRESS:
+                address.update(value)
+        self.setAddress(addresses)
 
     # BBB: AT schema field property
     PhysicalAddress = property(getPhysicalAddress, setPhysicalAddress)
 
     @security.protected(permissions.View)
     def getPostalAddress(self):
-        accessor = self.accessor("postal_address")
-        value = accessor(self)
-        # The address field returns a list of address dicts
-        if value and isinstance(value, list):
-            value = value[0]
-        if not isinstance(value, dict):
-            value = {}
-        return value
+        for address in self.getAddress():
+            if address.get("type") == POSTAL_ADDRESS:
+                return copy.deepcopy(address)
+        return self.get_empty_address(POSTAL_ADDRESS)
 
     @security.protected(permissions.ModifyPortalContent)
     def setPostalAddress(self, value):
-        mutator = self.mutator("postal_address")
-        mutator(self, value)
+        addresses = self.getAddress()
+        for address in addresses:
+            if address.get("type") == POSTAL_ADDRESS:
+                address.update(value)
+        self.setAddress(addresses)
 
     # BBB: AT schema field property
     PostalAddress = property(getPostalAddress, setPostalAddress)
@@ -535,7 +540,7 @@ class Person(Container):
         address = self.getPhysicalAddress()
         if not address:
             return ""
-        return address.get("district", "")
+        return address.get("subdivision2", "")
 
     def getPostalCode(self):
         """Return postal code from physical address
@@ -559,3 +564,16 @@ class Person(Container):
         """
         from plone import api
         return api.user.get(userid=self.getUsername()) is not None
+
+    def get_empty_address(self, address_type):
+        """Returns a dict that represents an empty address for the given type
+        """
+        return {
+            "type": address_type,
+            "address": "",
+            "zip": "",
+            "city": "",
+            "subdivision1": "",  # state
+            "subdivision2": "",  # district
+            "country": "",
+        }
