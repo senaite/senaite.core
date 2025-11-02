@@ -32,9 +32,6 @@ from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
-from senaite.core.schema.addressfield import NAIVE_ADDRESS
-from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
-from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from senaite.core.setuphandlers import add_catalog_column
 from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.upgrade import upgradestep
@@ -296,13 +293,13 @@ def migrate_contact_to_dx(src, destination=None):
     # NOTE: Addresses behave differently in AT and DX
     physical_address = src.getPhysicalAddress() or {}
     if physical_address:
-        address = to_dx_address(physical_address, PHYSICAL_ADDRESS)
-        target.setPhysicalAddress(address)
+        physical_address["type"] = "naive"
+        target.physical_address = [physical_address]
 
     postal_address = src.getPostalAddress() or {}
     if postal_address:
-        address = to_dx_address(physical_address, POSTAL_ADDRESS)
-        target.setPostalAddress(address)
+        postal_address["type"] = "naive"
+        target.postal_address = [postal_address]
 
     # Migrate the contents from AT to DX
     migrator = getMultiAdapter(
@@ -344,17 +341,3 @@ def migrate_contact_to_dx(src, destination=None):
     migrator.copy_id(src, target)
 
     logger.info("Migrated Contact from %s -> %s" % (src, target))
-
-
-def to_dx_address(value, address_type=NAIVE_ADDRESS):
-    """Converts a AT address into a DX addressfield compatible structure
-    """
-    return {
-        "type": value.get("address_type") or address_type,
-        "address": value.get("address") or u"",
-        "zip": value.get("zip") or u"",
-        "city": value.get("city") or u"",
-        "subdivision1": value.get("state") or u"",
-        "subdivision2": value.get("district") or u"",
-        "country": value.get("country") or u"",
-    }
