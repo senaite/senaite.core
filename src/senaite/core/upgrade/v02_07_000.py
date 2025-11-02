@@ -20,6 +20,7 @@
 
 
 from bika.lims import api
+from bika.lims.api import safe_unicode as u
 from bika.lims.interfaces import IInvalidated
 from bika.lims.utils import tmpID
 from plone.dexterity.fti import DexterityFTI
@@ -32,6 +33,9 @@ from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
+from senaite.core.schema.addressfield import NAIVE_ADDRESS
+from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
+from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from senaite.core.setuphandlers import add_catalog_column
 from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.setuphandlers import add_dexterity_items
@@ -294,13 +298,13 @@ def migrate_contact_to_dx(src, destination=None):
     # NOTE: Addresses behave differently in AT and DX
     physical_address = src.getPhysicalAddress() or {}
     if physical_address:
-        physical_address["type"] = "naive"
-        target.physical_address = [physical_address]
+        address = to_dx_address(physical_address, PHYSICAL_ADDRESS)
+        target.setPhysicalAddress(address)
 
     postal_address = src.getPostalAddress() or {}
     if postal_address:
-        postal_address["type"] = "naive"
-        target.postal_address = [postal_address]
+        address = to_dx_address(postal_address, POSTAL_ADDRESS)
+        target.setPostalAddress(address)
 
     # Migrate the contents from AT to DX
     migrator = getMultiAdapter(
@@ -342,6 +346,18 @@ def migrate_contact_to_dx(src, destination=None):
     migrator.copy_id(src, target)
 
     logger.info("Migrated Contact from %s -> %s" % (src, target))
+
+
+def to_dx_address(value, address_type=NAIVE_ADDRESS):
+    return {
+        "type": u(value.get("address_type") or address_type),
+        "address": u(value.get("address") or ""),
+        "zip": u(value.get("zip") or ""),
+        "city": u(value.get("city") or ""),
+        "subdivision1": u(value.get("state") or ""),
+        "subdivision2": u(value.get("district") or ""),
+        "country": u(value.get("country") or ""),
+    }
 
 
 def create_setup_contacts_folder(tool):
