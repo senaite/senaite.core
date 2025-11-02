@@ -28,6 +28,8 @@ from Products.CMFPlone.utils import safe_unicode
 from senaite.core.content.base import Container
 from senaite.core.schema import AddressField
 from senaite.core.schema import PhoneField
+from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
+from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from senaite.core.z3cform.widgets.address import AddressWidget
 from senaite.core.z3cform.widgets.phone import PhoneWidget
 from zope import schema
@@ -204,6 +206,7 @@ class IPersonSchema(model.Schema):
 
     directives.widget("physical_address", AddressWidget)
     physical_address = AddressField(
+        address_types=(PHYSICAL_ADDRESS),
         title=_(
             u"label_person_physical_address",
             default=u"Physical address"
@@ -217,6 +220,7 @@ class IPersonSchema(model.Schema):
             u"label_person_postal_address",
             default=u"Postal address"
         ),
+        address_types=(POSTAL_ADDRESS),
         required=False,
     )
 
@@ -490,7 +494,7 @@ class Person(Container):
         if value and isinstance(value, list):
             value = value[0]
         if not isinstance(value, dict):
-            value = {}
+            value = self.get_empty_address(PHYSICAL_ADDRESS)
         return value
 
     @security.protected(permissions.ModifyPortalContent)
@@ -509,7 +513,7 @@ class Person(Container):
         if value and isinstance(value, list):
             value = value[0]
         if not isinstance(value, dict):
-            value = {}
+            value = self.get_empty_address(POSTAL_ADDRESS)
         return value
 
     @security.protected(permissions.ModifyPortalContent)
@@ -535,7 +539,7 @@ class Person(Container):
         address = self.getPhysicalAddress()
         if not address:
             return ""
-        return address.get("district", "")
+        return address.get("subdivison2", "")
 
     def getPostalCode(self):
         """Return postal code from physical address
@@ -559,3 +563,16 @@ class Person(Container):
         """
         from plone import api
         return api.user.get(userid=self.getUsername()) is not None
+
+    def get_empty_address(self, address_type):
+        """Returns a dict that represents an empty address for the given type
+        """
+        return {
+            "type": address_type,
+            "address": "",
+            "zip": "",
+            "city": "",
+            "subdivision2": "",
+            "subdivision1": "",
+            "country": "",
+        }
