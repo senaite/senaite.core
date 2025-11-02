@@ -1,8 +1,8 @@
 /**
  * Form Tabbing Component
  *
- * Remembers the active tab in Bootstrap 4 tabs for dexterity edit and view forms
- * Uses URL parameter to persist the active tab across page reloads and form submissions
+ * Remembers the active tab in Bootstrap 4 tabs for content edit and view forms
+ * Uses URL parameter to persist the active tab across page reloads
  */
 
 import $ from "jquery";
