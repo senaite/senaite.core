@@ -20,6 +20,7 @@
 
 
 from bika.lims import api
+from bika.lims.api import safe_unicode as u
 from bika.lims.interfaces import IInvalidated
 from bika.lims.utils import tmpID
 from plone.dexterity.fti import DexterityFTI
@@ -348,11 +349,11 @@ def migrate_contact_to_dx(src, destination=None):
 
 def to_dx_address(value, address_type=NAIVE_ADDRESS):
     return {
-        "type": value.get("address_type") or address_type,
-        "address": value.get("address") or u"",
-        "zip": value.get("zip") or u"",
-        "city": value.get("city") or u"",
-        "subdivision1": value.get("state") or u"",
-        "subdivision2": value.get("district") or u"",
-        "country": value.get("country") or u"",
+        "type": u(value.get("address_type") or address_type),
+        "address": u(value.get("address") or ""),
+        "zip": u(value.get("zip") or ""),
+        "city": u(value.get("city") or ""),
+        "subdivision1": u(value.get("state") or ""),
+        "subdivision2": u(value.get("district") or ""),
+        "country": u(value.get("country") or ""),
     }
