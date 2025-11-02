@@ -164,7 +164,6 @@ class FormTabbing {
     }
 
     // Find edit and view links and add the tab parameter
-    // Include toolbar content views and regular links
     const linkSelectors = [
       "#contentview-edit a",
       "#contentview-view a",
