@@ -34,7 +34,6 @@ from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
 from senaite.core.config import PROJECTNAME as product
-from senaite.core.config.worksheet import WORKSHEETS_FOLDER_ID
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
 from senaite.core.schema.uidreferencefield import get_backref_storage
@@ -42,6 +41,7 @@ from senaite.core.setuphandlers import add_catalog_column
 from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.setuphandlers import add_dexterity_items
 from senaite.core.upgrade import upgradestep
+from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.utils import UpgradeUtils
 from zope.component import getMultiAdapter
 from zope.interface import alsoProvides
@@ -51,13 +51,13 @@ profile = "profile-{0}:default".format(product)
 
 REMOVE_AT_TYPES = [
     "Worksheet",
-    "WorksheetFolder",
 ]
 
 PORTAL_FOLDER_ITEMS = {
     # ID: ID, Title, FTI
     "worksheets": ("worksheets", "Worksheets", "Worksheets"),
-    "worksheets-tmp": (WORKSHEETS_FOLDER_ID, "Worksheets Temp", "Worksheets"),
+    # temporary DX folder for moving worksheets
+    "worksheets-tmp": ("worksheets-tmp", "Worksheets Temp", "Worksheets"),
 }
 
 
@@ -219,17 +219,21 @@ def migrate_worksheets_to_dx(tool):
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
     tool.runImportStepFromProfile(profile, "workflow")
-    # import_registry(tool)
+    tool.runImportStepFromProfile(profile, "plone.app.registry")
 
-    # Find all Worksheet objects
-    query = {
-        "portal_type": "Worksheet",
-    }
+    origin = api.get_portal().worksheets
+
+    # get the destination container
+    temp_folder = get_destination_folder("worksheets-tmp")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Find all AT Worksheet objects
+    query = {"portal_type": "Worksheet"}
     brains = api.search(query, WORKSHEET_CATALOG)
     total = len(brains)
     logger.info("Found {} Worksheet objects to migrate".format(total))
-
-    temp_folder = get_destination_folder("worksheets-tmp")
 
     for num, brain in enumerate(brains, start=1):
         # Get the object
@@ -240,46 +244,24 @@ def migrate_worksheets_to_dx(tool):
                 "Progress: {}/{} worksheets migrated".format(num, total))
         migrate_worksheet_to_dx(worksheet, temp_folder)
 
-    # delete old AT folder
-    # delete_folder("worksheets")
+    # remove old AT folder
+    if len(origin) == 0:
+        parent = origin.aq_parent
+        parent.manage_delObjects([origin.getId()])
 
-    # create new DX folder and move migrated Worksheet's
-    # folder = get_destination_folder("worksheets")
-    # move_worksheets(folder)
+    # get the new destination container for DX Worksheet folder
+    new_folder = get_destination_folder("worksheets")
+    for ws in temp_folder.objectValues():
+        api.move_object(ws, new_folder, check_constraints=False)
 
-    # delete temp DX folder
-    # delete_folder("worksheets-tmp")
+    # un-catalog the old container
+    uncatalog_object(temp_folder)
+    # remove temp DX folder
+    if len(temp_folder) == 0:
+        parent = temp_folder.aq_parent
+        parent.manage_delObjects([temp_folder.getId()])
 
     logger.info("Convert Worksheet's to Dexterity [DONE]")
-
-
-def delete_folder(folder_id):
-    portal = plone_api.portal.get()
-    if folder_id not in portal:
-        logger.warn("Folder '{}' not found for delete".format(folder_id))
-        return
-    folder = portal[folder_id]
-    logger.info("Delete folder '{}'".format(folder))
-    plone_api.content.delete(obj=folder, check_linkintegrity=False)
-
-
-def move_worksheets(destination):
-    logger.info("Moving migrated DX worksheet's to new folder")
-
-    query = {
-        "portal_type": "Worksheet",
-    }
-    brains = api.search(query, WORKSHEET_CATALOG)
-    total = len(brains)
-
-    for num, brain in enumerate(brains, start=1):
-        # Get the object
-        worksheet = api.get_object(brain)
-
-        if num % 100 == 0:
-            logger.info(
-                "Progress: {}/{} worksheets moved".format(num, total))
-        api.move_object(worksheet, destination, check_constraints=False)
 
 
 def migrate_worksheet_to_dx(src, destination):
@@ -334,8 +316,8 @@ def migrate_worksheet_to_dx(src, destination):
         for ref in old_an_backrefs:
             new_an_backrefs.append(api.get_uid(ref))
 
-    # move duplicate analyses to new worksheet
-    for dup in src.getDuplicateAnalyses():
+    # move Duplicate, Reject and Attachment to new worksheet
+    for dup in src.objectValues():
         api.move_object(dup, target, False)
 
     # Migrate the contents from AT to DX

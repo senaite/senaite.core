@@ -518,7 +518,7 @@ schema = BikaFolderSchema.copy() + Schema((
             "Client",
             "ClientFolder",
             "Samples",
-            "WorksheetFolder",
+            "Worksheets",
         ),
         mode="rw",
         multiValued=0,
