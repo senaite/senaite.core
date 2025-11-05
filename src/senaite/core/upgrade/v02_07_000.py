@@ -22,7 +22,6 @@
 from bika.lims import api
 from bika.lims.interfaces import IInvalidated
 from persistent.list import PersistentList
-from plone import api as plone_api
 from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
 
