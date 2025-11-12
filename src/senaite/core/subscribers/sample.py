@@ -19,6 +19,7 @@ class AfterCreateSampleHook(object):
     def __init__(self, sample, request):
         self.sample = sample
         self.request = request
+        self.sort = 10
 
     def update(self, sample, source=None):
         """Update handler
