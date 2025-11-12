@@ -289,11 +289,15 @@ def migrate_worksheet_to_dx(src, destination):
     target.instrument = src.getRawInstrument()
     target.results_layout = src.getResultsLayout()
     target.analyses = src.getAnalysesUIDs()
+
+    # if was replaced or replaces
     if hasattr(src, "replaced_by"):
         target.replaced_by = getattr(src, "replaced_by")
     if hasattr(src, "replaces_rejected_worksheet"):
         replaces_uid = getattr(src, "replaces_rejected_worksheet")
         target.replaces_rejected_worksheet = replaces_uid
+
+    # move layout
     layout = []
     for slot in src.getLayout():
         layout.append({
@@ -303,7 +307,18 @@ def migrate_worksheet_to_dx(src, destination):
             "analysis_uid": slot["analysis_uid"],
         })
     target.layout_view = layout
-    # remarks
+
+    # move remarks
+    remarks = []
+    for remark_record in src.getRemarks():
+        remarks.append({
+            "id": remark_record.id,
+            "user_id": remark_record.user_id,
+            "user_name": remark_record.user_name,
+            "created": remark_record.created,
+            "content": remark_record.content,
+        })
+    target.remarks = remarks
 
     # create backrefs storage for newly created Worksheet and
     # move there uids of Analyses dependendent on this worksheet

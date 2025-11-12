@@ -18,6 +18,10 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
+from bika.lims.api.security import get_user_id
+from bika.lims.utils import tmpID
+from senaite.core.api.dtime import now
 from senaite.core.schema.interfaces import IRemarksField
 from senaite.core.schema.fields import BaseField
 from zope.interface import implementer
@@ -49,3 +53,17 @@ class RemarksField(List, BaseField):
         :returns: list of dicts with remark information for each remark item
         """
         return super(RemarksField, self).get(object) or []
+
+    def add(self, object, value):
+        user_id = get_user_id()
+        properties = api.get_user_properties(user_id)
+        fullname = properties and properties.get("fullname") or user_id
+        remarks = self.get(object)
+        remarks.append({
+            "id": tmpID(),
+            "user_id": user_id,
+            "user_name": fullname,
+            "created": now(),
+            "content": value,
+        })
+        self.set(object, remarks)

@@ -21,12 +21,12 @@
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import getUsers
 from plone.memoize import view
+from plone.dexterity.browser.view import DefaultView
 from senaite.core.config.worksheet import DEFAULT_WORKSHEET_LAYOUT
 from senaite.core.p3compat import cmp
 from senaite.core.permissions.worksheet import can_manage_worksheets
@@ -34,7 +34,7 @@ from zope.schema.interfaces import IVocabularyFactory
 from zope.component import getUtility
 
 
-class ManageResultsView(BrowserView):
+class ManageResultsView(DefaultView):
     """Worksheet Manage Results View
     """
     template = ViewPageTemplateFile("../templates/manage_results.pt")
@@ -43,6 +43,8 @@ class ManageResultsView(BrowserView):
         super(ManageResultsView, self).__init__(context, request)
 
     def __call__(self):
+        self.update()
+
         self.rejection_message()
 
         self.icon = api.get_icon("Worksheets", html_tag=False)
@@ -81,6 +83,9 @@ class ManageResultsView(BrowserView):
         self.checkInstrumentsValidity()
 
         return self.template()
+
+    def update(self):
+        super(ManageResultsView, self).update()
 
     def contents_table(self):
         view_name = self.context.getResultsLayout()

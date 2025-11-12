@@ -234,20 +234,16 @@
         </div>
       </tal:ws_analyses>
 
-      <!-- Remarks Widget
-           https://github.com/senaite/senaite.core/pull/920 -->
-      <!--
+      <!-- Remarks Widget -->
       <div class="row">
-        <div id="remarks-widget"
-             class="col-sm-12 remarks-widget">
+        <div id="remarks-widget" class="col-sm-12">
           <h3>
             <i class="fas fa-comment"></i>
             <span i18n:translate="">Remarks</span>
           </h3>
-          <metal:widget use-macro="python:context.widget('remarks', mode='edit')"/>
+          <div tal:content="structure view/widgets/remarks/render" />
         </div>
       </div>
-      -->
       <!-- /Remarks Widget -->
 
     </metal:content-core>
