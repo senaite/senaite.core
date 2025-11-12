@@ -2042,7 +2042,10 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
                 # Pass the new sample to all subscription hooks
                 hooks = subscribers((sample, request), IAfterCreateSampleHook)
-                for hook in hooks:
+                # Lower sort keys are processed first
+                sorted_hooks = sorted(
+                    hooks, key=lambda x: api.to_float(getattr(x, "sort", 10)))
+                for hook in sorted_hooks:
                     hook.update(sample, source=source)
 
                 transaction.savepoint(optimistic=True)
