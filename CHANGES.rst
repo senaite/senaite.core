@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2811 Fixed typo in recalculation message ("Result recalucated" → "Result recalculated")
 - #2809 Prioritize after create sample susbcriber hooks
 - #2808 Sticky form tabbing
 - #2807 Fix traceback when emailing results report and email 'From' not set
