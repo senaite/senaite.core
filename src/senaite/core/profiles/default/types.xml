@@ -108,4 +108,7 @@
   <object name="WorksheetTemplate" meta_type="Dexterity FTI" />
   <object name="WorksheetTemplates" meta_type="Dexterity FTI" />
 
+  <!-- Laboratory -->
+  <object name="Laboratory" meta_type="Dexterity FTI" />
+
 </object>
