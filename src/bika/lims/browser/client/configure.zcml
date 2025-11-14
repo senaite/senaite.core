@@ -43,6 +43,8 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <!-- Contact views moved to senaite.core.browser.clients.client.contacts -->
+    <!--
     <browser:page
       for="bika.lims.interfaces.IClient"
       name="contacts"
@@ -50,5 +52,6 @@
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+    -->
 
 </configure>

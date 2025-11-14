@@ -73,7 +73,8 @@ def initialize(context):
     from bika.lims.content.calculation import Calculation
     from bika.lims.content.client import Client
     from bika.lims.content.clientfolder import ClientFolder
-    from bika.lims.content.contact import Contact
+    # Contact is now a Dexterity type - see senaite.core.content.contact
+    # from bika.lims.content.contact import Contact
     from bika.lims.content.container import Container
     from bika.lims.content.containertype import ContainerType
     from bika.lims.content.department import Department

@@ -506,6 +506,16 @@ class IWorksheetTemplate(Interface):
     """
 
 
+class IContacts(Interface):
+    """Marker interface for Contacts container
+    """
+
+
+class IContact(Interface):
+    """Marker interface for a single Contact
+    """
+
+
 class IAfterCreateSampleHook(Interface):
     """Subscription adapter after the sample was created
     """

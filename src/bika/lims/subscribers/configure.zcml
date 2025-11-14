@@ -51,13 +51,6 @@
       handler=".auditlog.ObjectRemovedEventHandler"
       />
 
-  <!-- Newly created analyses -->
-  <subscriber
-      for="*
-           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
-      handler="bika.lims.subscribers.objectmodified.ObjectModifiedEventHandler"
-      />
-
   <!-- Newly created analyses (applies to routine analyses only) -->
   <subscriber
       for="bika.lims.interfaces.IRoutineAnalysis

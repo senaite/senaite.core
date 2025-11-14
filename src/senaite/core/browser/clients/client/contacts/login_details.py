@@ -27,7 +27,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import security
 from bika.lims.browser import BrowserView
-from bika.lims.content.contact import Contact
 from bika.lims.content.labcontact import LabContact
 from plone.memoize import view
 from plone.protect import CheckAuthenticator
@@ -121,7 +120,7 @@ class ContactLoginDetailsView(BrowserView):
             out.update(dict(ps.propertyItems()))
 
         portal = api.get_portal()
-        mtool = getToolByName(self.context, 'portal_membership')
+        mtool = getToolByName(self.context, "portal_membership")
 
         out["id"] = userid
         out["portrait"] = mtool.getPersonalPortrait(id=userid)
@@ -144,7 +143,7 @@ class ContactLoginDetailsView(BrowserView):
         """Search Plone users which are not linked to a contact or lab contact
         """
 
-        # Only users with at nost these roles are displayed
+        # Only users with at most these roles are displayed
         linkable_roles = {"Authenticated", "Member", "Client"}
 
         out = []
@@ -155,6 +154,8 @@ class ContactLoginDetailsView(BrowserView):
                 continue
 
             # Skip users which are already linked to a Contact
+            # Use classmethod to find contacts by username
+            from senaite.core.content.contact import Contact
             contact = Contact.getContactByUsername(userid)
             labcontact = LabContact.getContactByUsername(userid)
 
@@ -238,23 +239,23 @@ class ContactLoginDetailsView(BrowserView):
         def error(field, message):
             if field:
                 message = "%s: %s" % (field, message)
-            self.context.plone_utils.addPortalMessage(message, 'error')
+            self.context.plone_utils.addPortalMessage(message, "error")
             return self.request.response.redirect(
                 self.context.absolute_url() + "/login_details")
 
         form = self.request.form
         contact = self.context
 
-        password = safe_unicode(form.get('password', '')).encode('utf-8')
-        username = safe_unicode(form.get('username', '')).encode('utf-8')
-        confirm = form.get('confirm', '')
-        email = safe_unicode(form.get('email', '')).encode('utf-8')
+        password = safe_unicode(form.get("password", "")).encode("utf-8")
+        username = safe_unicode(form.get("username", "")).encode("utf-8")
+        confirm = form.get("confirm", "")
+        email = safe_unicode(form.get("email", "")).encode("utf-8")
 
         if not username:
-            return error('username', PMF("Input is required but not given."))
+            return error("username", PMF("Input is required but not given."))
 
         if not email:
-            return error('email', PMF("Input is required but not given."))
+            return error("email", PMF("Input is required but not given."))
 
         reg_tool = self.context.portal_registration
         # properties = self.context.portal_properties.site_properties
@@ -262,16 +263,16 @@ class ContactLoginDetailsView(BrowserView):
         #     password = reg_tool.generatePassword()
         # else:
         if password != confirm:
-            return error('password', PMF("Passwords do not match."))
+            return error("password", PMF("Passwords do not match."))
 
         if not password:
-            return error('password', PMF("Input is required but not given."))
+            return error("password", PMF("Input is required but not given."))
 
         if not confirm:
-            return error('password', PMF("Passwords do not match."))
+            return error("password", PMF("Passwords do not match."))
 
         if len(password) < 5:
-            return error('password', PMF("Passwords must contain at least 5 "
+            return error("password", PMF("Passwords must contain at least 5 "
                                          "characters."))
         for user in self.get_users():
             userid = user.get("id", None)
@@ -287,9 +288,9 @@ class ContactLoginDetailsView(BrowserView):
             reg_tool.addMember(username,
                                password,
                                properties={
-                                   'username': username,
-                                   'email': email,
-                                   'fullname': username})
+                                   "username": username,
+                                   "email": email,
+                                   "fullname": username})
         except ValueError as msg:
             return error(None, msg)
 
@@ -306,7 +307,7 @@ class ContactLoginDetailsView(BrowserView):
                 group = self.portal_groups.getGroupById(group)
                 group.addMember(username)
 
-        if self.request.get('mail_me', 0):
+        if self.request.get("mail_me", 0):
             try:
                 reg_tool.registeredNotify(username)
             except Exception:
@@ -315,7 +316,7 @@ class ContactLoginDetailsView(BrowserView):
                 return error(None, message)
 
         message = _("Member registered and linked to the current Contact.")
-        self.context.plone_utils.addPortalMessage(message, 'info')
+        self.context.plone_utils.addPortalMessage(message, "info")
         return self.request.response.redirect(
             self.context.absolute_url() + "/login_details")
 
