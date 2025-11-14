@@ -6,6 +6,9 @@ Changelog
 
 - #2801 Global Contacts
 - #2795 Migrate Client Contacts to Dexterity
+- #2811 Fix typo in recalculation message ("Result recalucated" → "Result recalculated")
+- #2809 Prioritize after create sample susbcriber hooks
+- #2808 Sticky form tabbing
 - #2807 Fix traceback when emailing results report and email 'From' not set
 - #2806 Allow to create sample partitions on copy
 - #2804 Allow to skip analyses from partitions on copy
