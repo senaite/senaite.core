@@ -19,10 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims.interfaces import IDoNotSupportSnapshots
-from plone.dexterity.content import Container
 from plone.supermodel import model
-from senaite.core.interfaces import IHideActionsMenu
+from senaite.core.content.base import Container
 from senaite.core.interfaces import IContacts
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface import implementer
 
 
