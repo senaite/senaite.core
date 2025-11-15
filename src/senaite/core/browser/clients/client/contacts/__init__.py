@@ -17,11 +17,3 @@
 #
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
-from views.batches import ClientBatchesView
-from views.analysisrequests import ClientAnalysisRequestsView
-from views.analysisspecs import ClientAnalysisSpecsView
-from views.attachments import ClientAttachmentsView
-# Contact views moved to senaite.core.browser.clients.client.contacts
-from senaite.core.browser.clients.client.contacts.view import ClientContactsView
-from senaite.core.browser.clients.client.contacts.view import ClientContactVocabularyFactory

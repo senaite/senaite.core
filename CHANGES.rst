@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2805 Migrate Worksheets to DX
+- #2795 Migrate Client Contacts to Dexterity
 - #2811 Fix typo in recalculation message ("Result recalucated" → "Result recalculated")
 - #2809 Prioritize after create sample susbcriber hooks
 - #2808 Sticky form tabbing

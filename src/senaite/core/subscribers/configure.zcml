@@ -4,7 +4,7 @@
   <!-- Contact/LabContact *modified* event handler
        This subscriber updates the properties of the linked user.  -->
   <subscriber
-    for="bika.lims.interfaces.IContact
+    for="senaite.core.interfaces.IContact
          zope.lifecycleevent.interfaces.IObjectModifiedEvent"
     handler=".contact.on_contact_modified"/>
 

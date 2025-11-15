@@ -30,8 +30,8 @@ from bika.lims import _
 from bika.lims import api
 from bika.lims.api.mail import compose_email
 from bika.lims.api.mail import is_valid_email_address
-from bika.lims.interfaces import IContact
 from bika.lims.utils import get_link_for
+from senaite.core.interfaces import IContact
 from senaite.core.api import dtime
 from senaite.core.api import workflow as wapi
 from senaite.core.catalog import SAMPLE_CATALOG
