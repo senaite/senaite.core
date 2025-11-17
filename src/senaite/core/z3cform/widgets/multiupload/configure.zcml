@@ -10,7 +10,7 @@
   <adapter
       factory=".widget.MultiUploadDataConverter" />
 
-  <!-- Widget templates -->
+  <!-- Widget input template -->
   <browser:page
       name="multiupload_input"
       for="*"
@@ -19,18 +19,12 @@
       permission="zope.Public"
       />
 
+  <!-- Upload handler for AJAX requests -->
   <browser:page
-      name="multiupload_display"
+      name="multiupload_handler"
       for="*"
-      class="senaite.core.z3cform.widgets.multiupload.widget.MultiUploadWidget"
-      template="multiupload_display.pt"
-      permission="zope.Public"
-      />
-
-  <!-- Static resources -->
-  <browser:resourceDirectory
-      name="senaite.core.z3cform.widgets.multiupload"
-      directory="."
+      class=".handler.MultiUploadHandler"
+      permission="zope2.View"
       />
 
 </configure>

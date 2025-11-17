@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import json
+from bika.lims import api
 from plone.namedfile.file import NamedBlobFile
 from senaite.core.interfaces import IMultiUploadWidget
 from senaite.core.interfaces import ISenaiteFormLayer
@@ -17,7 +19,7 @@ from zope.schema.interfaces import ITuple
 
 @implementer_only(IMultiUploadWidget)
 class MultiUploadWidget(widget.HTMLFormElement, Widget):
-    """Multi-file upload widget using Dropzone.js
+    """Multi-file upload widget using React and react-dropzone
     """
 
     klass = u"multi-upload-widget"
@@ -26,27 +28,50 @@ class MultiUploadWidget(widget.HTMLFormElement, Widget):
     def update(self):
         super(MultiUploadWidget, self).update()
 
+    @property
+    def portal_url(self):
+        """Return the portal URL"""
+        return api.get_url(api.get_portal())
+
+    @property
+    def context_url(self):
+        """Return the context URL"""
+        return api.get_url(self.context)
+
+    def get_data_attributes(self):
+        """Return data attributes for the React widget"""
+        return {
+            "id": self.id,
+            "name": self.name,
+            "portal_url": self.portal_url,
+            "context_url": self.context_url,
+            "max_filesize": 104857600,  # 100MB default
+            "accepted_types": {},  # Accept all file types by default
+        }
+
+    def render_data_attributes(self):
+        """Render data attributes as HTML string"""
+        attrs = []
+        for key, value in self.get_data_attributes().items():
+            json_value = json.dumps(value)
+            # Escape quotes for HTML attribute
+            json_value = json_value.replace('"', '&quot;')
+            attrs.append('data-{}="{}"'.format(key, json_value))
+        return " ".join(attrs)
+
     def extract(self, default=None):
         """Extract uploaded files from request
         """
-        # Get the uploaded files from the request
-        files = self.request.form.get(self.name, [])
+        # Get the JSON data from the hidden field
+        data_field = self.name + '.data'
+        data = self.request.form.get(data_field, None)
 
-        if not isinstance(files, list):
-            files = [files] if files else []
-
-        # Filter out empty submissions
-        files = [f for f in files if f and getattr(f, 'filename', None)]
-
-        if files:
-            return files
-
-        # Check if we should keep existing files
-        existing = self.request.form.get(self.name + '.existing', [])
-        if existing:
-            if not isinstance(existing, list):
-                existing = [existing]
-            return existing
+        if data:
+            try:
+                # Parse the JSON data containing file IDs
+                return json.loads(data)
+            except (ValueError, TypeError):
+                pass
 
         return default
 
