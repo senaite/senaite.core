@@ -808,12 +808,9 @@ class InstrumentMultifileView(BikaListingView):
         self.columns = {
             "DocumentID": {"title": _("Document ID"),
                            "index": "sortable_title"},
-            "DocumentVersion": {"title": _("Document Version"),
-                                "index": "sortable_title"},
-            "DocumentLocation": {"title": _("Document Location"),
-                                 "index": "sortable_title"},
-            "DocumentType": {"title": _("Document Type"),
-                             "index": "sortable_title"},
+            "DocumentVersion": {"title": _("Document Version")},
+            "DocumentLocation": {"title": _("Document Location")},
+            "DocumentType": {"title": _("Document Type")},
             "FileDownload": {"title": _("File")}
         }
 
