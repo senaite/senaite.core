@@ -34,22 +34,6 @@ class IMultifileSchema(model.Schema):
     """Multifile Schema
     """
 
-    # Main fields
-    model.fieldset(
-        "default",
-        label=_(
-            u"label_multifile_default",
-            default=u"Document Information"
-        ),
-        fields=[
-            "document_id",
-            "file",
-            "document_version",
-            "document_location",
-            "document_type",
-        ]
-    )
-
     document_id = schema.TextLine(
         title=_(
             u"label_multifile_document_id",
