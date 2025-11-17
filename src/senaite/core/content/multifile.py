@@ -20,6 +20,7 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import senaiteMessageFactory as _
+from bika.lims.api import safe_unicode as u
 from bika.lims.interfaces import IDeactivable
 from plone.namedfile.field import NamedBlobFile
 from plone.supermodel import model
@@ -102,57 +103,52 @@ class Multifile(Container):
     @security.protected(permissions.View)
     def getDocumentID(self):
         accessor = self.accessor("document_id")
-        return accessor(self) if accessor else ""
+        return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
     def setDocumentID(self, value):
         mutator = self.mutator("document_id")
-        if mutator:
-            mutator(self, value)
+        mutator(self, u(value))
 
     @security.protected(permissions.View)
     def getFile(self):
         accessor = self.accessor("file")
-        return accessor(self) if accessor else None
+        return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
     def setFile(self, value):
         mutator = self.mutator("file")
-        if mutator:
-            mutator(self, value)
+        mutator(self, u(value))
 
     @security.protected(permissions.View)
     def getDocumentVersion(self):
         accessor = self.accessor("document_version")
-        return accessor(self) if accessor else ""
+        return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
     def setDocumentVersion(self, value):
         mutator = self.mutator("document_version")
-        if mutator:
-            mutator(self, value)
+        mutator(self, u(value))
 
     @security.protected(permissions.View)
     def getDocumentLocation(self):
         accessor = self.accessor("document_location")
-        return accessor(self) if accessor else ""
+        return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
     def setDocumentLocation(self, value):
         mutator = self.mutator("document_location")
-        if mutator:
-            mutator(self, value)
+        mutator(self, u(value))
 
     @security.protected(permissions.View)
     def getDocumentType(self):
         accessor = self.accessor("document_type")
-        return accessor(self) if accessor else ""
+        return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
     def setDocumentType(self, value):
         mutator = self.mutator("document_type")
-        if mutator:
-            mutator(self, value)
+        mutator(self, u(value))
 
     # BBB: AT schema field properties for backward compatibility
     DocumentID = property(getDocumentID, setDocumentID)
