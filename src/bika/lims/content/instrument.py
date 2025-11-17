@@ -654,7 +654,7 @@ class Instrument(ATFolder):
     def getDocuments(self):
         """ Return all the multifile objects related with the instrument
         """
-        return self.objectValues('Multifile')
+        return self.objectValues("Multifile")
 
     def getSchedule(self):
         return self.objectValues('InstrumentScheduledTask')

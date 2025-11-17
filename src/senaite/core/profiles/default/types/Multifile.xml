@@ -14,9 +14,7 @@
   <property name="factory">Multifile</property>
 
   <!-- URL TALES expression to add an item TTW -->
-  <property name="add_view_expr">
-    string:${folder_url}/++add++Multifile
-  </property>
+  <property name="add_view_expr">string:${folder_url}/++add++Multifile</property>
 
   <property name="link_target"/>
   <property name="immediate_view">view</property>

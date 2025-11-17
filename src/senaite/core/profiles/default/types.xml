@@ -111,4 +111,7 @@
   <object name="WorksheetTemplate" meta_type="Dexterity FTI" />
   <object name="WorksheetTemplates" meta_type="Dexterity FTI" />
 
+  <!-- Multifile -->
+  <object name="Multifile" meta_type="Dexterity FTI" />
+
 </object>
