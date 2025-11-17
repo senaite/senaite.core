@@ -2017,6 +2017,34 @@ Empty strings are returned unchanged:
     >>> api.text_to_html(text, wrap="div")
     ''
 
+Converting a value to unicode
+.............................
+
+This function converts a value to unicode:
+
+    >>> api.safe_unicode("ä")
+    u'\xe4'
+
+    >>> api.safe_unicode("1337")
+    u'1337'
+
+    >>> api.safe_unicode(u"1337")
+    u'1337'
+
+    >>> api.safe_unicode(1337)
+    u'1337'
+
+    >>> api.safe_unicode(1337L)
+    u'1337'
+
+    >>> api.safe_unicode([1,2,3])
+    u'[1, 2, 3]'
+
+None values just return the default:
+
+    >>> api.safe_unicode(None)
+    u''
+
 
 Converting a string to UTF8
 ...........................
