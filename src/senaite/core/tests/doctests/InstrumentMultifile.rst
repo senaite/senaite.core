@@ -33,7 +33,7 @@ Create an Instrument
 
 
 Create Multifile Objects
--------------------------
+------------------------
 
 Multifile objects can be created inside instruments to store documentation::
 
@@ -49,7 +49,7 @@ Multifiles provide the `IMultifile` interface::
 
 
 Set Multifile Fields
----------------------
+--------------------
 
 Set the Document ID::
 
@@ -116,7 +116,7 @@ Check file properties::
 
 
 Multiple Multifile Objects
----------------------------
+--------------------------
 
 Create additional Multifile objects with auto-generated IDs::
 
@@ -148,7 +148,7 @@ Create a third Multifile::
 
 
 Get Documents from Instrument
-------------------------------
+-----------------------------
 
 The instrument can retrieve all its Multifile objects::
 
@@ -189,7 +189,7 @@ Search for a specific Multifile by DocumentID::
 
 
 Backward Compatibility Properties
-----------------------------------
+---------------------------------
 
 The BBB properties should work for AT-style access::
 
@@ -221,7 +221,7 @@ The file download URL should follow the Dexterity pattern::
 
 
 Content Type Configuration
----------------------------
+--------------------------
 
 Verify that Multifile is allowed inside Instrument::
 
