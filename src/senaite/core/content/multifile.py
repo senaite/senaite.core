@@ -116,7 +116,7 @@ class Multifile(Container):
     def Title(self):
         """Return the DocumentID as Title
         """
-        return self.getDocumentID()
+        return self.getDocumentID() or self.getId()
 
     @security.protected(permissions.View)
     def getDocumentID(self):
