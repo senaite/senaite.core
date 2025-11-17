@@ -21,14 +21,14 @@
 import tempfile
 import traceback
 
-from pkg_resources import resource_filename
-
 import transaction
 from bika.lims import PMF
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import ISetupDataImporter
 from openpyxl import load_workbook
+from pkg_resources import resource_filename
 from Products.CMFCore.utils import getToolByName
 from zope.component import getAdapters
 from zope.component.hooks import getSite
@@ -40,38 +40,66 @@ class LoadSetupData(BrowserView):
         BrowserView.__init__(self, context, request)
         self.context = context
         self.request = request
-
         # dependencies to resolve
         self.deferred = []
 
-        self.request.set("disable_border", 1)
+    def set_reference(self, obj, fieldname, value):
+        """Set a (multi-valued) reference field
+        """
+        field = self.get_field(obj, fieldname)
+        if self.is_multi_valued(field):
+            current = self.get(obj, field)
+            if value not in current:
+                current.append(value)
+                self.set(obj, field, current)
+        else:
+            self.set(obj, field, value)
+
+    def get_field(self, obj, field_name):
+        if api.is_at_content(obj):
+            return obj.getField(field_name)
+        fields = api.get_fields(obj)
+        return fields.get(field_name)
+
+    def is_multi_valued(self, field):
+        multiValued = False
+        if hasattr(field, "multiValued"):
+            multiValued = field.multiValued
+        elif hasattr(field, "multi_valued"):
+            multiValued = field.multi_valued
+        return multiValued
+
+    def get(self, obj, field):
+        if api.is_at_content(obj):
+            accessor = field.getAccessor(obj)
+            return accessor()
+        return field.get(obj)
+
+    def set(self, obj, field, value):
+        if api.is_at_content(obj):
+            mutator = field.getMutator(obj)
+            mutator(value)
+        field.set(obj, value)
 
     def solve_deferred(self, deferred=None):
         # walk through self.deferred, linking ReferenceFields as we go
         unsolved = []
         deferred = deferred if deferred else self.deferred
-        for d in self.deferred:
-            src_obj = d['src_obj']
-            src_field = src_obj.getField(d['src_field'])
-            multiValued = src_field.multiValued
-            src_mutator = src_field.getMutator(src_obj)
-            src_accessor = src_field.getAccessor(src_obj)
 
-            tool = getToolByName(self.context, d['dest_catalog'])
+        for d in deferred:
+            src_obj = d["src_obj"]
+            src_fieldname = d["src_field"]
+            catalog = api.get_tool(d["dest_catalog"])
             try:
-                proxies = tool(d['dest_query'])
+                results = catalog(d["dest_query"])
             except Exception:
                 continue
-            if len(proxies) > 0:
-                obj = proxies[0].getObject()
-                if multiValued:
-                    value = src_accessor()
-                    value.append(obj.UID())
-                else:
-                    value = obj.UID()
-                src_mutator(value)
+            if len(results) > 0:
+                value = results[0].getObject()
+                self.set_reference(src_obj, src_fieldname, value)
             else:
                 unsolved.append(d)
+
         self.deferred = unsolved
         return len(unsolved)
 
@@ -80,27 +108,27 @@ class LoadSetupData(BrowserView):
         portal = getSite()
         workbook = None
 
-        if 'setupexisting' in form and 'existing' in form and form['existing']:
-                fn = form['existing'].split(":")
-                self.dataset_project = fn[0]
-                self.dataset_name = fn[1]
-                path = 'setupdata/%s/%s.xlsx' % \
-                    (self.dataset_name, self.dataset_name)
-                filename = resource_filename(self.dataset_project, path)
-                try:
-                    workbook = load_workbook(filename=filename)  # , use_iterators=True)
-                except AttributeError:
-                    print("")
-                    print(traceback.format_exc())
-                    print("Error while loading ", path)
+        if "setupexisting" in form and "existing" in form and form["existing"]:
+            fn = form["existing"].split(":")
+            self.dataset_project = fn[0]
+            self.dataset_name = fn[1]
+            path = "setupdata/%s/%s.xlsx" % \
+                (self.dataset_name, self.dataset_name)
+            filename = resource_filename(self.dataset_project, path)
+            try:
+                workbook = load_workbook(filename=filename)  # , use_iterators=True)
+            except AttributeError:
+                print("")
+                print(traceback.format_exc())
+                print("Error while loading ", path)
 
-        elif 'setupfile' in form and 'file' in form and form['file'] and 'projectname' in form and form['projectname']:
-                self.dataset_project = form['projectname']
-                tmp = tempfile.mktemp(suffix='.xlsx')
-                file_content = form['file'].read()
-                open(tmp, 'wb').write(file_content)
-                workbook = load_workbook(filename=tmp)  # , use_iterators=True)
-                self.dataset_name = 'uploaded'
+        elif "setupfile" in form and "file" in form and form["file"] and "projectname" in form and form["projectname"]:
+            self.dataset_project = form["projectname"]
+            tmp = tempfile.mktemp(suffix=".xlsx")
+            file_content = form["file"].read()
+            open(tmp, "wb").write(file_content)
+            workbook = load_workbook(filename=tmp)  # , use_iterators=True)
+            self.dataset_name = "uploaded"
 
         if not workbook:
             message = PMF("File not found...")

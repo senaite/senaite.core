@@ -269,51 +269,50 @@ class WorksheetImporter(object):
             PhysicalAddress, PostalAddress, CountryState, BillingAddress
         """
         addresses = {}
-        for add_type in ['Physical', 'Postal', 'Billing', 'CountryState']:
+        for add_type in ["Physical", "Postal", "Billing", "CountryState"]:
             addresses[add_type] = {}
-            for key in ['Address', 'City', 'State', 'District', 'Zip', 'Country']:
+            for key in ["Address", "City", "State", "District", "Zip", "Country"]:
                 addresses[add_type][key.lower()] = str(
-                    row.get("%s_%s" % (add_type, key), ''))
+                    row.get("%s_%s" % (add_type, key), ""))
 
-        if addresses['CountryState']['country'] == '' \
-                and addresses['CountryState']['state'] == '':
-            addresses['CountryState']['country'] = addresses['Physical']['country']
-            addresses['CountryState']['state'] = addresses['Physical']['state']
+        if addresses["CountryState"]["country"] == "" \
+                and addresses["CountryState"]["state"] == "":
+            addresses["CountryState"]["country"] = addresses["Physical"]["country"]
+            addresses["CountryState"]["state"] = addresses["Physical"]["state"]
 
-        if hasattr(obj, 'setPhysicalAddress'):
-            obj.setPhysicalAddress(addresses['Physical'])
-        if hasattr(obj, 'setPostalAddress'):
-            obj.setPostalAddress(addresses['Postal'])
-        if hasattr(obj, 'setCountryState'):
-            obj.setCountryState(addresses['CountryState'])
-        if hasattr(obj, 'setBillingAddress'):
-            obj.setBillingAddress(addresses['Billing'])
+        if hasattr(obj, "setPhysicalAddress"):
+            obj.setPhysicalAddress(addresses["Physical"])
+        if hasattr(obj, "setPostalAddress"):
+            obj.setPostalAddress(addresses["Postal"])
+        if hasattr(obj, "setCountryState"):
+            obj.setCountryState(addresses["CountryState"])
+        if hasattr(obj, "setBillingAddress"):
+            obj.setBillingAddress(addresses["Billing"])
 
     def fill_contactfields(self, row, obj):
         """ Fills the contact fields for the specified object if allowed:
             EmailAddress, Phone, Fax, BusinessPhone, BusinessFax, HomePhone,
             MobilePhone
         """
-        fieldnames = ['EmailAddress',
-                      'Phone',
-                      'Fax',
-                      'BusinessPhone',
-                      'BusinessFax',
-                      'HomePhone',
-                      'MobilePhone',
-                      ]
-        schema = obj.Schema()
-        fields = dict([(field.getName(), field) for field in schema.fields()])
+        fieldnames = [
+            "EmailAddress",
+            "Phone",
+            "Fax",
+            "BusinessPhone",
+            "BusinessFax",
+            "HomePhone",
+            "MobilePhone",
+        ]
         for fieldname in fieldnames:
             try:
-                field = fields[fieldname]
-            except Exception:
+                getattr(obj, fieldname)
+            except AttributeError:
                 if fieldname in row:
                     logger.info("Address field %s not found on %s" %
                                 (fieldname, obj))
                 continue
-            value = row.get(fieldname, '')
-            field.set(obj, value)
+            value = row.get(fieldname, "")
+            setattr(obj, fieldname, value)
 
     def get_object(self, catalog, portal_type, title=None, **kwargs):
         """This will return an object from the catalog.
@@ -607,66 +606,64 @@ class Clients(WorksheetImporter):
 class Client_Contacts(WorksheetImporter):
 
     def Import(self):
-        portal_groups = getToolByName(self.context, 'portal_groups')
         cat = api.get_tool(CLIENT_CATALOG)
         for row in self.get_rows(3):
-            client = cat(portal_type="Client",
-                         getName=row['Client_title'])
+            client = cat(portal_type="Client", getName=row["Client_title"])
             if len(client) == 0:
                 client_contact = "%(Firstname)s %(Surname)s" % row
-                error = "Client invalid: '%s'. The Client Contact %s will not be uploaded."
-                logger.error(error, row['Client_title'], client_contact)
+                error = "Client invalid: '%s'. " \
+                        "The Client Contact %s will not be uploaded."
+                logger.error(error, row["Client_title"], client_contact)
                 continue
             client = client[0].getObject()
-            contact = _createObjectByType("Contact", client, tmpID())
-            fullname = "%(Firstname)s %(Surname)s" % row
-            pub_pref = [x.strip() for x in
-                        row.get('PublicationPreference', '').split(",")]
-            contact.edit(
-                Salutation=row.get('Salutation', ''),
-                Firstname=row.get('Firstname', ''),
-                Surname=row.get('Surname', ''),
-                Username=row['Username'],
-                JobTitle=row.get('JobTitle', ''),
-                Department=row.get('Department', ''),
-                PublicationPreference=pub_pref,
+
+            def u_row_get(name):
+                return api.safe_unicode(row.get(name, ""))
+
+            contact = api.create(
+                client, "Contact",
+                salutation=u_row_get("Salutation"),
+                firstname=u_row_get("Firstname"),
+                surname=u_row_get("Surname"),
+                username=u_row_get("Username"),
+                job_title=u_row_get("JobTitle"),
+                department=u_row_get("Department"),
             )
+
             self.fill_contactfields(row, contact)
             self.fill_addressfields(row, contact)
-            contact.unmarkCreationFlag()
-            renameAfterCreation(contact)
-            notify(ObjectInitializedEvent(contact))
+
             # CC Contacts
-            if row['CCContacts']:
-                names = [x.strip() for x in row['CCContacts'].split(",")]
+            if row["CCContacts"]:
+                names = [x.strip() for x in row["CCContacts"].split(",")]
                 for _fullname in names:
                     self.defer(src_obj=contact,
-                               src_field='CCContact',
+                               src_field="cc_contact",
                                dest_catalog=CONTACT_CATALOG,
-                               dest_query={'portal_type': 'Contact',
-                                           'getFullname': _fullname}
-                               )
+                               dest_query={
+                                   "portal_type": "Contact",
+                                   "getFullname": _fullname,
+                               })
             # Create Plone user
-            username = safe_unicode(row['Username']).encode('utf-8')
-            password = safe_unicode(row['Password']).encode('utf-8')
+            username = u_row_get("Username").encode("utf-8")
+            password = u_row_get("Password").encode("utf-8")
+            fullname = "%(Firstname)s %(Surname)s" % row
             if (username):
                 try:
                     self.context.portal_registration.addMember(
                         username,
                         password,
                         properties={
-                            'username': username,
-                            'email': row['EmailAddress'],
-                            'fullname': fullname}
+                            "username": username,
+                            "email": row["EmailAddress"],
+                            "fullname": fullname,
+                        }
                     )
                 except Exception as msg:
                     logger.info("Error adding user (%s): %s" % (msg, username))
                 contact.aq_parent.manage_setLocalRoles(
                     row['Username'], ['Owner', ])
                 contact.reindexObject()
-                # add user to Clients group
-                group = portal_groups.getGroupById('Clients')
-                group.addMember(username)
 
 
 class Container_Types(WorksheetImporter):

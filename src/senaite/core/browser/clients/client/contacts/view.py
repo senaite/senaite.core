@@ -23,33 +23,35 @@ from collections import OrderedDict
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.interfaces import IContacts
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
 from bika.lims.vocabularies import CatalogVocabulary
 from senaite.core.catalog import CONTACT_CATALOG
+from senaite.core.interfaces import IContacts
 from zope.interface import implements
 
 
 class ClientContactsView(BikaListingView):
+    """Client Contacts listing view
+    """
     implements(IContacts)
 
     def __init__(self, context, request):
         super(ClientContactsView, self).__init__(context, request)
         self.catalog = CONTACT_CATALOG
         self.contentFilter = {
-            'portal_type': 'Contact',
-            'sort_on': 'sortable_title',
-            'path': {
+            "portal_type": "Contact",
+            "sort_on": "sortable_title",
+            "path": {
                 "query": "/".join(context.getPhysicalPath()),
                 "level": 0
             }
         }
         self.context_actions = {
-            _('Add'):
-                {'url': 'createObject?type_name=Contact',
-                 'permission': 'Add portal content',
-                 'icon': '++resource++bika.lims.images/add.png'}}
+            _("Add"):
+                {"url": "++add++Contact",
+                 "permission": "Add portal content",
+                 "icon": "++resource++bika.lims.images/add.png"}}
 
         self.show_select_row = False
         self.show_select_column = True
@@ -77,20 +79,20 @@ class ClientContactsView(BikaListingView):
         ))
 
         self.review_states = [
-            {'id': 'default',
-             'title': _('Active'),
-             'contentFilter': {'is_active': True},
-             'transitions': [{'id': 'deactivate'}, ],
-             'columns': self.columns.keys()},
-            {'id': 'inactive',
-             'title': _('Inactive'),
-             'contentFilter': {'is_active': False},
-             'transitions': [{'id': 'activate'}, ],
-             'columns': self.columns.keys()},
-            {'id': 'all',
-             'title': _('All'),
-             'contentFilter': {},
-             'columns': self.columns.keys()},
+            {"id": "default",
+             "title": _("Active"),
+             "contentFilter": {"is_active": True},
+             "transitions": [{"id": "deactivate"}, ],
+             "columns": self.columns.keys()},
+            {"id": "inactive",
+             "title": _("Inactive"),
+             "contentFilter": {"is_active": False},
+             "transitions": [{"id": "activate"}, ],
+             "columns": self.columns.keys()},
+            {"id": "all",
+             "title": _("All"),
+             "contentFilter": {},
+             "columns": self.columns.keys()},
         ]
 
     def folderitem(self, obj, item, index):
@@ -98,21 +100,24 @@ class ClientContactsView(BikaListingView):
         url = item.get("url")
         email = obj.getEmailAddress()
         fullname = obj.getFullname()
-        item['getFullname'] = fullname
-        item['getEmailAddress'] = email
-        item['getBusinessPhone'] = obj.getBusinessPhone()
-        item['getMobilePhone'] = obj.getMobilePhone()
-        item['Username'] = obj.getUsername() or ""
-        item['replace']['getFullname'] = get_link(url, fullname)
+        item["getFullname"] = fullname
+        item["getEmailAddress"] = email
+        item["getBusinessPhone"] = obj.getBusinessPhone()
+        item["getMobilePhone"] = obj.getMobilePhone()
+        item["Username"] = obj.getUsername() or ""
+        item["replace"]["getFullname"] = get_link(url, fullname)
         if email:
-            item["replace"]['getEmailAddress'] = get_email_link(email)
+            item["replace"]["getEmailAddress"] = get_email_link(email)
         return item
 
 
 class ClientContactVocabularyFactory(CatalogVocabulary):
+    """Vocabulary factory for client contacts
+    """
     def __call__(self):
         return super(ClientContactVocabularyFactory, self).__call__(
-            portal_type='Contact',
-            path={'query': "/".join(self.context.getPhysicalPath()),
-                  'level': 0}
+            portal_type="Contact",
+            path={"query": "/".join(self.context.getPhysicalPath()),
+                  "level": 0}
         )
+
