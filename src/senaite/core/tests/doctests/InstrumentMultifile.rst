@@ -252,8 +252,7 @@ Workflow Tests
 
 Multifile objects follow the senaite_deactivable_type_workflow::
 
-    >>> workflow = api.get_tool('portal_workflow')
-    >>> workflows = workflow.getChainFor(multifile1)
+    >>> workflows = api.get_workflows_for(multifile1)
     >>> workflows
     ('senaite_deactivable_type_workflow',)
 
@@ -315,7 +314,7 @@ Workflow History
 
 The workflow should maintain a history of transitions::
 
-    >>> history = workflow.getHistoryOf('senaite_deactivable_type_workflow', multifile1)
+    >>> history = api.get_review_history(multifile1)
     >>> len(history) >= 3
     True
 
