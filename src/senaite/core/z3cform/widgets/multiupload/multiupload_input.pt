@@ -1,0 +1,40 @@
+<div i18n:domain="senaite.core"
+     tal:define="name view/name;
+                  field_name string:${name};
+                  field_id string:${name}-upload;
+                  portal_url context/@@plone_portal_state/portal_url;
+                  context_url context/absolute_url">
+
+  <!-- CSS -->
+  <link rel="stylesheet" tal:attributes="href string:${portal_url}/++resource++senaite.core.z3cform.widgets.multiupload/dropzone.min.css" />
+  <link rel="stylesheet" tal:attributes="href string:${portal_url}/++resource++senaite.core.z3cform.widgets.multiupload/multiupload_widget.css" />
+
+  <!-- JS -->
+  <script type="text/javascript" tal:attributes="src string:${portal_url}/++resource++senaite.core.z3cform.widgets.multiupload/dropzone.min.js"></script>
+  <script type="text/javascript" tal:attributes="src string:${portal_url}/++resource++senaite.core.z3cform.widgets.multiupload/multiupload_widget.js"></script>
+
+  <div class="multi-upload-container">
+    <!-- Upload trigger button -->
+    <button type="button"
+            tal:attributes="id string:${field_id}-trigger"
+            class="multi-upload-trigger-button">
+      <span class="upload-icon">&#8682;</span> Select Files
+    </button>
+
+    <!-- Dropzone area (no 'dropzone' class to prevent auto-discovery) -->
+    <div tal:attributes="id field_id;
+                         class string:multi-upload-dropzone;
+                         data-context-url context_url;
+                         data-field-name field_name">
+      <div class="dz-message" data-dz-message>
+        <span>Drop files here</span>
+      </div>
+    </div>
+
+    <!-- Hidden input to store file data -->
+    <input type="hidden"
+           tal:attributes="name field_name;
+                 id string:${field_id}-data" />
+  </div>
+
+</div>

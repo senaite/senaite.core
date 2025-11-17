@@ -1,0 +1,36 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+  <!-- Multi-upload widget -->
+  <adapter
+      factory=".widget.MultiUploadWidgetFactory" />
+
+  <adapter
+      factory=".widget.MultiUploadDataConverter" />
+
+  <!-- Widget templates -->
+  <browser:page
+      name="multiupload_input"
+      for="*"
+      class="senaite.core.z3cform.widgets.multiupload.widget.MultiUploadWidget"
+      template="multiupload_input.pt"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      name="multiupload_display"
+      for="*"
+      class="senaite.core.z3cform.widgets.multiupload.widget.MultiUploadWidget"
+      template="multiupload_display.pt"
+      permission="zope.Public"
+      />
+
+  <!-- Static resources -->
+  <browser:resourceDirectory
+      name="senaite.core.z3cform.widgets.multiupload"
+      directory="."
+      />
+
+</configure>
