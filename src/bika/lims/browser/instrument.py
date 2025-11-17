@@ -795,7 +795,7 @@ class InstrumentMultifileView(BikaListingView):
         )
         self.context_actions = {
             _("Add"): {
-                "url": "createObject?type_name=Multifile",
+                "url": "++add++Multifile",
                 "icon": "++resource++bika.lims.images/add.png"
             }
         }
@@ -855,7 +855,13 @@ class InstrumentMultifileView(BikaListingView):
         file = self.get_file(obj)
         if file and file.get_size() > 0:
             filename = file.filename
-            download_url = "{}/at_download/File".format(url)
+            # Support both AT and DX file download URLs
+            if api.is_dexterity_content(obj):
+                # Dexterity file download
+                download_url = "{}/@@download/file".format(url)
+            else:
+                # Archetypes file download (backwards compatibility)
+                download_url = "{}/at_download/File".format(url)
             anchor = get_link(download_url, filename)
             item["FileDownload"] = filename
             item["replace"]["FileDownload"] = anchor
