@@ -20,6 +20,7 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import senaiteMessageFactory as _
+from bika.lims.interfaces import IDeactivable
 from plone.namedfile.field import NamedBlobFile
 from plone.supermodel import model
 from Products.CMFCore import permissions
@@ -103,7 +104,7 @@ class IMultifileSchema(model.Schema):
     )
 
 
-@implementer(IMultifile, IMultifileSchema)
+@implementer(IMultifile, IMultifileSchema, IDeactivable)
 class Multifile(Container):
     """A Document/File attachment
     """

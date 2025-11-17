@@ -124,6 +124,9 @@ Create additional Multifile objects with auto-generated IDs::
     >>> multifile2.getId()
     'multifile-2'
 
+    >>> multifile2.Title()
+    'multifile-2'
+
     >>> multifile2.setDocumentID("DOC-002")
     >>> multifile2.setDocumentType("Specifications")
     >>> multifile2.setDocumentVersion("2.1")
@@ -241,4 +244,86 @@ The objectValues method should work correctly::
     3
 
     >>> all([IMultifile.providedBy(mf) for mf in multifiles])
+    True
+
+
+Workflow Tests
+--------------
+
+Multifile objects follow the senaite_deactivable_type_workflow::
+
+    >>> workflow = api.get_tool('portal_workflow')
+    >>> workflows = workflow.getChainFor(multifile1)
+    >>> workflows
+    ('senaite_deactivable_type_workflow',)
+
+New Multifile objects start in the 'active' state::
+
+    >>> api.get_workflow_status_of(multifile1)
+    'active'
+
+Check available transitions from the active state::
+
+    >>> transitions = api.get_transitions_for(multifile1)
+    >>> 'deactivate' in [t['id'] for t in transitions]
+    True
+
+Deactivate the Multifile::
+
+    >>> obj = api.do_transition_for(multifile1, 'deactivate')
+    >>> api.get_workflow_status_of(multifile1)
+    'inactive'
+
+Check that the activate transition is now available::
+
+    >>> transitions = api.get_transitions_for(multifile1)
+    >>> 'activate' in [t['id'] for t in transitions]
+    True
+
+Activate the Multifile again::
+
+    >>> obj = api.do_transition_for(multifile1, 'activate')
+    >>> api.get_workflow_status_of(multifile1)
+    'active'
+
+Test the IDeactivable interface::
+
+    >>> from bika.lims.interfaces import IDeactivable
+    >>> IDeactivable.providedBy(multifile1)
+    True
+
+Check if the object is active using the API::
+
+    >>> api.is_active(multifile1)
+    True
+
+Deactivate and check again::
+
+    >>> obj = api.do_transition_for(multifile1, 'deactivate')
+    >>> api.is_active(multifile1)
+    False
+
+Activate it back for subsequent tests::
+
+    >>> obj = api.do_transition_for(multifile1, 'activate')
+    >>> api.is_active(multifile1)
+    True
+
+
+Workflow History
+----------------
+
+The workflow should maintain a history of transitions::
+
+    >>> history = workflow.getHistoryOf('senaite_deactivable_type_workflow', multifile1)
+    >>> len(history) >= 3
+    True
+
+The history should contain our transitions::
+
+    >>> actions = [h.get('action') for h in history if h.get('action')]
+    >>> 'deactivate' in actions
+    True
+
+    >>> 'activate' in actions
     True
