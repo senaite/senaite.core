@@ -422,10 +422,10 @@ def migrate_multifile_to_dx(src, destination=None):
     # NOTE: always convert string values to unicode for dexterity fields!
     target.title = u""  # calculated from document_id
     target.description = u""  # not used
-    target.document_id = api.safe_unicode(src.getDocumentID() or "")
-    target.document_version = api.safe_unicode(src.getDocumentVersion() or "")
-    target.document_location = api.safe_unicode(src.getDocumentLocation() or "")
-    target.document_type = api.safe_unicode(src.getDocumentType() or "")
+    target.document_id = to_unicode(src.getDocumentID() or "")
+    target.document_version = to_unicode(src.getDocumentVersion() or "")
+    target.document_location = to_unicode(src.getDocumentLocation() or "")
+    target.document_type = to_unicode(src.getDocumentType() or "")
 
     # Handle file field
     file_field = src.getField("File")
@@ -486,3 +486,16 @@ def to_dx_address(value, address_type=NAIVE_ADDRESS):
         "subdivision2": u(value.get("district") or ""),
         "country": u(value.get("country") or ""),
     }
+
+
+def to_unicode(value, default=u""):
+    """Safely convert a value to a unicode string
+    """
+    try:
+        try:
+            value = str(value)
+        except UnicodeDecodeError:
+            value = value.encode("utf8")
+        return u(value)
+    except Exception:
+        return default
