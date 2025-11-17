@@ -357,7 +357,7 @@ class Sub_Groups(WorksheetImporter):
 class Lab_Information(WorksheetImporter):
 
     def Import(self):
-        laboratory = self.context.bika_setup.laboratory
+        laboratory = self.context.setup.laboratory
         values = {}
         for row in self.get_rows(3):
             values[row['Field']] = row['Value']
