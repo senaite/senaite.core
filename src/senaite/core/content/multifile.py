@@ -110,9 +110,6 @@ class Multifile(Container):
     """
     security = ClassSecurityInfo()
 
-    # Set meta_type to 'Multifile' for objectValues filtering compatibility
-    meta_type = "Multifile"
-
     def Title(self):
         """Return the DocumentID as Title
         """

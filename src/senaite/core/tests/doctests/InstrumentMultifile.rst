@@ -234,17 +234,20 @@ Verify that Multifile is allowed inside Instrument::
     True
 
 
-Object Values
--------------
+Retrieving Multifiles via getDocuments
+--------------------------------------
 
-The objectValues method should work correctly::
+The getDocuments method uses catalog search to retrieve Multifile objects::
 
-    >>> multifiles = instrument.objectValues('Multifile')
+    >>> multifiles = instrument.getDocuments()
     >>> len(multifiles)
     3
 
     >>> all([IMultifile.providedBy(mf) for mf in multifiles])
     True
+
+    >>> sorted([mf.getDocumentID() for mf in multifiles])
+    ['DOC-001', 'DOC-002', 'DOC-003']
 
 
 Workflow Tests

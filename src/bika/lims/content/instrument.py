@@ -34,7 +34,6 @@ from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IInstrument
-from senaite.core.i18n import translate as t
 from bika.lims.utils import to_utf8
 from bika.lims.utils.analysis import create_reference_analysis
 from plone.app.blob.field import FileField as BlobFileField
@@ -65,6 +64,7 @@ from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.exportimport import instruments
+from senaite.core.i18n import translate as t
 from senaite.core.p3compat import cmp
 from zope.deprecation import deprecate
 from zope.interface import implements
@@ -654,7 +654,17 @@ class Instrument(ATFolder):
     def getDocuments(self):
         """ Return all the multifile objects related with the instrument
         """
-        return self.objectValues("Multifile")
+        query = {
+            "portal_type": "Multifile",
+            "path": {
+                "query": api.get_path(self),
+                "depth": 1
+            },
+            "sort_on": "created",
+            "sort_order": "ascending",
+        }
+        brains = api.search(query, SETUP_CATALOG)
+        return [api.get_object(brain) for brain in brains]
 
     def getSchedule(self):
         return self.objectValues('InstrumentScheduledTask')
