@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2812 Migrate MultiFile to Dexterity
 - #2795 Migrate Client Contacts to Dexterity
 - #2811 Fix typo in recalculation message ("Result recalucated" → "Result recalculated")
 - #2809 Prioritize after create sample susbcriber hooks
