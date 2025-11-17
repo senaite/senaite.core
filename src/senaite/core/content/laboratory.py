@@ -125,7 +125,8 @@ class ILaboratorySchema(IOrganizationSchema):
         ),
         description=_(
             u"description_confidence_level",
-            default=u"This value is reported at the bottom of all published results"
+            default=u"This value is reported "
+            u"at the bottom of all published results"
         ),
         required=False,
     )
@@ -183,7 +184,8 @@ class ILaboratorySchema(IOrganizationSchema):
         ),
         description=_(
             u"description_accreditation_reference",
-            default=u"The reference code issued to the lab by the accreditation body"
+            default=u"The reference code issued "
+            u"to the lab by the accreditation body"
         ),
         required=False,
     )
@@ -194,9 +196,10 @@ class ILaboratorySchema(IOrganizationSchema):
             default=u"Accreditation Logo"),
         description=_(
             u"description_accreditation_body_logo",
-            default=u"Please upload the logo you are authorised to use on your "
-                     u"website and results reports by your accreditation body. "
-                     u"Maximum size is 175 x 175 pixels."
+            default=u"Please upload the logo you are authorised "
+                    u"to use on your website and "
+                    u"results reports by your accreditation body. "
+                    u"Maximum size is 175 x 175 pixels."
         ),
         required=False,
     )
@@ -215,14 +218,16 @@ class ILaboratorySchema(IOrganizationSchema):
         ),
         description=_(
             u"description_accreditation_page_header",
-            default=u"Enter the details of your lab's service accreditations here. "
-            u"The following fields are available: lab_is_accredited, lab_name, "
+            default=u"Enter the details of your lab's service "
+            u"accreditations here. The following fields are available: "
+            u"lab_is_accredited, lab_name, "
             u"lab_country, confidence, accreditation_body_name, "
             u"accreditation_standard, accreditation_reference"
         ),
         default=DEFAULT_ACCREDITATION_PAGE_HEADER,
         required=False,
     )
+
 
 @implementer(ILaboratory, ILaboratorySchema,
              IDoNotSupportSnapshots, IHideActionsMenu,

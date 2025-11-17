@@ -419,15 +419,21 @@ def migrate_laboratory_to_dx(src, destination=None):
     # Copy addresses using the to_dx_address helper
     postal_address = src.getPostalAddress() or {}
     if postal_address:
-        target.setPostalAddress(to_dx_address(postal_address, POSTAL_ADDRESS))
+        target.setPostalAddress(
+            to_dx_address(postal_address, POSTAL_ADDRESS)
+        )
 
     physical_address = src.getPhysicalAddress() or {}
     if physical_address:
-        target.setPhysicalAddress(to_dx_address(physical_address, PHYSICAL_ADDRESS))
+        target.setPhysicalAddress(
+            to_dx_address(physical_address, PHYSICAL_ADDRESS)
+        )
 
     billing_address = src.getBillingAddress() or {}
     if billing_address:
-        target.setBillingAddress(to_dx_address(billing_address, BILLING_ADDRESS))
+        target.setBillingAddress(
+            to_dx_address(billing_address, BILLING_ADDRESS)
+        )
 
     # Migrate the contents from AT to DX
     migrator = getMultiAdapter(
@@ -464,6 +470,7 @@ def migrate_laboratory_to_dx(src, destination=None):
     migrator.copy_id(src, target)
 
     logger.info("Migrated Laboratory from %s -> %s" % (src, target))
+
 
 def to_dx_address(value, address_type=NAIVE_ADDRESS):
     return {
