@@ -666,7 +666,7 @@ def get_link(href, value=None, csrf=True, **kwargs):
     # Add a CSRF token
     if csrf and href.startswith("http"):
         href = addTokenToUrl(href)
-    return '<a href="{}" {}>{}</a>'.format(href, attr, anchor_value)
+    return u'<a href="{}" {}>{}</a>'.format(href, attr, anchor_value)
 
 
 def get_link_for(obj, **kwargs):

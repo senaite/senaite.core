@@ -853,15 +853,10 @@ class InstrumentMultifileView(BikaListingView):
         item["FileDownload"] = ""
         item["replace"]["FileDownload"] = ""
         file = self.get_file(obj)
-        if file and file.get_size() > 0:
-            filename = file.filename
-            # Support both AT and DX file download URLs
-            if api.is_dexterity_content(obj):
-                # Dexterity file download
-                download_url = "{}/@@download/file".format(url)
-            else:
-                # Archetypes file download (backwards compatibility)
-                download_url = "{}/at_download/File".format(url)
+
+        if file and file.getSize() > 0:
+            filename = api.safe_unicode(file.filename)
+            download_url = u"{}/@@download/file".format(url)
             anchor = get_link(download_url, filename)
             item["FileDownload"] = filename
             item["replace"]["FileDownload"] = anchor
