@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import json
 import uuid
 
 from bika.lims import api
