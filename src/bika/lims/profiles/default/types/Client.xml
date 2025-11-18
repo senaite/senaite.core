@@ -28,6 +28,9 @@
     <element value="SamplePoint"/>
     <element value="SampleTemplate"/>
     <element value="AnalysisProfile"/>
+    <!-- Plone standard content types for attachments -->
+    <element value="File"/>
+    <element value="Image"/>
   </property>
   <property name="allow_discussion">False</property>
   <property name="immediate_view">base_edit</property>
