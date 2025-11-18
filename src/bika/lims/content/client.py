@@ -25,7 +25,8 @@ from bika.lims import _
 from bika.lims import api
 from bika.lims.browser.fields import EmailsField
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets.uidreferencefilewidget import UIDReferenceFileWidget
+from bika.lims.browser.widgets.uidreferencefilewidget import \
+    UIDReferenceFileWidget
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import DECIMAL_MARKS
 from bika.lims.config import PROJECTNAME
@@ -176,6 +177,7 @@ schema = Organisation.schema.copy() + Schema((
         multiValued=1,
         allowed_types=("File", "Image"),
         widget=UIDReferenceFileWidget(
+            max_filesize=10485760,  # in Bytes, default 10 MB
             label=_("Attachments"),
             description=_(
                 "Upload files and images for this client. "
