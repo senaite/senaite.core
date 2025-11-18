@@ -27,7 +27,7 @@ from Products.Archetypes.Registry import registerWidget
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 
 
-class UIDReferenceFileWidget(ReferenceWidget):
+class MultiFileUploadWidget(ReferenceWidget):
     """Widget for uploading files that creates File/Image objects
     and stores their UIDs as references.
 
@@ -44,7 +44,7 @@ class UIDReferenceFileWidget(ReferenceWidget):
     _properties = ReferenceWidget._properties.copy()
     _properties.update({
         # Use our custom template
-        "macro": "senaite_widgets/uidreferencefilewidget",
+        "macro": "senaite_widgets/multifileuploadwidget",
         "endpoint": "@@multiupload_handler",
         # Maximum file size (10MB default)
         "max_filesize": 10485760,
@@ -199,7 +199,10 @@ class UIDReferenceFileWidget(ReferenceWidget):
         return uids, {}
 
 
-registerWidget(UIDReferenceFileWidget,
-               title="UID Reference File Upload Widget",
+registerWidget(MultiFileUploadWidget,
+               title="Multi File Upload Widget",
                description="Widget for uploading files as File/Image objects with UID references",
                used_for=("bika.lims.browser.fields.UIDReferenceField",))
+
+# Backward compatibility alias
+UIDReferenceFileWidget = MultiFileUploadWidget
