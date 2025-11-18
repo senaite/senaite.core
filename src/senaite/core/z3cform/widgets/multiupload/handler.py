@@ -1,97 +1,120 @@
 # -*- coding: utf-8 -*-
 
 import json
+import uuid
+
 from bika.lims import api
-from plone.namedfile.file import NamedBlobFile
-from plone.namedfile.file import NamedBlobImage
 from Products.Five.browser import BrowserView
-from ZODB.blob import Blob
+from bika.lims.decorators import returns_json
 
 
 class MultiUploadHandler(BrowserView):
     """Handler for multiupload widget AJAX requests
 
     This view receives file uploads from the React multiupload widget
-    and stores them temporarily, returning a unique ID for each file.
+    and stores them temporarily in the session, returning a unique ID.
+    The actual File/Image objects are created later in the widget's
+    process_form method.
     """
 
     def __call__(self):
-        """Handle the upload request"""
-        self.request.response.setHeader('Content-Type', 'application/json')
+        """Entry point for the file upload
+        """
+        request = self.request
+        if request.method != "POST":
+            return self.fail("Method not allowed", 405)
 
+        # Try to get the uploaded file, as we don't know the field name
+        upload = None
+        for key in request.form.keys():
+            value = request.form.get(key)
+            if hasattr(value, "filename") and hasattr(value, "read"):
+                upload = value
+                break
+
+        if not upload:
+            return self.fail("No file uploaded", 400)
+
+        return self.upload(upload)
+
+    def upload(self, upload):
+        """Store the uploaded file temporarily in the session
+        """
         try:
-            # Get the uploaded file from request
-            file_upload = None
-            for key in self.request.form.keys():
-                value = self.request.form.get(key)
-                if hasattr(value, 'filename') and hasattr(value, 'read'):
-                    file_upload = value
-                    break
+            # Get filename
+            filename = api.safe_unicode(getattr(upload, "filename", "unknown"))
 
-            if not file_upload:
-                return json.dumps({
-                    'error': 'No file uploaded',
-                    'status': 'error'
-                })
+            # Get the file data
+            data = upload.read()
 
-            # Get file metadata
-            filename = getattr(file_upload, 'filename', 'unknown')
+            # Get the file size
+            file_size = len(data)
 
-            # Get content type from headers
-            headers = getattr(file_upload, 'headers', {})
-            if hasattr(headers, 'get'):
-                content_type = headers.get('content-type', 'application/octet-stream')
-            else:
-                content_type = getattr(file_upload, 'content_type', 'application/octet-stream')
-
-            # Read file data
-            file_data = file_upload.read()
+            # Get content type
+            content_type = self.get_content_type(upload)
 
             # Determine if it's an image
-            is_image = content_type.startswith('image/')
+            is_image = self.is_image(content_type)
 
-            # Create blob
-            if is_image:
-                blob = NamedBlobImage(
-                    data=file_data,
-                    filename=filename,
-                    contentType=content_type
-                )
-            else:
-                blob = NamedBlobFile(
-                    data=file_data,
-                    filename=filename,
-                    contentType=content_type
-                )
-
-            # Store the blob in the session for later retrieval
-            # Generate a unique ID for this upload
-            import uuid
+            # Generate unique upload ID
             upload_id = str(uuid.uuid4())
 
             # Store in session
             session = self.request.SESSION
-            if 'multiupload_files' not in session:
-                session['multiupload_files'] = {}
+            if "multiupload_files" not in session:
+                session["multiupload_files"] = {}
 
-            session['multiupload_files'][upload_id] = {
-                'blob': blob,
-                'filename': filename,
-                'content_type': content_type,
-                'is_image': is_image,
+            session["multiupload_files"][upload_id] = {
+                "data": data,
+                "filename": filename,
+                "content_type": content_type,
+                "is_image": is_image,
             }
 
-            return json.dumps({
-                'id': upload_id,
-                'filename': filename,
-                'content_type': content_type,
-                'size': len(file_data),
-                'status': 'success'
+            api.logger.info(u"Stored upload {} in session for file {}".format(
+                upload_id, filename))
+
+            return self.send_json({
+                "id": upload_id,
+                "filename": filename,
+                "content_type": content_type,
+                "size": file_size,
+                "status": "success"
             })
 
         except Exception as e:
             api.logger.error("Error handling file upload: {}".format(str(e)))
-            return json.dumps({
-                'error': str(e),
-                'status': 'error'
-            })
+            return self.fail(str(e), 500)
+
+    def get_content_type(self, upload):
+        """Get the content type of the uploaded file
+        """
+        headers = getattr(upload, "headers", {})
+        if hasattr(headers, "get"):
+            content_type = headers.get("content-type", "application/octet-stream")
+        else:
+            content_type = getattr(upload, "content_type", "application/octet-stream")
+
+        # Ensure we never return None
+        return content_type or "application/octet-stream"
+
+    def is_image(self, content_type):
+        """Determine if the content type is an image
+        """
+        return content_type.startswith("image/")
+
+    def fail(self, message, status=500):
+        """Return a failure response
+        """
+        data = {
+            "error": message,
+            "status": "error"
+        }
+        return self.send_json(data, status=status)
+
+    @returns_json
+    def send_json(self, data, status=200):
+        """Return a JSON response
+        """
+        self.request.response.setStatus(status)
+        return data

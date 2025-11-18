@@ -22,7 +22,9 @@ class MultiUploadWidgetController extends React.Component {
       "name",
       "portal_url",
       "context_url",
+      "endpoint",
       "max_filesize",
+      // https://react-dropzone.js.org/#section-accepting-specific-file-types
       "accepted_types",
     ];
 
@@ -40,6 +42,11 @@ class MultiUploadWidgetController extends React.Component {
     return this;
   }
 
+  /*
+   * JSON parse the given value
+   *
+   * @param {String} value: The JSON value to parse
+   */
   parse_json(value) {
     try {
       return JSON.parse(value);
@@ -83,12 +90,33 @@ class MultiUploadWidgetController extends React.Component {
       )
     }));
 
-    fetch(`${this.state.context_url}/@@multiupload_handler`, {
+    const endpoint = this.state.endpoint || "@@multiupload_handler";
+    fetch(`${this.state.context_url}/${endpoint}`, {
       method: "POST",
       body: formData,
     })
-      .then(response => response.json())
+      .then(response => {
+        // Check if the response is OK
+        if (!response.ok) {
+          // Try to parse error message from JSON response
+          return response.json().then(errorData => {
+            return errorData;
+          }).catch(jsonError => {
+            // If JSON parsing fails, return a generic error object
+            return {
+              "status": "error",
+              "error": `Server error: ${response.status} ${response.statusText}`
+            };
+          });
+        }
+        return response.json();
+      })
       .then(data => {
+        // Check if the response contains an error status
+        if (data.status === "error") {
+          throw new Error(data.error || "Upload failed");
+        }
+
         console.debug("Upload success:", data);
         this.setState(
           prevState => ({
@@ -183,17 +211,16 @@ class MultiUploadWidgetController extends React.Component {
                 )}
                 <button
                   type="button"
-                  className="btn btn-sm btn-danger"
+                  className="btn"
                   onClick={() => this.removeFile(index)}
-                  disabled={fileObj.status === "uploading"}
-                >
-                  Remove
+                  disabled={fileObj.status === "uploading"}>
+                  <i className="fas fa-trash-alt text-secondary"></i>
                 </button>
               </div>
             </div>
             {fileObj.status === "error" && fileObj.error && (
               <div className="alert alert-danger mt-2 mb-0 small">
-                Error: {fileObj.error}
+                {fileObj.error}
               </div>
             )}
           </div>
@@ -203,7 +230,8 @@ class MultiUploadWidgetController extends React.Component {
   }
 
   render() {
-    const maxSize = this.state.max_filesize || 104857600; // 100MB default
+    // https://react-dropzone.js.org/#section-components
+    const maxSize = this.state.max_filesize || 10485760; // 10MB default
     const accept = this.state.accepted_types || {};
 
     return (

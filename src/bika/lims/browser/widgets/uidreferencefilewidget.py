@@ -19,12 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
+
 from bika.lims import api
 from bika.lims import logger
-from plone.app.contenttypes.behaviors.richtext import IRichText
 from plone.dexterity.utils import createContentInContainer
-from plone.namedfile.file import NamedBlobFile
-from plone.namedfile.file import NamedBlobImage
 from Products.Archetypes.Registry import registerWidget
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 
@@ -35,7 +33,7 @@ class UIDReferenceFileWidget(ReferenceWidget):
 
     This widget integrates with the React multiupload widget to:
     1. Accept file uploads
-    2. Create File or Image objects (from plone.app.contenttypes)
+    2. Create File or Image objects
     3. Store them in the parent container
     4. Store the UIDs of created objects in the field
     """
@@ -47,11 +45,9 @@ class UIDReferenceFileWidget(ReferenceWidget):
     _properties.update({
         # Use our custom template
         "macro": "senaite_widgets/uidreferencefilewidget",
-        # No catalog search for this widget
-        "url": None,
-        "catalog_name": None,
-        # Maximum file size (100MB default)
-        "max_filesize": 104857600,
+        "endpoint": "@@multiupload_handler",
+        # Maximum file size (10MB default)
+        "max_filesize": 10485760,
         # Accept all file types by default
         "accepted_types": {},
     })
@@ -70,14 +66,18 @@ class UIDReferenceFileWidget(ReferenceWidget):
         portal = api.get_portal()
         portal_url = api.get_url(portal)
         context_url = api.get_url(context)
+        endpoint = getattr(self, "endpoint", "@@multiupload_handler")
+        max_filesize = getattr(self, "max_filesize", 10485760)
+        accepted_types = getattr(self, "accepted_types", {})
 
         attributes = {
             "data-id": field.getName(),
             "data-name": field.getName(),
-            "data-portal-url": portal_url,
-            "data-context-url": context_url,
-            "data-max-filesize": getattr(self, "max_filesize", 104857600),
-            "data-accepted-types": json.dumps(getattr(self, "accepted_types", {})),
+            "data-endpoint": endpoint,
+            "data-portal_url": portal_url,
+            "data-context_url": context_url,
+            "data-max_filesize": max_filesize,
+            "data-accepted_types": json.dumps(accepted_types),
         }
 
         return attributes
@@ -94,7 +94,7 @@ class UIDReferenceFileWidget(ReferenceWidget):
         field_name = field.getName()
 
         # Get the JSON data from the hidden field
-        data_field = field_name + '.data'
+        data_field = field_name + ".data"
         data = form.get(data_field, None)
 
         if not data:
@@ -115,7 +115,7 @@ class UIDReferenceFileWidget(ReferenceWidget):
 
         # Get uploaded files from session
         session = instance.REQUEST.SESSION
-        uploaded_files = session.get('multiupload_files', {})
+        uploaded_files = session.get("multiupload_files", {})
 
         # Get existing UIDs to preserve them
         existing_uids = []
@@ -134,15 +134,34 @@ class UIDReferenceFileWidget(ReferenceWidget):
                 file_data = uploaded_files[upload_id]
 
                 # Get file metadata
-                blob = file_data['blob']
-                filename = file_data['filename']
-                is_image = file_data['is_image']
+                from plone.namedfile.file import NamedBlobFile
+                from plone.namedfile.file import NamedBlobImage
+
+                data = file_data["data"]
+                filename = file_data["filename"]
+                content_type = file_data["content_type"]
+                is_image = file_data["is_image"]
+
+                # Create NamedBlobFile or NamedBlobImage from stored data
+                if is_image:
+                    blob = NamedBlobImage(
+                        data=data,
+                        filename=filename,
+                        contentType=content_type
+                    )
+                else:
+                    blob = NamedBlobFile(
+                        data=data,
+                        filename=filename,
+                        contentType=content_type
+                    )
 
                 # Determine portal type
-                portal_type = 'Image' if is_image else 'File'
+                portal_type = "Image" if is_image else "File"
 
                 try:
                     # Create the object in the parent container
+                    # The blob is passed directly
                     obj = createContentInContainer(
                         instance,
                         portal_type,
@@ -170,7 +189,7 @@ class UIDReferenceFileWidget(ReferenceWidget):
         if upload_ids:
             for upload_id in upload_ids:
                 uploaded_files.pop(upload_id, None)
-            session['multiupload_files'] = uploaded_files
+            session["multiupload_files"] = uploaded_files
 
         # Handle multi-valued vs single-valued
         multi_valued = getattr(field, "multiValued", False)
