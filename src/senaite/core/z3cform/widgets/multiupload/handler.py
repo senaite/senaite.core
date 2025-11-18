@@ -52,9 +52,6 @@ class MultiUploadHandler(BrowserView):
             # Get content type
             content_type = self.get_content_type(upload)
 
-            # Determine if it's an image
-            is_image = self.is_image(content_type)
-
             # Generate unique upload ID
             upload_id = str(uuid.uuid4())
 
@@ -67,7 +64,6 @@ class MultiUploadHandler(BrowserView):
                 "data": data,
                 "filename": filename,
                 "content_type": content_type,
-                "is_image": is_image,
             }
 
             api.logger.info(u"Stored upload {} in session for file {}".format(
@@ -88,19 +84,10 @@ class MultiUploadHandler(BrowserView):
     def get_content_type(self, upload):
         """Get the content type of the uploaded file
         """
+        content_type = None
         headers = getattr(upload, "headers", {})
-        if hasattr(headers, "get"):
-            content_type = headers.get("content-type", "application/octet-stream")
-        else:
-            content_type = getattr(upload, "content_type", "application/octet-stream")
-
-        # Ensure we never return None
+        content_type = headers.get("content-type")
         return content_type or "application/octet-stream"
-
-    def is_image(self, content_type):
-        """Determine if the content type is an image
-        """
-        return content_type.startswith("image/")
 
     def fail(self, message, status=500):
         """Return a failure response

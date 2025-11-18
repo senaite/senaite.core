@@ -23,6 +23,8 @@ import json
 from bika.lims import api
 from bika.lims import logger
 from plone.dexterity.utils import createContentInContainer
+from plone.namedfile.file import NamedBlobFile
+from plone.namedfile.file import NamedBlobImage
 from Products.Archetypes.Registry import registerWidget
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 
@@ -133,14 +135,10 @@ class MultiFileUploadWidget(ReferenceWidget):
             if upload_id in uploaded_files:
                 file_data = uploaded_files[upload_id]
 
-                # Get file metadata
-                from plone.namedfile.file import NamedBlobFile
-                from plone.namedfile.file import NamedBlobImage
-
                 data = file_data["data"]
                 filename = file_data["filename"]
                 content_type = file_data["content_type"]
-                is_image = file_data["is_image"]
+                is_image = content_type.startswith("image/")
 
                 # Create NamedBlobFile or NamedBlobImage from stored data
                 if is_image:
