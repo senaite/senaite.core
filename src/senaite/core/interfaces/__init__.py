@@ -549,8 +549,8 @@ class IMultiUploadFileRemover(Interface):
     """Adapter for removing File/Image objects
 
     This adapter is looked up by container context and can be overridden
-    to customize file removal behavior, e.g., to move files to a central
-    repository instead of deleting them.
+    to customize file removal behavior, e.g., to deactivate/archive files
+    instead of deleting them.
     """
 
     def remove(uids):

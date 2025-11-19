@@ -26,8 +26,8 @@ from plone.namedfile.file import NamedBlobImage
 from senaite.core.interfaces import IMultiUploadFileCreator
 from senaite.core.interfaces import IMultiUploadFileRemover
 from zope.component import adapter
-from zope.interface import implementer
 from zope.interface import Interface
+from zope.interface import implementer
 
 
 @adapter(Interface, Interface)
