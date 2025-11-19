@@ -25,6 +25,8 @@ from bika.lims import logger
 from Products.Archetypes.Registry import registerWidget
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.interfaces import IMultiUploadFileCreator
+from senaite.core.interfaces import IMultiUploadFileRemover
+from zope.component import getAdapter
 from zope.component import getMultiAdapter
 
 
@@ -303,8 +305,9 @@ class MultiFileUploadWidget(ReferenceWidget):
     def delete_removed_files(self, container, uids):
         """Delete File/Image objects that were removed from the field
 
-        Uses a privileged security context to delete files even when the
-        current user doesn't have Delete permission on the container.
+        Uses the IMultiUploadFileRemover adapter which can be customized
+        to implement different removal strategies (e.g., move to central
+        repository instead of deletion).
 
         :param container: The parent container
         :param uids: List of UIDs to delete
@@ -312,53 +315,11 @@ class MultiFileUploadWidget(ReferenceWidget):
         if not uids:
             return
 
-        logger.info("Deleting {} removed file(s) from {}".format(
-            len(uids), api.get_path(container)))
+        # Get the file remover adapter
+        remover = getAdapter(container, IMultiUploadFileRemover)
 
-        # Use privileged context to delete files
-        with api.security.as_privileged_user():
-            for uid in uids:
-                try:
-                    obj = api.get_object(uid)
-                    parent = api.get_parent(obj)
-
-                    # Verify the object lives actually in this container
-                    if parent != container:
-                        logger.warning(
-                            "Skipping deletion of {}: not in container "
-                            "(parent: {}, expected: {})".format(
-                                uid, api.get_path(parent), api.get_path(container)))
-                        continue
-
-                    # Verify it's a File or Image
-                    if api.get_portal_type(obj) not in ["File", "Image"]:
-                        logger.warning(
-                            "Skipping deletion of {}: not a File/Image "
-                            "(type: {})".format(uid, api.get_portal_type(obj)))
-                        continue
-
-                    # Store info before deletion for logging
-                    obj_title = api.get_title(obj)
-                    obj_type = api.get_portal_type(obj)
-                    obj_path = api.get_path(obj)
-
-                    # Delete the object using privileged context
-                    api.delete(obj)
-                    logger.info(u"Deleted {} object: {} (was at: {})".format(
-                        obj_type, api.safe_unicode(obj_title), obj_path))
-
-                except api.APIError as e:
-                    logger.error("Error deleting object {}: {}".format(
-                        uid, str(e)))
-                    import traceback
-                    logger.error(traceback.format_exc())
-                    continue
-                except Exception as e:
-                    logger.error("Unexpected error deleting object {}: {}".format(
-                        uid, str(e)))
-                    import traceback
-                    logger.error(traceback.format_exc())
-                    continue
+        # Remove the files using the adapter
+        remover.remove(uids)
 
 
 registerWidget(MultiFileUploadWidget,

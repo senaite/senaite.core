@@ -5,6 +5,7 @@ import json
 from bika.lims import api
 from bika.lims import logger
 from senaite.core.interfaces import IMultiUploadFileCreator
+from senaite.core.interfaces import IMultiUploadFileRemover
 from senaite.core.interfaces import IMultiUploadWidget
 from senaite.core.interfaces import ISenaiteFormLayer
 from z3c.form.browser import widget
@@ -14,6 +15,7 @@ from z3c.form.interfaces import IFieldWidget
 from z3c.form.widget import FieldWidget
 from z3c.form.widget import Widget
 from zope.component import adapter
+from zope.component import getAdapter
 from zope.component import getMultiAdapter
 from zope.interface import implementer
 from zope.interface import implementer_only
@@ -279,58 +281,21 @@ class MultiUploadDataConverter(BaseDataConverter):
     def delete_removed_files(self, container, uids):
         """Delete File/Image objects that were removed from the field
 
+        Uses the IMultiUploadFileRemover adapter which can be customized
+        to implement different removal strategies (e.g., move to central
+        repository instead of deletion).
+
         :param container: The parent container
         :param uids: Set of UIDs to delete
         """
         if not uids:
             return
 
-        logger.info("Deleting {} removed file(s) from {}".format(
-            len(uids), api.get_path(container)))
+        # Get the file remover adapter
+        remover = getAdapter(container, IMultiUploadFileRemover)
 
-        # Use privileged context to delete files
-        with api.security.as_privileged_user():
-            for uid in uids:
-                try:
-                    obj = api.get_object(uid)
-                    parent = api.get_parent(obj)
-
-                    # Verify the object lives in this container
-                    if parent != container:
-                        logger.warning(
-                            "Skipping deletion of {}: not in container "
-                            "(parent: {}, expected: {})".format(
-                                uid, api.get_path(parent), api.get_path(container)))
-                        continue
-
-                    # Verify it's a File or Image
-                    if api.get_portal_type(obj) not in ["File", "Image"]:
-                        logger.warning(
-                            "Skipping deletion of {}: not a File/Image "
-                            "(type: {})".format(uid, api.get_portal_type(obj)))
-                        continue
-
-                    # Store info before deletion for logging
-                    obj_title = api.get_title(obj)
-                    obj_type = api.get_portal_type(obj)
-                    obj_path = api.get_path(obj)
-
-                    # Delete the object
-                    api.delete(obj)
-                    logger.info(u"Deleted {} object: {} (was at: {})".format(
-                        obj_type, api.safe_unicode(obj_title), obj_path))
-
-                except api.APIError as e:
-                    logger.error("Error deleting object {}: {}".format(uid, str(e)))
-                    import traceback
-                    logger.error(traceback.format_exc())
-                    continue
-                except Exception as e:
-                    logger.error("Unexpected error deleting object {}: {}".format(
-                        uid, str(e)))
-                    import traceback
-                    logger.error(traceback.format_exc())
-                    continue
+        # Remove the files using the adapter
+        remover.remove(uids)
 
 
 @adapter(ITuple, ISenaiteFormLayer)

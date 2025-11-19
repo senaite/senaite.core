@@ -543,3 +543,18 @@ class IMultiUploadFileCreator(Interface):
         :param data: The binary file data (bytes)
         :returns: The created File or Image object
         """
+
+
+class IMultiUploadFileRemover(Interface):
+    """Adapter for removing File/Image objects
+
+    This adapter is looked up by container context and can be overridden
+    to customize file removal behavior, e.g., to move files to a central
+    repository instead of deleting them.
+    """
+
+    def remove(uids):
+        """Remove File/Image objects by their UIDs
+
+        :param uids: Set or list of UIDs to remove
+        """
