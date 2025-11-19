@@ -60,15 +60,20 @@ class MultiUploadWidget(widget.HTMLFormElement, Widget):
         # Fallback to object URL
         return url
 
-    def get_file_size(self, obj):
+    def get_file_size(self, obj, field_name=None):
         """Get the file size for a File or Image object
 
         :param obj: The File or Image object
+        :param field_name: Optional field name to check for size. If None,
+                          automatically determines based on portal type.
         :returns: File size in bytes, or 0 if not available
         """
-        portal_type = api.get_portal_type(obj)
-        # Image objects use 'image' field, File objects use 'file' field
-        field_name = "image" if portal_type == "Image" else "file"
+        if field_name is None:
+            portal_type = api.get_portal_type(obj)
+            # Image objects use 'image' field, File objects use 'file' field
+            field_name = "image" if portal_type == "Image" else "file"
+
+        # get the file object from the field
         file_obj = getattr(obj, field_name, None)
 
         if file_obj and hasattr(file_obj, "size"):
