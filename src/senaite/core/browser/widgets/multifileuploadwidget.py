@@ -305,20 +305,14 @@ class MultiFileUploadWidget(ReferenceWidget):
     def delete_removed_files(self, container, uids):
         """Delete File/Image objects that were removed from the field
 
-        Uses the IMultiUploadFileRemover adapter which can be customized
-        to implement different removal strategies (e.g., move to central
-        repository instead of deletion).
-
         :param container: The parent container
         :param uids: List of UIDs to delete
         """
         if not uids:
             return
 
-        # Get the file remover adapter
+        # Remove the files using the `IMultiUploadFileRemover` adapter
         remover = getAdapter(container, IMultiUploadFileRemover)
-
-        # Remove the files using the adapter
         remover.remove(uids)
 
 
