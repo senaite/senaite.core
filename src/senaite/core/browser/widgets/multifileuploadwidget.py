@@ -24,12 +24,12 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.security import grant_permission_for
 from bika.lims.api.security import revoke_permission_for
-# from plone.app.referenceablebehavior.referenceable import IReferenceable
+from plone.app.referenceablebehavior.referenceable import IReferenceable
 from plone.dexterity.utils import createContentInContainer
 from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.file import NamedBlobImage
 from Products.Archetypes.Registry import registerWidget
-# from zope.interface import alsoProvides
+from zope.interface import alsoProvides
 from Products.CMFCore.permissions import DeleteObjects
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 
@@ -155,10 +155,12 @@ class MultiFileUploadWidget(ReferenceWidget):
         4. Deletes File/Image objects that were removed
         5. Returns the combined list of existing + new UIDs to be stored
         """
-        import pdb; pdb.set_trace()
-        field_name = field.getName()
+        # Skip processing for temporary instances
+        if instance.isTemporary():
+            return [], {}
 
         # Get current field value (before form processing)
+        field_name = field.getName()
         old_value = field.get(instance)
         old_uids = []
         if old_value:
@@ -270,11 +272,13 @@ class MultiFileUploadWidget(ReferenceWidget):
 
                     # Dynamically apply IReferenceable behavior
                     # -> Probably better added in the UIDReferenceField itself
-                    # if not IReferenceable.providedBy(obj):
-                    #     alsoProvides(obj, IReferenceable)
+                    if not IReferenceable.providedBy(obj):
+                        alsoProvides(obj, IReferenceable)
 
-                    # uc = api.get_tool("uid_catalog")
-                    # uc.catalog_object(obj)
+                    # Catalog the object, so that api.get_object(uid) works
+                    uc = api.get_tool("uid_catalog")
+                    # Note: The path is not used by this method!
+                    uc._catalogObject(obj, api.get_path(obj))
 
                     # Reindex to update catalogs
                     obj.reindexObject()
@@ -297,18 +301,11 @@ class MultiFileUploadWidget(ReferenceWidget):
                     logger.error(traceback.format_exc())
                     continue
             else:
-                logger.warning("Upload ID {} not found in session, skipping".format(
-                    upload_id))
+                logger.warning("Upload ID {} not found in session, skipping"
+                               .format(upload_id))
 
-        # Don't clean up session immediately - process_form might be called
-        # multiple times during validation. Session will be cleaned up when
-        # transaction commits or we can clean it up in a later request
-        #
-        # NOTE: We could add a marker to track which upload_ids were already
-        # processed to avoid duplicate object creation on subsequent calls
-
-        logger.info("process_form for field '{}': final UIDs to be stored = {}".format(
-            field_name, uids))
+        logger.info("process_form for field '{}': final UIDs to be stored = {}"
+                    .format(field_name, uids))
 
         # Delete File/Image objects that were removed from the field
         # Only do this on the first call (when validating is True) to avoid
