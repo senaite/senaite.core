@@ -14,24 +14,40 @@ class MultiUploadWidgetController extends React.Component {
     this.state = {
       files: [],
       uploaded_files: [],
+      existing_uids: [],
     };
 
     // Data keys located at the root element
     const data_keys = [
-      "id",
-      "name",
+      "fieldname",
       "portal_url",
       "context_url",
       "endpoint",
       "max_filesize",
       // https://react-dropzone.js.org/#section-accepting-specific-file-types
       "accepted_types",
+      "existing_files",
     ];
 
     // Query data keys and set state with parsed JSON value
     for (let key of data_keys) {
       let value = el.dataset[key];
       this.state[key] = this.parse_json(value);
+    }
+
+    // Initialize existing files for display
+    const existing_files = this.state.existing_files || [];
+    if (existing_files.length > 0) {
+      this.state.files = existing_files.map(file => ({
+        uid: file.uid,
+        name: file.name,
+        size: file.size || 0,
+        type: file.type,
+        url: file.url,
+        status: "existing",
+        is_existing: true,
+      }));
+      this.state.existing_uids = existing_files.map(file => file.uid);
     }
 
     // Bind callbacks
@@ -81,7 +97,7 @@ class MultiUploadWidgetController extends React.Component {
 
   uploadFile(fileObj) {
     const formData = new FormData();
-    formData.append(this.state.name, fileObj.file);
+    formData.append(this.state.fieldname, fileObj.file);
 
     // Update file status to uploading
     this.setState(prevState => ({
@@ -122,7 +138,7 @@ class MultiUploadWidgetController extends React.Component {
           prevState => ({
             files: prevState.files.map(f =>
               f.name === fileObj.name
-                ? { ...f, status: "success", server_id: data.id }
+                ? { ...f, status: "success", server_id: data.id, upload_id: data.id }
                 : f
             ),
             uploaded_files: [...prevState.uploaded_files, data.id]
@@ -147,18 +163,26 @@ class MultiUploadWidgetController extends React.Component {
       prevState => {
         const fileToRemove = prevState.files[index];
         const newFiles = prevState.files.filter((_, i) => i !== index);
+
+        // Handle removal of uploaded files (new uploads)
         const newUploadedFiles = prevState.uploaded_files.filter(
           id => id !== fileToRemove.server_id
         );
 
-        // Revoke object URL to prevent memory leaks
+        // Handle removal of existing files (already stored)
+        const newExistingUids = prevState.existing_uids.filter(
+          uid => uid !== fileToRemove.uid
+        );
+
+        // Revoke object URL to prevent memory leaks (only for newly uploaded files)
         if (fileToRemove.preview) {
           URL.revokeObjectURL(fileToRemove.preview);
         }
 
         return {
           files: newFiles,
-          uploaded_files: newUploadedFiles
+          uploaded_files: newUploadedFiles,
+          existing_uids: newExistingUids
         };
       },
       this.updateHiddenField
@@ -166,9 +190,17 @@ class MultiUploadWidgetController extends React.Component {
   }
 
   updateHiddenField() {
-    const hiddenInput = document.getElementById(`${this.state.id}-data`);
+    // Update the data field with newly uploaded file session IDs
+    const hiddenInput = document.getElementById(`${this.state.fieldname}-data`);
     if (hiddenInput) {
       hiddenInput.value = JSON.stringify(this.state.uploaded_files);
+    }
+
+    // Update the main field with ONLY existing UIDs
+    // New uploads will be converted to UIDs in process_form
+    const mainInput = document.querySelector(`input[name="${this.state.fieldname}"]`);
+    if (mainInput) {
+      mainInput.value = this.state.existing_uids.join("\r\n");
     }
   }
 
@@ -193,7 +225,15 @@ class MultiUploadWidgetController extends React.Component {
               <div className="file-info d-flex align-items-center flex-grow-1">
                 <span className="file-icon mr-2">📎</span>
                 <div className="file-details">
-                  <div className="file-name font-weight-bold">{fileObj.name}</div>
+                  {fileObj.is_existing && fileObj.url ? (
+                    <div className="file-name font-weight-bold">
+                      <a href={fileObj.url} target="_blank" rel="noopener noreferrer">
+                        {fileObj.name}
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="file-name font-weight-bold">{fileObj.name}</div>
+                  )}
                   <div className="file-size small text-muted">
                     {this.formatFileSize(fileObj.size)}
                   </div>
@@ -205,6 +245,9 @@ class MultiUploadWidgetController extends React.Component {
                 )}
                 {fileObj.status === "success" && (
                   <span className="badge badge-success mr-2">✓ Uploaded</span>
+                )}
+                {fileObj.status === "existing" && (
+                  <span className="badge badge-secondary mr-2">Saved</span>
                 )}
                 {fileObj.status === "error" && (
                   <span className="badge badge-danger mr-2">✗ Error</span>
@@ -239,15 +282,13 @@ class MultiUploadWidgetController extends React.Component {
         <Dropzone
           onDrop={this.onDrop}
           maxSize={maxSize}
-          accept={accept}
-        >
+          accept={accept}>
           {({ getRootProps, getInputProps, isDragActive }) => (
             <div
               {...getRootProps()}
               className={`multi-upload-dropzone border rounded p-4 text-center ${
                 isDragActive ? "drag-active" : ""
-              }`}
-            >
+              }`}>
               <input {...getInputProps()} />
               <div className="dropzone-content">
                 <span className="upload-icon" style={{ fontSize: "2rem" }}>
@@ -271,8 +312,8 @@ class MultiUploadWidgetController extends React.Component {
         {/* Hidden field to store uploaded file IDs */}
         <input
           type="hidden"
-          id={`${this.state.id}-data`}
-          name={`${this.state.name}.data`}
+          id={`${this.state.fieldname}-data`}
+          name={`${this.state.fieldname}.data`}
         />
       </div>
     );

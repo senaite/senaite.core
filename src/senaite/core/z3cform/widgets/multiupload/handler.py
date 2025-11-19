@@ -38,6 +38,8 @@ class MultiUploadHandler(BrowserView):
 
     def upload(self, upload):
         """Store the uploaded file temporarily in the session
+
+        NOTE: This is required since we might be in the add form.
         """
         try:
             # Get filename
@@ -53,6 +55,7 @@ class MultiUploadHandler(BrowserView):
             content_type = self.get_content_type(upload)
 
             # Generate unique upload ID
+            # This is stored in a hidden field and read later by process_form
             upload_id = str(uuid.uuid4())
 
             # Store in session
