@@ -34,9 +34,9 @@ class MultiFileUploadWidget(ReferenceWidget):
     and stores their UIDs as references.
 
     This widget integrates with the React multiupload widget to:
-    1. Accept file uploads
-    2. Create File or Image objects
-    3. Store them in the parent container
+    1. Accept file uploads, even in add forms
+    2. Create File or Image objects for each uploaded file
+    3. Store them in the current context
     4. Store the UIDs of created objects in the field
     """
 
@@ -102,6 +102,24 @@ class MultiFileUploadWidget(ReferenceWidget):
         """
         return getattr(field, "multiValued", False)
 
+    def get_download_url(self, obj):
+        """Get the download URL for a File or Image object
+
+        :param obj: The File or Image object
+        :returns: Download URL string
+        """
+        url = api.get_url(obj)
+        portal_type = api.get_portal_type(obj)
+
+        # For Dexterity File/Image objects, use the @@download view
+        if portal_type == "File":
+            return "{}/@@download/file".format(url)
+        elif portal_type == "Image":
+            return "{}/@@download/image".format(url)
+
+        # Fallback to object URL
+        return url
+
     def get_existing_files_data(self, context, field, value):
         """Get metadata for existing file references to populate React component
 
@@ -116,14 +134,17 @@ class MultiFileUploadWidget(ReferenceWidget):
         for uid in uids:
             try:
                 obj = api.get_object(uid)
+                portal_type = api.get_portal_type(obj)
                 file_data = {
                     "uid": uid,
                     "name": api.get_title(obj),
-                    "url": api.get_url(obj),
-                    "type": api.get_portal_type(obj),
+                    "url": self.get_download_url(obj),
+                    "type": portal_type,
                 }
                 # Try to get file size if available
-                file_obj = getattr(obj, "file", None)
+                # Image objects use 'image' field, File objects use 'file' field
+                field_name = "image" if portal_type == "Image" else "file"
+                file_obj = getattr(obj, field_name, None)
                 if file_obj and hasattr(file_obj, "size"):
                     file_data["size"] = file_obj.size
                 elif file_obj and hasattr(file_obj, "getSize"):
@@ -224,8 +245,7 @@ class MultiFileUploadWidget(ReferenceWidget):
                 data = file_data["data"]
                 filename = api.safe_unicode(file_data["filename"])
                 content_type = file_data["content_type"]
-                # is_image = content_type.startswith("image/")
-                is_image = False
+                is_image = content_type.startswith("image/")
 
                 # Create NamedBlobFile or NamedBlobImage from stored data
                 if is_image:
@@ -246,13 +266,17 @@ class MultiFileUploadWidget(ReferenceWidget):
 
                 try:
                     # Create the object in the parent container
-                    # The blob is passed directly
+                    # Note: Image objects use 'image' field, File objects use 'file' field
+                    field_name = "image" if is_image else "file"
+                    kwargs = {
+                        field_name: blob,
+                        "title": filename,
+                        "checkConstraints": False,
+                    }
                     obj = createContentInContainer(
                         instance,
                         portal_type,
-                        title=filename,
-                        file=blob,
-                        checkConstraints=False,
+                        **kwargs
                     )
 
                     # Reindex to update catalogs
