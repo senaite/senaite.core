@@ -22,15 +22,10 @@ import json
 
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.api.security import grant_permission_for
-from bika.lims.api.security import revoke_permission_for
-from plone.app.referenceablebehavior.referenceable import IReferenceable
 from plone.dexterity.utils import createContentInContainer
 from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.file import NamedBlobImage
 from Products.Archetypes.Registry import registerWidget
-from zope.interface import alsoProvides
-from Products.CMFCore.permissions import DeleteObjects
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 
 
@@ -190,28 +185,18 @@ class MultiFileUploadWidget(ReferenceWidget):
         # Start with existing UIDs
         uids = list(existing_uids)
 
-        if not data:
-            # No new uploads, just return existing UIDs
-            if not self.is_multi_valued(field):
-                return uids[0] if uids else "", {}
-            return uids, {}
-
-        try:
-            # Parse the JSON data containing upload IDs for new files
-            # E.g. [u'27fceb0e-a750-430f-b1ab-b93e0c902fb3', ...]
-            upload_ids = json.loads(data)
-            logger.info("process_form for field '{}': upload_ids from .data "
-                        "field = {}".format(field_name, upload_ids))
-            if not upload_ids:
-                # No new uploads, just return existing UIDs
-                if not self.is_multi_valued(field):
-                    return uids[0] if uids else "", {}
-                return uids, {}
-        except (ValueError, TypeError):
-            logger.error("Invalid JSON data for field {}".format(field_name))
-            if not self.is_multi_valued(field):
-                return uids[0] if uids else "", {}
-            return uids, {}
+        # Parse upload IDs if there are new uploads
+        upload_ids = []
+        if data:
+            try:
+                # Parse the JSON data containing upload IDs for new files
+                # E.g. [u'27fceb0e-a750-430f-b1ab-b93e0c902fb3', ...]
+                upload_ids = json.loads(data)
+                logger.info("process_form for field '{}': upload_ids from .data "
+                            "field = {}".format(field_name, upload_ids))
+            except (ValueError, TypeError):
+                logger.error("Invalid JSON data for field {}".format(field_name))
+                upload_ids = []
 
         # Get uploaded files from session
         session = instance.REQUEST.SESSION
@@ -239,9 +224,9 @@ class MultiFileUploadWidget(ReferenceWidget):
                 data = file_data["data"]
                 filename = api.safe_unicode(file_data["filename"])
                 content_type = file_data["content_type"]
-                is_image = content_type.startswith("image/")
+                # is_image = content_type.startswith("image/")
+                is_image = False
 
-                import pdb; pdb.set_trace()
                 # Create NamedBlobFile or NamedBlobImage from stored data
                 if is_image:
                     blob = NamedBlobImage(
@@ -269,16 +254,6 @@ class MultiFileUploadWidget(ReferenceWidget):
                         file=blob,
                         checkConstraints=False,
                     )
-
-                    # Dynamically apply IReferenceable behavior
-                    # -> Probably better added in the UIDReferenceField itself
-                    if not IReferenceable.providedBy(obj):
-                        alsoProvides(obj, IReferenceable)
-
-                    # Catalog the object, so that api.get_object(uid) works
-                    uc = api.get_tool("uid_catalog")
-                    # Note: The path is not used by this method!
-                    uc._catalogObject(obj, api.get_path(obj))
 
                     # Reindex to update catalogs
                     obj.reindexObject()
@@ -308,10 +283,12 @@ class MultiFileUploadWidget(ReferenceWidget):
                     .format(field_name, uids))
 
         # Delete File/Image objects that were removed from the field
-        # Only do this on the first call (when validating is True) to avoid
-        # multiple deletions during subsequent validation calls
-        if validating and old_uids:
+        logger.info("Checking deletion: validating={}, old_uids={}, uids={}".format(
+            validating, old_uids, uids))
+
+        if old_uids:
             removed_uids = set(old_uids) - set(uids)
+            logger.info("Removed UIDs: {}".format(removed_uids))
             if removed_uids:
                 self.delete_removed_files(instance, removed_uids)
 
@@ -324,6 +301,9 @@ class MultiFileUploadWidget(ReferenceWidget):
     def delete_removed_files(self, container, uids):
         """Delete File/Image objects that were removed from the field
 
+        Uses a privileged security context to delete files even when the
+        current user doesn't have Delete permission on the container.
+
         :param container: The parent container
         :param uids: List of UIDs to delete
         """
@@ -333,44 +313,50 @@ class MultiFileUploadWidget(ReferenceWidget):
         logger.info("Deleting {} removed file(s) from {}".format(
             len(uids), api.get_path(container)))
 
-        # Get current user
-        user = api.get_current_user()
-
-        for uid in uids:
-            try:
-                obj = api.get_object(uid)
-                parent = api.get_parent(obj)
-
-                # Verify the object lives actually in this container
-                if parent != container:
-                    logger.warning("Skipping deletion of {}: not in container"
-                                   .format(uid))
-                    continue
-
-                # Store title before deletion for logging
-                obj_title = api.get_title(obj)
-                obj_type = obj.portal_type
-
-                # Temporarily grant Delete objects permission to the parent
-                # since the permission needs to be checked on the container
-                grant_permission_for(DeleteObjects, user, parent)
-
+        # Use privileged context to delete files
+        with api.security.as_privileged_user():
+            for uid in uids:
                 try:
-                    # Delete the object
-                    api.delete(obj)
-                    logger.info(u"Deleted {} object: {}".format(
-                        obj_type, api.safe_unicode(obj_title)))
-                finally:
-                    # Revoke the permission from the parent container
-                    revoke_permission_for(DeleteObjects, user, parent)
+                    obj = api.get_object(uid)
+                    parent = api.get_parent(obj)
 
-            except api.APIError as e:
-                logger.error("Error deleting object {}: {}".format(uid, str(e)))
-                continue
-            except Exception as e:
-                logger.error("Unexpected error deleting object {}: {}".format(
-                    uid, str(e)))
-                continue
+                    # Verify the object lives actually in this container
+                    if parent != container:
+                        logger.warning(
+                            "Skipping deletion of {}: not in container "
+                            "(parent: {}, expected: {})".format(
+                                uid, api.get_path(parent), api.get_path(container)))
+                        continue
+
+                    # Verify it's a File or Image
+                    if api.get_portal_type(obj) not in ["File", "Image"]:
+                        logger.warning(
+                            "Skipping deletion of {}: not a File/Image "
+                            "(type: {})".format(uid, api.get_portal_type(obj)))
+                        continue
+
+                    # Store info before deletion for logging
+                    obj_title = api.get_title(obj)
+                    obj_type = api.get_portal_type(obj)
+                    obj_path = api.get_path(obj)
+
+                    # Delete the object using privileged context
+                    api.delete(obj)
+                    logger.info(u"Deleted {} object: {} (was at: {})".format(
+                        obj_type, api.safe_unicode(obj_title), obj_path))
+
+                except api.APIError as e:
+                    logger.error("Error deleting object {}: {}".format(
+                        uid, str(e)))
+                    import traceback
+                    logger.error(traceback.format_exc())
+                    continue
+                except Exception as e:
+                    logger.error("Unexpected error deleting object {}: {}".format(
+                        uid, str(e)))
+                    import traceback
+                    logger.error(traceback.format_exc())
+                    continue
 
 
 registerWidget(MultiFileUploadWidget,
