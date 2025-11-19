@@ -60,6 +60,24 @@ class MultiUploadWidget(widget.HTMLFormElement, Widget):
         # Fallback to object URL
         return url
 
+    def get_file_size(self, obj):
+        """Get the file size for a File or Image object
+
+        :param obj: The File or Image object
+        :returns: File size in bytes, or 0 if not available
+        """
+        portal_type = api.get_portal_type(obj)
+        # Image objects use 'image' field, File objects use 'file' field
+        field_name = "image" if portal_type == "Image" else "file"
+        file_obj = getattr(obj, field_name, None)
+
+        if file_obj and hasattr(file_obj, "size"):
+            return file_obj.size
+        elif file_obj and hasattr(file_obj, "getSize"):
+            return file_obj.getSize()
+
+        return 0
+
     def get_existing_files_data(self):
         """Get metadata for existing file references to populate React component
 
@@ -73,25 +91,13 @@ class MultiUploadWidget(widget.HTMLFormElement, Widget):
                 continue
             try:
                 obj = api.get_object(uid)
-                portal_type = api.get_portal_type(obj)
                 file_data = {
                     "uid": uid,
                     "name": api.get_title(obj),
                     "url": self.get_download_url(obj),
-                    "type": portal_type,
+                    "type": api.get_portal_type(obj),
+                    "size": self.get_file_size(obj),
                 }
-
-                # Try to get file size if available
-                # Image objects use 'image' field, File objects use 'file' field
-                field_name = "image" if portal_type == "Image" else "file"
-                file_obj = getattr(obj, field_name, None)
-                if file_obj and hasattr(file_obj, "size"):
-                    file_data["size"] = file_obj.size
-                elif file_obj and hasattr(file_obj, "getSize"):
-                    file_data["size"] = file_obj.getSize()
-                else:
-                    file_data["size"] = 0
-
                 existing_files.append(file_data)
 
             except api.APIError:
