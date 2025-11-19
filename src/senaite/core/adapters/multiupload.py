@@ -27,10 +27,9 @@ from senaite.core.interfaces import IMultiUploadFileCreator
 from zope.component import adapter
 from zope.interface import implementer
 from zope.interface import Interface
-from zope.schema.interfaces import IField
 
 
-@adapter(Interface, IField)
+@adapter(Interface, Interface)
 @implementer(IMultiUploadFileCreator)
 class DefaultFileCreator(object):
     """Default adapter for creating File/Image objects from uploaded data

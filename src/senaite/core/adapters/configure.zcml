@@ -73,7 +73,7 @@
   <adapter
       factory=".multiupload.DefaultFileCreator"
       for="zope.interface.Interface
-           zope.schema.interfaces.IField"
+           zope.interface.Interface"
       provides="senaite.core.interfaces.IMultiUploadFileCreator" />
 
 </configure>
