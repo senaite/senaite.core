@@ -302,11 +302,11 @@ class MultiUploadDataConverter(BaseDataConverter):
             removed_uids = set(old_uids) - set(uids)
             logger.info("Removed UIDs: {}".format(removed_uids))
             if removed_uids:
-                self._delete_removed_files(context, removed_uids)
+                self.delete_removed_files(context, removed_uids)
 
         return tuple(uids)
 
-    def _delete_removed_files(self, container, uids):
+    def delete_removed_files(self, container, uids):
         """Delete File/Image objects that were removed from the field
 
         :param container: The parent container
