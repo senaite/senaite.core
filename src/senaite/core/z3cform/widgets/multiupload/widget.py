@@ -4,9 +4,7 @@ import json
 
 from bika.lims import api
 from bika.lims import logger
-from plone.dexterity.utils import createContentInContainer
-from plone.namedfile.file import NamedBlobFile
-from plone.namedfile.file import NamedBlobImage
+from senaite.core.interfaces import IMultiUploadFileCreator
 from senaite.core.interfaces import IMultiUploadWidget
 from senaite.core.interfaces import ISenaiteFormLayer
 from z3c.form.browser import widget
@@ -16,6 +14,7 @@ from z3c.form.interfaces import IFieldWidget
 from z3c.form.widget import FieldWidget
 from z3c.form.widget import Widget
 from zope.component import adapter
+from zope.component import getMultiAdapter
 from zope.interface import implementer
 from zope.interface import implementer_only
 from zope.schema.interfaces import ITuple
@@ -236,42 +235,16 @@ class MultiUploadDataConverter(BaseDataConverter):
                 data = file_data["data"]
                 filename = api.safe_unicode(file_data["filename"])
                 content_type = file_data["content_type"]
-                is_image = content_type.startswith("image/")
-
-                # Create NamedBlobFile or NamedBlobImage
-                if is_image:
-                    blob = NamedBlobImage(
-                        data=data,
-                        filename=filename,
-                        contentType=content_type
-                    )
-                else:
-                    blob = NamedBlobFile(
-                        data=data,
-                        filename=filename,
-                        contentType=content_type
-                    )
-
-                # Determine portal type
-                portal_type = "Image" if is_image else "File"
 
                 try:
-                    # Create the object in the parent container
-                    # Note: Image objects use 'image' field, File objects use 'file' field
-                    field_name = "image" if is_image else "file"
-                    kwargs = {
-                        field_name: blob,
-                        "title": filename,
-                        "checkConstraints": False,
-                    }
-                    obj = createContentInContainer(
-                        context,
-                        portal_type,
-                        **kwargs
+                    # Get the file creator adapter
+                    creator = getMultiAdapter(
+                        (context, field),
+                        IMultiUploadFileCreator
                     )
 
-                    # Reindex to update catalogs
-                    obj.reindexObject()
+                    # Create the File/Image object using the adapter
+                    obj = creator.create(filename, content_type, data)
 
                     # Get UID
                     uid = api.get_uid(obj)
@@ -281,13 +254,10 @@ class MultiUploadDataConverter(BaseDataConverter):
                     created_uids_map[upload_id] = uid
                     session[created_uids_key] = created_uids_map
 
-                    logger.info(u"Created {} object {} with UID {}".format(
-                        portal_type, filename, uid))
-
                 except Exception as e:
                     import traceback
-                    logger.error(u"Error creating {} object {}: {}".format(
-                        portal_type, filename, api.safe_unicode(str(e))))
+                    logger.error(u"Error creating object {}: {}".format(
+                        filename, api.safe_unicode(str(e))))
                     logger.error(traceback.format_exc())
                     continue
             else:

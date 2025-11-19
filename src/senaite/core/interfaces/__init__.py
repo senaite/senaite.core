@@ -526,3 +526,20 @@ class IAfterCreateSampleHook(Interface):
         :param source: The source sample from where this sample was copied,
                        otherwise None
         """
+
+
+class IMultiUploadFileCreator(Interface):
+    """Adapter for creating File/Image objects from uploaded data
+
+    This adapter is looked up by (context, field) and can be overridden
+    to customize file/image creation behavior for specific contexts or fields.
+    """
+
+    def create(filename, content_type, data):
+        """Create a File or Image object from uploaded data
+
+        :param filename: The original filename (unicode)
+        :param content_type: The MIME content type
+        :param data: The binary file data (bytes)
+        :returns: The created File or Image object
+        """

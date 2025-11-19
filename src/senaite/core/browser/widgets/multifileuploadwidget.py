@@ -22,11 +22,10 @@ import json
 
 from bika.lims import api
 from bika.lims import logger
-from plone.dexterity.utils import createContentInContainer
-from plone.namedfile.file import NamedBlobFile
-from plone.namedfile.file import NamedBlobImage
 from Products.Archetypes.Registry import registerWidget
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.interfaces import IMultiUploadFileCreator
+from zope.component import getMultiAdapter
 
 
 class MultiFileUploadWidget(ReferenceWidget):
@@ -255,42 +254,14 @@ class MultiFileUploadWidget(ReferenceWidget):
                 data = file_data["data"]
                 filename = api.safe_unicode(file_data["filename"])
                 content_type = file_data["content_type"]
-                is_image = content_type.startswith("image/")
-
-                # Create NamedBlobFile or NamedBlobImage from stored data
-                if is_image:
-                    blob = NamedBlobImage(
-                        data=data,
-                        filename=filename,
-                        contentType=content_type
-                    )
-                else:
-                    blob = NamedBlobFile(
-                        data=data,
-                        filename=filename,
-                        contentType=content_type
-                    )
-
-                # Determine portal type
-                portal_type = "Image" if is_image else "File"
 
                 try:
-                    # Create the object in the parent container
-                    # Note: Image objects use 'image' field, File objects use 'file' field
-                    field_name = "image" if is_image else "file"
-                    kwargs = {
-                        field_name: blob,
-                        "title": filename,
-                        "checkConstraints": False,
-                    }
-                    obj = createContentInContainer(
-                        instance,
-                        portal_type,
-                        **kwargs
-                    )
+                    # Get the file creator adapter
+                    creator = getMultiAdapter(
+                        (instance, field), IMultiUploadFileCreator)
 
-                    # Reindex to update catalogs
-                    obj.reindexObject()
+                    # Create the File/Image object using the adapter
+                    obj = creator.create(filename, content_type, data)
 
                     # Get UID
                     uid = api.get_uid(obj)
@@ -300,13 +271,10 @@ class MultiFileUploadWidget(ReferenceWidget):
                     created_uids_map[upload_id] = uid
                     session[created_uids_key] = created_uids_map
 
-                    logger.info(u"Created {} object {} with UID {}".format(
-                        portal_type, filename, uid))
-
                 except Exception as e:
                     import traceback
-                    logger.error(u"Error creating {} object {}: {}".format(
-                        portal_type, filename, api.safe_unicode(str(e))))
+                    logger.error(u"Error creating object {}: {}".format(
+                        filename, api.safe_unicode(str(e))))
                     logger.error(traceback.format_exc())
                     continue
             else:
