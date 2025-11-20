@@ -111,29 +111,37 @@ class MultiUploadWidget(UIDReferenceWidget):
 
         return existing_files
 
-    def get_data_attributes(self):
-        """Return data attributes for the React widget"""
+    def get_value(self):
+        """Extract the value from the widget
+
+        Returns the current UIDs as a list
+        """
+        value = self.value
+        if value is None:
+            return []
+        if not isinstance(value, (list, tuple)):
+            return []
+        return list(value)
+
+    def get_input_widget_attributes(self):
+        """Return input widget attributes for the ReactJS component
+
+        This method gets called from the page template to populate the
+        attributes that are used by the ReactJS widget component.
+        """
         existing_files = self.get_existing_files_data()
 
-        return {
-            "fieldname": self.name,
-            "portal_url": self.portal_url,
-            "context_url": self.context_url,
-            "endpoint": "@@multiupload_handler",
-            "max_filesize": 10485760,  # 10MB default
-            "accepted_types": {},  # Accept all file types by default
-            "existing_files": existing_files,
+        attributes = {
+            "data-fieldname": self.name,
+            "data-portal-url": self.portal_url,
+            "data-context-url": self.context_url,
+            "data-endpoint": "@@multiupload_handler",
+            "data-max-filesize": json.dumps(10485760),  # 10MB default
+            "data-accepted-types": json.dumps({}),  # Accept all file types by default
+            "data-existing-files": json.dumps(existing_files),
         }
 
-    def render_data_attributes(self):
-        """Render data attributes as HTML string"""
-        attrs = []
-        for key, value in self.get_data_attributes().items():
-            json_value = json.dumps(value)
-            # Escape quotes for HTML attribute
-            json_value = json_value.replace('"', '&quot;')
-            attrs.append('data-{}="{}"'.format(key, json_value))
-        return " ".join(attrs)
+        return attributes
 
     def extract(self, default=None):
         """Extract uploaded files from request
