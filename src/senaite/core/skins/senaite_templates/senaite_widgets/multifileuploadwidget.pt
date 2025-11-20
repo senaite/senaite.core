@@ -67,12 +67,12 @@
                              data-existing_files python:existing_files;
                              python:widget_attrs;">
           <!-- ReactJS multiupload widget will be rendered here -->
-        </div>
 
         <!-- Hidden input field to store the current UIDs (for display only) -->
         <input type="hidden"
                tal:attributes="name python:fieldName;
                      value python:'\r\n'.join(field.widget.get_value(context, field, value))" />
+        </div>
 
         <div class="fieldErrorBox" tal:condition="required"></div>
         <div class="fieldErrorBox" tal:content="error_id" i18n:translate=""></div>
