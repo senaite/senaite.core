@@ -14,6 +14,7 @@ from z3c.form.interfaces import IDataConverter
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.widget import FieldWidget
 from zope.component import adapter
+from zope.schema.interfaces import IField
 from zope.component import getAdapter
 from zope.component import getMultiAdapter
 from zope.interface import Interface
@@ -294,7 +295,7 @@ class MultiUploadWidget(UIDReferenceWidget):
         return uids
 
 
-@adapter(IMultiUploadWidget)
+@adapter(IField, IMultiUploadWidget)
 @implementer(IDataConverter)
 class MultiUploadDataConverter(BaseDataConverter):
     """Data converter for multi-upload widget
