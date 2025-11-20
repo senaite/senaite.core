@@ -17,7 +17,6 @@ from z3c.form.widget import FieldWidget
 from zope.component import adapter
 from zope.component import getAdapter
 from zope.component import getMultiAdapter
-from zope.interface import Interface
 from zope.interface import implementer
 from zope.interface import implementer_only
 
