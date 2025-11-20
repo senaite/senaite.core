@@ -53,7 +53,6 @@ class MultiUploadWidgetController extends React.Component {
     // Bind callbacks
     this.onDrop = this.onDrop.bind(this);
     this.removeFile = this.removeFile.bind(this);
-    this.updateHiddenField = this.updateHiddenField.bind(this);
 
     return this;
   }
@@ -134,17 +133,14 @@ class MultiUploadWidgetController extends React.Component {
         }
 
         console.debug("Upload success:", data);
-        this.setState(
-          prevState => ({
-            files: prevState.files.map(f =>
-              f.name === fileObj.name
-                ? { ...f, status: "success", server_id: data.id, upload_id: data.id }
-                : f
-            ),
-            uploaded_files: [...prevState.uploaded_files, data.id]
-          }),
-          this.updateHiddenField
-        );
+        this.setState(prevState => ({
+          files: prevState.files.map(f =>
+            f.name === fileObj.name
+              ? { ...f, status: "success", server_id: data.id, upload_id: data.id }
+              : f
+          ),
+          uploaded_files: [...prevState.uploaded_files, data.id]
+        }));
       })
       .catch(error => {
         console.error("Upload error:", error);
@@ -184,24 +180,8 @@ class MultiUploadWidgetController extends React.Component {
           uploaded_files: newUploadedFiles,
           existing_uids: newExistingUids
         };
-      },
-      this.updateHiddenField
+      }
     );
-  }
-
-  updateHiddenField() {
-    // Update the data field with newly uploaded file session IDs
-    const hiddenInput = document.getElementById(`${this.state.fieldname}-data`);
-    if (hiddenInput) {
-      hiddenInput.value = JSON.stringify(this.state.uploaded_files);
-    }
-
-    // Update the main field with ONLY existing UIDs
-    // New uploads will be converted to UIDs in process_form
-    const mainInput = document.querySelector(`input[name="${this.state.fieldname}"]`);
-    if (mainInput) {
-      mainInput.value = this.state.existing_uids.join("\r\n");
-    }
   }
 
   formatFileSize(bytes) {
@@ -309,11 +289,19 @@ class MultiUploadWidgetController extends React.Component {
 
         {this.renderFileList()}
 
+        {/* Hidden field to store existing UIDs (maintained by React) */}
+        <input
+          type="hidden"
+          name={this.state.fieldname}
+          value={this.state.existing_uids.join("\r\n")}
+        />
+
         {/* Hidden field to store uploaded file IDs */}
         <input
           type="hidden"
           id={`${this.state.fieldname}-data`}
           name={`${this.state.fieldname}.data`}
+          value={JSON.stringify(this.state.uploaded_files)}
         />
       </div>
     );
