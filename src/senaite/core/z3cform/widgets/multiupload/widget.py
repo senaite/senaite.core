@@ -149,6 +149,9 @@ class MultiUploadWidget(UIDReferenceWidget):
 
         Returns the final list of UIDs (existing + newly created)
         """
+        logger.info("="*80)
+        logger.info("extract() called for field '{}'".format(self.name))
+
         # Get existing Plone UIDs from the main field (maintained by React)
         main_value = self.request.form.get(self.name, "")
         existing_uids = []
@@ -202,14 +205,31 @@ class MultiUploadWidget(UIDReferenceWidget):
             # Check if we already created an object for this upload_id
             if upload_id in created_uids_map:
                 uid = created_uids_map[upload_id]
-                uids.append(uid)
-                logger.info("Reusing existing UID {} for upload_id {}".format(
-                    uid, upload_id))
-                continue
+                # Verify the object still exists (might have been rolled back)
+                try:
+                    obj = api.get_object(uid)
+                    uids.append(uid)
+                    logger.info("Reusing existing UID {} for upload_id {}".format(
+                        uid, upload_id))
+                    continue
+                except api.APIError:
+                    logger.warning("UID {} from session no longer exists, recreating for upload_id {}".format(
+                        uid, upload_id))
+                    # Remove stale UID from map and fall through to recreate
+                    del created_uids_map[upload_id]
+                    session[created_uids_key] = created_uids_map
 
-            if upload_id in uploaded_files:
-                file_data = uploaded_files[upload_id]
+            # Get file data from session dict
+            file_data = uploaded_files.get(upload_id)
 
+            logger.info("Looking for upload_id {} in session dict".format(upload_id))
+            if file_data:
+                logger.info("✓ Found file data in session for upload_id {}".format(upload_id))
+            else:
+                logger.warning("✗ File data NOT found in session for upload_id {}".format(upload_id))
+                logger.info("Available upload IDs in session: {}".format(uploaded_files.keys()))
+
+            if file_data:
                 data = file_data["data"]
                 filename = api.safe_unicode(file_data["filename"])
                 content_type = file_data["content_type"]
@@ -234,6 +254,8 @@ class MultiUploadWidget(UIDReferenceWidget):
 
                     logger.info("Created object with UID {} for upload_id {}".format(
                         uid, upload_id))
+                    logger.info("Created and mapped: upload_id {} -> UID {}".format(
+                        upload_id, uid))
 
                 except Exception as e:
                     import traceback
@@ -242,7 +264,7 @@ class MultiUploadWidget(UIDReferenceWidget):
                     logger.error(traceback.format_exc())
                     continue
             else:
-                logger.warning("Upload ID {} not found in session, skipping".format(
+                logger.warning("Upload file data for ID {} not found in session, skipping".format(
                     upload_id))
 
         logger.info("extract for field '{}': final UIDs={}".format(

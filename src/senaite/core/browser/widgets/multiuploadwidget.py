@@ -67,10 +67,10 @@ class MultiUploadWidget(ReferenceWidget):
             context, field, value)
 
     def get_input_widget_attributes(self, context, field, value):
-        """Return input widget attributes for the ReactJS multiupload component
+        """Return input widget attributes for the ReactJS widget
 
         This method is called from the page template to populate the
-        data attributes that are used by the ReactJS widget component.
+        data attributes used by the ReactJS widget component.
 
         :param context: The current context of the field
         :param field: The current field of the widget
@@ -116,7 +116,7 @@ class MultiUploadWidget(ReferenceWidget):
         url = api.get_url(obj)
         portal_type = api.get_portal_type(obj)
 
-        # For Dexterity File/Image objects, use the @@download view
+        # For Dexterity File/Image objects, use @@download view
         if portal_type == "File":
             return "{}/@@download/file".format(url)
         elif portal_type == "Image":
@@ -133,7 +133,7 @@ class MultiUploadWidget(ReferenceWidget):
         """
         if field_name is None:
             portal_type = api.get_portal_type(obj)
-            # Image objects use 'image' field, File objects use 'file' field
+            # Image uses 'image' field, File uses 'file' field
             field_name = "image" if portal_type == "Image" else "file"
 
         # get the file object from the field
@@ -147,11 +147,11 @@ class MultiUploadWidget(ReferenceWidget):
         return 0
 
     def get_existing_files_data(self, context, field, value):
-        """Get metadata for existing file references to populate React component
+        """Get metadata for existing file references
 
         :param context: The current context of the field
         :param field: The current field of the widget
-        :param value: The current field value (list of UIDs or objects)
+        :param value: The current field value (list of UIDs)
         :returns: JSON string with existing file data
         """
         existing_files = []
@@ -170,50 +170,65 @@ class MultiUploadWidget(ReferenceWidget):
                 existing_files.append(file_data)
 
             except api.APIError:
-                logger.error("Could not retrieve object for UID: {}".format(uid))
+                logger.error(
+                    "Could not retrieve object for UID: {}"
+                    .format(uid))
                 continue
 
         return json.dumps(existing_files)
 
-    def process_form(self, instance, field, form, empty_marker=None,
-                     emptyReturnsMarker=False, validating=True):
-        """Process form data and create File/Image objects from uploads
+    def process_form(
+            self, instance, field, form,
+            empty_marker=None, emptyReturnsMarker=False,
+            validating=True):
+        """Process form data and create File/Image objects
 
         This method:
-        1. Gets the main field value which contains existing UIDs
-        2. Gets uploaded file IDs from the .data field (stored by multiupload handler)
+        1. Gets the main field value (existing UIDs)
+        2. Gets uploaded file IDs from .data field
         3. Creates File or Image objects for new uploads
         4. Deletes File/Image objects that were removed
-        5. Returns the combined list of existing + new UIDs to be stored
+        5. Returns combined list of existing + new UIDs
         """
         # Skip processing for temporary instances
         if instance.isTemporary():
             return [], {}
 
-        # Get current field value (before form processing)
         field_name = field.getName()
+        logger.info("=" * 80)
+        logger.info(
+            "process_form() called for field '{}', validating={}"
+            .format(field_name, validating))
+
+        # Get current field value (before form processing)
         old_value = field.get(instance)
         old_uids = []
         if old_value:
             if isinstance(old_value, (list, tuple)):
-                old_uids = [api.get_uid(obj) for obj in old_value if api.is_object(obj)]
+                old_uids = [
+                    api.get_uid(obj) for obj in old_value
+                    if api.is_object(obj)]
             elif api.is_object(old_value):
                 old_uids = [api.get_uid(old_value)]
 
-        # Get the main field value (existing UIDs maintained by React)
+        # Get the main field value (existing UIDs from React)
         main_value = form.get(field_name, "")
         existing_uids = []
         if main_value:
             if api.is_string(main_value):
                 # UIDs are separated by \r\n
-                existing_uids = [uid.strip() for uid in main_value.split("\r\n") if uid.strip()]
+                existing_uids = [
+                    uid.strip() for uid in main_value.split("\r\n")
+                    if uid.strip()]
             elif isinstance(main_value, (list, tuple)):
                 existing_uids = [uid for uid in main_value if uid]
 
-        logger.info("process_form for field '{}': old_uids = {}, existing_uids from main field = {}".format(
-            field_name, old_uids, existing_uids))
+        logger.info(
+            "process_form for field '{}': old_uids = {}, "
+            "existing_uids from main field = {}"
+            .format(field_name, old_uids, existing_uids))
 
-        # Get the JSON data from the .data hidden field (new uploads only)
+        # Get the JSON data from .data field (new uploads only)
         # It contains the generated UUIDs for uploaded files
         data_field = field_name + ".data"
         data = form.get(data_field, "")
@@ -225,38 +240,67 @@ class MultiUploadWidget(ReferenceWidget):
         upload_ids = []
         if data:
             try:
-                # Parse the JSON data containing upload IDs for new files
-                # E.g. [u'27fceb0e-a750-430f-b1ab-b93e0c902fb3', ...]
+                # Parse JSON data with upload IDs
                 upload_ids = json.loads(data)
-                logger.info("process_form for field '{}': upload_ids from .data "
-                            "field = {}".format(field_name, upload_ids))
+                logger.info(
+                    "process_form for field '{}': upload_ids "
+                    "from .data field = {}"
+                    .format(field_name, upload_ids))
             except (ValueError, TypeError):
-                logger.error("Invalid JSON data for field {}".format(field_name))
+                logger.error(
+                    "Invalid JSON data for field {}"
+                    .format(field_name))
                 upload_ids = []
 
-        # Get uploaded files from session
+        # Get session and uploaded files
         session = instance.REQUEST.SESSION
         uploaded_files = session.get("multiupload_files", {})
 
-        # Track created UIDs in session to handle multiple process_form calls
-        # (which happens during validation)
+        # Track created UIDs to handle multiple calls
         created_uids_key = "multiupload_created_uids"
         created_uids_map = session.get(created_uids_key, {})
 
         # Create File/Image objects for each uploaded file
         for upload_id in upload_ids:
-            # Check if we already created an object for this upload_id
+            # Check if we already created object for this upload_id
             if upload_id in created_uids_map:
-                # Reuse the UID from a previous process_form call
+                # Reuse the UID from previous process_form call
                 uid = created_uids_map[upload_id]
-                uids.append(uid)
-                logger.info("Reusing existing UID {} for upload_id {}".format(
-                    uid, upload_id))
-                continue
+                # Verify object still exists (might be rolled back)
+                try:
+                    obj = api.get_object(uid)
+                    uids.append(uid)
+                    logger.info(
+                        "Reusing existing UID {} for upload_id {}"
+                        .format(uid, upload_id))
+                    continue
+                except api.APIError:
+                    logger.warning(
+                        "UID {} no longer exists, recreating for "
+                        "upload_id {}".format(uid, upload_id))
+                    # Remove stale UID and fall through to recreate
+                    del created_uids_map[upload_id]
+                    session[created_uids_key] = created_uids_map
 
-            if upload_id in uploaded_files:
-                file_data = uploaded_files[upload_id]
+            # Get file data from session dict
+            file_data = uploaded_files.get(upload_id)
 
+            logger.info(
+                "Looking for upload_id {} in session dict"
+                .format(upload_id))
+            if file_data:
+                logger.info(
+                    "✓ Found file data for upload_id {}"
+                    .format(upload_id))
+            else:
+                logger.warning(
+                    "✗ File data NOT found for upload_id {}"
+                    .format(upload_id))
+                logger.info(
+                    "Available upload IDs in session: {}"
+                    .format(uploaded_files.keys()))
+
+            if file_data:
                 data = file_data["data"]
                 filename = api.safe_unicode(file_data["filename"])
                 content_type = file_data["content_type"]
@@ -266,8 +310,9 @@ class MultiUploadWidget(ReferenceWidget):
                     creator = getMultiAdapter(
                         (instance, field), IMultiUploadFileCreator)
 
-                    # Create the File/Image object using the adapter
-                    obj = creator.create(filename, content_type, data)
+                    # Create the File/Image object
+                    obj = creator.create(
+                        filename, content_type, data)
 
                     # Get UID
                     uid = api.get_uid(obj)
@@ -277,22 +322,30 @@ class MultiUploadWidget(ReferenceWidget):
                     created_uids_map[upload_id] = uid
                     session[created_uids_key] = created_uids_map
 
+                    logger.info(
+                        "Created and mapped: upload_id {} -> UID {}"
+                        .format(upload_id, uid))
+
                 except Exception as e:
                     import traceback
-                    logger.error(u"Error creating object {}: {}".format(
-                        filename, api.safe_unicode(str(e))))
+                    logger.error(
+                        u"Error creating object {}: {}"
+                        .format(filename, api.safe_unicode(str(e))))
                     logger.error(traceback.format_exc())
                     continue
             else:
-                logger.warning("Upload ID {} not found in session, skipping"
-                               .format(upload_id))
+                logger.warning(
+                    "Upload file data for ID {} not found, skipping"
+                    .format(upload_id))
 
-        logger.info("process_form for field '{}': final UIDs to be stored = {}"
-                    .format(field_name, uids))
+        logger.info(
+            "process_form for field '{}': final UIDs = {}"
+            .format(field_name, uids))
 
-        # Delete File/Image objects that were removed from the field
-        logger.info("Checking deletion: validating={}, old_uids={}, uids={}".format(
-            validating, old_uids, uids))
+        # Delete File/Image objects that were removed
+        logger.info(
+            "Checking deletion: validating={}, old_uids={}, uids={}"
+            .format(validating, old_uids, uids))
 
         if old_uids:
             removed_uids = set(old_uids) - set(uids)
@@ -307,7 +360,7 @@ class MultiUploadWidget(ReferenceWidget):
         return uids, {}
 
     def delete_removed_files(self, container, uids):
-        """Delete File/Image objects that were removed from the field
+        """Delete File/Image objects removed from the field
 
         :param container: The parent container
         :param uids: List of UIDs to delete
@@ -315,12 +368,15 @@ class MultiUploadWidget(ReferenceWidget):
         if not uids:
             return
 
-        # Remove the files using the `IMultiUploadFileRemover` adapter
+        # Remove files using IMultiUploadFileRemover adapter
         remover = getAdapter(container, IMultiUploadFileRemover)
         remover.remove(uids)
 
 
-registerWidget(MultiUploadWidget,
-               title="Multi Upload Widget",
-               description="Widget for uploading files into the parent container keeping UID references",
-               used_for=("bika.lims.browser.fields.UIDReferenceField",))
+registerWidget(
+    MultiUploadWidget,
+    title="Multi Upload Widget",
+    description=(
+        "Widget for uploading files into the parent container "
+        "keeping UID references"),
+    used_for=("bika.lims.browser.fields.UIDReferenceField",))
