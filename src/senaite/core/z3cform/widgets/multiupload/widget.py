@@ -158,20 +158,8 @@ class MultiUploadWidget(UIDReferenceWidget):
         main_value = self.request.form.get(self.name, "")
         existing_uids = []
         if main_value:
-            if isinstance(main_value, str):
-                # Split by newlines
-                all_values = [
-                    uid.strip() for uid in main_value.split("\r\n")
-                    if uid.strip()]
-            elif isinstance(main_value, (list, tuple)):
-                all_values = [uid for uid in main_value if uid]
-            else:
-                all_values = []
-
-            # Filter out upload UUIDs (dashes) and keep Plone UIDs only
-            # Plone UIDs: 32 chars no dashes, upload UUIDs: have dashes
-            existing_uids = [
-                uid for uid in all_values if uid and "-" not in uid]
+            # Split by newlines
+            existing_uids = [uid.strip() for uid in main_value.split("\r\n")]
 
         logger.info("extract for field '{}': existing_uids={}".format(
             self.name, existing_uids))
@@ -234,17 +222,6 @@ class MultiUploadWidget(UIDReferenceWidget):
             logger.info(
                 "Looking for upload_id {} in session dict".format(
                     upload_id))
-            if file_data:
-                logger.info(
-                    "✓ Found file data in session for upload_id {}"
-                    .format(upload_id))
-            else:
-                logger.warning(
-                    "✗ File data NOT found in session for upload_id {}"
-                    .format(upload_id))
-                logger.info(
-                    "Available upload IDs in session: {}".format(
-                        uploaded_files.keys()))
 
             if file_data:
                 data = file_data["data"]
