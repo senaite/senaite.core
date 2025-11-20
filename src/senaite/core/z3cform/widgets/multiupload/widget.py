@@ -8,26 +8,25 @@ from senaite.core.interfaces import IMultiUploadFileCreator
 from senaite.core.interfaces import IMultiUploadFileRemover
 from senaite.core.interfaces import IMultiUploadWidget
 from senaite.core.interfaces import ISenaiteFormLayer
-from z3c.form.browser import widget
+from senaite.core.z3cform.widgets.uidreference.widget import UIDReferenceWidget
 from z3c.form.converter import BaseDataConverter
 from z3c.form.interfaces import IDataConverter
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.widget import FieldWidget
-from z3c.form.widget import Widget
 from zope.component import adapter
 from zope.component import getAdapter
 from zope.component import getMultiAdapter
+from zope.interface import Interface
 from zope.interface import implementer
 from zope.interface import implementer_only
-from zope.schema.interfaces import ITuple
 
 
 @implementer_only(IMultiUploadWidget)
-class MultiUploadWidget(widget.HTMLFormElement, Widget):
+class MultiUploadWidget(UIDReferenceWidget):
     """Multi-file upload widget using React and react-dropzone
     """
 
-    klass = u"multi-upload-widget"
+    klass = u"multiuploadfield"
     value = ()
 
     def update(self):
