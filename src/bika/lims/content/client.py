@@ -25,8 +25,8 @@ from bika.lims import _
 from bika.lims import api
 from bika.lims.browser.fields import EmailsField
 from bika.lims.browser.fields import UIDReferenceField
-from senaite.core.browser.widgets.multifileuploadwidget import \
-    MultiFileUploadWidget
+from senaite.core.browser.widgets.multiuploadwidget import \
+    MultiUploadWidget
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import DECIMAL_MARKS
 from bika.lims.config import PROJECTNAME
@@ -176,7 +176,7 @@ schema = Organisation.schema.copy() + Schema((
         required=0,
         multiValued=1,
         allowed_types=("File", "Image"),
-        widget=MultiFileUploadWidget(
+        widget=MultiUploadWidget(
             max_filesize=10485760,  # in Bytes, default 10 MB
             label=_("Attachments"),
             description=_(

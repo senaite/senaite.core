@@ -30,7 +30,7 @@ from zope.component import getAdapter
 from zope.component import getMultiAdapter
 
 
-class MultiFileUploadWidget(ReferenceWidget):
+class MultiUploadWidget(ReferenceWidget):
     """Widget for uploading files that creates File/Image objects
     and stores their UIDs as references.
 
@@ -47,7 +47,7 @@ class MultiFileUploadWidget(ReferenceWidget):
     _properties = ReferenceWidget._properties.copy()
     _properties.update({
         # Use our custom template
-        "macro": "senaite_widgets/multifileuploadwidget",
+        "macro": "senaite_widgets/multiuploadwidget",
         "endpoint": "@@multiupload_handler",
         # Maximum file size (10MB default)
         "max_filesize": 10485760,
@@ -63,7 +63,7 @@ class MultiFileUploadWidget(ReferenceWidget):
         :param value: The current set value
         :returns: List of UIDs
         """
-        return super(MultiFileUploadWidget, self).get_value(
+        return super(MultiUploadWidget, self).get_value(
             context, field, value)
 
     def get_input_widget_attributes(self, context, field, value):
@@ -320,7 +320,7 @@ class MultiFileUploadWidget(ReferenceWidget):
         remover.remove(uids)
 
 
-registerWidget(MultiFileUploadWidget,
-               title="Multi File Upload Widget",
+registerWidget(MultiUploadWidget,
+               title="Multi Upload Widget",
                description="Widget for uploading files into the parent container keeping UID references",
                used_for=("bika.lims.browser.fields.UIDReferenceField",))
