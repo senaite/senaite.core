@@ -71,7 +71,7 @@
         <!-- Hidden input field to store the current UIDs (for display only) -->
         <input type="hidden"
                tal:attributes="name python:fieldName;
-                     value python:'\r\n'.join(field.widget.get_value(context, field, value))" />
+                               value python:'\r\n'.join(field.widget.get_value(context, field, value))" />
         </div>
 
         <div class="fieldErrorBox" tal:condition="required"></div>

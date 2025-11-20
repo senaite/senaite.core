@@ -132,99 +132,68 @@ class MultiUploadWidget(UIDReferenceWidget):
         existing_files = self.get_existing_files_data()
 
         attributes = {
+            "id": self.id,
             "data-fieldname": self.name,
-            "data-portal-url": self.portal_url,
-            "data-context-url": self.context_url,
+            "data-portal_url": self.portal_url,
+            "data-context_url": self.context_url,
             "data-endpoint": "@@multiupload_handler",
-            "data-max-filesize": json.dumps(10485760),  # 10MB default
-            "data-accepted-types": json.dumps({}),  # Accept all file types by default
-            "data-existing-files": json.dumps(existing_files),
+            "data-max_filesize": json.dumps(10485760),  # 10MB default
+            "data-accepted_types": json.dumps({}),  # Accept all file types by default
+            "data-existing_files": json.dumps(existing_files),
         }
 
         return attributes
 
     def extract(self, default=None):
-        """Extract uploaded files from request
+        """Extract uploaded files from request and create File/Image objects
+
+        Returns the final list of UIDs (existing + newly created)
         """
-        # Get the JSON data from the hidden field
-        data_field = self.name + '.data'
-        data = self.request.form.get(data_field, None)
-
-        if data:
-            try:
-                # Parse the JSON data containing file IDs
-                return json.loads(data)
-            except (ValueError, TypeError):
-                pass
-
-        return default
-
-
-@adapter(IMultiUploadWidget)
-@implementer(IDataConverter)
-class MultiUploadDataConverter(BaseDataConverter):
-    """Data converter for multi-upload widget
-
-    Converts between widget values (upload IDs) and field values (UIDs).
-    Creates File/Image objects from uploads and returns their UIDs.
-    Deletes File/Image objects that were removed from the field.
-    """
-
-    def toWidgetValue(self, value):
-        """Convert from field value (UIDs) to widget value
-
-        :param value: Tuple of UIDs
-        :returns: Tuple of UIDs
-        """
-        if value is None:
-            return ()
-        return value
-
-    def toFieldValue(self, value):
-        """Convert from widget value (upload IDs) to field value (UIDs)
-
-        Creates File/Image objects for uploaded files and returns their UIDs.
-        Also handles deletion of removed files.
-
-        :param value: Upload IDs from the widget (JSON)
-        :returns: Tuple of UIDs
-        """
-        # Get the field and context
-        field = self.field
-        context = self.widget.context
-
-        # Get current field value (old UIDs before form processing)
-        old_value = field.get(context) if hasattr(field, 'get') else ()
-        old_uids = list(old_value) if old_value else []
-
-        # Get existing UIDs from the main field (maintained by React)
-        main_value = self.widget.request.form.get(self.widget.name, "")
+        # Get existing Plone UIDs from the main field (maintained by React)
+        main_value = self.request.form.get(self.name, "")
         existing_uids = []
         if main_value:
             if isinstance(main_value, str):
-                existing_uids = [uid.strip() for uid in main_value.split("\r\n") if uid.strip()]
+                # Split by newlines
+                all_values = [uid.strip() for uid in main_value.split("\r\n") if uid.strip()]
             elif isinstance(main_value, (list, tuple)):
-                existing_uids = [uid for uid in main_value if uid]
+                all_values = [uid for uid in main_value if uid]
+            else:
+                all_values = []
 
-        logger.info("toFieldValue for field '{}': old_uids={}, existing_uids={}".format(
-            self.widget.name, old_uids, existing_uids))
+            # Filter out upload UUIDs (which have dashes) and keep only Plone UIDs
+            # Plone UIDs are 32 chars without dashes, upload UUIDs have dashes
+            existing_uids = [uid for uid in all_values if uid and "-" not in uid]
+
+        logger.info("extract for field '{}': existing_uids={}".format(
+            self.name, existing_uids))
 
         # Start with existing UIDs
         uids = list(existing_uids)
 
-        # Get upload IDs from the .data field
+        # Get upload IDs from the .data field (new uploads)
+        data_field = self.name + '.data'
+        data = self.request.form.get(data_field, None)
         upload_ids = []
-        if value:
-            upload_ids = value if isinstance(value, (list, tuple)) else []
 
-        logger.info("toFieldValue for field '{}': upload_ids={}".format(
-            self.widget.name, upload_ids))
+        if data:
+            try:
+                # Parse the JSON data containing upload IDs
+                upload_ids = json.loads(data)
+                if not isinstance(upload_ids, (list, tuple)):
+                    upload_ids = []
+            except (ValueError, TypeError):
+                logger.error("Invalid JSON data for field {}".format(self.name))
+                upload_ids = []
+
+        logger.info("extract for field '{}': upload_ids={}".format(
+            self.name, upload_ids))
 
         # Get session and uploaded files
-        session = self.widget.request.SESSION
+        session = self.request.SESSION
         uploaded_files = session.get("multiupload_files", {})
 
-        # Track created UIDs to handle multiple calls
+        # Track created UIDs to handle multiple extract calls
         created_uids_key = "multiupload_created_uids"
         created_uids_map = session.get(created_uids_key, {})
 
@@ -248,7 +217,7 @@ class MultiUploadDataConverter(BaseDataConverter):
                 try:
                     # Get the file creator adapter
                     creator = getMultiAdapter(
-                        (context, field),
+                        (self.context, self.field),
                         IMultiUploadFileCreator
                     )
 
@@ -263,6 +232,9 @@ class MultiUploadDataConverter(BaseDataConverter):
                     created_uids_map[upload_id] = uid
                     session[created_uids_key] = created_uids_map
 
+                    logger.info("Created object with UID {} for upload_id {}".format(
+                        uid, upload_id))
+
                 except Exception as e:
                     import traceback
                     logger.error(u"Error creating object {}: {}".format(
@@ -273,14 +245,70 @@ class MultiUploadDataConverter(BaseDataConverter):
                 logger.warning("Upload ID {} not found in session, skipping".format(
                     upload_id))
 
-        logger.info("toFieldValue for field '{}': final UIDs={}".format(
-            self.widget.name, uids))
+        logger.info("extract for field '{}': final UIDs={}".format(
+            self.name, uids))
+
+        # Always return the list of UIDs, even if empty
+        # Returning None/default could cause the field to not be set
+        return uids
+
+
+@adapter(IMultiUploadWidget)
+@implementer(IDataConverter)
+class MultiUploadDataConverter(BaseDataConverter):
+    """Data converter for multi-upload widget
+
+    Converts between widget values (list of UIDs) and field values (tuple of UIDs).
+    Handles deletion of File/Image objects that were removed from the field.
+
+    Note: File/Image object creation is done in the widget's extract() method,
+    not in this converter. The converter receives already-resolved Plone UIDs.
+    """
+
+    def toWidgetValue(self, value):
+        """Convert from field value (UIDs) to widget value
+
+        :param value: Tuple of UIDs
+        :returns: Tuple of UIDs
+        """
+        if value is None:
+            return ()
+        return value
+
+    def toFieldValue(self, value):
+        """Convert from widget value (list of UIDs) to field value (tuple of UIDs)
+
+        The extract() method already created the File/Image objects and returned
+        their UIDs. This method just converts to tuple and handles deletion of
+        removed files.
+
+        :param value: List of Plone UIDs from extract()
+        :returns: Tuple of UIDs
+        """
+        # Get the field and context
+        field = self.field
+        context = self.widget.context
+
+        # Get current field value (old UIDs before form processing)
+        old_value = field.get(context) if hasattr(field, "get") else ()
+        old_uids = list(old_value) if old_value else []
+
+        # Value from extract() is already a list of Plone UIDs
+        if value is None:
+            uids = []
+        elif isinstance(value, (list, tuple)):
+            uids = list(value)
+        else:
+            uids = []
+
+        logger.info("toFieldValue for field '{}': old_uids={}, new_uids={}".format(
+            self.widget.name, old_uids, uids))
 
         # Delete File/Image objects that were removed
         if old_uids:
             removed_uids = set(old_uids) - set(uids)
-            logger.info("Removed UIDs: {}".format(removed_uids))
             if removed_uids:
+                logger.info("Deleting removed UIDs: {}".format(removed_uids))
                 self.delete_removed_files(context, removed_uids)
 
         return tuple(uids)

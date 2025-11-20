@@ -84,7 +84,11 @@ class MultiFileUploadWidget(ReferenceWidget):
         max_filesize = getattr(self, "max_filesize", 10485760)
         accepted_types = getattr(self, "accepted_types", {})
 
+        # Generate widget ID
+        widget_id = "{}_{}".format(context.getId(), field.getName())
+
         attributes = {
+            "id": widget_id,
             "data-fieldname": field.getName(),
             "data-endpoint": endpoint,
             "data-portal_url": portal_url,
