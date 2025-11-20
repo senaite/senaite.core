@@ -37,8 +37,8 @@ class MultiFileUploadWidget(ReferenceWidget):
     This widget integrates with the React multiupload widget to:
     1. Accept file uploads, even in add forms
     2. Create File or Image objects for each uploaded file
-    3. Store them in the current context
-    4. Store the UIDs of created objects in the field
+    3. Store them as child objects of the current context
+    4. Store the UIDs of the created objects in the reference field
     """
 
     # CSS class that is picked up by the ReactJS component

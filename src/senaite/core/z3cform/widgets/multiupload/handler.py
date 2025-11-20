@@ -40,6 +40,9 @@ class MultiUploadHandler(BrowserView):
         """Store the uploaded file temporarily in the session
 
         NOTE: This is required since we might be in the add form.
+
+        :param upload: The uploaded file object
+        :returns: JSON response with upload ID and file info
         """
         try:
             # Get filename
@@ -51,11 +54,12 @@ class MultiUploadHandler(BrowserView):
             # Get the file size
             file_size = len(data)
 
-            # Get content type
+            # Get content MIME type
             content_type = self.get_content_type(upload)
 
             # Generate unique upload ID
-            # This is stored in a hidden field and read later by process_form
+            # This is stored in a hidden <fieldname>.data field
+            # and read later by process_form
             upload_id = str(uuid.uuid4())
 
             # Store in session
@@ -85,7 +89,10 @@ class MultiUploadHandler(BrowserView):
             return self.fail(str(e), 500)
 
     def get_content_type(self, upload):
-        """Get the content type of the uploaded file
+        """Get the MIME type of the uploaded file
+
+        :param upload: The uploaded file object
+        :returns: The content type string
         """
         content_type = None
         headers = getattr(upload, "headers", {})
@@ -94,6 +101,10 @@ class MultiUploadHandler(BrowserView):
 
     def fail(self, message, status=500):
         """Return a failure response
+
+        :param message: The error message
+        :param status: The HTTP status code
+        :returns: The JSON error response
         """
         data = {
             "error": message,
@@ -103,7 +114,11 @@ class MultiUploadHandler(BrowserView):
 
     @returns_json
     def send_json(self, data, status=200):
-        """Return a JSON response
+        """Return a JSON response with a status code
+
+        :param data: The data to return as JSON
+        :param status: The HTTP status code
+        :returns: The JSON data
         """
         self.request.response.setStatus(status)
         return data
