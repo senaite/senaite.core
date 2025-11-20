@@ -8,13 +8,13 @@ from senaite.core.interfaces import IMultiUploadFileCreator
 from senaite.core.interfaces import IMultiUploadFileRemover
 from senaite.core.interfaces import IMultiUploadWidget
 from senaite.core.interfaces import ISenaiteFormLayer
+from senaite.core.schema.interfaces import IUIDReferenceField
 from senaite.core.z3cform.widgets.uidreference.widget import UIDReferenceWidget
 from z3c.form.converter import BaseDataConverter
 from z3c.form.interfaces import IDataConverter
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.widget import FieldWidget
 from zope.component import adapter
-from zope.schema.interfaces import IField
 from zope.component import getAdapter
 from zope.component import getMultiAdapter
 from zope.interface import Interface
@@ -272,68 +272,58 @@ class MultiUploadWidget(UIDReferenceWidget):
         return uids
 
 
-@adapter(IField, IMultiUploadWidget)
+@adapter(IUIDReferenceField, IMultiUploadWidget)
 @implementer(IDataConverter)
 class MultiUploadDataConverter(BaseDataConverter):
     """Data converter for multi-upload widget
-
-    Converts between widget values (list of UIDs) and field values
-    (tuple of UIDs). Handles deletion of File/Image objects that were
-    removed from the field.
-
-    Note: File/Image object creation is done in the widget's extract()
-    method, not in this converter. The converter receives already-resolved
-    Plone UIDs.
     """
 
     def toWidgetValue(self, value):
         """Convert from field value (UIDs) to widget value
 
-        :param value: Tuple of UIDs
-        :returns: Tuple of UIDs
+        :param value: List of UIDs
+        :returns: List of UIDs
         """
         if value is None:
-            return ()
+            return []
         return value
 
     def toFieldValue(self, value):
-        """Convert from widget value (list) to field value (tuple)
+        """Convert from widget value to field value
 
         The extract() method already created the File/Image objects and
-        returned their UIDs. This method just converts to tuple and
-        handles deletion of removed files.
+        returned their UIDs.
 
         :param value: List of Plone UIDs from extract()
-        :returns: Tuple of UIDs
+        :returns: List/Tuple of UIDs (properly validated)
         """
         # Get the field and context
         field = self.field
         context = self.widget.context
 
         # Get current field value (old UIDs before form processing)
-        old_value = field.get(context) if hasattr(field, "get") else ()
-        old_uids = list(old_value) if old_value else []
+        old_value = field.get(context)
+        old_uids = list(map(api.get_uid, old_value)) if old_value else []
 
-        # Value from extract() is already a list of Plone UIDs
+        # Value from extract() is already a list of UIDs
         if value is None:
             uids = []
-        elif isinstance(value, (list, tuple)):
-            uids = list(value)
         else:
-            uids = []
+            uids = list(value)
 
         logger.info(
             "toFieldValue for field '{}': old_uids={}, new_uids={}"
             .format(self.widget.name, old_uids, uids))
 
-        # Delete File/Image objects that were removed
+        # Delete objects that were removed
         if old_uids:
             removed_uids = set(old_uids) - set(uids)
             if removed_uids:
                 logger.info("Deleting removed UIDs: {}".format(removed_uids))
                 self.delete_removed_files(context, removed_uids)
 
-        return tuple(uids)
+        # avoid "Wrong containing type" error on save
+        return map(str, uids)
 
     def delete_removed_files(self, container, uids):
         """Delete File/Image objects that were removed from the field
