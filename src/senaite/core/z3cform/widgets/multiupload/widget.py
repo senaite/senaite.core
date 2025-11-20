@@ -291,8 +291,12 @@ class MultiUploadDataConverter(BaseDataConverter):
         remover.remove(uids)
 
 
-@adapter(ITuple, ISenaiteFormLayer)
+@adapter(Interface, ISenaiteFormLayer)
 @implementer(IFieldWidget)
 def MultiUploadWidgetFactory(field, request):
-    """Factory for the multi-upload widget"""
+    """Factory for the multi-upload widget
+
+    Can be used with any field type (Tuple, UIDReferenceField, etc.)
+    that needs to store multiple file/image UIDs.
+    """
     return FieldWidget(field, MultiUploadWidget(request))
