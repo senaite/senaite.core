@@ -113,6 +113,14 @@ class MultiUploadWidget(UIDReferenceWidget):
 
         return existing_files
 
+    def get_session(self, request):
+        """Safely get the session from the request
+
+        :param request: The request object
+        :returns: Session object or None if not available (e.g., in tests)
+        """
+        return getattr(request, "SESSION", None)
+
     def get_value(self):
         """Extract the value from the widget
 
@@ -187,7 +195,13 @@ class MultiUploadWidget(UIDReferenceWidget):
             self.name, upload_ids))
 
         # Get session and uploaded files
-        session = self.request.SESSION
+        session = self.get_session(self.request)
+        if not session:
+            # No session (e.g., in tests), return existing UIDs only
+            logger.info(
+                "No SESSION available, skipping file upload processing")
+            return uids
+
         uploaded_files = session.get("multiupload_files", {})
 
         # Track created UIDs to handle multiple extract calls

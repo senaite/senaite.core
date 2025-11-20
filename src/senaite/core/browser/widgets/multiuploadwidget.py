@@ -146,6 +146,14 @@ class MultiUploadWidget(ReferenceWidget):
 
         return 0
 
+    def get_session(self, request):
+        """Safely get the session from the request
+
+        :param request: The request object
+        :returns: Session object or None if not available (e.g., in tests)
+        """
+        return getattr(request, "SESSION", None)
+
     def get_existing_files_data(self, context, field, value):
         """Get metadata for existing file references
 
@@ -253,7 +261,15 @@ class MultiUploadWidget(ReferenceWidget):
                 upload_ids = []
 
         # Get session and uploaded files
-        session = instance.REQUEST.SESSION
+        session = self.get_session(instance.REQUEST)
+        if not session:
+            # No session (e.g., in tests), return existing UIDs only
+            logger.info(
+                "No SESSION available, skipping file upload processing")
+            if not self.is_multi_valued(field):
+                return uids[0] if uids else "", {}
+            return uids, {}
+
         uploaded_files = session.get("multiupload_files", {})
 
         # Track created UIDs to handle multiple calls
