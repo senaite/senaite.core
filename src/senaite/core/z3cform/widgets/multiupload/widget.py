@@ -106,7 +106,8 @@ class MultiUploadWidget(UIDReferenceWidget):
                 existing_files.append(file_data)
 
             except api.APIError:
-                logger.error("Could not retrieve object for UID: {}".format(uid))
+                logger.error(
+                    "Could not retrieve object for UID: {}".format(uid))
                 continue
 
         return existing_files
@@ -137,8 +138,8 @@ class MultiUploadWidget(UIDReferenceWidget):
             "data-portal_url": self.portal_url,
             "data-context_url": self.context_url,
             "data-endpoint": "@@multiupload_handler",
-            "data-max_filesize": json.dumps(10485760),  # 10MB default
-            "data-accepted_types": json.dumps({}),  # Accept all file types by default
+            "data-max_filesize": json.dumps(10485760),  # 10MB
+            "data-accepted_types": json.dumps({}),  # Accept all
             "data-existing_files": json.dumps(existing_files),
         }
 
@@ -158,15 +159,18 @@ class MultiUploadWidget(UIDReferenceWidget):
         if main_value:
             if isinstance(main_value, str):
                 # Split by newlines
-                all_values = [uid.strip() for uid in main_value.split("\r\n") if uid.strip()]
+                all_values = [
+                    uid.strip() for uid in main_value.split("\r\n")
+                    if uid.strip()]
             elif isinstance(main_value, (list, tuple)):
                 all_values = [uid for uid in main_value if uid]
             else:
                 all_values = []
 
-            # Filter out upload UUIDs (which have dashes) and keep only Plone UIDs
-            # Plone UIDs are 32 chars without dashes, upload UUIDs have dashes
-            existing_uids = [uid for uid in all_values if uid and "-" not in uid]
+            # Filter out upload UUIDs (dashes) and keep Plone UIDs only
+            # Plone UIDs: 32 chars no dashes, upload UUIDs: have dashes
+            existing_uids = [
+                uid for uid in all_values if uid and "-" not in uid]
 
         logger.info("extract for field '{}': existing_uids={}".format(
             self.name, existing_uids))
@@ -186,7 +190,8 @@ class MultiUploadWidget(UIDReferenceWidget):
                 if not isinstance(upload_ids, (list, tuple)):
                     upload_ids = []
             except (ValueError, TypeError):
-                logger.error("Invalid JSON data for field {}".format(self.name))
+                logger.error(
+                    "Invalid JSON data for field {}".format(self.name))
                 upload_ids = []
 
         logger.info("extract for field '{}': upload_ids={}".format(
@@ -209,12 +214,15 @@ class MultiUploadWidget(UIDReferenceWidget):
                 try:
                     obj = api.get_object(uid)
                     uids.append(uid)
-                    logger.info("Reusing existing UID {} for upload_id {}".format(
-                        uid, upload_id))
+                    logger.info(
+                        "Reusing existing UID {} for upload_id {}".format(
+                            uid, upload_id))
                     continue
                 except api.APIError:
-                    logger.warning("UID {} from session no longer exists, recreating for upload_id {}".format(
-                        uid, upload_id))
+                    logger.warning(
+                        "UID {} from session no longer exists, "
+                        "recreating for upload_id {}".format(
+                            uid, upload_id))
                     # Remove stale UID from map and fall through to recreate
                     del created_uids_map[upload_id]
                     session[created_uids_key] = created_uids_map
@@ -222,12 +230,20 @@ class MultiUploadWidget(UIDReferenceWidget):
             # Get file data from session dict
             file_data = uploaded_files.get(upload_id)
 
-            logger.info("Looking for upload_id {} in session dict".format(upload_id))
+            logger.info(
+                "Looking for upload_id {} in session dict".format(
+                    upload_id))
             if file_data:
-                logger.info("✓ Found file data in session for upload_id {}".format(upload_id))
+                logger.info(
+                    "✓ Found file data in session for upload_id {}"
+                    .format(upload_id))
             else:
-                logger.warning("✗ File data NOT found in session for upload_id {}".format(upload_id))
-                logger.info("Available upload IDs in session: {}".format(uploaded_files.keys()))
+                logger.warning(
+                    "✗ File data NOT found in session for upload_id {}"
+                    .format(upload_id))
+                logger.info(
+                    "Available upload IDs in session: {}".format(
+                        uploaded_files.keys()))
 
             if file_data:
                 data = file_data["data"]
@@ -252,10 +268,12 @@ class MultiUploadWidget(UIDReferenceWidget):
                     created_uids_map[upload_id] = uid
                     session[created_uids_key] = created_uids_map
 
-                    logger.info("Created object with UID {} for upload_id {}".format(
-                        uid, upload_id))
-                    logger.info("Created and mapped: upload_id {} -> UID {}".format(
-                        upload_id, uid))
+                    logger.info(
+                        "Created object with UID {} for upload_id {}"
+                        .format(uid, upload_id))
+                    logger.info(
+                        "Created and mapped: upload_id {} -> UID {}"
+                        .format(upload_id, uid))
 
                 except Exception as e:
                     import traceback
@@ -264,8 +282,9 @@ class MultiUploadWidget(UIDReferenceWidget):
                     logger.error(traceback.format_exc())
                     continue
             else:
-                logger.warning("Upload file data for ID {} not found in session, skipping".format(
-                    upload_id))
+                logger.warning(
+                    "Upload file data for ID {} not found in session, "
+                    "skipping".format(upload_id))
 
         logger.info("extract for field '{}': final UIDs={}".format(
             self.name, uids))
@@ -280,11 +299,13 @@ class MultiUploadWidget(UIDReferenceWidget):
 class MultiUploadDataConverter(BaseDataConverter):
     """Data converter for multi-upload widget
 
-    Converts between widget values (list of UIDs) and field values (tuple of UIDs).
-    Handles deletion of File/Image objects that were removed from the field.
+    Converts between widget values (list of UIDs) and field values
+    (tuple of UIDs). Handles deletion of File/Image objects that were
+    removed from the field.
 
-    Note: File/Image object creation is done in the widget's extract() method,
-    not in this converter. The converter receives already-resolved Plone UIDs.
+    Note: File/Image object creation is done in the widget's extract()
+    method, not in this converter. The converter receives already-resolved
+    Plone UIDs.
     """
 
     def toWidgetValue(self, value):
@@ -298,11 +319,11 @@ class MultiUploadDataConverter(BaseDataConverter):
         return value
 
     def toFieldValue(self, value):
-        """Convert from widget value (list of UIDs) to field value (tuple of UIDs)
+        """Convert from widget value (list) to field value (tuple)
 
-        The extract() method already created the File/Image objects and returned
-        their UIDs. This method just converts to tuple and handles deletion of
-        removed files.
+        The extract() method already created the File/Image objects and
+        returned their UIDs. This method just converts to tuple and
+        handles deletion of removed files.
 
         :param value: List of Plone UIDs from extract()
         :returns: Tuple of UIDs
@@ -323,8 +344,9 @@ class MultiUploadDataConverter(BaseDataConverter):
         else:
             uids = []
 
-        logger.info("toFieldValue for field '{}': old_uids={}, new_uids={}".format(
-            self.widget.name, old_uids, uids))
+        logger.info(
+            "toFieldValue for field '{}': old_uids={}, new_uids={}"
+            .format(self.widget.name, old_uids, uids))
 
         # Delete File/Image objects that were removed
         if old_uids:
