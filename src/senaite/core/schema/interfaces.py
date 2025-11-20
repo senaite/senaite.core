@@ -97,3 +97,8 @@ class IGPSCoordinatesField(IDict):
 class ISelectOtherField(INativeString):
     """Senaite SelectOther field
     """
+
+
+class IMultiUploadField(IList):
+    """Senaite Multi Upload field
+    """
