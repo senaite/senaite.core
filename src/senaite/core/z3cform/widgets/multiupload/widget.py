@@ -336,8 +336,8 @@ class MultiUploadDataConverter(BaseDataConverter):
                 logger.info("Deleting removed UIDs: {}".format(removed_uids))
                 self.delete_removed_files(context, removed_uids)
 
-        # avoid "Wrong containing type" error on save
-        return map(str, uids)
+        # Ensure all UIDs are strings (avoid "Wrong containing type" error)
+        return [str(uid) for uid in uids] if uids else []
 
     def delete_removed_files(self, container, uids):
         """Delete File/Image objects that were removed from the field
