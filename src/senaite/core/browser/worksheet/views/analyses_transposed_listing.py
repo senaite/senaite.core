@@ -20,13 +20,14 @@
 
 from collections import OrderedDict
 
+from plone.memoize import view
+from senaite.app.listing.interfaces import ITransposedListingView
+from zope.interface import implements
+
 from analyses_listing import AnalysesView
 from bika.lims import _
 from bika.lims.utils import get_link
 from senaite.core.i18n import translate as t
-from plone.memoize import view
-from senaite.app.listing.interfaces import ITransposedListingView
-from zope.interface import implements
 
 
 class AnalysesTransposedView(AnalysesView):

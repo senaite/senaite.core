@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from Products.Five.browser import BrowserView
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from senaite.core.config.worksheet import WORKSHEETS_FOLDER_ID

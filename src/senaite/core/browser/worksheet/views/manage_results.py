@@ -22,16 +22,17 @@ from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone.dexterity.browser.view import DefaultView
+from plone.memoize import view
+from zope.component import getUtility
+from zope.schema.interfaces import IVocabularyFactory
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import getUsers
-from plone.memoize import view
-from plone.dexterity.browser.view import DefaultView
 from senaite.core.config.worksheet import DEFAULT_WORKSHEET_LAYOUT
 from senaite.core.p3compat import cmp
 from senaite.core.permissions.worksheet import can_manage_worksheets
-from zope.schema.interfaces import IVocabularyFactory
-from zope.component import getUtility
 
 
 class ManageResultsView(DefaultView):

@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from Products.Five.browser import BrowserView
+
 from bika.lims import bikaMessageFactory as _
 from senaite.core.exportimport import instruments
 

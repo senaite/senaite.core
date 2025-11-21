@@ -18,25 +18,16 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import api
-from Products.Five.browser import BrowserView
+from zope.interface import implements
+
+from senaite.core.config.worksheet import WORKSHEET_LAYOUT_OPTIONS
+from senaite.core.interfaces import IWorksheetLayouts
 
 
-class WorksheetView(BrowserView):
-    """Base view for Worksheet
+class DefaultWorksheetLayouts(object):
+    """ Default worksheet layouts (classic and transposed view)
     """
+    implements(IWorksheetLayouts)
 
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-
-    def __call__(self):
-        view = "add_analyses"
-        if self.context.getLayoutView():
-            view = "manage_results"
-
-        redirect_url = "{}/{}".format(api.get_url(self.context), view)
-        self.request.response.redirect(redirect_url)
-        return
-
-
+    def getLayouts(self):
+        return WORKSHEET_LAYOUT_OPTIONS

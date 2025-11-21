@@ -20,20 +20,21 @@
 
 import collections
 
+from DateTime import DateTime
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone.memoize import view
+from plone.protect import CheckAuthenticator
+from senaite.app.listing import ListingView
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PRIORITIES
 from bika.lims.utils import get_image
-from senaite.core.i18n import translate as t
 from bika.lims.vocabularies import CatalogVocabulary
-from DateTime import DateTime
-from plone.memoize import view
-from plone.protect import CheckAuthenticator
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.app.listing import ListingView
-from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.i18n import translate
+from senaite.core.i18n import translate as t
 from senaite.core.permissions.worksheet import can_manage_worksheets
 
 

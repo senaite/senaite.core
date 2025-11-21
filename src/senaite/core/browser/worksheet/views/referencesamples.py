@@ -20,13 +20,14 @@
 
 import collections
 
+from plone.memoize import view
+from plone.protect import CheckAuthenticator
+from senaite.app.listing import ListingView
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.utils import get_link
-from plone.memoize import view
-from plone.protect import CheckAuthenticator
-from senaite.app.listing import ListingView
 from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.i18n import translate
 

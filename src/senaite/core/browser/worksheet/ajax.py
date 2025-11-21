@@ -20,10 +20,10 @@
 
 import plone
 import plone.protect
-
-from bika.lims import api
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
+
+from bika.lims import api
 
 
 class SetAnalyst(BrowserView):

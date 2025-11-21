@@ -19,8 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import bikaMessageFactory as _
-from senaite.core.i18n import translate
 from referencesamples import ReferenceSamplesView
+from senaite.core.i18n import translate
 
 
 class AddBlankView(ReferenceSamplesView):

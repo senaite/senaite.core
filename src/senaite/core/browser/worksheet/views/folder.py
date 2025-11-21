@@ -22,13 +22,15 @@ import collections
 import json
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone.memoize.view import memoize
+from senaite.app.listing import ListingView
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import getUsers
 from bika.lims.utils import get_display_list
 from bika.lims.utils import get_link
 from bika.lims.utils import get_progress_bar_html
-from bika.lims.utils import getUsers
-from senaite.app.listing import ListingView
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.i18n import translate
@@ -36,7 +38,6 @@ from senaite.core.permissions import AddWorksheet
 from senaite.core.permissions.worksheet import can_add_worksheet
 from senaite.core.permissions.worksheet import can_edit_worksheet
 from senaite.core.permissions.worksheet import can_manage_worksheets
-from plone.memoize.view import memoize
 
 
 class WorksheetsView(ListingView):
