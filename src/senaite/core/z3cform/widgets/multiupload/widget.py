@@ -169,7 +169,7 @@ class MultiUploadWidget(UIDReferenceWidget):
         logger.info("extract for field '{}': existing_uids={}".format(
             self.name, existing_uids))
 
-        return existing_uids
+        return list(map(str, existing_uids))
 
 
 @adapter(IMultiUploadField, IMultiUploadWidget)
