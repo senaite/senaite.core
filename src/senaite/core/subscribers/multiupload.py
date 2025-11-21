@@ -62,6 +62,10 @@ def on_object_modified(obj, event):
 
     # Prevent infinite recursion for deletion handler
     request = api.get_request()
+    if not request:
+        # Use test request if no real request is available (e.g., test setup)
+        request = api.get_test_request()
+
     processing_objs = getattr(request, UPLOAD_DELETING_KEY, set())
 
     obj_uid = api.get_uid(obj)
@@ -107,6 +111,10 @@ def process_multiupload_fields(obj, event):
     """
     # Prevent infinite recursion: check if we're already processing this object
     request = api.get_request()
+    if not request:
+        # Use test request if no real request is available (e.g., test setup)
+        request = api.get_test_request()
+
     processing_objs = getattr(request, UPLOAD_PROCESSING_KEY, set())
 
     obj_uid = api.get_uid(obj)
