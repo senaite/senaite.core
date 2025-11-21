@@ -48,9 +48,7 @@ def on_object_added(obj, event):
     container and has a proper acquisition chain, allowing us to create
     child objects inside it.
     """
-    api.snapshot.pause_snapshots_for(obj)
     process_multiupload_fields(obj, event)
-    api.snapshot.resume_snapshots_for(obj)
 
 
 def on_object_modified(obj, event):
@@ -97,7 +95,6 @@ def on_object_modified(obj, event):
         # Always remove from processing set
         processing_objs.discard(obj_uid)
         setattr(request, UPLOAD_DELETING_KEY, processing_objs)
-        api.snapshot.resume_snapshots_for(obj)
 
 
 def process_multiupload_fields(obj, event):

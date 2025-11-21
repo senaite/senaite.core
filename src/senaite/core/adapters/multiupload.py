@@ -89,14 +89,13 @@ class DefaultFileCreator(object):
         }
 
         try:
+            api.snapshot.pause_snapshots_for(self.context)
             obj = createContentInContainer(
                 self.context,
                 portal_type,
                 **kwargs
             )
-
-            # Reindex to update catalogs
-            obj.reindexObject()
+            api.snapshot.resume_snapshots_for(self.context)
 
             logger.info(u"Created {} object {} with UID {}".format(
                 portal_type, filename, api.get_uid(obj)))
