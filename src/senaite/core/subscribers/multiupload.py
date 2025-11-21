@@ -59,6 +59,7 @@ def on_object_modified(obj, event):
     Processes MultiUploadField fields after the object is modified.
     Also handles deletion of removed File/Image objects.
     """
+
     # Prevent infinite recursion for deletion handler
     request = api.get_request()
     processing_objs = getattr(request, UPLOAD_DELETING_KEY, set())
@@ -144,7 +145,8 @@ def process_multiupload_fields(obj, event):
             logger.info("Processing MultiUploadField: {}".format(name))
 
             # Get submitted UIDs from request (what user wants to keep)
-            submitted_uids = get_submitted_uids(name, request)
+            submitted_uids = get_submitted_uids(
+                name, request, prefix=form_prefix)
             logger.info("Field {} submitted UIDs: {}".format(
                 name, submitted_uids))
 

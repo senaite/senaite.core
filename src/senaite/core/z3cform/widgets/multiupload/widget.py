@@ -10,6 +10,7 @@ from senaite.core.schema.interfaces import IMultiUploadField
 from senaite.core.schema.interfaces import IUIDReferenceField
 from senaite.core.z3cform.widgets.uidreference.widget import UIDReferenceWidget
 from z3c.form.converter import BaseDataConverter
+from z3c.form.interfaces import IAddForm
 from z3c.form.interfaces import IDataConverter
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.widget import FieldWidget
@@ -150,23 +151,50 @@ class MultiUploadWidget(UIDReferenceWidget):
 
         return attributes
 
+    def is_add_form(self):
+        """Check if we are in an add form
+
+        :returns: True if in add form, False if in edit form
+        """
+        # Check if the parent form implements IAddForm
+        form = getattr(self, "form", None)
+        if form is None:
+            return False
+
+        # Check for z3c.form IAddForm interface
+        return IAddForm.providedBy(form)
+
     def extract(self, default=None):
         """Extract uploaded files from request
+
+        Returns current field value in edit forms or empty list in add forms.
+        Upload UUIDs remain in request for event subscriber processing.
+
+        :param default: Default value if extraction fails
+        :returns: List of UIDs
         """
         logger.info("="*80)
         logger.info("extract() called for field '{}'".format(self.name))
 
-        # Get existing UIDs from the main field (maintained by React)
-        main_value = self.request.form.get(self.name, "")
-        existing_uids = []
-        if main_value:
-            # Split by newlines and filter out empty strings
-            existing_uids = [uid.strip() for uid in main_value.split("\r\n")]
+        # In add forms, return empty list (no existing values)
+        if self.is_add_form():
+            logger.info("extract for '{}': add form, returning []".format(
+                self.name))
+            return []
 
-        logger.info("extract for field '{}': existing_uids={}".format(
-            self.name, existing_uids))
-
-        return list(map(str, existing_uids))
+        # In edit forms, get current field value from context
+        field_name = self.field.__name__
+        try:
+            current_value = getattr(self.context, field_name, [])
+            if current_value is None:
+                current_value = []
+            logger.info("extract for '{}': edit form, value={}".format(
+                self.name, current_value))
+            return list(current_value)
+        except (AttributeError, TypeError) as e:
+            logger.warning("extract for '{}': error getting value: {}".format(
+                self.name, str(e)))
+            return []
 
 
 @adapter(IMultiUploadField, IMultiUploadWidget)
