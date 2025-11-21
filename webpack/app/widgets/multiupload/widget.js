@@ -1,5 +1,6 @@
 import React from "react";
 import Dropzone from "react-dropzone";
+import $ from "jquery";
 import "./multiupload.css";
 
 
@@ -39,6 +40,7 @@ class MultiUploadWidgetController extends React.Component {
     const existing_files = this.state.existing_files || [];
     if (existing_files.length > 0) {
       this.state.files = existing_files.map(file => ({
+        id: file.uid,
         uid: file.uid,
         name: file.name,
         size: file.size || 0,
@@ -75,6 +77,7 @@ class MultiUploadWidgetController extends React.Component {
     console.debug("Files dropped:", acceptedFiles);
 
     const newFiles = acceptedFiles.map(file => ({
+      id: Math.random().toString(36).substr(2, 9),
       file: file,
       name: file.name,
       size: file.size,
@@ -101,7 +104,7 @@ class MultiUploadWidgetController extends React.Component {
     // Update file status to uploading
     this.setState(prevState => ({
       files: prevState.files.map(f =>
-        f.name === fileObj.name ? { ...f, status: "uploading", progress: 0 } : f
+        f.id === fileObj.id ? { ...f, status: "uploading", progress: 0 } : f
       )
     }));
 
@@ -135,7 +138,7 @@ class MultiUploadWidgetController extends React.Component {
         console.debug("Upload success:", data);
         this.setState(prevState => ({
           files: prevState.files.map(f =>
-            f.name === fileObj.name
+            f.id === fileObj.id
               ? { ...f, status: "success", server_id: data.id, upload_id: data.id }
               : f
           ),
@@ -146,7 +149,7 @@ class MultiUploadWidgetController extends React.Component {
         console.error("Upload error:", error);
         this.setState(prevState => ({
           files: prevState.files.map(f =>
-            f.name === fileObj.name
+            f.id === fileObj.id
               ? { ...f, status: "error", error: error.message }
               : f
           )
@@ -154,11 +157,18 @@ class MultiUploadWidgetController extends React.Component {
       });
   }
 
-  removeFile(index) {
-    this.setState(
-      prevState => {
-        const fileToRemove = prevState.files[index];
-        const newFiles = prevState.files.filter((_, i) => i !== index);
+  removeFile(fileId, event) {
+    // Get the file item element and animate fade out
+    const fileItem = $(event.target).closest(".multi-upload-file-item");
+
+    // Fade out animation
+    fileItem.fadeOut(300, () => {
+      // After animation completes, update state
+      this.setState(prevState => {
+        const fileToRemove = prevState.files.find(f => f.id === fileId);
+        if (!fileToRemove) return prevState;
+
+        const newFiles = prevState.files.filter(f => f.id !== fileId);
 
         // Handle removal of uploaded files (new uploads)
         const newUploadedFiles = prevState.uploaded_files.filter(
@@ -170,7 +180,7 @@ class MultiUploadWidgetController extends React.Component {
           uid => uid !== fileToRemove.uid
         );
 
-        // Revoke object URL to prevent memory leaks (only for newly uploaded files)
+        // Revoke object URL to prevent memory leaks
         if (fileToRemove.preview) {
           URL.revokeObjectURL(fileToRemove.preview);
         }
@@ -180,8 +190,8 @@ class MultiUploadWidgetController extends React.Component {
           uploaded_files: newUploadedFiles,
           existing_uids: newExistingUids
         };
-      }
-    );
+      });
+    });
   }
 
   formatFileSize(bytes) {
@@ -199,8 +209,8 @@ class MultiUploadWidgetController extends React.Component {
 
     return (
       <div className="multi-upload-file-list mt-3">
-        {this.state.files.map((fileObj, index) => (
-          <div key={index} className="multi-upload-file-item border rounded p-2 mb-2">
+        {this.state.files.map((fileObj) => (
+          <div key={fileObj.id} className="multi-upload-file-item border rounded p-2 mb-2">
             <div className="d-flex align-items-center justify-content-between">
               <div className="file-info d-flex align-items-center flex-grow-1">
                 <span className="file-icon mr-2">📎</span>
@@ -235,7 +245,7 @@ class MultiUploadWidgetController extends React.Component {
                 <button
                   type="button"
                   className="btn"
-                  onClick={() => this.removeFile(index)}
+                  onClick={(e) => this.removeFile(fileObj.id, e)}
                   disabled={fileObj.status === "uploading"}>
                   <i className="fas fa-trash-alt text-secondary"></i>
                 </button>
