@@ -26,7 +26,7 @@ class MultiUploadWidgetController extends React.Component {
       "max_filesize",
       // https://react-dropzone.js.org/#section-accepting-specific-file-types
       "accepted_types",
-      "existing_files",
+      "existing_files",  // Metadata for existing files
     ];
 
     // Query data keys and set state with parsed JSON value
