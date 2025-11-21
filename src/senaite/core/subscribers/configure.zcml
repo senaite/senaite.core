@@ -33,16 +33,16 @@
          zope.lifecycleevent.interfaces.IObjectModifiedEvent"
     handler=".multiupload.on_object_modified"/>
 
-  <!-- <!-\- MultiUpload field processing after object creation (AT) -\-> -->
-  <!-- <subscriber -->
-  <!--   for="* -->
-  <!--        Products.Archetypes.interfaces.IObjectInitializedEvent" -->
-  <!--   handler=".multiupload.on_object_created"/> -->
+  <!-- MultiUpload field processing after object creation (AT) -->
+  <subscriber
+    for="*
+         Products.Archetypes.interfaces.IObjectInitializedEvent"
+    handler=".multiupload.on_object_added"/>
 
-  <!-- <!-\- MultiUpload field processing after object modification (AT) -\-> -->
-  <!-- <subscriber -->
-  <!--   for="* -->
-  <!--        Products.Archetypes.interfaces.IObjectEditedEvent" -->
-  <!--   handler=".multiupload.on_object_modified"/> -->
+  <!-- MultiUpload field processing after object modification (AT) -->
+  <subscriber
+    for="*
+         Products.Archetypes.interfaces.IObjectEditedEvent"
+    handler=".multiupload.on_object_modified"/>
 
 </configure>

@@ -152,9 +152,6 @@ class MultiUploadWidget(UIDReferenceWidget):
 
     def extract(self, default=None):
         """Extract uploaded files from request
-
-        Returns only existing UIDs. Upload UUIDs are stored in request
-        for later processing by the event subscriber.
         """
         logger.info("="*80)
         logger.info("extract() called for field '{}'".format(self.name))

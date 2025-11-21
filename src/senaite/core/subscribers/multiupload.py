@@ -59,7 +59,6 @@ def on_object_modified(obj, event):
     Processes MultiUploadField fields after the object is modified.
     Also handles deletion of removed File/Image objects.
     """
-
     # Prevent infinite recursion for deletion handler
     request = api.get_request()
     processing_objs = getattr(request, UPLOAD_DELETING_KEY, set())
@@ -76,9 +75,6 @@ def on_object_modified(obj, event):
     setattr(request, UPLOAD_DELETING_KEY, processing_objs)
 
     try:
-        # Pause snapshots during processing
-        api.snapshot.pause_snapshots_for(obj)
-
         # Get all MultiUploadField fields
         fields = get_multiupload_fields(obj)
 
@@ -132,13 +128,16 @@ def process_multiupload_fields(obj, event):
             logger.info("No SESSION available, skipping upload processing")
             return
 
+        # Get uploaded UUID -> file mapping data from session
         uploaded_files = session.get(SESSION_KEY, {})
-        if not uploaded_files:
-            logger.info("No uploaded files in session")
-            return
 
         # Get all MultiUploadField fields
         fields = get_multiupload_fields(obj)
+
+        # z3c.form uses form prefixes for DX contents
+        form_prefix = ""
+        if api.is_dexterity_content(obj):
+            form_prefix = "form.widgets."
 
         # Process each MultiUploadField
         for name, field in fields.items():
@@ -150,10 +149,7 @@ def process_multiupload_fields(obj, event):
                 name, submitted_uids))
 
             # Parse upload UUIDs from request (new files to create)
-            upload_uuids = get_upload_uuids(name, request)
-            if not upload_uuids:
-                logger.info("No upload UUIDs for field {}".format(name))
-                continue
+            upload_uuids = get_upload_uuids(name, request, prefix=form_prefix)
 
             logger.info("Field {} upload UUIDs: {}".format(
                 name, upload_uuids))
@@ -172,6 +168,8 @@ def process_multiupload_fields(obj, event):
                 uid = create_file_object(obj, field, upload_uuid, file_data)
                 if uid:
                     created_uids.append(uid)
+                    # Mark created object as processing
+                    processing_objs.add(uid)
 
             # Combine submitted UIDs (existing) with newly created UIDs
             new_value = submitted_uids + created_uids
@@ -185,16 +183,15 @@ def process_multiupload_fields(obj, event):
         setattr(request, UPLOAD_PROCESSING_KEY, processing_objs)
 
 
-def get_upload_uuids(field_name, request, form_prefix="form.widgets."):
+def get_upload_uuids(field_name, request, prefix=""):
     """Parse upload UUIDs from request data
 
-    :param data_value: JSON string containing list of UUIDs
-    :param field_name: Name of the field (for logging)
-    :returns: List of UUID strings
+    :param field_name: Name of the field
+    :param request: The request object
+    :param prefix: Form field prefix
     """
-
     # Get upload UUIDs from request using <fieldname>.data key
-    data_key = "{}{}.data".format(form_prefix, field_name)
+    data_key = "{}{}.data".format(prefix, field_name)
     data_value = request.get(data_key, "")
 
     if not data_value:
@@ -215,16 +212,16 @@ def get_upload_uuids(field_name, request, form_prefix="form.widgets."):
     return []
 
 
-def get_submitted_uids(field_name, request, form_prefix="form.widgets."):
+def get_submitted_uids(field_name, request, prefix=""):
     """Get submitted UIDs from request (what user wants to keep)
 
     :param field_name: Name of the field
     :param request: The request object
-    :param form_prefix: Form field prefix
+    :param prefix: Form field prefix
     :returns: List of submitted UIDs
     """
     # Get main field value from request (contains existing UIDs)
-    field_key = "{}{}".format(form_prefix, field_name)
+    field_key = "{}{}".format(prefix, field_name)
     field_value = request.get(field_key, "")
 
     if not field_value:
@@ -311,7 +308,7 @@ def get_current_uids(field, obj):
     :returns: List of current UIDs in field
     """
     current_value = field.get(obj) or []
-    return [item for item in current_value if api.is_uid(item)]
+    return list(map(api.get_uid, current_value))
 
 
 def remove_deleted_files(fields, obj, current_values, request):
@@ -325,9 +322,13 @@ def remove_deleted_files(fields, obj, current_values, request):
     :param current_values: Dictionary of current UIDs per field
     :param request: The request object
     """
+    form_prefix = ""
+    if api.is_dexterity_content(obj):
+        form_prefix = "form.widgets."
+
     for name, field in fields.items():
         # Get submitted UIDs (what user wants to keep)
-        submitted_uids = get_submitted_uids(name, request)
+        submitted_uids = get_submitted_uids(name, request, prefix=form_prefix)
         logger.info("Field {} submitted UIDs: {}".format(
             name, submitted_uids))
 

@@ -165,10 +165,9 @@ class MultiUploadWidget(ReferenceWidget):
 
         return json.dumps(existing_files)
 
-    def process_form(
-            self, instance, field, form,
-            empty_marker=None, emptyReturnsMarker=False,
-            validating=True):
+    def process_form(self, instance, field, form,
+                     empty_marker=None, emptyReturnsMarker=False,
+                     validating=True):
         """Process form data and return existing UIDs
 
         :param instance: The content instance
@@ -189,27 +188,13 @@ class MultiUploadWidget(ReferenceWidget):
             "process_form() called for field '{}', validating={}"
             .format(field_name, validating))
 
-        # Get the main field value (existing UIDs from React widget)
-        existing_uids = []
-        value = form.get(field_name, "")
-        if value:
-            if api.is_string(value):
-                # UIDs are separated by \r\n
-                existing_uids = [uid.strip() for uid in value.split("\r\n")]
-            elif isinstance(value, (list, tuple)):
-                existing_uids = [uid for uid in value if uid]
+        # Always return the existing UIDs from the field.
+        # The file creation/deletion and adding is handled in the event handler
+        existing_uids = field.getRaw(instance) or []
 
         logger.info(
             "process_form for field '{}': returning existing UIDs = {}"
             .format(field_name, existing_uids))
-
-        # Upload UUIDs are stored in <fieldname>.data and will be
-        # processed by the event subscriber
-        data_key = "{}.data".format(field_name)
-        if data_key in form:
-            logger.info(
-                "Upload UUIDs found in '{}' for event subscriber"
-                .format(data_key))
 
         # Return only existing UIDs
         return existing_uids, {}
