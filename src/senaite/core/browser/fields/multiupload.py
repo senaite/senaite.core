@@ -24,8 +24,11 @@ from AccessControl import ClassSecurityInfo
 from App.class_init import InitializeClass
 from Products.Archetypes.Field import ObjectField
 from Products.Archetypes.Registry import registerField
+from senaite.core.schema.interfaces import IMultiUploadField
+from zope.interface import implementer
 
 
+@implementer(IMultiUploadField)
 class MultiUploadField(ObjectField):
     """A field that stores UIDs and upload UUIDs
 

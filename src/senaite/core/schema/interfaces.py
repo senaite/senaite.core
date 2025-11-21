@@ -74,6 +74,7 @@ class IRichTextField(IRichText):
     """Senaite rich text field
     """
 
+
 class IEmailField(ITextLine):
     """Input type "email" widget
     """
