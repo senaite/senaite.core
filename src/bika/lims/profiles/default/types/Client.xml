@@ -28,7 +28,7 @@
     <element value="SamplePoint"/>
     <element value="SampleTemplate"/>
     <element value="AnalysisProfile"/>
-    <!-- Plone standard content types for attachments -->
+    <!-- Use File/Image types for attachments -->
     <element value="File"/>
     <element value="Image"/>
   </property>
