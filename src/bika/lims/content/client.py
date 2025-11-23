@@ -25,9 +25,6 @@ from bika.lims import _
 from bika.lims import api
 from bika.lims.browser.fields import EmailsField
 from bika.lims.browser.fields import UIDReferenceField
-from senaite.core.browser.fields.multiupload import MultiUploadField
-from senaite.core.browser.widgets.multiuploadwidget import \
-    MultiUploadWidget
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import DECIMAL_MARKS
 from bika.lims.config import PROJECTNAME
@@ -47,6 +44,8 @@ from Products.CMFCore import permissions
 from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
 from Products.CMFCore.utils import _checkPermission
 from Products.CMFPlone.RegistrationTool import get_member_by_login_name
+from senaite.core.browser.fields.multiupload import MultiUploadField
+from senaite.core.browser.widgets.multiuploadwidget import MultiUploadWidget
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from zope.interface import implements
 
