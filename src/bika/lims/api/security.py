@@ -23,11 +23,12 @@ from contextlib import contextmanager
 import six
 from AccessControl import getSecurityManager
 from AccessControl.Permission import Permission
-from AccessControl.SecurityManagement import (newSecurityManager,
-                                              setSecurityManager)
+from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import setSecurityManager
 from AccessControl.SpecialUsers import system as system_user
 from bika.lims import api
-from bika.lims.api.user import get_user, get_user_id
+from bika.lims.api.user import get_user
+from bika.lims.api.user import get_user_id
 
 
 def get_security_manager():
