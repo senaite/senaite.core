@@ -18,16 +18,16 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from contextlib import contextmanager
+
 import six
 from AccessControl import getSecurityManager
 from AccessControl.Permission import Permission
-from AccessControl.SecurityManagement import newSecurityManager
-from AccessControl.SecurityManagement import setSecurityManager
+from AccessControl.SecurityManagement import (newSecurityManager,
+                                              setSecurityManager)
 from AccessControl.SpecialUsers import system as system_user
 from bika.lims import api
-from bika.lims.api.user import get_user
-from bika.lims.api.user import get_user_id
-from contextlib import contextmanager
+from bika.lims.api.user import get_user, get_user_id
 
 
 def get_security_manager():
