@@ -516,6 +516,16 @@ class IContact(Interface):
     """
 
 
+class ISimpleFile(Interface):
+    """Marker interface for simple files
+    """
+
+
+class ISimpleImage(Interface):
+    """Marker interface for simple images
+    """
+
+
 class IAfterCreateSampleHook(Interface):
     """Subscription adapter after the sample was created
     """
