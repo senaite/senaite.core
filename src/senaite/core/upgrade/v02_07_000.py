@@ -367,6 +367,7 @@ def setup_custom_image_and_file_types(tool):
     logger.info("Setup custom File and Image types ...")
     portal = tool.aq_inner.aq_parent
     tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "rolemap")
     tool.runImportStepFromProfile(profile, "workflow")
     setup_core_catalogs(portal)
     logger.info("Setup custom File and Image types [DONE]")
