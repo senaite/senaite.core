@@ -49,8 +49,10 @@ class ClientAttachmentsView(ListingView):
         self.title = "Attachments"
         self.description = "Client attachments and files"
 
+        # Build workflow action delete URL
         view_url = "{}/{}".format(api.get_url(context), self.__name__)
-        delete_url = "{}/@@delete".format(view_url)
+        delete_url = "workflow_action?action=delete&redirect_url={}".format(
+            view_url)
 
         self.columns = OrderedDict((
             ("Title", {
