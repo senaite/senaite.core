@@ -33,6 +33,8 @@ from zope.component import getMultiAdapter
 UPLOAD_PROCESSING_KEY = "_multiupload_processing"
 UPLOAD_DELETING_KEY = "_multiupload_deleting"
 
+_marker = object()
+
 
 def on_object_added(obj, event):
     """Event handler for when object is added to container
@@ -155,6 +157,13 @@ def process_multiupload_fields(obj, event):
             # Get submitted UIDs from request (what user wants to keep)
             submitted_uids = get_submitted_uids(
                 name, request, prefix=form_prefix)
+
+            if submitted_uids is _marker:
+                # field is missing in request, which means we are not coming
+                # from a form submission, but rather from a programmatic
+                # modification
+                continue
+
             logger.info("Field {} submitted UIDs: {}".format(
                 name, submitted_uids))
 
@@ -222,7 +231,7 @@ def get_upload_uuids(field_name, request, prefix=""):
     return []
 
 
-def get_submitted_uids(field_name, request, prefix=""):
+def get_submitted_uids(field_name, request, prefix="", default=_marker):
     """Get submitted UIDs from request (what user wants to keep)
 
     :param field_name: Name of the field
@@ -235,7 +244,7 @@ def get_submitted_uids(field_name, request, prefix=""):
     field_value = request.get(field_key, "")
 
     if not field_value:
-        return []
+        return default
 
     # Split by newlines and filter UIDs
     submitted = []
@@ -339,6 +348,10 @@ def remove_deleted_files(fields, obj, current_values, request):
     for name, field in fields.items():
         # Get submitted UIDs (what user wants to keep)
         submitted_uids = get_submitted_uids(name, request, prefix=form_prefix)
+        if submitted_uids is _marker:
+            # field is missing in request, which means we are not coming from a
+            # form submission, but rather from a programmatic modification
+            continue
         logger.info("Field {} submitted UIDs: {}".format(
             name, submitted_uids))
 
