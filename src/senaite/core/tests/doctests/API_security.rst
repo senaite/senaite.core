@@ -395,7 +395,7 @@ Create a test file object in the client container:
     >>> from plone.dexterity.utils import createContentInContainer
     >>> test_file = createContentInContainer(
     ...     client,
-    ...     "File",
+    ...     "SimpleFile",
     ...     title=u"Test File for Deletion",
     ...     file=NamedBlobFile(data=b"test content", filename=u"test.txt"))
     >>> test_file_uid = api.get_uid(test_file)
