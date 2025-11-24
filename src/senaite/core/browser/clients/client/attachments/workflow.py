@@ -40,12 +40,9 @@ class WorkflowActionDeleteAdapter(WorkflowActionGenericAdapter):
         # Get UIDs of objects to delete
         uids = [api.get_uid(obj) for obj in objects]
 
-        # Get the parent container (Client)
-        parent = api.get_parent(self.context)
-
         # Use the remover adapter to delete the files
         # This will also cleanup references in the parent
-        remover = queryAdapter(parent, IMultiUploadFileRemover)
+        remover = queryAdapter(self.context, IMultiUploadFileRemover)
         if not remover:
             logger.error(
                 "No IMultiUploadFileRemover adapter found for context"
@@ -56,8 +53,16 @@ class WorkflowActionDeleteAdapter(WorkflowActionGenericAdapter):
             )
 
         try:
-            # Remove the files - this also cleans up parent references
+            # Remove the files
             remover.remove(uids)
+
+            # update parent references
+            # XXX: How to better remove stale references of the parent object?
+            if hasattr(self.context, "getRawAttachments"):
+                attachments = self.context.getRawAttachments()
+                new_attachments = [uid for uid in attachments
+                                   if uid not in uids]
+                self.context.setAttachments(new_attachments)
 
             message = "{} file(s) deleted successfully".format(len(uids))
             return self.redirect(message=message, level="info")
