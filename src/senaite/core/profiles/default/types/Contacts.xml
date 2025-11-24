@@ -1,23 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object name="Setup"
-        meta_type="Dexterity FTI"
+<object name="Contacts" meta_type="Dexterity FTI"
         i18n:domain="senaite.core"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 
   <!-- Title and Description -->
-  <property name="title" i18n:translate="">SENAITE Setup</property>
-  <property name="description"></property>
+  <property name="title"
+            i18n:translate="">Contacts</property>
+  <property name="description"
+            i18n:translate="">Global contacts container</property>
 
   <!-- content-type icon -->
-  <property name="icon_expr">senaite_theme/icon/setup</property>
+  <property name="icon_expr">senaite_theme/icon/contact</property>
 
   <!-- factory name; usually the same as type name -->
-  <property name="factory">Setup</property>
+  <property name="factory">Contacts</property>
 
   <!-- URL TALES expression to add an item TTW -->
-  <property name="add_view_expr"></property>
+  <property name="add_view_expr">
+    string:${folder_url}/++add++Contacts
+  </property>
 
-  <property name="link_target"></property>
+  <property name="link_target"/>
   <property name="immediate_view">view</property>
 
   <!-- Is this item addable globally, or is it restricted? -->
@@ -27,7 +30,7 @@
   <property name="filter_content_types">True</property>
   <!-- If filtering, what's allowed -->
   <property name="allowed_content_types">
-    <element value="Contacts" />
+    <element value="Contact" />
   </property>
 
   <property name="allow_discussion">False</property>
@@ -44,21 +47,21 @@
   <property name="add_permission">cmf.AddPortalContent</property>
 
   <!-- Python class for content items of this sort -->
-  <property name="schema">senaite.core.content.senaitesetup.ISetupSchema</property>
-  <property name="klass">senaite.core.content.senaitesetup.Setup</property>
+  <property name="schema">senaite.core.content.contacts.IContactsSchema</property>
+  <property name="klass">senaite.core.content.contacts.Contacts</property>
 
   <!-- Dexterity behaviours for this type -->
   <property name="behaviors">
-    <!-- Don't show item in navigation -->
-    <element value="plone.app.dexterity.behaviors.exclfromnav.IExcludeFromNavigationDefault"/>
+    <element value="plone.app.content.interfaces.INameFromTitle"/>
+    <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
     <element value="plone.app.referenceablebehavior.referenceable.IReferenceable" />
   </property>
 
   <!-- Action aliases -->
-  <alias from="(Default)" to="@@edit"/>
+  <alias from="(Default)" to="(dynamic view)"/>
   <alias from="edit" to="@@edit"/>
   <alias from="sharing" to="@@sharing"/>
-  <alias from="view" to="@@edit"/>
+  <alias from="view" to="(selected layout)"/>
 
   <!-- View -->
   <action title="View"
@@ -69,7 +72,7 @@
           icon_expr=""
           link_target=""
           url_expr="string:${object_url}"
-          visible="False">
+          visible="True">
     <permission value="View"/>
   </action>
 

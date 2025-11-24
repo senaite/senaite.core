@@ -120,4 +120,3 @@ class ClientContactVocabularyFactory(CatalogVocabulary):
             path={"query": "/".join(self.context.getPhysicalPath()),
                   "level": 0}
         )
-

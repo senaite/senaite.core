@@ -39,6 +39,7 @@ from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from senaite.core.setuphandlers import add_catalog_column
 from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.setuphandlers import setup_core_catalogs
+from senaite.core.setuphandlers import add_dexterity_items
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from zope.component import getMultiAdapter
@@ -370,3 +371,25 @@ def setup_custom_image_and_file_types(tool):
     tool.runImportStepFromProfile(profile, "workflow")
     setup_core_catalogs(portal)
     logger.info("Setup custom File and Image types [DONE]")
+
+
+def create_setup_contacts_folder(tool):
+    """Create the Contacts container in the setup folder
+    """
+    logger.info("Creating Contacts container in setup folder ...")
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "actions")
+
+    setup = api.get_senaite_setup()
+
+    # Check if contacts folder already exists
+    if not setup.get("contacts"):
+        items = [("contacts", "Contacts", "Contacts")]
+        add_dexterity_items(setup, items)
+        logger.info("Contacts container created")
+    else:
+        logger.info("Contacts folder already exists [SKIP]")
+
+    logger.info("Creating Contacts container in setup folder [DONE]")
