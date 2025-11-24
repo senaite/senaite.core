@@ -25,16 +25,15 @@
   /-->
 
   <!-- Add Permissions -->
+  <permission id="senaite.core.permissions.AddARTemplate" title="senaite.core: Add ARTemplate"/>
   <permission id="senaite.core.permissions.AddAnalysis" title="senaite.core: Add Analysis"/>
   <permission id="senaite.core.permissions.AddAnalysisCategory" title="senaite.core: Add AnalysisCategory"/>
   <permission id="senaite.core.permissions.AddAnalysisProfile" title="senaite.core: Add AnalysisProfile"/>
   <permission id="senaite.core.permissions.AddAnalysisService" title="senaite.core: Add AnalysisService"/>
   <permission id="senaite.core.permissions.AddAnalysisSpec" title="senaite.core: Add AnalysisSpec"/>
-  <permission id="senaite.core.permissions.AddARTemplate" title="senaite.core: Add ARTemplate"/>
-  <permission id="senaite.core.permissions.AddSampleTemplate" title="senaite.core: Add SampleTemplate"/>
   <permission id="senaite.core.permissions.AddAttachment" title="senaite.core: Add Attachment"/>
-  <permission id="senaite.core.permissions.AddAutoImportLog" title="senaite.core: Add AutoImportLog"/>
   <permission id="senaite.core.permissions.AddAttachmentType" title="senaite.core: Add AttachmentType"/>
+  <permission id="senaite.core.permissions.AddAutoImportLog" title="senaite.core: Add AutoImportLog"/>
   <permission id="senaite.core.permissions.AddBatch" title="senaite.core: Add Batch"/>
   <permission id="senaite.core.permissions.AddBatchLabel" title="senaite.core: Add BatchLabel"/>
   <permission id="senaite.core.permissions.AddCalculation" title="senaite.core: Add Calculation"/>
@@ -58,8 +57,11 @@
   <permission id="senaite.core.permissions.AddSampleCondition" title="senaite.core: Add SampleCondition"/>
   <permission id="senaite.core.permissions.AddSampleMatrix" title="senaite.core: Add SampleMatrix"/>
   <permission id="senaite.core.permissions.AddSamplePoint" title="senaite.core: Add SamplePoint"/>
+  <permission id="senaite.core.permissions.AddSampleTemplate" title="senaite.core: Add SampleTemplate"/>
   <permission id="senaite.core.permissions.AddSampleType" title="senaite.core: Add SampleType"/>
   <permission id="senaite.core.permissions.AddSamplingDeviation" title="senaite.core: Add SamplingDeviation"/>
+  <permission id="senaite.core.permissions.AddSimpleFile" title="senaite.core: Add Simple File"/>
+  <permission id="senaite.core.permissions.AddSimpleImage" title="senaite.core: Add Simple Image"/>
   <permission id="senaite.core.permissions.AddStorageLocation" title="senaite.core: Add StorageLocation"/>
   <permission id="senaite.core.permissions.AddSubGroup" title="senaite.core: Add SubGroup"/>
   <permission id="senaite.core.permissions.AddSupplier" title="senaite.core: Add Supplier"/>
