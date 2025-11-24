@@ -70,7 +70,7 @@ class DefaultFileCreator(object):
                 filename=filename,
                 contentType=content_type
             )
-            portal_type = "Image"
+            portal_type = "SimpleImage"
             field_name = "image"
         else:
             blob = NamedBlobFile(
@@ -78,7 +78,7 @@ class DefaultFileCreator(object):
                 filename=filename,
                 contentType=content_type
             )
-            portal_type = "File"
+            portal_type = "SimpleFile"
             field_name = "file"
 
         # Create the object in the container
@@ -129,7 +129,7 @@ class DefaultFileRemover(object):
         self.container = container
 
     def remove(self, uids):
-        """Remove File/Image objects by their UIDs
+        """Remove SimpleFile/SimpleImage objects by their UIDs
 
         :param uids: Set or list of UIDs to remove
         """
@@ -155,11 +155,12 @@ class DefaultFileRemover(object):
                                 api.get_path(self.container)))
                         continue
 
-                    # Verify it's a File or Image
-                    if api.get_portal_type(obj) not in ["File", "Image"]:
+                    # Verify it's a SimpleFile or SimpleImage
+                    portal_type = api.get_portal_type(obj)
+                    if portal_type not in ["SimpleFile", "SimpleImage"]:
                         logger.warning(
-                            "Skipping deletion of {}: not a File/Image "
-                            "(type: {})".format(uid, api.get_portal_type(obj)))
+                            "Skipping deletion of {}: not a SimpleFile/"
+                            "SimpleImage (type: {})".format(uid, portal_type))
                         continue
 
                     # Store info before deletion for logging

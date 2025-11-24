@@ -4,6 +4,7 @@
 
   <!-- Package includes -->
   <include package=".analysisprofiles"/>
+  <include package=".attachments"/>
   <include package=".contacts"/>
   <include package=".samplepoints"/>
   <include package=".sampletemplates"/>

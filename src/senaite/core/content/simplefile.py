@@ -63,24 +63,33 @@ class SimpleFile(Item):
     _catalogs = ["senaite_attachments_catalog"]
     security = ClassSecurityInfo()
 
+    @property
     @security.protected(permissions.View)
     def content_type(self):
+        """Return the content type of the file"""
         return getattr(self.file, "contentType", None)
 
     @security.protected(permissions.View)
     def get_size(self):
+        """Return the file size in bytes"""
         return getattr(self.file, "size", 0)
 
-    def getObjSize(self):
-        """Returns the size of the file in human-readable format
-        """
+    @security.protected(permissions.View)
+    def get_filename(self):
+        """Return the filename as unicode"""
+        from bika.lims import api
+        filename = getattr(self.file, "filename", u"")
+        return api.safe_unicode(filename)
+
+    @security.protected(permissions.View)
+    def get_formatted_size(self):
+        """Return the file size in human-readable format"""
         size = self.get_size()
         if not size:
-            return "0 KB"
+            return u"0 B"
 
-        if size < 1024:
-            return "{} B".format(size)
-        elif size < 1048576:
-            return "{} KB".format(size / 1024)
-        else:
-            return "{:.2f} MB".format(size / 1048576.0)
+        for unit in [u"B", u"KB", u"MB", u"GB"]:
+            if size < 1024.0:
+                return u"{:.1f} {}".format(size, unit)
+            size /= 1024.0
+        return u"{:.1f} TB".format(size)
