@@ -30,14 +30,14 @@ class IAttachmentsDeletedEvent(IObjectEvent):
 @implementer(IAttachmentsDeletedEvent)
 class AttachmentsDeletedEvent(object):
 
-    def __init__(self, container, deleted_uids):
-        """Attachments Deleted Event
+    def __init__(self, container, deleted):
+        """Attachment Deleted Event
 
         :param container: Conbtainer that held the attachments
-        :param deleted_uids: UIDs of deleted attachments
+        :param deleted: List of deleted attachments
         """
         self.container = container
-        self.deleted_uids = deleted_uids
+        self.deleted = deleted
 
         # See IObjectEvent
         # -> Allow to define an event subscriber for a custom type

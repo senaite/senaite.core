@@ -45,4 +45,10 @@
          Products.Archetypes.interfaces.IObjectEditedEvent"
     handler=".multiupload.on_object_modified"/>
 
+  <!-- Subscriber when client attachments were deleted -->
+  <subscriber
+    for="bika.lims.interfaces.IClient
+         senaite.core.events.attachments.IAttachmentsDeletedEvent"
+    handler=".client.on_attachments_deleted"/>
+
 </configure>

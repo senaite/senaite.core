@@ -27,3 +27,9 @@ def on_client_created(client, event):
     if get_registry_record("auto_create_client_group", True):
         # create a new client group
         client.create_group()
+
+
+def on_attachments_deleted(container, event):
+    """Event handler when attachments were deleted
+    """
+    deleted = event.deleted
