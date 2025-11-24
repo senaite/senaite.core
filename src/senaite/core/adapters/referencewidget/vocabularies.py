@@ -149,10 +149,7 @@ class ClientAwareReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
 
             if client_uid:
                 # Apply the search criteria for this client
-                if "Contact" in self.get_portal_types(query):
-                    query["getParentUID"] = [client_uid]
-                else:
-                    query["getClientUID"] = [client_uid, ""]
+                query["getClientUID"] = [client_uid, ""]
 
         return query
 

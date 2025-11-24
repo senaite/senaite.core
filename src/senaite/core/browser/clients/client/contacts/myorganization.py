@@ -40,7 +40,7 @@ class MyOrganizationView(BrowserView):
 
         current_user = api.get_current_user()
         contact = api.get_user_contact(current_user)
-        if contact:
+        if contact and not contact.isGlobal():
             # Redirect to the contact's container
             parent = api.get_parent(contact)
             url = api.get_url(parent)
@@ -49,3 +49,12 @@ class MyOrganizationView(BrowserView):
         # Not a contact, redirect to portal
         url = api.get_url(api.get_portal())
         return self.request.response.redirect(url)
+
+    def available(self):
+        """Available expression for the menu action
+        """
+        if not api.is_client_contact(self.context):
+            return False
+        if self.context.isGlobal():
+            return False
+        return True
