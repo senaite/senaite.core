@@ -37,6 +37,7 @@ from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import AUDITLOG_CATALOG
 from senaite.core.catalog import CATALOG_MAPPINGS
 from senaite.core.catalog import AnalysisCatalog
+from senaite.core.catalog import AttachmentsCatalog
 from senaite.core.catalog import AuditlogCatalog
 from senaite.core.catalog import AutoImportLogCatalog
 from senaite.core.catalog import ClientCatalog
@@ -110,6 +111,7 @@ ADD_BEHAVIORS = {
 
 CATALOGS = (
     AnalysisCatalog,
+    AttachmentsCatalog,
     AuditlogCatalog,
     AutoImportLogCatalog,
     ClientCatalog,
