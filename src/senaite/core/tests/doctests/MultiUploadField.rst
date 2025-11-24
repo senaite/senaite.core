@@ -63,11 +63,6 @@ First, let's create a simple test content type with a MultiUploadField:
     ...     """Test document"""
     ...     pass
 
-Create a client to hold test documents:
-
-    >>> clients = portal.clients
-    >>> client = api.create(clients, "Client", title="Test Client")
-    >>> client_path = api.get_path(client)
 
 
 Field Behavior
@@ -82,12 +77,11 @@ Test that the MultiUploadField stores UIDs correctly:
 Creating a Test Document
 ========================
 
-Create a test document that will hold our files:
+Create a client to hold test documents:
 
-    >>> doc = api.create(client, "Folder", title="Test Document")
-    >>> doc_uid = api.get_uid(doc)
-    >>> doc_uid
-    '...'
+    >>> clients = portal.clients
+    >>> client = api.create(clients, "Client", title="Test Client")
+    >>> client_path = api.get_path(client)
 
 
 Simulating File Upload
@@ -157,7 +151,7 @@ Let's create the files using the adapter:
     ...
     ...     # Determine if image or file
     ...     is_image = content_type.startswith("image/")
-    ...     portal_type = "Image" if is_image else "File"
+    ...     portal_type = "SimpleImage" if is_image else "SimpleFile"
     ...
     ...     # Create the file/image object
     ...     if is_image:
@@ -166,14 +160,14 @@ Let's create the files using the adapter:
     ...             filename=filename,
     ...             contentType=content_type
     ...         )
-    ...         obj = api.create(doc, portal_type, title=filename, image=blob)
+    ...         obj = api.create(client, portal_type, title=filename, image=blob)
     ...     else:
     ...         blob = NamedBlobFile(
     ...             data=data,
     ...             filename=filename,
     ...             contentType=content_type
     ...         )
-    ...         obj = api.create(doc, portal_type, title=filename, file=blob)
+    ...         obj = api.create(client, portal_type, title=filename, file=blob)
     ...
     ...     created_uids.append(api.get_uid(obj))
 
@@ -183,8 +177,8 @@ Let's create the files using the adapter:
 
 5. Set the field value with the created UIDs:
 
-    >>> doc.attachments = created_uids
-    >>> doc.reindexObject()
+    >>> client.attachments = created_uids
+    >>> client.reindexObject()
     >>> transaction.commit()
 
 
@@ -193,7 +187,7 @@ Verify Files Were Created
 
 Check that files exist in the document:
 
-    >>> len(doc.objectIds())
+    >>> len(client.objectIds())
     3
 
 Check the portal types:
@@ -201,13 +195,13 @@ Check the portal types:
     >>> types = [api.get_portal_type(api.get_object(uid)) for uid in created_uids]
     >>> types.sort()
     >>> types
-    ['File', 'File', 'Image']
+    ['SimpleFile', 'SimpleFile', 'SimpleImage']
 
 
 Retrieve Files from Field
 ==========================
 
-    >>> retrieved_uids = doc.attachments
+    >>> retrieved_uids = client.attachments
     >>> len(retrieved_uids)
     3
 
@@ -238,18 +232,18 @@ Test that we can get proper download URLs:
     >>> from senaite.core.z3cform.widgets.multiupload.widget import MultiUploadWidget
     >>> widget = MultiUploadWidget(request)
 
-For Files:
+For SimpleFiles:
 
-    >>> file_obj = [f for f in files if api.get_portal_type(f) == "File"][0]
+    >>> file_obj = [f for f in files if api.get_portal_type(f) == "SimpleFile"][0]
     >>> file_url = widget.get_download_url(file_obj)
-    >>> "/@@download/file" in file_url
+    >>> "@@download/file" in file_url
     True
 
-For Images:
+For SimpleImages:
 
-    >>> image_obj = [f for f in files if api.get_portal_type(f) == "Image"][0]
+    >>> image_obj = [f for f in files if api.get_portal_type(f) == "SimpleImage"][0]
     >>> image_url = widget.get_download_url(image_obj)
-    >>> "/@@download/image" in image_url
+    >>> "@@download/image" in image_url
     True
 
 
@@ -258,7 +252,7 @@ File Deletion
 
 Test that removing a UID from the field allows for file deletion:
 
-    >>> original_count = len(doc.attachments)
+    >>> original_count = len(client.attachments)
     >>> original_count
     3
 
@@ -266,8 +260,8 @@ Remove the first UID:
 
     >>> uid_to_remove = created_uids[0]
     >>> remaining_uids = [uid for uid in created_uids if uid != uid_to_remove]
-    >>> doc.attachments = remaining_uids
-    >>> len(doc.attachments)
+    >>> client.attachments = remaining_uids
+    >>> len(client.attachments)
     2
 
 The file object still exists (deletion happens via adapter in subscriber):
@@ -280,21 +274,21 @@ Simulate deletion via adapter:
 
     >>> from senaite.core.interfaces import IMultiUploadFileRemover
     >>> from zope.component import getAdapter
-    >>> remover = getAdapter(doc, IMultiUploadFileRemover)
+    >>> remover = getAdapter(client, IMultiUploadFileRemover)
     >>> obj_id = obj_to_remove.getId()
-    >>> obj_id in doc.objectIds()
+    >>> obj_id in client.objectIds()
     True
 
     >>> remover.remove([uid_to_remove])
 
 Verify the file was deleted:
 
-    >>> obj_id in doc.objectIds()
+    >>> obj_id in client.objectIds()
     False
 
 Verify the field still has the remaining files:
 
-    >>> len(doc.attachments)
+    >>> len(client.attachments)
     2
 
 
@@ -311,7 +305,7 @@ The field should accept an empty list:
 
 The field should validate strings (UIDs):
 
-    >>> field.validate([api.get_uid(doc)])
+    >>> field.validate([api.get_uid(client)])
 
 
 Widget Add Form Detection

@@ -49,10 +49,10 @@ class MultiUploadWidget(UIDReferenceWidget):
         url = api.get_url(obj)
         portal_type = api.get_portal_type(obj)
 
-        # For Dexterity File/Image objects, use the @@download view
-        if portal_type == "File":
+        # Use the @@download view
+        if portal_type == "SimpleFile":
             return "{}/@@download/file".format(url)
-        elif portal_type == "Image":
+        elif portal_type == "SimpleImage":
             return "{}/@@download/image".format(url)
 
         # Fallback to object URL
