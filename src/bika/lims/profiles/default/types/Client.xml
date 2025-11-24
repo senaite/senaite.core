@@ -28,9 +28,9 @@
     <element value="SamplePoint"/>
     <element value="SampleTemplate"/>
     <element value="AnalysisProfile"/>
-    <!-- Use File/Image types for attachments -->
-    <element value="File"/>
-    <element value="Image"/>
+    <!-- Use SimpleFile/SimpleImage types for attachments -->
+    <element value="SimpleFile"/>
+    <element value="SimpleImage"/>
   </property>
   <property name="allow_discussion">False</property>
   <property name="immediate_view">base_edit</property>
