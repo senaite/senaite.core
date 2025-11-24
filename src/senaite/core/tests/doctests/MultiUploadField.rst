@@ -1,5 +1,5 @@
 MultiUploadField
-----------------
+================
 
 MultiUploadField is a field that allows multiple file uploads to be attached
 to a content object. Files are stored as separate File or Image objects within
@@ -11,7 +11,7 @@ Running this test from the buildout directory:
 
 
 Needed Imports
-==============
+--------------
 
     >>> import json
     >>> import transaction
@@ -24,14 +24,14 @@ Needed Imports
 
 
 Variables
-=========
+---------
 
     >>> portal = self.portal
     >>> request = self.request
 
 
 Test User
-=========
+---------
 
 We need certain permissions to create and access objects used in this test,
 so here we will assume the role of Lab Manager.
@@ -42,7 +42,7 @@ so here we will assume the role of Lab Manager.
 
 
 Test Content Type
-=================
+-----------------
 
 First, let's create a simple test content type with a MultiUploadField:
 
@@ -66,7 +66,7 @@ First, let's create a simple test content type with a MultiUploadField:
 
 
 Field Behavior
-==============
+--------------
 
 Test that the MultiUploadField stores UIDs correctly:
 
@@ -75,7 +75,7 @@ Test that the MultiUploadField stores UIDs correctly:
 
 
 Creating a Test Document
-========================
+------------------------
 
 Create a client to hold test documents:
 
@@ -85,7 +85,7 @@ Create a client to hold test documents:
 
 
 Simulating File Upload
-=======================
+----------------------
 
 Let's simulate the file upload process:
 
@@ -183,7 +183,7 @@ Let's create the files using the adapter:
 
 
 Verify Files Were Created
-==========================
+-------------------------
 
 Check that files exist in the document:
 
@@ -199,7 +199,7 @@ Check the portal types:
 
 
 Retrieve Files from Field
-==========================
+-------------------------
 
     >>> retrieved_uids = client.attachments
     >>> len(retrieved_uids)
@@ -210,7 +210,7 @@ Retrieve Files from Field
 
 
 Get File Objects
-================
+----------------
 
     >>> files = [api.get_object(uid) for uid in retrieved_uids]
     >>> len(files)
@@ -225,7 +225,7 @@ Check file titles:
 
 
 Download URLs
-=============
+-------------
 
 Test that we can get proper download URLs:
 
@@ -248,7 +248,7 @@ For SimpleImages:
 
 
 File Deletion
-=============
+-------------
 
 Test that removing a UID from the field allows for file deletion:
 
@@ -293,7 +293,7 @@ Verify the field still has the remaining files:
 
 
 Field Validation
-================
+----------------
 
 The field should accept a list of UIDs:
 
@@ -309,7 +309,7 @@ The field should validate strings (UIDs):
 
 
 Widget Add Form Detection
-==========================
+-------------------------
 
 Test the is_add_form method:
 
