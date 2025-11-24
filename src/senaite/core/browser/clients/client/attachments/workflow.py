@@ -56,13 +56,13 @@ class WorkflowActionDeleteAdapter(WorkflowActionGenericAdapter):
             # Remove the files
             remover.remove(uids)
 
-            # update parent references
+            # update parent references -> now done in an event handler
             # XXX: How to better remove stale references of the parent object?
-            if hasattr(self.context, "getRawAttachments"):
-                attachments = self.context.getRawAttachments()
-                new_attachments = [uid for uid in attachments
-                                   if uid not in uids]
-                self.context.setAttachments(new_attachments)
+            # if hasattr(self.context, "getRawAttachments"):
+            #     attachments = self.context.getRawAttachments()
+            #     new_attachments = [uid for uid in attachments
+            #                        if uid not in uids]
+            #     self.context.setAttachments(new_attachments)
 
             message = "{} file(s) deleted successfully".format(len(uids))
             return self.redirect(message=message, level="info")
