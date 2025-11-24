@@ -156,13 +156,7 @@ def process_multiupload_fields(obj, event):
 
             # Get submitted UIDs from request (what user wants to keep)
             submitted_uids = get_submitted_uids(
-                name, request, prefix=form_prefix)
-
-            if submitted_uids is _marker:
-                # field is missing in request, which means we are not coming
-                # from a form submission, but rather from a programmatic
-                # modification
-                continue
+                name, request, prefix=form_prefix, default=[])
 
             logger.info("Field {} submitted UIDs: {}".format(
                 name, submitted_uids))
