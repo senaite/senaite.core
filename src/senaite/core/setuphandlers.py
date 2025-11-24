@@ -101,12 +101,15 @@ CONTENTS_TO_DELETE = (
 # Mapping of portal types to additional behaviors that should be enabled
 # Format: {"portal_type": ("behavior.interface", ...)}
 ADD_BEHAVIORS = {
-    "File": (
-        "plone.app.referenceablebehavior.referenceable.IReferenceable",
-    ),
-    "Image": (
-        "plone.app.referenceablebehavior.referenceable.IReferenceable",
-    ),
+    # Kept for example purposes only. File and Image types are now  implemented
+    # with SimpleFile and SimpleImage content types
+    #
+    # "File": (
+    #     "plone.app.referenceablebehavior.referenceable.IReferenceable",
+    # ),
+    # "Image": (
+    #     "plone.app.referenceablebehavior.referenceable.IReferenceable",
+    # ),
 }
 
 CATALOGS = (
@@ -621,7 +624,7 @@ def setup_content_type_behaviors(portal, behaviors_mapping=None):
     referenceable by UID.
 
     :param portal: The portal object
-    :param behaviors_mapping: Optional custom mapping (defaults to ADD_BEHAVIORS)
+    :param behaviors_mapping: Optional custom mapping
     """
     if behaviors_mapping is None:
         behaviors_mapping = ADD_BEHAVIORS
