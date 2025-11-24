@@ -48,6 +48,7 @@ class ClientAttachmentsView(ListingView):
         self.form_id = "client_attachments"
         self.title = "Attachments"
         self.description = "Client attachments and files"
+        self.view_url = "{}/{}".format(api.get_url(context), self.__name__)
 
         self.columns = OrderedDict((
             ("Title", {
@@ -89,7 +90,7 @@ class ClientAttachmentsView(ListingView):
                     {
                         "id": "delete",
                         "title": _("Delete"),
-                        "url": "workflow_action?action=delete",
+                        "url": "workflow_action?action=delete&redirect_url={}".format(self.view_url),
                         "css_class": "btn btn-danger",
                     }
                 ]
