@@ -22,6 +22,7 @@ from collections import OrderedDict
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
+from bika.lims.utils import get_link_for
 from senaite.app.listing import ListingView
 from senaite.core.catalog import ATTACHMENTS_CATALOG
 
@@ -36,7 +37,6 @@ class ClientAttachmentsView(ListingView):
             "portal_type": ["SimpleFile", "SimpleImage"],
             "path": {
                 "query": api.get_path(context),
-                "depth": 1
             },
             "sort_on": "created",
             "sort_order": "descending"
@@ -48,7 +48,9 @@ class ClientAttachmentsView(ListingView):
         self.form_id = "client_attachments"
         self.title = "Attachments"
         self.description = "Client attachments and files"
-        self.view_url = "{}/{}".format(api.get_url(context), self.__name__)
+
+        view_url = "{}/{}".format(api.get_url(context), self.__name__)
+        delete_url = "{}/@@delete".format(view_url)
 
         self.columns = OrderedDict((
             ("Title", {
@@ -71,6 +73,10 @@ class ClientAttachmentsView(ListingView):
                 "title": _("Creator"),
                 "index": "Creator"
             }),
+            ("Location", {
+                "title": _("Location"),
+                "index": "path"
+            }),
         ))
 
         self.review_states = [
@@ -78,19 +84,13 @@ class ClientAttachmentsView(ListingView):
                 "id": "default",
                 "title": _("All"),
                 "contentFilter": {},
-                "columns": [
-                    "Title",
-                    "content_type",
-                    "get_size",
-                    "created",
-                    "Creator"
-                ],
+                "columns":  self.columns.keys(),
                 "transitions": [],
                 "custom_transitions": [
                     {
                         "id": "delete",
                         "title": _("Delete"),
-                        "url": "workflow_action?action=delete&redirect_url={}".format(self.view_url),
+                        "url": delete_url,
                         "css_class": "btn btn-danger",
                     }
                 ]
@@ -113,6 +113,9 @@ class ClientAttachmentsView(ListingView):
         # Get the actual object
         attachment = api.get_object(obj)
 
+        # Get the parent container
+        container = api.get_parent(attachment)
+
         # Filename (Title)
         item["Title"] = api.get_title(attachment)
 
@@ -134,6 +137,10 @@ class ClientAttachmentsView(ListingView):
             download_url,
             attachment.get_filename()
         )
+
+        # Location
+        item["Location"] = api.get_title(container)
+        item["replace"]["Location"] = get_link_for(container)
 
         return item
 
