@@ -3,11 +3,11 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
-      title="SENAITE.CORE 2.7.0: Enable IReferenceable behavior for File and Image"
-      description="Ensures File and Image objects are cataloged in uid_catalog for multifile upload widget"
+      title="SENAITE.CORE 2.7.0: Add custom file/image types"
+      description="Add SampleFile and SampleImage types and setup custom Attachments Catalog"
       source="2711"
       destination="2712"
-      handler=".v02_07_000.enable_referenceable_behavior_for_files"
+      handler=".v02_07_000.setup_custom_image_and_file_types"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

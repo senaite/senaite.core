@@ -38,7 +38,7 @@ from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
 from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from senaite.core.setuphandlers import add_catalog_column
 from senaite.core.setuphandlers import add_catalog_index
-from senaite.core.setuphandlers import setup_content_type_behaviors
+from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from zope.component import getMultiAdapter
@@ -361,14 +361,12 @@ def to_dx_address(value, address_type=NAIVE_ADDRESS):
 
 
 @upgradestep(product, version)
-def enable_referenceable_behavior_for_files(tool):
-    """Enable IReferenceable behavior for File and Image content types
-
-    This ensures File and Image objects are cataloged in the uid_catalog
-    and can be retrieved by UID, which is required for the multifile upload
-    widget that stores UID references to uploaded files.
+def setup_custom_image_and_file_types(tool):
+    """Setup custom File and Image types and add Attachments catalog
     """
-    logger.info("Enable IReferenceable behavior for File and Image types...")
+    logger.info("Setup custom File and Image types ...")
     portal = tool.aq_inner.aq_parent
-    setup_content_type_behaviors(portal)
-    logger.info("Enable IReferenceable behavior for File and Image types [DONE]")
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+    setup_core_catalogs(portal)
+    logger.info("Setup custom File and Image types [DONE]")
