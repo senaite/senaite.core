@@ -57,7 +57,7 @@ class ClientAttachmentsView(ListingView):
         self.columns = OrderedDict((
             ("Title", {
                 "title": _("Filename"),
-                "index": "sortable_title"
+                "index": "getId"
             }),
             ("content_type", {
                 "title": _("Type"),
