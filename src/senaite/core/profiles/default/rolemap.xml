@@ -346,20 +346,6 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
-    <permission name="senaite.core: Add SimpleFile" acquire="True">
-      <role name="Client"/>
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Owner"/>
-    </permission>
-    <permission name="senaite.core: Add SimpleImage" acquire="True">
-      <role name="Client"/>
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Owner"/>
-    </permission>
     <permission name="senaite.core: Add StorageLocation" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>

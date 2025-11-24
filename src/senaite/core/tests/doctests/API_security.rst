@@ -403,7 +403,7 @@ Create a test file object in the client container:
 Verify the file exists:
 
     >>> api.get_object(test_file_uid)
-    <File at ...>
+    <SimpleFile at ...>
 
 The current user doesn't have delete permission on the client container.
 Without the privileged context, deletion would fail. With it, deletion succeeds:

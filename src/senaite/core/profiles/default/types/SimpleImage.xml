@@ -39,7 +39,7 @@
   <property name="default_view_fallback">False</property>
 
   <!-- permission required to add an item of this type -->
-  <property name="add_permission">senaite.core: Add Simple Image</property>
+  <property name="add_permission">cmf.AddPortalContent</property>
 
   <!-- Python class for content items of this sort -->
   <property name="schema">senaite.core.content.simpleimage.ISimpleImageSchema</property>

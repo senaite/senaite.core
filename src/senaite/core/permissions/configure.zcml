@@ -60,8 +60,6 @@
   <permission id="senaite.core.permissions.AddSampleTemplate" title="senaite.core: Add SampleTemplate"/>
   <permission id="senaite.core.permissions.AddSampleType" title="senaite.core: Add SampleType"/>
   <permission id="senaite.core.permissions.AddSamplingDeviation" title="senaite.core: Add SamplingDeviation"/>
-  <permission id="senaite.core.permissions.AddSimpleFile" title="senaite.core: Add SimpleFile"/>
-  <permission id="senaite.core.permissions.AddSimpleImage" title="senaite.core: Add SimpleImage"/>
   <permission id="senaite.core.permissions.AddStorageLocation" title="senaite.core: Add StorageLocation"/>
   <permission id="senaite.core.permissions.AddSubGroup" title="senaite.core: Add SubGroup"/>
   <permission id="senaite.core.permissions.AddSupplier" title="senaite.core: Add Supplier"/>
