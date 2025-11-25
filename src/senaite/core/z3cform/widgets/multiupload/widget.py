@@ -128,7 +128,7 @@ class MultiUploadWidget(UIDReferenceWidget):
             return []
         if not isinstance(value, (list, tuple)):
             return []
-        return list(value)
+        return list(filter(api.is_uid, value))
 
     def get_input_widget_attributes(self):
         """Return input widget attributes for the ReactJS component
@@ -190,7 +190,7 @@ class MultiUploadWidget(UIDReferenceWidget):
                 current_value = []
             logger.info("extract for '{}': edit form, value={}".format(
                 self.name, current_value))
-            return list(current_value)
+            return list(filter(api.is_uid, current_value))
         except (AttributeError, TypeError) as e:
             logger.warning("extract for '{}': error getting value: {}".format(
                 self.name, str(e)))
@@ -216,12 +216,12 @@ class MultiUploadDataConverter(BaseDataConverter):
     def toFieldValue(self, value):
         """Convert from widget value to field value
 
-        The extract() method returned a list of UIDs/UUIDs.
+        The extract() method returned a list of UIDs.
 
-        :param value: List of UIDs/UUIDs from extract()
-        :returns: List of UIDs/UUIDs
+        :param value: List of UIDs from extract()
+        :returns: List of UIDs
         """
-        # Value from extract() is already a list of UIDs/UUIDs
+        # Value from extract() is already a list of UIDs
         if value is None:
             result = []
         else:
