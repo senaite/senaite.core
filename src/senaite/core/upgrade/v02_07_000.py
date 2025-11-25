@@ -382,3 +382,10 @@ def create_setup_contacts_folder(tool):
         logger.info("Contacts folder already exists [SKIP]")
 
     logger.info("Creating Contacts container in setup folder [DONE]")
+
+
+@upgradestep(product, version)
+def notify_upgrade(context):
+    """Dummy func to force the call of before and after upgrade events
+    """
+    pass
