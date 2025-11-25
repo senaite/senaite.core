@@ -103,7 +103,10 @@ class Multifile(Container):
     @security.protected(permissions.View)
     def getDocumentID(self):
         accessor = self.accessor("document_id")
-        return accessor(self)
+        value = accessor(self)
+        if not value:
+            return ""
+        return u(value).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setDocumentID(self, value):
@@ -118,12 +121,15 @@ class Multifile(Container):
     @security.protected(permissions.ModifyPortalContent)
     def setFile(self, value):
         mutator = self.mutator("file")
-        mutator(self, u(value))
+        mutator(self, value)
 
     @security.protected(permissions.View)
     def getDocumentVersion(self):
         accessor = self.accessor("document_version")
-        return accessor(self)
+        value = accessor(self)
+        if not value:
+            return ""
+        return u(value).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setDocumentVersion(self, value):
@@ -133,7 +139,10 @@ class Multifile(Container):
     @security.protected(permissions.View)
     def getDocumentLocation(self):
         accessor = self.accessor("document_location")
-        return accessor(self)
+        value = accessor(self)
+        if not value:
+            return ""
+        return u(value).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setDocumentLocation(self, value):
@@ -143,7 +152,10 @@ class Multifile(Container):
     @security.protected(permissions.View)
     def getDocumentType(self):
         accessor = self.accessor("document_type")
-        return accessor(self)
+        value = accessor(self)
+        if not value:
+            return ""
+        return u(value).encode("utf-8")
 
     @security.protected(permissions.ModifyPortalContent)
     def setDocumentType(self, value):
