@@ -207,6 +207,7 @@ def remove_at_portal_types(tool):
     logger.info("Remove AT types from portal_types tool ... [DONE]")
 
 
+@upgradestep(product, version)
 def migrate_contacts_to_dx(tool):
     """Migrate Contact objects from Archetypes to Dexterity
     """
@@ -360,6 +361,7 @@ def to_dx_address(value, address_type=NAIVE_ADDRESS):
     }
 
 
+@upgradestep(product, version)
 def create_setup_contacts_folder(tool):
     """Create the Contacts container in the setup folder
     """
