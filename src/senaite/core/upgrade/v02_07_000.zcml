@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Fix custom actions and behaviors are missing"
+      description="Fix custom actions and behaviors are missing"
+      source="2712"
+      destination="2713"
+      handler=".v02_07_000.notify_upgrade"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Create global Contacts container"
       description="Create Contacts container in setup folder"
       source="2711"
