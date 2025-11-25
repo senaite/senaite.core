@@ -194,6 +194,16 @@ class IAnalysisCategories(Interface):
     """
 
 
+class IContact(Interface):
+    """Marker interface for a single Contact
+    """
+
+
+class IContacts(Interface):
+    """Marker interface for Contacts container
+    """
+
+
 class IHaveAnalysisCategory(Interface):
     """Marker interface for objects that have AnalysisCategory(ies) assigned
     """
@@ -523,16 +533,6 @@ class IWorksheetTemplates(Interface):
 
 class IWorksheetTemplate(Interface):
     """Marker interface for Worksheet Template
-    """
-
-
-class IContacts(Interface):
-    """Marker interface for Contacts container
-    """
-
-
-class IContact(Interface):
-    """Marker interface for a single Contact
     """
 
 

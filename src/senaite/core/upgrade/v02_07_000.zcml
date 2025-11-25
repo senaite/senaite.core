@@ -5,9 +5,17 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Migrate Worksheet objects to Dexterity"
       description="Convert Worksheet content type from Archetypes to Dexterity"
+      source="2712"
+      destination="2713"
+      handler=".v02_07_000.migrate_worksheets_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Create global Contacts container"
+      description="Create Contacts container in setup folder"
       source="2711"
       destination="2712"
-      handler=".v02_07_000.migrate_worksheets_to_dx"
+      handler=".v02_07_000.create_setup_contacts_folder"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

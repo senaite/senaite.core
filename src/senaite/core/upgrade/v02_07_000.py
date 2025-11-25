@@ -392,6 +392,28 @@ def to_dx_address(value, address_type=NAIVE_ADDRESS):
     }
 
 
+def create_setup_contacts_folder(tool):
+    """Create the Contacts container in the setup folder
+    """
+    logger.info("Creating Contacts container in setup folder ...")
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "actions")
+
+    setup = api.get_senaite_setup()
+
+    # Check if contacts folder already exists
+    if not setup.get("contacts"):
+        items = [("contacts", "Contacts", "Contacts")]
+        add_dexterity_items(setup, items)
+        logger.info("Contacts container created")
+    else:
+        logger.info("Contacts folder already exists [SKIP]")
+
+    logger.info("Creating Contacts container in setup folder [DONE]")
+
+
 @upgradestep(product, version)
 def migrate_worksheets_to_dx(tool):
     """Convert existing worksheet templates to Dexterity

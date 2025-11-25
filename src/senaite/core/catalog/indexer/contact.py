@@ -40,7 +40,7 @@ def sortable_title(instance):
 def getParentUID(instance):
     parent = instance.aq_parent
     if not IClient.providedBy(parent):
-        return None
+        return ""
     return parent.UID()
 
 
