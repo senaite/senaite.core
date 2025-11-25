@@ -1264,6 +1264,33 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             return {"allowed": True}
 
         if all([catalog, query, uids]):
+            # Special handling for Contact fields with getParentUID filter
+            # Global contacts should always be allowed regardless of client
+            if name in ["Contact", "CCContact"] and "getParentUID" in query:
+                from bika.lims.interfaces import IClient
+
+                # Check each selected contact
+                for uid in uids:
+                    contact = api.get_object_by_uid(uid, None)
+                    if not contact:
+                        # Invalid contact, will fail later
+                        break
+
+                    parent = api.get_parent(contact)
+                    # Global contacts (not under a client) are always allowed
+                    if not IClient.providedBy(parent):
+                        continue
+
+                    # Client contacts must match the query
+                    parent_uid = api.get_uid(parent)
+                    parent_uid_query = query.get("getParentUID", [])
+                    if parent_uid not in parent_uid_query:
+                        # This client contact doesn't match the query
+                        break
+                else:
+                    # All contacts are either global or match the query
+                    return {"allowed": True}
+
             # check if the current value is allowed for the new query
             brains = api.search(query, catalog=catalog)
             allowed_uids = list(map(api.get_uid, brains))
@@ -1590,10 +1617,10 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # catalog queries for UI field filtering
         queries = {
             "Contact": {
-                "getParentUID": [uid]
+                "getParentUID": [uid, ""]
             },
             "CCContact": {
-                "getParentUID": [uid]
+                "getParentUID": [uid, ""]
             },
             "SamplePoint": {
                 "getClientUID": [uid, ""],
@@ -1874,13 +1901,18 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Re-add the Contact
             required_fields["Contact"] = contact
 
-            # Check if the contact belongs to the selected client
+            # Check if the contact belongs to the selected client or is global
             contact_obj = api.get_object(contact, None)
             if not contact_obj:
                 fielderrors["Contact"] = _("No valid contact")
             else:
-                parent_uid = api.get_uid(api.get_parent(contact_obj))
-                if parent_uid != record.get("Client"):
+                parent = api.get_parent(contact_obj)
+                parent_uid = api.get_uid(parent)
+                # Allow contacts that belong to the client or are global
+                from bika.lims.interfaces import IClient
+                is_client_contact = parent_uid == record.get("Client")
+                is_global_contact = not IClient.providedBy(parent)
+                if not (is_client_contact or is_global_contact):
                     msg = _("Contact does not belong to the selected client")
                     fielderrors["Contact"] = msg
 

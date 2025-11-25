@@ -69,6 +69,7 @@ from Products.CMFPlone.utils import base_hasattr
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
 from senaite.core.interfaces import IContact
+from senaite.core.interfaces import IContacts
 from senaite.core.interfaces import ITemporaryObject
 from z3c.form.validator import Data as ValidatorData
 from zope import globalrequest
@@ -1637,7 +1638,23 @@ def is_client_contact(brain_or_object):
     if not is_object(brain_or_object):
         return False
     obj = get_object(brain_or_object)
-    return IContact.providedBy(obj)
+    return IContact.providedBy(obj) and not is_global_contact(obj)
+
+
+def is_global_contact(brain_or_object):
+    """Checks if the brain or object is a global contact
+
+    :returns: True if the brain or object is a global contact, False otherwise
+    """
+    if not is_object(brain_or_object):
+        return False
+    obj = get_object(brain_or_object)
+    if not IContact.providedBy(obj):
+        return False
+    parent = get_parent(brain_or_object)
+    if not IContacts.providedBy(parent):
+        return False
+    return True
 
 
 def is_contact(brain_or_object):
@@ -1648,6 +1665,8 @@ def is_contact(brain_or_object):
     if is_client_contact(brain_or_object):
         return True
     if is_lab_contact(brain_or_object):
+        return True
+    if is_global_contact(brain_or_object):
         return True
     return False
 

@@ -1,0 +1,26 @@
+<div class="contacts-filter-container"
+     style="display: inline-block; margin-left: 20px;"
+     i18n:domain="senaite.core">
+  <div class="custom-control custom-checkbox custom-control-inline">
+    <input type="checkbox"
+           class="custom-control-input"
+           id="include-client-contacts"
+           tal:attributes="checked python: view.is_include_client_contacts() and 'checked' or None" />
+    <label class="custom-control-label" for="include-client-contacts">
+      <span i18n:translate="label_include_client_contacts">Include client contacts</span>
+    </label>
+  </div>
+
+  <script type="text/javascript">
+    (function() {
+      var checkbox = document.getElementById("include-client-contacts");
+      if (!checkbox) return;
+
+      checkbox.addEventListener("change", function() {
+        var value = this.checked ? "1" : "0";
+        document.cookie = "include_client_contacts=" + value + "; path=/; max-age=31536000"; // 1 year
+        window.location.reload();
+      });
+    })();
+  </script>
+</div>

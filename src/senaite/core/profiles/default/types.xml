@@ -90,6 +90,7 @@
 
   <!-- Contacts -->
   <object name="Contact" meta_type="Dexterity FTI" />
+  <object name="Contacts" meta_type="Dexterity FTI" />
 
   <!-- Dynamic Analysis specifications -->
   <object name="DynamicAnalysisSpec" meta_type="Dexterity FTI" />
