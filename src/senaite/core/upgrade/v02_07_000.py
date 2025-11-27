@@ -390,6 +390,7 @@ def migrate_multifiles_to_dx(tool):
     logger.info("Migrating Multifiles to Dexterity [DONE]")
 
 
+@upgradestep(product, version)
 def migrate_multifile_to_dx(src, destination=None):
     """Migrate an AT multifile to DX in the destination folder
 
