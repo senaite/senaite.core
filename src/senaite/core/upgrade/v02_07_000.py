@@ -446,7 +446,7 @@ def migrate_multifile_to_dx(src, destination=None):
                 data = file_data.data
                 target.file = NamedBlobFile(
                     data=data,
-                    filename=filename,
+                    filename=u(filename),
                     contentType=content_type
                 )
             else:
