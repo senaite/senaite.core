@@ -5,8 +5,8 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Migrate Multifile objects to Dexterity"
       description="Convert Multifile content type from Archetypes to Dexterity"
-      source="2713"
-      destination="2714"
+      source="2714"
+      destination="2715"
       handler=".v02_07_000.migrate_multifiles_to_dx"
       profile="senaite.core:default"/>
 
