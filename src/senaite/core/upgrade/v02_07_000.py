@@ -23,8 +23,10 @@ from bika.lims import api
 from bika.lims.api import safe_unicode as u
 from bika.lims.interfaces import IInvalidated
 from bika.lims.utils import tmpID
+from plone.app.blob.field import BlobWrapper
 from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
+from plone.namedfile.file import NamedBlobFile
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
@@ -432,12 +434,24 @@ def migrate_multifile_to_dx(src, destination=None):
     target.document_location = u(src.getDocumentLocation())
     target.document_type = u(src.getDocumentType())
 
-    # Handle file field
+    # Handle file field - convert AT BlobWrapper to DX NamedBlobFile
     file_field = src.getField("File")
     if file_field:
         file_data = file_field.get(src)
         if file_data:
-            target.file = file_data
+            # Convert BlobWrapper to NamedBlobFile
+            if isinstance(file_data, BlobWrapper):
+                filename = file_data.getFilename()
+                content_type = file_data.getContentType()
+                data = file_data.data
+                target.file = NamedBlobFile(
+                    data=data,
+                    filename=filename,
+                    contentType=content_type
+                )
+            else:
+                # Fallback for other types
+                target.file = file_data
 
     # Migrate the contents from AT to DX
     migrator = getMultiAdapter(
