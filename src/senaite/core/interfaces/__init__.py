@@ -231,6 +231,11 @@ class IAttachmentTypes(Interface):
     """
 
 
+class IMultifile(Interface):
+    """Marker interface for a Multifile
+    """
+
+
 class ISampleContainers(Interface):
     """Marker interface for sample container setup folder
     """

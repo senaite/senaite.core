@@ -795,7 +795,7 @@ class InstrumentMultifileView(BikaListingView):
         )
         self.context_actions = {
             _("Add"): {
-                "url": "createObject?type_name=Multifile",
+                "url": "++add++Multifile",
                 "icon": "++resource++bika.lims.images/add.png"
             }
         }
@@ -808,12 +808,9 @@ class InstrumentMultifileView(BikaListingView):
         self.columns = {
             "DocumentID": {"title": _("Document ID"),
                            "index": "sortable_title"},
-            "DocumentVersion": {"title": _("Document Version"),
-                                "index": "sortable_title"},
-            "DocumentLocation": {"title": _("Document Location"),
-                                 "index": "sortable_title"},
-            "DocumentType": {"title": _("Document Type"),
-                             "index": "sortable_title"},
+            "DocumentVersion": {"title": _("Document Version")},
+            "DocumentLocation": {"title": _("Document Location")},
+            "DocumentType": {"title": _("Document Type")},
             "FileDownload": {"title": _("File")}
         }
 
@@ -853,9 +850,10 @@ class InstrumentMultifileView(BikaListingView):
         item["FileDownload"] = ""
         item["replace"]["FileDownload"] = ""
         file = self.get_file(obj)
-        if file and file.get_size() > 0:
-            filename = file.filename
-            download_url = "{}/at_download/File".format(url)
+
+        if file and file.getSize() > 0:
+            filename = api.safe_unicode(file.filename)
+            download_url = u"{}/@@download/file".format(url)
             anchor = get_link(download_url, filename)
             item["FileDownload"] = filename
             item["replace"]["FileDownload"] = anchor

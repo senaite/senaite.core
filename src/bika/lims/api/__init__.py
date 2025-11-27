@@ -66,7 +66,6 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.RegistrationTool import get_member_by_login_name
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import base_hasattr
-from Products.CMFPlone.utils import safe_unicode
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
 from senaite.core.interfaces import IContact
@@ -2025,6 +2024,36 @@ def text_to_html(text, wrap="p", encoding="utf8"):
             tag=wrap, html=html)
     # return encoded html
     return html.encode(encoding)
+
+
+def safe_unicode(value, default=u""):
+    """Safely convert a value to a unicode string
+
+    :param value: Value to be converted to unicode
+    :param default: Default value if conversion fails
+    :returns: Unicode string
+    """
+    if value is None:
+        return default
+
+    # If already unicode, return as is
+    if isinstance(value, six.text_type):
+        return value
+
+    try:
+        # First convert to str (handles int, long, etc.)
+        try:
+            value = str(value)
+        except UnicodeDecodeError:
+            # If value is bytes with non-ASCII chars
+            value = value.encode("utf8")
+
+        # Convert to unicode
+        if isinstance(value, six.binary_type):
+            return value.decode("utf8")
+        return six.text_type(value)
+    except Exception:
+        return default
 
 
 def to_utf8(string, default=_marker):

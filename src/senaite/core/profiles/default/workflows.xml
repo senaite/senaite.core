@@ -235,6 +235,9 @@
     <type type_id="Method">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
+    <type type_id="Multifile">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
     <type type_id="Pricelist">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
