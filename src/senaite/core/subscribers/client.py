@@ -18,6 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from senaite.core.registry import get_registry_record
 
 
@@ -27,3 +28,18 @@ def on_client_created(client, event):
     if get_registry_record("auto_create_client_group", True):
         # create a new client group
         client.create_group()
+
+
+def on_attachments_deleted(container, event):
+    """Event handler when attachments were deleted
+    """
+    deleted = event.deleted
+
+    # Remove stale references from the attachments field
+    deleted_attachments = [api.get_uid(obj) for obj in deleted]
+    current_attachments = container.getRawAttachments() or []
+
+    new_attachments = [uid for uid in current_attachments
+                       if uid not in deleted_attachments]
+
+    container.setAttachments(new_attachments)

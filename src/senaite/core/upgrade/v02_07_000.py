@@ -36,9 +36,11 @@ from senaite.core.interfaces.catalog import ISenaiteCatalogObject
 from senaite.core.schema.addressfield import NAIVE_ADDRESS
 from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
 from senaite.core.schema.addressfield import POSTAL_ADDRESS
+from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_catalog_column
 from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.setuphandlers import add_dexterity_items
+from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 from zope.component import getMultiAdapter
@@ -389,3 +391,17 @@ def notify_upgrade(context):
     """Dummy func to force the call of before and after upgrade events
     """
     pass
+
+
+@upgradestep(product, version)
+def setup_custom_image_and_file_types(tool):
+    """Setup custom File and Image types and add Attachments catalog
+    """
+    logger.info("Setup custom File and Image types ...")
+    portal = tool.aq_inner.aq_parent
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+    # Needed for the updated Client.xml action
+    _run_import_step(portal, "typeinfo", "profile-bika.lims:default")
+    setup_core_catalogs(portal)
+    logger.info("Setup custom File and Image types [DONE]")
