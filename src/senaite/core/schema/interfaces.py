@@ -74,6 +74,7 @@ class IRichTextField(IRichText):
     """Senaite rich text field
     """
 
+
 class IEmailField(ITextLine):
     """Input type "email" widget
     """
@@ -96,4 +97,9 @@ class IGPSCoordinatesField(IDict):
 
 class ISelectOtherField(INativeString):
     """Senaite SelectOther field
+    """
+
+
+class IMultiUploadField(IList):
+    """Senaite Multi Upload field
     """

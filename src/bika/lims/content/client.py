@@ -44,6 +44,8 @@ from Products.CMFCore import permissions
 from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
 from Products.CMFCore.utils import _checkPermission
 from Products.CMFPlone.RegistrationTool import get_member_by_login_name
+from senaite.core.browser.fields.multiupload import MultiUploadField
+from senaite.core.browser.widgets.multiuploadwidget import MultiUploadWidget
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from zope.interface import implements
 
@@ -166,6 +168,19 @@ schema = Organisation.schema.copy() + Schema((
                 "Decimal mark to use in the reports from this Client."),
             format="select",
         )
+    ),
+
+    MultiUploadField(
+        "Attachments",
+        schemata="default",
+        widget=MultiUploadWidget(
+            max_filesize=10485760,  # in Bytes, default 10 MB
+            label=_("Attachments"),
+            description=_(
+                "Upload files and images for this client. "
+                "Files will be stored in the client folder and can be "
+                "downloaded later."),
+        ),
     ),
 ))
 

@@ -11,6 +11,14 @@
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add custom file/image types"
+      description="Add SampleFile and SampleImage types and setup custom Attachments Catalog"
+      source="2713"
+      destination="2714"
+      handler=".v02_07_000.setup_custom_image_and_file_types"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Fix custom actions and behaviors are missing"
       description="Fix custom actions and behaviors are missing"
       source="2712"
