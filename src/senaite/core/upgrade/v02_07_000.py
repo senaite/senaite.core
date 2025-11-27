@@ -542,6 +542,8 @@ def setup_custom_image_and_file_types(tool):
     """Setup custom File and Image types and add Attachments catalog
     """
     logger.info("Setup custom File and Image types ...")
+    # Ensure old AT types are flushed first
+    remove_at_portal_types(tool)
     portal = tool.aq_inner.aq_parent
     tool.runImportStepFromProfile(profile, "typeinfo")
     tool.runImportStepFromProfile(profile, "workflow")
