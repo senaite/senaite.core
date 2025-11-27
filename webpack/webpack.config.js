@@ -210,16 +210,9 @@ module.exports = {
           return { "legacy.js": min.code };
         }
       }, {
-        // legacy.css
-        src: [
-          "../src/senaite/core/browser/static/css/senaite.core.graphics.css",
-        ],
-        dest: code => ({
-          "legacy.css":new CleanCSS({}).minify(code).styles,
-        })
-      }, {
         // thirdparty.js
         src: [
+          "../src/senaite/core/browser/static/thirdparty/plone/jquery.tools.js",
           "../src/senaite/core/browser/static/thirdparty/plone/overlayhelpers.js",
           "../src/senaite/core/browser/static/thirdparty/jquery-barcode-2.2.0.min.js",
           "../src/senaite/core/browser/static/thirdparty/jquery-qrcode-0.17.0.min.js",
@@ -233,6 +226,7 @@ module.exports = {
         // legacy.css
         src: [
           "../src/senaite/core/browser/static/css/senaite.core.graphics.css",
+          "../src/senaite/core/browser/static/thirdparty/plone/overlays.css",
         ],
         dest: code => ({
           "legacy.css":new CleanCSS({}).minify(code).styles,
