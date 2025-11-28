@@ -5,9 +5,25 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Migrate Worksheet objects to Dexterity"
       description="Convert Worksheet content type from Archetypes to Dexterity"
+      source="2715"
+      destination="2716"
+      handler=".v02_07_000.migrate_worksheets_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate Multifile objects to Dexterity"
+      description="Convert Multifile content type from Archetypes to Dexterity"
+      source="2714"
+      destination="2715"
+      handler=".v02_07_000.migrate_multifiles_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add custom file/image types"
+      description="Add SampleFile and SampleImage types and setup custom Attachments Catalog"
       source="2713"
       destination="2714"
-      handler=".v02_07_000.migrate_worksheets_to_dx"
+      handler=".v02_07_000.setup_custom_image_and_file_types"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

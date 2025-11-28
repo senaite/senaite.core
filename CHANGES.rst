@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2805 Migrate Worksheets to DX
+- #2812 Migrate MultiFile to Dexterity
+- #2815 Remove dependency to plone.app.jquerytools
 - #2816 Fix custom actions and behaviors are missing
 - #2801 Global Contacts
 - #2795 Migrate Client Contacts to Dexterity

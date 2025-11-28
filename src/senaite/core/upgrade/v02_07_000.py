@@ -23,8 +23,10 @@ from bika.lims import api
 from bika.lims.api import safe_unicode as u
 from bika.lims.interfaces import IInvalidated
 from bika.lims.utils import tmpID
+from plone.app.blob.field import BlobWrapper
 from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
+from plone.namedfile.file import NamedBlobFile
 from persistent.list import PersistentList
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from senaite.core import logger
@@ -32,6 +34,7 @@ from senaite.core.api import dtime
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
 from senaite.core.config import PROJECTNAME as product
@@ -40,10 +43,12 @@ from senaite.core.interfaces.catalog import ISenaiteCatalogObject
 from senaite.core.schema.addressfield import NAIVE_ADDRESS
 from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
 from senaite.core.schema.addressfield import POSTAL_ADDRESS
+from senaite.core.setuphandlers import _run_import_step
 from senaite.core.schema.uidreferencefield import get_backref_storage
 from senaite.core.setuphandlers import add_catalog_column
 from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.setuphandlers import add_dexterity_items
+from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.utils import UpgradeUtils
@@ -55,6 +60,7 @@ profile = "profile-{0}:default".format(product)
 
 REMOVE_AT_TYPES = [
     "Contact",
+    "Multifile",
     "Worksheet",
 ]
 
@@ -381,6 +387,146 @@ def migrate_contact_to_dx(src, destination=None):
     logger.info("Migrated Contact from %s -> %s" % (src, target))
 
 
+def migrate_multifiles_to_dx(tool):
+    """Migrate Multifile objects from Archetypes to Dexterity
+    """
+    logger.info("Migrating Multifiles to Dexterity ...")
+
+    # Ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+    # Find all Multifile objects
+    query = {
+        "portal_type": "Multifile",
+    }
+    brains = api.search(query, SETUP_CATALOG)
+    total = len(brains)
+    logger.info("Found {} Multifile objects to migrate".format(total))
+
+    for num, brain in enumerate(brains, start=1):
+        # Get the object
+        multifile = api.get_object(brain)
+
+        if num % 100 == 0:
+            logger.info("Progress: {}/{} multifiles migrated".format(num, total))
+
+        # Skip if already migrated to Dexterity
+        if not api.is_at_content(multifile):
+            logger.info("[{}/{}] Already migrated: {}".format(
+                num, total, api.get_path(multifile)))
+            continue
+
+        migrate_multifile_to_dx(multifile)
+
+    logger.info("Migrating Multifiles to Dexterity [DONE]")
+
+
+@upgradestep(product, version)
+def migrate_multifile_to_dx(src, destination=None):
+    """Migrate an AT multifile to DX in the destination folder
+
+    :param src: The source AT object
+    :param destination: The destination folder. If `None`, the parent folder of
+                        the source object is taken
+    """
+    # migrate the contents from the old AT container to the new one
+    portal_type = "Multifile"
+
+    if api.get_portal_type(src) != portal_type:
+        logger.error("Not a '{}' object: {}".format(portal_type, src))
+        return
+
+    # Create the object if it does not exist yet
+    src_id = src.getId()
+    target_id = src_id
+
+    # check if we migrate within the same folder
+    if destination is None:
+        # use a temporary ID for the migrated content
+        target_id = tmpID()
+        # set the destination to the source parent
+        destination = api.get_parent(src)
+
+    target = destination.get(target_id)
+    if not target:
+        # Don't use the api to skip the auto-id generation
+        target = createContent(portal_type, id=target_id)
+        destination._setObject(target_id, target)
+        target = destination._getOb(target_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = u""  # calculated from document_id
+    target.description = u""  # not used
+    target.document_id = u(src.getDocumentID())
+    target.document_version = u(src.getDocumentVersion())
+    target.document_location = u(src.getDocumentLocation())
+    target.document_type = u(src.getDocumentType())
+
+    # Handle file field - convert AT BlobWrapper to DX NamedBlobFile
+    file_field = src.getField("File")
+    if file_field:
+        file_data = file_field.get(src)
+        if file_data:
+            # Convert BlobWrapper to NamedBlobFile
+            if isinstance(file_data, BlobWrapper):
+                filename = file_data.getFilename()
+                content_type = file_data.getContentType()
+                data = file_data.data
+                target.file = NamedBlobFile(
+                    data=data,
+                    filename=u(filename),
+                    contentType=content_type
+                )
+            else:
+                # Fallback for other types
+                target.file = file_data
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter(
+        (src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID
+    migrator.copy_uid(src, target)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # move eventual contents from source to target
+    if api.is_folderish(src):
+        cp = src.manage_cutObjects(ids=src.objectIds())
+        target.manage_pasteObjects(cp)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    logger.info("Migrated Multifile from %s -> %s" % (src, target))
+
+
 def to_dx_address(value, address_type=NAIVE_ADDRESS):
     return {
         "type": u(value.get("address_type") or address_type),
@@ -421,6 +567,22 @@ def notify_upgrade(context):
     """Dummy func to force the call of before and after upgrade events
     """
     pass
+
+
+@upgradestep(product, version)
+def setup_custom_image_and_file_types(tool):
+    """Setup custom File and Image types and add Attachments catalog
+    """
+    logger.info("Setup custom File and Image types ...")
+    # Ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+    portal = tool.aq_inner.aq_parent
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+    # Needed for the updated Client.xml action
+    _run_import_step(portal, "typeinfo", "profile-bika.lims:default")
+    setup_core_catalogs(portal)
+    logger.info("Setup custom File and Image types [DONE]")
 
 
 @upgradestep(product, version)

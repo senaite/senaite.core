@@ -8,6 +8,7 @@
   <include package=".duration" />
   <include package=".gpscoordinates" />
   <include package=".listing" />
+  <include package=".multiupload" />
   <include package=".queryselect" />
   <include package=".remarks" />
   <include package=".selectother" />

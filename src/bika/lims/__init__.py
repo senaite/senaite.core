@@ -94,7 +94,6 @@ def initialize(context):
     from bika.lims.content.manufacturer import Manufacturer
     from bika.lims.content.method import Method
     from bika.lims.content.methods import Methods
-    from bika.lims.content.multifile import Multifile
     from bika.lims.content.organisation import Organisation
     from bika.lims.content.person import Person
     from bika.lims.content.preservation import Preservation

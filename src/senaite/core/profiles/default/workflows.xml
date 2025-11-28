@@ -152,6 +152,12 @@
     <type type_id="WorksheetTemplates">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
+    <type type_id="SimpleFile">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="SimpleImage">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
     <!-- /Bindings to "senaite_one_state_workflow" -->
 
 
@@ -227,6 +233,9 @@
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="Method">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="Multifile">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="Pricelist">

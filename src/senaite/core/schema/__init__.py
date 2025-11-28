@@ -36,7 +36,9 @@ from .interfaces import IDurationField
 from .interfaces import IEmailField
 from .interfaces import IGPSCoordinatesField
 from .interfaces import IIntField
+from .interfaces import IMultiUploadField
 from .interfaces import IRichTextField
+from .multiuploadfield import MultiUploadField
 from .interfaces import IRemarksField
 from .phonefield import IPhoneField
 from .phonefield import PhoneField
@@ -55,6 +57,7 @@ classImplementsFirst(DurationField, IDurationField)
 classImplementsFirst(EmailField, IEmailField)
 classImplementsFirst(GPSCoordinatesField, IGPSCoordinatesField)
 classImplementsFirst(IntField, IIntField)
+classImplementsFirst(MultiUploadField, IMultiUploadField)
 classImplementsFirst(PhoneField, IPhoneField)
 classImplementsFirst(RemarksField, IRemarksField)
 classImplementsFirst(RichTextField, IRichTextField)

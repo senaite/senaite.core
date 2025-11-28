@@ -89,4 +89,8 @@
   <adapter name="sampletype_title" factory=".analysisspec.sampletype_title"/>
   <adapter name="sampletype_uid" factory=".analysisspec.sampletype_uid"/>
 
+  <!-- Attachment Indexer (SimpleFile/SimpleImage) -->
+  <adapter name="listing_searchable_text" factory=".attachment.listing_searchable_text"/>
+  <adapter name="listing_searchable_text" factory=".attachment.listing_searchable_text_image"/>
+
 </configure>

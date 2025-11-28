@@ -112,6 +112,13 @@
   <object name="WorksheetTemplate" meta_type="Dexterity FTI" />
   <object name="WorksheetTemplates" meta_type="Dexterity FTI" />
 
+  <!-- Multifile -->
+  <object name="Multifile" meta_type="Dexterity FTI" />
+
+  <!-- Simple File/Image -->
+  <object name="SimpleFile" meta_type="Dexterity FTI" />
+  <object name="SimpleImage" meta_type="Dexterity FTI" />
+
   <!-- Worksheet -->
   <object name="Worksheet" meta_type="Dexterity FTI" />
   <object name="Worksheets" meta_type="Dexterity FTI" />
