@@ -3,7 +3,7 @@ Changelog
 
 2.7.0 (unreleased)
 ------------------
-
+- #2817 Fix QR code render for multi-page stickers
 - #2812 Migrate MultiFile to Dexterity
 - #2815 Remove dependency to plone.app.jquerytools
 - #2816 Fix custom actions and behaviors are missing
