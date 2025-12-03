@@ -24,7 +24,6 @@ from operator import itemgetter
 
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.memoize import view
 from plone.resource.utils import queryResourceDirectory
@@ -32,6 +31,7 @@ from plone.resource.utils import queryResourceDirectory
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api.analysis import is_out_of_range
+from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces import IReferenceSample
