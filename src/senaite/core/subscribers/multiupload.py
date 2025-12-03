@@ -25,7 +25,7 @@ from bika.lims import logger
 from senaite.core.interfaces import IMultiUploadFileCreator
 from senaite.core.interfaces import IMultiUploadFileRemover
 from senaite.core.schema.interfaces import IMultiUploadField
-from senaite.core.z3cform.widgets.multiupload.handler import SESSION_KEY
+from senaite.core.z3cform.widgets.multiupload.storage import get_storage
 from zope.component import getAdapter
 from zope.component import getMultiAdapter
 
@@ -133,14 +133,8 @@ def process_multiupload_fields(obj, event):
     setattr(request, UPLOAD_PROCESSING_KEY, processing_objs)
 
     try:
-        # Get uploaded files from session
-        session = getattr(request, "SESSION", None)
-        if not session:
-            logger.info("No SESSION available, skipping upload processing")
-            return
-
-        # Get uploaded UUID -> file mapping data from session
-        uploaded_files = session.get(SESSION_KEY, {})
+        # Get the shared upload storage (cluster-safe)
+        storage = get_storage()
 
         # Get all MultiUploadField fields
         fields = get_multiupload_fields(obj)
@@ -170,10 +164,11 @@ def process_multiupload_fields(obj, event):
             # Create File/Image objects for each upload UUID
             created_uids = []
             for upload_uuid in upload_uuids:
-                file_data = uploaded_files.get(upload_uuid)
+                # Retrieve file data from shared storage
+                file_data = storage.retrieve(upload_uuid)
                 if not file_data:
                     logger.warning(
-                        "Upload data for UUID {} not found in session"
+                        "Upload data for UUID {} not found in storage"
                         .format(upload_uuid))
                     continue
 
@@ -183,6 +178,8 @@ def process_multiupload_fields(obj, event):
                     created_uids.append(uid)
                     # Mark created object as processing
                     processing_objs.add(uid)
+                    # Remove from storage after successful creation
+                    storage.remove(upload_uuid)
 
             # Combine submitted UIDs (existing) with newly created UIDs
             new_value = submitted_uids + created_uids

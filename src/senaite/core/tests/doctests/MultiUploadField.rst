@@ -5,6 +5,10 @@ MultiUploadField is a field that allows multiple file uploads to be attached
 to a content object. Files are stored as separate File or Image objects within
 the container, and their UIDs are stored in the field.
 
+This test covers the complete upload workflow including the cluster-safe
+temporary storage mechanism that allows uploads to be shared across multiple
+ZEO client instances.
+
 Running this test from the buildout directory:
 
     bin/test test_textual_doctests -t MultiUploadField
@@ -84,6 +88,61 @@ Create a client to hold test documents:
     >>> client_path = api.get_path(client)
 
 
+Testing Temporary Upload Storage
+---------------------------------
+
+Before simulating file uploads, let's test the storage directly:
+
+    >>> from senaite.core.z3cform.widgets.multiupload.storage import get_storage
+
+    >>> storage = get_storage()
+
+Store a test upload:
+
+    >>> test_data = b"Test data for storage"
+    >>> success = storage.store(
+    ...     "test-storage-uuid",
+    ...     u"test.txt",
+    ...     "text/plain",
+    ...     test_data
+    ... )
+    >>> success
+    True
+
+    >>> transaction.commit()
+
+Retrieve the upload:
+
+    >>> retrieved = storage.retrieve("test-storage-uuid")
+    >>> retrieved["filename"]
+    u'test.txt'
+
+    >>> retrieved["content_type"]
+    'text/plain'
+
+    >>> retrieved["data"] == test_data
+    True
+
+    >>> "timestamp" in retrieved
+    True
+
+Remove the upload:
+
+    >>> removed = storage.remove("test-storage-uuid")
+    >>> removed
+    True
+
+Verify it's gone:
+
+    >>> storage.retrieve("test-storage-uuid") is None
+    True
+
+Attempt to retrieve non-existent upload:
+
+    >>> storage.retrieve("non-existent-uuid") is None
+    True
+
+
 Simulating File Upload
 ----------------------
 
@@ -96,34 +155,30 @@ Let's simulate the file upload process:
     >>> file_data_3 = b"PNG image data here"
 
 
-2. Store files in session (simulating upload handler):
+2. Store files in shared ZODB storage (simulating upload handler):
 
-    >>> from senaite.core.z3cform.widgets.multiupload.handler import SESSION_KEY
+    >>> from senaite.core.z3cform.widgets.multiupload.storage import get_storage
 
-    >>> session_data = {}
-    >>> request.SESSION = session_data
+    >>> storage = get_storage()
 
     >>> upload_uuid_1 = "test-uuid-1"
     >>> upload_uuid_2 = "test-uuid-2"
     >>> upload_uuid_3 = "test-uuid-3"
 
-    >>> session_data[SESSION_KEY] = {
-    ...     upload_uuid_1: {
-    ...         "filename": u"test1.txt",
-    ...         "content_type": "text/plain",
-    ...         "data": file_data_1,
-    ...     },
-    ...     upload_uuid_2: {
-    ...         "filename": u"test2.txt",
-    ...         "content_type": "text/plain",
-    ...         "data": file_data_2,
-    ...     },
-    ...     upload_uuid_3: {
-    ...         "filename": u"test3.png",
-    ...         "content_type": "image/png",
-    ...         "data": file_data_3,
-    ...     },
-    ... }
+Store each upload in the shared storage:
+
+    >>> storage.store(upload_uuid_1, u"test1.txt", "text/plain", file_data_1)
+    True
+
+    >>> storage.store(upload_uuid_2, u"test2.txt", "text/plain", file_data_2)
+    True
+
+    >>> storage.store(upload_uuid_3, u"test3.png", "image/png", file_data_3)
+    True
+
+Commit the transaction so the storage is persisted:
+
+    >>> transaction.commit()
 
 
 3. Simulate form submission with upload UUIDs:
@@ -140,11 +195,12 @@ Let's simulate the file upload process:
     >>> from senaite.core.interfaces import IMultiUploadFileCreator
     >>> from zope.component import getMultiAdapter
 
-Let's create the files using the adapter:
+Let's create the files using the adapter and retrieve from storage:
 
     >>> created_uids = []
     >>> for upload_uuid in [upload_uuid_1, upload_uuid_2, upload_uuid_3]:
-    ...     file_data_dict = session_data[SESSION_KEY][upload_uuid]
+    ...     # Retrieve file data from shared storage
+    ...     file_data_dict = storage.retrieve(upload_uuid)
     ...     filename = file_data_dict["filename"]
     ...     content_type = file_data_dict["content_type"]
     ...     data = file_data_dict["data"]
@@ -170,9 +226,23 @@ Let's create the files using the adapter:
     ...         obj = api.create(client, portal_type, title=filename, file=blob)
     ...
     ...     created_uids.append(api.get_uid(obj))
+    ...
+    ...     # Clean up storage after creating the file
+    ...     removed = storage.remove(upload_uuid)
 
     >>> len(created_uids)
     3
+
+Verify uploads were removed from storage after processing:
+
+    >>> storage.retrieve(upload_uuid_1) is None
+    True
+
+    >>> storage.retrieve(upload_uuid_2) is None
+    True
+
+    >>> storage.retrieve(upload_uuid_3) is None
+    True
 
 
 5. Set the field value with the created UIDs:

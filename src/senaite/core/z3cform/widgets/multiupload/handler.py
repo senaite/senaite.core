@@ -1,25 +1,20 @@
 # -*- coding: utf-8 -*-
 
-import threading
 import uuid
 
 from bika.lims import api
 from bika.lims.decorators import returns_json
 from Products.Five.browser import BrowserView
-from senaite.core import logger
-
-# Global lock for session access - shared across all threads
-SESSION_LOCK = threading.Lock()
-SESSION_KEY = "multiupload_files"
+from senaite.core.z3cform.widgets.multiupload.storage import get_storage
 
 
 class MultiUploadHandler(BrowserView):
     """Handler for multiupload widget AJAX requests
 
     This view receives file uploads from the React multiupload widget
-    and stores them temporarily in the session, returning a unique ID.
-    The actual File/Image objects are created later in the widget's
-    process_form method.
+    and stores them temporarily in shared ZODB storage, returning a
+    unique ID. The actual File/Image objects are created later when the
+    form is saved via the event subscriber.
     """
 
     def __call__(self):
@@ -42,11 +37,10 @@ class MultiUploadHandler(BrowserView):
         return self.upload(upload)
 
     def upload(self, upload):
-        """Store the uploaded file temporarily in the session
+        """Store the uploaded file temporarily in shared ZODB storage
 
-        NOTE: Uses a global threading.Lock to prevent race conditions
-              when multiple threads try to write to the session
-              simultaneously.
+        Uses cluster-safe ZODB storage instead of SESSION to ensure
+        uploads are visible across all ZEO client instances.
 
         :param upload: The uploaded file object
         :returns: JSON response with upload ID and file info
@@ -69,12 +63,12 @@ class MultiUploadHandler(BrowserView):
         # and read later by process_form
         upload_id = str(uuid.uuid4())
 
-        # Store in session with thread-safe locking
-        success = self.store_in_session(
+        # Store in shared ZODB storage (cluster-safe)
+        success = self.store_in_storage(
             upload_id, filename, content_type, data)
 
         if not success:
-            return self.fail("Failed to store file in session", 500)
+            return self.fail("Failed to store file in storage", 500)
 
         return self.send_json({
             "id": upload_id,
@@ -84,9 +78,12 @@ class MultiUploadHandler(BrowserView):
             "status": "success"
         })
 
-    def store_in_session(
+    def store_in_storage(
             self, upload_id, filename, content_type, data):
-        """Store uploaded file data in session with thread-safe locking
+        """Store uploaded file data in shared ZODB storage
+
+        Uses the cluster-safe TemporaryUploadStorage which stores
+        uploads in portal annotations accessible to all ZEO clients.
 
         :param upload_id: The unique upload ID
         :param filename: The filename
@@ -94,47 +91,8 @@ class MultiUploadHandler(BrowserView):
         :param data: The file data bytes
         :returns: True if stored successfully, False otherwise
         """
-        with SESSION_LOCK:
-            logger.info(
-                u"Acquired lock for upload {}".format(upload_id))
-
-            # IMPORTANT: Sync the ZODB connection to get fresh data
-            # Without this, we see stale data from transaction snapshot
-            session = self.request.SESSION
-            # Sync ZODB connection if available
-            if hasattr(session, '_p_jar') and \
-                    session._p_jar is not None:
-                session._p_jar.sync()
-
-            # Get or create the uploads dict
-            uploaded_files = session.get(SESSION_KEY, {})
-
-            # Add this upload
-            uploaded_files[upload_id] = {
-                "data": data,
-                "filename": filename,
-                "content_type": content_type,
-            }
-
-            # Store back to session - triggers ZODB change detection
-            session[SESSION_KEY] = uploaded_files
-
-            # Verify it was stored
-            total = len(session.get(SESSION_KEY, {}))
-            if upload_id in session.get(SESSION_KEY, {}):
-                logger.info(
-                    u"✓ Stored upload {} for file {} (total: {})"
-                    .format(upload_id, filename, total))
-                logger.info(
-                    u"Released lock for upload {}".format(upload_id))
-                return True
-            else:
-                logger.error(
-                    u"✗ FAILED to store upload {} for file {}"
-                    .format(upload_id, filename))
-                logger.info(
-                    u"Released lock for upload {}".format(upload_id))
-                return False
+        storage = get_storage()
+        return storage.store(upload_id, filename, content_type, data)
 
     def get_content_type(self, upload):
         """Get the MIME type of the uploaded file
