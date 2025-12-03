@@ -89,7 +89,7 @@ Create a client to hold test documents:
 
 
 Testing Temporary Upload Storage
----------------------------------
+--------------------------------
 
 Before simulating file uploads, let's test the storage directly:
 
