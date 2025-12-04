@@ -54,9 +54,9 @@ class PrintView(BrowserView):
         are shown.
     """
 
-    template = ViewPageTemplateFile("../templates/print.pt")
+    template = ViewPageTemplateFile("templates/print.pt")
     _DEFAULT_NUMCOLS = 3
-    _TEMPLATES_DIR = "../templates/print"
+    _TEMPLATES_DIR = "templates/print"
     _TEMPLATES_LIST = []
     _TEMPLATE_ERR = "<div class='error-print'>%s - %s '%s':<pre>%s</pre></div>"
     _current_ws_index = 0

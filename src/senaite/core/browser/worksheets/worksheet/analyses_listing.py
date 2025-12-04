@@ -504,7 +504,7 @@ class AnalysesView(BaseView):
         # update the data
         data.update(self.get_slot_header_data(obj))
 
-        template = ViewPageTemplateFile("../templates/slot_header.pt")
+        template = ViewPageTemplateFile("templates/slot_header.pt")
         return template(self, data=data)
 
     @view.memoize

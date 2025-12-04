@@ -56,7 +56,7 @@ def getServiceUidsByMethod(method):
 class AddAnalysesView(ListingView):
     """Assign Analyses View for Worksheets
     """
-    template = ViewPageTemplateFile("../templates/add_analyses.pt")
+    template = ViewPageTemplateFile("templates/add_analyses.pt")
 
     def __init__(self, context, request):
         super(AddAnalysesView, self).__init__(context, request)

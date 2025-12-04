@@ -38,7 +38,7 @@ from senaite.core.permissions.worksheet import can_manage_worksheets
 class ManageResultsView(DefaultView):
     """Worksheet Manage Results View
     """
-    template = ViewPageTemplateFile("../templates/manage_results.pt")
+    template = ViewPageTemplateFile("templates/manage_results.pt")
 
     def __init__(self, context, request):
         super(ManageResultsView, self).__init__(context, request)
