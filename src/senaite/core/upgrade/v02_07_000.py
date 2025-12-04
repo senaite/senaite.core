@@ -38,6 +38,7 @@ from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.config.worksheet import DEFAULT_WORKSHEET_LAYOUT
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
 from senaite.core.schema.addressfield import NAIVE_ADDRESS
@@ -599,6 +600,19 @@ def migrate_worksheets_to_dx(tool):
     tool.runImportStepFromProfile(profile, "workflow")
     tool.runImportStepFromProfile(profile, "plone.app.registry")
 
+    # copy related settings
+    fields = [
+        ("WorksheetLayout",
+         "setWorksheetLayout", DEFAULT_WORKSHEET_LAYOUT),
+        ("RestrictWorksheetUsersAccess",
+         "setRestrictWorksheetUsersAccess", True),
+        ("RestrictWorksheetManagement",
+         "setRestrictWorksheetManagement", True),
+        ("ScientificNotationReport",
+         "setScientificNotationReport", "1"),
+    ]
+    copy_settings_from_bika_setup(fields)
+
     origin = api.get_portal().worksheets
 
     # get the destination container
@@ -640,6 +654,21 @@ def migrate_worksheets_to_dx(tool):
         parent.manage_delObjects([temp_folder.getId()])
 
     logger.info("Convert Worksheet's to Dexterity [DONE]")
+
+
+def copy_settings_from_bika_setup(fields):
+    """Copy related settings from `bika_setup` to `senaitesetup`
+    """
+    bika_setup = api.get_bika_setup()
+    senaite_setup = api.get_senaite_setup()
+    for old, new, default in fields:
+        value = bika_setup.getField(old).get(bika_setup)
+        if value is None:
+            value = default
+        setter = getattr(senaite_setup, new, None)
+        if callable(setter):
+            setter(value)
+            logger.info("Copy field {}({}) -> {}".format(old, value, new))
 
 
 def migrate_worksheet_to_dx(src, destination):
