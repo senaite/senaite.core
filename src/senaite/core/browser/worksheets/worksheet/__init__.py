@@ -17,3 +17,18 @@
 #
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
+
+from .add_analyses import AddAnalysesView
+from .add_blank import AddBlankView
+from .add_control import AddControlView
+from .add_duplicate import AddDuplicateView
+from .add_worksheet import AddWorksheetView
+from .ajax import SetAnalyst
+from .ajax import SetInstrument
+from .analyses_listing import AnalysesView
+from .analyses_transposed_listing import AnalysesTransposedView
+from .export import ExportView
+from .manage_results import ManageResultsView
+from .printview import PrintView
+from .referencesamples import ReferenceSamplesView
+from .view import WorksheetView

@@ -28,7 +28,7 @@ from bika.lims.utils import get_link
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
 from senaite.core.i18n import translate as t
-from senaite.core.browser.worksheets.views import AnalysesTransposedView
+from senaite.core.browser.worksheets.worksheet import AnalysesTransposedView
 from six.moves.urllib.parse import parse_qs
 
 
