@@ -91,7 +91,7 @@
       for="senaite.core.interfaces.IWorksheets"
       name="worksheet_add"
       class=".views.AddWorksheetView"
-      permission="senaite.core.permissions.worksheet.AddWorksheet"
+      permission="senaite.core.permissions.AddWorksheet"
       layer="senaite.core.interfaces.ISenaiteCore"
   />
 
