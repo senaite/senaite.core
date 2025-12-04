@@ -43,7 +43,7 @@ from senaite.core.permissions.worksheet import can_manage_worksheets
 class WorksheetsView(ListingView):
     """Listing View for Worksheets
     """
-    template = ViewPageTemplateFile("../templates/folder.pt")
+    template = ViewPageTemplateFile("templates/view.pt")
 
     def __init__(self, context, request):
         super(WorksheetsView, self).__init__(context, request)
