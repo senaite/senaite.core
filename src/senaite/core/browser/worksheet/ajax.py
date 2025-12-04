@@ -18,9 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import plone
 import plone.protect
-from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 
 from bika.lims import api
@@ -36,13 +34,12 @@ class SetAnalyst(BrowserView):
         self.request = request
 
     def __call__(self):
-        mtool = getToolByName(self, "portal_membership")
         plone.protect.CheckAuthenticator(self.request)
         plone.protect.PostOnly(self.request)
         value = self.request.get("value", "")
-        if not get_user(user=value):
+        if not value:
             return
-        if not mtool.getMemberById(value):
+        if not get_user(user=value):
             return
         self.context.setAnalyst(value)
 
