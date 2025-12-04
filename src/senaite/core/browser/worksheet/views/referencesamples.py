@@ -113,23 +113,12 @@ class ReferenceSamplesView(ListingView):
         ]
 
     def __call__(self):
-        self.rejection_message()
-
         template = super(ReferenceSamplesView, self).__call__()
         # Handle form submission
         if self.request.form.get("submitted"):
             CheckAuthenticator(self.request)
             self.handle_submit()
         return template
-
-    def rejection_message(self):
-        for msg in self.context.getRejectionMessages():
-            self.add_status_message(msg)
-
-    def add_status_message(self, message, level="info"):
-        """Set a portal status message
-        """
-        return self.context.plone_utils.addPortalMessage(message, level)
 
     def update(self):
         """Update hook

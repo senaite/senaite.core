@@ -99,7 +99,6 @@ class CreateWorksheetModal(Modal):
 
         # create the new worksheet
         ws = api.create(self.worksheet_folder, "Worksheet")
-        ws.setTitle(ws.getId())
         ws.setAnalyst(analyst)
         ws.addAnalyses(analyses)
         ws.setResultsLayout(self.worksheet_layout)

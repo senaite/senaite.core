@@ -46,8 +46,6 @@ class ManageResultsView(DefaultView):
     def __call__(self):
         self.update()
 
-        self.rejection_message()
-
         self.icon = api.get_icon("Worksheets", html_tag=False)
 
         # Save the results layout
@@ -95,10 +93,6 @@ class ManageResultsView(DefaultView):
         layout_view.update()
         layout_view.before_render()
         return layout_view.contents_table()
-
-    def rejection_message(self):
-        for msg in self.context.getRejectionMessages():
-            self.add_status_message(msg)
 
     def add_status_message(self, message, level="info"):
         """Set a portal status message

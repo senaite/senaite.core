@@ -116,17 +116,11 @@ class AddDuplicateView(ListingView):
     def __call__(self):
         template = super(AddDuplicateView, self).__call__()
 
-        self.rejection_message()
-
         # Handle form submission
         if self.request.form.get("submitted"):
             CheckAuthenticator(self.request)
             self.handle_submit()
         return template
-
-    def rejection_message(self):
-        for msg in self.context.getRejectionMessages():
-            self.add_status_message(msg)
 
     def add_status_message(self, message, level="info"):
         """Set a portal status message

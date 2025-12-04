@@ -586,7 +586,7 @@ class Setup(Container):
 
     @security.protected(permissions.ModifyPortalContent)
     def setWorksheetLayout(self, value):
-        mutator = self.mutator("restrict_worksheet_users_access")
+        mutator = self.mutator("worksheet_layout")
         return mutator(self, value)
 
     @security.protected(permissions.View)
@@ -596,7 +596,7 @@ class Setup(Container):
 
     @security.protected(permissions.ModifyPortalContent)
     def setRestrictWorksheetUsersAccess(self, value):
-        mutator = self.mutator("worksheet_layout")
+        mutator = self.mutator("restrict_worksheet_users_access")
         return mutator(self, value)
 
     @security.protected(permissions.View)

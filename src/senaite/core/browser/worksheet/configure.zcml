@@ -8,7 +8,7 @@
       for="senaite.core.interfaces.IWorksheets"
       name="view"
       class=".views.WorksheetsView"
-      permission="zope.Public"
+      permission="cmf.ListFolderContents"
       layer="senaite.core.interfaces.ISenaiteCore"
   />
 
@@ -16,7 +16,7 @@
       for="senaite.core.interfaces.IWorksheet"
       name="view"
       class=".views.WorksheetView"
-      permission="zope.Public"
+      permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore"
   />
 
@@ -91,7 +91,7 @@
       for="senaite.core.interfaces.IWorksheets"
       name="worksheet_add"
       class=".views.AddWorksheetView"
-      permission="zope.Public"
+      permission="senaite.core.permissions.worksheet.AddWorksheet"
       layer="senaite.core.interfaces.ISenaiteCore"
   />
 

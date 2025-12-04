@@ -24,6 +24,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 
 from bika.lims import api
+from bika.lims.api.user import get_user
 
 
 class SetAnalyst(BrowserView):
@@ -39,7 +40,7 @@ class SetAnalyst(BrowserView):
         plone.protect.CheckAuthenticator(self.request)
         plone.protect.PostOnly(self.request)
         value = self.request.get("value", "")
-        if not value:
+        if not get_user(user=value):
             return
         if not mtool.getMemberById(value):
             return

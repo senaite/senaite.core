@@ -669,13 +669,6 @@ def migrate_worksheet_to_dx(src, destination):
     target.results_layout = src.getResultsLayout()
     target.analyses = src.getAnalysesUIDs()
 
-    # if was replaced or replaces
-    if hasattr(src, "replaced_by"):
-        target.replaced_by = getattr(src, "replaced_by")
-    if hasattr(src, "replaces_rejected_worksheet"):
-        replaces_uid = getattr(src, "replaces_rejected_worksheet")
-        target.replaces_rejected_worksheet = replaces_uid
-
     # move layout
     layout = []
     for slot in src.getLayout():

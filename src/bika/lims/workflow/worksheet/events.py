@@ -221,7 +221,6 @@ def after_reject(worksheet):
 
     new_ws.setAnalyses(new_ws_analyses)
     new_ws.setLayoutView(new_layout)
-    new_ws.setReplacesRejectedWorksheet(worksheet)
     for analysis in new_ws.getAnalyses():
         review_state = api.get_review_status(analysis)
         if review_state == "to_be_verified":
@@ -230,4 +229,3 @@ def after_reject(worksheet):
     worksheet.REQUEST["context_uid"] = worksheet.UID()
     worksheet.setLayoutView(old_layout)
     worksheet.setAnalyses(old_ws_analyses)
-    worksheet.setReplacedBy(new_ws)

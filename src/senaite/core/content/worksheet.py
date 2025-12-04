@@ -49,6 +49,7 @@ from senaite.core.config.worksheet import DEFAULT_WORKSHEET_LAYOUT
 from senaite.core.schema import UIDReferenceField
 from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
+from senaite.core.schema import TextLineField
 from senaite.core.schema.remarksfield import RemarksField
 from senaite.core.z3cform.widgets.remarks import RemarksWidget
 from senaite.core.interfaces import IWorksheet
@@ -121,7 +122,8 @@ class IWorksheetSchema(model.Schema):
     """Worksheet schema interface
     """
 
-    title = schema.TextLine(
+    directives.omitted("title")
+    title = TextLineField(
         title=_(
             u"title_worksheet_title",
             default=u"Name"
@@ -129,6 +131,7 @@ class IWorksheetSchema(model.Schema):
         required=True,
     )
 
+    directives.omitted("description")
     description = schema.Text(
         title=_(
             u"title_worksheet_description",
@@ -163,8 +166,7 @@ class IWorksheetSchema(model.Schema):
             u"title_worksheet_analyses",
             default=u"Analyses"
         ),
-        allowed_types=("Analysis", "DuplicateAnalysis", "ReferenceAnalysis",
-                       "RejectAnalysis"),
+        allowed_types=("Analysis", "DuplicateAnalysis", "ReferenceAnalysis",),
         relationship="WorksheetAnalysis",
         multi_valued=True,
         required=True,
@@ -181,7 +183,7 @@ class IWorksheetSchema(model.Schema):
         required=False,
     )
 
-    analyst = schema.TextLine(
+    analyst = TextLineField(
         title=_(
             u"title_worksheet_analyst",
             default=u"Analyst"
@@ -193,8 +195,8 @@ class IWorksheetSchema(model.Schema):
     # TODO Remove. Instruments must be assigned directly to each analysis.
     instrument = UIDReferenceField(
         title=_(
-            u"title_worksheet_method",
-            default=u"Method"
+            u"title_worksheet_instrument",
+            default=u"Instrument"
         ),
         allowed_types=("Instrument",),
         vocabulary="senaite.core.vocabularies.available_methods",
@@ -221,26 +223,6 @@ class IWorksheetSchema(model.Schema):
         default=DEFAULT_WORKSHEET_LAYOUT,
     )
 
-    replaced_by = UIDReferenceField(
-        title=_(
-            u"title_worksheet_replaced_by",
-            default=u"Replaced by"
-        ),
-        allowed_types=("Worksheet",),
-        multi_valued=False,
-        required=False,
-    )
-
-    replaces_rejected_worksheet = UIDReferenceField(
-        title=_(
-            u"title_worksheet_replaces_rejected_worksheet",
-            default=u"Replaces rejected worksheet"
-        ),
-        allowed_types=("Worksheet",),
-        multi_valued=False,
-        required=False,
-    )
-
 
 @implementer(IWorksheet, IWorksheetSchema, IDeactivable)
 class Worksheet(Container):
@@ -259,7 +241,7 @@ class Worksheet(Container):
             title = api.get_id(self)
             mutator = self.mutator("title")
             mutator(self, title)
-        return title.encode("utf-8")
+        return title
 
     @security.protected(permissions.View)
     def getWorksheetTemplate(self):
@@ -438,38 +420,6 @@ class Worksheet(Container):
 
     # BBB: AT schema field property
     ResultsLayout = property(getResultsLayout, setResultsLayout)
-
-    @security.protected(permissions.View)
-    def getReplacedBy(self):
-        accessor = self.accessor("replaced_by")
-        return accessor(self)
-
-    def getRawReplacedBy(self):
-        replaced_by = self.getReplacedBy()
-        if replaced_by:
-            return replaced_by.UID()
-        return None
-
-    @security.protected(permissions.ModifyPortalContent)
-    def setReplacedBy(self, value):
-        mutator = self.mutator("replaced_by")
-        mutator(self, value)
-
-    @security.protected(permissions.View)
-    def getReplacesRejectedWorksheet(self):
-        accessor = self.accessor("replaces_rejected_worksheet")
-        return accessor(self)
-
-    def getRawReplacesRejectedWorksheet(self):
-        replaces = self.getReplacesRejectedWorksheet()
-        if replaces:
-            return replaces.UID()
-        return None
-
-    @security.protected(permissions.ModifyPortalContent)
-    def setReplacesRejectedWorksheet(self, value):
-        mutator = self.mutator("replaces_rejected_worksheet")
-        mutator(self, value)
 
     def addAnalyses(self, analyses):
         """Adds a collection of analyses to the Worksheet at once
@@ -1531,26 +1481,3 @@ class Worksheet(Container):
         if wst:
             return wst.absolute_url_path()
         return ""
-
-    def getRejectionMessages(self):
-        """Getting rejection messages for view worksheet from `replaced_by` and
-        `replaces_rejected_worksheet` fields
-        """
-        msgs = []
-        if self.getReplacedBy():
-            id = self.getReplacedBy().getId()
-            msgs.append(_(
-                u"replaced_by_worksheet_message",
-                default=u"This worksheet has been rejected. "
-                        u"The replacement worksheet is ${ws_id}",
-                mapping={"ws_id": id}
-            ))
-        if self.getReplacesRejectedWorksheet():
-            id = self.getReplacesRejectedWorksheet().getId()
-            msgs.append(_(
-                u"replaces_rejected_worksheet_message",
-                default=u"This worksheet has been created to replace "
-                        u"the rejected worksheet at ${ws_id}",
-                mapping={"ws_id": id}
-            ))
-        return msgs

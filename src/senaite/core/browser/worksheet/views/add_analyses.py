@@ -29,8 +29,8 @@ from senaite.app.listing import ListingView
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PRIORITIES
+from bika.lims.utils import get_display_list
 from bika.lims.utils import get_image
-from bika.lims.vocabularies import CatalogVocabulary
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.i18n import translate
@@ -160,8 +160,6 @@ class AddAnalysesView(ListingView):
     def __call__(self):
         super(AddAnalysesView, self).__call__()
 
-        self.rejection_message()
-
         # Handle form submission
         if self.request.form.get("submitted"):
             CheckAuthenticator(self.request)
@@ -182,10 +180,6 @@ class AddAnalysesView(ListingView):
             return self.handle_subpath()
 
         return self.template()
-
-    def rejection_message(self):
-        for msg in self.context.getRejectionMessages():
-            self.add_status_message(msg)
 
     def update(self):
         """Update hook
@@ -326,7 +320,10 @@ class AddAnalysesView(ListingView):
     def getWorksheetTemplates(self):
         """Return WS Templates
         """
-        vocabulary = CatalogVocabulary(self)
-        vocabulary.catalog = SETUP_CATALOG
-        return vocabulary(
-            portal_type="WorksheetTemplate", sort_on="sortable_title")
+        query = {
+            "portal_type": "WorksheetTemplate",
+            "is_active": True,
+            "sort_on": "sortable_title",
+        }
+        brains = api.search(query, SETUP_CATALOG)
+        return get_display_list(brains)

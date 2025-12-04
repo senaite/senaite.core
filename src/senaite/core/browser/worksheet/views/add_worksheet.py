@@ -51,7 +51,6 @@ class AddWorksheetView(BrowserView):
         portal = api.get_portal()
         ws_container = portal.get(WORKSHEETS_FOLDER_ID)
         ws = api.create(ws_container, "Worksheet")
-        ws.setTitle(ws.getId())
 
         # Set analyst and instrument
         ws.setAnalyst(analyst)
