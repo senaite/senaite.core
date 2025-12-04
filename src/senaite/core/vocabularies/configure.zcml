@@ -27,6 +27,10 @@
       name="senaite.core.vocabularies.duplicate" />
 
   <utility
+      component=".instruments.AvailableInstrumentsFactory"
+      name="senaite.core.vocabularies.available_instruments" />
+
+  <utility
       component=".methods.AvailableMethodsFactory"
       name="senaite.core.vocabularies.available_methods" />
 

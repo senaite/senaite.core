@@ -199,7 +199,7 @@ class IWorksheetSchema(model.Schema):
             default=u"Instrument"
         ),
         allowed_types=("Instrument",),
-        vocabulary="senaite.core.vocabularies.available_methods",
+        vocabulary="senaite.core.vocabularies.available_instruments",
         multi_valued=False,
         required=False,
     )
