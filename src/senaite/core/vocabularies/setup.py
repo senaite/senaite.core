@@ -34,9 +34,9 @@ class CurrenciesVocabulary(object):
     def __call__(self, context):
         locale = locales.getLocale("en", "US")
         currencies = locale.numbers.currencies.values()
-        items = [(c.type, u"{} ({})".format(c.displayName, c.symbol))
+        items = [(c.type, c.type, u"{} ({})".format(c.displayName, c.symbol))
                  for c in currencies]
-        items.sort(key=lambda x: x[1])
+        items.sort(key=lambda x: x[2])
         return SimpleVocabulary.fromItems(items)
 
 
@@ -46,8 +46,10 @@ class CountriesVocabulary(object):
     """
 
     def __call__(self, context):
-        items = geo.get_countries()
-        items = [(country.alpha_2, country.name) for country in items]
+        items = [("", "", _(u"- No selection -"))]
+        countries = geo.get_countries()
+        items.extend([(country.alpha_2, country.alpha_2, country.name)
+                      for country in countries])
         return SimpleVocabulary.fromItems(items)
 
 
@@ -58,8 +60,8 @@ class DecimalMarksVocabulary(object):
 
     def __call__(self, context):
         items = [
-            (".", _(u"Dot (.)")),
-            (",", _(u"Comma (,)")),
+            (".", ".", _(u"Dot (.)")),
+            (",", ",", _(u"Comma (,)")),
         ]
         return SimpleVocabulary.fromItems(items)
 
@@ -71,11 +73,11 @@ class ScientificNotationVocabulary(object):
 
     def __call__(self, context):
         items = [
-            ("1", u"aE+b / aE-b"),
-            ("2", u"ax10^b / ax10^-b"),
-            ("3", u"ax10^b / ax10^-b (with superscript)"),
-            ("4", u"a·10^b / a·10^-b"),
-            ("5", u"a·10^b / a·10^-b (with superscript)"),
+            ("1", "1", u"aE+b / aE-b"),
+            ("2", "2", u"ax10^b / ax10^-b"),
+            ("3", "3", u"ax10^b / ax10^-b (with superscript)"),
+            ("4", "4", u"a·10^b / a·10^-b"),
+            ("5", "5", u"a·10^b / a·10^-b (with superscript)"),
         ]
         return SimpleVocabulary.fromItems(items)
 
@@ -87,8 +89,9 @@ class WorksheetLayoutVocabulary(object):
 
     def __call__(self, context):
         items = [
-            ("analyses_classic_view", _(u"Classic")),
-            ("analyses_transposed_view", _(u"Transposed")),
+            ("analyses_classic_view", "analyses_classic_view", _(u"Classic")),
+            ("analyses_transposed_view", "analyses_transposed_view",
+             _(u"Transposed")),
         ]
         return SimpleVocabulary.fromItems(items)
 
@@ -100,13 +103,13 @@ class WeekdaysVocabulary(object):
 
     def __call__(self, context):
         items = [
-            ("0", _(u"Monday")),
-            ("1", _(u"Tuesday")),
-            ("2", _(u"Wednesday")),
-            ("3", _(u"Thursday")),
-            ("4", _(u"Friday")),
-            ("5", _(u"Saturday")),
-            ("6", _(u"Sunday")),
+            ("0", "0", _(u"Monday")),
+            ("1", "1", _(u"Tuesday")),
+            ("2", "2", _(u"Wednesday")),
+            ("3", "3", _(u"Thursday")),
+            ("4", "4", _(u"Friday")),
+            ("5", "5", _(u"Saturday")),
+            ("6", "6", _(u"Sunday")),
         ]
         return SimpleVocabulary.fromItems(items)
 
@@ -118,12 +121,12 @@ class MultiVerificationTypeVocabulary(object):
 
     def __call__(self, context):
         items = [
-            ("self_multi_enabled",
+            ("self_multi_enabled", "self_multi_enabled",
              _(u"Allow same user to verify multiple times")),
-            ("self_multi_not_cons",
+            ("self_multi_not_cons", "self_multi_not_cons",
              _(u"Allow same user to verify multiple times, "
                u"but not consecutively")),
-            ("self_multi_disabled",
+            ("self_multi_disabled", "self_multi_disabled",
              _(u"Disable multi-verification for the same user")),
         ]
         return SimpleVocabulary.fromItems(items)
@@ -135,7 +138,7 @@ class NumberOfVerificationsVocabulary(object):
     """
 
     def __call__(self, context):
-        items = [(1, u"1"), (2, u"2"), (3, u"3"), (4, u"4")]
+        items = [(1, 1, u"1"), (2, 2, u"2"), (3, 3, u"3"), (4, 4, u"4")]
         return SimpleVocabulary.fromItems(items)
 
 
