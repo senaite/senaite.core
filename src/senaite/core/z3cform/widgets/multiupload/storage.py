@@ -43,9 +43,6 @@ STORAGE_KEY = "senaite.core.multiupload.storage"
 # Default expiration time for uploads (2 hours)
 DEFAULT_EXPIRATION_SECONDS = 7200
 
-# Cleanup interval: run cleanup every N operations
-CLEANUP_INTERVAL = 100
-
 
 class ITemporaryUploadStorage(Interface):
     """Interface for temporary upload storage"""
@@ -91,9 +88,6 @@ class TemporaryUploadStorage(object):
 
     Each upload is stored with a unique UUID key, preventing conflicts
     between concurrent uploads from different users.
-
-    Self-cleaning: Expired uploads are automatically removed every
-    CLEANUP_INTERVAL operations (similar to plone.memoize.CleanupDict).
     """
 
     def __init__(self, context=None):
@@ -114,46 +108,8 @@ class TemporaryUploadStorage(object):
         annotations = IAnnotations(self.context)
         if STORAGE_KEY not in annotations:
             container = OOBTree()
-            # Initialize metadata using a special key
-            container["__metadata__"] = {"cleanup_counter": 0}
             annotations[STORAGE_KEY] = container
         return annotations[STORAGE_KEY]
-
-    def _auto_cleanup(self):
-        """Automatically cleanup expired uploads periodically
-
-        Similar to plone.memoize.CleanupDict, this runs cleanup every
-        CLEANUP_INTERVAL operations to prevent the storage from
-        growing indefinitely.
-        """
-        try:
-            container = self._get_container()
-
-            # Get or initialize metadata
-            metadata = container.get("__metadata__", {"cleanup_counter": 0})
-
-            # Increment counter
-            counter = metadata.get("cleanup_counter", 0) + 1
-            metadata["cleanup_counter"] = counter
-            container["__metadata__"] = metadata
-
-            # Run cleanup every CLEANUP_INTERVAL operations
-            if counter >= CLEANUP_INTERVAL:
-                logger.info(
-                    u"Auto-cleanup triggered after {} operations".format(
-                        counter))
-                removed = self.cleanup()
-                # Reset counter
-                metadata["cleanup_counter"] = 0
-                container["__metadata__"] = metadata
-                return removed
-
-        except Exception as e:
-            logger.error(
-                u"Auto-cleanup failed: {}".format(
-                    api.safe_unicode(str(e))))
-
-        return 0
 
     def store(self, upload_id, filename, content_type, data):
         """Store uploaded file data
@@ -170,8 +126,7 @@ class TemporaryUploadStorage(object):
         :returns: True if stored successfully
         """
         try:
-            # Trigger auto-cleanup periodically
-            self._auto_cleanup()
+            self.cleanup()
 
             container = self._get_container()
 
@@ -263,10 +218,7 @@ class TemporaryUploadStorage(object):
 
             # Find expired uploads
             for upload_id, record in container.items():
-                # Skip metadata key
-                if upload_id == "__metadata__":
-                    continue
-                if record.timestamp < cutoff_time:
+                if getattr(record, "timestamp", 0) < cutoff_time:
                     to_remove.append(upload_id)
 
             # Remove expired uploads
