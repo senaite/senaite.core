@@ -20,7 +20,7 @@ Sticker margins: 8mm, 1mm
     z-index: 1000;
 }
 
-.sticker .barcode {
+.sticker .qrcode {
     margin: 0 auto;
     padding: 1mm 0 !important;
     text-align: center;
