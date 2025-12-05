@@ -26,4 +26,36 @@
       component=".analysis_types.DuplicateVocabularyFactory"
       name="senaite.core.vocabularies.duplicate" />
 
+  <utility
+      component=".setup.CurrenciesVocabularyFactory"
+      name="senaite.core.vocabularies.currencies" />
+
+  <utility
+      component=".setup.CountriesVocabularyFactory"
+      name="senaite.core.vocabularies.countries" />
+
+  <utility
+      component=".setup.DecimalMarksVocabularyFactory"
+      name="senaite.core.vocabularies.decimal_marks" />
+
+  <utility
+      component=".setup.ScientificNotationVocabularyFactory"
+      name="senaite.core.vocabularies.scientific_notation" />
+
+  <utility
+      component=".setup.WorksheetLayoutVocabularyFactory"
+      name="senaite.core.vocabularies.worksheet_layout" />
+
+  <utility
+      component=".setup.WeekdaysVocabularyFactory"
+      name="senaite.core.vocabularies.weekdays" />
+
+  <utility
+      component=".setup.MultiVerificationTypeVocabularyFactory"
+      name="senaite.core.vocabularies.multi_verification_type" />
+
+  <utility
+      component=".setup.NumberOfVerificationsVocabularyFactory"
+      name="senaite.core.vocabularies.number_of_verifications" />
+
 </configure>
