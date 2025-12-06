@@ -39,8 +39,13 @@ from senaite.core.interfaces import ISetup
 from senaite.core.schema import DurationField
 from senaite.core.schema import RichTextField
 from senaite.core.schema import UIDReferenceField
+from senaite.core.schema.fields import DataGridField
+from senaite.core.schema.fields import DataGridRow
+from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.duration.widget import DurationWidgetFactory
 from zope import schema
+from zope.component import getUtility
+from zope.interface import Interface
 from zope.interface import implementer
 from zope.interface import provider
 from zope.schema.interfaces import IContextAwareDefaultFactory
@@ -65,6 +70,160 @@ def default_email_from_sample_publication(context):
     """
     portal_email = api.get_registry_record("plone.email_from_address")
     return portal_email
+
+
+DEFAULT_ID_FORMATTING = [
+    {
+        "form": "B-{seq:03d}",
+        "portal_type": "Batch",
+        "prefix": "batch",
+        "sequence_type": "generated",
+        "context": "",
+        "counter_type": "",
+        "counter_reference": "",
+        "split_length": 1
+    },
+    {
+        "form": "D-{seq:03d}",
+        "portal_type": "DuplicateAnalysis",
+        "prefix": "duplicate",
+        "sequence_type": "generated",
+        "context": "",
+        "counter_type": "",
+        "counter_reference": "",
+        "split_length": 1
+    },
+    {
+        "form": "I-{seq:03d}",
+        "portal_type": "Invoice",
+        "prefix": "invoice",
+        "sequence_type": "generated",
+        "context": "",
+        "counter_type": "",
+        "counter_reference": "",
+        "split_length": 1
+    },
+    {
+        "form": "QC-{seq:03d}",
+        "portal_type": "ReferenceSample",
+        "prefix": "refsample",
+        "sequence_type": "generated",
+        "context": "",
+        "counter_type": "",
+        "counter_reference": "",
+        "split_length": 1
+    },
+    {
+        "form": "SA-{seq:03d}",
+        "portal_type": "ReferenceAnalysis",
+        "prefix": "refanalysis",
+        "sequence_type": "generated",
+        "context": "",
+        "counter_type": "",
+        "counter_reference": "",
+        "split_length": 1
+    },
+    {
+        "form": "WS-{seq:03d}",
+        "portal_type": "Worksheet",
+        "prefix": "worksheet",
+        "sequence_type": "generated",
+        "context": "",
+        "counter_type": "",
+        "counter_reference": "",
+        "split_length": 1
+    },
+    {
+        "form": "{sampleType}-{seq:04d}",
+        "portal_type": "AnalysisRequest",
+        "prefix": "analysisrequest",
+        "sequence_type": "generated",
+        "context": "",
+        "counter_type": "",
+        "counter_reference": "",
+        "split_length": 1
+    },
+    {
+        "form": "{parent_ar_id}-P{partition_count:02d}",
+        "portal_type": "AnalysisRequestPartition",
+        "prefix": "analysisrequestpartition",
+        "sequence_type": "",
+        "context": "",
+        "counter_type": "",
+        "counter_reference": "",
+        "split_length": 1
+    },
+    {
+        "form": "{parent_base_id}-R{retest_count:02d}",
+        "portal_type": "AnalysisRequestRetest",
+        "prefix": "analysisrequestretest",
+        "sequence_type": "",
+        "context": "",
+        "counter_type": "",
+        "counter_reference": "",
+        "split_length": 1
+    },
+    {
+        "form": "{parent_ar_id}-S{secondary_count:02d}",
+        "portal_type": "AnalysisRequestSecondary",
+        "prefix": "analysisrequestsecondary",
+        "sequence_type": "",
+        "context": "",
+        "counter_type": "",
+        "counter_reference": "",
+        "split_length": 1
+    },
+]
+
+
+class IIDFormattingRecordSchema(Interface):
+    """Schema for ID formatting configuration records
+    """
+
+    portal_type = schema.TextLine(
+        title=_(u"Portal Type"),
+        required=False,
+    )
+
+    form = schema.TextLine(
+        title=_(u"Format"),
+        required=False,
+    )
+
+    sequence_type = schema.Choice(
+        title=_(u"Seq Type"),
+        values=["", "counter", "generated"],
+        required=True,
+        default="",
+    )
+
+    context = schema.TextLine(
+        title=_(u"Context"),
+        required=False,
+    )
+
+    counter_type = schema.Choice(
+        title=_(u"Counter Type"),
+        values=["", "backreference", "contained"],
+        required=True,
+        default="",
+    )
+
+    counter_reference = schema.TextLine(
+        title=_(u"Counter Ref"),
+        required=False,
+    )
+
+    prefix = schema.TextLine(
+        title=_(u"Prefix"),
+        required=False,
+    )
+
+    split_length = schema.Int(
+        title=_(u"Split Length"),
+        required=False,
+        default=1,
+    )
 
 
 class ISetupSchema(model.Schema):
@@ -871,6 +1030,37 @@ class ISetupSchema(model.Schema):
         default=1,
     )
 
+    # ID Server
+    directives.widget(
+        "id_formatting",
+        DataGridWidgetFactory,
+        allow_insert=True,
+        allow_delete=True,
+        allow_reorder=True,
+        auto_append=False)
+    id_formatting = DataGridField(
+        title=_(u"Formatting Configuration"),
+        description=_(
+            u"The ID Server provides unique sequential IDs for objects such "
+            u"as Samples and Worksheets etc, based on a format specified for "
+            u"each content type. The format is constructed similarly to the "
+            u"Python format syntax, using predefined variables per content "
+            u"type, and advancing the IDs through a sequence number, 'seq' "
+            u"and its padding as a number of digits, e.g. '03d' for a "
+            u"sequence of IDs from 001 to 999."
+        ),
+        value_type=DataGridRow(schema=IIDFormattingRecordSchema),
+        required=False,
+        default=DEFAULT_ID_FORMATTING,
+    )
+
+    id_server_values = schema.Text(
+        title=_(u"ID Server Values"),
+        description=_(u"Current ID server counter values"),
+        required=False,
+        readonly=True,
+    )
+
     ###
     # Fieldsets
     ###
@@ -986,6 +1176,15 @@ class ISetupSchema(model.Schema):
             "small_sticker_template",
             "large_sticker_template",
             "default_number_of_copies",
+        ]
+    )
+
+    model.fieldset(
+        "id_server",
+        label=_(u"ID Server"),
+        fields=[
+            "id_formatting",
+            "id_server_values",
         ]
     )
 
@@ -1900,4 +2099,42 @@ class Setup(Container):
         """
         mutator = self.mutator("default_number_of_copies")
         return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getIDFormatting(self):
+        """Get ID formatting configuration
+        """
+        accessor = self.accessor("id_formatting")
+        value = accessor(self)
+        if not value:
+            return DEFAULT_ID_FORMATTING
+        return value
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setIDFormatting(self, value):
+        """Set ID formatting configuration
+        """
+        mutator = self.mutator("id_formatting")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getIDServerValues(self):
+        """Get current ID server values
+        This is a computed field - returns current counter values
+        """
+        from senaite.core.interfaces import INumberGenerator
+        number_generator = getUtility(INumberGenerator)
+        keys = number_generator.keys()
+        values = number_generator.values()
+        results = []
+        for i in range(len(keys)):
+            results.append("{}: {}".format(keys[i], values[i]))
+        return "\n".join(results)
+
+    @security.protected(permissions.View)
+    def getIDServerValuesHTML(self):
+        """Get current ID server values as HTML
+        Alias for backwards compatibility with AT BikaSetup
+        """
+        return self.getIDServerValues()
 

@@ -2113,5 +2113,31 @@ class BikaSetup(folder.ATFolder):
         if setup:
             setup.setDefaultNumberOfCopies(value)
 
+    def getIDFormatting(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getIDFormatting()
+        return []
+
+    def setIDFormatting(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setIDFormatting(value)
+
+    def getIDServerValuesHTML(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getIDServerValuesHTML()
+        return ""
+
 
 registerType(BikaSetup, PROJECTNAME)
