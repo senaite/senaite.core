@@ -2,9 +2,31 @@
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       i18n:domain="senaite.core">
 
-  <!-- View macro uses string widget rendering -->
-  <metal:view_macro define-macro="view">
-    <div metal:use-macro="here/widgets/string/macros/view"></div>
+  <!-- View macro -->
+  <metal:view_macro define-macro="view"
+                    tal:define="value python:accessor();
+                                options python:value[0] if value and len(value) > 0 else {};
+                                enabled python:'checkbox' in options and options['checkbox'] == 'on';
+                                sorted_keys python:widget.getSortKeys(options.keys());">
+    <div class="field-view">
+      <!-- Show enabled status -->
+      <div class="mb-2">
+        <strong i18n:translate="">Rejection workflow:</strong>
+        <span tal:condition="enabled" i18n:translate="">Enabled</span>
+        <span tal:condition="not:enabled" i18n:translate="">Disabled</span>
+      </div>
+
+      <!-- Show rejection reasons if enabled -->
+      <div tal:condition="python:enabled and len(sorted_keys) > 0">
+        <strong i18n:translate="">Predefined rejection reasons:</strong>
+        <ul class="list-unstyled ml-3">
+          <li tal:repeat="key sorted_keys"
+              tal:condition="python:key in options and options[key]">
+            <span tal:content="python:options[key]"></span>
+          </li>
+        </ul>
+      </div>
+    </div>
   </metal:view_macro>
 
   <!-- Edit macro -->
