@@ -168,8 +168,10 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Security",
         default=True,
         widget=BooleanWidget(
-            label=_("Allow access to worksheets only to assigned analysts"),
-            description=_("If unchecked, analysts will have access to all worksheets.")
+            label=_("Restrict worksheet access to assigned analysts"),
+            description=_("When enabled, analysts can only access worksheets to "
+                          "which they are assigned. When disabled, analysts have "
+                          "access to all worksheets.")
         )
     ),
     BooleanField(
@@ -177,13 +179,13 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Security",
         default=True,
         widget=BooleanWidget(
-            label=_("Allow to submit results for unassigned analyses or for "
-                    "analyses assigned to others"),
+            label=_("Allow submission of results for unassigned analyses"),
             description=_(
-                "If unchecked, users will only be able to submit results "
-                "for the analyses they are assigned to, and the submission of "
-                "results for unassigned analyses won't be permitted. This "
-                "setting does not apply to users with role Lab Manager")
+                "When enabled, users can submit results for analyses not "
+                "assigned to them or for unassigned analyses. When disabled, "
+                "users can only submit results for analyses assigned to "
+                "themselves. This setting does not apply to users with role "
+                "Lab Manager.")
         )
     ),
     BooleanField(
@@ -191,12 +193,12 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Security",
         default=True,
         widget=BooleanWidget(
-            label=_("Only lab managers can create and manage worksheets"),
-            description=_("If unchecked, analysts and lab clerks will "
-                          "be able to manage Worksheets, too. If the "
-                          "users have restricted access only to those "
-                          "worksheets for which they are assigned, "
-                          "this option will be checked and readonly.")
+            label=_("Restrict worksheet management to lab managers"),
+            description=_("When enabled, only lab managers can create and manage "
+                          "worksheets. When disabled, analysts and lab clerks can "
+                          "also manage worksheets. Note: This setting is "
+                          "automatically enabled and locked when worksheet access "
+                          "is restricted to assigned analysts.")
         )
     ),
     # NOTE: This is a Proxy Field which delegates to the SENAITE Registry!
@@ -1152,16 +1154,9 @@ class BikaSetup(folder.ATFolder):
         return items
 
     def isRejectionWorkflowEnabled(self):
-        """Return true if the rejection workflow is enabled (its checkbox is set)
+        """Return true if the rejection workflow is enabled
         """
-        widget = self.getRejectionReasons()
-        # widget will be something like:
-        # [{'checkbox': u'on', 'textfield-2': u'b', 'textfield-1': u'c', 'textfield-0': u'a'}]
-        if len(widget) > 0:
-            checkbox = widget[0].get('checkbox', False)
-            return True if checkbox == 'on' and len(widget[0]) > 1 else False
-        else:
-            return False
+        return self.getEnableRejectionWorkflow()
 
     def getRejectionReasonsItems(self):
         """Return the list of predefined rejection reasons
@@ -1325,25 +1320,6 @@ class BikaSetup(folder.ATFolder):
         if setup:
             setup.setAllowManualResultCaptureDate(value)
 
-    def getMaxNumberOfSamplesAdd(self):
-        """Get the value from the senaite setup
-        """
-        setup = api.get_senaite_setup()
-        # setup is `None` during initial site content structure installation
-        if setup:
-            return setup.getMaxNumberOfSamplesAdd()
-        return self.getField("MaxNumberOfSamplesAdd").default
-
-    def setMaxNumberOfSamplesAdd(self, value):
-        """Set the value in the senaite setup
-        """
-        setup = api.get_senaite_setup()
-        # setup is `None` during initial site content structure installation
-        if setup:
-            # we get a string value here!
-            value = api.to_int(value, default=10)
-            setup.setMaxNumberOfSamplesAdd(value)
-
     def getShowLabNameInLogin(self):
         """Get the value from the senaite setup
         """
@@ -1394,6 +1370,748 @@ class BikaSetup(folder.ATFolder):
         # setup is `None` during initial site content structure installation
         if setup:
             setup.setInvalidationReasonRequired(value)
+
+    # Proxy methods for Security fields
+    def getRestrictWorksheetUsersAccess(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            return setup.getRestrictWorksheetUsersAccess()
+
+    def setRestrictWorksheetUsersAccess(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            setup.setRestrictWorksheetUsersAccess(value)
+
+    def getAllowToSubmitNotAssigned(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            return setup.getAllowToSubmitNotAssigned()
+
+    def setAllowToSubmitNotAssigned(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            setup.setAllowToSubmitNotAssigned(value)
+
+    def getRestrictWorksheetManagement(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            return setup.getRestrictWorksheetManagement()
+
+    def setRestrictWorksheetManagement(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            setup.setRestrictWorksheetManagement(value)
+
+    # Proxy methods for Accounting fields
+    def getShowPrices(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            return setup.getShowPrices()
+
+    def setShowPrices(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            setup.setShowPrices(value)
+
+    def getCurrency(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            return setup.getCurrency()
+
+    def setCurrency(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            setup.setCurrency(value)
+
+    def getDefaultCountry(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            return setup.getDefaultCountry()
+
+    def setDefaultCountry(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            setup.setDefaultCountry(value)
+
+    def getMemberDiscount(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            return setup.getMemberDiscount()
+
+    def setMemberDiscount(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            setup.setMemberDiscount(value)
+
+    def getVAT(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            return setup.getVAT()
+
+    def setVAT(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            setup.setVAT(value)
+
+    def getDecimalMark(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getDecimalMark()
+
+    def setDecimalMark(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setDecimalMark(value)
+
+    def getScientificNotationReport(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getScientificNotationReport()
+
+    def setScientificNotationReport(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setScientificNotationReport(value)
+
+    def getMinimumResults(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getMinimumResults()
+
+    def setMinimumResults(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setMinimumResults(value)
+
+    def getCategoriseAnalysisServices(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getCategoriseAnalysisServices()
+
+    def setCategoriseAnalysisServices(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setCategoriseAnalysisServices(value)
+
+    def getEnableARSpecs(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getEnableArSpecs()
+
+    def setEnableARSpecs(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setEnableArSpecs(value)
+
+    def getExponentialFormatThreshold(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getExponentialFormatThreshold()
+
+    def setExponentialFormatThreshold(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setExponentialFormatThreshold(value)
+
+    def getEnableAnalysisRemarks(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getEnableAnalysisRemarks()
+
+    def setEnableAnalysisRemarks(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setEnableAnalysisRemarks(value)
+
+    def getAutoVerifySamples(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getAutoVerifySamples()
+
+    def setAutoVerifySamples(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setAutoVerifySamples(value)
+
+    def getSelfVerificationEnabled(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getSelfVerificationEnabled()
+
+    def setSelfVerificationEnabled(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setSelfVerificationEnabled(value)
+
+    def getNumberOfRequiredVerifications(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getNumberOfRequiredVerifications()
+
+    def setNumberOfRequiredVerifications(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setNumberOfRequiredVerifications(value)
+
+    def getTypeOfmultiVerification(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getTypeOfMultiVerification()
+
+    def setTypeOfmultiVerification(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setTypeOfMultiVerification(value)
+
+    def getResultsDecimalMark(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getResultsDecimalMark()
+
+    def setResultsDecimalMark(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setResultsDecimalMark(value)
+
+    def getScientificNotationResults(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getScientificNotationResults()
+
+    def setScientificNotationResults(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setScientificNotationResults(value)
+
+    def getDefaultNumberOfARsToAdd(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getDefaultNumberOfArsToAdd()
+
+    def setDefaultNumberOfARsToAdd(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setDefaultNumberOfArsToAdd(value)
+
+    def getEnableRejectionWorkflow(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getEnableRejectionWorkflow()
+        return False
+
+    def setEnableRejectionWorkflow(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setEnableRejectionWorkflow(value)
+
+    def getRejectionReasons(self):
+        """Get the value from the senaite setup
+        Converts DX list format to AT RecordsField format
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            # Get the DX list format
+            reasons = setup.getRejectionReasons()
+            enabled = setup.getEnableRejectionWorkflow()
+            if not reasons and not enabled:
+                return []
+            # Convert to AT RecordsField format:
+            # [{'checkbox': 'on', 'textfield-0': 'reason1', ...}]
+            reasons_dict = {"checkbox": "on" if enabled else ""}
+            for idx, reason in enumerate(reasons):
+                reasons_dict["textfield-{}".format(idx)] = reason
+            return [reasons_dict]
+        return []
+
+    def setRejectionReasons(self, value):
+        """Set the value in the senaite setup
+        Handles both the checkbox and the reasons
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            # Extract checkbox value and set enable_rejection_workflow
+            if value and isinstance(value, (list, tuple)) and len(value) > 0:
+                if isinstance(value[0], dict):
+                    checkbox = value[0].get("checkbox", "")
+                    setup.setEnableRejectionWorkflow(checkbox == "on")
+            # The DX setter handles conversion from AT RecordsField format
+            setup.setRejectionReasons(value)
+
+    def getMaxNumberOfSamplesAdd(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getMaxNumberOfSamplesAdd()
+
+    def setMaxNumberOfSamplesAdd(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setMaxNumberOfSamplesAdd(value)
+
+    def getWorksheetLayout(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getWorksheetLayout()
+
+    def setWorksheetLayout(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setWorksheetLayout(value)
+
+    def getDashboardByDefault(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getDashboardByDefault()
+
+    def setDashboardByDefault(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setDashboardByDefault(value)
+
+    def getLandingPage(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getLandingPage()
+
+    def setLandingPage(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setLandingPage(value)
+
+    def getShowPartitions(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getShowPartitions()
+
+    def setShowPartitions(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setShowPartitions(value)
+
+    def getPrintingWorkflowEnabled(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getPrintingWorkflowEnabled()
+
+    def setPrintingWorkflowEnabled(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setPrintingWorkflowEnabled(value)
+
+    def getSamplingWorkflowEnabled(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getSamplingWorkflowEnabled()
+
+    def setSamplingWorkflowEnabled(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setSamplingWorkflowEnabled(value)
+
+    def getScheduleSamplingEnabled(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getScheduleSamplingEnabled()
+
+    def setScheduleSamplingEnabled(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setScheduleSamplingEnabled(value)
+
+    def getAutoreceiveSamples(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getAutoreceiveSamples()
+
+    def setAutoreceiveSamples(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setAutoreceiveSamples(value)
+
+    def getSamplePreservationEnabled(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getSamplePreservationEnabled()
+
+    def setSamplePreservationEnabled(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setSamplePreservationEnabled(value)
+
+    def getWorkdays(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getWorkdays()
+
+    def setWorkdays(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setWorkdays(value)
+
+    def getDefaultTurnaroundTime(self):
+        """Get the value from the senaite setup
+        """
+        from senaite.core.api import dtime
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            value = setup.getDefaultTurnaroundTime()
+            # Convert timedelta to dict for AT form
+            return dtime.timedelta_to_dict(value, default={})
+        return {}
+
+    def setDefaultTurnaroundTime(self, value):
+        """Set the value in the senaite setup
+        """
+        from senaite.core.api import dtime
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            # Convert dict to timedelta for DX storage
+            td_value = dtime.to_timedelta(value, default=None)
+            if td_value is not None:
+                setup.setDefaultTurnaroundTime(td_value)
+
+    def getDefaultSampleLifetime(self):
+        """Get the value from the senaite setup
+        """
+        from senaite.core.api import dtime
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            value = setup.getDefaultSampleLifetime()
+            # Convert timedelta to dict for AT form
+            return dtime.timedelta_to_dict(value, default={})
+        return {}
+
+    def setDefaultSampleLifetime(self, value):
+        """Set the value in the senaite setup
+        """
+        from senaite.core.api import dtime
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            # Convert dict to timedelta for DX storage
+            td_value = dtime.to_timedelta(value, default=None)
+            if td_value is not None:
+                setup.setDefaultSampleLifetime(td_value)
+
+    def getNotifyOnSampleRejection(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getNotifyOnSampleRejection()
+
+    def setNotifyOnSampleRejection(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setNotifyOnSampleRejection(value)
+
+    def getEmailBodySampleRejection(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getEmailBodySampleRejection()
+
+    def setEmailBodySampleRejection(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setEmailBodySampleRejection(value)
+
+    def getEmailBodySampleInvalidation(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getEmailBodySampleInvalidation()
+
+    def setEmailBodySampleInvalidation(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setEmailBodySampleInvalidation(value)
+
+    def getAutoPrintStickers(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getAutoPrintStickers()
+
+    def setAutoPrintStickers(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setAutoPrintStickers(value)
+
+    def getAutoStickerTemplate(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getAutoStickerTemplate()
+
+    def setAutoStickerTemplate(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setAutoStickerTemplate(value)
+
+    def getSmallStickerTemplate(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getSmallStickerTemplate()
+
+    def setSmallStickerTemplate(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setSmallStickerTemplate(value)
+
+    def getLargeStickerTemplate(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getLargeStickerTemplate()
+
+    def setLargeStickerTemplate(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setLargeStickerTemplate(value)
+
+    def getDefaultNumberOfCopies(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getDefaultNumberOfCopies()
+
+    def setDefaultNumberOfCopies(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setDefaultNumberOfCopies(value)
 
 
 registerType(BikaSetup, PROJECTNAME)

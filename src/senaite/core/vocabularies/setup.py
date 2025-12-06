@@ -46,10 +46,9 @@ class CountriesVocabulary(object):
     """
 
     def __call__(self, context):
-        items = [("", "", _(u"- No selection -"))]
         countries = geo.get_countries()
-        items.extend([(country.alpha_2, country.alpha_2, country.name)
-                      for country in countries])
+        items = [(country.alpha_2, country.alpha_2, country.name)
+                 for country in countries]
         return SimpleVocabulary.fromItems(items)
 
 
