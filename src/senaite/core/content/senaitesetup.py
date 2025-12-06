@@ -506,8 +506,8 @@ class ISetupSchema(model.Schema):
                     u"co-operative members or associates deserving of this "
                     u"discount"
         ),
-        required=False,
-        default=u"",
+        required=True,
+        default=u"0.0",
     )
 
     directives.widget("vat", klass="numeric")
@@ -522,8 +522,8 @@ class ISetupSchema(model.Schema):
                     u"applied system wide but can be overwritten on individual "
                     u"items"
         ),
-        required=False,
-        default=u"",
+        required=True,
+        default=u"0.0",
     )
 
     # Results Reports
@@ -1530,13 +1530,13 @@ class Setup(Container):
     @security.protected(permissions.View)
     def getMemberDiscount(self):
         """Get member discount percentage
-        Returns string value
+        Returns string value, defaults to "0.0" if empty
         """
         accessor = self.accessor("member_discount")
         value = accessor(self)
         # Convert to string if numeric (from AT FixedPointField)
-        if value is None:
-            return u""
+        if value is None or value == "":
+            return u"0.0"
         if isinstance(value, (int, float)):
             return api.safe_unicode(str(value))
         return api.safe_unicode(value)
@@ -1559,13 +1559,13 @@ class Setup(Container):
     @security.protected(permissions.View)
     def getVAT(self):
         """Get VAT percentage
-        Returns string value
+        Returns string value, defaults to "0.0" if empty
         """
         accessor = self.accessor("vat")
         value = accessor(self)
         # Convert to string if numeric (from AT FixedPointField)
-        if value is None:
-            return u""
+        if value is None or value == "":
+            return u"0.0"
         if isinstance(value, (int, float)):
             return api.safe_unicode(str(value))
         return api.safe_unicode(value)
