@@ -30,7 +30,8 @@ class EditForm(EditFormAdapterBase):
     def initialized(self, data):
         """Handle form initialization
         Show/hide rejection_reasons based on enable_rejection_workflow
-        Make restrict_worksheet_management readonly if restrict_worksheet_users_access is enabled
+        Make restrict_worksheet_management readonly if
+        restrict_worksheet_users_access is enabled
         """
         # Check if rejection workflow is enabled
         enabled = self.context.getEnableRejectionWorkflow()
@@ -54,7 +55,8 @@ class EditForm(EditFormAdapterBase):
     def modified(self, data):
         """Handle field modifications
         Show/hide rejection_reasons when enable_rejection_workflow changes
-        Enable/readonly restrict_worksheet_management when restrict_worksheet_users_access changes
+        Enable/readonly restrict_worksheet_management when
+        restrict_worksheet_users_access changes
         """
         name = data.get("name")
         value = data.get("value")
@@ -67,7 +69,8 @@ class EditForm(EditFormAdapterBase):
                 self.add_hide_field(_FIELD_PREFIX + "rejection_reasons")
 
         elif name == _FIELD_PREFIX + "restrict_worksheet_users_access":
-            # Handle restrict_worksheet_management based on restrict_worksheet_users_access
+            # Handle restrict_worksheet_management based on
+            # restrict_worksheet_users_access
             if value:
                 # Enable restrict_worksheet_management checkbox
                 self.add_update_field(

@@ -193,7 +193,7 @@ class IIDFormattingRecordSchema(Interface):
     sequence_type = schema.Choice(
         title=_(u"Seq Type"),
         values=["", "counter", "generated"],
-        required=True,
+        required=False,
         default="",
     )
 
@@ -205,7 +205,7 @@ class IIDFormattingRecordSchema(Interface):
     counter_type = schema.Choice(
         title=_(u"Counter Type"),
         values=["", "backreference", "contained"],
-        required=True,
+        required=False,
         default="",
     )
 
@@ -506,7 +506,8 @@ class ISetupSchema(model.Schema):
                     u"co-operative members or associates deserving of this "
                     u"discount"
         ),
-        default=u"33.33",
+        required=False,
+        default=u"",
     )
 
     directives.widget("vat", klass="numeric")
@@ -521,7 +522,8 @@ class ISetupSchema(model.Schema):
                     u"applied system wide but can be overwritten on individual "
                     u"items"
         ),
-        default=u"19.00",
+        required=False,
+        default=u"",
     )
 
     # Results Reports
@@ -1428,7 +1430,7 @@ class Setup(Container):
     def setAutoLogOff(self, value):
         """Set session lifetime in minutes
         """
-        value = int(value)
+        value = api.to_int(value, default=0)
         if value < 0:
             value = 0
         value = value * 60
@@ -1528,28 +1530,58 @@ class Setup(Container):
     @security.protected(permissions.View)
     def getMemberDiscount(self):
         """Get member discount percentage
+        Returns string value
         """
         accessor = self.accessor("member_discount")
-        return accessor(self)
+        value = accessor(self)
+        # Convert to string if numeric (from AT FixedPointField)
+        if value is None:
+            return u""
+        if isinstance(value, (int, float)):
+            return api.safe_unicode(str(value))
+        return api.safe_unicode(value)
 
     @security.protected(permissions.ModifyPortalContent)
     def setMemberDiscount(self, value):
         """Set member discount percentage
+        Accepts string or numeric value
         """
+        # Convert numeric to string
+        if value is not None and not isinstance(value, basestring):
+            value = api.safe_unicode(str(value))
+        elif value:
+            value = api.safe_unicode(value)
+        else:
+            value = u""
         mutator = self.mutator("member_discount")
         return mutator(self, value)
 
     @security.protected(permissions.View)
     def getVAT(self):
         """Get VAT percentage
+        Returns string value
         """
         accessor = self.accessor("vat")
-        return accessor(self)
+        value = accessor(self)
+        # Convert to string if numeric (from AT FixedPointField)
+        if value is None:
+            return u""
+        if isinstance(value, (int, float)):
+            return api.safe_unicode(str(value))
+        return api.safe_unicode(value)
 
     @security.protected(permissions.ModifyPortalContent)
     def setVAT(self, value):
         """Set VAT percentage
+        Accepts string or numeric value
         """
+        # Convert numeric to string
+        if value is not None and not isinstance(value, basestring):
+            value = api.safe_unicode(str(value))
+        elif value:
+            value = api.safe_unicode(value)
+        else:
+            value = u""
         mutator = self.mutator("vat")
         return mutator(self, value)
 
@@ -1595,7 +1627,9 @@ class Setup(Container):
     @security.protected(permissions.ModifyPortalContent)
     def setMinimumResults(self, value):
         """Set minimum number of results for QC stats
+        Converts to int if needed
         """
+        value = api.to_int(value, default=None)
         mutator = self.mutator("minimum_results")
         return mutator(self, value)
 
@@ -1614,14 +1648,14 @@ class Setup(Container):
         return mutator(self, value)
 
     @security.protected(permissions.View)
-    def getEnableArSpecs(self):
+    def getEnableARSpecs(self):
         """Get enable AR specs setting
         """
         accessor = self.accessor("enable_ar_specs")
         return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
-    def setEnableArSpecs(self, value):
+    def setEnableARSpecs(self, value):
         """Set enable AR specs setting
         """
         mutator = self.mutator("enable_ar_specs")
@@ -1637,7 +1671,9 @@ class Setup(Container):
     @security.protected(permissions.ModifyPortalContent)
     def setExponentialFormatThreshold(self, value):
         """Set exponential format threshold
+        Converts to int if needed
         """
+        value = api.to_int(value, default=None)
         mutator = self.mutator("exponential_format_threshold")
         return mutator(self, value)
 
@@ -1698,14 +1734,14 @@ class Setup(Container):
         return mutator(self, value)
 
     @security.protected(permissions.View)
-    def getTypeOfMultiVerification(self):
+    def getTypeOfmultiVerification(self):
         """Get type of multi verification
         """
         accessor = self.accessor("type_of_multi_verification")
         return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
-    def setTypeOfMultiVerification(self, value):
+    def setTypeOfmultiVerification(self, value):
         """Set type of multi verification
         """
         mutator = self.mutator("type_of_multi_verification")
@@ -1744,16 +1780,18 @@ class Setup(Container):
         return mutator(self, value)
 
     @security.protected(permissions.View)
-    def getDefaultNumberOfArsToAdd(self):
+    def getDefaultNumberOfARsToAdd(self):
         """Get default number of ARs to add
         """
         accessor = self.accessor("default_number_of_ars_to_add")
         return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
-    def setDefaultNumberOfArsToAdd(self, value):
+    def setDefaultNumberOfARsToAdd(self, value):
         """Set default number of ARs to add
+        Converts to int if needed
         """
+        value = api.to_int(value, default=None)
         mutator = self.mutator("default_number_of_ars_to_add")
         return mutator(self, value)
 
@@ -1774,9 +1812,14 @@ class Setup(Container):
     @security.protected(permissions.View)
     def getRejectionReasons(self):
         """Get rejection reasons
+        Ensures all values are unicode
         """
         accessor = self.accessor("rejection_reasons")
-        return accessor(self)
+        reasons = accessor(self)
+        if not reasons:
+            return []
+        # Ensure all reasons are unicode
+        return [api.safe_unicode(r) for r in reasons]
 
     @security.protected(permissions.ModifyPortalContent)
     def setRejectionReasons(self, value):
@@ -1795,8 +1838,12 @@ class Setup(Container):
                 # Sort by the number suffix and extract values
                 sorted_keys = sorted(textfield_keys,
                                      key=lambda x: int(x.split("-")[1]))
-                value = [reasons_dict[k] for k in sorted_keys
+                value = [api.safe_unicode(reasons_dict[k])
+                         for k in sorted_keys
                          if reasons_dict[k]]
+            else:
+                # Ensure all values are unicode
+                value = [api.safe_unicode(v) for v in value if v]
         mutator = self.mutator("rejection_reasons")
         return mutator(self, value)
 
@@ -1810,7 +1857,9 @@ class Setup(Container):
     @security.protected(permissions.ModifyPortalContent)
     def setMaxNumberOfSamplesAdd(self, value):
         """Set maximum number of samples to add
+        Converts to int if needed
         """
+        value = api.to_int(value, default=None)
         mutator = self.mutator("max_number_of_samples_add")
         return mutator(self, value)
 
@@ -2096,24 +2145,62 @@ class Setup(Container):
     @security.protected(permissions.ModifyPortalContent)
     def setDefaultNumberOfCopies(self, value):
         """Set default number of copies
+        Converts to int if needed
         """
+        value = api.to_int(value, default=None)
         mutator = self.mutator("default_number_of_copies")
         return mutator(self, value)
 
     @security.protected(permissions.View)
     def getIDFormatting(self):
         """Get ID formatting configuration
+        Normalizes None values to empty strings for Choice fields
         """
         accessor = self.accessor("id_formatting")
         value = accessor(self)
         if not value:
             return DEFAULT_ID_FORMATTING
-        return value
+
+        # Normalize None values to empty strings for Choice fields
+        normalized = []
+        for row in value:
+            normalized_row = dict(row)
+            # Convert None to empty string for Choice fields
+            if normalized_row.get("sequence_type") is None:
+                normalized_row["sequence_type"] = ""
+            if normalized_row.get("counter_type") is None:
+                normalized_row["counter_type"] = ""
+            normalized.append(normalized_row)
+
+        return normalized
 
     @security.protected(permissions.ModifyPortalContent)
     def setIDFormatting(self, value):
         """Set ID formatting configuration
+        Normalizes None values to empty strings for Choice fields
         """
+        if value:
+            # Normalize None values to empty strings for Choice fields
+            normalized = []
+            for row in value:
+                normalized_row = dict(row)
+                # Convert None to empty string for Choice fields
+                if normalized_row.get("sequence_type") is None:
+                    normalized_row["sequence_type"] = ""
+                if normalized_row.get("counter_type") is None:
+                    normalized_row["counter_type"] = ""
+                # Convert None to empty string for text fields
+                for key in ["context", "counter_reference", "prefix",
+                            "portal_type", "form"]:
+                    if normalized_row.get(key) is None:
+                        normalized_row[key] = ""
+                # Ensure split_length is an int
+                if normalized_row.get("split_length"):
+                    normalized_row["split_length"] = api.to_int(
+                        normalized_row["split_length"], default=1)
+                normalized.append(normalized_row)
+            value = normalized
+
         mutator = self.mutator("id_formatting")
         return mutator(self, value)
 
@@ -2137,4 +2224,3 @@ class Setup(Container):
         Alias for backwards compatibility with AT BikaSetup
         """
         return self.getIDServerValues()
-

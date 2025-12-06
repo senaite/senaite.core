@@ -1165,7 +1165,7 @@ class BikaSetup(folder.ATFolder):
         if not reasons:
             return []
         reasons = reasons[0]
-        keys = filter(lambda key: key != "checkbox", reasons.keys())
+        keys = filter(lambda key: key != u"checkbox", reasons.keys())
         return map(lambda key: reasons[key], sorted(keys)) or []
 
     def _getNumberOfRequiredVerificationsVocabulary(self):
@@ -1555,7 +1555,7 @@ class BikaSetup(folder.ATFolder):
         setup = api.get_senaite_setup()
         # setup is `None` during initial site content structure installation
         if setup:
-            return setup.getEnableArSpecs()
+            return setup.getEnableARSpecs()
 
     def setEnableARSpecs(self, value):
         """Set the value in the senaite setup
@@ -1563,7 +1563,7 @@ class BikaSetup(folder.ATFolder):
         setup = api.get_senaite_setup()
         # setup is `None` during initial site content structure installation
         if setup:
-            setup.setEnableArSpecs(value)
+            setup.setEnableARSpecs(value)
 
     def getExponentialFormatThreshold(self):
         """Get the value from the senaite setup
@@ -1651,7 +1651,7 @@ class BikaSetup(folder.ATFolder):
         setup = api.get_senaite_setup()
         # setup is `None` during initial site content structure installation
         if setup:
-            return setup.getTypeOfMultiVerification()
+            return setup.getTypeOfmultiVerification()
 
     def setTypeOfmultiVerification(self, value):
         """Set the value in the senaite setup
@@ -1659,7 +1659,7 @@ class BikaSetup(folder.ATFolder):
         setup = api.get_senaite_setup()
         # setup is `None` during initial site content structure installation
         if setup:
-            setup.setTypeOfMultiVerification(value)
+            setup.setTypeOfmultiVerification(value)
 
     def getResultsDecimalMark(self):
         """Get the value from the senaite setup
@@ -1699,7 +1699,7 @@ class BikaSetup(folder.ATFolder):
         setup = api.get_senaite_setup()
         # setup is `None` during initial site content structure installation
         if setup:
-            return setup.getDefaultNumberOfArsToAdd()
+            return setup.getDefaultNumberOfARsToAdd()
 
     def setDefaultNumberOfARsToAdd(self, value):
         """Set the value in the senaite setup
@@ -1707,7 +1707,7 @@ class BikaSetup(folder.ATFolder):
         setup = api.get_senaite_setup()
         # setup is `None` during initial site content structure installation
         if setup:
-            setup.setDefaultNumberOfArsToAdd(value)
+            setup.setDefaultNumberOfARsToAdd(value)
 
     def getEnableRejectionWorkflow(self):
         """Get the value from the senaite setup
@@ -1740,9 +1740,11 @@ class BikaSetup(folder.ATFolder):
                 return []
             # Convert to AT RecordsField format:
             # [{'checkbox': 'on', 'textfield-0': 'reason1', ...}]
-            reasons_dict = {"checkbox": "on" if enabled else ""}
+            reasons_dict = {u"checkbox": u"on" if enabled else u""}
             for idx, reason in enumerate(reasons):
-                reasons_dict["textfield-{}".format(idx)] = reason
+                # Ensure reason is unicode
+                reasons_dict[u"textfield-{}".format(idx)] = \
+                    api.safe_unicode(reason)
             return [reasons_dict]
         return []
 
