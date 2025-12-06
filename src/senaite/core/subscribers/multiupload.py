@@ -25,7 +25,7 @@ from bika.lims import logger
 from senaite.core.interfaces import IMultiUploadFileCreator
 from senaite.core.interfaces import IMultiUploadFileRemover
 from senaite.core.schema.interfaces import IMultiUploadField
-from senaite.core.z3cform.widgets.multiupload.handler import SESSION_KEY
+from senaite.core.z3cform.widgets.multiupload.storage import get_storage
 from zope.component import getAdapter
 from zope.component import getMultiAdapter
 
@@ -62,12 +62,22 @@ def on_object_modified(obj, event):
     Also handles deletion of removed File/Image objects.
     """
 
-    # Prevent infinite recursion for deletion handler
+    # Early check: does object have MultiUploadField fields?
+    fields = get_multiupload_fields(obj)
+    if not fields:
+        return  # No multiupload fields, skip entirely
+
+    # Get request
     request = api.get_request()
     if not request:
         # Use test request if no real request is available (e.g., test setup)
         request = api.get_test_request()
 
+    # Check for upload data OR submitted UIDs (for deletion detection)
+    if not has_multiupload_activity(fields, request, obj):
+        return  # No multiupload activity
+
+    # Prevent infinite recursion for deletion handler
     processing_objs = getattr(request, UPLOAD_DELETING_KEY, set())
 
     obj_uid = api.get_uid(obj)
@@ -82,9 +92,6 @@ def on_object_modified(obj, event):
     setattr(request, UPLOAD_DELETING_KEY, processing_objs)
 
     try:
-        # Get all MultiUploadField fields
-        fields = get_multiupload_fields(obj)
-
         # Track current values before processing (for deletion detection)
         current_values = track_current_uids(fields, obj)
 
@@ -124,6 +131,19 @@ def process_multiupload_fields(obj, event):
         # Already processing this object, skip to prevent recursion
         return
 
+    # Get all MultiUploadField fields - early return if none
+    fields = get_multiupload_fields(obj)
+    if not fields:
+        return  # No fields to process
+
+    # Check for upload data - early return if none
+    if not has_upload_uuids(fields, request, obj):
+        return  # No upload data
+
+    # Determine form prefix (needed later for processing)
+    form_prefix = "form.widgets." if api.is_dexterity_content(obj) else ""
+
+    # NOW log (only if we're actually processing)
     logger.info("="*80)
     logger.info("process_multiupload_fields called for {}".format(
         api.get_path(obj)))
@@ -133,22 +153,8 @@ def process_multiupload_fields(obj, event):
     setattr(request, UPLOAD_PROCESSING_KEY, processing_objs)
 
     try:
-        # Get uploaded files from session
-        session = getattr(request, "SESSION", None)
-        if not session:
-            logger.info("No SESSION available, skipping upload processing")
-            return
-
-        # Get uploaded UUID -> file mapping data from session
-        uploaded_files = session.get(SESSION_KEY, {})
-
-        # Get all MultiUploadField fields
-        fields = get_multiupload_fields(obj)
-
-        # z3c.form uses form prefixes for DX contents
-        form_prefix = ""
-        if api.is_dexterity_content(obj):
-            form_prefix = "form.widgets."
+        # Get the shared upload storage (cluster-safe)
+        storage = get_storage()
 
         # Process each MultiUploadField
         for name, field in fields.items():
@@ -170,10 +176,11 @@ def process_multiupload_fields(obj, event):
             # Create File/Image objects for each upload UUID
             created_uids = []
             for upload_uuid in upload_uuids:
-                file_data = uploaded_files.get(upload_uuid)
+                # Retrieve file data from shared storage
+                file_data = storage.retrieve(upload_uuid)
                 if not file_data:
                     logger.warning(
-                        "Upload data for UUID {} not found in session"
+                        "Upload data for UUID {} not found in storage"
                         .format(upload_uuid))
                     continue
 
@@ -183,6 +190,8 @@ def process_multiupload_fields(obj, event):
                     created_uids.append(uid)
                     # Mark created object as processing
                     processing_objs.add(uid)
+                    # Remove from storage after successful creation
+                    storage.remove(upload_uuid)
 
             # Combine submitted UIDs (existing) with newly created UIDs
             new_value = submitted_uids + created_uids
@@ -296,6 +305,63 @@ def get_multiupload_fields(obj):
     fields = api.get_fields(obj)
     return {name: field for name, field in fields.items()
             if IMultiUploadField.providedBy(field)}
+
+
+def has_multiupload_activity(fields, request, obj):
+    """Check if there is any multiupload activity in the request
+
+    Checks for:
+    - New upload UUIDs in request (field.data parameter)
+    - Field submissions for deletion detection (field parameter)
+
+    :param fields: Dictionary of field name -> field pairs
+    :param request: The request object
+    :param obj: The object being processed
+    :returns: True if there's multiupload activity, False otherwise
+    """
+    if not fields:
+        return False
+
+    # Determine form prefix based on content type
+    form_prefix = "form.widgets." if api.is_dexterity_content(obj) else ""
+
+    for name in fields.keys():
+        # Check for new uploads
+        data_key = "{}{}.data".format(form_prefix, name)
+        if request.get(data_key):
+            return True
+
+        # Check for field submission (deletion scenario)
+        field_key = "{}{}".format(form_prefix, name)
+        if field_key in request.form:
+            return True
+
+    return False
+
+
+def has_upload_uuids(fields, request, obj):
+    """Check if there are upload UUIDs in the request
+
+    Only checks for new upload UUIDs (field.data parameter),
+    not field submissions.
+
+    :param fields: Dictionary of field name -> field pairs
+    :param request: The request object
+    :param obj: The object being processed
+    :returns: True if there are upload UUIDs, False otherwise
+    """
+    if not fields:
+        return False
+
+    # Determine form prefix based on content type
+    form_prefix = "form.widgets." if api.is_dexterity_content(obj) else ""
+
+    for name in fields.keys():
+        data_key = "{}{}.data".format(form_prefix, name)
+        if request.get(data_key):
+            return True
+
+    return False
 
 
 def track_current_uids(fields, obj):
