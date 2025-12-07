@@ -990,6 +990,7 @@ class ISetupSchema(model.Schema):
             schema.vocabulary.SimpleTerm("receive", "receive", _(u"Receive")),
         ]),
         required=False,
+        default="None",
     )
 
     auto_sticker_template = schema.TextLine(
@@ -2082,9 +2083,14 @@ class Setup(Container):
     @security.protected(permissions.View)
     def getAutoPrintStickers(self):
         """Get auto print stickers setting
+        Returns "None" (string) if not set
         """
         accessor = self.accessor("auto_print_stickers")
-        return accessor(self)
+        value = accessor(self)
+        # Return "None" string as default if not set
+        if value is None:
+            return "None"
+        return value
 
     @security.protected(permissions.ModifyPortalContent)
     def setAutoPrintStickers(self, value):
