@@ -1353,24 +1353,6 @@ class Setup(Container):
         return mutator(self, value)
 
     @security.protected(permissions.View)
-    def getMaxNumberOfSamplesAdd(self):
-        """Returns the maximum number of samples that can be created for each
-        column in sample add form in accordance with the value set for the
-        field 'Number of samples'
-        """
-        accessor = self.accessor("max_number_of_samples_add")
-        return api.to_int(accessor(self))
-
-    @security.protected(permissions.ModifyPortalContent)
-    def setMaxNumberOfSamplesAdd(self, value):
-        """Sets the maximum number of samples that can be created for each
-        column in sample add form in accordance with the value set for the
-        field 'Number of samples'
-        """
-        mutator = self.mutator("max_number_of_samples_add")
-        return mutator(self, value)
-
-    @security.protected(permissions.View)
     def getDateSampledRequired(self):
         """Returns whether the DateSampled field is required on sample creation
         when the sampling workflow is not active
