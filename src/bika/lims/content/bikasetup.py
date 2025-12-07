@@ -60,9 +60,7 @@ from senaite.core.api import geo
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.interfaces import IHideActionsMenu
-from senaite.core.interfaces import INumberGenerator
 from senaite.core.p3compat import cmp
-from zope.component import getUtility
 from zope.interface import implements
 
 
