@@ -260,7 +260,7 @@ class FolderView(BikaListingView):
             return False
 
         # rely on setup's setting
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getRestrictWorksheetUsersAccess()
 
     def is_analyst_assignment_allowed(self):

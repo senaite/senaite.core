@@ -107,7 +107,7 @@ class AnalysisRequestAddView(BrowserView):
     def __call__(self):
         self.portal = api.get_portal()
         self.portal_url = self.portal.absolute_url()
-        self.setup = api.get_setup()
+        self.setup = api.get_senaite_setup()
         self.came_from = "add"
         self.tmp_ar = self.get_ar()
         self.ar_count = self.get_ar_count()
@@ -145,13 +145,13 @@ class AnalysisRequestAddView(BrowserView):
     def analyses_required(self):
         """Check if analyses are required
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getSampleAnalysesRequired()
 
     def get_currency(self):
         """Returns the configured currency
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         currency = setup.getCurrency()
         currencies = locales.getLocale("en").numbers.currencies
         return currencies[currency]
@@ -719,7 +719,7 @@ class AnalysisRequestManageView(BrowserView):
         return self.tmp_ar
 
     def get_annotation(self):
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return IAnnotations(setup)
 
     @property
@@ -1237,7 +1237,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
     def ajax_get_global_settings(self):
         """Returns the global Bika settings
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         settings = {
             "show_prices": setup.getShowPrices(),
         }
@@ -1713,7 +1713,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         base_info["filter_queries"] = filter_queries
 
     def show_recalculate_prices(self):
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getShowPrices()
 
     def ajax_recalculate_prices(self):
@@ -1728,7 +1728,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         records = self.get_records()
 
         client = self.get_client()
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
 
         member_discount = float(setup.getMemberDiscount())
         member_discount_applies = False
@@ -2103,7 +2103,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
     def is_automatic_label_printing_enabled(self):
         """Returns whether the automatic printing of barcode labels is active
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         auto_print = setup.getAutoPrintStickers()
         auto_receive = setup.getAutoreceiveSamples()
         action = "receive" if auto_receive else "register"
@@ -2113,7 +2113,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Handle redirect after sample creation or cancel
         """
         # Automatic label printing
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         auto_print = self.is_automatic_label_printing_enabled()
         # Check if immediate results entry is enabled in setup and the current
         # user has enough privileges to do so

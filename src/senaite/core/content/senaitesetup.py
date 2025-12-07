@@ -55,7 +55,7 @@ from zope.schema.interfaces import IContextAwareDefaultFactory
 def default_email_body_sample_publication(context):
     """Returns the default body text for publication emails
     """
-    view = api.get_view("senaite_view", context=api.get_setup())
+    view = api.get_view("senaite_view", context=api.get_senaite_setup())
     if view is None:
         # Test fixture
         return u""

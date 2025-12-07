@@ -58,7 +58,7 @@ class SetupView(BrowserView):
     def setup(self):
         """Returns the old Setup Object
         """
-        return api.get_setup()
+        return api.get_senaite_setup()
 
     @property
     def senaite_setup(self):

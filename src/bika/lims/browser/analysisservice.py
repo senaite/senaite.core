@@ -60,7 +60,7 @@ class AnalysisServiceInfoView(BrowserView):
     def show_prices(self):
         """Checks if prices should be shown or not
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getShowPrices()
 
     @view.memoize
@@ -68,7 +68,7 @@ class AnalysisServiceInfoView(BrowserView):
         """Get the currency Symbol
         """
         locale = locales.getLocale('en')
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         currency = setup.getCurrency()
         return locale.numbers.currencies[currency].symbol
 

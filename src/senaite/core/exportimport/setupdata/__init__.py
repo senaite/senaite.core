@@ -2112,7 +2112,9 @@ class Setup(WorksheetImporter):
     def to_string_vocab_value(self, field, value):
         vocabulary = field.vocabulary
         if type(vocabulary) is str:
-            vocabulary = getFromString(api.get_setup(), vocabulary)
+            # Use bika_setup for vocabulary access (has subfolders)
+            bika_setup = api.get_portal().get("bika_setup")
+            vocabulary = getFromString(bika_setup, vocabulary)
         else:
             vocabulary = vocabulary.items()
 

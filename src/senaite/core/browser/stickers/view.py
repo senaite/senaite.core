@@ -139,7 +139,7 @@ class StickerView(BrowserView):
             parent = api.get_parent(self.context)
             url = api.get_url(parent)
         # redirect to direct results entry
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         if setup.getImmediateResultsEntry():
             url = "{}/multi_results?uids={}".format(
                 url, ",".join(self.get_uids()))
@@ -329,7 +329,7 @@ class StickerView(BrowserView):
         in the request
         :rtype: int
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         default_num = setup.getDefaultNumberOfCopies()
         request_num = self.request.form.get("copies_count")
         return to_int(request_num, default_num)
@@ -356,7 +356,7 @@ class StickerView(BrowserView):
             return default_template
 
         # rely on the default setup template
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         size = self.request.get("size", "")
         if size == "small":
             return setup.getSmallStickerTemplate()

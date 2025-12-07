@@ -136,7 +136,7 @@ def create_analysisrequest(client, request, values, analyses=None,
             receive_sample(ar, date_received=date_received)
 
     if not IReceived.providedBy(ar):
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         auto_receive = setup.getAutoreceiveSamples()
         if ar.getSamplingRequired():
             # sample has not been collected yet
@@ -560,7 +560,7 @@ def do_rejection(sample, notify=None):
 
     # Do we need to send a notification email?
     if notify is None:
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         notify = setup.getNotifyOnSampleRejection()
 
     if notify:
@@ -608,7 +608,7 @@ def get_rejection_mail(sample, rejection_pdf=None):
     reasons = "<br/>- ".join(reasons)
 
     # Render the email body
-    setup = api.get_setup()
+    setup = api.get_senaite_setup()
     lab_address = setup.laboratory.getPrintAddress()
     email_body = Template(setup.getEmailBodySampleRejection())
     email_body = email_body.safe_substitute({
@@ -633,7 +633,7 @@ def get_rejection_mail(sample, rejection_pdf=None):
         logger.warn("No valid recipients for {}".format(api.get_id(sample)))
         return None
 
-    lab = api.get_setup().laboratory
+    lab = api.get_senaite_setup().laboratory
     attachments = rejection_pdf and [rejection_pdf] or []
 
     return compose_email(
