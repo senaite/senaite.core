@@ -1723,9 +1723,14 @@ class Setup(Container):
     @security.protected(permissions.View)
     def getNumberOfRequiredVerifications(self):
         """Get number of required verifications
+        Returns 1 (default) if not set
         """
         accessor = self.accessor("number_of_required_verifications")
-        return accessor(self)
+        value = accessor(self)
+        # Return default of 1 if not set
+        if value is None:
+            return 1
+        return value
 
     @security.protected(permissions.ModifyPortalContent)
     def setNumberOfRequiredVerifications(self, value):
