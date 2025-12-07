@@ -1178,15 +1178,6 @@ class BikaSetup(folder.ATFolder):
         items = [(1, '1'), (2, '2'), (3, '3'), (4, '4')]
         return IntDisplayList(list(items))
 
-    def getIDServerValuesHTML(self):
-        number_generator = getUtility(INumberGenerator)
-        keys = number_generator.keys()
-        values = number_generator.values()
-        results = []
-        for i in range(len(keys)):
-            results.append('%s: %s' % (keys[i], values[i]))
-        return "\n".join(results)
-
     def getEmailFromSamplePublication(self):
         """Get the value from the senaite setup
         """
