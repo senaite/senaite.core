@@ -86,6 +86,7 @@
     <metal:fill fill-slot="main">
       <metal:main define-macro="main">
         <metal:use_header use-macro="header_macro" />
+        <div tal:replace="structure provider:plone.belowcontenttitle" />
         <metal:use_typedescription use-macro="typedescription_macro" />
         <metal:use_body use-macro="body_macro" />
         <metal:use_footer use-macro="footer_macro" />
