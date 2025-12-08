@@ -67,8 +67,8 @@ def get_worksheet_layouts():
     """Getting additional layouts for Worksheet
     """
     layouts = []
-    for name, layout_utility in getUtilitiesFor(IWorksheetLayouts):
-        [layouts.append(layout) for layout in layout_utility.getLayouts()]
+    for name, utility in getUtilitiesFor(IWorksheetLayouts):
+        [layouts.append(layout) for layout in utility.getResultLayouts()]
 
     return DisplayList(tuple(layouts))
 
@@ -268,7 +268,7 @@ class Worksheet(Container):
         mutator(self, sorted_layout)
 
     # BBB: AT schema field property
-    # Layout = property(getLayoutView, setLayoutView)
+    Layout = property(getLayoutView, setLayoutView)
 
     @security.protected(permissions.View)
     def getAnalyses(self):

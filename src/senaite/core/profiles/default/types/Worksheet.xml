@@ -27,7 +27,6 @@
     <!-- If filtering, what's allowed -->
     <property name="allowed_content_types">
         <element value="DuplicateAnalysis"/>
-        <element value="RejectAnalysis"/>
         <element value="Attachment"/>
     </property>
 
@@ -108,7 +107,6 @@
             url_expr="string:${object_url}/add_analyses"
             i18n:attributes="title"
             visible="True">
-        <permission value="senaite.core: Edit Worksheet"/>
         <permission value="senaite.core: Manage Worksheets"/>
     </action>
 
@@ -121,7 +119,6 @@
             url_expr="string:${object_url}/add_blank"
             i18n:attributes="title"
             visible="True">
-        <permission value="senaite.core: Edit Worksheet"/>
         <permission value="senaite.core: Manage Worksheets"/>
     </action>
 
@@ -134,7 +131,6 @@
             url_expr="string:${object_url}/add_control"
             i18n:attributes="title"
             visible="True">
-        <permission value="senaite.core: Edit Worksheet"/>
         <permission value="senaite.core: Manage Worksheets"/>
     </action>
 
@@ -147,7 +143,6 @@
             url_expr="string:${object_url}/add_duplicate"
             i18n:attributes="title"
             visible="True">
-        <permission value="senaite.core: Edit Worksheet"/>
         <permission value="senaite.core: Manage Worksheets"/>
     </action>
 

@@ -51,7 +51,7 @@ from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.setuphandlers import add_dexterity_items
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
-from senaite.core.upgrade.utils import uncatalog_object
+from senaite.core.upgrade.utils import uncatalog_object, delete_object
 from senaite.core.upgrade.utils import UpgradeUtils
 from zope.component import getMultiAdapter
 from zope.interface import alsoProvides
@@ -592,12 +592,17 @@ def migrate_worksheets_to_dx(tool):
     """
     logger.info("Convert Worksheet's to Dexterity ...")
 
+    # Delete rejected analysis and empty worksheets
+    # before install new content type
+    cleanup_rejected_worksheets()
+
     # ensure old AT types are flushed first
     remove_at_portal_types(tool)
 
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
     tool.runImportStepFromProfile(profile, "workflow")
+    tool.runImportStepFromProfile(profile, "rolemap")
     tool.runImportStepFromProfile(profile, "plone.app.registry")
 
     # copy related settings
@@ -654,6 +659,31 @@ def migrate_worksheets_to_dx(tool):
         parent.manage_delObjects([temp_folder.getId()])
 
     logger.info("Convert Worksheet's to Dexterity [DONE]")
+
+
+def cleanup_rejected_worksheets():
+    """Delete all rejected worksheets and RejectAnalysis
+    """
+    logger.info("Cleanup rejected worksheets...")
+
+    rejected_analysis_query = {"portal_type": "RejectAnalysis"}
+    for brain in api.search(rejected_analysis_query, ANALYSIS_CATALOG):
+        rejected_analysis = api.get_object(brain)
+        api.delete(rejected_analysis, False)
+        logger.info("Delete rejected analysis {}".format(rejected_analysis))
+
+    rejected_worksheets = {
+        "portal_type": "Worksheet",
+        "review_state": "rejected",
+    }
+    for brain in api.search(rejected_worksheets, WORKSHEET_CATALOG):
+        ws = api.get_object(brain)
+        if ws.objectValues():
+            continue
+        api.delete(ws, False)
+        logger.info("Delete rejected worksheet {}".format(ws))
+
+    logger.info("Cleanup rejected worksheets [DONE]")
 
 
 def copy_settings_from_bika_setup(fields):
@@ -732,8 +762,8 @@ def migrate_worksheet_to_dx(src, destination):
             new_an_backrefs.append(api.get_uid(ref))
 
     # move Duplicate, Reject and Attachment to new worksheet
-    for dup in src.objectValues():
-        api.move_object(dup, target, False)
+    for obj in src.objectValues():
+        api.move_object(obj, target, False)
 
     # Migrate the contents from AT to DX
     migrator = getMultiAdapter((src, target), interface=IContentMigrator)

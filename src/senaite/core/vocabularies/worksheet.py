@@ -32,8 +32,8 @@ class WorksheetLayouts(object):
 
     def __call__(self, context=None):
         layouts = []
-        for name, layout_utility in getUtilitiesFor(IWorksheetLayouts):
-            [layouts.append(layout) for layout in layout_utility.getLayouts()]
+        for name, utility in getUtilitiesFor(IWorksheetLayouts):
+            [layouts.append(layout) for layout in utility.getResultLayouts()]
 
         return to_simple_vocabulary(tuple(layouts))
 
