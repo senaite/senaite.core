@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2821 Migrate all fields from bika_setup to senaite setup
 - #2817 Fix QR code render for multi-page stickers
 - #2818 Fix UnicodeDecodeError if analysis unit contains unicode characters
 - #2812 Migrate MultiFile to Dexterity
