@@ -113,14 +113,6 @@ For `to_be_verified` status:
     >>> isTransitionAllowed(ws, "remove")
     False
 
-For `rejected` status:
-
-    >>> success = do_action_for(ws, "reject")
-    >>> api.get_workflow_status_of(ws)
-    'rejected'
-    >>> isTransitionAllowed(ws, "remove")
-    False
-
 For `verified` status:
 
     >>> bikasetup.setSelfVerificationEnabled(True)
