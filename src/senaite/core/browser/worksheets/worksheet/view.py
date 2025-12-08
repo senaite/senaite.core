@@ -33,7 +33,7 @@ class WorksheetView(BrowserView):
 
     def __call__(self):
         view = "add_analyses"
-        if self.context.getLayoutView():
+        if self.context.getAnalyses():
             view = "manage_results"
 
         redirect_url = "{}/{}".format(api.get_url(self.context), view)
