@@ -51,7 +51,7 @@ from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.setuphandlers import add_dexterity_items
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
-from senaite.core.upgrade.utils import uncatalog_object, delete_object
+from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.utils import UpgradeUtils
 from zope.component import getMultiAdapter
 from zope.interface import alsoProvides
