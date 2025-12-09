@@ -36,7 +36,7 @@ from zope.annotation.interfaces import IAnnotations
 from zope.event import notify
 from zope.interface import alsoProvides
 from zope.interface import implementer
-from zope.schema import ASCIILine
+from zope.schema import TextLine
 from zope.schema import List
 
 BACKREFS_STORAGE = "senaite.core.schema.uidreferencefield.backreferences"
@@ -118,7 +118,7 @@ class UIDReferenceField(List, BaseField):
     """Stores UID references to other objects
     """
 
-    value_type = ASCIILine(title=u"UID")
+    value_type = TextLine(title=u"UID")
 
     def __init__(self, allowed_types=None, multi_valued=True, **kw):
         if allowed_types is None:
