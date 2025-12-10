@@ -24,14 +24,14 @@
 <link href="#" rel="stylesheet" tal:attributes="href <%= 'string:${view/site_url}' + htmlWebpackPlugin.files.css[f] %>" />
 <% } %>
 
+<!-- Thirdparty JS bundle (loaded before legacy.js as it contains jQuery plugins used by legacy code) -->
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/bundles/thirdparty.js"></script>
+
+<!-- Thirdparty CSS bundle -->
+<link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/bundles/thirdparty.css" />
+
 <!-- Legacy JS bundle -->
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/bundles/legacy.js"></script>
 
 <!-- Legacy CSS bundle -->
 <link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/bundles/legacy.css" />
-
-<!-- Thirdparty JS bundle -->
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/bundles/thirdparty.js"></script>
-
-<!-- Thirdparty CSS bundle -->
-<link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/bundles/thirdparty.css" />
