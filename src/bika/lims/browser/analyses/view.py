@@ -883,9 +883,9 @@ class AnalysesView(ListingView):
         """Render HTML element for unit
         """
         if css_class is None:
-            css_class = "unit d-inline-block py-2 small text-secondary text-nowrap"
-        return "<span class='{css_class}'>{unit}</span>".format(
-            unit=unit, css_class=css_class)
+            css_class = u"unit d-inline-block py-2 small text-secondary text-nowrap"
+        return u"<span class='{css_class}'>{unit}</span>".format(
+            unit=safe_unicode(unit), css_class=css_class)
 
     def get_category_title(self, analysis):
         """Returns the title of the category the analysis is assigned to
@@ -1098,7 +1098,7 @@ class AnalysesView(ListingView):
 
         if is_editable and calculation:
             url = analysis_brain.getURL()
-            item["after"]["Result"] = item["after"].get("Result") or ""
+            item["after"]["Result"] = item["after"].get("Result") or u""
             item["after"]["Result"] += get_link(
                 "{}/action/recalculate".format(url),
                 value="<i class='small text-secondary fas fa-sync'></i>",

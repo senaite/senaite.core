@@ -5,7 +5,9 @@ Changelog
 ------------------
 
 - #2821 Migrate all fields from bika_setup to senaite setup
+- #2819 Fix multiuploads for cluster setups
 - #2817 Fix QR code render for multi-page stickers
+- #2818 Fix UnicodeDecodeError if analysis unit contains unicode characters
 - #2818 Fix UnicodeDecodeError if analysis unit contains unicode characters
 - #2812 Migrate MultiFile to Dexterity
 - #2815 Remove dependency to plone.app.jquerytools
