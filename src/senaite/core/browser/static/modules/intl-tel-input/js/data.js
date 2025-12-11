@@ -1,5 +1,5 @@
 /*
- * International Telephone Input v25.3.1
+ * International Telephone Input v25.12.5
  * https://github.com/jackocnr/intl-tel-input.git
  * Licensed under the MIT license
  */
@@ -35,36 +35,50 @@ var factoryOutput = (() => {
   // src/js/intl-tel-input/data.ts
   var data_exports = {};
   __export(data_exports, {
-    default: () => data_default
+    default: () => data_default,
+    rawCountryData: () => rawCountryData
   });
   var rawCountryData = [
     [
       "af",
       // Afghanistan
-      "93"
+      "93",
+      0,
+      null,
+      "0"
     ],
     [
       "ax",
       // Åland Islands
       "358",
-      1
+      1,
+      ["18", "4"],
+      // (4 is a mobile range shared with FI)
+      "0"
     ],
     [
       "al",
       // Albania
-      "355"
+      "355",
+      0,
+      null,
+      "0"
     ],
     [
       "dz",
       // Algeria
-      "213"
+      "213",
+      0,
+      null,
+      "0"
     ],
     [
       "as",
       // American Samoa
       "1",
       5,
-      ["684"]
+      ["684"],
+      "1"
     ],
     [
       "ad",
@@ -81,24 +95,32 @@ var factoryOutput = (() => {
       // Anguilla
       "1",
       6,
-      ["264"]
+      ["264"],
+      "1"
     ],
     [
       "ag",
       // Antigua and Barbuda
       "1",
       7,
-      ["268"]
+      ["268"],
+      "1"
     ],
     [
       "ar",
       // Argentina
-      "54"
+      "54",
+      0,
+      null,
+      "0"
     ],
     [
       "am",
       // Armenia
-      "374"
+      "374",
+      0,
+      null,
+      "0"
     ],
     [
       "aw",
@@ -115,25 +137,33 @@ var factoryOutput = (() => {
       // Australia
       "61",
       0,
-      null,
+      ["4"],
+      // (mobile range shared with CX and CC)
       "0"
     ],
     [
       "at",
       // Austria
-      "43"
+      "43",
+      0,
+      null,
+      "0"
     ],
     [
       "az",
       // Azerbaijan
-      "994"
+      "994",
+      0,
+      null,
+      "0"
     ],
     [
       "bs",
       // Bahamas
       "1",
       8,
-      ["242"]
+      ["242"],
+      "1"
     ],
     [
       "bh",
@@ -143,24 +173,34 @@ var factoryOutput = (() => {
     [
       "bd",
       // Bangladesh
-      "880"
+      "880",
+      0,
+      null,
+      "0"
     ],
     [
       "bb",
       // Barbados
       "1",
       9,
-      ["246"]
+      ["246"],
+      "1"
     ],
     [
       "by",
       // Belarus
-      "375"
+      "375",
+      0,
+      null,
+      "8"
     ],
     [
       "be",
       // Belgium
-      "32"
+      "32",
+      0,
+      null,
+      "0"
     ],
     [
       "bz",
@@ -177,7 +217,8 @@ var factoryOutput = (() => {
       // Bermuda
       "1",
       10,
-      ["441"]
+      ["441"],
+      "1"
     ],
     [
       "bt",
@@ -187,12 +228,18 @@ var factoryOutput = (() => {
     [
       "bo",
       // Bolivia
-      "591"
+      "591",
+      0,
+      null,
+      "0"
     ],
     [
       "ba",
       // Bosnia and Herzegovina
-      "387"
+      "387",
+      0,
+      null,
+      "0"
     ],
     [
       "bw",
@@ -202,7 +249,10 @@ var factoryOutput = (() => {
     [
       "br",
       // Brazil
-      "55"
+      "55",
+      0,
+      null,
+      "0"
     ],
     [
       "io",
@@ -214,7 +264,8 @@ var factoryOutput = (() => {
       // British Virgin Islands
       "1",
       11,
-      ["284"]
+      ["284"],
+      "1"
     ],
     [
       "bn",
@@ -224,7 +275,10 @@ var factoryOutput = (() => {
     [
       "bg",
       // Bulgaria
-      "359"
+      "359",
+      0,
+      null,
+      "0"
     ],
     [
       "bf",
@@ -239,7 +293,10 @@ var factoryOutput = (() => {
     [
       "kh",
       // Cambodia
-      "855"
+      "855",
+      0,
+      null,
+      "0"
     ],
     [
       "cm",
@@ -251,7 +308,8 @@ var factoryOutput = (() => {
       // Canada
       "1",
       1,
-      ["204", "226", "236", "249", "250", "263", "289", "306", "343", "354", "365", "367", "368", "382", "387", "403", "416", "418", "428", "431", "437", "438", "450", "584", "468", "474", "506", "514", "519", "548", "579", "581", "584", "587", "604", "613", "639", "647", "672", "683", "705", "709", "742", "753", "778", "780", "782", "807", "819", "825", "867", "873", "879", "902", "905"]
+      ["204", "226", "236", "249", "250", "257", "263", "289", "306", "343", "354", "365", "367", "368", "382", "403", "416", "418", "428", "431", "437", "438", "450", "468", "474", "506", "514", "519", "548", "579", "581", "584", "587", "604", "613", "639", "647", "672", "683", "705", "709", "742", "753", "778", "780", "782", "807", "819", "825", "867", "873", "879", "902", "905", "942"],
+      "1"
     ],
     [
       "cv",
@@ -270,7 +328,8 @@ var factoryOutput = (() => {
       // Cayman Islands
       "1",
       12,
-      ["345"]
+      ["345"],
+      "1"
     ],
     [
       "cf",
@@ -290,14 +349,18 @@ var factoryOutput = (() => {
     [
       "cn",
       // China
-      "86"
+      "86",
+      0,
+      null,
+      "0"
     ],
     [
       "cx",
       // Christmas Island
       "61",
       2,
-      ["89164"],
+      ["4", "89164"],
+      // (4 is a mobile range shared with AU and CC)
       "0"
     ],
     [
@@ -305,13 +368,17 @@ var factoryOutput = (() => {
       // Cocos (Keeling) Islands
       "61",
       1,
-      ["89162"],
+      ["4", "89162"],
+      // (4 is a mobile range shared with AU and CX)
       "0"
     ],
     [
       "co",
       // Colombia
-      "57"
+      "57",
+      0,
+      null,
+      "0"
     ],
     [
       "km",
@@ -326,7 +393,10 @@ var factoryOutput = (() => {
     [
       "cd",
       // Congo (Kinshasa)
-      "243"
+      "243",
+      0,
+      null,
+      "0"
     ],
     [
       "ck",
@@ -346,12 +416,18 @@ var factoryOutput = (() => {
     [
       "hr",
       // Croatia
-      "385"
+      "385",
+      0,
+      null,
+      "0"
     ],
     [
       "cu",
       // Cuba
-      "53"
+      "53",
+      0,
+      null,
+      "0"
     ],
     [
       "cw",
@@ -384,24 +460,32 @@ var factoryOutput = (() => {
       // Dominica
       "1",
       13,
-      ["767"]
+      ["767"],
+      "1"
     ],
     [
       "do",
       // Dominican Republic
       "1",
       2,
-      ["809", "829", "849"]
+      ["809", "829", "849"],
+      "1"
     ],
     [
       "ec",
       // Ecuador
-      "593"
+      "593",
+      0,
+      null,
+      "0"
     ],
     [
       "eg",
       // Egypt
-      "20"
+      "20",
+      0,
+      null,
+      "0"
     ],
     [
       "sv",
@@ -416,7 +500,10 @@ var factoryOutput = (() => {
     [
       "er",
       // Eritrea
-      "291"
+      "291",
+      0,
+      null,
+      "0"
     ],
     [
       "ee",
@@ -431,7 +518,10 @@ var factoryOutput = (() => {
     [
       "et",
       // Ethiopia
-      "251"
+      "251",
+      0,
+      null,
+      "0"
     ],
     [
       "fk",
@@ -452,17 +542,26 @@ var factoryOutput = (() => {
       "fi",
       // Finland
       "358",
-      0
+      0,
+      ["4"],
+      // (mobile range shared with AX)
+      "0"
     ],
     [
       "fr",
       // France
-      "33"
+      "33",
+      0,
+      null,
+      "0"
     ],
     [
       "gf",
       // French Guiana
-      "594"
+      "594",
+      0,
+      null,
+      "0"
     ],
     [
       "pf",
@@ -482,17 +581,26 @@ var factoryOutput = (() => {
     [
       "ge",
       // Georgia
-      "995"
+      "995",
+      0,
+      null,
+      "0"
     ],
     [
       "de",
       // Germany
-      "49"
+      "49",
+      0,
+      null,
+      "0"
     ],
     [
       "gh",
       // Ghana
-      "233"
+      "233",
+      0,
+      null,
+      "0"
     ],
     [
       "gi",
@@ -514,20 +622,24 @@ var factoryOutput = (() => {
       // Grenada
       "1",
       14,
-      ["473"]
+      ["473"],
+      "1"
     ],
     [
       "gp",
       // Guadeloupe
       "590",
-      0
+      0,
+      null,
+      "0"
     ],
     [
       "gu",
       // Guam
       "1",
       15,
-      ["671"]
+      ["671"],
+      "1"
     ],
     [
       "gt",
@@ -575,7 +687,10 @@ var factoryOutput = (() => {
     [
       "hu",
       // Hungary
-      "36"
+      "36",
+      0,
+      null,
+      "06"
     ],
     [
       "is",
@@ -585,58 +700,82 @@ var factoryOutput = (() => {
     [
       "in",
       // India
-      "91"
+      "91",
+      0,
+      null,
+      "0"
     ],
     [
       "id",
       // Indonesia
-      "62"
+      "62",
+      0,
+      null,
+      "0"
     ],
     [
       "ir",
       // Iran
-      "98"
+      "98",
+      0,
+      null,
+      "0"
     ],
     [
       "iq",
       // Iraq
-      "964"
+      "964",
+      0,
+      null,
+      "0"
     ],
     [
       "ie",
       // Ireland
-      "353"
+      "353",
+      0,
+      null,
+      "0"
     ],
     [
       "im",
       // Isle of Man
       "44",
       2,
-      ["1624", "74576", "7524", "7924", "7624"],
+      ["1624", "74576", "7524", "7624", "7924"],
       "0"
     ],
     [
       "il",
       // Israel
-      "972"
+      "972",
+      0,
+      null,
+      "0"
     ],
     [
       "it",
       // Italy
       "39",
-      0
+      0,
+      ["3"]
+      // (mobile range shared with VA)
     ],
     [
       "jm",
       // Jamaica
       "1",
       4,
-      ["876", "658"]
+      ["658", "876"],
+      "1"
     ],
     [
       "jp",
       // Japan
-      "81"
+      "81",
+      0,
+      null,
+      "0"
     ],
     [
       "je",
@@ -649,7 +788,10 @@ var factoryOutput = (() => {
     [
       "jo",
       // Jordan
-      "962"
+      "962",
+      0,
+      null,
+      "0"
     ],
     [
       "kz",
@@ -657,22 +799,32 @@ var factoryOutput = (() => {
       "7",
       1,
       ["33", "7"],
+      // (33 is shared with RU)
       "8"
     ],
     [
       "ke",
       // Kenya
-      "254"
+      "254",
+      0,
+      null,
+      "0"
     ],
     [
       "ki",
       // Kiribati
-      "686"
+      "686",
+      0,
+      null,
+      "0"
     ],
     [
       "xk",
       // Kosovo
-      "383"
+      "383",
+      0,
+      null,
+      "0"
     ],
     [
       "kw",
@@ -682,12 +834,18 @@ var factoryOutput = (() => {
     [
       "kg",
       // Kyrgyzstan
-      "996"
+      "996",
+      0,
+      null,
+      "0"
     ],
     [
       "la",
       // Laos
-      "856"
+      "856",
+      0,
+      null,
+      "0"
     ],
     [
       "lv",
@@ -697,7 +855,10 @@ var factoryOutput = (() => {
     [
       "lb",
       // Lebanon
-      "961"
+      "961",
+      0,
+      null,
+      "0"
     ],
     [
       "ls",
@@ -707,22 +868,34 @@ var factoryOutput = (() => {
     [
       "lr",
       // Liberia
-      "231"
+      "231",
+      0,
+      null,
+      "0"
     ],
     [
       "ly",
       // Libya
-      "218"
+      "218",
+      0,
+      null,
+      "0"
     ],
     [
       "li",
       // Liechtenstein
-      "423"
+      "423",
+      0,
+      null,
+      "0"
     ],
     [
       "lt",
       // Lithuania
-      "370"
+      "370",
+      0,
+      null,
+      "0"
     ],
     [
       "lu",
@@ -737,17 +910,26 @@ var factoryOutput = (() => {
     [
       "mg",
       // Madagascar
-      "261"
+      "261",
+      0,
+      null,
+      "0"
     ],
     [
       "mw",
       // Malawi
-      "265"
+      "265",
+      0,
+      null,
+      "0"
     ],
     [
       "my",
       // Malaysia
-      "60"
+      "60",
+      0,
+      null,
+      "0"
     ],
     [
       "mv",
@@ -767,12 +949,18 @@ var factoryOutput = (() => {
     [
       "mh",
       // Marshall Islands
-      "692"
+      "692",
+      0,
+      null,
+      "1"
     ],
     [
       "mq",
       // Martinique
-      "596"
+      "596",
+      0,
+      null,
+      "0"
     ],
     [
       "mr",
@@ -805,36 +993,50 @@ var factoryOutput = (() => {
     [
       "md",
       // Moldova
-      "373"
+      "373",
+      0,
+      null,
+      "0"
     ],
     [
       "mc",
       // Monaco
-      "377"
+      "377",
+      0,
+      null,
+      "0"
     ],
     [
       "mn",
       // Mongolia
-      "976"
+      "976",
+      0,
+      null,
+      "0"
     ],
     [
       "me",
       // Montenegro
-      "382"
+      "382",
+      0,
+      null,
+      "0"
     ],
     [
       "ms",
       // Montserrat
       "1",
       16,
-      ["664"]
+      ["664"],
+      "1"
     ],
     [
       "ma",
       // Morocco
       "212",
       0,
-      null,
+      ["6", "7"],
+      // (mobile ranges shared with EH)
       "0"
     ],
     [
@@ -845,12 +1047,18 @@ var factoryOutput = (() => {
     [
       "mm",
       // Myanmar (Burma)
-      "95"
+      "95",
+      0,
+      null,
+      "0"
     ],
     [
       "na",
       // Namibia
-      "264"
+      "264",
+      0,
+      null,
+      "0"
     ],
     [
       "nr",
@@ -860,12 +1068,18 @@ var factoryOutput = (() => {
     [
       "np",
       // Nepal
-      "977"
+      "977",
+      0,
+      null,
+      "0"
     ],
     [
       "nl",
       // Netherlands
-      "31"
+      "31",
+      0,
+      null,
+      "0"
     ],
     [
       "nc",
@@ -875,7 +1089,10 @@ var factoryOutput = (() => {
     [
       "nz",
       // New Zealand
-      "64"
+      "64",
+      0,
+      null,
+      "0"
     ],
     [
       "ni",
@@ -890,7 +1107,10 @@ var factoryOutput = (() => {
     [
       "ng",
       // Nigeria
-      "234"
+      "234",
+      0,
+      null,
+      "0"
     ],
     [
       "nu",
@@ -905,25 +1125,34 @@ var factoryOutput = (() => {
     [
       "kp",
       // North Korea
-      "850"
+      "850",
+      0,
+      null,
+      "0"
     ],
     [
       "mk",
       // North Macedonia
-      "389"
+      "389",
+      0,
+      null,
+      "0"
     ],
     [
       "mp",
       // Northern Mariana Islands
       "1",
       17,
-      ["670"]
+      ["670"],
+      "1"
     ],
     [
       "no",
       // Norway
       "47",
-      0
+      0,
+      ["4", "9"]
+      // (mobile ranges shared with SJ)
     ],
     [
       "om",
@@ -933,7 +1162,10 @@ var factoryOutput = (() => {
     [
       "pk",
       // Pakistan
-      "92"
+      "92",
+      0,
+      null,
+      "0"
     ],
     [
       "pw",
@@ -943,7 +1175,10 @@ var factoryOutput = (() => {
     [
       "ps",
       // Palestinian Territories
-      "970"
+      "970",
+      0,
+      null,
+      "0"
     ],
     [
       "pa",
@@ -958,17 +1193,26 @@ var factoryOutput = (() => {
     [
       "py",
       // Paraguay
-      "595"
+      "595",
+      0,
+      null,
+      "0"
     ],
     [
       "pe",
       // Peru
-      "51"
+      "51",
+      0,
+      null,
+      "0"
     ],
     [
       "ph",
       // Philippines
-      "63"
+      "63",
+      0,
+      null,
+      "0"
     ],
     [
       "pl",
@@ -985,7 +1229,8 @@ var factoryOutput = (() => {
       // Puerto Rico
       "1",
       3,
-      ["787", "939"]
+      ["787", "939"],
+      "1"
     ],
     [
       "qa",
@@ -1003,20 +1248,27 @@ var factoryOutput = (() => {
     [
       "ro",
       // Romania
-      "40"
+      "40",
+      0,
+      null,
+      "0"
     ],
     [
       "ru",
       // Russia
       "7",
       0,
-      null,
+      ["33"],
+      // (shared with KZ)
       "8"
     ],
     [
       "rw",
       // Rwanda
-      "250"
+      "250",
+      0,
+      null,
+      "0"
     ],
     [
       "ws",
@@ -1036,7 +1288,10 @@ var factoryOutput = (() => {
     [
       "sa",
       // Saudi Arabia
-      "966"
+      "966",
+      0,
+      null,
+      "0"
     ],
     [
       "sn",
@@ -1046,7 +1301,10 @@ var factoryOutput = (() => {
     [
       "rs",
       // Serbia
-      "381"
+      "381",
+      0,
+      null,
+      "0"
     ],
     [
       "sc",
@@ -1056,7 +1314,10 @@ var factoryOutput = (() => {
     [
       "sl",
       // Sierra Leone
-      "232"
+      "232",
+      0,
+      null,
+      "0"
     ],
     [
       "sg",
@@ -1068,17 +1329,24 @@ var factoryOutput = (() => {
       // Sint Maarten
       "1",
       21,
-      ["721"]
+      ["721"],
+      "1"
     ],
     [
       "sk",
       // Slovakia
-      "421"
+      "421",
+      0,
+      null,
+      "0"
     ],
     [
       "si",
       // Slovenia
-      "386"
+      "386",
+      0,
+      null,
+      "0"
     ],
     [
       "sb",
@@ -1088,22 +1356,34 @@ var factoryOutput = (() => {
     [
       "so",
       // Somalia
-      "252"
+      "252",
+      0,
+      null,
+      "0"
     ],
     [
       "za",
       // South Africa
-      "27"
+      "27",
+      0,
+      null,
+      "0"
     ],
     [
       "kr",
       // South Korea
-      "82"
+      "82",
+      0,
+      null,
+      "0"
     ],
     [
       "ss",
       // South Sudan
-      "211"
+      "211",
+      0,
+      null,
+      "0"
     ],
     [
       "es",
@@ -1113,13 +1393,18 @@ var factoryOutput = (() => {
     [
       "lk",
       // Sri Lanka
-      "94"
+      "94",
+      0,
+      null,
+      "0"
     ],
     [
       "bl",
       // St. Barthélemy
       "590",
-      1
+      1,
+      null,
+      "0"
     ],
     [
       "sh",
@@ -1131,37 +1416,48 @@ var factoryOutput = (() => {
       // St. Kitts & Nevis
       "1",
       18,
-      ["869"]
+      ["869"],
+      "1"
     ],
     [
       "lc",
       // St. Lucia
       "1",
       19,
-      ["758"]
+      ["758"],
+      "1"
     ],
     [
       "mf",
       // St. Martin
       "590",
-      2
+      2,
+      null,
+      "0"
     ],
     [
       "pm",
       // St. Pierre & Miquelon
-      "508"
+      "508",
+      0,
+      null,
+      "0"
     ],
     [
       "vc",
       // St. Vincent & Grenadines
       "1",
       20,
-      ["784"]
+      ["784"],
+      "1"
     ],
     [
       "sd",
       // Sudan
-      "249"
+      "249",
+      0,
+      null,
+      "0"
     ],
     [
       "sr",
@@ -1173,27 +1469,40 @@ var factoryOutput = (() => {
       // Svalbard & Jan Mayen
       "47",
       1,
-      ["79"]
+      ["4", "79", "9"]
+      // (4 and 9 are mobile ranges shared with NO)
     ],
     [
       "se",
       // Sweden
-      "46"
+      "46",
+      0,
+      null,
+      "0"
     ],
     [
       "ch",
       // Switzerland
-      "41"
+      "41",
+      0,
+      null,
+      "0"
     ],
     [
       "sy",
       // Syria
-      "963"
+      "963",
+      0,
+      null,
+      "0"
     ],
     [
       "tw",
       // Taiwan
-      "886"
+      "886",
+      0,
+      null,
+      "0"
     ],
     [
       "tj",
@@ -1203,12 +1512,18 @@ var factoryOutput = (() => {
     [
       "tz",
       // Tanzania
-      "255"
+      "255",
+      0,
+      null,
+      "0"
     ],
     [
       "th",
       // Thailand
-      "66"
+      "66",
+      0,
+      null,
+      "0"
     ],
     [
       "tl",
@@ -1235,7 +1550,8 @@ var factoryOutput = (() => {
       // Trinidad & Tobago
       "1",
       22,
-      ["868"]
+      ["868"],
+      "1"
     ],
     [
       "tn",
@@ -1245,19 +1561,26 @@ var factoryOutput = (() => {
     [
       "tr",
       // Turkey
-      "90"
+      "90",
+      0,
+      null,
+      "0"
     ],
     [
       "tm",
       // Turkmenistan
-      "993"
+      "993",
+      0,
+      null,
+      "8"
     ],
     [
       "tc",
       // Turks & Caicos Islands
       "1",
       23,
-      ["649"]
+      ["649"],
+      "1"
     ],
     [
       "tv",
@@ -1265,19 +1588,36 @@ var factoryOutput = (() => {
       "688"
     ],
     [
+      "vi",
+      // U.S. Virgin Islands
+      "1",
+      24,
+      ["340"],
+      "1"
+    ],
+    [
       "ug",
       // Uganda
-      "256"
+      "256",
+      0,
+      null,
+      "0"
     ],
     [
       "ua",
       // Ukraine
-      "380"
+      "380",
+      0,
+      null,
+      "0"
     ],
     [
       "ae",
       // United Arab Emirates
-      "971"
+      "971",
+      0,
+      null,
+      "0"
     ],
     [
       "gb",
@@ -1291,19 +1631,17 @@ var factoryOutput = (() => {
       "us",
       // United States
       "1",
-      0
+      0,
+      null,
+      "1"
     ],
     [
       "uy",
       // Uruguay
-      "598"
-    ],
-    [
-      "vi",
-      // U.S. Virgin Islands
-      "1",
-      24,
-      ["340"]
+      "598",
+      0,
+      null,
+      "0"
     ],
     [
       "uz",
@@ -1320,17 +1658,24 @@ var factoryOutput = (() => {
       // Vatican City
       "39",
       1,
-      ["06698"]
+      ["06698", "3"]
+      // (3 is a mobile range shared with IT)
     ],
     [
       "ve",
       // Venezuela
-      "58"
+      "58",
+      0,
+      null,
+      "0"
     ],
     [
       "vn",
       // Vietnam
-      "84"
+      "84",
+      0,
+      null,
+      "0"
     ],
     [
       "wf",
@@ -1342,38 +1687,54 @@ var factoryOutput = (() => {
       // Western Sahara
       "212",
       1,
-      ["5288", "5289"],
+      ["5288", "5289", "6", "7"],
+      // (6 and 7 are mobile ranges shared with MA)
       "0"
     ],
     [
       "ye",
       // Yemen
-      "967"
+      "967",
+      0,
+      null,
+      "0"
     ],
     [
       "zm",
       // Zambia
-      "260"
+      "260",
+      0,
+      null,
+      "0"
     ],
     [
       "zw",
       // Zimbabwe
-      "263"
+      "263",
+      0,
+      null,
+      "0"
     ]
   ];
   var allCountries = [];
-  for (let i = 0; i < rawCountryData.length; i++) {
-    const c = rawCountryData[i];
-    allCountries[i] = {
+  for (const c of rawCountryData) {
+    allCountries.push({
       name: "",
-      // this is now populated in the plugin
+      // populated in the plugin
       iso2: c[0],
       dialCode: c[1],
       priority: c[2] || 0,
       areaCodes: c[3] || null,
       nodeById: {},
-      nationalPrefix: c[4] || null
-    };
+      // populated by the plugin
+      nationalPrefix: c[4] || null,
+      normalisedName: "",
+      // populated in the plugin
+      initials: "",
+      // populated in the plugin
+      dialCodePlus: ""
+      // populated in the plugin
+    });
   }
   var data_default = allCountries;
   return __toCommonJS(data_exports);
