@@ -38,7 +38,6 @@ class SetupView(BrowserView):
         self.request = request
 
     def __call__(self):
-        self.request.set("disable_border", 1)
         return self.template()
 
     @property
@@ -65,6 +64,12 @@ class SetupView(BrowserView):
         """Returns the new Setup Object
         """
         return api.get_senaite_setup()
+
+    @property
+    def bika_setup(self):
+        """Returns the new Setup Object
+        """
+        return api.get_bika_setup()
 
     @memoize_contextless
     def get_icon_for(self, brain, **kw):
@@ -109,7 +114,7 @@ class SetupView(BrowserView):
 
         :returns: objects
         """
-        items = self.setup.objectValues() + self.senaite_setup.objectValues()
+        items = self.setup.objectValues() + self.bika_setup.objectValues()
 
         # sort by (translated) title
         def cmp_by_translated_title(obj1, obj2):
