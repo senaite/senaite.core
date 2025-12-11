@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2827 Link demo user to contact during import
 - #2825 Updated webpack dependencies
 - #2826 Fix inconsistent Profile filtering on multi-sample creation
 - #2819 Fix multiuploads for cluster setups
