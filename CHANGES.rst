@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2825 Updated webpack dependencies
+- #2826 Fix inconsistent Profile filtering on multi-sample creation
 - #2819 Fix multiuploads for cluster setups
 - #2817 Fix QR code render for multi-page stickers
 - #2818 Fix UnicodeDecodeError if analysis unit contains unicode characters
