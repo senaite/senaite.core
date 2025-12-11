@@ -352,6 +352,10 @@ def migrate_contact_to_dx(src, destination=None):
     # change the ID *after* the original object was removed
     migrator.copy_id(src, target)
 
+    # Ensure user is correctly linked to the contact
+    if target.getUsername():
+        target.setUser(target.getUsername())
+
     logger.info("Migrated Contact from %s -> %s" % (src, target))
 
 
@@ -551,3 +555,29 @@ def setup_custom_image_and_file_types(tool):
     _run_import_step(portal, "typeinfo", "profile-bika.lims:default")
     setup_core_catalogs(portal)
     logger.info("Setup custom File and Image types [DONE]")
+
+
+@upgradestep(product, version)
+def link_contact_users(tool):
+    """This upgrade step ensures that the client contacts are linked correctly
+    to their users
+    """
+    logger.info("Link client contacts to users ...")
+    query = {"portal_type": "Contact"}
+    brains = api.search(query, CONTACT_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Linking contacts to users {0}/{1}"
+                        .format(num, total))
+
+        contact = api.get_object(brain)
+        username = contact.getUsername()
+        if not username:
+            continue
+        contact.setUser(username)
+        logger.info("Linking user '{}' -> Contact '{}'"
+                    .format(username, api.get_path(contact)))
+        contact._p_deactivate()
+
+    logger.info("Link client contacts to users [DONE]")
