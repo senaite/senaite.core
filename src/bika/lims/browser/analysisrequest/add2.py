@@ -17,7 +17,7 @@
 #
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
+import copy
 import json
 from collections import OrderedDict
 from datetime import datetime
@@ -1480,7 +1480,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 continue
             metadata[key] = {obj_info["uid"]: obj_info}
 
-        return metadata
+        return copy.deepcopy(metadata)
 
     def get_template_additional_info(self, metadata):
         template_to_services = {}
@@ -1567,14 +1567,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             obj, key, record=record), objects)
         return filter(None, objects)
 
-    def object_info_cache_key(method, self, obj, key, **kw):
-        if obj is None or not key:
-            raise DontCache
-        field_name = key.lower()
-        obj_key = api.get_cache_key(obj)
-        return "-".join([field_name, obj_key] + kw.keys())
-
-    @cache(object_info_cache_key)
     def get_object_info(self, obj, key, record=None):
         """Returns the object info metadata for the passed in object and key
         :param obj: the object from which extract the info from
@@ -1649,9 +1641,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         record = record if record else {}
         sample_type_uid = record.get("SampleType")
         if api.is_uid(sample_type_uid):
-            fields = ["Template", "Specification", "Profiles", "SamplePoint"]
-            for field in fields:
-                queries[field]["sampletype_uid"] = [sample_type_uid, ""]
+            st_queries = self.get_sampletype_queries(sample_type_uid, record)
+            queries.update(st_queries)
 
         return queries
 
