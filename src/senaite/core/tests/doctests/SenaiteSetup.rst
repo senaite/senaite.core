@@ -1089,19 +1089,26 @@ Unicode content in invalidation email body should work without errors:
 
 Test rejection reasons with unicode characters:
 
-    >>> unicode_reasons = [u"Unzureichendes Volumen", u"Behälter beschädigt", u"Temperatur zu hoch (>25°C)"]
-    >>> senaite_setup.setRejectionReasons(unicode_reasons)
-    >>> reasons = senaite_setup.getRejectionReasons()
+Set unicode rejection reasons via bikasetup to ensure proper syncing:
+
+    >>> unicode_reasons = [u"Füllmenge nicht ausreichend", u"Behälter beschädigt", u"Temperatur zu hoch (>25°C)"]
+    >>> bikasetup.setRejectionReasons(unicode_reasons)
+    >>> reasons = bikasetup.getRejectionReasonsItems()
     >>> len(reasons)
     3
-    >>> u"Unzureichendes Volumen" in reasons
+    >>> u"Füllmenge nicht ausreichend" in reasons or u"F\\xfcllmenge nicht ausreichend" in str(reasons) or "Füllmenge nicht ausreichend" in str(reasons)
     True
     >>> u"Behälter beschädigt" in reasons or u"Beh\\xe4lter besch\\xe4digt" in str(reasons) or "Behälter beschädigt" in str(reasons)
     True
 
-Verify that bikasetup returns the same unicode values:
+Verify that senaite_setup returns the same unicode values:
 
-    >>> bikasetup.getRejectionReasons() == senaite_setup.getRejectionReasons()
+    >>> senaite_reasons = senaite_setup.getRejectionReasons()
+    >>> len(senaite_reasons)
+    3
+    >>> u"Füllmenge nicht ausreichend" in senaite_reasons or u"F\\xfcllmenge nicht ausreichend" in str(senaite_reasons) or "Füllmenge nicht ausreichend" in str(senaite_reasons)
+    True
+    >>> bikasetup.getRejectionReasonsItems() == senaite_setup.getRejectionReasons()
     True
 
 

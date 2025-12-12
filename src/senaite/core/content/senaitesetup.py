@@ -1837,14 +1837,33 @@ class Setup(Container):
     @security.protected(permissions.View)
     def getRejectionReasons(self):
         """Get rejection reasons
-        Ensures all values are unicode
+        Ensures all values are unicode and handles both DX and AT formats
         """
         accessor = self.accessor("rejection_reasons")
         reasons = accessor(self)
         if not reasons:
             return []
-        # Ensure all reasons are unicode
-        return [api.safe_unicode(r) for r in reasons]
+
+        # Handle AT RecordsField format: [{'checkbox': 'on', 'textfield-0':
+        # 'reason1', ...}]
+        if isinstance(reasons, (list, tuple)) and len(reasons) > 0:
+            if isinstance(reasons[0], dict):
+                # Extract textfield-* values from the dict
+                reasons_dict = reasons[0]
+                # Get all keys that start with 'textfield-'
+                textfield_keys = [k for k in reasons_dict.keys()
+                                  if k.startswith("textfield-")]
+                # Sort by the number suffix and extract values
+                sorted_keys = sorted(textfield_keys,
+                                     key=lambda x: int(x.split("-")[1]))
+                reasons = [api.safe_unicode(reasons_dict[k])
+                           for k in sorted_keys
+                           if reasons_dict[k]]
+            else:
+                # Ensure all values are unicode
+                reasons = [api.safe_unicode(r) for r in reasons if r]
+
+        return reasons
 
     @security.protected(permissions.ModifyPortalContent)
     def setRejectionReasons(self, value):
