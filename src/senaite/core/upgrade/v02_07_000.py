@@ -68,8 +68,6 @@ REMOVE_AT_TYPES = [
 PORTAL_FOLDER_ITEMS = {
     # ID: ID, Title, FTI
     "worksheets": ("worksheets", "Worksheets", "Worksheets"),
-    # temporary DX folder for moving worksheets
-    "worksheets-tmp": ("worksheets-tmp", "Worksheets Temp", "Worksheets"),
 }
 
 
@@ -596,6 +594,25 @@ def migrate_worksheets_to_dx(tool):
     # before install new content type
     cleanup_rejected_worksheets()
 
+    # get the current allowed types for portal
+    portal = api.get_portal()
+    pt = api.get_tool("portal_types")
+    type_info = pt.getTypeInfo(portal)
+    allowed_types = type_info.allowed_content_types
+
+    # temporarily append WorksheetFolder as an allowed type
+    portal_type = "WorksheetFolder"
+    if portal_type not in type_info.allowed_content_types:
+        type_info.allowed_content_types = allowed_types + (portal_type,)
+
+    # Rename old AT worksheets folder
+    portal.manage_renameObject("worksheets", "worksheets-old")
+
+    # restore the allowed_types
+    type_info.allowed_content_types = allowed_types
+
+    origin = portal.get("worksheets-old")
+
     # ensure old AT types are flushed first
     remove_at_portal_types(tool)
 
@@ -618,10 +635,8 @@ def migrate_worksheets_to_dx(tool):
     ]
     copy_settings_from_bika_setup(fields)
 
-    origin = api.get_portal().worksheets
-
     # get the destination container
-    temp_folder = get_destination_folder("worksheets-tmp")
+    new_dx_folder = get_destination_folder("worksheets")
 
     # un-catalog the old container
     uncatalog_object(origin)
@@ -639,24 +654,11 @@ def migrate_worksheets_to_dx(tool):
         if num % 100 == 0:
             logger.info(
                 "Progress: {}/{} worksheets migrated".format(num, total))
-        migrate_worksheet_to_dx(worksheet, temp_folder)
+        migrate_worksheet_to_dx(worksheet, new_dx_folder)
 
     # remove old AT folder
     if len(origin) == 0:
-        parent = origin.aq_parent
-        parent.manage_delObjects([origin.getId()])
-
-    # get the new destination container for DX Worksheet folder
-    new_folder = get_destination_folder("worksheets")
-    for ws in temp_folder.objectValues():
-        api.move_object(ws, new_folder, check_constraints=False)
-
-    # un-catalog the old container
-    uncatalog_object(temp_folder)
-    # remove temp DX folder
-    if len(temp_folder) == 0:
-        parent = temp_folder.aq_parent
-        parent.manage_delObjects([temp_folder.getId()])
+        portal.manage_delObjects(["worksheets-old"])
 
     logger.info("Convert Worksheet's to Dexterity [DONE]")
 
