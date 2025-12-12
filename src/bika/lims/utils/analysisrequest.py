@@ -604,7 +604,7 @@ def get_rejection_mail(sample, rejection_pdf=None):
     reasons = reasons and reasons[0] or {}
     reasons = reasons.get("selected", []) + [reasons.get("other")]
     reasons = filter(None, reasons)
-    reasons = u"<br/>- ".join(reasons)
+    reasons = u"<br/>- ".join(map(api.safe_unicode, reasons))
 
     # Render the email body
     setup = api.get_senaite_setup()
