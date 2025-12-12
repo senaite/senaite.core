@@ -149,23 +149,23 @@ def get_portal():
 
 
 def get_setup():
-    """Fetch the `bika_setup` folder.
+    """Fetch the SENAITE `setup` folder.
     """
     portal = get_portal()
-    return portal.get("bika_setup")
-
-
-def get_bika_setup():
-    """Fetch the `bika_setup` folder.
-    """
-    return get_setup()
+    return portal.get("setup")
 
 
 def get_senaite_setup():
     """Fetch the new DX `setup` folder.
     """
+    return get_setup()
+
+
+def get_bika_setup():
+    """Fetch the `bika_setup` folder.
+    """
     portal = get_portal()
-    return portal.get("setup")
+    return portal.get("bika_setup")
 
 
 def create(container, portal_type, *args, **kwargs):
