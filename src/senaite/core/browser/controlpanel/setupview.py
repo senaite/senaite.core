@@ -67,7 +67,7 @@ class SetupView(BrowserView):
 
     @property
     def bika_setup(self):
-        """Returns the new Setup Object
+        """Returns the old Setup Object
         """
         return api.get_bika_setup()
 

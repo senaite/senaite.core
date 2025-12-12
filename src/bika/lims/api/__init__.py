@@ -135,6 +135,7 @@ SKIP_VALIDATION_FIELDS = [
     "subjects",
 ]
 
+
 class APIError(Exception):
     """Base exception class for bika.lims errors."""
 
