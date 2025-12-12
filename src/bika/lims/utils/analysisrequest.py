@@ -596,7 +596,6 @@ def get_rejection_email_recipients(sample):
     return list(emails)
 
 
-
 def get_rejection_mail(sample, rejection_pdf=None):
     """Generates an email to sample contacts with rejection reasons
     """
