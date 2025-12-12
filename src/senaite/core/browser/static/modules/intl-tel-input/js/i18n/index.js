@@ -20,6 +20,7 @@ export { default as id, countryTranslations as idCountryTranslations, interfaceT
 export { default as it, countryTranslations as itCountryTranslations, interfaceTranslations as itInterfaceTranslations } from "./it";
 export { default as ja, countryTranslations as jaCountryTranslations, interfaceTranslations as jaInterfaceTranslations } from "./ja";
 export { default as ko, countryTranslations as koCountryTranslations, interfaceTranslations as koInterfaceTranslations } from "./ko";
+export { default as lt, countryTranslations as ltCountryTranslations, interfaceTranslations as ltInterfaceTranslations } from "./lt";
 export { default as mr, countryTranslations as mrCountryTranslations, interfaceTranslations as mrInterfaceTranslations } from "./mr";
 export { default as nl, countryTranslations as nlCountryTranslations, interfaceTranslations as nlInterfaceTranslations } from "./nl";
 export { default as no, countryTranslations as noCountryTranslations, interfaceTranslations as noInterfaceTranslations } from "./no";
@@ -28,11 +29,15 @@ export { default as pt, countryTranslations as ptCountryTranslations, interfaceT
 export { default as ro, countryTranslations as roCountryTranslations, interfaceTranslations as roInterfaceTranslations } from "./ro";
 export { default as ru, countryTranslations as ruCountryTranslations, interfaceTranslations as ruInterfaceTranslations } from "./ru";
 export { default as sk, countryTranslations as skCountryTranslations, interfaceTranslations as skInterfaceTranslations } from "./sk";
+export { default as sl, countryTranslations as slCountryTranslations, interfaceTranslations as slInterfaceTranslations } from "./sl";
+export { default as sq, countryTranslations as sqCountryTranslations, interfaceTranslations as sqInterfaceTranslations } from "./sq";
+export { default as sr, countryTranslations as srCountryTranslations, interfaceTranslations as srInterfaceTranslations } from "./sr";
 export { default as sv, countryTranslations as svCountryTranslations, interfaceTranslations as svInterfaceTranslations } from "./sv";
 export { default as te, countryTranslations as teCountryTranslations, interfaceTranslations as teInterfaceTranslations } from "./te";
 export { default as th, countryTranslations as thCountryTranslations, interfaceTranslations as thInterfaceTranslations } from "./th";
 export { default as tr, countryTranslations as trCountryTranslations, interfaceTranslations as trInterfaceTranslations } from "./tr";
 export { default as uk, countryTranslations as ukCountryTranslations, interfaceTranslations as ukInterfaceTranslations } from "./uk";
 export { default as ur, countryTranslations as urCountryTranslations, interfaceTranslations as urInterfaceTranslations } from "./ur";
+export { default as uz, countryTranslations as uzCountryTranslations, interfaceTranslations as uzInterfaceTranslations } from "./uz";
 export { default as vi, countryTranslations as viCountryTranslations, interfaceTranslations as viInterfaceTranslations } from "./vi";
 export { default as zh, countryTranslations as zhCountryTranslations, interfaceTranslations as zhInterfaceTranslations } from "./zh";

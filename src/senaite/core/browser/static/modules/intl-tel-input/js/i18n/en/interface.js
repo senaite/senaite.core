@@ -1,8 +1,9 @@
 const interfaceTranslations = {
-  selectedCountryAriaLabel: "Selected country",
-  noCountrySelected: "No country selected",
+  selectedCountryAriaLabel: "Change country, selected ${countryName} (${dialCode})",
+  noCountrySelected: "Select country",
   countryListAriaLabel: "List of countries",
   searchPlaceholder: "Search",
+  clearSearchAriaLabel: "Clear search",
   zeroSearchResults: "No results found",
   oneSearchResult: "1 result found",
   multipleSearchResults: "${count} results found",

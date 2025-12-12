@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 7.9.1 (2025-05-29)
+ * TinyMCE version 8.3.0 (2025-12-10)
  */
 
 (function () {
@@ -56,6 +56,11 @@
      * strict-null-checks
      */
     class Optional {
+        tag;
+        value;
+        // Sneaky optimisation: every instance of Optional.none is identical, so just
+        // reuse the same object
+        static singletonNone = new Optional(false);
         // The internal representation has a `tag` and a `value`, but both are
         // private: able to be console.logged, but not able to be accessed by code
         constructor(tag, value) {
@@ -223,7 +228,7 @@
          */
         getOrDie(message) {
             if (!this.tag) {
-                throw new Error(message !== null && message !== void 0 ? message : 'Called getOrDie on None');
+                throw new Error(message ?? 'Called getOrDie on None');
             }
             else {
                 return this.value;
@@ -287,12 +292,8 @@
             return this.tag ? `some(${this.value})` : 'none()';
         }
     }
-    // Sneaky optimisation: every instance of Optional.none is identical, so just
-    // reuse the same object
-    Optional.singletonNone = new Optional(false);
 
     const nativeIndexOf = Array.prototype.indexOf;
-    /* eslint-enable */
     const rawIndexOf = (ts, t) => nativeIndexOf.call(ts, t);
     const contains = (xs, x) => rawIndexOf(xs, x) > -1;
     const findUntil = (xs, pred, until) => {
@@ -395,6 +396,7 @@
         const stylesContainsAliasMap = map(listStyleTypeAliases, (alias) => contains(styles, alias));
         editor.ui.registry.addSplitButton(id, {
             tooltip,
+            chevronTooltip: tooltip,
             icon: nodeName === "OL" /* ListType.OrderedList */ ? 'ordered-list' : 'unordered-list',
             presets: 'listpreview',
             columns: nodeName === "OL" /* ListType.OrderedList */ ? 3 : 4,
