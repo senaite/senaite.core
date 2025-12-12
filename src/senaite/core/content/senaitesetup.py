@@ -45,6 +45,7 @@ from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.duration.widget import DurationWidgetFactory
 from zope import schema
 from zope.component import getUtility
+from zope.deprecation import deprecate
 from zope.interface import Interface
 from zope.interface import implementer
 from zope.interface import provider
@@ -1870,6 +1871,17 @@ class Setup(Container):
                 value = [api.safe_unicode(v) for v in value if v]
         mutator = self.mutator("rejection_reasons")
         return mutator(self, value)
+
+    @deprecate("Method is kept for backwards compatibility only")
+    def getRejectionReasonsItems(self):
+        """Return the list of predefined rejection reasons
+
+        .. deprecated::
+            Use getRejectionReasons() instead. This method is kept for
+            backwards compatibility only and will be removed in a future
+            version.
+        """
+        return self.getRejectionReasons()
 
     @security.protected(permissions.View)
     def getMaxNumberOfSamplesAdd(self):

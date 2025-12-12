@@ -148,7 +148,8 @@ class RejectSamplesView(BrowserView):
     def get_rejection_reasons(self):
         """Returns the list of available rejection reasons
         """
-        return api.get_senaite_setup().getRejectionReasonsItems()
+        setup = api.get_senaite_setup()
+        return setup.getRejectionReasons()
 
     def get_samples_data(self):
         """Returns a list of Samples data (dictionary)
