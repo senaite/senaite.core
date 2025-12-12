@@ -2089,10 +2089,14 @@ class Setup(Container):
 
     @security.protected(permissions.View)
     def getEmailBodySampleRejection(self):
-        """Get email body for sample rejection
+        """Returns the transformed email body text for rejection emails
         """
         accessor = self.accessor("email_body_sample_rejection")
-        return accessor(self)
+        value = accessor(self)
+        if IRichTextValue.providedBy(value):
+            # Transforms the raw value to the output mimetype
+            value = value.output_relative_to(self)
+        return value
 
     @security.protected(permissions.ModifyPortalContent)
     def setEmailBodySampleRejection(self, value):
@@ -2103,10 +2107,14 @@ class Setup(Container):
 
     @security.protected(permissions.View)
     def getEmailBodySampleInvalidation(self):
-        """Get email body for sample invalidation
+        """Returns the transformed email body text for invalidation emails
         """
         accessor = self.accessor("email_body_sample_invalidation")
-        return accessor(self)
+        value = accessor(self)
+        if IRichTextValue.providedBy(value):
+            # Transforms the raw value to the output mimetype
+            value = value.output_relative_to(self)
+        return value
 
     @security.protected(permissions.ModifyPortalContent)
     def setEmailBodySampleInvalidation(self, value):
