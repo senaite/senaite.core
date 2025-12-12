@@ -950,6 +950,161 @@ Email Body Sample Invalidation:
     True
 
 
+RichTextValue Handling for Email Bodies
+.........................................
+
+The email body getters should properly handle RichTextValue objects and return
+the transformed text content instead of the RichTextValue object itself.
+
+First, let's import the necessary components:
+
+    >>> from plone.app.textfield import RichText
+    >>> from plone.app.textfield.value import RichTextValue
+    >>> from plone.app.textfield import IRichTextValue
+
+Test Email Body Sample Publication with RichTextValue:
+
+When setting a simple string, it gets converted to a RichTextValue internally,
+but the getter should return the transformed output:
+
+    >>> senaite_setup.setEmailBodySamplePublication(u"<p>Results ready!</p>")
+    >>> result = senaite_setup.getEmailBodySamplePublication()
+    >>> isinstance(result, basestring)
+    True
+    >>> u"Results ready!" in result
+    True
+
+The result should not be a RichTextValue object:
+
+    >>> IRichTextValue.providedBy(result)
+    False
+
+Test Email Body Sample Rejection with RichTextValue:
+
+Setting a string value and verifying it returns text, not RichTextValue:
+
+    >>> senaite_setup.setEmailBodySampleRejection(u"<p>Sample rejected!</p>")
+    >>> result = senaite_setup.getEmailBodySampleRejection()
+    >>> isinstance(result, basestring)
+    True
+    >>> u"Sample rejected!" in result
+    True
+
+The result should not be a RichTextValue object:
+
+    >>> IRichTextValue.providedBy(result)
+    False
+
+Verify the same via bikasetup:
+
+    >>> result = bikasetup.getEmailBodySampleRejection()
+    >>> isinstance(result, basestring)
+    True
+    >>> IRichTextValue.providedBy(result)
+    False
+
+Test Email Body Sample Invalidation with RichTextValue:
+
+Setting a string value and verifying it returns text, not RichTextValue:
+
+    >>> senaite_setup.setEmailBodySampleInvalidation(u"<p>Sample invalidated!</p>")
+    >>> result = senaite_setup.getEmailBodySampleInvalidation()
+    >>> isinstance(result, basestring)
+    True
+    >>> u"Sample invalidated!" in result
+    True
+
+The result should not be a RichTextValue object:
+
+    >>> IRichTextValue.providedBy(result)
+    False
+
+Verify the same via bikasetup:
+
+    >>> result = bikasetup.getEmailBodySampleInvalidation()
+    >>> isinstance(result, basestring)
+    True
+    >>> IRichTextValue.providedBy(result)
+    False
+
+Test with more complex HTML content:
+
+    >>> complex_html = u"<p>Dear Client,</p><p>Your sample <strong>$sample_id</strong> has been rejected.</p><p>Reasons: $reasons</p>"
+    >>> senaite_setup.setEmailBodySampleRejection(complex_html)
+    >>> result = senaite_setup.getEmailBodySampleRejection()
+    >>> isinstance(result, basestring)
+    True
+    >>> u"$sample_id" in result
+    True
+    >>> u"$reasons" in result
+    True
+
+Verify consistency between senaite_setup and bikasetup:
+
+    >>> senaite_setup.getEmailBodySampleRejection() == bikasetup.getEmailBodySampleRejection()
+    True
+
+    >>> complex_html_inv = u"<p>Sample <em>$sample_link</em> invalidated.</p><p>Retest: $retest_link</p>"
+    >>> senaite_setup.setEmailBodySampleInvalidation(complex_html_inv)
+    >>> result = senaite_setup.getEmailBodySampleInvalidation()
+    >>> isinstance(result, basestring)
+    True
+    >>> u"$sample_link" in result
+    True
+    >>> u"$retest_link" in result
+    True
+
+Verify consistency between senaite_setup and bikasetup:
+
+    >>> senaite_setup.getEmailBodySampleInvalidation() == bikasetup.getEmailBodySampleInvalidation()
+    True
+
+Test with unicode characters (German umlauts and special characters):
+
+Unicode content in rejection email body should work without errors:
+
+    >>> unicode_rejection = u"<p>Ihre Probe wurde abgelehnt: <strong>Gründe</strong></p><ul><li>Unzureichendes Volumen</li><li>Beschädigte Probe</li></ul>"
+    >>> senaite_setup.setEmailBodySampleRejection(unicode_rejection)
+    >>> result = senaite_setup.getEmailBodySampleRejection()
+    >>> isinstance(result, basestring)
+    True
+    >>> u"Gründe" in result or "Gr\\xfcnde" in result or "Gründe" in result
+    True
+    >>> u"Unzureichendes" in result
+    True
+    >>> u"Beschädigte" in result or "Besch\\xe4digte" in result or "Beschädigte" in result
+    True
+
+Unicode content in invalidation email body should work without errors:
+
+    >>> unicode_invalidation = u"<p>Probe <em>$sample_link</em> ungültig gemacht.</p><p>Grund: Fehlerhafte Messwerte (Überprüfung erforderlich)</p>"
+    >>> senaite_setup.setEmailBodySampleInvalidation(unicode_invalidation)
+    >>> result = senaite_setup.getEmailBodySampleInvalidation()
+    >>> isinstance(result, basestring)
+    True
+    >>> u"ungültig" in result or "ung\\xfcltig" in result or "ungültig" in result
+    True
+    >>> u"Überprüfung" in result or "\\xdcberpr\\xfcfung" in result or "Überprüfung" in result
+    True
+
+Test rejection reasons with unicode characters:
+
+    >>> unicode_reasons = [u"Unzureichendes Volumen", u"Behälter beschädigt", u"Temperatur zu hoch (>25°C)"]
+    >>> senaite_setup.setRejectionReasons(unicode_reasons)
+    >>> reasons = senaite_setup.getRejectionReasons()
+    >>> len(reasons)
+    3
+    >>> u"Unzureichendes Volumen" in reasons
+    True
+    >>> u"Behälter beschädigt" in reasons or u"Beh\\xe4lter besch\\xe4digt" in str(reasons) or "Behälter beschädigt" in str(reasons)
+    True
+
+Verify that bikasetup returns the same unicode values:
+
+    >>> bikasetup.getRejectionReasons() == senaite_setup.getRejectionReasons()
+    True
+
+
 Sticker Fields
 ..............
 

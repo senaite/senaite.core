@@ -289,7 +289,7 @@ class InvalidateSamplesView(BrowserView):
         lab_address = setup.laboratory.getPrintAddress()
         body = Template(setup.getEmailBodySampleInvalidation())
         body = body.safe_substitute({
-            "lab_address": "<br/>".join(lab_address),
+            "lab_address": u"<br/>".join(lab_address),
             "sample_id": api.get_id(sample),
             "sample_link": get_link_for(sample, csrf=False),
             "retest_id": api.get_id(retest),

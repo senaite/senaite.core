@@ -604,15 +604,15 @@ def get_rejection_mail(sample, rejection_pdf=None):
     reasons = reasons and reasons[0] or {}
     reasons = reasons.get("selected", []) + [reasons.get("other")]
     reasons = filter(None, reasons)
-    reasons = "<br/>- ".join(reasons)
+    reasons = u"<br/>- ".join(reasons)
 
     # Render the email body
     setup = api.get_senaite_setup()
     lab_address = setup.laboratory.getPrintAddress()
     email_body = Template(setup.getEmailBodySampleRejection())
     email_body = email_body.safe_substitute({
-        "lab_address": "<br/>".join(lab_address),
-        "reasons": reasons and "<br/>-{}".format(reasons) or "",
+        "lab_address": u"<br/>".join(lab_address),
+        "reasons": reasons and u"<br/>-{}".format(reasons) or u"",
         "sample_id": api.get_id(sample),
         "sample_link": get_link(api.get_url(sample), api.get_id(sample))
     })
