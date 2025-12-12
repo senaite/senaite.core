@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 7.9.1 (2025-05-29)
+ * TinyMCE version 8.3.0 (2025-12-10)
  */
 
 (function () {
@@ -7,13 +7,12 @@
 
     /* eslint-disable @typescript-eslint/no-wrapper-object-types */
     const hasProto = (v, constructor, predicate) => {
-        var _a;
         if (predicate(v, constructor.prototype)) {
             return true;
         }
         else {
             // String-based fallback time
-            return ((_a = v.constructor) === null || _a === void 0 ? void 0 : _a.name) === constructor.name;
+            return v.constructor?.name === constructor.name;
         }
     };
     const typeOf = (x) => {
@@ -63,6 +62,11 @@
      * strict-null-checks
      */
     class Optional {
+        tag;
+        value;
+        // Sneaky optimisation: every instance of Optional.none is identical, so just
+        // reuse the same object
+        static singletonNone = new Optional(false);
         // The internal representation has a `tag` and a `value`, but both are
         // private: able to be console.logged, but not able to be accessed by code
         constructor(tag, value) {
@@ -230,7 +234,7 @@
          */
         getOrDie(message) {
             if (!this.tag) {
-                throw new Error(message !== null && message !== void 0 ? message : 'Called getOrDie on None');
+                throw new Error(message ?? 'Called getOrDie on None');
             }
             else {
                 return this.value;
@@ -294,14 +298,9 @@
             return this.tag ? `some(${this.value})` : 'none()';
         }
     }
-    // Sneaky optimisation: every instance of Optional.none is identical, so just
-    // reuse the same object
-    Optional.singletonNone = new Optional(false);
 
-    /* eslint-disable @typescript-eslint/unbound-method */
     const nativeSlice = Array.prototype.slice;
     const nativeIndexOf = Array.prototype.indexOf;
-    /* eslint-enable */
     const rawIndexOf = (ts, t) => nativeIndexOf.call(ts, t);
     const contains = (xs, x) => rawIndexOf(xs, x) > -1;
     const map = (xs, f) => {
@@ -352,7 +351,6 @@
     //
     // Use the native keys if it is available (IE9+), otherwise fall back to manually filtering
     const keys = Object.keys;
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     const hasOwnProperty = Object.hasOwnProperty;
     const get$1 = (obj, key) => {
         return has(obj, key) ? Optional.from(obj[key]) : Optional.none();
@@ -416,8 +414,7 @@
 
     const get = (customTabs) => {
         const addTab = (spec) => {
-            var _a;
-            const name = (_a = spec.name) !== null && _a !== void 0 ? _a : generate('tab-name');
+            const name = spec.name ?? generate('tab-name');
             const currentCustomTabs = customTabs.get();
             currentCustomTabs[name] = spec;
             customTabs.set(currentCustomTabs);
@@ -620,8 +617,10 @@
         { key: 'powerpaste', name: 'PowerPaste', type: "premium" /* PluginType.Premium */, slug: 'introduction-to-powerpaste' },
         { key: 'revisionhistory', name: 'Revision History', type: "premium" /* PluginType.Premium */ },
         { key: 'tinymcespellchecker', name: 'Spell Checker', type: "premium" /* PluginType.Premium */, slug: 'introduction-to-tiny-spellchecker' },
+        { key: 'suggestededits', name: 'Suggested Edits', type: "premium" /* PluginType.Premium */ },
         { key: 'autocorrect', name: 'Spelling Autocorrect', type: "premium" /* PluginType.Premium */ },
         { key: 'tableofcontents', name: 'Table of Contents', type: "premium" /* PluginType.Premium */ },
+        { key: 'fullpagehtml', name: 'Fullpage HTML', type: "premium" /* PluginType.Premium */ },
         { key: 'advtemplate', name: 'Templates', type: "premium" /* PluginType.Premium */, slug: 'advanced-templates' },
         { key: 'tinycomments', name: 'Tiny Comments', type: "premium" /* PluginType.Premium */, slug: 'introduction-to-tiny-comments' },
         { key: 'tinydrive', name: 'Tiny Drive', type: "premium" /* PluginType.Premium */, slug: 'tinydrive-introduction' },
@@ -667,13 +666,13 @@
         }, (x) => {
             // We know this plugin, so use our stored details.
             const name = x.type === "premium" /* PluginUrls.PluginType.Premium */ ? `${x.name}*` : x.name;
-            const html = makeLink({ name, url: `https://www.tiny.cloud/docs/tinymce/7/${x.slug}/` });
+            const html = makeLink({ name, url: `https://www.tiny.cloud/docs/tinymce/${tinymce.majorVersion}/${x.slug}/` });
             return { name, html };
         });
         const getPluginKeys = (editor) => {
             const keys$1 = keys(editor.plugins);
             const forcedPlugins = getForcedPlugins(editor);
-            const hiddenPlugins = isUndefined(forcedPlugins) ? ['onboarding'] : forcedPlugins.concat(['onboarding']);
+            const hiddenPlugins = isUndefined(forcedPlugins) ? ['onboarding', 'licensekeymanager'] : forcedPlugins.concat(['onboarding', 'licensekeymanager']);
             return filter(keys$1, (k) => !contains(hiddenPlugins, k));
         };
         const pluginLister = (editor) => {
@@ -718,7 +717,7 @@
     const tab = () => {
         const getVersion = (major, minor) => major.indexOf('@') === 0 ? 'X.X.X' : major + '.' + minor;
         const version = getVersion(global.majorVersion, global.minorVersion);
-        const changeLogLink = '<a data-alloy-tabstop="true" tabindex="-1" href="https://www.tiny.cloud/docs/tinymce/7/changelog/?utm_campaign=help_dialog_version_tab&utm_source=tiny&utm_medium=referral" rel="noopener" target="_blank">TinyMCE ' + version + '</a>';
+        const changeLogLink = '<a data-alloy-tabstop="true" tabindex="-1" href="https://www.tiny.cloud/docs/tinymce/8/changelog/?utm_campaign=help_dialog_version_tab&utm_source=tiny&utm_medium=referral" rel="noopener" target="_blank">TinyMCE ' + version + '</a>';
         const htmlPanel = {
             type: 'htmlpanel',
             html: '<p>' + global$2.translate(['You are using {0}', changeLogLink]) + '</p>',
@@ -736,7 +735,6 @@
     const parseHelpTabsSetting = (tabsFromSettings, tabs) => {
         const newTabs = {};
         const names = map(tabsFromSettings, (t) => {
-            var _a;
             if (isString(t)) {
                 // Code below shouldn't care if a tab name doesn't have a spec.
                 // If we find it does, we'll need to make this smarter.
@@ -747,7 +745,7 @@
                 return t;
             }
             else {
-                const name = (_a = t.name) !== null && _a !== void 0 ? _a : generate('tab-name');
+                const name = t.name ?? generate('tab-name');
                 newTabs[name] = t;
                 return name;
             }
