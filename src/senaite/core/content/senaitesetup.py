@@ -1851,27 +1851,14 @@ class Setup(Container):
     def setRejectionReasons(self, value):
         """Set rejection reasons
         Accepts a simple list of strings (DX format).
-        Also handles AT RecordsField format for backwards compatibility
-        with the v02_07_000 upgrade step.
+        The v02_07_000 upgrade step handles AT→DX conversion before calling
+        this setter, so no format conversion is needed here.
         """
-        # Handle AT RecordsField format: [{'checkbox': 'on', 'textfield-0':
-        # 'reason1', ...}] - mainly for the upgrade step
-        if value and isinstance(value, (list, tuple)) and len(value) > 0:
-            if isinstance(value[0], dict):
-                # Extract textfield-* values from the dict
-                reasons_dict = value[0]
-                # Get all keys that start with 'textfield-'
-                textfield_keys = [k for k in reasons_dict.keys()
-                                  if k.startswith("textfield-")]
-                # Sort by the number suffix and extract values
-                sorted_keys = sorted(textfield_keys,
-                                     key=lambda x: int(x.split("-")[1]))
-                value = [api.safe_unicode(reasons_dict[k])
-                         for k in sorted_keys
-                         if reasons_dict[k]]
-            else:
-                # Ensure all values are unicode
-                value = [api.safe_unicode(v) for v in value if v]
+        # Ensure all values are unicode
+        if value and isinstance(value, (list, tuple)):
+            value = [api.safe_unicode(v) for v in value if v]
+        else:
+            value = []
         mutator = self.mutator("rejection_reasons")
         return mutator(self, value)
 

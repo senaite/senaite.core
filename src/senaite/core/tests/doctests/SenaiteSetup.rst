@@ -550,7 +550,7 @@ Rejection Reasons:
     >>> bikasetup.getRejectionReasonsItems()
     [u'Sample damaged', u'Insufficient volume']
 
-    >>> bikasetup.setRejectionReasons([{u"checkbox": u"on", u"textfield-0": u"Test reason 1", u"textfield-1": u"Test reason 2"}])
+    >>> bikasetup.setRejectionReasons([u"Test reason 1", u"Test reason 2"])
     >>> bikasetup.getRejectionReasonsItems()
     [u'Test reason 1', u'Test reason 2']
 
