@@ -77,6 +77,7 @@ from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.container.contained import notifyContainerModified
+from zope.deprecation import deprecate
 from zope.event import notify
 from zope.i18n import translate
 from zope.interface import Invalid
@@ -135,6 +136,7 @@ SKIP_VALIDATION_FIELDS = [
     "subjects",
 ]
 
+
 class APIError(Exception):
     """Base exception class for bika.lims errors."""
 
@@ -147,17 +149,14 @@ def get_portal():
     return ploneapi.portal.getSite()
 
 
+@deprecate("Please use get_senaite_setup() insetad")
 def get_setup():
-    """Fetch the `bika_setup` folder.
+    """Fetch the old `bika_setup` folder.
+
+    TODO: Change in the future to return the SENAITE setup instead
     """
     portal = get_portal()
     return portal.get("bika_setup")
-
-
-def get_bika_setup():
-    """Fetch the `bika_setup` folder.
-    """
-    return get_setup()
 
 
 def get_senaite_setup():
@@ -165,6 +164,13 @@ def get_senaite_setup():
     """
     portal = get_portal()
     return portal.get("setup")
+
+
+def get_bika_setup():
+    """Fetch the `bika_setup` folder.
+    """
+    portal = get_portal()
+    return portal.get("bika_setup")
 
 
 def create(container, portal_type, *args, **kwargs):

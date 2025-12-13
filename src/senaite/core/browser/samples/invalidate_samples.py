@@ -66,7 +66,7 @@ class InvalidateSamplesView(BrowserView):
         """Returns whether the introduction of a reason is required for the
         invalidation of a sample
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getInvalidationReasonRequired()
 
     def __call__(self):
@@ -283,13 +283,13 @@ class InvalidateSamplesView(BrowserView):
               mapping={"sample_id": api.get_id(sample)})
         )
 
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         retest = sample.getRetest()
         lab_email = setup.laboratory.getEmailAddress()
         lab_address = setup.laboratory.getPrintAddress()
         body = Template(setup.getEmailBodySampleInvalidation())
         body = body.safe_substitute({
-            "lab_address": "<br/>".join(lab_address),
+            "lab_address": u"<br/>".join(lab_address),
             "sample_id": api.get_id(sample),
             "sample_link": get_link_for(sample, csrf=False),
             "retest_id": api.get_id(retest),

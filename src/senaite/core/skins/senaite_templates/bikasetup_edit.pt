@@ -1,0 +1,55 @@
+<!-- Custom edit template for BikaSetup to override the page title -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="senaite.core">
+  <head><title></title></head>
+  <body>
+
+    <!-- Override the header macro to show 'Legacy Setup' instead of
+         'Edit SENAITE Setup' -->
+    <div metal:define-macro="header">
+      <metal:block define-slot="title">
+        <h1 i18n:translate="heading_legacy_setup" class="documentFirstHeading">
+          Legacy Setup
+        </h1>
+
+        <div class="alert alert-info"
+             tal:condition="context/@@plone/isDefaultPageInFolder|nothing">
+          <strong i18n:translate="">
+            Info
+          </strong>
+          <span omit-tag="" i18n:translate="label_edit_default_view_container">
+            You are editing the default view of a container. If you wanted to
+            edit the container itself,
+            <a href=""
+               class="alert-link"
+               i18n:name="go_here"
+               i18n:translate="label_edit_default_view_container_go_here"
+               tal:attributes="href string:${context/aq_inner/aq_parent/absolute_url}/edit">go here</a>.
+          </span>
+        </div>
+
+      </metal:block>
+
+      <div id="archetypes-schemata-links"
+           tal:condition="python: fieldsets and not allow_tabbing">
+        <tal:block repeat="fset fieldsets">
+          <tal:current condition="python:fset == fieldset and fieldsets != ['default']">
+            <strong>[<span tal:content="fset" i18n:translate="" />]</strong>
+          </tal:current>
+          <tal:others condition="python:fset != fieldset">
+            <a href="#" tal:attributes="href string:${context/absolute_url}/${template/getId}?fieldset=${fset}">
+              [<span tal:content="fset" i18n:translate="" />]</a>
+          </tal:others>
+        </tal:block>
+      </div>
+      <metal:block define-slot="extra_info" />
+
+    </div>
+
+  </body>
+</html>

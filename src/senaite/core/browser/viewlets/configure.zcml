@@ -248,6 +248,26 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Senaite Setup Legacy Link Viewlet (DX Setup) -->
+  <browser:viewlet
+      for="senaite.core.interfaces.ISetup"
+      name="senaite.setup.legacy_link"
+      class=".setup_legacy_link.SetupLegacyLinkViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Bika Setup Legacy Link Viewlet (AT Setup) -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IBikaSetup"
+      name="bika.setup.legacy_link"
+      class=".setup_legacy_link.SetupLegacyLinkViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Viewlet manager in sample view inside the title macro -->
   <browser:viewletManager
       name="senaite.sampletitle"

@@ -1434,7 +1434,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
     @property
     def bika_setup(self):
-        return api.get_bika_setup()
+        return api.get_senaite_setup()
 
     def Title(self):
         """ Return the Request ID as title """

@@ -143,7 +143,7 @@ class AnalysisProfileAnalysesView(BikaListingView):
     def show_prices(self):
         """Checks if prices should be shown or not
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getShowPrices()
 
     @view.memoize
@@ -151,7 +151,7 @@ class AnalysisProfileAnalysesView(BikaListingView):
         """Get the currency Symbol
         """
         locale = locales.getLocale("en")
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         currency = setup.getCurrency()
         return locale.numbers.currencies[currency].symbol
 
@@ -159,7 +159,7 @@ class AnalysisProfileAnalysesView(BikaListingView):
     def get_decimal_mark(self):
         """Returns the decimal mark
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getDecimalMark()
 
     @view.memoize

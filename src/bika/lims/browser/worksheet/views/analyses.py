@@ -66,7 +66,7 @@ class AnalysesView(BaseView):
         self.expand_all_categories = False
         self.show_search = False
 
-        self.bika_setup = api.get_bika_setup()
+        self.bika_setup = api.get_senaite_setup()
         self.items_rowspans = dict()
 
         self.columns = collections.OrderedDict((
@@ -213,7 +213,7 @@ class AnalysesView(BaseView):
     def is_analysis_remarks_enabled(self):
         """Check if analysis remarks are enabled
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getEnableAnalysisRemarks()
 
     def isItemAllowed(self, obj):
