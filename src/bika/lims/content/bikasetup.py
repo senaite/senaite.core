@@ -1035,9 +1035,6 @@ schema = BikaFolderSchema.copy() + Schema((
     LinesField(
         'RejectionReasons',
         schemata="Analyses",
-        accessor='getRejectionReasons',
-        edit_accessor='getRejectionReasons',
-        mutator='setRejectionReasons',
         widget=LinesWidget(
             label=_("Rejection Reasons"),
             description=_("List of predefined rejection reasons. "
