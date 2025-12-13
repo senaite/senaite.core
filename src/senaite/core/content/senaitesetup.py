@@ -1837,8 +1837,8 @@ class Setup(Container):
     @security.protected(permissions.View)
     def getRejectionReasons(self):
         """Get rejection reasons
-        Returns a list of unicode strings. After the v02_07_000 upgrade,
-        the data is stored in DX format (simple list), not AT RecordsField.
+        Returns a list of unicode strings. The v02_07_000 upgrade step
+        converts old AT RecordsField data to this format.
         """
         accessor = self.accessor("rejection_reasons")
         reasons = accessor(self)

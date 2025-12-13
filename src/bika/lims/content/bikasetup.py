@@ -25,7 +25,6 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget
-from bika.lims.browser.widgets import RejectionSetupWidget
 from bika.lims.browser.widgets.decimal import DecimalWidget
 from bika.lims.browser.worksheet.tools import getWorksheetLayouts
 from bika.lims.config import CURRENCIES
@@ -45,6 +44,7 @@ from Products.Archetypes.atapi import InAndOutWidget
 from Products.Archetypes.atapi import IntegerField
 from Products.Archetypes.atapi import IntegerWidget
 from Products.Archetypes.atapi import LinesField
+from Products.Archetypes.atapi import LinesWidget
 from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.atapi import StringField
@@ -1032,14 +1032,16 @@ schema = BikaFolderSchema.copy() + Schema((
             rows=30,
         ),
     ),
-    RecordsField(
+    LinesField(
         'RejectionReasons',
         schemata="Analyses",
-        widget=RejectionSetupWidget(
-            label=_("Enable the rejection workflow"),
-            description=_("Select this to activate the rejection workflow "
-                          "for Samples. A 'Reject' option will be displayed in "
-                          "the actions menu.")
+        accessor='getRejectionReasons',
+        edit_accessor='getRejectionReasons',
+        mutator='setRejectionReasons',
+        widget=LinesWidget(
+            label=_("Rejection Reasons"),
+            description=_("List of predefined rejection reasons. "
+                          "Enter one reason per line.")
         ),
     ),
     IntegerField(
