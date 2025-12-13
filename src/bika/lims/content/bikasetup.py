@@ -1158,13 +1158,13 @@ class BikaSetup(folder.ATFolder):
 
     def getRejectionReasonsItems(self):
         """Return the list of predefined rejection reasons
+
+        .. deprecated::
+            This method now simply returns getRejectionReasons() as both
+            return the same format (simple list). Kept for backwards
+            compatibility.
         """
-        reasons = self.getRejectionReasons()
-        if not reasons:
-            return []
-        reasons = reasons[0]
-        keys = filter(lambda key: key != u"checkbox", reasons.keys())
-        return map(lambda key: reasons[key], sorted(keys)) or []
+        return self.getRejectionReasons()
 
     def _getNumberOfRequiredVerificationsVocabulary(self):
         """
@@ -1716,40 +1716,22 @@ class BikaSetup(folder.ATFolder):
             setup.setEnableRejectionWorkflow(value)
 
     def getRejectionReasons(self):
-        """Get the value from the senaite setup
-        Converts DX list format to AT RecordsField format
+        """Get the rejection reasons from senaite setup
+        Returns a simple list of unicode strings
         """
         setup = api.get_senaite_setup()
         # setup is `None` during initial site content structure installation
         if setup:
-            # Get the DX list format
-            reasons = setup.getRejectionReasons()
-            enabled = setup.getEnableRejectionWorkflow()
-            if not reasons and not enabled:
-                return []
-            # Convert to AT RecordsField format:
-            # [{'checkbox': 'on', 'textfield-0': 'reason1', ...}]
-            reasons_dict = {u"checkbox": u"on" if enabled else u""}
-            for idx, reason in enumerate(reasons):
-                # Ensure reason is unicode
-                reasons_dict[u"textfield-{}".format(idx)] = \
-                    api.safe_unicode(reason)
-            return [reasons_dict]
+            return setup.getRejectionReasons()
         return []
 
     def setRejectionReasons(self, value):
-        """Set the value in the senaite setup
-        Handles both the checkbox and the reasons
+        """Set the rejection reasons in senaite setup
+        Accepts a simple list of strings
         """
         setup = api.get_senaite_setup()
         # setup is `None` during initial site content structure installation
         if setup:
-            # Extract checkbox value and set enable_rejection_workflow
-            if value and isinstance(value, (list, tuple)) and len(value) > 0:
-                if isinstance(value[0], dict):
-                    checkbox = value[0].get("checkbox", "")
-                    setup.setEnableRejectionWorkflow(checkbox == "on")
-            # The DX setter handles conversion from AT RecordsField format
             setup.setRejectionReasons(value)
 
     def getMaxNumberOfSamplesAdd(self):

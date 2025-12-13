@@ -1093,7 +1093,7 @@ Set unicode rejection reasons via bikasetup to ensure proper syncing:
 
     >>> unicode_reasons = [u"Füllmenge nicht ausreichend", u"Behälter beschädigt", u"Temperatur zu hoch (>25°C)"]
     >>> bikasetup.setRejectionReasons(unicode_reasons)
-    >>> reasons = bikasetup.getRejectionReasonsItems()
+    >>> reasons = bikasetup.getRejectionReasons()
     >>> len(reasons)
     3
     >>> u"Füllmenge nicht ausreichend" in reasons or u"F\\xfcllmenge nicht ausreichend" in str(reasons) or "Füllmenge nicht ausreichend" in str(reasons)
@@ -1101,14 +1101,19 @@ Set unicode rejection reasons via bikasetup to ensure proper syncing:
     >>> u"Behälter beschädigt" in reasons or u"Beh\\xe4lter besch\\xe4digt" in str(reasons) or "Behälter beschädigt" in str(reasons)
     True
 
-Verify that senaite_setup returns the same unicode values:
+Verify that both bikasetup and senaite_setup return the same unicode values:
 
     >>> senaite_reasons = senaite_setup.getRejectionReasons()
     >>> len(senaite_reasons)
     3
     >>> u"Füllmenge nicht ausreichend" in senaite_reasons or u"F\\xfcllmenge nicht ausreichend" in str(senaite_reasons) or "Füllmenge nicht ausreichend" in str(senaite_reasons)
     True
-    >>> bikasetup.getRejectionReasonsItems() == senaite_setup.getRejectionReasons()
+    >>> bikasetup.getRejectionReasons() == senaite_setup.getRejectionReasons()
+    True
+
+Verify getRejectionReasonsItems (deprecated) still works:
+
+    >>> bikasetup.getRejectionReasonsItems() == bikasetup.getRejectionReasons()
     True
 
 
