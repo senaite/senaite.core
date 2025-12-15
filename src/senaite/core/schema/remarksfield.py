@@ -34,6 +34,10 @@ class RemarksField(List, BaseField):
     """A field that handles a remarks for DX content types
     """
 
+    def __init__(self, **kwargs):
+        List.__init__(self, **kwargs)
+        BaseField.__init__(self, **kwargs)
+
     def set(self, object, value):
         """Set a remarks record or records
         :param object: the instance of the field
