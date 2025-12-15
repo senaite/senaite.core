@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2828 RemarksField type for Dexterity content types
 - #2821 Migrate all fields from bika_setup to senaite setup
 - #2825 Updated webpack dependencies
 - #2826 Fix inconsistent Profile filtering on multi-sample creation
