@@ -46,7 +46,6 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
-from senaite.core.config.worksheet import WORKSHEETS_FOLDER_ID
 
 DASHBOARD_FILTER_COOKIE = 'dashboard_filter_cookie'
 
@@ -495,7 +494,7 @@ class DashboardView(BrowserView):
         # Active Worksheets (all)
         total = self.search_count(query, bc.id)
 
-        ws_folder = WORKSHEETS_FOLDER_ID + '?list_review_state={}'
+        ws_folder = 'worksheets?list_review_state={}'
 
         # Open worksheets
         name = _('Results pending')

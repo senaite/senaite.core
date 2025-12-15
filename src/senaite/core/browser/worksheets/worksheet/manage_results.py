@@ -101,7 +101,7 @@ class ManageResultsView(DefaultView):
 
     @property
     def layout_displaylist(self):
-        vocab_key = "senaite.core.vocabularies.worksheet_layouts"
+        vocab_key = "senaite.core.vocabularies.worksheet_layout"
         vocab_factory = getUtility(IVocabularyFactory, vocab_key)
         return vocab_factory(self.context)
 

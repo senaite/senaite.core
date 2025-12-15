@@ -76,6 +76,8 @@
                           unload_protection python:enable_unload_protection and 'pat-formunloadalert';
                           has_groups python:bool(groups);
                           form_tabbing python:(has_groups and enable_form_tabbing) and 'enableFormTabbing pat-autotoc' or '';
+                          default_widgets python:view.widgets.values();
+                          has_default_widgets python:bool(default_widgets);
                           show_default_label python:has_groups and default_fieldset_label and len(view.widgets);
                           form_view_name_raw python:view.__name__ or request.getURL().split('/')[-1];
                           form_view_name python:'-'.join(['view', 'name'] + [x for x in form_view_name_raw.split('++') if x]);
@@ -94,6 +96,7 @@
 
             <!-- primary tab -->
             <li class="nav-item" role="presentation"
+                tal:condition="has_default_widgets"
                 tal:define="has_errors view/widgets/errors">
               <a tal:content="default_fieldset_label"
                  tal:attributes="class python:has_errors and 'nav-link active text-danger' or 'nav-link active'"
@@ -111,10 +114,12 @@
                              fieldset_label group/label;
                              fieldset_name python:getattr(group, '__name__', False) or getattr(group.label, 'default', False) or fieldset_label;
                              fieldset_name python:normalizeString(fieldset_name);
-                             has_errors group/widgets/errors|nothing"
+                             has_errors group/widgets/errors|nothing;
+                             is_first python:repeat['group'].start;
+                             should_be_active python:is_first and not has_default_widgets"
                  tal:attributes="id string:${fieldset_name}-tab;
                                  href string:#${fieldset_name};
-                                 class python:has_errors and 'nav-link text-danger' or 'nav-link'"
+                                 class python:has_errors and 'nav-link text-danger' or (should_be_active and 'nav-link active' or 'nav-link')"
                  tal:content="fieldset_label"
                  data-toggle="tab"
                  role="tab">
@@ -141,7 +146,8 @@
               <div class="tab-content">
 
                 <!-- Primary fieldsets -->
-                <div class="tab-pane active" id="default" role="tabpanel">
+                <div class="tab-pane active" id="default" role="tabpanel"
+                     tal:condition="has_default_widgets">
                   <metal:define define-macro="widget_rendering">
                     <tal:widgets repeat="widget view/widgets/values">
                       <metal:field-slot define-slot="field">
@@ -160,8 +166,12 @@
                        tal:define="normalizeString nocall:context/@@plone/normalizeString;
                                    fieldset_label group/label;
                                    fieldset_name python:getattr(group, '__name__', False) or getattr(group.label, 'default', False) or fieldset_label;
-                                   fieldset_name python:normalizeString(fieldset_name);"
+                                   fieldset_name python:normalizeString(fieldset_name);
+                                   is_first python:repeat['group'].start;
+                                   should_be_active python:is_first and not has_default_widgets;
+                                   pane_class python:'tab-pane active' if should_be_active else 'tab-pane';"
                        tal:attributes="id string:${fieldset_name};
+                                       class pane_class;
                                        data-fieldset fieldset_name">
 
                     <p i18n:translate=""

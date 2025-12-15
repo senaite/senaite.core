@@ -231,13 +231,13 @@ class EmailView(BrowserView):
     def setup(self):
         """Get the setup object
         """
-        return api.get_setup()
+        return api.get_senaite_setup()
 
     @property
     def laboratory(self):
         """Laboratory object from the LIMS setup
         """
-        return api.get_setup().laboratory
+        return api.get_senaite_setup().laboratory
 
     @property
     def always_cc_responsibles(self):
@@ -319,7 +319,7 @@ class EmailView(BrowserView):
         body = self.request.get("body", None)
         if body is not None:
             return body
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         body = setup.getEmailBodySamplePublication()
         template_context = {
             "client_name": self.client_name,

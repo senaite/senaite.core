@@ -68,7 +68,7 @@ def admitted_stickers_vocabulary(context):
 def default_retention_period():
     """Returns the default retention period
     """
-    period = api.get_setup().getDefaultSampleLifetime()
+    period = api.get_senaite_setup().getDefaultSampleLifetime()
     return dtime.to_timedelta(period, default=timedelta(0))
 
 

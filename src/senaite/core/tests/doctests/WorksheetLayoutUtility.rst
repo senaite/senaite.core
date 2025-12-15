@@ -11,13 +11,12 @@ Running this test from the buildout directory:
 Required Imports:
 
     >>> from senaite.core.config.worksheet import WORKSHEET_LAYOUT_OPTIONS
-    >>> from senaite.core.vocabularies.worksheet import WorksheetLayoutsFactory
     >>> from zope.schema.interfaces import IVocabularyFactory
     >>> from zope.component import getUtility
 
 Check layouts:
 
-    >>> vocab_key = "senaite.core.vocabularies.worksheet_layouts"
+    >>> vocab_key = "senaite.core.vocabularies.worksheet_layout"
     >>> vocab_factory = getUtility(IVocabularyFactory, vocab_key)
     >>> vocab = vocab_factory()
     >>> layout_names = set([term.token for term in vocab])

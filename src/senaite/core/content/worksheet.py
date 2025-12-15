@@ -218,7 +218,7 @@ class IWorksheetSchema(model.Schema):
             u"title_worksheet_results_layout",
             default=u"Results Layout"
         ),
-        vocabulary="senaite.core.vocabularies.worksheet_layouts",
+        vocabulary="senaite.core.vocabularies.worksheet_layout",
         required=False,
         default=DEFAULT_WORKSHEET_LAYOUT,
     )

@@ -23,7 +23,6 @@ from bika.lims import senaiteMessageFactory as _
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.browser.modals import Modal
 from senaite.core.catalog import SETUP_CATALOG
-from senaite.core.config.worksheet import WORKSHEETS_FOLDER_ID
 from six import string_types
 
 
@@ -115,7 +114,7 @@ class CreateWorksheetModal(Modal):
         """Return the worksheet root folder
         """
         portal = api.get_portal()
-        return portal.restrictedTraverse(WORKSHEETS_FOLDER_ID)
+        return portal.restrictedTraverse("worksheets")
 
     @property
     def worksheet_layout(self):

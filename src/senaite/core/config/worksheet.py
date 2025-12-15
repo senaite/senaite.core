@@ -36,6 +36,3 @@ DEFAULT_WORKSHEET_LAYOUT = "analyses_classic_view"
 
 # Add-on folder to look for templates
 WS_TEMPLATES_ADDON_DIR = "worksheets"
-
-# Worksheets container id in the Portal
-WORKSHEETS_FOLDER_ID = "worksheets"

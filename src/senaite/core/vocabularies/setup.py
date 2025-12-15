@@ -1,0 +1,153 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE.
+#
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2025 by it's authors.
+# Some rights reserved, see README and LICENSE.
+
+from bika.lims import _
+from senaite.core.api import geo
+from senaite.core.interfaces import IWorksheetLayouts
+from zope.component import getUtilitiesFor
+from zope.i18n.locales import locales
+from zope.interface import implementer
+from zope.schema.interfaces import IVocabularyFactory
+from zope.schema.vocabulary import SimpleVocabulary
+
+
+@implementer(IVocabularyFactory)
+class CurrenciesVocabulary(object):
+    """Vocabulary of currencies
+    """
+
+    def __call__(self, context):
+        locale = locales.getLocale("en", "US")
+        currencies = locale.numbers.currencies.values()
+        items = [(c.type, c.type, u"{} ({})".format(c.displayName, c.symbol))
+                 for c in currencies]
+        items.sort(key=lambda x: x[2])
+        return SimpleVocabulary.fromItems(items)
+
+
+@implementer(IVocabularyFactory)
+class CountriesVocabulary(object):
+    """Vocabulary of countries
+    """
+
+    def __call__(self, context):
+        countries = geo.get_countries()
+        items = [(country.alpha_2, country.alpha_2, country.name)
+                 for country in countries]
+        return SimpleVocabulary.fromItems(items)
+
+
+@implementer(IVocabularyFactory)
+class DecimalMarksVocabulary(object):
+    """Vocabulary of decimal marks
+    """
+
+    def __call__(self, context):
+        items = [
+            (".", ".", _(u"Dot (.)")),
+            (",", ",", _(u"Comma (,)")),
+        ]
+        return SimpleVocabulary.fromItems(items)
+
+
+@implementer(IVocabularyFactory)
+class ScientificNotationVocabulary(object):
+    """Vocabulary of scientific notation options
+    """
+
+    def __call__(self, context):
+        items = [
+            ("1", "1", u"aE+b / aE-b"),
+            ("2", "2", u"ax10^b / ax10^-b"),
+            ("3", "3", u"ax10^b / ax10^-b (with superscript)"),
+            ("4", "4", u"a·10^b / a·10^-b"),
+            ("5", "5", u"a·10^b / a·10^-b (with superscript)"),
+        ]
+        return SimpleVocabulary.fromItems(items)
+
+
+@implementer(IVocabularyFactory)
+class WorksheetLayoutVocabulary(object):
+    """Vocabulary of worksheet layout options
+    """
+
+    def __call__(self, context=None):
+        layouts = []
+        for name, utility in getUtilitiesFor(IWorksheetLayouts):
+            [layouts.append(layout) for layout in utility.getResultLayouts()]
+
+        return SimpleVocabulary.fromItems(layouts)
+
+
+@implementer(IVocabularyFactory)
+class WeekdaysVocabulary(object):
+    """Vocabulary of weekdays
+    """
+
+    def __call__(self, context):
+        items = [
+            ("0", "0", _(u"Monday")),
+            ("1", "1", _(u"Tuesday")),
+            ("2", "2", _(u"Wednesday")),
+            ("3", "3", _(u"Thursday")),
+            ("4", "4", _(u"Friday")),
+            ("5", "5", _(u"Saturday")),
+            ("6", "6", _(u"Sunday")),
+        ]
+        return SimpleVocabulary.fromItems(items)
+
+
+@implementer(IVocabularyFactory)
+class MultiVerificationTypeVocabulary(object):
+    """Vocabulary of multi-verification types
+    """
+
+    def __call__(self, context):
+        items = [
+            ("self_multi_enabled", "self_multi_enabled",
+             _(u"Allow same user to verify multiple times")),
+            ("self_multi_not_cons", "self_multi_not_cons",
+             _(u"Allow same user to verify multiple times, "
+               u"but not consecutively")),
+            ("self_multi_disabled", "self_multi_disabled",
+             _(u"Disable multi-verification for the same user")),
+        ]
+        return SimpleVocabulary.fromItems(items)
+
+
+@implementer(IVocabularyFactory)
+class NumberOfVerificationsVocabulary(object):
+    """Vocabulary for number of required verifications
+    """
+
+    def __call__(self, context):
+        items = [(1, 1, u"1"), (2, 2, u"2"), (3, 3, u"3"), (4, 4, u"4")]
+        return SimpleVocabulary.fromItems(items)
+
+
+# Factory instances
+CurrenciesVocabularyFactory = CurrenciesVocabulary()
+CountriesVocabularyFactory = CountriesVocabulary()
+DecimalMarksVocabularyFactory = DecimalMarksVocabulary()
+ScientificNotationVocabularyFactory = ScientificNotationVocabulary()
+WorksheetLayoutVocabularyFactory = WorksheetLayoutVocabulary()
+WeekdaysVocabularyFactory = WeekdaysVocabulary()
+MultiVerificationTypeVocabularyFactory = MultiVerificationTypeVocabulary()
+NumberOfVerificationsVocabularyFactory = NumberOfVerificationsVocabulary()

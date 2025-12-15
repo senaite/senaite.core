@@ -22,7 +22,6 @@ from Products.Five.browser import BrowserView
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from senaite.core.config.worksheet import WORKSHEETS_FOLDER_ID
 
 
 class AddWorksheetView(BrowserView):
@@ -49,7 +48,7 @@ class AddWorksheetView(BrowserView):
             return
 
         portal = api.get_portal()
-        ws_container = portal.get(WORKSHEETS_FOLDER_ID)
+        ws_container = portal.get("worksheets")
         ws = api.create(ws_container, "Worksheet")
 
         # Set analyst and instrument
