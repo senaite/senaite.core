@@ -167,7 +167,7 @@ class SamplingFieldsVisibility(SenaiteATWidgetVisibility):
 
             elif not sampling:
                 # not received and no sampling, use setup's setting
-                setup = api.get_setup()
+                setup = api.get_senaite_setup()
                 field.required = setup.getDateSampledRequired()
 
             elif sampling and mode == "add":

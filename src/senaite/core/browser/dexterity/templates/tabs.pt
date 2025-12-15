@@ -1,7 +1,9 @@
 <div tal:define="groups view/groups | nothing;
                  enable_form_tabbing view/enable_form_tabbing | python:True;
                  default_fieldset_label view/default_fieldset_label | string:'General';
-                 has_groups python:bool(groups);">
+                 has_groups python:bool(groups);
+                 default_widgets python:[w for w in view.widgets.values() if w.__name__ not in ('IBasic.title', 'IBasic.description', 'title', 'description')];
+                 has_default_widgets python:bool(default_widgets);">
 
   <!-- Tab view toggle -->
   <div class="d-flex flex-row-reverse"
@@ -27,7 +29,8 @@
       tal:condition="python: has_groups and enable_form_tabbing">
 
     <!-- primary tab -->
-    <li class="nav-item" role="presentation">
+    <li class="nav-item" role="presentation"
+        tal:condition="has_default_widgets">
       <a tal:content="default_fieldset_label"
          tal:attributes="class python:'nav-link active'"
          id="default-tab"
@@ -43,10 +46,12 @@
                      fieldset_label group/label;
                      fieldset_name python:getattr(group, '__name__', False) or getattr(group.label, 'default', False) or fieldset_label;
                      fieldset_name python:normalizeString(fieldset_name);
-                     has_errors group/widgets/errors|nothing"
+                     has_errors group/widgets/errors|nothing;
+                     is_first python:repeat['group'].start;
+                     should_be_active python:is_first and not has_default_widgets"
          tal:attributes="id string:${fieldset_name}-tab;
                          href string:#${fieldset_name};
-                         class python:has_errors and 'nav-link text-danger' or 'nav-link'"
+                         class python:has_errors and 'nav-link text-danger' or (should_be_active and 'nav-link active' or 'nav-link')"
          tal:content="fieldset_label"
          data-toggle="tab"
          role="tab">
@@ -58,7 +63,8 @@
   <!-- tab content -->
   <div class="tab-content">
     <!-- Primary fieldsets -->
-    <div class="tab-pane active" id="default" role="tabpanel">
+    <div class="tab-pane active" id="default" role="tabpanel"
+         tal:condition="has_default_widgets">
       <tal:block repeat="widget view/widgets/values|nothing">
         <tal:block tal:condition="python:widget.__name__ not in ('IBasic.title', 'IBasic.description', 'title', 'description',)">
           <tal:widget tal:replace="structure widget/@@ploneform-render-widget"/>
@@ -71,9 +77,12 @@
            tal:define="normalizeString nocall:context/@@plone/normalizeString;
                        fieldset_label group/label;
                        fieldset_name python:getattr(group, '__name__', False) or getattr(group.label, 'default', False) or fieldset_label;
-                       fieldset_name python:normalizeString(fieldset_name);"
+                       fieldset_name python:normalizeString(fieldset_name);
+                       is_first python:repeat['group'].start;
+                       should_be_active python:is_first and not has_default_widgets;
+                       pane_class python:('tab-pane active' if should_be_active else 'tab-pane') if enable_form_tabbing else 'd-block';"
            tal:attributes="id string:${fieldset_name};
-                           class python:'tab-pane' if enable_form_tabbing else 'd-block';
+                           class pane_class;
                            data-fieldset fieldset_name;">
         <tal:block tal:repeat="widget group/widgets/values">
           <tal:widget tal:replace="structure widget/@@ploneform-render-widget"/>

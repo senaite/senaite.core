@@ -231,7 +231,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
             return end
 
         # get the laboratory workdays
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         workdays = setup.getWorkdays()
 
         # every day is a workday, no need for calculation

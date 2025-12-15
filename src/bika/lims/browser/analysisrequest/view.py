@@ -57,5 +57,5 @@ class AnalysisRequestViewView(BrowserView):
     def show_categories(self):
         """Check the setup if analysis services should be categorized
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getCategoriseAnalysisServices()

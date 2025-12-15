@@ -36,7 +36,6 @@ from .addresswidget import AddressWidget
 from .scheduleinputwidget import ScheduleInputWidget
 from .integer import IntegerWidget
 from .decimal import DecimalWidget
-from .rejectionsetupwidget import RejectionSetupWidget
 from .rejectionwidget import RejectionWidget
 from .priorityselectionwidget import  PrioritySelectionWidget
 from .sampletypestickerswidget import SampleTypeStickersWidget
