@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2805 Migrate Worksheets to DX
+- #2830 Fix TinyMCE hidden Cursor
+- #2829 Fix TypeError in bika_setup rejection widget
 - #2821 Migrate all fields from bika_setup to senaite setup
 - #2825 Updated webpack dependencies
 - #2826 Fix inconsistent Profile filtering on multi-sample creation
