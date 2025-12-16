@@ -33,9 +33,11 @@
   <!-- SubGroup Indexer -->
   <adapter name="sortable_title" factory=".subgroup.sortable_title"/>
 
-  <!-- ARReport Indexer -->
-  <adapter name="sample_uid" factory=".arreport.sample_uid"/>
-  <adapter name="arreport_searchable_text" factory=".arreport.arreport_searchable_text"/>
+  <!-- ARReport / ResultsReport Indexer -->
+  <adapter name="sample_uid" factory=".resultsreport.sample_uid"/>
+  <adapter name="sample_uid" factory=".resultsreport.resultsreport_sample_uid"/>
+  <adapter name="arreport_searchable_text" factory=".resultsreport.arreport_searchable_text"/>
+  <adapter name="resultsreport_searchable_text" factory=".resultsreport.resultsreport_searchable_text"/>
 
   <!-- Auditlog Indexer -->
   <adapter name="action" factory=".auditlog.action"/>

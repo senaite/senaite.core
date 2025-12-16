@@ -21,10 +21,18 @@
 from bika.lims import api
 from bika.lims.interfaces import IARReport
 from plone.indexer import indexer
+from senaite.core.interfaces import IResultsReport
 
 
 @indexer(IARReport)
 def sample_uid(instance):
+    """Returns a list of UIDs of the contained Samples
+    """
+    return instance.getRawContainedAnalysisRequests()
+
+
+@indexer(IResultsReport)
+def resultsreport_sample_uid(instance):
     """Returns a list of UIDs of the contained Samples
     """
     return instance.getRawContainedAnalysisRequests()
@@ -54,5 +62,44 @@ def arreport_searchable_text(instance):
             recipients.append(recipient)
 
     tokens.extend(recipients)
+
+    return u" ".join(list(set(tokens)))
+
+
+@indexer(IResultsReport)
+def resultsreport_searchable_text(instance):
+    """Searchable text for ResultsReport
+    """
+    sample = instance.getAnalysisRequest()
+    if not sample:
+        return u""
+
+    # Metadata is a plain dict (same as AT version)
+    metadata = instance.getMetadata() or {}
+
+    tokens = [
+        sample.getId(),
+        sample.getBatchID() or "",
+        metadata.get("paperformat", ""),
+        metadata.get("orientation", ""),
+        metadata.get("template", ""),
+    ]
+
+    # Extend IDs of contained Samples
+    contained_samples = instance.getContainedAnalysisRequests()
+    tokens.extend([api.get_id(s) for s in contained_samples if s])
+
+    # Extend email recipients
+    recipients = []
+    send_log = instance.getSendLog() or []
+    for log in send_log:
+        email_recipients = log.get("email_recipients", [])
+        if email_recipients:
+            recipients.extend(email_recipients)
+
+    tokens.extend(recipients)
+
+    # Filter out None/empty values
+    tokens = [t for t in tokens if t]
 
     return u" ".join(list(set(tokens)))
