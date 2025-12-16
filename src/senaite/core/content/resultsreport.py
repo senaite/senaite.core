@@ -24,6 +24,7 @@ from plone.autoform import directives
 from plone.namedfile.field import NamedBlobFile
 from plone.supermodel import model
 from Products.CMFCore import permissions
+from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.interfaces import IResultsReport
@@ -31,6 +32,7 @@ from senaite.core.schema import UIDReferenceField
 from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
+from senaite.core.z3cform.widgets.datetimewidget import DatetimeWidgetFactory
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from zope import schema
 from zope.interface import Interface
@@ -44,7 +46,7 @@ class IMetadataRow(Interface):
         title=_(u"Paper Format"),
         required=False,
     )
-    timestamp = schema.Datetime(
+    timestamp = schema.TextLine(
         title=_(u"Timestamp"),
         required=False,
     )
@@ -134,7 +136,6 @@ class IResultsReportSchema(model.Schema):
         label=_(u"Results Report"),
         fields=[
             "analysis_request",
-            "contained_analysis_requests",
             "html",
             "pdf",
             "date_printed",
@@ -205,6 +206,10 @@ class IResultsReportSchema(model.Schema):
         required=False,
     )
 
+    directives.widget(
+        "date_printed",
+        DatetimeWidgetFactory,
+    )
     date_printed = schema.Datetime(
         title=_(u"Date Printed"),
         description=_(u"Date when the report was printed"),
@@ -216,6 +221,7 @@ class IResultsReportSchema(model.Schema):
         "metadata",
         label=_(u"Metadata"),
         fields=[
+            "contained_analysis_requests",
             "metadata",
             "recipients",
             "send_log",
@@ -273,7 +279,7 @@ class ResultsReport(Container):
        the publication mode
     """
     # Catalogs where this type will be catalogued
-    _catalogs = []
+    _catalogs = [REPORT_CATALOG]
 
     security = ClassSecurityInfo()
 
@@ -290,20 +296,14 @@ class ResultsReport(Container):
     def getAnalysisRequest(self):
         """Get the primary analysis request object
         """
-        from bika.lims import api
-        uid = getattr(self, "analysis_request", None)
-        if not uid:
-            return None
-        return api.get_object_by_uid(uid)
+        accessor = self.accessor("analysis_request")
+        return accessor(self)
 
     def getContainedAnalysisRequests(self):
         """Get the contained analysis request objects
         """
-        from bika.lims import api
-        uids = getattr(self, "contained_analysis_requests", [])
-        if not uids:
-            return []
-        return [api.get_object_by_uid(uid) for uid in uids if uid]
+        accessor = self.accessor("contained_analysis_requests")
+        return accessor(self)
 
     def getClient(self):
         """Get the client from the primary analysis request
@@ -313,6 +313,178 @@ class ResultsReport(Container):
             return ar.getClient()
         return None
 
+    @security.protected(permissions.View)
+    def getMetadata(self):
+        """Get metadata as plain dict
 
-# BBB: Keep ARReport as an alias for backward compatibility
+        Internally stored as DataGridField (list of dicts), but returns the
+        first dict for backward compatibility with senaite.impress and AT.
+        """
+        accessor = self.accessor("metadata")
+        metadata_list = accessor(self) or []
+        if metadata_list and len(metadata_list) > 0:
+            return metadata_list[0]
+        return {}
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setMetadata(self, value):
+        """Set metadata from plain dict
+
+        Internally stores as DataGridField (list of dicts), but accepts a
+        plain dict for backward compatibility with senaite.impress and AT.
+        """
+        mutator = self.mutator("metadata")
+        if value:
+            # Wrap dict in list for DataGridField storage
+            metadata_list = [value] if isinstance(value, dict) else []
+            mutator(self, metadata_list)
+        else:
+            mutator(self, [])
+
+    # AT-style getters/setters for backward compatibility
+
+    @security.protected(permissions.View)
+    def getRawAnalysisRequest(self):
+        accessor = self.accessor("analysis_request", raw=True)
+        return accessor(self)
+
+    @security.protected(permissions.View)
+    def getAnalysisRequestUID(self):
+        """Get the UID of the primary analysis request
+        """
+        return self.getRawAnalysisRequest()
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setAnalysisRequest(self, value):
+        mutator = self.mutator("analysis_request")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    AnalysisRequest = property(getAnalysisRequest, setAnalysisRequest)
+
+    @security.protected(permissions.View)
+    def getRawContainedAnalysisRequests(self):
+        accessor = self.accessor("contained_analysis_requests", raw=True)
+        return accessor(self)
+
+    @security.protected(permissions.View)
+    def getContainedAnalysisRequestUIDs(self):
+        """Get the UIDs of the contained analysis requests
+        """
+        return self.getRawContainedAnalysisRequests()
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setContainedAnalysisRequests(self, value):
+        mutator = self.mutator("contained_analysis_requests")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    ContainedAnalysisRequests = property(
+        getContainedAnalysisRequests,
+        setContainedAnalysisRequests
+    )
+
+    @security.protected(permissions.View)
+    def getRawHtml(self):
+        accessor = self.accessor("html", raw=True)
+        return accessor(self)
+
+    @security.protected(permissions.View)
+    def getHtml(self):
+        accessor = self.accessor("html")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setHtml(self, value):
+        mutator = self.mutator("html")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    Html = property(getHtml, setHtml)
+
+    @security.protected(permissions.View)
+    def getRawPdf(self):
+        accessor = self.accessor("pdf", raw=True)
+        return accessor(self)
+
+    @security.protected(permissions.View)
+    def getPdf(self):
+        accessor = self.accessor("pdf")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setPdf(self, value):
+        mutator = self.mutator("pdf")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    Pdf = property(getPdf, setPdf)
+
+    @security.protected(permissions.View)
+    def getRawDatePrinted(self):
+        accessor = self.accessor("date_printed", raw=True)
+        return accessor(self)
+
+    @security.protected(permissions.View)
+    def getDatePrinted(self):
+        accessor = self.accessor("date_printed")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setDatePrinted(self, value):
+        mutator = self.mutator("date_printed")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    DatePrinted = property(getDatePrinted, setDatePrinted)
+
+    @security.protected(permissions.View)
+    def getRawMetadata(self):
+        """Get raw metadata (list of dicts from DataGridField)
+        """
+        accessor = self.accessor("metadata", raw=True)
+        return accessor(self)
+
+    # BBB: AT schema field property
+    # Note: getMetadata/setMetadata are defined above with dict<->list conversion
+    Metadata = property(getMetadata, setMetadata)
+
+    @security.protected(permissions.View)
+    def getRawRecipients(self):
+        accessor = self.accessor("recipients", raw=True)
+        return accessor(self)
+
+    @security.protected(permissions.View)
+    def getRecipients(self):
+        accessor = self.accessor("recipients")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setRecipients(self, value):
+        mutator = self.mutator("recipients")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    Recipients = property(getRecipients, setRecipients)
+
+    @security.protected(permissions.View)
+    def getRawSendLog(self):
+        accessor = self.accessor("send_log", raw=True)
+        return accessor(self)
+
+    @security.protected(permissions.View)
+    def getSendLog(self):
+        accessor = self.accessor("send_log")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSendLog(self, value):
+        mutator = self.mutator("send_log")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    SendLog = property(getSendLog, setSendLog)
+
+
+# BBB: Backward compatibility alias
 ARReport = ResultsReport
