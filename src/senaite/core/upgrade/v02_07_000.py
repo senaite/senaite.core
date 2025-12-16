@@ -849,14 +849,10 @@ def migrate_arreport_to_dx(src, destination=None):
         sendlog_list = sendlog if isinstance(sendlog, list) else []
         for record in sendlog_list:
             if "email_send_date" in record and record["email_send_date"]:
-                dt = api.to_date(record["email_send_date"], default=None)
+                dt = dtime.to_DT(record["email_send_date"])
                 if dt:
                     # Convert Zope DateTime to Python datetime (naive)
-                    if hasattr(dt, "asdatetime"):
-                        dt = dt.asdatetime().replace(tzinfo=None)
-                    elif hasattr(dt, "replace"):
-                        # Already Python datetime, make it naive
-                        dt = dt.replace(tzinfo=None)
+                    dt = dt.asdatetime().replace(tzinfo=None)
                     record["email_send_date"] = dt
         target.send_log = sendlog_list
 
