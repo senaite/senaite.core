@@ -441,9 +441,11 @@ class ResultsReport(Container):
     @security.protected(permissions.View)
     def getRawMetadata(self):
         """Get raw metadata (list of dicts from DataGridField)
+
+        Returns the internal list storage directly, without the dict
+        conversion that getMetadata() provides.
         """
-        accessor = self.accessor("metadata", raw=True)
-        return accessor(self)
+        return self.metadata
 
     # BBB: AT schema field property
     # Note: getMetadata/setMetadata are defined above with dict<->list conversion
