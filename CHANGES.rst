@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2831 Migrate ARReport to Dexterity
 - #2829 Fix TypeError in bika_setup rejection widget
 - #2821 Migrate all fields from bika_setup to senaite setup
 - #2825 Updated webpack dependencies
