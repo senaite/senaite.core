@@ -42,7 +42,7 @@ class ReportsListingView(ListingView):
 
         self.catalog = REPORT_CATALOG
         self.contentFilter = {
-            "portal_type": "ARReport",
+            "portal_type": ["ResultsReport"],
             "path": {
                 "query": api.get_path(self.context),
                 "depth": 2,
