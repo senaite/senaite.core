@@ -1,0 +1,540 @@
+Results Report
+--------------
+
+The ResultsReport content type stores published reports with their PDF and HTML
+content, metadata about the report format and template, send log for email
+tracking, and recipient information. This is the Dexterity successor to the
+Archetypes-based ARReport.
+
+Running this test from the buildout directory::
+
+    bin/test test_textual_doctests -t ResultsReport
+
+
+Test Setup
+..........
+
+Needed Imports:
+
+    >>> import transaction
+    >>> from DateTime import DateTime
+    >>> from plone import api as ploneapi
+    >>> from plone.namedfile.file import NamedBlobFile
+    >>> from bika.lims import api
+    >>> from bika.lims.utils.analysisrequest import create_analysisrequest
+    >>> from bika.lims.workflow import doActionFor
+    >>> from senaite.core.catalog import REPORT_CATALOG
+    >>> from datetime import datetime
+
+Functional Helpers:
+
+    >>> def timestamp(format="%Y-%m-%d"):
+    ...     return DateTime().strftime(format)
+
+    >>> def new_sample(client, contact, sampletype, services):
+    ...     values = {
+    ...         "Client": client.UID(),
+    ...         "Contact": contact.UID(),
+    ...         "DateSampled": date_now,
+    ...         "SampleType": sampletype.UID()
+    ...     }
+    ...     service_uids = [s.UID() for s in services]
+    ...     return create_analysisrequest(
+    ...         client, request, values, service_uids)
+
+Variables:
+
+    >>> date_now = timestamp()
+    >>> portal = self.portal
+    >>> request = self.request
+    >>> setup = portal.setup
+    >>> bika_setup = portal.bika_setup
+    >>> sampletypes = setup.sampletypes
+    >>> analysiscategories = setup.analysiscategories
+    >>> bika_analysisservices = bika_setup.bika_analysisservices
+
+Test user:
+
+We need certain permissions to create and access objects used in this test,
+so here we will assume the role of Lab Manager.
+
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import setRoles
+    >>> setRoles(portal, TEST_USER_ID, ["LabManager"])
+
+
+LIMS Setup
+..........
+
+Create a Client with Contact:
+
+    >>> clients = portal.clients
+    >>> client = api.create(
+    ...     clients, "Client", Name="Happy Hills", ClientID="HH")
+    >>> contact = api.create(
+    ...     client, "Contact", Firstname="Rita", Lastname="Mohale")
+
+Create a SampleType:
+
+    >>> sampletype = api.create(
+    ...     sampletypes, "SampleType", title="Water", Prefix="W")
+
+Create an AnalysisCategory:
+
+    >>> category = api.create(
+    ...     analysiscategories, "AnalysisCategory", title="Chemistry")
+
+Create AnalysisServices:
+
+    >>> service_ph = api.create(
+    ...     bika_analysisservices,
+    ...     "AnalysisService",
+    ...     title="pH",
+    ...     ShortTitle="pH",
+    ...     Category=category,
+    ...     Keyword="PH")
+    >>> service_temp = api.create(
+    ...     bika_analysisservices,
+    ...     "AnalysisService",
+    ...     title="Temperature",
+    ...     ShortTitle="Temp",
+    ...     Category=category,
+    ...     Keyword="TEMP")
+
+
+Create Sample
+.............
+
+Create an AnalysisRequest (Sample):
+
+    >>> sample = new_sample(
+    ...     client, contact, sampletype, [service_ph, service_temp])
+    >>> sample
+    <AnalysisRequest at /plone/clients/client-...>
+
+    >>> sample.getId()
+    'W-0001'
+
+
+Creating a ResultsReport
+.........................
+
+ResultsReport objects are typically created by senaite.impress when publishing
+reports. They are stored as children of the primary AnalysisRequest:
+
+    >>> report = api.create(sample, "ResultsReport")
+    >>> report
+    <ResultsReport at /plone/clients/client-.../...>
+
+The report should be catalogued in the report catalog:
+
+    >>> catalog = api.get_tool(REPORT_CATALOG)
+    >>> brains = catalog({"portal_type": "ResultsReport"})
+    >>> len(brains) >= 1
+    True
+
+
+Setting Primary Sample
+......................
+
+The primary sample is a required field and links the report to an
+AnalysisRequest:
+
+    >>> report.setAnalysisRequest(sample.UID())
+    >>> report.getAnalysisRequest() == sample
+    True
+
+The UID accessor should return the raw UID:
+
+    >>> report.getAnalysisRequestUID() == sample.UID()
+    True
+
+The title should default to the sample ID:
+
+    >>> report.Title()
+    'W-0001'
+
+
+Setting Contained Samples
+.........................
+
+Multi-sample reports can reference multiple samples. Create a second sample:
+
+    >>> sample2 = new_sample(
+    ...     client, contact, sampletype, [service_ph])
+    >>> sample2.getId()
+    'W-0002'
+
+Set contained samples:
+
+    >>> contained_uids = [sample.UID(), sample2.UID()]
+    >>> report.setContainedAnalysisRequests(contained_uids)
+    >>> len(report.getContainedAnalysisRequests())
+    2
+
+Get the UIDs:
+
+    >>> report.getContainedAnalysisRequestUIDs() == contained_uids
+    True
+
+
+Report Metadata (Dict/List Conversion)
+......................................
+
+The metadata field demonstrates backward compatibility with senaite.impress
+and the AT-based ARReport. Externally, it behaves like a plain dict, but
+internally stores as a DataGridField (list of dicts).
+
+This is how senaite.impress sets metadata:
+
+    >>> metadata = {
+    ...     "template": "senaite.impress:Default",
+    ...     "paperformat": "A4",
+    ...     "orientation": "portrait",
+    ...     "timestamp": "2025-01-15T10:30:00",
+    ...     "contained_requests": "W-0001,W-0002"
+    ... }
+
+Set metadata using the setter (accepts dict):
+
+    >>> report.setMetadata(metadata)
+
+Get metadata using the getter (returns dict):
+
+    >>> result = report.getMetadata()
+    >>> result["template"]
+    'senaite.impress:Default'
+
+    >>> result["paperformat"]
+    'A4'
+
+    >>> result["orientation"]
+    'portrait'
+
+    >>> result["timestamp"]
+    '2025-01-15T10:30:00'
+
+Verify the internal storage is actually a list:
+
+    >>> raw = report.getRawMetadata()
+    >>> isinstance(raw, list)
+    True
+
+    >>> len(raw)
+    1
+
+    >>> isinstance(raw[0], dict)
+    True
+
+The AT-style property should also work:
+
+    >>> report.Metadata == result
+    True
+
+
+Report Content (HTML and PDF)
+.............................
+
+Set HTML content:
+
+    >>> html_content = "<html><body><h1>Report for W-0001</h1></body></html>"
+    >>> report.setHtml(html_content)
+    >>> report.getHtml() == html_content
+    True
+
+The AT-style property should work:
+
+    >>> report.Html == html_content
+    True
+
+Set PDF content:
+
+    >>> pdf_data = b"%PDF-1.4 fake pdf content"
+    >>> pdf_file = NamedBlobFile(
+    ...     data=pdf_data,
+    ...     filename=u"report.pdf",
+    ...     contentType="application/pdf")
+    >>> report.setPdf(pdf_file)
+    >>> report.getPdf().data == pdf_data
+    True
+
+The AT-style property should work:
+
+    >>> report.Pdf.data == pdf_data
+    True
+
+
+Date Printed
+............
+
+Set the date when the report was printed:
+
+    >>> print_date = datetime(2025, 1, 15, 10, 30, 0)
+    >>> report.setDatePrinted(print_date)
+    >>> report.getDatePrinted()
+    datetime.datetime(2025, 1, 15, 10, 30)
+
+The AT-style property should work:
+
+    >>> report.DatePrinted == print_date
+    True
+
+
+Recipients
+..........
+
+Recipients are stored as a list of dicts (DataGridField):
+
+    >>> recipients = [
+    ...     {
+    ...         "UID": contact.UID(),
+    ...         "Username": "rita",
+    ...         "Fullname": "Rita Mohale",
+    ...         "EmailAddress": "rita@happyhills.com",
+    ...         "PublicationModes": "email,pdf"
+    ...     }
+    ... ]
+
+    >>> report.setRecipients(recipients)
+    >>> result = report.getRecipients()
+    >>> len(result)
+    1
+
+    >>> result[0]["Fullname"]
+    'Rita Mohale'
+
+The AT-style property should work:
+
+    >>> report.Recipients == result
+    True
+
+
+Send Log
+........
+
+The send log tracks email deliveries and is compatible with emailview.py
+from senaite.impress. It expects to work with lists of dicts.
+
+Get the current send log (empty initially):
+
+    >>> send_log = report.getSendLog()
+    >>> send_log is None or len(send_log) == 0
+    True
+
+Simulate how emailview.py writes the send log:
+
+    >>> from DateTime import DateTime as ZopeDateTime
+    >>> timestamp = ZopeDateTime()
+
+Create a new send log record (simulating emailview.py):
+
+    >>> new_record = {
+    ...     "actor": "admin",
+    ...     "actor_fullname": "Admin User",
+    ...     "email_send_date": timestamp,
+    ...     "email_recipients": ["rita@happyhills.com"],
+    ...     "email_responsibles": ["lab@happyhills.com"],
+    ...     "email_subject": "Your analysis results for W-0001",
+    ...     "email_body": "Please find attached...",
+    ...     "email_attachments": ["report.pdf"]
+    ... }
+
+Append to existing records (as done in emailview.py):
+
+    >>> records = report.getSendLog() or []
+    >>> records.append(new_record)
+    >>> report.setSendLog(records)
+
+Verify the send log was written:
+
+    >>> result = report.getSendLog()
+    >>> len(result)
+    1
+
+    >>> result[0]["actor"]
+    'admin'
+
+    >>> result[0]["email_recipients"]
+    ['rita@happyhills.com']
+
+Add a second send log entry:
+
+    >>> second_record = {
+    ...     "actor": "labmanager",
+    ...     "actor_fullname": "Lab Manager",
+    ...     "email_send_date": ZopeDateTime(),
+    ...     "email_recipients": ["client@example.com"],
+    ...     "email_responsibles": [],
+    ...     "email_subject": "Re-send: Results for W-0001",
+    ...     "email_body": "As requested...",
+    ...     "email_attachments": ["report.pdf"]
+    ... }
+
+    >>> records = report.getSendLog()
+    >>> records.append(second_record)
+    >>> report.setSendLog(records)
+
+Verify both entries exist:
+
+    >>> result = report.getSendLog()
+    >>> len(result)
+    2
+
+    >>> result[1]["actor"]
+    'labmanager'
+
+The AT-style property should work:
+
+    >>> report.SendLog == result
+    True
+
+
+Catalog Indexing
+................
+
+The report should be indexed with searchable text including sample IDs,
+metadata, and recipients:
+
+    >>> report.reindexObject()
+    >>> brains = catalog({"portal_type": "ResultsReport"})
+    >>> brain = [b for b in brains if b.UID == report.UID()][0]
+    >>> brain.Title
+    'W-0001'
+
+The report should be searchable by sample UID:
+
+    >>> brains = catalog({
+    ...     "portal_type": "ResultsReport",
+    ...     "sample_uid": sample.UID()
+    ... })
+    >>> len(brains) >= 1
+    True
+
+The searchable text should include sample IDs and email recipients:
+
+    >>> searchable = catalog(
+    ...     {"portal_type": "ResultsReport",
+    ...      "resultsreport_searchable_text": "W-0001"})
+    >>> len(searchable) >= 1
+    True
+
+    >>> searchable = catalog(
+    ...     {"portal_type": "ResultsReport",
+    ...      "resultsreport_searchable_text": "rita@happyhills.com"})
+    >>> len(searchable) >= 1
+    True
+
+
+Client Accessor
+...............
+
+The report should be able to access its client through the primary sample:
+
+    >>> report.getClient() == client
+    True
+
+
+Empty Metadata Handling
+.......................
+
+Setting empty metadata should work correctly:
+
+    >>> report.setMetadata({})
+    >>> result = report.getMetadata()
+    >>> result == {}
+    True
+
+Setting None should also work:
+
+    >>> report.setMetadata(None)
+    >>> result = report.getMetadata()
+    >>> result == {}
+    True
+
+Restore metadata for subsequent tests:
+
+    >>> report.setMetadata(metadata)
+
+
+Simulating senaite.impress Storage Pattern
+...........................................
+
+This simulates how senaite.impress creates a complete report through the
+storage adapter:
+
+    >>> new_report = api.create(
+    ...     sample, "ResultsReport", id="report-002")
+
+    >>> html = "<html><body><h1>Complete Report</h1></body></html>"
+    >>> pdf_data = b"%PDF-1.4 complete report"
+    >>> pdf = NamedBlobFile(
+    ...     data=pdf_data,
+    ...     filename=u"complete.pdf",
+    ...     contentType="application/pdf")
+
+    >>> metadata = {
+    ...     "template": "senaite.impress:MultiDefault",
+    ...     "paperformat": "A4",
+    ...     "orientation": "landscape",
+    ...     "timestamp": DateTime().ISO(),
+    ...     "contained_requests": ",".join([sample.getId(), sample2.getId()])
+    ... }
+
+Set all fields as senaite.impress would:
+
+    >>> new_report.setAnalysisRequest(sample.UID())
+    >>> new_report.setContainedAnalysisRequests(
+    ...     [sample.UID(), sample2.UID()])
+    >>> new_report.setHtml(html)
+    >>> new_report.setPdf(pdf)
+    >>> new_report.setMetadata(metadata)
+    >>> new_report.setDatePrinted(datetime.now())
+
+Verify everything was set correctly:
+
+    >>> new_report.getAnalysisRequest() == sample
+    True
+
+    >>> len(new_report.getContainedAnalysisRequests())
+    2
+
+    >>> new_report.getHtml() == html
+    True
+
+    >>> new_report.getPdf().data == pdf_data
+    True
+
+    >>> meta = new_report.getMetadata()
+    >>> meta["template"]
+    'senaite.impress:MultiDefault'
+
+    >>> meta["orientation"]
+    'landscape'
+
+Commit and verify the report is persisted:
+
+    >>> transaction.commit()
+    >>> catalog = api.get_tool(REPORT_CATALOG)
+    >>> brains = catalog({"portal_type": "ResultsReport"})
+    >>> len(brains) >= 2
+    True
+
+
+Edge Cases
+..........
+
+Test getting metadata when none is set:
+
+    >>> edge_report = api.create(sample, "ResultsReport")
+    >>> edge_report.getMetadata()
+    {}
+
+Test getting send log when none is set:
+
+    >>> edge_report.getSendLog() is None or len(edge_report.getSendLog()) == 0
+    True
+
+Test getting recipients when none are set:
+
+    >>> edge_report.getRecipients() is None or len(edge_report.getRecipients()) == 0
+    True
