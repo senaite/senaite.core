@@ -104,19 +104,17 @@ class SidebarNavigationAPI(BrowserView):
     def get_navigation_depth(self, default=3):
         """Return the navigation depth from the setup
         """
-        return getattr(self.setup, "sidebar_navigation_depth", default)
+        return self.setup.getSidebarNavigationDepth()
 
     def get_displayed_types(self, default=None):
         """Return the displayed types
         """
-        return getattr(self.setup, "sidebar_displayed_types", default)
+        return self.setup.getSidebarDisplayedTypes()
 
     def get_selected_folders(self, default=None):
         """Return the selected folders
         """
-        if default is None:
-            default = []
-        return getattr(self.setup, "sidebar_folders", default)
+        return self.setup.getSidebarFolders()
 
     def __call__(self):
         """Return navigation tree as JSON"""
@@ -181,10 +179,12 @@ class SidebarNavigationAPI(BrowserView):
     def _build_tree_from_uid_catalog(
             self, navigation_root, navigation_depth, displayed_types,
             selected_folders=None):
-        """Build navigation tree from uid_catalog
+        """Build navigation tree
 
-        Uses uid_catalog which indexes ALL content types, including those
-        in specialized catalogs (senaite_catalog_client, etc.).
+        Top-level folders are queried from portal_catalog by ID.
+        Children are queried recursively from uid_catalog.
+
+        If no folders are selected, returns an empty tree.
 
         :param navigation_root: The navigation root object
         :param navigation_depth: Maximum depth to query
@@ -194,65 +194,105 @@ class SidebarNavigationAPI(BrowserView):
         """
         if selected_folders is None:
             selected_folders = ()
-        uid_catalog = api.get_tool("uid_catalog")
+
+        root_children = []
+
+        # Only build tree if folders are selected
+        if not selected_folders:
+            return {"children": root_children}
+
+        # Get selected folders directly from portal_catalog by ID
+        portal_catalog = api.get_tool("portal_catalog")
         root_path_str = api.get_path(navigation_root)
 
-        # Query uid_catalog for all navigation items
-        # Note: uid_catalog doesn't have depth parameter, so we query all
-        # and filter by depth later
-        # Note: We DON'T filter by portal_type in the query because we want
-        # selected_folders to always appear regardless of their type
+        for folder_id in selected_folders:
+            # Query for folder by ID at root level
+            query = {
+                "path": {"query": root_path_str, "depth": 1},
+                "id": folder_id
+            }
+            brains = portal_catalog(**query)
+
+            if not brains:
+                continue
+
+            brain = brains[0]
+            obj = api.get_object(brain)
+
+            # Build folder item
+            folder_item = {
+                "id": folder_id,
+                "Title": api.get_title(obj),
+                "Description": api.get_description(obj),
+                "getURL": api.get_url(obj),
+                "portal_type": api.get_portal_type(obj),
+                "path": api.get_path(brain),
+                "depth": 1,
+                "review_state": api.get_review_status(brain),
+                "show_children": True,
+                "item": brain,
+                "obj": obj,
+                "children": []
+            }
+
+            # Query children using uid_catalog if depth allows
+            if navigation_depth > 1:
+                children = self._get_children_recursive(
+                    obj,
+                    max_depth=navigation_depth,
+                    current_depth=1,
+                    displayed_types=displayed_types
+                )
+                folder_item["children"] = children
+
+            root_children.append(folder_item)
+
+        return {"children": root_children}
+
+    def _get_children_recursive(self, parent_obj, max_depth, current_depth,
+                                displayed_types=None):
+        """Recursively get children from uid_catalog
+
+        :param parent_obj: Parent object
+        :param max_depth: Maximum depth to query
+        :param current_depth: Current depth level
+        :param displayed_types: Tuple of portal types to include
+        :returns: List of child items
+        """
+        if current_depth >= max_depth:
+            return []
+
+        uid_catalog = api.get_tool("uid_catalog")
+        parent_path = api.get_path(parent_obj)
+
+        # Query for all descendants
         query = {
-            "path": {"query": root_path_str},
+            "path": {"query": parent_path},
             "sort_on": "id"
         }
+        if displayed_types:
+            query["portal_type"] = displayed_types
 
         brains = uid_catalog(**query)
 
-        # Build a mapping of path -> brain for quick lookup
+        # Build a mapping of path -> item
         items_by_path = {}
-        skipped_depth = 0
-        skipped_root = 0
-        skipped_type = 0
 
         for brain in brains:
             path = brain.getPath()
 
-            # Normalize path - ensure it's absolute
-            if not path.startswith("/"):
-                # Relative path, prepend root path
-                path = root_path_str + "/" + path
-
-            # Calculate depth relative to navigation root
-            depth = path.count("/") - root_path_str.count("/")
-
-            # Skip items beyond max depth
-            if depth > navigation_depth:
-                skipped_depth += 1
+            # Skip parent itself
+            if path == parent_path:
                 continue
 
-            # Skip the root itself
-            if path == root_path_str:
-                skipped_root += 1
+            # Calculate depth relative to parent
+            depth = path.count("/") - parent_path.count("/")
+
+            # Skip items beyond remaining depth
+            if depth > (max_depth - current_depth):
                 continue
 
             obj = api.get_object(brain)
-            obj_id = api.get_id(obj)
-            portal_type = api.get_portal_type(obj)
-
-            # Apply portal_type filtering
-            # BUT: Skip filtering for selected_folders at root level (depth 1)
-            # This ensures selected folders always appear in sidebar
-            if displayed_types:
-                is_selected_folder = (
-                    depth == 1 and
-                    selected_folders and
-                    obj_id in selected_folders
-                )
-                if not is_selected_folder:
-                    if portal_type not in displayed_types:
-                        skipped_type += 1
-                        continue
 
             items_by_path[path] = {
                 "id": api.get_id(obj),
@@ -260,8 +300,8 @@ class SidebarNavigationAPI(BrowserView):
                 "Description": api.get_description(obj),
                 "getURL": api.get_url(obj),
                 "portal_type": api.get_portal_type(obj),
-                "path": api.get_path(brain),
-                "depth": depth,
+                "path": path,
+                "depth": current_depth + depth,
                 "review_state": api.get_review_status(brain),
                 "show_children": True,
                 "item": brain,
@@ -270,61 +310,19 @@ class SidebarNavigationAPI(BrowserView):
             }
 
         # Build hierarchical structure
-        root_children = []
+        children = []
         for path, item in items_by_path.items():
             # Find parent path
-            parent_path = "/".join(path.split("/")[:-1])
+            item_parent_path = "/".join(path.split("/")[:-1])
 
-            if parent_path == root_path_str:
-                # Direct child of root
-                root_children.append(item)
-            elif parent_path in items_by_path:
+            if item_parent_path == parent_path:
+                # Direct child of parent
+                children.append(item)
+            elif item_parent_path in items_by_path:
                 # Child of another item
-                items_by_path[parent_path]["children"].append(item)
+                items_by_path[item_parent_path]["children"].append(item)
 
-        # Filter root children if selected_folders is specified
-        # and preserve the order from selected_folders
-        if selected_folders:
-            # Create a mapping of id -> item for quick lookup
-            items_by_id = {
-                item.get("id"): item for item in root_children
-            }
-            # Rebuild root_children in the order specified by selected_folders
-            root_children = [
-                items_by_id[folder_id]
-                for folder_id in selected_folders
-                if folder_id in items_by_id
-            ]
-
-        # Create sort key function using custom order
-        def get_sort_key(item):
-            """Get sort key for item based on custom order
-
-            Items in selected_folders come first in specified order,
-            others come after sorted alphabetically by id.
-            """
-            item_id = item.get("id", "")
-            if item_id in selected_folders:
-                # Return order index for items in custom order
-                return (0, selected_folders.index(item_id))
-            else:
-                # Return high number + alphabetical for unlisted items
-                return (1, item_id)
-
-        # Sort children recursively
-        def sort_children(node):
-            if node.get("children"):
-                node["children"].sort(key=get_sort_key)
-                for child in node["children"]:
-                    sort_children(child)
-
-        for item in root_children:
-            sort_children(item)
-
-        # Sort root children using custom order
-        root_children.sort(key=get_sort_key)
-
-        return {"children": root_children}
+        return children
 
     def _process_navigation_tree(self, tree_data, current_url=""):
         """Process navigation tree into a JSON-friendly structure

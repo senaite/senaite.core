@@ -1477,6 +1477,49 @@ class Setup(Container):
         return mutator(self, value)
 
     @security.protected(permissions.View)
+    def getSidebarFolders(self):
+        """Returns the sidebar navigation folders
+        """
+        accessor = self.accessor("sidebar_folders")
+        return accessor(self) or ()
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSidebarFolders(self, value):
+        """Set the sidebar navigation folders
+        """
+        mutator = self.mutator("sidebar_folders")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getSidebarNavigationDepth(self):
+        """Returns the sidebar navigation depth
+        """
+        accessor = self.accessor("sidebar_navigation_depth")
+        depth = accessor(self)
+        return depth if depth is not None else 3
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSidebarNavigationDepth(self, value):
+        """Set the sidebar navigation depth
+        """
+        mutator = self.mutator("sidebar_navigation_depth")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getSidebarDisplayedTypes(self):
+        """Returns the sidebar displayed portal types
+        """
+        accessor = self.accessor("sidebar_displayed_types")
+        return accessor(self) or ()
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSidebarDisplayedTypes(self, value):
+        """Set the sidebar displayed portal types
+        """
+        mutator = self.mutator("sidebar_displayed_types")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
     def getInvalidationReasonRequired(self):
         """Returns whether the introduction of a reason is required when
         invalidating a sample
