@@ -20,17 +20,13 @@
 
 import json
 
-from Acquisition import aq_inner
 from bika.lims import api
 from plone.app.viewletmanager.manager import OrderedViewletManager
 from plone.memoize.instance import memoize
-from plone.registry.interfaces import IRegistry
-from Products.CMFPlone.interfaces import INavigationSchema
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
 from zope.component import getMultiAdapter
-from zope.component import getUtility
 
 
 class SidebarViewletManager(OrderedViewletManager):
@@ -75,8 +71,9 @@ class SidebarNavigationAPI(BrowserView):
 
     def __init__(self, context, request):
         super(SidebarNavigationAPI, self).__init__(context, request)
-        # Cache portal_types tool for efficient icon lookups
         self._portal_types = None
+        self._portal_state = None
+        self._setup = None
 
     @property
     def portal_types(self):
@@ -84,6 +81,42 @@ class SidebarNavigationAPI(BrowserView):
         if self._portal_types is None:
             self._portal_types = api.get_tool("portal_types")
         return self._portal_types
+
+    @property
+    def portal_state(self):
+        """Cached portal_state tool"""
+        if self._portal_state is None:
+            self._portal_state = api.get_view("plone_portal_state")
+        return self._portal_state
+
+    @property
+    def setup(self):
+        """Cached senaite setup"""
+        if self._setup is None:
+            self._setup = api.get_senaite_setup()
+        return self._setup
+
+    def get_navigation_root(self):
+        """Return the navigation root
+        """
+        return self.portal_state.navigation_root()
+
+    def get_navigation_depth(self, default=3):
+        """Return the navigation depth from the setup
+        """
+        return getattr(self.setup, "sidebar_navigation_depth", default)
+
+    def get_displayed_types(self, default=None):
+        """Return the displayed types
+        """
+        return getattr(self.setup, "sidebar_displayed_types", default)
+
+    def get_selected_folders(self, default=None):
+        """Return the selected folders
+        """
+        if default is None:
+            default = []
+        return getattr(self.setup, "sidebar_folders", default)
 
     def __call__(self):
         """Return navigation tree as JSON"""
@@ -128,61 +161,26 @@ class SidebarNavigationAPI(BrowserView):
 
         :param current_url: The URL of the current page for highlighting
         """
-        # Get context - use navigation root, not current context
-        context = aq_inner(self.context)
 
-        # Get the navigation root (usually the Plone site root)
-        portal_state = getMultiAdapter(
-            (context, self.request),
-            name="plone_portal_state"
-        )
-        navigation_root = portal_state.navigation_root()
-
-        # Read navigation settings from registry (configured in control panel)
-        registry = getUtility(IRegistry)
-        nav_settings = registry.forInterface(
-            INavigationSchema,
-            prefix="plone",
-            check=False
-        )
-
-        # Get navigation depth from registry
-        navigation_depth = getattr(nav_settings, "navigation_depth", 3)
-
-        # Get displayed types
-        displayed_types = tuple(getattr(
-            nav_settings, "displayed_types", []))
-
-        # Get custom navigation order from registry
-        navigation_order = self._get_navigation_order(registry)
+        navigation_root = self.get_navigation_root()
+        navigation_depth = self.get_navigation_depth()
+        displayed_types = self.get_displayed_types()
+        selected_folders = self.get_selected_folders()
 
         # Build tree using uid_catalog
         data = self._build_tree_from_uid_catalog(
             navigation_root,
             navigation_depth,
             displayed_types,
-            navigation_order
+            selected_folders
         )
 
         # Process into JSON-friendly format
         return self._process_navigation_tree(data, current_url)
 
-    def _get_navigation_order(self, registry):
-        """Get custom navigation order from registry
-
-        :param registry: The registry utility
-        :returns: List of item IDs in desired order
-        """
-        try:
-            # Try to get custom order from registry
-            order = registry.get("senaite.core.navigation_order", [])
-            return list(order) if order else []
-        except Exception:
-            return []
-
     def _build_tree_from_uid_catalog(
             self, navigation_root, navigation_depth, displayed_types,
-            navigation_order=None):
+            selected_folders=None):
         """Build navigation tree from uid_catalog
 
         Uses uid_catalog which indexes ALL content types, including those
@@ -191,29 +189,31 @@ class SidebarNavigationAPI(BrowserView):
         :param navigation_root: The navigation root object
         :param navigation_depth: Maximum depth to query
         :param displayed_types: Tuple of portal types to include
-        :param navigation_order: List of item IDs in desired order
+        :param selected_folders: Tuple of folder IDs to include at root level
         :returns: Dict with tree structure
         """
-        if navigation_order is None:
-            navigation_order = []
+        if selected_folders is None:
+            selected_folders = ()
         uid_catalog = api.get_tool("uid_catalog")
-        root_path = navigation_root.getPhysicalPath()
-        root_path_str = "/".join(root_path)
-        portal_url = navigation_root.absolute_url()
+        root_path_str = api.get_path(navigation_root)
 
         # Query uid_catalog for all navigation items
         # Note: uid_catalog doesn't have depth parameter, so we query all
         # and filter by depth later
-        brains = uid_catalog(
-            path={"query": root_path_str},
-            portal_type=displayed_types,
-            sort_on="id"
-        )
+        # Note: We DON'T filter by portal_type in the query because we want
+        # selected_folders to always appear regardless of their type
+        query = {
+            "path": {"query": root_path_str},
+            "sort_on": "id"
+        }
+
+        brains = uid_catalog(**query)
 
         # Build a mapping of path -> brain for quick lookup
         items_by_path = {}
         skipped_depth = 0
         skipped_root = 0
+        skipped_type = 0
 
         for brain in brains:
             path = brain.getPath()
@@ -237,6 +237,22 @@ class SidebarNavigationAPI(BrowserView):
                 continue
 
             obj = api.get_object(brain)
+            obj_id = api.get_id(obj)
+            portal_type = api.get_portal_type(obj)
+
+            # Apply portal_type filtering
+            # BUT: Skip filtering for selected_folders at root level (depth 1)
+            # This ensures selected folders always appear in sidebar
+            if displayed_types:
+                is_selected_folder = (
+                    depth == 1 and
+                    selected_folders and
+                    obj_id in selected_folders
+                )
+                if not is_selected_folder:
+                    if portal_type not in displayed_types:
+                        skipped_type += 1
+                        continue
 
             items_by_path[path] = {
                 "id": api.get_id(obj),
@@ -266,17 +282,31 @@ class SidebarNavigationAPI(BrowserView):
                 # Child of another item
                 items_by_path[parent_path]["children"].append(item)
 
+        # Filter root children if selected_folders is specified
+        # and preserve the order from selected_folders
+        if selected_folders:
+            # Create a mapping of id -> item for quick lookup
+            items_by_id = {
+                item.get("id"): item for item in root_children
+            }
+            # Rebuild root_children in the order specified by selected_folders
+            root_children = [
+                items_by_id[folder_id]
+                for folder_id in selected_folders
+                if folder_id in items_by_id
+            ]
+
         # Create sort key function using custom order
         def get_sort_key(item):
             """Get sort key for item based on custom order
 
-            Items in navigation_order come first in specified order,
+            Items in selected_folders come first in specified order,
             others come after sorted alphabetically by id.
             """
             item_id = item.get("id", "")
-            if item_id in navigation_order:
+            if item_id in selected_folders:
                 # Return order index for items in custom order
-                return (0, navigation_order.index(item_id))
+                return (0, selected_folders.index(item_id))
             else:
                 # Return high number + alphabetical for unlisted items
                 return (1, item_id)
@@ -331,13 +361,33 @@ class SidebarNavigationAPI(BrowserView):
 
         # Get item URL and normalize for comparison
         item_url = node.get("getURL", "").rstrip("/")
-        normalized_current = current_url.rstrip("/")
+
+        # Normalize current URL - remove query params, anchors, and view names
+        normalized_current = current_url.split("#")[0].split("?")[0].rstrip("/")
+
+        # Remove common view suffixes from both URLs
+        view_suffixes = [
+            "/view", "/@@view", "/folder_contents", "/@@folder_contents",
+            "/edit", "/@@edit", "/folder_listing", "/@@folder_listing"
+        ]
+
+        for view_suffix in view_suffixes:
+            if normalized_current.endswith(view_suffix):
+                normalized_current = normalized_current[:-len(view_suffix)]
+                break
+
+        # Also normalize item URL in case it has view suffixes
+        normalized_item = item_url
+        for view_suffix in view_suffixes:
+            if normalized_item.endswith(view_suffix):
+                normalized_item = normalized_item[:-len(view_suffix)]
+                break
 
         # Check if this item is current or parent
-        is_current = (item_url == normalized_current)
+        is_current = (normalized_item == normalized_current)
         is_parent = (
-            normalized_current.startswith(item_url + "/")
-            if item_url else False
+            normalized_current.startswith(normalized_item + "/")
+            if normalized_item else False
         )
 
         # Get icon using the same approach as SENAITE's bootstrapview
