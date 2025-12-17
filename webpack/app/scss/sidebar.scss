@@ -1,122 +1,668 @@
-/* CSS Styles for the SENAITE Sidebar */
+/* ==========================================================================
+   SENAITE Sidebar - Bootstrap 4/5 Design
+   ========================================================================== */
+
+/* Bootstrap Variables (adjust as needed based on your theme)
+   ========================================================================== */
+
+$sidebar-bg: #f8f9fa;
+$sidebar-border: #dee2e6;
+$link-color: #212529;
+$link-hover-bg: #e9ecef;
+$primary: #0d6efd;
+$primary-light: #cfe2ff;
+$secondary: #6c757d;
+$light: #f8f9fa;
+$dark: #212529;
+
+/* Layout
+   ========================================================================== */
+
 .wrapper {
-    display: flex;
-    min-height: calc(100% - 64px);  // subtract toolbar
-    div.container-fluid {
-        width: calc(100% - 50px);  // subtract sidebar
-    }
+  display: flex;
+  min-height: calc(100% - 64px);
+
+  div.container-fluid {
+    width: calc(100% - 50px);
+    transition: width 0.3s ease-in-out;
+  }
 }
+
+/* Sidebar Base Styles
+   ========================================================================== */
 
 #sidebar {
-    min-width: $sidebar-maximized-width;
-    max-width: $sidebar-maximized-width;
-    transition: all 0.3s;
-    overflow: hidden;
-    white-space: nowrap;
-    background-color: $senaite-bg-lightgrey !important;
-}
-#sidebar #sidebar-header {
-    text-align: right;
-    button:focus {
-        box-shadow: none;
-    }
-}
-#sidebar:not(.minimized) ul li:hover {
-    color: #000;
-    transition: all 0.1s;
-    opacity: 1;
-}
-#sidebar.minimized {
-    min-width: $sidebar-minimized-width;
-    max-width: $sidebar-minimized-width;
-}
-#sidebar.minimized .sidebar-toggle-icon {
-    @extend .fa;
-    @extend .fa-toggle-off;
-}
-#sidebar.toggled .sidebar-toggle-icon {
-    @extend .fa;
-    @extend .fa-toggle-on;
-}
-#sidebar.minimized ul li a {
-    padding: 15px 0px;
-    text-align: center;
-}
-#sidebar.minimized ul ul a {
-    padding: 15px 17px !important;
-}
-#sidebar.minimized ul li a i {
-    margin-right: 0;
-    margin-bottom: 5px;
-}
-#sidebar.minimized ul li a span.node-title,
-#sidebar.minimized ul li a span.child-title {
-    display: none;
-}
-#sidebar ul li.active>a {
-    color: $sidebar-selected-color;
-}
-#sidebar ul li.active,
-#sidebar ul li.expanded {
-    background: $sidebar-selected-bg;
+  position: relative;
+  min-width: $sidebar-maximized-width;
+  max-width: $sidebar-maximized-width;
+  min-height: 100vh;
+  background-color: $sidebar-bg;
+  border-right: 1px solid $sidebar-border;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  transition: all 0.3s ease-in-out;
+  overflow: hidden;
+  z-index: 1000;
 }
 
-/* Sidebar maximized */
+/* Sidebar Header
+   ========================================================================== */
+
+#sidebar-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 1rem;
+  background-color: $sidebar-bg;
+  border-bottom: 1px solid $sidebar-border;
+  text-align: right;
+
+  button {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid transparent;
+    background-color: transparent;
+    color: $secondary;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    font-size: 1rem;
+    line-height: 1.5;
+
+    &:hover {
+      background-color: $link-hover-bg;
+      color: $dark;
+    }
+
+    &:focus {
+      outline: 0;
+      box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+
+    &:active {
+      background-color: darken($link-hover-bg, 5%);
+    }
+  }
+}
+
 #sidebar.minimized #sidebar-header {
-    text-align: center;
+  text-align: center;
+  padding: 0.75rem 0.5rem;
 }
+
+/* Toggle Icon States
+   ========================================================================== */
+
 #sidebar .sidebar-toggle-icon {
-    @extend .fa;
-    @extend .fa-toggle-off;
+  @extend .fa;
+  @extend .fa-bars;
+  font-size: 1rem;
+  transition: transform 0.3s ease-in-out;
 }
+
+#sidebar.toggled .sidebar-toggle-icon {
+  @extend .fa;
+  @extend .fa-times;
+  transform: rotate(90deg);
+}
+
+/* Search Bar
+   ========================================================================== */
+
+#sidebar-search-container {
+  padding: 0.5rem 1rem 1rem;
+  border-bottom: 1px solid $sidebar-border;
+}
+
+#sidebar-search {
+  width: 100%;
+  padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='%236c757d'%3E%3Cpath fill-rule='evenodd' d='M11.5 7a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0zm-.82 4.74a6 6 0 1 1 1.06-1.06l3.04 3.04a.75.75 0 1 1-1.06 1.06l-3.04-3.04z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 0.75rem center;
+  font-size: 0.875rem;
+  color: $dark;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+  &::placeholder {
+    color: $secondary;
+  }
+
+  &:focus {
+    outline: 0;
+    border-color: #86b7fe;
+    background-color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+}
+
+#sidebar.minimized #sidebar-search-container {
+  padding: 0.5rem;
+
+  #sidebar-search {
+    padding: 0.5rem;
+    background-position: center;
+    text-indent: -9999px;
+  }
+}
+
+/* Navigation Base - Bootstrap Nav Styles
+   ========================================================================== */
+
+#sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 #sidebar a {
-    color: $sidebar-color;
-}
-#sidebar a:hover {
-    color: $sidebar-hover-color;
-}
-#sidebar ul li a {
-    padding: 15px 17px;
-    display: block;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  color: $link-color;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 400;
+  border-radius: 0.25rem;
+  margin: 0.125rem 0.5rem;
+  transition: color 0.15s ease-in-out,
+              background-color 0.15s ease-in-out;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  /* Icon spacing */
+  .node-icon,
+  .child-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.75rem;
+    min-width: 1.25rem;
+    transition: transform 0.15s ease-in-out;
+
+    img.nav-icon {
+      width: 1.125rem;
+      height: 1.125rem;
+      object-fit: contain;
+    }
+  }
+
+  /* Legacy icon support */
+  i {
+    margin-right: 0.75rem;
+    font-size: 1rem;
+    min-width: 1.25rem;
+    text-align: center;
+    transition: transform 0.15s ease-in-out;
+  }
+
+  /* Hover state - Bootstrap style */
+  &:hover {
+    background-color: $link-hover-bg;
+    color: $dark;
+
+    .node-icon,
+    .child-icon,
+    i {
+      transform: scale(1.05);
+    }
+  }
+
+  /* Focus state */
+  &:focus {
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  }
 }
 
-/* hide deactivated items from sidebar */
-#sidebar li a.senaite-state-inactive,
-#sidebar.minimized li a.senaite-state-inactive {
-    display: none;
+/* Navigation Levels - Bootstrap Spacing
+   ========================================================================== */
+
+#sidebar ul.nav-level-1 {
+  padding: 0.5rem 0;
+
+  > li {
+    position: relative;
+
+    > a {
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 0.75rem 1rem;
+    }
+  }
 }
 
-/* submenu */
-#sidebar ul.submenu {
-    max-width: $sidebar-maximized-width;
+#sidebar ul.nav-level-2 {
+  padding-left: 1rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+
+  > li {
+    > a {
+      font-size: 0.8125rem;
+      font-weight: 400;
+      padding: 0.5rem 1rem;
+      color: $secondary;
+    }
+  }
 }
-#sidebar ul.submenu li {
-    width: $sidebar-maximized-width;
+
+#sidebar ul.nav-level-3 {
+  padding-left: 2rem;
+
+  > li {
+    > a {
+      font-size: 0.8125rem;
+      font-weight: 400;
+      padding: 0.375rem 1rem;
+      color: $secondary;
+    }
+  }
 }
-#sidebar.minimized ul.submenu li {
-    padding: 0;
-    width: $sidebar-minimized-width;
+
+/* Active States - Bootstrap Primary Color
+   ========================================================================== */
+
+#sidebar ul li.active > a,
+#sidebar ul li.navTreeCurrentNode > a {
+  background-color: $primary-light;
+  color: $primary;
+  font-weight: 600;
+
+  &:hover {
+    background-color: darken($primary-light, 5%);
+  }
+
+  i,
+  .node-icon,
+  .child-icon {
+    color: $primary;
+  }
 }
+
+/* Parent of current item (you're inside this folder) */
+#sidebar ul li.navTreeCurrentParent > a {
+  background-color: $link-hover-bg;
+  color: $dark;
+  font-weight: 600;
+
+  &:hover {
+    background-color: darken($link-hover-bg, 5%);
+  }
+}
+
 #sidebar ul.nav-level-1 li.active,
-#sidebar ul.nav-level-1 li.expanded,
-#sidebar.minimized ul.nav-level-1 li.active,
-#sidebar.minimized ul.nav-level-1 li.expanded {
-    background-: $sidebar-selected-bg-1;
-    &:hover {
-        background: $sidebar-selected-bg-1;
-    }
-}
-#sidebar ul.nav-level-2 li.active,
-#sidebar.minimized ul.nav-level-2 li.active {
-    background: $sidebar-selected-bg-2;
-    &:hover {
-        background: $sidebar-selected-bg-2;
-    }
+#sidebar ul.nav-level-1 li.expanded {
+  background-color: transparent;
+
+  > a {
+    background-color: $link-hover-bg;
+  }
 }
 
-/* Media Queries */
+#sidebar ul.nav-level-1 li.navTreeCurrentParent {
+  background-color: transparent;
+
+  > a {
+    background-color: $link-hover-bg;
+    font-weight: 600;
+  }
+}
+
+#sidebar ul.nav-level-2 li.active {
+  background-color: transparent;
+
+  > a {
+    background-color: $primary-light;
+    color: $primary;
+  }
+}
+
+/* Collapsible Sections - Bootstrap Caret
+   ========================================================================== */
+
+#sidebar .caret {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 0.3rem solid transparent;
+  border-right: 0.3rem solid transparent;
+  border-top: 0.3rem solid $secondary;
+  transition: transform 0.15s ease-in-out;
+  pointer-events: none;
+}
+
+#sidebar li.expanded > a .caret {
+  transform: translateY(-50%) rotate(180deg);
+  border-top-color: $dark;
+}
+
+#sidebar li.collapsed > ul {
+  display: none;
+}
+
+/* Minimized State
+   ========================================================================== */
+
+#sidebar.minimized {
+  min-width: $sidebar-minimized-width;
+  max-width: $sidebar-minimized-width;
+
+  ul li a {
+    padding: 0.75rem 0;
+    text-align: center;
+    justify-content: center;
+    margin: 0.125rem 0.25rem;
+
+    .node-icon,
+    .child-icon {
+      margin-right: 0;
+
+      img.nav-icon {
+        width: 1.375rem;
+        height: 1.375rem;
+      }
+    }
+
+    i {
+      margin-right: 0;
+      font-size: 1.25rem;
+    }
+
+    .node-title,
+    .child-title,
+    .caret {
+      display: none;
+    }
+  }
+
+  ul.nav-level-2,
+  ul.nav-level-3 {
+    display: none;
+  }
+}
+
+/* Search Active State - Bootstrap Warning Color
+   ========================================================================== */
+
+#sidebar.search-active {
+  .search-match > a {
+    background-color: #fff3cd;
+
+    &:hover {
+      background-color: #ffe69c;
+    }
+  }
+
+  .collapsed {
+    > ul {
+      display: block !important;
+    }
+  }
+}
+
+/* Hidden States
+   ========================================================================== */
+
+#sidebar li a.senaite-state-inactive {
+  display: none;
+}
+
+/* Loading State - Bootstrap Spinner
+   ========================================================================== */
+
+#sidebar.loading {
+  pointer-events: none;
+}
+
+.sidebar-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  color: $secondary;
+  font-size: 0.875rem;
+
+  .spinner {
+    width: 2rem;
+    height: 2rem;
+    margin-bottom: 1rem;
+    border: 0.25rem solid rgba(13, 110, 253, 0.25);
+    border-top-color: $primary;
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+  }
+}
+
+#sidebar.minimized .sidebar-loading {
+  padding: 1.5rem 0.5rem;
+
+  span {
+    display: none;
+  }
+
+  .spinner {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-bottom: 0;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error State - Bootstrap Danger Alert
+   ========================================================================== */
+
+.sidebar-error {
+  padding: 0.75rem 1rem;
+  margin: 1rem;
+  background-color: #f8d7da;
+  border: 1px solid #f5c2c7;
+  border-radius: 0.25rem;
+  color: #842029;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+#sidebar.minimized .sidebar-error {
+  padding: 0.5rem;
+  margin: 0.5rem;
+  font-size: 0.75rem;
+}
+
+/* Scrollbar Styling
+   ========================================================================== */
+
+#sidebar {
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* WebKit browsers */
+  &::-webkit-scrollbar {
+    width: 0.375rem;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #ced4da;
+    border-radius: 0.1875rem;
+
+    &:hover {
+      background-color: #adb5bd;
+    }
+  }
+
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #ced4da transparent;
+}
+
+/* Accessibility - Bootstrap SR-Only
+   ========================================================================== */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus visible for keyboard navigation */
+#sidebar a:focus-visible {
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Animations - Subtle Bootstrap-style
+   ========================================================================== */
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-0.625rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+#sidebar:not(.minimized) ul li {
+  animation: slideIn 0.2s ease-in-out;
+}
+
+/* Bootstrap Dark Mode (optional, for Bootstrap 5.3+)
+   ========================================================================== */
+
+[data-bs-theme="dark"] {
+  #sidebar {
+    background-color: #212529;
+    border-right-color: #495057;
+    color: #dee2e6;
+
+    a {
+      color: #dee2e6;
+
+      &:hover {
+        background-color: #343a40;
+        color: #fff;
+      }
+    }
+
+    #sidebar-header {
+      background-color: #212529;
+      border-bottom-color: #495057;
+
+      button {
+        color: #adb5bd;
+
+        &:hover {
+          background-color: #343a40;
+          color: #f8f9fa;
+        }
+
+        &:focus {
+          box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+        }
+      }
+    }
+
+    #sidebar-search {
+      background-color: #343a40;
+      border-color: #495057;
+      color: #f8f9fa;
+
+      &:focus {
+        border-color: #86b7fe;
+        background-color: #212529;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+      }
+    }
+
+    ul li.active > a,
+    ul li.navTreeCurrentNode > a {
+      background-color: #0a58ca;
+      color: #fff;
+
+      &:hover {
+        background-color: #084298;
+      }
+    }
+
+    ul li.navTreeCurrentParent > a {
+      background-color: #343a40;
+      color: #fff;
+    }
+  }
+}
+
+/* Responsive Design - Bootstrap Breakpoints
+   ========================================================================== */
+
 @media (max-width: 768px) {
-    // #sidebar-header {
-    //     display: none;
-    // }
+  #sidebar {
+    position: fixed;
+    left: 0;
+    top: 64px;
+    height: calc(100vh - 64px);
+    transform: translateX(-100%);
+    box-shadow: none;
+
+    &.toggled {
+      transform: translateX(0);
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    &.minimized {
+      transform: translateX(0);
+    }
+  }
+
+  .wrapper div.container-fluid {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  #sidebar {
+    min-width: 100vw;
+    max-width: 100vw;
+
+    &.minimized {
+      min-width: $sidebar-minimized-width;
+      max-width: $sidebar-minimized-width;
+    }
+  }
+}
+
+/* Print Styles
+   ========================================================================== */
+
+@media print {
+  #sidebar {
+    display: none;
+  }
+
+  .wrapper div.container-fluid {
+    width: 100% !important;
+  }
 }

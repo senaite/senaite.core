@@ -87,11 +87,16 @@
     <value>
       <!-- Work Items -->
       <element>Samples</element>
+      <element>Sample</element>
       <element>BatchFolder</element>
+      <element>Batch</element>
       <element>ClientFolder</element>
+      <element>Client</element>
       <element>Folder</element>
       <element>Methods</element>
+      <element>Method</element>
       <element>WorksheetFolder</element>
+      <element>Worksheet</element>
       <!-- Setup Items -->
       <element>AnalysisCategories</element>
       <element>AnalysisProfiles</element>
