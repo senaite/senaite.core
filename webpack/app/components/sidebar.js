@@ -290,12 +290,18 @@ class Sidebar {
 
       if (has_children) {
         header.addEventListener("click", (event) => {
-          // Only toggle if clicking the caret or if in minimized mode
-          const is_caret = event.target.classList.contains("caret");
-          if (is_caret || this.is_minimized()) {
+          // Check if clicking the caret (exact target or parent)
+          const target = event.target;
+          const is_caret = target.classList.contains("caret") ||
+                          target.closest(".caret");
+
+          // Only toggle if clicking the caret
+          // In all other cases (including minimized mode), allow navigation
+          if (is_caret) {
             event.preventDefault();
             this.toggle_section(parent_li);
           }
+          // Otherwise, allow normal link navigation
         });
 
         // Add caret indicator
