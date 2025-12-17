@@ -23,7 +23,7 @@ $focus-ring: #fbbf24;
 
   div.container-fluid {
     width: calc(100% - 50px);
-    transition: width 0.3s ease-in-out;
+    transition: width 0.2s ease-in-out;
   }
 }
 
@@ -38,7 +38,7 @@ $focus-ring: #fbbf24;
   background-color: $sidebar-bg;
   border-right: 1px solid $sidebar-border;
   box-shadow: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   z-index: 1000;
 }
@@ -101,7 +101,7 @@ $focus-ring: #fbbf24;
   @extend .fa;
   @extend .fa-bars;
   font-size: 1rem;
-  transition: transform 0.3s ease-in-out;
+  transition: transform 0.15s ease-in-out;
 }
 
 #sidebar.toggled .sidebar-toggle-icon {
@@ -129,7 +129,7 @@ $focus-ring: #fbbf24;
   background-position: 0.875rem center;
   font-size: 0.875rem;
   color: $link-color;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 
   &::placeholder {
     color: $secondary;
@@ -177,7 +177,7 @@ $focus-ring: #fbbf24;
   font-weight: 400;
   border-radius: 0.5rem;
   margin: 0.125rem 0.75rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -191,14 +191,14 @@ $focus-ring: #fbbf24;
     margin-right: 0.75rem;
     min-width: 1rem;
     flex-shrink: 0;
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 
     img.nav-icon {
       width: 0.875rem;
       height: 0.875rem;
       object-fit: contain;
       opacity: 0.7;
-      transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     }
   }
 
@@ -355,11 +355,11 @@ $focus-ring: #fbbf24;
   position: absolute;
   right: 0.75rem;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-20%);
   padding: 0.5rem;
   margin: -0.5rem;
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 0.5;
 
   /* Create the triangle using borders */
@@ -375,7 +375,7 @@ $focus-ring: #fbbf24;
 }
 
 #sidebar li.expanded > a .caret {
-  transform: translateY(-50%) rotate(180deg);
+  transform: translateY(0%) rotate(180deg);
   opacity: 0.7;
 
   &::before {
