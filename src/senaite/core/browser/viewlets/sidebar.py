@@ -20,13 +20,8 @@
 
 import json
 
-from Acquisition import aq_chain
 from Acquisition import aq_inner
 from bika.lims import api
-from plone.app.layout.navigation.interfaces import INavigationQueryBuilder
-from plone.app.layout.navigation.interfaces import INavtreeStrategy
-from plone.app.layout.navigation.navtree import buildFolderTree
-from plone.app.portlets.portlets import navigation
 from plone.app.viewletmanager.manager import OrderedViewletManager
 from plone.memoize.instance import memoize
 from plone.registry.interfaces import IRegistry
@@ -158,166 +153,148 @@ class SidebarNavigationAPI(BrowserView):
         displayed_types = tuple(getattr(
             nav_settings, "displayed_types", []))
 
+        # Get custom navigation order from registry
+        navigation_order = self._get_navigation_order(registry)
+
         # Build tree using uid_catalog
         data = self._build_tree_from_uid_catalog(
             navigation_root,
             navigation_depth,
-            displayed_types
+            displayed_types,
+            navigation_order
         )
 
         # Process into JSON-friendly format
         return self._process_navigation_tree(data, current_url)
 
-    def _enhance_with_acquisition_chain(
-            self, tree_data, current_url, navigation_root, nav_settings):
-        """Enhance navigation tree with acquisition chain from current context
+    def _get_navigation_order(self, registry):
+        """Get custom navigation order from registry
 
-        SENAITE uses specialized catalogs (senaite_catalog_client,
-        senaite_catalog_sample, etc.) so items won't appear in portal_catalog.
-        This method traverses the acquisition chain and inserts parent objects
-        into the tree to show the current path.
-
-        :param tree_data: Navigation tree dict from buildFolderTree
-        :param current_url: URL of current page
-        :param navigation_root: The navigation root object
-        :param nav_settings: Navigation settings from registry
+        :param registry: The registry utility
+        :returns: List of item IDs in desired order
         """
-
-        if not tree_data or not current_url:
-            return
-
         try:
-            # Get displayed types from settings
-            displayed_types = list(getattr(
-                nav_settings, "displayed_types", []))
-            navigation_depth = getattr(nav_settings, "navigation_depth", 3)
+            # Try to get custom order from registry
+            order = registry.get("senaite.core.navigation_order", [])
+            return list(order) if order else []
+        except Exception:
+            return []
 
-            # Get the root path for depth calculation
-            root_path = navigation_root.getPhysicalPath()
-            root_depth = len(root_path)
-            max_depth = root_depth + navigation_depth
+    def _build_tree_from_uid_catalog(
+            self, navigation_root, navigation_depth, displayed_types,
+            navigation_order=None):
+        """Build navigation tree from uid_catalog
 
-            # Parse current URL to get path
-            # Remove protocol, domain, and query string
-            url_path = current_url.split("?")[0].split("#")[0]
-            if "//" in url_path:
-                url_path = "/" + url_path.split("//", 1)[1].split("/", 1)[1]
+        Uses uid_catalog which indexes ALL content types, including those
+        in specialized catalogs (senaite_catalog_client, etc.).
 
-            # Get object at this path
-            try:
-                current_obj = self.context.restrictedTraverse(
-                    str(url_path.lstrip("/")))
-            except Exception:
-                # Could not traverse to this path, skip enhancement
-                return
-
-            # Traverse up acquisition chain
-            chain_items = []
-            for obj in aq_chain(current_obj):
-                # Stop at navigation root
-                if obj == navigation_root:
-                    break
-
-                # Check if this object should be in navigation
-                portal_type = getattr(obj, "portal_type", None)
-                if not portal_type or portal_type not in displayed_types:
-                    continue
-
-                # Check depth
-                obj_path = obj.getPhysicalPath()
-                obj_depth = len(obj_path)
-                if obj_depth > max_depth:
-                    continue
-
-                # Get object info
-                try:
-                    chain_items.append({
-                        "id": obj.getId(),
-                        "Title": obj.Title(),
-                        "Description": obj.Description() if hasattr(
-                            obj, "Description") else "",
-                        "getURL": obj.absolute_url(),
-                        "portal_type": portal_type,
-                        "path": "/".join(obj_path),
-                        "depth": obj_depth - root_depth,
-                        "review_state": api.get_review_status(obj),
-                        "show_children": True,
-                        "item": obj,
-                        "children": []
-                    })
-                except Exception as e:
-                    logger.warning(
-                        "Error processing acquisition chain item: %s" % str(e))
-                    continue
-
-            # Insert chain items into tree
-            if chain_items:
-                self._insert_chain_into_tree(
-                    tree_data, chain_items, displayed_types)
-
-        except Exception as e:
-            logger.error(
-                "Error enhancing navigation with acquisition chain: %s" %
-                str(e), exc_info=True)
-
-    def _insert_chain_into_tree(self, tree_data, chain_items, displayed_types):
-        """Insert acquisition chain items into the navigation tree
-
-        :param tree_data: Navigation tree dict
-        :param chain_items: List of items from acquisition chain (child to parent order)
-        :param displayed_types: List of types to display
+        :param navigation_root: The navigation root object
+        :param navigation_depth: Maximum depth to query
+        :param displayed_types: Tuple of portal types to include
+        :param navigation_order: List of item IDs in desired order
+        :returns: Dict with tree structure
         """
-        if not chain_items:
-            return
+        if navigation_order is None:
+            navigation_order = []
+        uid_catalog = api.get_tool("uid_catalog")
+        root_path = navigation_root.getPhysicalPath()
+        root_path_str = "/".join(root_path)
+        portal_url = navigation_root.absolute_url()
 
-        # Reverse to go from parent to child
-        chain_items.reverse()
+        # Query uid_catalog for all navigation items
+        # Note: uid_catalog doesn't have depth parameter, so we query all
+        # and filter by depth later
+        brains = uid_catalog(
+            path={"query": root_path_str},
+            portal_type=displayed_types,
+            sort_on="id"
+        )
 
-        # Start at root children
-        current_level = tree_data.get("children", [])
+        # Build a mapping of path -> brain for quick lookup
+        items_by_path = {}
+        skipped_depth = 0
+        skipped_root = 0
 
-        # For each item in chain, find or create its place in tree
-        for i, chain_item in enumerate(chain_items):
-            item_path = chain_item["path"]
+        for brain in brains:
+            path = brain.getPath()
 
-            # Look for this item in current level
-            found = False
-            for existing_item in current_level:
-                existing_brain = existing_item.get("item")
-                if existing_brain:
-                    # Item is a catalog brain, use getPath() method
-                    existing_path_str = existing_brain.getPath()
-                    if existing_path_str == item_path:
-                        # Found it, move to its children for next iteration
-                        current_level = existing_item.get("children", [])
-                        found = True
-                        break
+            # Normalize path - ensure it's absolute
+            if not path.startswith("/"):
+                # Relative path, prepend root path
+                path = root_path_str + "/" + path
 
-            # If not found, insert it
-            if not found:
-                # Find parent in current level
-                parent_path = "/".join(item_path.split("/")[:-1])
-                inserted = False
+            # Calculate depth relative to navigation root
+            depth = path.count("/") - root_path_str.count("/")
 
-                for existing_item in current_level:
-                    existing_brain = existing_item.get("item")
-                    if existing_brain:
-                        # Item is a catalog brain, use getPath() method
-                        existing_path_str = existing_brain.getPath()
-                        if existing_path_str == parent_path:
-                            # Add as child of this item
-                            existing_item.setdefault("children", [])
-                            existing_item["children"].append(chain_item)
-                            current_level = existing_item["children"]
-                            inserted = True
-                            break
+            # Skip items beyond max depth
+            if depth > navigation_depth:
+                skipped_depth += 1
+                continue
 
-                if not inserted:
-                    # Parent not found, this shouldn't happen but log it
-                    logger.warning(
-                        "Could not find parent for chain item: %s" %
-                        str(chain_item["Title"]))
-                    break
+            # Skip the root itself
+            if path == root_path_str:
+                skipped_root += 1
+                continue
+
+            obj = api.get_object(brain)
+
+            items_by_path[path] = {
+                "id": api.get_id(obj),
+                "Title": api.get_title(obj),
+                "Description": api.get_description(obj),
+                "getURL": api.get_url(obj),
+                "portal_type": api.get_portal_type(obj),
+                "path": api.get_path(brain),
+                "depth": depth,
+                "review_state": api.get_review_status(brain),
+                "show_children": True,
+                "item": brain,
+                "obj": obj,
+                "children": []
+            }
+
+        # Build hierarchical structure
+        root_children = []
+        for path, item in items_by_path.items():
+            # Find parent path
+            parent_path = "/".join(path.split("/")[:-1])
+
+            if parent_path == root_path_str:
+                # Direct child of root
+                root_children.append(item)
+            elif parent_path in items_by_path:
+                # Child of another item
+                items_by_path[parent_path]["children"].append(item)
+
+        # Create sort key function using custom order
+        def get_sort_key(item):
+            """Get sort key for item based on custom order
+
+            Items in navigation_order come first in specified order,
+            others come after sorted alphabetically by id.
+            """
+            item_id = item.get("id", "")
+            if item_id in navigation_order:
+                # Return order index for items in custom order
+                return (0, navigation_order.index(item_id))
+            else:
+                # Return high number + alphabetical for unlisted items
+                return (1, item_id)
+
+        # Sort children recursively
+        def sort_children(node):
+            if node.get("children"):
+                node["children"].sort(key=get_sort_key)
+                for child in node["children"]:
+                    sort_children(child)
+
+        for item in root_children:
+            sort_children(item)
+
+        # Sort root children using custom order
+        root_children.sort(key=get_sort_key)
+
+        return {"children": root_children}
 
     def _process_navigation_tree(self, tree_data, current_url=""):
         """Process navigation tree into a JSON-friendly structure
