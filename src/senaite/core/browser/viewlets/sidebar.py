@@ -176,6 +176,27 @@ class SidebarNavigationAPI(BrowserView):
         # Process into JSON-friendly format
         return self._process_navigation_tree(data, current_url)
 
+    def _create_item_from_brain(self, brain, depth):
+        """Create navigation item dict from catalog brain
+
+        :param brain: Catalog brain
+        :param depth: Depth level of the item
+        :returns: Dict with item data
+        """
+        return {
+            "id": api.get_id(brain),
+            "Title": api.get_title(brain),
+            "Description": api.get_description(brain),
+            "getURL": api.get_url(brain),
+            "portal_type": api.get_portal_type(brain),
+            "path": api.get_path(brain),
+            "depth": depth,
+            "review_state": api.get_review_status(brain),
+            "show_children": True,
+            "item": brain,
+            "children": []
+        }
+
     def _build_tree_from_uid_catalog(
             self, navigation_root, navigation_depth, displayed_types,
             selected_folders=None):
@@ -217,28 +238,14 @@ class SidebarNavigationAPI(BrowserView):
                 continue
 
             brain = brains[0]
-            obj = api.get_object(brain)
 
-            # Build folder item
-            folder_item = {
-                "id": folder_id,
-                "Title": api.get_title(obj),
-                "Description": api.get_description(obj),
-                "getURL": api.get_url(obj),
-                "portal_type": api.get_portal_type(obj),
-                "path": api.get_path(brain),
-                "depth": 1,
-                "review_state": api.get_review_status(brain),
-                "show_children": True,
-                "item": brain,
-                "obj": obj,
-                "children": []
-            }
+            # Build folder item from brain
+            folder_item = self._create_item_from_brain(brain, depth=1)
 
             # Query children using uid_catalog if depth allows
             if navigation_depth > 1:
                 children = self._get_children_recursive(
-                    obj,
+                    brain,
                     max_depth=navigation_depth,
                     current_depth=1,
                     displayed_types=displayed_types
@@ -249,11 +256,11 @@ class SidebarNavigationAPI(BrowserView):
 
         return {"children": root_children}
 
-    def _get_children_recursive(self, parent_obj, max_depth, current_depth,
+    def _get_children_recursive(self, parent_brain, max_depth, current_depth,
                                 displayed_types=None):
         """Recursively get children from uid_catalog
 
-        :param parent_obj: Parent object
+        :param parent_brain: Parent catalog brain
         :param max_depth: Maximum depth to query
         :param current_depth: Current depth level
         :param displayed_types: Tuple of portal types to include
@@ -263,7 +270,7 @@ class SidebarNavigationAPI(BrowserView):
             return []
 
         uid_catalog = api.get_tool("uid_catalog")
-        parent_path = api.get_path(parent_obj)
+        parent_path = api.get_path(parent_brain)
 
         # Query for all descendants
         query = {
@@ -279,7 +286,7 @@ class SidebarNavigationAPI(BrowserView):
         items_by_path = {}
 
         for brain in brains:
-            path = brain.getPath()
+            path = api.get_path(brain)
 
             # Skip parent itself
             if path == parent_path:
@@ -292,22 +299,10 @@ class SidebarNavigationAPI(BrowserView):
             if depth > (max_depth - current_depth):
                 continue
 
-            obj = api.get_object(brain)
-
-            items_by_path[path] = {
-                "id": api.get_id(obj),
-                "Title": api.get_title(obj),
-                "Description": api.get_description(obj),
-                "getURL": api.get_url(obj),
-                "portal_type": api.get_portal_type(obj),
-                "path": path,
-                "depth": current_depth + depth,
-                "review_state": api.get_review_status(brain),
-                "show_children": True,
-                "item": brain,
-                "obj": obj,
-                "children": []
-            }
+            # Create item from brain
+            item = self._create_item_from_brain(
+                brain, depth=current_depth + depth)
+            items_by_path[path] = item
 
         # Build hierarchical structure
         children = []
