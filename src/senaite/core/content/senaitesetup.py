@@ -20,6 +20,7 @@
 
 from datetime import timedelta
 
+import six
 from AccessControl import ClassSecurityInfo
 from bika.lims import _
 from bika.lims import api
@@ -2201,16 +2202,17 @@ class Setup(Container):
         if not value:
             return DEFAULT_ID_FORMATTING
 
-        # Normalize values: convert `None` to empty strings and unicode to
-        # bytes to prevent `UnicodeDecodeError` when formatting with UTF-8
-        # encoded values
+        # Normalize values: convert `None` to empty strings
+        # In Python 2: convert unicode to bytes to prevent `UnicodeDecodeError`
+        # when formatting with UTF-8 encoded values
+        # In Python 3: keep strings as unicode (no conversion needed)
         normalized = []
         for row in value:
             normalized_row = {}
             for key, val in row.items():
                 if val is None:
                     normalized_row[key] = ""
-                elif isinstance(val, unicode):
+                elif six.PY2 and isinstance(val, six.text_type):
                     normalized_row[key] = val.encode("utf-8")
                 else:
                     normalized_row[key] = val
