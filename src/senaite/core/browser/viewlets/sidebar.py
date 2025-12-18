@@ -273,8 +273,11 @@ class SidebarNavigationAPI(BrowserView):
         parent_path = api.get_path(parent_brain)
 
         # Query for all descendants
+        # NOTE: The UID catalog uses relative paths w/o slash!
         query = {
-            "path": {"query": parent_path},
+            "path": {
+                "query": parent_path.replace("/", "", 1),
+            },
             "sort_on": "id"
         }
         if displayed_types:

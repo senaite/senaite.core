@@ -17,15 +17,15 @@
   </div>
 
   <!-- Search Container -->
-  <!-- <div id="sidebar-search-container">
-       <input type="search"
-       id="sidebar-search"
-       class="form-control"
-       placeholder="Search navigation..."
-       aria-label="Search navigation"
-       i18n:attributes="placeholder; aria-label" />
-       </div>
-  -->
+  <div id="sidebar-search-container">
+    <input type="search"
+           id="sidebar-search"
+           class="form-control"
+           placeholder="Search navigation..."
+           aria-label="Search navigation"
+           i18n:attributes="placeholder; aria-label" />
+  </div>
+  
   <!-- Navigation Container (populated by JavaScript) -->
   <div class="sidebar-navigation">
     <!-- Loading placeholder -->

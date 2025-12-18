@@ -451,12 +451,13 @@ class Sidebar {
       // Show all items when search is cleared
       items.forEach(item => {
         item.style.display = "";
-        item.classList.remove("search-match", "search-no-match");
+        item.classList.remove("search-match", "search-no-match",
+                              "search-parent-match");
       });
       return;
     }
 
-    // Filter items based on search query
+    // First pass: mark items that directly match the query
     items.forEach(item => {
       const link = item.querySelector("a");
       if (!link) {
@@ -467,23 +468,34 @@ class Sidebar {
       const matches = text.includes(query);
 
       if (matches) {
-        item.style.display = "";
         item.classList.add("search-match");
-        item.classList.remove("search-no-match");
+        item.classList.remove("search-no-match", "search-parent-match");
+        item.style.display = "";
+      } else {
+        item.classList.add("search-no-match");
+        item.classList.remove("search-match", "search-parent-match");
+        item.style.display = "none";
+      }
+    });
 
-        // Expand parent sections
+    // Second pass: show parents of matching items and expand them
+    items.forEach(item => {
+      if (item.classList.contains("search-match")) {
+        // Expand and show all parent sections
         let parent = item.parentElement;
         while (parent && parent !== this.el) {
           if (parent.tagName === "LI") {
+            parent.style.display = "";
             parent.classList.add("expanded");
             parent.classList.remove("collapsed");
+            // Mark as parent match if not a direct match
+            if (!parent.classList.contains("search-match")) {
+              parent.classList.remove("search-no-match");
+              parent.classList.add("search-parent-match");
+            }
           }
           parent = parent.parentElement;
         }
-      } else {
-        item.style.display = "none";
-        item.classList.add("search-no-match");
-        item.classList.remove("search-match");
       }
     });
   }
