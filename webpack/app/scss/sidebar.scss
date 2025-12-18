@@ -22,8 +22,9 @@ $focus-ring: #fbbf24;
   min-height: calc(100% - 64px);
 
   div.container-fluid {
-    width: calc(100% - 50px);
-    transition: width 0.2s ease-in-out;
+    flex: 1;
+    min-width: 0;
+    transition: none;
   }
 }
 
@@ -33,14 +34,43 @@ $focus-ring: #fbbf24;
 #sidebar {
   position: relative;
   min-width: $sidebar-maximized-width;
-  max-width: $sidebar-maximized-width;
+  max-width: 600px;
+  width: $sidebar-maximized-width;
   min-height: 100vh;
   background-color: $sidebar-bg;
   border-right: 1px solid $sidebar-border;
   box-shadow: none;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: none;
   overflow: hidden;
   z-index: 1000;
+  user-select: none;
+}
+
+/* Sidebar Resize Handle
+   ========================================================================== */
+
+#sidebar .resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  cursor: ew-resize;
+  z-index: 1001;
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(217, 119, 6, 0.2);
+  }
+
+  &.resizing {
+    background-color: rgba(217, 119, 6, 0.4);
+  }
+}
+
+#sidebar.minimized .resize-handle {
+  display: none;
 }
 
 /* Sidebar Header
@@ -180,7 +210,16 @@ $focus-ring: #fbbf24;
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   white-space: nowrap;
-  text-overflow: ellipsis;
+
+  /* Ensure text with ellipsis */
+  .node-title,
+  .child-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+  }
 
   /* Icon spacing */
   .node-icon,

@@ -21,11 +21,19 @@ class Sidebar {
       "toggle_el": "sidebar-header",
       "search_el": "sidebar-search",
       "cookie_key": "sidebar-toggle",
+      "width_cookie_key": "sidebar-width",
+      "min_width": 200,
+      "max_width": 600,
     }, config);
 
     // Track navigation data
     this.navigation_data = null;
     this.navigation_container = null;
+
+    // Track resize state
+    this.is_resizing = false;
+    this.resize_start_x = 0;
+    this.resize_start_width = 0;
 
     // Bind "this" context when called
     this.fetch_navigation = this.fetch_navigation.bind(this);
@@ -37,6 +45,9 @@ class Sidebar {
     this.on_search_blur = this.on_search_blur.bind(this);
     this.on_search_input = this.on_search_input.bind(this);
     this.toggle_section = this.toggle_section.bind(this);
+    this.on_resize_start = this.on_resize_start.bind(this);
+    this.on_resize_move = this.on_resize_move.bind(this);
+    this.on_resize_end = this.on_resize_end.bind(this);
 
     // Initialize sidebar element
     this.el = document.getElementById(this.config.el);
@@ -50,12 +61,16 @@ class Sidebar {
     this.setup_search();
     this.setup_collapsible_sections();
     this.setup_keyboard_navigation();
+    this.setup_resize_handle();
 
     // Restore toggle state from cookie
     if (this.is_toggled()) {
       this.el.classList.remove("minimized");
       this.el.classList.add("toggled");
     }
+
+    // Restore saved width from cookie
+    this.restore_width();
 
     // Fetch and render navigation from JSON API
     this.fetch_navigation();
@@ -514,6 +529,120 @@ class Sidebar {
     setTimeout(() => {
       announcement.remove();
     }, 1000);
+  }
+
+  /**
+   * Setup resize handle
+   */
+  setup_resize_handle() {
+    // Create resize handle element
+    const resize_handle = document.createElement("div");
+    resize_handle.className = "resize-handle";
+    resize_handle.setAttribute("aria-label", "Resize sidebar");
+    this.el.appendChild(resize_handle);
+
+    // Add event listeners
+    resize_handle.addEventListener("mousedown", this.on_resize_start);
+  }
+
+  /**
+   * Start resizing
+   */
+  on_resize_start(event) {
+    event.preventDefault();
+    this.is_resizing = true;
+    this.resize_start_x = event.clientX;
+    this.resize_start_width = this.el.offsetWidth;
+
+    // Add resizing class
+    const resize_handle = this.el.querySelector(".resize-handle");
+    if (resize_handle) {
+      resize_handle.classList.add("resizing");
+    }
+
+    // Add global listeners
+    document.addEventListener("mousemove", this.on_resize_move);
+    document.addEventListener("mouseup", this.on_resize_end);
+
+    // Prevent text selection while resizing
+    document.body.style.userSelect = "none";
+    document.body.style.cursor = "ew-resize";
+  }
+
+  /**
+   * Handle resize movement
+   */
+  on_resize_move(event) {
+    if (!this.is_resizing) {
+      return;
+    }
+
+    event.preventDefault();
+
+    // Calculate new width
+    const delta = event.clientX - this.resize_start_x;
+    let new_width = this.resize_start_width + delta;
+
+    // Clamp to min/max
+    new_width = Math.max(
+      this.config.min_width,
+      Math.min(this.config.max_width, new_width)
+    );
+
+    // Apply new width
+    this.el.style.width = `${new_width}px`;
+  }
+
+  /**
+   * End resizing
+   */
+  on_resize_end(event) {
+    if (!this.is_resizing) {
+      return;
+    }
+
+    this.is_resizing = false;
+
+    // Remove resizing class
+    const resize_handle = this.el.querySelector(".resize-handle");
+    if (resize_handle) {
+      resize_handle.classList.remove("resizing");
+    }
+
+    // Remove global listeners
+    document.removeEventListener("mousemove", this.on_resize_move);
+    document.removeEventListener("mouseup", this.on_resize_end);
+
+    // Restore text selection
+    document.body.style.userSelect = "";
+    document.body.style.cursor = "";
+
+    // Save width to cookie
+    const current_width = this.el.offsetWidth;
+    this.save_width(current_width);
+  }
+
+  /**
+   * Save sidebar width to cookie
+   */
+  save_width(width) {
+    window.site.set_cookie(this.config.width_cookie_key, width);
+  }
+
+  /**
+   * Restore sidebar width from cookie
+   */
+  restore_width() {
+    const saved_width = window.site.read_cookie(
+      this.config.width_cookie_key);
+
+    if (saved_width) {
+      const width = parseInt(saved_width, 10);
+      if (width >= this.config.min_width &&
+          width <= this.config.max_width) {
+        this.el.style.width = `${width}px`;
+      }
+    }
   }
 }
 
