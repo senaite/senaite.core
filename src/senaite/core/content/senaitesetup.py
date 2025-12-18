@@ -2194,21 +2194,26 @@ class Setup(Container):
     def getIDFormatting(self):
         """Get ID formatting configuration
         Normalizes None values to empty strings for Choice fields
+        Ensures string values are returned as byte strings (not unicode)
         """
         accessor = self.accessor("id_formatting")
         value = accessor(self)
         if not value:
             return DEFAULT_ID_FORMATTING
 
-        # Normalize None values to empty strings for Choice fields
+        # Normalize values: convert `None` to empty strings and unicode to
+        # bytes to prevent `UnicodeDecodeError` when formatting with UTF-8
+        # encoded values
         normalized = []
         for row in value:
-            normalized_row = dict(row)
-            # Convert None to empty string for Choice fields
-            if normalized_row.get("sequence_type") is None:
-                normalized_row["sequence_type"] = ""
-            if normalized_row.get("counter_type") is None:
-                normalized_row["counter_type"] = ""
+            normalized_row = {}
+            for key, val in row.items():
+                if val is None:
+                    normalized_row[key] = ""
+                elif isinstance(val, unicode):
+                    normalized_row[key] = val.encode("utf-8")
+                else:
+                    normalized_row[key] = val
             normalized.append(normalized_row)
 
         return normalized
