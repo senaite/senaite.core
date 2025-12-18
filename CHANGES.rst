@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2833 Ensure string values for ID formatting
 - #2830 Fix TinyMCE hidden Cursor
 - #2829 Fix TypeError in bika_setup rejection widget
 - #2821 Migrate all fields from bika_setup to senaite setup
