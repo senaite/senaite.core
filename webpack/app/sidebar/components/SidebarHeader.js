@@ -12,8 +12,8 @@ export const SidebarHeader = ({isToggled, onToggle}) => {
       <button
         type="button"
         onClick={onToggle}
-        title="Toggle sidebar"
-        aria-label="Toggle sidebar"
+        title="Toggle sidebar (Ctrl/Cmd+B)"
+        aria-label="Toggle sidebar (Ctrl/Cmd+B)"
         aria-expanded={isToggled}>
         <i className={`sidebar-toggle-icon ${iconClass}`} />
       </button>
