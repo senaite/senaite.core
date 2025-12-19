@@ -21,10 +21,17 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize Site
   window.site = new Site();
 
+  // Initialize SENAITE core namespace
+  window.senaite = window.senaite || {};
+  window.senaite.core = window.senaite.core || {};
+
   // Initialize Sidebar
-  window.sidebar = new Sidebar({
+  window.senaite.core.sidebar = new Sidebar({
     "el": "sidebar",
   });
+
+  // BBB: Keep legacy reference for backwards compatibility
+  window.sidebar = window.senaite.core.sidebar;
 
   // Ajax Edit Form Handler
   var form = new EditForm({
