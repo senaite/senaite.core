@@ -42,6 +42,7 @@ from senaite.core.schema import RichTextField
 from senaite.core.schema import UIDReferenceField
 from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
+from senaite.core.schema.textlinefield import TextLineField
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.duration.widget import DurationWidgetFactory
 from zope import schema
@@ -182,12 +183,12 @@ class IIDFormattingRecordSchema(Interface):
     """Schema for ID formatting configuration records
     """
 
-    portal_type = schema.TextLine(
+    portal_type = TextLineField(
         title=_(u"Portal Type"),
         required=False,
     )
 
-    form = schema.TextLine(
+    form = TextLineField(
         title=_(u"Format"),
         required=False,
     )
@@ -199,7 +200,7 @@ class IIDFormattingRecordSchema(Interface):
         default="",
     )
 
-    context = schema.TextLine(
+    context = TextLineField(
         title=_(u"Context"),
         required=False,
     )
@@ -211,12 +212,12 @@ class IIDFormattingRecordSchema(Interface):
         default="",
     )
 
-    counter_reference = schema.TextLine(
+    counter_reference = TextLineField(
         title=_(u"Counter Ref"),
         required=False,
     )
 
-    prefix = schema.TextLine(
+    prefix = TextLineField(
         title=_(u"Prefix"),
         required=False,
     )
