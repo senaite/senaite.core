@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2833 Ensure string values for ID formatting
 - #2827 Link demo user to contact during import
 - #2836 Rollback temporary samples on error during creation
 - #2830 Fix TinyMCE hidden Cursor
