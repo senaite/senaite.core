@@ -214,14 +214,22 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         tat = self.getMaxTimeAllowed()
         if not tat:
             return None
-        if api.to_minutes(**tat) == 0:
+
+        # During AT->DX migration, tat might be either a dict or timedelta
+        if isinstance(tat, timedelta):
+            delta = tat
+            minutes = int(delta.total_seconds() / 60)
+        else:
+            # Archetypes format
+            minutes = api.to_minutes(**tat)
+            # delta time when the first analysis is considered as late
+            delta = timedelta(minutes=minutes)
+
+        if minutes == 0:
             return None
         start = self.getStartProcessDate()
         if not start:
             return None
-
-        # delta time when the first analysis is considered as late
-        delta = timedelta(minutes=api.to_minutes(**tat))
 
         # calculated due date
         end = dt2DT(DT2dt(start) + delta)
