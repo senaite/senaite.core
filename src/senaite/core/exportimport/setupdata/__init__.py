@@ -660,11 +660,12 @@ class Client_Contacts(WorksheetImporter):
                             "fullname": fullname,
                         }
                     )
+                    # This will add the user to a client specific group which
+                    # has the "Client" role assigned
+                    contact.setUser(username)
+
                 except Exception as msg:
                     logger.info("Error adding user (%s): %s" % (msg, username))
-                contact.aq_parent.manage_setLocalRoles(
-                    row['Username'], ['Owner', ])
-                contact.reindexObject()
 
 
 class Container_Types(WorksheetImporter):
