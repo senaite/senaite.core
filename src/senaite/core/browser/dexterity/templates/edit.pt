@@ -15,7 +15,7 @@
     <div tal:replace="structure provider:plone.belowcontenttitle" />
 
     <div id="content-core">
-      <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
+      <div tal:replace="structure view/contents" />
     </div>
 
   </metal:block>

@@ -232,7 +232,7 @@ def after_verify(analysis):
 
     # Promote transition to Analysis Request if Sample auto-verify is enabled
     if IRequestAnalysis.providedBy(analysis) and check_all_verified(analysis):
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         if setup.getAutoVerifySamples():
             doActionFor(analysis.getRequest(), "verify")
 

@@ -53,7 +53,7 @@ def after_no_sampling_workflow(analysis_request):
     """Function triggered after "no_sampling_workflow transition for the
     Analysis Request passed in is performed
     """
-    setup = api.get_setup()
+    setup = api.get_senaite_setup()
     if setup.getAutoreceiveSamples():
         # Auto-receive samples is enabled. Note transition to "received" state
         # will only take place if the current user has enough privileges (this

@@ -19,6 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 
+from datetime import timedelta
+
 from bika.lims import api
 from bika.lims.api import safe_unicode as u
 from bika.lims.interfaces import IInvalidated
@@ -28,6 +30,7 @@ from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
 from plone.namedfile.file import NamedBlobFile
 from senaite.core import logger
+from senaite.core.api import dtime
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
@@ -581,3 +584,186 @@ def link_contact_users(tool):
         contact._p_deactivate()
 
     logger.info("Link client contacts to users [DONE]")
+
+
+@upgradestep(product, version)
+def migrate_setup_fields_to_dx(tool):
+    """Migrate all setup fields from BikaSetup to SenaiteSetup
+    """
+    logger.info("Migrating setup fields from BikaSetup to SenaiteSetup ...")
+
+    bika_setup = api.get_bika_setup()
+    senaite_setup = api.get_senaite_setup()
+
+    if not bika_setup or not senaite_setup:
+        logger.warning("BikaSetup or SenaiteSetup not found [SKIP]")
+        return
+
+    # Mapping of AT field name -> DX field name
+    # Format: (AT_field_name, DX_field_name, converter_function)
+    fields_to_migrate = (
+        # Security
+        ("AutoLogOff", "auto_log_off", None),
+        ("RestrictWorksheetUsersAccess", "restrict_worksheet_users_access",
+         None),
+        ("AllowToSubmitNotAssigned", "allow_to_submit_not_assigned", None),
+        ("RestrictWorksheetManagement", "restrict_worksheet_management", None),
+        ("EnableGlobalAuditlog", "enable_global_auditlog", None),
+        # Accounting
+        ("ShowPrices", "show_prices", None),
+        ("Currency", "currency", None),
+        ("DefaultCountry", "default_country", None),
+        ("MemberDiscount", "member_discount", None),
+        ("VAT", "vat", None),
+        # Results Reports
+        ("DecimalMark", "decimal_mark", None),
+        ("ScientificNotationReport", "scientific_notation_report", None),
+        ("MinimumResults", "minimum_results", None),
+        # Analyses
+        ("CategoriseAnalysisServices", "categorise_analysis_services", None),
+        ("CategorizeSampleAnalyses", "categorize_sample_analyses", None),
+        ("SampleAnalysesRequired", "sample_analyses_required", None),
+        ("AllowManualResultCaptureDate", "allow_manual_result_capture_date",
+         None),
+        ("EnableARSpecs", "enable_ar_specs", None),
+        ("ExponentialFormatThreshold", "exponential_format_threshold", None),
+        ("ImmediateResultsEntry", "immediate_results_entry", None),
+        ("EnableAnalysisRemarks", "enable_analysis_remarks", None),
+        ("AutoVerifySamples", "auto_verify_samples", None),
+        ("SelfVerificationEnabled", "self_verification_enabled", None),
+        ("NumberOfRequiredVerifications", "number_of_required_verifications",
+         None),
+        ("TypeOfmultiVerification", "type_of_multi_verification", None),
+        ("ResultsDecimalMark", "results_decimal_mark", None),
+        ("ScientificNotationResults", "scientific_notation_results", None),
+        ("RejectionReasons", "rejection_reasons", "rejection_reasons"),
+        ("DefaultNumberOfARsToAdd", "default_number_of_ars_to_add", None),
+        ("MaxNumberOfSamplesAdd", "max_number_of_samples_add", None),
+        # Appearance
+        ("WorksheetLayout", "worksheet_layout", None),
+        ("DashboardByDefault", "dashboard_by_default", None),
+        ("LandingPage", "landing_page", None),
+        ("ShowPartitions", "show_partitions", None),
+        ("ShowLabNameInLogin", "show_lab_name_in_login", None),
+        # Sampling
+        ("PrintingWorkflowEnabled", "printing_workflow_enabled", None),
+        ("SamplingWorkflowEnabled", "sampling_workflow_enabled", None),
+        ("ScheduleSamplingEnabled", "schedule_sampling_enabled", None),
+        ("DateSampledRequired", "date_sampled_required", None),
+        ("AutoreceiveSamples", "autoreceive_samples", None),
+        ("SamplePreservationEnabled", "sample_preservation_enabled", None),
+        ("Workdays", "workdays", None),
+        ("DefaultTurnaroundTime", "default_turnaround_time", "duration"),
+        ("DefaultSampleLifetime", "default_sample_lifetime", "duration"),
+        # Notifications
+        ("EmailFromSamplePublication", "email_from_sample_publication", None),
+        ("EmailBodySamplePublication", "email_body_sample_publication", None),
+        ("AlwaysCCResponsiblesInReportEmail",
+         "always_cc_responsibles_in_report_emails", None),
+        ("NotifyOnSampleRejection", "notify_on_sample_rejection", None),
+        ("EmailBodySampleRejection", "email_body_sample_rejection", None),
+        ("InvalidationReasonRequired", "invalidation_reason_required", None),
+        ("EmailBodySampleInvalidation", "email_body_sample_invalidation",
+         None),
+        # Sticker
+        ("AutoPrintStickers", "auto_print_stickers", None),
+        ("AutoStickerTemplate", "auto_sticker_template", None),
+        ("SmallStickerTemplate", "small_sticker_template", None),
+        ("LargeStickerTemplate", "large_sticker_template", None),
+        ("DefaultNumberOfCopies", "default_number_of_copies", None),
+        # ID Server
+        ("IDFormatting", "id_formatting", None),
+    )
+
+    migrated = 0
+    skipped = 0
+    errors = 0
+
+    for field_info in fields_to_migrate:
+        at_field_name = field_info[0]
+        dx_field_name = field_info[1]
+        converter = field_info[2] if len(field_info) > 2 else None
+
+        # Get the AT field
+        at_field = bika_setup.getField(at_field_name)
+        if not at_field:
+            logger.warning("AT field {} not found [SKIP]".format(
+                at_field_name))
+            skipped += 1
+            continue
+
+        # Get raw value from AT field
+        try:
+            raw_value = at_field.get(bika_setup)
+        except Exception as e:
+            logger.error("Error reading AT field {}: {} [SKIP]".format(
+                at_field_name, str(e)))
+            errors += 1
+            continue
+
+        # we use the same setter names as in the AT setup
+        setter_name = "set{}".format(at_field_name)
+
+        # Check if setter exists on SenaiteSetup
+        setter = getattr(senaite_setup, setter_name, None)
+        if not setter or not callable(setter):
+            logger.warning("Setter {} not found on SenaiteSetup [SKIP]".format(
+                setter_name))
+            skipped += 1
+            continue
+
+        try:
+            # Apply converter if specified
+            converted_value = raw_value
+            if converter == "duration":
+                # Convert dict to timedelta
+                if isinstance(raw_value, dict):
+                    converted_value = dtime.to_timedelta(raw_value)
+                elif not isinstance(raw_value, timedelta):
+                    logger.warning(
+                        "Expected dict or timedelta for {}, got {} [SKIP]".format(
+                            at_field_name, type(raw_value)))
+                    skipped += 1
+                    continue
+            elif converter == "rejection_reasons":
+                # Special handling for RejectionReasons
+                # Extract checkbox and reasons from RecordsField
+                if raw_value and isinstance(raw_value, (list, tuple)):
+                    if len(raw_value) > 0 and isinstance(raw_value[0], dict):
+                        reasons_dict = raw_value[0]
+                        # Set enable_rejection_workflow based on checkbox
+                        checkbox = reasons_dict.get("checkbox", "")
+                        senaite_setup.setEnableRejectionWorkflow(
+                            checkbox == "on")
+                        # Extract textfield-* values
+                        textfield_keys = [k for k in reasons_dict.keys()
+                                          if k.startswith("textfield-")]
+                        sorted_keys = sorted(
+                            textfield_keys,
+                            key=lambda x: int(x.split("-")[1]))
+                        converted_value = [
+                            api.safe_unicode(reasons_dict[k])
+                            for k in sorted_keys
+                            if reasons_dict[k]
+                        ]
+                    else:
+                        converted_value = []
+                else:
+                    converted_value = []
+
+            # Set value on SenaiteSetup
+            setter(converted_value)
+
+            logger.info("Migrated {} -> {}: {}".format(
+                at_field_name, dx_field_name, repr(converted_value)))
+            migrated += 1
+
+        except Exception as e:
+            logger.error("Error migrating {} -> {}: {}".format(
+                at_field_name, dx_field_name, str(e)))
+            errors += 1
+
+    logger.info("Migration summary: {} migrated, {} skipped, {} errors".format(
+        migrated, skipped, errors))
+
+    logger.info("Migrating setup fields [DONE]")

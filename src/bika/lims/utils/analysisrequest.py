@@ -136,7 +136,7 @@ def create_analysisrequest(client, request, values, analyses=None,
             receive_sample(ar, date_received=date_received)
 
     if not IReceived.providedBy(ar):
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         auto_receive = setup.getAutoreceiveSamples()
         if ar.getSamplingRequired():
             # sample has not been collected yet
@@ -560,7 +560,7 @@ def do_rejection(sample, notify=None):
 
     # Do we need to send a notification email?
     if notify is None:
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         notify = setup.getNotifyOnSampleRejection()
 
     if notify:
@@ -596,7 +596,6 @@ def get_rejection_email_recipients(sample):
     return list(emails)
 
 
-
 def get_rejection_mail(sample, rejection_pdf=None):
     """Generates an email to sample contacts with rejection reasons
     """
@@ -605,15 +604,15 @@ def get_rejection_mail(sample, rejection_pdf=None):
     reasons = reasons and reasons[0] or {}
     reasons = reasons.get("selected", []) + [reasons.get("other")]
     reasons = filter(None, reasons)
-    reasons = "<br/>- ".join(reasons)
+    reasons = u"<br/>- ".join(map(api.safe_unicode, reasons))
 
     # Render the email body
-    setup = api.get_setup()
+    setup = api.get_senaite_setup()
     lab_address = setup.laboratory.getPrintAddress()
     email_body = Template(setup.getEmailBodySampleRejection())
     email_body = email_body.safe_substitute({
-        "lab_address": "<br/>".join(lab_address),
-        "reasons": reasons and "<br/>-{}".format(reasons) or "",
+        "lab_address": u"<br/>".join(lab_address),
+        "reasons": reasons and u"<br/>-{}".format(reasons) or u"",
         "sample_id": api.get_id(sample),
         "sample_link": get_link(api.get_url(sample), api.get_id(sample))
     })
@@ -633,7 +632,7 @@ def get_rejection_mail(sample, rejection_pdf=None):
         logger.warn("No valid recipients for {}".format(api.get_id(sample)))
         return None
 
-    lab = api.get_setup().laboratory
+    lab = api.get_senaite_setup().laboratory
     attachments = rejection_pdf and [rejection_pdf] or []
 
     return compose_email(
