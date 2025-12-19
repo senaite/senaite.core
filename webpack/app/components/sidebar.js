@@ -1,10 +1,9 @@
 /* SENAITE Sidebar
  *
- * Modern sidebar inspired by Claude.ai's design with smooth animations,
+ * Modern sidebar with smooth animations,
  * collapsible sections, and improved accessibility.
  *
  * Features:
- * - Auto-expand on hover with configurable delay
  * - Toggle button for persistent state
  * - Smooth CSS transitions
  * - Keyboard navigation support
@@ -48,6 +47,7 @@ class Sidebar {
     this.on_resize_start = this.on_resize_start.bind(this);
     this.on_resize_move = this.on_resize_move.bind(this);
     this.on_resize_end = this.on_resize_end.bind(this);
+    this.load_all_items = this.load_all_items.bind(this);
 
     // Initialize sidebar element
     this.el = document.getElementById(this.config.el);
@@ -247,6 +247,36 @@ class Sidebar {
       const child_list = this.render_navigation_list(
         item.children, level + 1);
       li.appendChild(child_list);
+
+      // Add "Load more" button if there are more items
+      if (item.has_more) {
+        const load_more_li = document.createElement("li");
+        load_more_li.className = "navTreeItem load-more-item";
+
+        const load_more_link = document.createElement("a");
+        load_more_link.href = "#";
+        load_more_link.className = "navTreeLink load-more-link";
+
+        // Show "Load more..." text
+        load_more_link.textContent = "Show more...";
+        load_more_link.setAttribute("data-parent-id", item.id);
+        load_more_link.setAttribute("title",
+          "Click to load all items in this folder");
+
+        load_more_link.addEventListener("click", (event) => {
+          event.preventDefault();
+
+          // Show loading state
+          load_more_link.classList.add("loading");
+          load_more_link.innerHTML = '<span class="spinner"></span> Loading...';
+          load_more_link.style.pointerEvents = "none";
+
+          this.load_all_items();
+        });
+
+        load_more_li.appendChild(load_more_link);
+        child_list.appendChild(load_more_li);
+      }
     }
 
     return li;
@@ -642,6 +672,61 @@ class Sidebar {
           width <= this.config.max_width) {
         this.el.style.width = `${width}px`;
       }
+    }
+  }
+
+  /**
+   * Load all navigation items without limit
+   */
+  async load_all_items() {
+    try {
+      // Add loading state
+      this.el.classList.add("loading");
+
+      // Get the portal URL
+      const portal_url = window.portal_url || "/";
+
+      // Get the current page URL for highlighting
+      const current_url = window.location.href;
+
+      // Fetch navigation data with load_all=true
+      const response = await fetch(
+        `${portal_url}/@@sidebar-navigation-json?current_url=${encodeURIComponent(current_url)}&load_all=true`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "same-origin",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to fetch navigation");
+      }
+
+      // Store navigation data
+      this.navigation_data = result.data;
+
+      // Render navigation
+      this.render_navigation();
+
+      // Remove loading state
+      this.el.classList.remove("loading");
+    } catch (error) {
+      console.error("Error loading all navigation items:", error);
+
+      // Remove loading state
+      this.el.classList.remove("loading");
+
+      // Show error message
+      this.show_error("Failed to load all items");
     }
   }
 }

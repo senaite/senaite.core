@@ -739,19 +739,17 @@ $focus-ring: #fbbf24;
 /* Animations - Smooth Modern Transitions
    ========================================================================== */
 
-@keyframes slideIn {
+@keyframes fadeIn {
   from {
-    opacity: 0;
-    transform: translateX(-0.5rem);
+    opacity: 0.7;
   }
   to {
     opacity: 1;
-    transform: translateX(0);
   }
 }
 
 #sidebar:not(.minimized) ul li {
-  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Dark Mode (optional, for Bootstrap 5.3+)
