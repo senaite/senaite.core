@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2836 Rollback temporary samples on error during creation
 - #2830 Fix TinyMCE hidden Cursor
 - #2829 Fix TypeError in bika_setup rejection widget
 - #2821 Migrate all fields from bika_setup to senaite setup
