@@ -875,7 +875,7 @@ class ISetupSchema(model.Schema):
                     u"their children, and so on."
         ),
         required=True,
-        default=2,
+        default=1,
         min=1,
         max=3,
     )

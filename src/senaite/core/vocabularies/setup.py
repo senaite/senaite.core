@@ -21,6 +21,8 @@
 from bika.lims import _
 from bika.lims import api
 from senaite.core.api import geo
+from senaite.core.config.setup import SKIP_NAV_FOLDER_TYPES
+from senaite.core.config.setup import SKIP_NAV_PORTAL_TYPES
 from zope.i18n.locales import locales
 from zope.interface import implementer
 from zope.schema.interfaces import IVocabularyFactory
@@ -153,17 +155,15 @@ class TopLevelFoldersVocabulary(object):
 
         # Get all immediate children of portal
         for obj_id in portal.objectIds():
-            try:
-                obj = portal[obj_id]
-                # Check if object is AT or DX
-                if not api.is_object(obj):
-                    continue
-                # Get title and id
-                title = api.get_title(obj)
-                items.append((obj_id, obj_id, title))
-            except Exception:
-                # Skip objects we can't access
+            obj = portal[obj_id]
+            # Check if object is AT or DX
+            if not api.is_object(obj):
                 continue
+            if api.get_portal_type(obj) in SKIP_NAV_FOLDER_TYPES:
+                continue
+            # Get title and id
+            title = api.get_title(obj)
+            items.append((obj_id, obj_id, title))
 
         # Sort by title
         items.sort(key=lambda x: x[2])
@@ -182,15 +182,13 @@ class NavigationPortalTypesVocabulary(object):
 
         # Get all portal types
         for portal_type in portal_types.objectIds():
-            try:
-                fti = portal_types.getTypeInfo(portal_type)
-                if fti:
-                    # Use the title from FTI (user-friendly name)
-                    title = fti.Title() or portal_type
-                    items.append((portal_type, portal_type, title))
-            except Exception:
-                # Skip types we can't access
+            if portal_type in SKIP_NAV_PORTAL_TYPES:
                 continue
+            fti = portal_types.getTypeInfo(portal_type)
+            if fti:
+                # Use the title from FTI (user-friendly name)
+                title = fti.Title() or portal_type
+                items.append((portal_type, portal_type, title))
 
         # Sort by title
         items.sort(key=lambda x: x[2])
