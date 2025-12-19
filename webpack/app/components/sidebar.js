@@ -47,7 +47,7 @@ class Sidebar {
     this.on_resize_start = this.on_resize_start.bind(this);
     this.on_resize_move = this.on_resize_move.bind(this);
     this.on_resize_end = this.on_resize_end.bind(this);
-    this.load_all_items = this.load_all_items.bind(this);
+    this.show_more_items = this.show_more_items.bind(this);
 
     // Initialize sidebar element
     this.el = document.getElementById(this.config.el);
@@ -89,8 +89,8 @@ class Sidebar {
       // Get the portal URL
       const portal_url = window.portal_url || "/";
 
-      // Get the current page URL for highlighting
-      const current_url = window.location.href;
+      // Get the current content URL from body data attribute
+      const current_url = document.body.dataset.baseUrl || window.location.href;
 
       // Fetch navigation data with current URL parameter
       const response = await fetch(
@@ -271,7 +271,7 @@ class Sidebar {
           load_more_link.innerHTML = '<span class="spinner"></span> Loading...';
           load_more_link.style.pointerEvents = "none";
 
-          this.load_all_items();
+          this.show_more_items();
         });
 
         load_more_li.appendChild(load_more_link);
@@ -676,9 +676,9 @@ class Sidebar {
   }
 
   /**
-   * Load all navigation items without limit
+   * Show more navigation items
    */
-  async load_all_items() {
+  async show_more_items() {
     try {
       // Add loading state
       this.el.classList.add("loading");
@@ -686,12 +686,12 @@ class Sidebar {
       // Get the portal URL
       const portal_url = window.portal_url || "/";
 
-      // Get the current page URL for highlighting
-      const current_url = window.location.href;
+      // Get the current content URL from body data attribute
+      const current_url = document.body.dataset.baseUrl || window.location.href;
 
-      // Fetch navigation data with load_all=true
+      // Fetch navigation data with show_more=true
       const response = await fetch(
-        `${portal_url}/@@sidebar-navigation-json?current_url=${encodeURIComponent(current_url)}&load_all=true`,
+        `${portal_url}/@@sidebar-navigation-json?current_url=${encodeURIComponent(current_url)}&show_more=true`,
         {
           method: "GET",
           headers: {
