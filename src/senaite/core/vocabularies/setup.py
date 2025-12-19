@@ -91,7 +91,8 @@ class WorksheetLayoutVocabulary(object):
     def __call__(self, context=None):
         layouts = []
         for name, utility in getUtilitiesFor(IWorksheetLayouts):
-            [layouts.append(layout) for layout in utility.getResultLayouts()]
+            items = utility.getResultLayouts()
+            [layouts.append((key, key, title)) for key, title in items]
 
         return SimpleVocabulary.fromItems(layouts)
 
