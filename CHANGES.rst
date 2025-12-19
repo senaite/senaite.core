@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2828 RemarksField type for Dexterity content types
+- #2836 Rollback temporary samples on error during creation
 - #2830 Fix TinyMCE hidden Cursor
 - #2829 Fix TypeError in bika_setup rejection widget
 - #2821 Migrate all fields from bika_setup to senaite setup
