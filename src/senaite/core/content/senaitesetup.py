@@ -875,9 +875,9 @@ class ISetupSchema(model.Schema):
                     u"their children, and so on."
         ),
         required=True,
-        default=3,
+        default=2,
         min=1,
-        max=5,
+        max=3,
     )
 
     sidebar_displayed_types = schema.Tuple(
