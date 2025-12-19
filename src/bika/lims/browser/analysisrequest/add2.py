@@ -2057,22 +2057,34 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Create as many samples as required
             num_samples = self.get_num_samples(record)
             for idx in range(num_samples):
-                sample = crar(client, self.request, record)
+                # Create a savepoint before each sample creation to allow
+                # proper rollback if sample creation fails
+                sp = transaction.savepoint()
+                try:
+                    sample = crar(client, self.request, record)
 
-                # Create the attachments
-                for attachment_record in attachments:
-                    self.create_attachment(sample, attachment_record)
+                    # Create the attachments
+                    for attachment_record in attachments:
+                        self.create_attachment(sample, attachment_record)
 
-                # Pass the new sample to all subscription hooks
-                hooks = subscribers((sample, request), IAfterCreateSampleHook)
-                # Lower sort keys are processed first
-                sorted_hooks = sorted(
-                    hooks, key=lambda x: api.to_float(getattr(x, "sort", 10)))
-                for hook in sorted_hooks:
-                    hook.update(sample, source=source)
+                    # Pass the new sample to all subscription hooks
+                    hooks = subscribers(
+                        (sample, request), IAfterCreateSampleHook)
+                    # Lower sort keys are processed first
+                    sorted_hooks = sorted(
+                        hooks, key=lambda x: api.to_float(
+                            getattr(x, "sort", 10)))
+                    for hook in sorted_hooks:
+                        hook.update(sample, source=source)
 
-                transaction.savepoint(optimistic=True)
-                samples.append(sample)
+                    transaction.savepoint(optimistic=True)
+                    samples.append(sample)
+                except Exception:
+                    # Roll back to the savepoint before this sample creation
+                    # This properly reverts all changes including catalog
+                    # entries, workflow history, annotations, etc.
+                    sp.rollback()
+                    raise
 
         return samples
 
