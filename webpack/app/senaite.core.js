@@ -3,7 +3,7 @@ import I18N from "./components/i18n.js";
 import {i18n, _t, _p} from "./i18n-wrapper.js"
 import EditForm from "./components/editform.js"
 import Site from "./components/site.js"
-import Sidebar from "./components/sidebar.js"
+import {initSidebar} from "./sidebar"
 import FormTabbing from "./components/formtabbing.js"
 
 
@@ -25,13 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
   window.senaite = window.senaite || {};
   window.senaite.core = window.senaite.core || {};
 
-  // Initialize Sidebar
-  window.senaite.core.sidebar = new Sidebar({
-    "el": "sidebar",
-  });
-
-  // BBB: Keep legacy reference for backwards compatibility
-  window.sidebar = window.senaite.core.sidebar;
+  // Initialize React Sidebar
+  initSidebar();
 
   // Ajax Edit Form Handler
   var form = new EditForm({
