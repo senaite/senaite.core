@@ -311,7 +311,33 @@ $focus-ring: #fbbf24;
 }
 
 #sidebar ul.nav-level-3 {
-  padding-left: 2rem;
+  padding-left: 1rem;
+
+  > li {
+    > a {
+      font-size: 0.8125rem;
+      font-weight: 400;
+      padding: 0.375rem 1rem;
+      color: $secondary;
+    }
+  }
+}
+
+#sidebar ul.nav-level-4 {
+  padding-left: 1rem;
+
+  > li {
+    > a {
+      font-size: 0.8125rem;
+      font-weight: 400;
+      padding: 0.375rem 1rem;
+      color: $secondary;
+    }
+  }
+}
+
+#sidebar ul.nav-level-5 {
+  padding-left: 1rem;
 
   > li {
     > a {
@@ -546,6 +572,50 @@ $focus-ring: #fbbf24;
 
 #sidebar li a.senaite-state-inactive {
   display: none;
+}
+
+/* Load More Button
+   ========================================================================== */
+
+#sidebar .load-more-item {
+  margin-top: 0.25rem;
+}
+
+#sidebar .load-more-link {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: $primary;
+  font-style: italic;
+  padding: 0.375rem 0.75rem;
+  opacity: 0.8;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-color: $link-hover-bg;
+    opacity: 1;
+    color: $primary;
+  }
+
+  &:focus {
+    outline: 0;
+    box-shadow: 0 0 0 2px $focus-ring;
+  }
+
+  &.loading {
+    opacity: 0.6;
+    cursor: wait;
+
+    .spinner {
+      display: inline-block;
+      width: 0.875rem;
+      height: 0.875rem;
+      margin-right: 0.5rem;
+      border: 0.125rem solid rgba(217, 119, 6, 0.3);
+      border-top-color: $primary;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+  }
 }
 
 /* Loading State - Modern Spinner
