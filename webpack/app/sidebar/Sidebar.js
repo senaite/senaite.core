@@ -1,4 +1,5 @@
 import React, {useState, useCallback, useEffect} from "react";
+import {createPortal} from "react-dom";
 import {useSidebarState} from "./hooks/useSidebarState";
 import {useSidebarResize} from "./hooks/useSidebarResize";
 import {useNavigation} from "./hooks/useNavigation";
@@ -18,6 +19,8 @@ import {SidebarNavigation} from "./components/SidebarNavigation";
  * - Collapsible navigation sections
  * - Search functionality for navigation items
  * - Resizable sidebar with drag handle
+ * - Mobile-responsive with overlay and slide-in animation
+ * - Body scroll lock when mobile sidebar is open
  */
 export const Sidebar = () => {
   const {isToggled, isMinimized, toggle} = useSidebarState();
@@ -26,6 +29,18 @@ export const Sidebar = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // Apply classes and styles to the #sidebar container
   useEffect(() => {
@@ -44,6 +59,26 @@ export const Sidebar = () => {
     container.setAttribute("role", "navigation");
     container.setAttribute("aria-label", "Main navigation");
   }, [isMinimized, isToggled, isLoading, isSearchActive, width]);
+
+  // Manage body scroll for mobile
+  useEffect(() => {
+    if (isMobile && isToggled && !isMinimized) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobile, isToggled, isMinimized]);
+
+  // Handle backdrop click to close sidebar
+  const handleBackdropClick = useCallback(() => {
+    if (isMobile) {
+      toggle(false);
+    }
+  }, [isMobile, toggle]);
 
   const handleSearch = useCallback((query) => {
     setSearchQuery(query);
@@ -67,9 +102,29 @@ export const Sidebar = () => {
     toggle();
   }, [toggle]);
 
+  const showBackdrop = isMobile && isToggled && !isMinimized;
+
   return (
     <>
-      <SidebarHeader isToggled={isToggled} onToggle={handleToggle} />
+      {/* Mobile backdrop - rendered via portal to body */}
+      {createPortal(
+        <div
+          className={`sidebar-backdrop ${showBackdrop ? "show" : ""}`}
+          onClick={handleBackdropClick}
+          aria-hidden="true"
+        />,
+        document.body
+      )}
+
+      {/* On mobile, render toggle button outside sidebar via portal */}
+      {isMobile && !isToggled ? (
+        createPortal(
+          <SidebarHeader isToggled={isToggled} onToggle={handleToggle} />,
+          document.body
+        )
+      ) : (
+        <SidebarHeader isToggled={isToggled} onToggle={handleToggle} />
+      )}
 
       <SidebarSearch
         onSearch={handleSearch}
