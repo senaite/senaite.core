@@ -2,6 +2,10 @@
    SENAITE Sidebar Style
    ========================================================================== */
 
+// Sidebar size variables (from base.scss)
+$sidebar-minimized-width: 50px;
+$sidebar-maximized-width: 200px;
+
 $sidebar-bg: #ffffff;
 $sidebar-border: #e5e7eb;
 $link-color: #374151;
@@ -128,15 +132,11 @@ $focus-ring: #fbbf24;
    ========================================================================== */
 
 #sidebar .sidebar-toggle-icon {
-  @extend .fa;
-  @extend .fa-bars;
   font-size: 1rem;
   transition: transform 0.15s ease-in-out;
 }
 
 #sidebar.toggled .sidebar-toggle-icon {
-  @extend .fa;
-  @extend .fa-times;
   transform: rotate(90deg);
 }
 

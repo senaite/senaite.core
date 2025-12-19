@@ -203,8 +203,50 @@ import {initSidebar} from "./sidebar"
 
 document.addEventListener("DOMContentLoaded", () => {
   // ... other initialization ...
-  initSidebar();
+
+  // Initialize and expose sidebar API
+  window.senaite.core.sidebar = initSidebar();
+
+  // BBB: Legacy reference
+  window.sidebar = window.senaite.core.sidebar;
 });
+```
+
+### Sidebar API
+
+The sidebar is accessible globally via `window.senaite.core.sidebar` (or `window.sidebar` for backwards compatibility):
+
+```javascript
+// Check if sidebar is toggled (expanded)
+window.senaite.core.sidebar.isToggled()  // returns boolean
+
+// Check if sidebar is minimized
+window.senaite.core.sidebar.isMinimized()  // returns boolean
+
+// Toggle sidebar programmatically
+window.senaite.core.sidebar.toggle()  // toggle current state
+window.senaite.core.sidebar.toggle(true)  // force expand
+window.senaite.core.sidebar.toggle(false)  // force minimize
+
+// Minimize sidebar
+window.senaite.core.sidebar.minimize()
+
+// Maximize sidebar
+window.senaite.core.sidebar.maximize()
+
+// Get sidebar DOM element
+window.senaite.core.sidebar.getElement()  // returns HTMLElement
+```
+
+**Example Usage:**
+```javascript
+// Programmatically expand the sidebar
+window.senaite.core.sidebar.maximize();
+
+// Check current state
+if (window.senaite.core.sidebar.isMinimized()) {
+  console.log("Sidebar is minimized");
+}
 ```
 
 ## Migration from Vanilla JS

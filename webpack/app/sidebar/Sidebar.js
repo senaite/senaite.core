@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useRef} from "react";
+import React, {useState, useCallback, useEffect} from "react";
 import {useSidebarState} from "./hooks/useSidebarState";
 import {useSidebarResize} from "./hooks/useSidebarResize";
 import {useNavigation} from "./hooks/useNavigation";
@@ -27,7 +27,23 @@ export const Sidebar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
 
-  const sidebarRef = useRef(null);
+  // Apply classes and styles to the #sidebar container
+  useEffect(() => {
+    const container = document.getElementById("sidebar");
+    if (!container) return;
+
+    const classes = [];
+    if (isMinimized) classes.push("minimized");
+    if (isToggled) classes.push("toggled");
+    if (isLoading) classes.push("loading");
+    if (isSearchActive) classes.push("search-active");
+
+    container.className = classes.join(" ");
+    container.style.width = isMinimized ? "50px" : `${width}px`;
+    container.setAttribute("aria-expanded", !isMinimized);
+    container.setAttribute("role", "navigation");
+    container.setAttribute("aria-label", "Main navigation");
+  }, [isMinimized, isToggled, isLoading, isSearchActive, width]);
 
   const handleSearch = useCallback((query) => {
     setSearchQuery(query);
@@ -35,7 +51,11 @@ export const Sidebar = () => {
 
   const handleSearchFocus = useCallback(() => {
     setIsSearchActive(true);
-  }, []);
+    // Expand sidebar if minimized
+    if (isMinimized) {
+      toggle(true);
+    }
+  }, [isMinimized, toggle]);
 
   const handleSearchBlur = useCallback(() => {
     setTimeout(() => {
@@ -47,34 +67,8 @@ export const Sidebar = () => {
     toggle();
   }, [toggle]);
 
-  const sidebarClasses = ["sidebar"];
-  if (isMinimized) {
-    sidebarClasses.push("minimized");
-  }
-  if (isToggled) {
-    sidebarClasses.push("toggled");
-  }
-  if (isLoading) {
-    sidebarClasses.push("loading");
-  }
-  if (isSearchActive) {
-    sidebarClasses.push("search-active");
-  }
-
-  const sidebarStyle = {
-    width: isMinimized ? "50px" : `${width}px`,
-  };
-
   return (
-    <div
-      id="sidebar"
-      ref={sidebarRef}
-      className={sidebarClasses.join(" ")}
-      style={sidebarStyle}
-      aria-expanded={!isMinimized}
-      role="navigation"
-      aria-label="Main navigation"
-    >
+    <>
       <SidebarHeader isToggled={isToggled} onToggle={handleToggle} />
 
       <SidebarSearch
@@ -111,7 +105,7 @@ export const Sidebar = () => {
           aria-label="Resize sidebar"
         />
       )}
-    </div>
+    </>
   );
 };
 

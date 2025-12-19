@@ -26,7 +26,10 @@ document.addEventListener("DOMContentLoaded", () => {
   window.senaite.core = window.senaite.core || {};
 
   // Initialize React Sidebar
-  initSidebar();
+  window.senaite.core.sidebar = initSidebar();
+
+  // BBB: Keep legacy reference for backwards compatibility
+  window.sidebar = window.senaite.core.sidebar;
 
   // Ajax Edit Form Handler
   var form = new EditForm({

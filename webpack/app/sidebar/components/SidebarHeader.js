@@ -5,6 +5,8 @@ import React from "react";
  * Displays the toggle button for expanding/collapsing the sidebar
  */
 export const SidebarHeader = ({isToggled, onToggle}) => {
+  const iconClass = isToggled ? "fa fa-times" : "fa fa-bars";
+
   return (
     <div id="sidebar-header">
       <button
@@ -12,9 +14,8 @@ export const SidebarHeader = ({isToggled, onToggle}) => {
         onClick={onToggle}
         title="Toggle sidebar"
         aria-label="Toggle sidebar"
-        aria-expanded={isToggled}
-      >
-        <i className="sidebar-toggle-icon" />
+        aria-expanded={isToggled}>
+        <i className={`sidebar-toggle-icon ${iconClass}`} />
       </button>
     </div>
   );
