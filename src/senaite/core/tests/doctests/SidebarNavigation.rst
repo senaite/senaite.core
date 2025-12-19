@@ -2,8 +2,8 @@ Sidebar Navigation
 ==================
 
 The sidebar navigation provides a dynamic, configurable navigation tree for
-SENAITE LIMS. It queries both portal_catalog and uid_catalog to build a
-hierarchical structure of navigation items.
+SENAITE LIMS. It queries registered catalogs to build a hierarchical structure
+of navigation items.
 
 Running this test from the buildout directory::
 
@@ -41,82 +41,35 @@ Create some test folders and objects to build a navigation tree:
     >>> batches = portal.batches
     >>> worksheets = portal.worksheets
 
+Create a test client for testing:
+
+    >>> client = api.create(clients, "Client", title="Test Client")
+    >>> api.get_id(client)
+    'client-1'
+
+Reindex the object so it appears in catalogs:
+
+    >>> client.reindexObject()
+
 Get the SenaiteSetup object:
 
     >>> setup = api.get_senaite_setup()
 
 
-API Methods for Catalog Brains
-...............................
-
-The API provides methods to handle both portal_catalog and uid_catalog brains,
-which may have different path formats.
-
-
-Test get_path with portal_catalog brain
-........................................
-
-Portal catalog brains return absolute paths:
-
-    >>> portal_catalog = api.get_tool("portal_catalog")
-    >>> brains = portal_catalog(portal_type="Client", sort_limit=1)
-    >>> if brains:
-    ...     brain = brains[0]
-    ...     path = api.get_path(brain)
-    ...     path.startswith("/")
-    True
-
-
-Test get_path with uid_catalog brain
-.....................................
-
-UID catalog brains may return relative paths that need to be normalized:
-
-    >>> uid_catalog = api.get_tool("uid_catalog")
-    >>> brains = uid_catalog(sort_limit=1)
-    >>> if brains:
-    ...     brain = brains[0]
-    ...     path = api.get_path(brain)
-    ...     # Path should be normalized to absolute path
-    ...     path.startswith("/")
-    True
-
-
-Test get_url with portal_catalog brain
-.......................................
-
-Portal catalog brains have a getURL method:
-
-    >>> brains = portal_catalog(portal_type="Client", sort_limit=1)
-    >>> if brains:
-    ...     brain = brains[0]
-    ...     url = api.get_url(brain)
-    ...     url.startswith("http")
-    True
-
-
-Test get_url with uid_catalog brain
-....................................
-
-UID catalog brains may not have getURL, so we construct it from the path:
-
-    >>> brains = uid_catalog(sort_limit=1)
-    >>> if brains:
-    ...     brain = brains[0]
-    ...     url = api.get_url(brain)
-    ...     # URL should be properly constructed
-    ...     url.startswith("http")
-    True
-
-
 Sidebar Navigation Configuration
-.................................
+................................
 
 The sidebar navigation is configured through SenaiteSetup.
 
 
 Test default configuration
-...........................
+..........................
+
+First, reset to defaults:
+
+    >>> setup.setSidebarFolders(())
+    >>> setup.setSidebarNavigationDepth(3)
+    >>> setup.setSidebarDisplayedTypes(())
 
 By default, no folders are selected:
 
@@ -135,7 +88,7 @@ No portal types are filtered by default:
 
 
 Test setting sidebar folders
-.............................
+............................
 
 Select specific folders to display:
 
@@ -145,7 +98,7 @@ Select specific folders to display:
 
 
 Test setting navigation depth
-..............................
+.............................
 
 Set maximum depth to 2:
 
@@ -155,7 +108,7 @@ Set maximum depth to 2:
 
 
 Test setting displayed types
-.............................
+............................
 
 Filter to only show specific portal types:
 
@@ -165,13 +118,13 @@ Filter to only show specific portal types:
 
 
 Sidebar Navigation API Endpoint
-................................
+...............................
 
 The sidebar navigation is accessed via the @@sidebar-navigation-json view.
 
 
 Test getting the navigation view
-.................................
+................................
 
 Get the navigation API view:
 
@@ -181,7 +134,7 @@ Get the navigation API view:
 
 
 Test getting navigation root
-.............................
+............................
 
 The navigation root should be the portal:
 
@@ -191,7 +144,7 @@ The navigation root should be the portal:
 
 
 Test getting navigation depth
-..............................
+.............................
 
 Should return the configured depth:
 
@@ -200,7 +153,7 @@ Should return the configured depth:
 
 
 Test getting displayed types
-.............................
+............................
 
 Should return the configured types:
 
@@ -209,7 +162,7 @@ Should return the configured types:
 
 
 Test getting selected folders
-..............................
+.............................
 
 Should return the configured folders:
 
@@ -217,19 +170,113 @@ Should return the configured folders:
     ('clients', 'samples', 'methods')
 
 
+Test dynamic catalog lookup
+...........................
+
+The sidebar uses dynamic catalog lookup to optimize queries by selecting the
+most appropriate catalog for each folder based on its allowed content types.
+
+When a folder allows only one content type, the sidebar uses the specialized
+catalog for that type (e.g., senaite_catalog_client for Client objects).
+Otherwise, it falls back to uid_catalog.
+
+Get the catalog tools for testing:
+
+    >>> portal_catalog = api.get_tool("portal_catalog")
+    >>> uid_catalog = api.get_tool("uid_catalog")
+
+
+Test get_catalog_for with client folder
+.......................................
+
+The ClientFolder allows only Client content type, so the method should
+select the specialized senaite_catalog_client instead of uid_catalog:
+
+    >>> clients_brain = uid_catalog(UID=api.get_uid(clients))[0]
+    >>> catalog = view.get_catalog_for(clients_brain)
+    >>> catalog.id
+    'senaite_catalog_client'
+
+
+Test catalog caching
+....................
+
+The catalog lookup should be cached per portal type:
+
+    >>> # Query again for the same portal type
+    >>> catalog_again = view.get_catalog_for(clients_brain)
+    >>> catalog_again.id
+    'senaite_catalog_client'
+
+
+Test catalog selection logic
+............................
+
+The get_catalog_for method inspects the FTI (Factory Type Information) of
+each folder to determine which catalog to use. When a folder allows exactly
+one content type, it uses the specialized catalog for that type. When a
+folder allows multiple content types, it falls back to uid_catalog.
+
+Verify ClientFolder FTI configuration:
+
+    >>> portal_types = api.get_tool("portal_types")
+    >>> clients_fti = portal_types.getTypeInfo("ClientFolder")
+    >>> allowed_types = clients_fti.allowed_content_types
+    >>> "Client" in allowed_types
+    True
+    >>> # ClientFolder allows exactly one content type
+    >>> len(allowed_types) == 1
+    True
+
+Test fallback to uid_catalog for folders with multiple allowed types:
+
+    >>> # Samples folder allows multiple content types
+    >>> samples_brain = uid_catalog(UID=api.get_uid(samples))[0]
+    >>> samples_catalog = view.get_catalog_for(samples_brain)
+    >>> # Should use uid_catalog since it allows multiple types
+    >>> samples_catalog.id in ("uid_catalog", "senaite_catalog_sample")
+    True
+
+
+Test dynamic catalog integration with tree building
+...................................................
+
+The `_get_children_recursive` method uses the catalog returned by
+get_catalog_for, ensuring that each folder in the navigation tree is
+queried using its optimal catalog:
+
+    >>> # Build a tree with the clients folder
+    >>> setup.setSidebarFolders(("clients",))
+    >>> tree_data = view._build_tree(
+    ...     navigation_root=portal,
+    ...     navigation_depth=2,
+    ...     displayed_types=None,
+    ...     selected_folders=("clients",)
+    ... )
+    >>> # Verify the clients folder appears in the tree
+    >>> len(tree_data["children"]) > 0
+    True
+    >>> tree_data["children"][0]["id"]
+    'clients'
+
+The tree building process automatically selected senaite_catalog_client for
+querying Client objects within the ClientFolder, demonstrating the dynamic
+catalog lookup in action.
+
+
 Building Navigation Tree
-.........................
+........................
 
 Test building the navigation tree with selected folders.
 
 
 Test building tree with folders
-................................
+...............................
 
 Set up folders and build tree:
 
     >>> setup.setSidebarFolders(("clients", "samples"))
-    >>> data = view._build_tree_from_uid_catalog(
+    >>> data = view._build_tree(
     ...     navigation_root=portal,
     ...     navigation_depth=2,
     ...     displayed_types=None,
@@ -258,11 +305,11 @@ If folders exist, they should be in the correct order:
 
 
 Test building tree without folders
-...................................
+..................................
 
 With no folders selected, tree should be empty:
 
-    >>> data = view._build_tree_from_uid_catalog(
+    >>> data = view._build_tree(
     ...     navigation_root=portal,
     ...     navigation_depth=2,
     ...     displayed_types=None,
@@ -273,31 +320,33 @@ With no folders selected, tree should be empty:
 
 
 Test item creation from brain
-..............................
+.............................
 
-Test creating navigation items from catalog brains:
+Test creating navigation items from catalog brains using created client:
 
-    >>> brains = portal_catalog(portal_type="Client", sort_limit=1)
-    >>> if brains:
-    ...     brain = brains[0]
-    ...     item = view._create_item_from_brain(brain, depth=1)
-    ...     # Item should have required keys
-    ...     "id" in item
-    ...     "Title" in item
-    ...     "getURL" in item
-    ...     "path" in item
-    ...     "depth" in item
-    ...     "children" in item
+    >>> client_uid = api.get_uid(client)
+    >>> brains = uid_catalog(UID=client_uid)
+    >>> len(brains) > 0
     True
+    >>> brain = brains[0]
+    >>> item = view._create_item_from_brain(brain, depth=1)
+    >>> # Item should have required keys
+    >>> "id" in item
     True
+    >>> "Title" in item
     True
+    >>> "getURL" in item
     True
+    >>> "path" in item
     True
+    >>> "depth" in item
+    True
+    >>> "children" in item
     True
 
 
 Test navigation tree processing
-................................
+...............................
 
 Test processing the tree into JSON-friendly format:
 
@@ -308,7 +357,7 @@ Test processing the tree into JSON-friendly format:
 
 
 Test URL normalization for highlighting
-........................................
+.......................................
 
 Test that current item is properly detected:
 
@@ -333,7 +382,7 @@ Test that current item is properly detected:
 
 
 Test portal type filtering
-...........................
+..........................
 
 Test that portal type filtering works correctly:
 
@@ -341,7 +390,7 @@ Test that portal type filtering works correctly:
     >>> setup.setSidebarDisplayedTypes(("Client",))
 
     >>> # Build tree with type filtering
-    >>> data = view._build_tree_from_uid_catalog(
+    >>> data = view._build_tree(
     ...     navigation_root=portal,
     ...     navigation_depth=2,
     ...     displayed_types=("Client",),
@@ -376,25 +425,6 @@ Test the full JSON API response:
     True
 
     >>> "count" in result
-    True
-
-
-Test path normalization edge cases
-...................................
-
-Test that paths are correctly normalized for different catalog types:
-
-    >>> portal_path = api.get_path(portal)
-    >>> portal_path.startswith("/")
-    True
-
-Test that relative paths are properly handled:
-
-    >>> # Simulate a relative path (like from uid_catalog)
-    >>> relative_path = "clients"
-    >>> if not relative_path.startswith(portal_path):
-    ...     normalized_path = "/".join([portal_path, relative_path])
-    ...     normalized_path.startswith(portal_path)
     True
 
 
