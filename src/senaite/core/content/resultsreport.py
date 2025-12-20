@@ -241,6 +241,7 @@ class IResultsReportSchema(model.Schema):
             schema=IMetadataRow
         ),
         required=False,
+        default=[],
     )
 
     directives.widget(
@@ -255,6 +256,7 @@ class IResultsReportSchema(model.Schema):
             schema=IRecipientsRow
         ),
         required=False,
+        default=[],
     )
 
     directives.widget(
@@ -269,6 +271,7 @@ class IResultsReportSchema(model.Schema):
             schema=ISendLogRow
         ),
         required=False,
+        default=[],
     )
 
 
