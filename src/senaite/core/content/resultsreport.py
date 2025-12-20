@@ -46,22 +46,27 @@ class IMetadataRow(Interface):
     paperformat = TextLineField(
         title=_(u"Paper Format"),
         required=False,
+        default=u"",
     )
     timestamp = TextLineField(
         title=_(u"Timestamp"),
         required=False,
+        default=u"",
     )
     orientation = TextLineField(
         title=_(u"Orientation"),
         required=False,
+        default=u"",
     )
     template = TextLineField(
         title=_(u"Template"),
         required=False,
+        default=u"",
     )
     contained_requests = TextLineField(
         title=_(u"Contained Requests"),
         required=False,
+        default=u"",
     )
 
 
@@ -71,34 +76,45 @@ class ISendLogRow(Interface):
     actor = TextLineField(
         title=_(u"Actor"),
         required=False,
+        default=u"",
     )
     actor_fullname = TextLineField(
         title=_(u"Actor Fullname"),
         required=False,
+        default=u"",
     )
     email_send_date = schema.Datetime(
         title=_(u"Email Send Date"),
         required=False,
+        default=None,
     )
-    email_recipients = TextLineField(
+    email_recipients = schema.List(
         title=_(u"Email Recipients"),
+        value_type=TextLineField(),
         required=False,
+        default=[],
     )
-    email_responsibles = TextLineField(
+    email_responsibles = schema.List(
         title=_(u"Email Responsibles"),
+        value_type=TextLineField(),
         required=False,
+        default=[],
     )
     email_subject = TextLineField(
         title=_(u"Email Subject"),
         required=False,
+        default=u"",
     )
     email_body = schema.Text(
         title=_(u"Email Body"),
         required=False,
+        default=u"",
     )
-    email_attachments = TextLineField(
+    email_attachments = schema.List(
         title=_(u"Email Attachments"),
+        value_type=TextLineField(),
         required=False,
+        default=[],
     )
 
 
@@ -108,22 +124,27 @@ class IRecipientsRow(Interface):
     UID = TextLineField(
         title=_(u"UID"),
         required=False,
+        default=u"",
     )
     Username = TextLineField(
         title=_(u"Username"),
         required=False,
+        default=u"",
     )
     Fullname = TextLineField(
         title=_(u"Fullname"),
         required=False,
+        default=u"",
     )
     EmailAddress = TextLineField(
         title=_(u"Email Address"),
         required=False,
+        default=u"",
     )
     PublicationModes = TextLineField(
         title=_(u"Publication Modes"),
         required=False,
+        default=u"",
     )
 
 
@@ -326,8 +347,15 @@ class ResultsReport(Container):
         """
         accessor = self.accessor("metadata")
         metadata_list = accessor(self) or []
+
+        # Handle case where accessor returns a dict instead of list
+        if isinstance(metadata_list, dict):
+            return metadata_list
+
+        # Return first dict from list
         if metadata_list and len(metadata_list) > 0:
             return metadata_list[0]
+
         return {}
 
     @security.protected(permissions.ModifyPortalContent)
