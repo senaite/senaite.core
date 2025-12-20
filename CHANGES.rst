@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2832 Fix sample type prefix validation
 - #2837 Disable Cancel Button in Sample Registration Form after Save
 - #2833 Ensure string values for ID formatting
 - #2827 Link demo user to contact during import
