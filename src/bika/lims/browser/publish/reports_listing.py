@@ -173,8 +173,17 @@ class ReportsListingView(ListingView):
     def get_filesize(self, pdf):
         """Compute the filesize of the PDF
         """
+        if not pdf:
+            return 0
         try:
-            filesize = float(pdf.size)
+            if hasattr(pdf, "size"):
+                filesize = float(pdf.size)
+            elif hasattr(pdf, "getSize"):
+                filesize = float(pdf.getSize())
+            elif hasattr(pdf, "data"):
+                filesize = float(len(pdf.data))
+            else:
+                return 0
             return filesize / 1024
         except (POSKeyError, TypeError, AttributeError):
             return 0
