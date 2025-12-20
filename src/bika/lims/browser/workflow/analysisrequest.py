@@ -180,11 +180,21 @@ class WorkflowActionPrintSampleAdapter(WorkflowActionGenericAdapter):
         if api.get_workflow_status_of(sample) != "published":
             return False
 
-        reports = sample.objectIds("ARReport")
+        query = {
+            "portal_type": ["ResultsReport"],
+            "path": {
+                "query": api.get_path(sample),
+                "depth": 1
+            },
+            "sort_on": "created",
+            "sort_order": "ascending"
+        }
+        reports = api.search(query, "senaite_catalog_report")
         if not reports:
             return False
 
-        last_report = sample.get(reports[-1])
+        # Get the last report
+        last_report = api.get_object(reports[-1])
         last_report.setDatePrinted(DateTime())
         sample.reindexObject(idxs=["getPrinted"])
         return True
