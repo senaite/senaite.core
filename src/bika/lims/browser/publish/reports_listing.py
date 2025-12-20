@@ -174,9 +174,9 @@ class ReportsListingView(ListingView):
         """Compute the filesize of the PDF
         """
         try:
-            filesize = float(pdf.get_size())
+            filesize = float(pdf.size)
             return filesize / 1024
-        except (POSKeyError, TypeError):
+        except (POSKeyError, TypeError, AttributeError):
             return 0
 
     def localize_date(self, date):
