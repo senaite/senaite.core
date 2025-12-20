@@ -2037,6 +2037,10 @@ class window.AnalysisRequestAdd
     save_and_copy_button = $("input[name=save_and_copy_button]")
     save_and_copy_button.prop "disabled": yes
 
+    # deactivate the cancel button
+    cancel_button = $("input[name=cancel_button]")
+    cancel_button.prop "disabled": yes
+
 
   ###*
    * Event handler when Ajax request finished
@@ -2054,6 +2058,10 @@ class window.AnalysisRequestAdd
     # reactivate the save and copy button
     save_and_copy_button = $("input[name=save_and_copy_button]")
     save_and_copy_button.prop "disabled": no
+
+    # reactivate the cancel button
+    cancel_button = $("input[name=cancel_button]")
+    cancel_button.prop "disabled": no
 
 
   ###*

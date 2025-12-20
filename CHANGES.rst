@@ -5,6 +5,11 @@ Changelog
 ------------------
 
 - #2805 Migrate Worksheets to DX
+- #2832 Fix sample type prefix validation
+- #2837 Disable Cancel Button in Sample Registration Form after Save
+- #2833 Ensure string values for ID formatting
+- #2827 Link demo user to contact during import
+- #2836 Rollback temporary samples on error during creation
 - #2830 Fix TinyMCE hidden Cursor
 - #2829 Fix TypeError in bika_setup rejection widget
 - #2821 Migrate all fields from bika_setup to senaite setup
