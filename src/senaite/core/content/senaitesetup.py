@@ -20,6 +20,7 @@
 
 from datetime import timedelta
 
+import six
 from AccessControl import ClassSecurityInfo
 from bika.lims import _
 from bika.lims import api
@@ -41,6 +42,7 @@ from senaite.core.schema import RichTextField
 from senaite.core.schema import UIDReferenceField
 from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
+from senaite.core.schema.textlinefield import TextLineField
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.duration.widget import DurationWidgetFactory
 from zope import schema
@@ -181,12 +183,12 @@ class IIDFormattingRecordSchema(Interface):
     """Schema for ID formatting configuration records
     """
 
-    portal_type = schema.TextLine(
+    portal_type = TextLineField(
         title=_(u"Portal Type"),
         required=False,
     )
 
-    form = schema.TextLine(
+    form = TextLineField(
         title=_(u"Format"),
         required=False,
     )
@@ -198,7 +200,7 @@ class IIDFormattingRecordSchema(Interface):
         default="",
     )
 
-    context = schema.TextLine(
+    context = TextLineField(
         title=_(u"Context"),
         required=False,
     )
@@ -210,12 +212,12 @@ class IIDFormattingRecordSchema(Interface):
         default="",
     )
 
-    counter_reference = schema.TextLine(
+    counter_reference = TextLineField(
         title=_(u"Counter Ref"),
         required=False,
     )
 
-    prefix = schema.TextLine(
+    prefix = TextLineField(
         title=_(u"Prefix"),
         required=False,
     )
@@ -2294,21 +2296,27 @@ class Setup(Container):
     def getIDFormatting(self):
         """Get ID formatting configuration
         Normalizes None values to empty strings for Choice fields
+        Ensures string values are returned as byte strings (not unicode)
         """
         accessor = self.accessor("id_formatting")
         value = accessor(self)
         if not value:
             return DEFAULT_ID_FORMATTING
 
-        # Normalize None values to empty strings for Choice fields
+        # Normalize values: convert `None` to empty strings
+        # In Python 2: convert unicode to bytes to prevent `UnicodeDecodeError`
+        # when formatting with UTF-8 encoded values
+        # In Python 3: keep strings as unicode (no conversion needed)
         normalized = []
         for row in value:
-            normalized_row = dict(row)
-            # Convert None to empty string for Choice fields
-            if normalized_row.get("sequence_type") is None:
-                normalized_row["sequence_type"] = ""
-            if normalized_row.get("counter_type") is None:
-                normalized_row["counter_type"] = ""
+            normalized_row = {}
+            for key, val in row.items():
+                if val is None:
+                    normalized_row[key] = ""
+                elif six.PY2 and isinstance(val, six.text_type):
+                    normalized_row[key] = val.encode("utf-8")
+                else:
+                    normalized_row[key] = val
             normalized.append(normalized_row)
 
         return normalized
