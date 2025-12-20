@@ -31,6 +31,7 @@ from senaite.core.interfaces import IResultsReport
 from senaite.core.schema import UIDReferenceField
 from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
+from senaite.core.schema.textlinefield import TextLineField
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.datetimewidget import DatetimeWidgetFactory
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
@@ -42,23 +43,23 @@ from zope.interface import implementer
 class IMetadataRow(Interface):
     """Schema for metadata record
     """
-    paperformat = schema.TextLine(
+    paperformat = TextLineField(
         title=_(u"Paper Format"),
         required=False,
     )
-    timestamp = schema.TextLine(
+    timestamp = TextLineField(
         title=_(u"Timestamp"),
         required=False,
     )
-    orientation = schema.TextLine(
+    orientation = TextLineField(
         title=_(u"Orientation"),
         required=False,
     )
-    template = schema.TextLine(
+    template = TextLineField(
         title=_(u"Template"),
         required=False,
     )
-    contained_requests = schema.TextLine(
+    contained_requests = TextLineField(
         title=_(u"Contained Requests"),
         required=False,
     )
@@ -67,11 +68,11 @@ class IMetadataRow(Interface):
 class ISendLogRow(Interface):
     """Schema for send log record
     """
-    actor = schema.TextLine(
+    actor = TextLineField(
         title=_(u"Actor"),
         required=False,
     )
-    actor_fullname = schema.TextLine(
+    actor_fullname = TextLineField(
         title=_(u"Actor Fullname"),
         required=False,
     )
@@ -79,15 +80,15 @@ class ISendLogRow(Interface):
         title=_(u"Email Send Date"),
         required=False,
     )
-    email_recipients = schema.TextLine(
+    email_recipients = TextLineField(
         title=_(u"Email Recipients"),
         required=False,
     )
-    email_responsibles = schema.TextLine(
+    email_responsibles = TextLineField(
         title=_(u"Email Responsibles"),
         required=False,
     )
-    email_subject = schema.TextLine(
+    email_subject = TextLineField(
         title=_(u"Email Subject"),
         required=False,
     )
@@ -95,7 +96,7 @@ class ISendLogRow(Interface):
         title=_(u"Email Body"),
         required=False,
     )
-    email_attachments = schema.TextLine(
+    email_attachments = TextLineField(
         title=_(u"Email Attachments"),
         required=False,
     )
@@ -104,23 +105,23 @@ class ISendLogRow(Interface):
 class IRecipientsRow(Interface):
     """Schema for recipients record
     """
-    UID = schema.TextLine(
+    UID = TextLineField(
         title=_(u"UID"),
         required=False,
     )
-    Username = schema.TextLine(
+    Username = TextLineField(
         title=_(u"Username"),
         required=False,
     )
-    Fullname = schema.TextLine(
+    Fullname = TextLineField(
         title=_(u"Fullname"),
         required=False,
     )
-    EmailAddress = schema.TextLine(
+    EmailAddress = TextLineField(
         title=_(u"Email Address"),
         required=False,
     )
-    PublicationModes = schema.TextLine(
+    PublicationModes = TextLineField(
         title=_(u"Publication Modes"),
         required=False,
     )
