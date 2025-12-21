@@ -19,6 +19,7 @@ Needed Imports:
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from DateTime import DateTime
+    >>> from datetime import timedelta
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
@@ -78,6 +79,7 @@ LIMS Setup
 
 Setup the Lab for testing:
 
+    >>> bikasetup.setDefaultTurnaroundTime(timedelta(days=5))
     >>> bikasetup.setSelfVerificationEnabled(True)
     >>> analysisservices = bikasetup.bika_analysisservices
     >>> categories = setup.analysiscategories
