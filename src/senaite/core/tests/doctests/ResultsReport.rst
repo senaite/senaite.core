@@ -178,12 +178,11 @@ Get the UIDs:
     True
 
 
-Report Metadata (Dict/List Conversion)
-......................................
+Report Metadata
+...............
 
-The metadata field demonstrates backward compatibility with senaite.impress
-and the AT-based ARReport. Externally, it behaves like a plain dict, but
-internally stores as a DataGridField (list of dicts).
+The metadata field stores report metadata as a plain dict for compatibility
+with senaite.impress and the AT-based ARReport.
 
 This is how senaite.impress sets metadata:
 
@@ -214,17 +213,17 @@ Get metadata using the getter (returns dict):
     >>> result["timestamp"]
     '2025-01-15T10:30:00'
 
-Verify the internal storage is actually a list:
+Verify the internal storage is a dict:
 
     >>> raw = report.getRawMetadata()
-    >>> isinstance(raw, list)
+    >>> isinstance(raw, dict)
     True
 
     >>> len(raw)
-    1
+    5
 
-    >>> isinstance(raw[0], dict)
-    True
+    >>> raw["template"]
+    'senaite.impress:Default'
 
 The AT-style property should also work:
 
@@ -323,8 +322,8 @@ Get the current send log (empty initially):
 
 Simulate how emailview.py writes the send log:
 
-    >>> from DateTime import DateTime as ZopeDateTime
-    >>> timestamp = ZopeDateTime()
+    >>> from datetime import datetime as py_datetime
+    >>> timestamp = py_datetime.now()
 
 Create a new send log record (simulating emailview.py):
 
@@ -362,7 +361,7 @@ Add a second send log entry:
     >>> second_record = {
     ...     "actor": "labmanager",
     ...     "actor_fullname": "Lab Manager",
-    ...     "email_send_date": ZopeDateTime(),
+    ...     "email_send_date": py_datetime.now(),
     ...     "email_recipients": ["client@example.com"],
     ...     "email_responsibles": [],
     ...     "email_subject": "Re-send: Results for W-0001",
