@@ -40,36 +40,6 @@ from zope.interface import Interface
 from zope.interface import implementer
 
 
-class IMetadataRow(Interface):
-    """Schema for metadata record
-    """
-    paperformat = TextLineField(
-        title=_(u"Paper Format"),
-        required=False,
-        default=u"",
-    )
-    timestamp = TextLineField(
-        title=_(u"Timestamp"),
-        required=False,
-        default=u"",
-    )
-    orientation = TextLineField(
-        title=_(u"Orientation"),
-        required=False,
-        default=u"",
-    )
-    template = TextLineField(
-        title=_(u"Template"),
-        required=False,
-        default=u"",
-    )
-    contained_requests = TextLineField(
-        title=_(u"Contained Requests"),
-        required=False,
-        default=u"",
-    )
-
-
 class ISendLogRow(Interface):
     """Schema for send log record
     """
@@ -250,19 +220,14 @@ class IResultsReportSchema(model.Schema):
         ]
     )
 
-    directives.widget(
-        "metadata",
-        DataGridWidgetFactory,
-    )
-    metadata = DataGridField(
+    directives.mode(metadata="display")
+    metadata = schema.Dict(
         title=_(u"Metadata"),
         description=_(u"Report metadata"),
-        value_type=DataGridRow(
-            title=_(u"Metadata"),
-            schema=IMetadataRow
-        ),
+        key_type=TextLineField(),
+        value_type=TextLineField(),
         required=False,
-        default=[],
+        default={},
     )
 
     directives.widget(
@@ -341,37 +306,16 @@ class ResultsReport(Container):
     @security.protected(permissions.View)
     def getMetadata(self):
         """Get metadata as plain dict
-
-        Internally stored as DataGridField (list of dicts), but returns the
-        first dict for backward compatibility with senaite.impress and AT.
         """
         accessor = self.accessor("metadata")
-        metadata_list = accessor(self) or []
-
-        # Handle case where accessor returns a dict instead of list
-        if isinstance(metadata_list, dict):
-            return metadata_list
-
-        # Return first dict from list
-        if metadata_list and len(metadata_list) > 0:
-            return metadata_list[0]
-
-        return {}
+        return accessor(self) or {}
 
     @security.protected(permissions.ModifyPortalContent)
     def setMetadata(self, value):
         """Set metadata from plain dict
-
-        Internally stores as DataGridField (list of dicts), but accepts a
-        plain dict for backward compatibility with senaite.impress and AT.
         """
         mutator = self.mutator("metadata")
-        if value:
-            # Wrap dict in list for DataGridField storage
-            metadata_list = [value] if isinstance(value, dict) else []
-            mutator(self, metadata_list)
-        else:
-            mutator(self, [])
+        mutator(self, value if value else {})
 
     # AT-style getters/setters for backward compatibility
 

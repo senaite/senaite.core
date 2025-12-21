@@ -864,13 +864,11 @@ def migrate_arreport_to_dx(src, destination=None):
         target.contained_analysis_requests = [
             api.get_uid(ar) for x in contained_ars if x]
 
-    # Get Metadata (RecordField -> DataGridField)
+    # Get Metadata (RecordField -> Dict)
     metadata = src.getMetadata()
     if metadata:
-        # Wrap dict in list for DataGridField storage
-        # Note: setMetadata() handles this, but we set directly here
-        metadata_list = [metadata] if isinstance(metadata, dict) else []
-        target.metadata = metadata_list
+        # Store as plain dict (matching AT's RecordField behavior)
+        target.metadata = metadata if isinstance(metadata, dict) else {}
 
     # Get SendLog (RecordsField -> DataGridField)
     sendlog = src.getSendLog()
