@@ -195,7 +195,7 @@ class WorkflowActionPrintSampleAdapter(WorkflowActionGenericAdapter):
 
         # Get the last report
         last_report = api.get_object(reports[-1])
-        last_report.setDatePrinted(DateTime())
+        last_report.setDatePrinted(DateTime().asdatetime())
         sample.reindexObject(idxs=["getPrinted"])
         return True
 
