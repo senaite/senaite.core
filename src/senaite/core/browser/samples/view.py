@@ -556,12 +556,8 @@ class SamplesView(ListingView):
             item["Printed"] = ""
             printed = obj.getPrinted if hasattr(obj, "getPrinted") else "0"
             print_icon = ""
-            if printed == "0":
-                print_icon = get_image("delete.png",
-                                       title=t(_("Not printed yet")))
-            elif printed == "1":
-                print_icon = get_image("ok.png",
-                                       title=t(_("Printed")))
+            if printed == "1":
+                print_icon = get_image("ok.png", title=t(_("Printed")))
             elif printed == "2":
                 print_icon = get_image(
                     "exclamation.png",
