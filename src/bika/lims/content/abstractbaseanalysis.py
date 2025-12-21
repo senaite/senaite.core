@@ -1190,8 +1190,11 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         if tat:
             return tat
 
-        # Convert timedelta to dict for AT format:
         value = self.bika_setup.getDefaultTurnaroundTime()
+        if isinstance(value, dict):
+            return value
+
+        # Convert timedelta to dict for AT format:
         return dtime.timedelta_to_dict(value, default={})
 
     @security.public

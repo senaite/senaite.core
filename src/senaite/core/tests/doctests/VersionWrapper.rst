@@ -19,7 +19,6 @@ Needed Imports:
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from DateTime import DateTime
-    >>> from datetime import timedelta
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
@@ -79,7 +78,6 @@ LIMS Setup
 
 Setup the Lab for testing:
 
-    >>> bikasetup.setDefaultTurnaroundTime(timedelta(days=5))
     >>> bikasetup.setSelfVerificationEnabled(True)
     >>> analysisservices = bikasetup.bika_analysisservices
     >>> categories = setup.analysiscategories
@@ -322,7 +320,6 @@ content types are migrated to DX, but we keep them here into account for
 legacy and consistency reasons:
 
 - `DurationField` type:
-
     >>> sorted(Ca.getMaxTimeAllowed().items())
     [('days', 5), ('hours', 0), ('minutes', 0), ('seconds', 0)]
 
