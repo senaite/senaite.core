@@ -26,6 +26,7 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets.decimal import DecimalWidget
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
+from senaite.core.api import dtime
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.config import SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
@@ -1186,7 +1187,15 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         return: a dictionary with the keys "days", "hours" and "minutes"
         """
         tat = self.Schema().getField("MaxTimeAllowed").get(self)
-        return tat or self.bika_setup.getDefaultTurnaroundTime()
+        if tat:
+            return tat
+
+        value = self.bika_setup.getDefaultTurnaroundTime()
+        if isinstance(value, dict):
+            return value
+
+        # Convert timedelta to dict for AT format:
+        return dtime.timedelta_to_dict(value, default={})
 
     @security.public
     def getMaxHoldingTime(self):
