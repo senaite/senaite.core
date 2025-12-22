@@ -908,9 +908,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             ))
 
             # Result might contain a single result option
-            match = values_texts.get(str(result))
-            if match:
-                return match
+            text = values_texts.get(str(result))
+            if text:
+                return cgi.escape(text) if html else text
 
             # Result might be a string with multiple options e.g. "['2', '1']"
             try:

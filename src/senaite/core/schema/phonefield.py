@@ -18,14 +18,13 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from senaite.core.schema.fields import BaseField
 from senaite.core.schema.interfaces import IPhoneField
+from senaite.core.schema.textlinefield import TextLineField
 from zope.interface import implementer
-from zope.schema import NativeString
 
 
 @implementer(IPhoneField)
-class PhoneField(NativeString, BaseField):
+class PhoneField(TextLineField):
     """A field that handles phone numbers
     """
     def _validate(self, value):

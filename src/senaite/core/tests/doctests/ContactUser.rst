@@ -132,13 +132,13 @@ It also grants local `Owner` role on the client object::
 
 The user is able to modify the `client` object properties::
 
-    >>> browser.open(client1.absolute_url() + "/base_edit")
+    >>> browser.open(client1.absolute_url() + "/edit")
     >>> "edit_form" in browser.contents
     True
 
 As well as the `contact` object properties::
 
-    >>> browser.open(contact1.absolute_url() + "/base_edit")
+    >>> browser.open(contact1.absolute_url() + "/edit")
     >>> "edit_form" in browser.contents
     True
 
@@ -151,7 +151,7 @@ But the user can not access other clients::
 
 Or modify other clients::
 
-    >>> browser.open(client2.absolute_url() + "/base_edit")
+    >>> browser.open(client2.absolute_url() + "/edit")
     Traceback (most recent call last):
     ...
     Unauthorized: ...

@@ -20,8 +20,8 @@
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
-from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
+from senaite.core.interfaces import IContact
 from bika.lims.utils import get_link_for
 from plone.app.users.browser.account import getSchema
 from plone.app.users.browser.userdatapanel import UserDataPanel as Base
@@ -31,6 +31,7 @@ from plone.app.users.schema import ProtectedTextLine
 from plone.app.users.schema import checkEmailAddress
 from plone.autoform import directives
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.statusmessages.interfaces import IStatusMessage
 from senaite.core.catalog import CONTACT_CATALOG
 from z3c.form.browser.text import TextWidget
 from z3c.form.interfaces import DISPLAY_MODE
@@ -183,22 +184,20 @@ class UserDataPanel(Base):
             ))
 
         elif IContact.providedBy(contact):
-            fullname = contact.getFullname()
-            client_name = contact.aq_parent.getName()
-            self.add_status_message(_(
-                "User is linked to the client contact '${fullname}' "
-                "(${client_name})",
-                mapping={
-                    "fullname": api.safe_unicode(fullname),
-                    "client_name": api.safe_unicode(client_name)
-                }
-            ))
+            fullname = api.safe_unicode(contact.getFullname())
+            if contact.isGlobal():
+                msg = _("User is linked to the global contact '${fullname}'",
+                        mapping={"fullname": fullname})
+            else:
+                msg = _("User is linked to the contact '${fullname}'",
+                        mapping={"fullname": fullname})
+            self.add_status_message(msg)
 
     def add_status_message(self, message, level="info"):
         """Add a portal status message
         """
-        plone_utils = api.get_tool("plone_utils")
-        return plone_utils.addPortalMessage(message, level)
+        request = api.get_request()
+        IStatusMessage(request).add(message, type=level)
 
 
 class UserDataConfiglet(UserDataPanel):

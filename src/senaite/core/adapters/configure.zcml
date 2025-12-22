@@ -69,4 +69,17 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       provides="senaite.core.interfaces.stickers.IGetStickerTemplates" />
 
+  <!-- Default File/Image creator for multiupload widget -->
+  <adapter
+      factory=".multiupload.DefaultFileCreator"
+      for="zope.interface.Interface
+           zope.interface.Interface"
+      provides="senaite.core.interfaces.IMultiUploadFileCreator" />
+
+  <!-- Default File/Image remover for multiupload widget -->
+  <adapter
+      factory=".multiupload.DefaultFileRemover"
+      for="zope.interface.Interface"
+      provides="senaite.core.interfaces.IMultiUploadFileRemover" />
+
 </configure>

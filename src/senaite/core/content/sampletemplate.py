@@ -362,7 +362,7 @@ class SampleTemplate(Container, ClientAwareMixin):
     def getSamplingRequiredDefaultValue(self):
         """Get the setup if the sampling workflow is enabled or not
         """
-        bikasetup = api.get_bika_setup()
+        bikasetup = api.get_senaite_setup()
         return bikasetup.getSamplingWorkflowEnabled()
 
     # BBB: AT schema field property

@@ -26,6 +26,7 @@ from zope.schema.interfaces import IField
 from zope.schema.interfaces import IInt
 from zope.schema.interfaces import IList
 from zope.schema.interfaces import INativeString
+from zope.schema.interfaces import ITextLine
 from zope.schema.interfaces import ITimedelta
 
 
@@ -74,7 +75,12 @@ class IRichTextField(IRichText):
     """
 
 
-class IPhoneField(INativeString):
+class IEmailField(ITextLine):
+    """Input type "email" widget
+    """
+
+
+class IPhoneField(ITextLine):
     """Input type "phone" widget
     """
 
@@ -91,4 +97,9 @@ class IGPSCoordinatesField(IDict):
 
 class ISelectOtherField(INativeString):
     """Senaite SelectOther field
+    """
+
+
+class IMultiUploadField(IList):
+    """Senaite Multi Upload field
     """

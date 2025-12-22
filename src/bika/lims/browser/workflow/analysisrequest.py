@@ -376,7 +376,7 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
         """Returns whether the assignment of specs at analysis level within
         sample context is enabled or not
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getEnableARSpecs()
 
     def is_hidden(self, service):

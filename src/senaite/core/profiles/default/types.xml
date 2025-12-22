@@ -88,6 +88,10 @@
   <object name="AnalysisCategory" meta_type="Dexterity FTI" />
   <object name="AnalysisCategories" meta_type="Dexterity FTI" />
 
+  <!-- Contacts -->
+  <object name="Contact" meta_type="Dexterity FTI" />
+  <object name="Contacts" meta_type="Dexterity FTI" />
+
   <!-- Dynamic Analysis specifications -->
   <object name="DynamicAnalysisSpec" meta_type="Dexterity FTI" />
   <object name="DynamicAnalysisSpecs" meta_type="Dexterity FTI" />
@@ -107,5 +111,12 @@
   <!-- Worksheet Templates -->
   <object name="WorksheetTemplate" meta_type="Dexterity FTI" />
   <object name="WorksheetTemplates" meta_type="Dexterity FTI" />
+
+  <!-- Multifile -->
+  <object name="Multifile" meta_type="Dexterity FTI" />
+
+  <!-- Simple File/Image -->
+  <object name="SimpleFile" meta_type="Dexterity FTI" />
+  <object name="SimpleImage" meta_type="Dexterity FTI" />
 
 </object>

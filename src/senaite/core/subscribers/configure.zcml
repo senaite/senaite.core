@@ -4,7 +4,7 @@
   <!-- Contact/LabContact *modified* event handler
        This subscriber updates the properties of the linked user.  -->
   <subscriber
-    for="bika.lims.interfaces.IContact
+    for="senaite.core.interfaces.IContact
          zope.lifecycleevent.interfaces.IObjectModifiedEvent"
     handler=".contact.on_contact_modified"/>
 
@@ -13,5 +13,42 @@
     for="bika.lims.interfaces.IClient
            Products.Archetypes.interfaces.IObjectInitializedEvent"
     handler=".client.on_client_created"/>
+
+  <!-- Sample subscription adapter to update the sample after it was created -->
+  <subscriber
+    for="bika.lims.interfaces.IAnalysisRequest
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    provides="senaite.core.interfaces.IAfterCreateSampleHook"
+    factory=".sample.AfterCreateSampleHook"/>
+
+  <!-- MultiUpload field processing after object is added (DX) -->
+  <subscriber
+    for="plone.dexterity.interfaces.IDexterityContent
+         zope.lifecycleevent.interfaces.IObjectAddedEvent"
+    handler=".multiupload.on_object_added"/>
+
+  <!-- MultiUpload field processing after object modification (DX) -->
+  <subscriber
+    for="plone.dexterity.interfaces.IDexterityContent
+         zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+    handler=".multiupload.on_object_modified"/>
+
+  <!-- MultiUpload field processing after object creation (AT) -->
+  <subscriber
+    for="*
+         Products.Archetypes.interfaces.IObjectInitializedEvent"
+    handler=".multiupload.on_object_added"/>
+
+  <!-- MultiUpload field processing after object modification (AT) -->
+  <subscriber
+    for="*
+         Products.Archetypes.interfaces.IObjectEditedEvent"
+    handler=".multiupload.on_object_modified"/>
+
+  <!-- Subscriber when client attachments were deleted -->
+  <subscriber
+    for="bika.lims.interfaces.IClient
+         senaite.core.events.attachments.IAttachmentsDeletedEvent"
+    handler=".client.on_attachments_deleted"/>
 
 </configure>

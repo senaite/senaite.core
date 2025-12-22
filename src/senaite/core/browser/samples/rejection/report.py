@@ -87,20 +87,15 @@ class RejectionReport(BrowserView):
     def laboratory(self):
         """Returns the laboratory object
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.laboratory
 
     @property
     def available_reasons(self):
         """Returns available rejection reasons
         """
-        setup = api.get_setup()
-        reasons = setup.getRejectionReasons()
-        # XXX getRejectionReasons returns a list with a single dict
-        reasons = reasons[0] if reasons else {}
-        # XXX Exclude 'checkbox' (used to toggle reasons in setup)
-        reasons = [reasons[key] for key in reasons.keys() if key != 'checkbox']
-        return sorted(reasons)
+        setup = api.get_senaite_setup()
+        return setup.getRejectionReasons()
 
     @property
     def layout_css(self):

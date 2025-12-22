@@ -194,6 +194,16 @@ class IAnalysisCategories(Interface):
     """
 
 
+class IContact(Interface):
+    """Marker interface for a single Contact
+    """
+
+
+class IContacts(Interface):
+    """Marker interface for Contacts container
+    """
+
+
 class IHaveAnalysisCategory(Interface):
     """Marker interface for objects that have AnalysisCategory(ies) assigned
     """
@@ -218,6 +228,11 @@ class IAttachmentType(Interface):
 
 class IAttachmentTypes(Interface):
     """Marker interface for attachment types setup folder
+    """
+
+
+class IMultifile(Interface):
+    """Marker interface for a Multifile
     """
 
 
@@ -504,3 +519,57 @@ class IWorksheetTemplates(Interface):
 class IWorksheetTemplate(Interface):
     """Marker interface for Worksheet Template
     """
+
+
+class ISimpleFile(Interface):
+    """Marker interface for simple files
+    """
+
+
+class ISimpleImage(Interface):
+    """Marker interface for simple images
+    """
+
+
+class IAfterCreateSampleHook(Interface):
+    """Subscription adapter after the sample was created
+    """
+    def update(sample, source=None):
+        """Update the sample after it was created
+
+        :param sample: The new created sample
+        :param source: The source sample from where this sample was copied,
+                       otherwise None
+        """
+
+
+class IMultiUploadFileCreator(Interface):
+    """Adapter for creating File/Image objects from uploaded data
+
+    This adapter is looked up by (context, field) and can be overridden
+    to customize file/image creation behavior for specific contexts or fields.
+    """
+
+    def create(filename, content_type, data):
+        """Create a File or Image object from uploaded data
+
+        :param filename: The original filename (unicode)
+        :param content_type: The MIME content type
+        :param data: The binary file data (bytes)
+        :returns: The created File or Image object
+        """
+
+
+class IMultiUploadFileRemover(Interface):
+    """Adapter for removing File/Image objects
+
+    This adapter is looked up by container context and can be overridden
+    to customize file removal behavior, e.g., to deactivate/archive files
+    instead of deleting them.
+    """
+
+    def remove(uids):
+        """Remove File/Image objects by their UIDs
+
+        :param uids: Set or list of UIDs to remove
+        """

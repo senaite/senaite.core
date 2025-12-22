@@ -460,7 +460,7 @@ def format_interim(interim_field, html=True):
 
     else:
         # default formatting
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         decimal_mark = setup.getResultsDecimalMark()
         values = [formatDecimalMark(val, decimal_mark) for val in values]
 

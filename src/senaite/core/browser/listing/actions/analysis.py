@@ -37,4 +37,4 @@ class ActionView(BaseActionView):
             return self.message(
                 "Failed to recalculate result", False, title=title)
 
-        return self.message("Result recalucated", True, title=title)
+        return self.message("Result recalculated", True, title=title)

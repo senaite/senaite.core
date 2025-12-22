@@ -35,7 +35,6 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from bika.lims import logger
 from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
 from DateTime import DateTime
 from OFS.event import ObjectWillBeMovedEvent
@@ -67,15 +66,18 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.RegistrationTool import get_member_by_login_name
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import base_hasattr
-from Products.CMFPlone.utils import safe_unicode
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
+from senaite.core.interfaces import IContact
+from senaite.core.interfaces import IContacts
 from senaite.core.interfaces import ITemporaryObject
+from z3c.form.validator import Data as ValidatorData
 from zope import globalrequest
 from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.container.contained import notifyContainerModified
+from zope.deprecation import deprecate
 from zope.event import notify
 from zope.i18n import translate
 from zope.interface import Invalid
@@ -134,6 +136,7 @@ SKIP_VALIDATION_FIELDS = [
     "subjects",
 ]
 
+
 class APIError(Exception):
     """Base exception class for bika.lims errors."""
 
@@ -146,17 +149,14 @@ def get_portal():
     return ploneapi.portal.getSite()
 
 
+@deprecate("Please use get_senaite_setup() insetad")
 def get_setup():
-    """Fetch the `bika_setup` folder.
+    """Fetch the old `bika_setup` folder.
+
+    TODO: Change in the future to return the SENAITE setup instead
     """
     portal = get_portal()
     return portal.get("bika_setup")
-
-
-def get_bika_setup():
-    """Fetch the `bika_setup` folder.
-    """
-    return get_setup()
 
 
 def get_senaite_setup():
@@ -164,6 +164,13 @@ def get_senaite_setup():
     """
     portal = get_portal()
     return portal.get("setup")
+
+
+def get_bika_setup():
+    """Fetch the `bika_setup` folder.
+    """
+    portal = get_portal()
+    return portal.get("bika_setup")
 
 
 def create(container, portal_type, *args, **kwargs):
@@ -227,6 +234,7 @@ def copy_object(source, container=None, portal_type=None, *args, **kwargs):
     """
     # Prevent circular dependencies
     from security import check_permission
+
     # Use same container as source unless explicitly set
     source = get_object(source)
     if not container:
@@ -1511,7 +1519,7 @@ def get_current_user():
     return ploneapi.user.get_current()
 
 
-def get_user_contact(user, contact_types=['Contact', 'LabContact']):
+def get_user_contact(user, contact_types=None):
     """Returns the associated contact of a Plone user
 
     If the user passed in has no contact associated, return None.
@@ -1525,6 +1533,10 @@ def get_user_contact(user, contact_types=['Contact', 'LabContact']):
         return None
 
     from senaite.core.catalog import CONTACT_CATALOG  # Avoid circular import
+
+    if contact_types is None:
+        contact_types = ["Contact", "LabContact"]
+
     query = {"portal_type": contact_types, "getUsername": user.getId()}
     brains = search(query, catalog=CONTACT_CATALOG)
     if not brains:
@@ -1550,13 +1562,13 @@ def get_user_client(user_or_contact):
     :param: Plone user or contact
     :returns: Client the contact of the Plone user belongs to
     """
-    if not user_or_contact or ILabContact.providedBy(user_or_contact):
+    if not user_or_contact or is_lab_contact(user_or_contact):
         # Lab contacts cannot belong to a client
         return None
 
-    if not IContact.providedBy(user_or_contact):
-        contact = get_user_contact(user_or_contact, contact_types=['Contact'])
-        if IContact.providedBy(contact):
+    if not is_contact(user_or_contact):
+        contact = get_user_contact(user_or_contact, contact_types=["Contact"])
+        if is_client_contact(contact):
             return get_user_client(contact)
         return None
 
@@ -1576,7 +1588,7 @@ def get_user_fullname(user_or_contact):
     :param: Plone user or contact
     :returns: Fullname of the contact or user
     """
-    if IContact.providedBy(user_or_contact):
+    if is_contact(user_or_contact):
         return user_or_contact.getFullname()
 
     user = get_user(user_or_contact)
@@ -1598,7 +1610,7 @@ def get_user_email(user_or_contact):
     :param: Plone user or contact
     :returns: Fullname of the contact or user
     """
-    if IContact.providedBy(user_or_contact):
+    if is_contact(user_or_contact):
         return user_or_contact.getEmailAddress()
 
     user = get_user(user_or_contact)
@@ -1611,6 +1623,58 @@ def get_user_email(user_or_contact):
         return user.getProperty("email", default="")
 
     return contact.getEmailAddress()
+
+
+def is_lab_contact(brain_or_object):
+    """Checks if the brain or object is a Lab Contact
+
+    :returns: True if the brain or object is a Lab Contact, False otherwise
+    """
+    if not is_object(brain_or_object):
+        return False
+    obj = get_object(brain_or_object)
+    return ILabContact.providedBy(obj)
+
+
+def is_client_contact(brain_or_object):
+    """Checks if the brain or object is a Client Contact
+
+    :returns: True if the brain or object is a Client Contact, False otherwise
+    """
+    if not is_object(brain_or_object):
+        return False
+    obj = get_object(brain_or_object)
+    return IContact.providedBy(obj) and not is_global_contact(obj)
+
+
+def is_global_contact(brain_or_object):
+    """Checks if the brain or object is a global contact
+
+    :returns: True if the brain or object is a global contact, False otherwise
+    """
+    if not is_object(brain_or_object):
+        return False
+    obj = get_object(brain_or_object)
+    if not IContact.providedBy(obj):
+        return False
+    parent = get_parent(brain_or_object)
+    if not IContacts.providedBy(parent):
+        return False
+    return True
+
+
+def is_contact(brain_or_object):
+    """Checks if the brain or object is a Client Contact or Lab Contact
+
+    :returns: True if the brain or object is a Contact, False otherwise
+    """
+    if is_client_contact(brain_or_object):
+        return True
+    if is_lab_contact(brain_or_object):
+        return True
+    if is_global_contact(brain_or_object):
+        return True
+    return False
 
 
 def get_current_client():
@@ -1968,6 +2032,36 @@ def text_to_html(text, wrap="p", encoding="utf8"):
     return html.encode(encoding)
 
 
+def safe_unicode(value, default=u""):
+    """Safely convert a value to a unicode string
+
+    :param value: Value to be converted to unicode
+    :param default: Default value if conversion fails
+    :returns: Unicode string
+    """
+    if value is None:
+        return default
+
+    # If already unicode, return as is
+    if isinstance(value, six.text_type):
+        return value
+
+    try:
+        # First convert to str (handles int, long, etc.)
+        try:
+            value = str(value)
+        except UnicodeDecodeError:
+            # If value is bytes with non-ASCII chars
+            value = value.encode("utf8")
+
+        # Convert to unicode
+        if isinstance(value, six.binary_type):
+            return value.decode("utf8")
+        return six.text_type(value)
+    except Exception:
+        return default
+
+
 def to_utf8(string, default=_marker):
     """Encode string to UTF8
 
@@ -2080,7 +2174,7 @@ def to_list(value):
     return list(value)
 
 
-def validate(obj, invariants=True):
+def validate(obj):
     """Validates the full object
 
     :param obj: the object to validate the data against
@@ -2100,24 +2194,37 @@ def validate(obj, invariants=True):
             getattr(field, "_type", None) in [str]
 
     errors = {}
+    obj_data = {}
 
     # iterate through object fields and validate each
     fields = get_fields(obj)
-
     for field_name, field in fields.items():
-        if field_name in SKIP_VALIDATION_FIELDS:
-            continue
 
+        # extract the field value
         value = getattr(obj, field_name, None)
-
         if callable(value):
             # Handle callable values, e.g. effective, expired etc.
             value = value()
         if isinstance(value, six.string_types):
             value = safe_unicode(value)
         if is_string_field(field):
-            # provide UTF8 encoded strings for stringfields, e.g. the ID field.
-            value = to_utf8(value)
+            # Provide UTF-8 encoded strings for StringField or NativeString.
+            # This prevents a WrongType error when the value is unicode instead
+            # of str. For example, the field used to store an object's ID is a
+            # StringField, which only accepts str. However, in Senaite, values
+            # are stored as unicode and returned as UTF-8 to maintain AT legacy
+            # behavior.
+            # Note that this "trick" only applies to top-level fields: a
+            # WrongContainedType error will be raised if the field is, e.g., a
+            # DataGridField whose subfield inherits from NativeString.
+            missing_value = getattr(field, "missing_value", None)
+            value = to_utf8(value, default=None) or missing_value
+
+        # update obj_data for later use with invariants
+        obj_data[field_name] = value
+
+        if field_name in SKIP_VALIDATION_FIELDS:
+            continue
 
         try:
             field.validate(value)
@@ -2128,22 +2235,23 @@ def validate(obj, invariants=True):
             if value is not None:
                 errors[field_name] = "wrong type"
         except Invalid as ex:
-            errors[field_name] = translate(ex.message)
+            errors[field_name] = translate(ex.message) or type(ex).__name__
 
     # validate invariants from schema
     sch = get_schema(obj)
     try:
-        sch.validateInvariants(obj)
+        sch.validateInvariants(ValidatorData(sch, obj_data, obj))
     except Invalid as ex:
-        errors[sch.getName()] = translate(ex.message)
+        errors[sch.getName()] = translate(ex.message) or type(ex).__name__
 
     # validate invariants from behaviors
     for behavior_id in get_behaviors(obj):
         behavior = lookup_behavior_registration(behavior_id)
+        sch = behavior.interface
         try:
-            behavior.interface.validateInvariants(obj)
+            sch.validateInvariants(ValidatorData(sch, obj_data, obj))
         except Invalid as ex:
-            errors[behavior_id] = translate(ex.message)
+            errors[behavior_id] = translate(ex.message) or type(ex).__name__
 
     return errors
 

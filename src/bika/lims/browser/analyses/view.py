@@ -318,7 +318,7 @@ class AnalysesView(ListingView):
         """
         if api.get_current_client():
             # Current user is a client contact
-            return api.get_setup().getShowPartitions()
+            return api.get_senaite_setup().getShowPartitions()
         return True
 
     @viewcache.memoize
@@ -883,9 +883,9 @@ class AnalysesView(ListingView):
         """Render HTML element for unit
         """
         if css_class is None:
-            css_class = "unit d-inline-block py-2 small text-secondary text-nowrap"
-        return "<span class='{css_class}'>{unit}</span>".format(
-            unit=unit, css_class=css_class)
+            css_class = u"unit d-inline-block py-2 small text-secondary text-nowrap"
+        return u"<span class='{css_class}'>{unit}</span>".format(
+            unit=safe_unicode(unit), css_class=css_class)
 
     def get_category_title(self, analysis):
         """Returns the title of the category the analysis is assigned to
@@ -1098,7 +1098,7 @@ class AnalysesView(ListingView):
 
         if is_editable and calculation:
             url = analysis_brain.getURL()
-            item["after"]["Result"] = item["after"].get("Result") or ""
+            item["after"]["Result"] = item["after"].get("Result") or u""
             item["after"]["Result"] += get_link(
                 "{}/action/recalculate".format(url),
                 value="<i class='small text-secondary fas fa-sync'></i>",
@@ -1425,13 +1425,14 @@ class AnalysesView(ListingView):
         results_range = analysis.getResultsRange()
 
         # get the results range interval properly formatted
-        value = get_formatted_interval(results_range, "")
+        value = get_formatted_interval(analysis, "")
 
-        # for non-floatable analyses, display the comment instead
-        result_type = analysis.getResultType()
-        if result_type not in ["numeric", "string"]:
-            comment = results_range.get("rangecomment")
-            value = comment if comment else value
+        # show comment if the result is out of range
+        out_range, out_shoulders = is_out_of_range(analysis)
+        comment = results_range.get("rangecomment")
+        if out_range and comment:
+            img = get_image("comment_ico.png", title=comment)
+            self._append_html_element(item, "Specification", img)
 
         item["Specification"] = value
 

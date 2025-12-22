@@ -18,6 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import cgi
 from collections import Mapping
 
 from bika.lims import api
@@ -176,18 +177,34 @@ def is_out_of_range(brain_or_object, result=_marker):
     return True, not in_shoulder
 
 
-def get_formatted_interval(results_range, default=_marker):
+def get_formatted_interval(analysis_or_results_range, default=_marker):
     """Returns a string representation of the interval defined by the results
     range passed in
-    :param results_range: a dict or a ResultsRangeDict
+
+    :param analysis_or_results_range: analysis, dict or ResultsRangeDict
     """
+    analysis = None
+    if IAnalysis.providedBy(analysis_or_results_range) or IReferenceAnalysis.providedBy(analysis_or_results_range):
+        analysis = analysis_or_results_range
+        results_range = analysis.getResultsRange()
+    else:
+        results_range = analysis_or_results_range
+
     if not isinstance(results_range, Mapping):
         if default is not _marker:
             return default
         api.fail("Type not supported")
+
     results_range = ResultsRangeDict(results_range)
     min_str = results_range.min if api.is_floatable(results_range.min) else None
     max_str = results_range.max if api.is_floatable(results_range.max) else None
+
+    if analysis:
+        min_text = analysis.getResultOptionTextByValue(min_str)
+        min_str = cgi.escape(min_text) if min_text else min_str
+        max_text = analysis.getResultOptionTextByValue(max_str)
+        max_str = cgi.escape(max_text) if max_text else max_str
+
     if min_str is None and max_str is None:
         if default is not _marker:
             return default

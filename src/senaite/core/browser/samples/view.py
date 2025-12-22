@@ -100,7 +100,7 @@ class SamplesView(ListingView):
         self.url = api.get_url(self.context)
 
         # Toggle some columns if the sampling workflow is enabled
-        sampling_enabled = api.get_setup().getSamplingWorkflowEnabled()
+        sampling_enabled = api.get_senaite_setup().getSamplingWorkflowEnabled()
 
         now = DateTime().strftime("%Y-%m-%d %H:%M")
 
@@ -663,7 +663,7 @@ class SamplesView(ListingView):
         """Purges unnecessary review statuses
         """
         remove_filters = []
-        setup = api.get_bika_setup()
+        setup = api.get_senaite_setup()
         if not setup.getSamplingWorkflowEnabled():
             remove_filters.append("to_be_sampled")
         if not setup.getScheduleSamplingEnabled():
@@ -786,7 +786,7 @@ class SamplesView(ListingView):
 
     @property
     def is_printing_workflow_enabled(self):
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getPrintingWorkflowEnabled()
 
     def str_date(self, date, long_format=1, default=""):
@@ -810,7 +810,7 @@ class SamplesView(ListingView):
             return False
         if api.get_current_client():
             # If current user is a client contact, delegate to ShowPartitions
-            return api.get_setup().getShowPartitions()
+            return api.get_senaite_setup().getShowPartitions()
         return True
 
     @property

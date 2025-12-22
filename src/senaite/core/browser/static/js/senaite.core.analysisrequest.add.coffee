@@ -116,7 +116,7 @@ class window.AnalysisRequestAdd
   ###
   recalculate_records: =>
     @ajax_post_form("recalculate_records").done (records) ->
-      console.debug "Recalculate Analyses: Records=", records
+      console.debug "Recalculate Records=", records
       # remember a services snapshot
       @records_snapshot = records
       # trigger event for whom it might concern
@@ -605,20 +605,23 @@ class window.AnalysisRequestAdd
     # (multi-) reference fields, e.g. CC Contacts of selected Contact
     if @is_reference_field field
       manually_deselected = @deselected_uids[field_name] or []
-      # filter out values that were manually deselected
-      values = values.filter (value) ->
-        return value.uid not in manually_deselected
+      current_value = @get_reference_field_value field
 
-      # get a list of uids
-      uids = values.map (value) ->
-        return value.uid
-
-      # update reference field data records
-      values.forEach (value) =>
-        @set_reference_field_records field, value
+      to_set = []
+      values.forEach (value, index) ->
+        # skip manually deselected references
+        if value.uid in manually_deselected
+          return
+        # skip if the `if_empty` flag is set and the field is not empty
+        if_empty = value.if_empty? and value.if_empty is true
+        if if_empty and current_value.length > 0
+          return
+        # remember the others
+        to_set.push value.uid
 
       # update reference field values
-      @set_reference_field field, uids
+      if to_set.length > 0
+        @set_reference_field field, to_set
 
     # other fields, e.g. default CC Emails of Client
     else
@@ -650,7 +653,9 @@ class window.AnalysisRequestAdd
     me = this
     chain = Promise.resolve()
     $.each record.filter_queries, (field_name, query) ->
-      field = $("#" + field_name + "-#{arnum}")
+      field_id = field_name + "-#{arnum}"
+      field = $("#" + field_id)
+      console.debug("Apply filter query from #{record.id} to #{field_id}: #{JSON.stringify(query)}")
       chain = chain.then () ->
         me.set_reference_field_query field, query
 
@@ -671,7 +676,8 @@ class window.AnalysisRequestAdd
 
     # set the new query
     controller.set_search_query(query)
-    console.debug("Set custom search query for field #{field.selector}: #{JSON.stringify(query)}")
+    field_id = field.attr "id"
+    console.debug("Set custom search query for field #{field_id}: #{JSON.stringify(query)}")
 
     # check if the target field needs to be flushed
     target_field_name = field.closest("tr[fieldname]").attr "fieldname"
@@ -1388,7 +1394,6 @@ class window.AnalysisRequestAdd
     selected = if event.type is "select" then yes else no
     deselected = not selected
     manually_deselected = @deselected_uids[field_name] or []
-    record = @records_snapshot[arnum] or {}
     metadata = @get_metadata_for(arnum, field_name)
 
     # reset all dependent filter queries

@@ -275,7 +275,7 @@ class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
 
     def getDefaultLifetime(self):
         """ get the default retention period """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getDefaultSampleLifetime()
 
     def getRawSamplePoints(self):

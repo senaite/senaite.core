@@ -17,7 +17,7 @@
 #
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
+import copy
 import json
 from collections import OrderedDict
 from datetime import datetime
@@ -53,12 +53,14 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.api import dtime
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.interfaces import IAfterCreateSampleHook
 from senaite.core.p3compat import cmp
 from senaite.core.permissions import TransitionMultiResults
 from senaite.core.registry import get_registry_record
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getAdapters
 from zope.component import queryAdapter
+from zope.component import subscribers
 from zope.i18n.locales import locales
 from zope.i18nmessageid import Message
 from zope.interface import alsoProvides
@@ -105,7 +107,7 @@ class AnalysisRequestAddView(BrowserView):
     def __call__(self):
         self.portal = api.get_portal()
         self.portal_url = self.portal.absolute_url()
-        self.setup = api.get_setup()
+        self.setup = api.get_senaite_setup()
         self.came_from = "add"
         self.tmp_ar = self.get_ar()
         self.ar_count = self.get_ar_count()
@@ -143,13 +145,13 @@ class AnalysisRequestAddView(BrowserView):
     def analyses_required(self):
         """Check if analyses are required
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getSampleAnalysesRequired()
 
     def get_currency(self):
         """Returns the configured currency
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         currency = setup.getCurrency()
         currencies = locales.getLocale("en").numbers.currencies
         return currencies[currency]
@@ -391,6 +393,7 @@ class AnalysisRequestAddView(BrowserView):
             parent = None
             if source is not None:
                 parent = self.get_parent_ar(source)
+
             for field in fields:
                 value = None
                 fieldname = field.getName()
@@ -402,6 +405,17 @@ class AnalysisRequestAddView(BrowserView):
                     # get the default value of this field
                     value = self.get_default_value(
                         field, ar_context, arnum=arnum)
+
+                # Filter out analyses in certain workflow states when copying
+                if fieldname == "Analyses" and value:
+                    skip_states = self.get_skip_analyses_states()
+                    value = self.filter_objs_with_states(
+                        value, filter_states=skip_states)
+
+                    # Filter out partition analyses if configured
+                    if self.get_skip_partition_analyses() and source:
+                        value = self.filter_partition_analyses(value, source)
+
                 # store the value on the new fieldname
                 new_fieldname = self.get_fieldname(field, arnum)
                 out[new_fieldname] = value
@@ -599,7 +613,6 @@ class AnalysisRequestAddView(BrowserView):
             widget_type = None
         return widget_type in ALLOW_MULTI_PASTE_WIDGET_TYPES
 
-    @viewcache.memoize
     def get_allowed_multi_paste_fields(self):
         """Returns a list of fields that allow multi paste
         """
@@ -607,7 +620,72 @@ class AnalysisRequestAddView(BrowserView):
         record = get_registry_record(key)
         if not record:
             return []
-        return record
+        # convert to plain list to avoid persistent references
+        return list(record)
+
+    def get_skip_analyses_states(self):
+        """Returns a list of analyses WF states to skip on copy
+        """
+        key = "sample_add_form_skip_analyses_in_states"
+        record = get_registry_record(key)
+        if not record:
+            return []
+        # convert to plain list to avoid persistent references
+        return list(record)
+
+    def get_skip_partition_analyses(self):
+        """Returns whether to skip partition analyses on copy
+        """
+        key = "sample_add_form_skip_partition_analyses"
+        record = get_registry_record(key)
+        return bool(record)
+
+    def filter_objs_with_states(self, objs, filter_states=None):
+        """Filter out objects that are in the given workflow states
+
+        :param objs: List of objects to filter
+        :param filter_states: List of workflow state IDs to exclude
+        :return: List of objects not in the filter_states
+        """
+        if not filter_states:
+            return objs
+        if not isinstance(filter_states, (list, tuple)):
+            return objs
+        filtered = []
+        for obj in objs:
+            status = api.get_review_status(obj)
+            if status not in filter_states:
+                filtered.append(obj)
+        return filtered
+
+    def filter_partition_analyses(self, analyses, source):
+        """Filter out analyses that belong to partitions
+
+        Only keeps analyses that directly belong to the source sample.
+        Analyses from partitions are identified by checking if they are
+        direct children of the source sample.
+
+        :param analyses: List of analysis brains/objects to filter
+        :param source: The source sample object
+        :return: List of analyses that belong directly to the source sample
+        """
+        if not analyses or not source:
+            return analyses
+
+        # Get the physical paths of analyses that directly belong to the source
+        source_analysis_paths = set()
+        for analysis in source.objectValues("Analysis"):
+            source_analysis_paths.add(api.get_path(analysis))
+
+        # Filter the analyses to keep only those in the source
+        filtered = []
+        for analysis in analyses:
+            # Get the object if it's a brain
+            analysis_path = api.get_path(analysis)
+            if analysis_path in source_analysis_paths:
+                filtered.append(analysis)
+
+        return filtered
 
 
 class AnalysisRequestManageView(BrowserView):
@@ -641,7 +719,7 @@ class AnalysisRequestManageView(BrowserView):
         return self.tmp_ar
 
     def get_annotation(self):
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return IAnnotations(setup)
 
     @property
@@ -1159,7 +1237,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
     def ajax_get_global_settings(self):
         """Returns the global Bika settings
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         settings = {
             "show_prices": setup.getShowPrices(),
         }
@@ -1186,6 +1264,33 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             return {"allowed": True}
 
         if all([catalog, query, uids]):
+            # Special handling for Contact fields with getParentUID filter
+            # Global contacts should always be allowed regardless of client
+            if name in ["Contact", "CCContact"] and "getParentUID" in query:
+                from bika.lims.interfaces import IClient
+
+                # Check each selected contact
+                for uid in uids:
+                    contact = api.get_object_by_uid(uid, None)
+                    if not contact:
+                        # Invalid contact, will fail later
+                        break
+
+                    parent = api.get_parent(contact)
+                    # Global contacts (not under a client) are always allowed
+                    if not IClient.providedBy(parent):
+                        continue
+
+                    # Client contacts must match the query
+                    parent_uid = api.get_uid(parent)
+                    parent_uid_query = query.get("getParentUID", [])
+                    if parent_uid not in parent_uid_query:
+                        # This client contact doesn't match the query
+                        break
+                else:
+                    # All contacts are either global or match the query
+                    return {"allowed": True}
+
             # check if the current value is allowed for the new query
             brains = api.search(query, catalog=catalog)
             allowed_uids = list(map(api.get_uid, brains))
@@ -1375,7 +1480,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 continue
             metadata[key] = {obj_info["uid"]: obj_info}
 
-        return metadata
+        return copy.deepcopy(metadata)
 
     def get_template_additional_info(self, metadata):
         template_to_services = {}
@@ -1462,14 +1567,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             obj, key, record=record), objects)
         return filter(None, objects)
 
-    def object_info_cache_key(method, self, obj, key, **kw):
-        if obj is None or not key:
-            raise DontCache
-        field_name = key.lower()
-        obj_key = api.get_cache_key(obj)
-        return "-".join([field_name, obj_key] + kw.keys())
-
-    @cache(object_info_cache_key)
     def get_object_info(self, obj, key, record=None):
         """Returns the object info metadata for the passed in object and key
         :param obj: the object from which extract the info from
@@ -1512,10 +1609,10 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # catalog queries for UI field filtering
         queries = {
             "Contact": {
-                "getParentUID": [uid]
+                "getParentUID": [uid, ""]
             },
             "CCContact": {
-                "getParentUID": [uid]
+                "getParentUID": [uid, ""]
             },
             "SamplePoint": {
                 "getClientUID": [uid, ""],
@@ -1544,9 +1641,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         record = record if record else {}
         sample_type_uid = record.get("SampleType")
         if api.is_uid(sample_type_uid):
-            fields = ["Template", "Specification", "Profiles", "SamplePoint"]
-            for field in fields:
-                queries[field]["sampletype_uid"] = [sample_type_uid, ""]
+            st_queries = self.get_sampletype_queries(sample_type_uid, record)
+            queries.update(st_queries)
 
         return queries
 
@@ -1608,7 +1704,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         base_info["filter_queries"] = filter_queries
 
     def show_recalculate_prices(self):
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getShowPrices()
 
     def ajax_recalculate_prices(self):
@@ -1623,7 +1719,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         records = self.get_records()
 
         client = self.get_client()
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
 
         member_discount = float(setup.getMemberDiscount())
         member_discount_applies = False
@@ -1796,13 +1892,18 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Re-add the Contact
             required_fields["Contact"] = contact
 
-            # Check if the contact belongs to the selected client
+            # Check if the contact belongs to the selected client or is global
             contact_obj = api.get_object(contact, None)
             if not contact_obj:
                 fielderrors["Contact"] = _("No valid contact")
             else:
-                parent_uid = api.get_uid(api.get_parent(contact_obj))
-                if parent_uid != record.get("Client"):
+                parent = api.get_parent(contact_obj)
+                parent_uid = api.get_uid(parent)
+                # Allow contacts that belong to the client or are global
+                from bika.lims.interfaces import IClient
+                is_client_contact = parent_uid == record.get("Client")
+                is_global_contact = not IClient.providedBy(parent)
+                if not (is_client_contact or is_global_contact):
                     msg = _("Contact does not belong to the selected client")
                     fielderrors["Contact"] = msg
 
@@ -1889,6 +1990,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # add the attachments to the record
             valid_record["attachments"] = filter(None, attachments)
 
+            # keep the `_source_uid` in the record for the create process
+            valid_record["_source_uid"] = record.get("_source_uid")
+
             # append the valid record to the list of valid records
             valid_records.append(valid_record)
 
@@ -1941,6 +2045,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Creates samples for the given records
         """
         samples = []
+        request = self.request
         for record in records:
             client_uid = record.get("Client")
             client = self.get_object_by_uid(client_uid)
@@ -1950,6 +2055,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Pop the attachments
             attachments = record.pop("attachments", [])
 
+            # Pop the source UID
+            source_uid = record.pop("_source_uid", None)
+
+            # Fetch the source object
+            source = None
+            if source_uid:
+                source = api.get_object(source_uid)
+
             # Create as many samples as required
             num_samples = self.get_num_samples(record)
             for idx in range(num_samples):
@@ -1958,6 +2071,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 # Create the attachments
                 for attachment_record in attachments:
                     self.create_attachment(sample, attachment_record)
+
+                # Pass the new sample to all subscription hooks
+                hooks = subscribers((sample, request), IAfterCreateSampleHook)
+                # Lower sort keys are processed first
+                sorted_hooks = sorted(
+                    hooks, key=lambda x: api.to_float(getattr(x, "sort", 10)))
+                for hook in sorted_hooks:
+                    hook.update(sample, source=source)
 
                 transaction.savepoint(optimistic=True)
                 samples.append(sample)
@@ -1982,7 +2103,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
     def is_automatic_label_printing_enabled(self):
         """Returns whether the automatic printing of barcode labels is active
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         auto_print = setup.getAutoPrintStickers()
         auto_receive = setup.getAutoreceiveSamples()
         action = "receive" if auto_receive else "register"
@@ -1992,7 +2113,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Handle redirect after sample creation or cancel
         """
         # Automatic label printing
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         auto_print = self.is_automatic_label_printing_enabled()
         # Check if immediate results entry is enabled in setup and the current
         # user has enough privileges to do so

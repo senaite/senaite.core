@@ -5,6 +5,39 @@ Changelog
 ------------------
 
 - #2775 Auto-add CCContact when hidden on Sample Add form
+- #2830 Fix TinyMCE hidden Cursor
+- #2829 Fix TypeError in bika_setup rejection widget
+- #2821 Migrate all fields from bika_setup to senaite setup
+- #2825 Updated webpack dependencies
+- #2826 Fix inconsistent Profile filtering on multi-sample creation
+- #2819 Fix multiuploads for cluster setups
+- #2817 Fix QR code render for multi-page stickers
+- #2818 Fix UnicodeDecodeError if analysis unit contains unicode characters
+- #2812 Migrate MultiFile to Dexterity
+- #2815 Remove dependency to plone.app.jquerytools
+- #2816 Fix custom actions and behaviors are missing
+- #2801 Global Contacts
+- #2795 Migrate Client Contacts to Dexterity
+- #2811 Fix typo in recalculation message ("Result recalucated" → "Result recalculated")
+- #2809 Prioritize after create sample susbcriber hooks
+- #2808 Sticky form tabbing
+- #2807 Fix traceback when emailing results report and email 'From' not set
+- #2806 Allow to create sample partitions on copy
+- #2804 Allow to skip analyses from partitions on copy
+- #2803 Allow to skip analyses in WF states on copy
+- #2802 Fix KeyError in DX address widget country lookup
+- #2800 Fix WrongContainedType on object creation/update via jsonapi
+- #2799 Fix Reference Sample import supplier data
+- #2797 Fix sticker rendering error when no configured template was found
+- #2793 Fix APIError: Expected string type, got '<type 'NoneType'>'
+- #2792 Add setting to trigger transition events on sample creation
+- #2791 Add TextLineField that strips the value and properly handle encodings
+- #2790 Fix "Show more" button does not appear for the 2nd and 3rd sample remarks
+- #2785 Fix Formatted specification interval rendering is not shown for analyses and reference analyses
+- #2776 Fix Imported Worksheet Templates not editable after Load Setup Data
+- #2781 Fix formatted specification interval for result options
+- #2780 Fix result options text not displayed if it contains character entities
+- #2778 Allow manual submission for imported results
 - #2768 Pin magnitude to a Python 2 compatible version
 - #2762 Fix performance of analysis dependency calculations
 - #2767 Show "Save" button in sample header if at least one field is editable

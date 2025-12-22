@@ -4,6 +4,7 @@ import {i18n, _t, _p} from "./i18n-wrapper.js"
 import EditForm from "./components/editform.js"
 import Site from "./components/site.js"
 import Sidebar from "./components/sidebar.js"
+import FormTabbing from "./components/formtabbing.js"
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -47,6 +48,13 @@ document.addEventListener("DOMContentLoaded", () => {
     $("[data-toggle='tooltip']").tooltip();
     $("select.selectpicker").selectpicker();
   });
+
+  // Initialize Form Tabbing if tabs are found
+  const tabs = document.querySelectorAll(".nav-tabs a[data-toggle='tab']");
+  if (tabs.length > 0) {
+    const formTabbing = new FormTabbing();
+    formTabbing.init();
+  }
 
   // Reload the whole view if the status of the view's context has changed
   // due to the transition submission of some items from the listing

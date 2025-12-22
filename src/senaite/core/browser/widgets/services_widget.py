@@ -138,14 +138,14 @@ class ServicesWidget(DefaultListingWidget):
     def show_categories_enabled(self):
         """Check in the setup if categories are enabled
         """
-        bika_setup = api.get_bika_setup()
+        bika_setup = api.get_senaite_setup()
         return bika_setup.getCategoriseAnalysisServices()
 
     @view.memoize
     def show_prices(self):
         """Checks if prices should be shown or not
         """
-        bika_setup = api.get_setup()
+        bika_setup = api.get_senaite_setup()
         return bika_setup.getShowPrices()
 
     @view.memoize
@@ -153,7 +153,7 @@ class ServicesWidget(DefaultListingWidget):
         """Get the currency Symbol
         """
         locale = locales.getLocale("en")
-        bika_setup = api.get_bika_setup()
+        bika_setup = api.get_senaite_setup()
         currency = bika_setup.getCurrency()
         return locale.numbers.currencies[currency].symbol
 
@@ -161,7 +161,7 @@ class ServicesWidget(DefaultListingWidget):
     def get_decimal_mark(self):
         """Returns the decimal mark
         """
-        bika_setup = api.get_bika_setup()
+        bika_setup = api.get_senaite_setup()
         return bika_setup.getDecimalMark()
 
     @view.memoize

@@ -25,6 +25,7 @@
   <include package=".attachmenttypes" />
   <include package=".batchlabels" />
   <include package=".containertypes" />
+  <include package=".contacts" />
   <include package=".departments" />
   <include package=".dynamicanalysisspecs" />
   <include package=".instrumentlocations" />

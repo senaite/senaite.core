@@ -60,5 +60,5 @@ class SampleReceiveWorkflowTransition(ListingWorkflowTransition):
     def is_auto_print_stickers_enabled(self):
         """Returns whether the auto print of stickers on reception is enabled
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return "receive" in setup.getAutoPrintStickers()

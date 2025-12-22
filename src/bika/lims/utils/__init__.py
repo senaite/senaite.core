@@ -33,6 +33,7 @@ from AccessControl import getSecurityManager
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from bika.lims import api
+from bika.lims.api import safe_unicode as u
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IClient
@@ -661,12 +662,12 @@ def get_link(href, value=None, csrf=True, **kwargs):
     """
     if not href:
         return ""
-    anchor_value = value and value or href
+    anchor_value = value and u(value) or href
     attr = render_html_attributes(**kwargs)
     # Add a CSRF token
     if csrf and href.startswith("http"):
         href = addTokenToUrl(href)
-    return '<a href="{}" {}>{}</a>'.format(href, attr, anchor_value)
+    return u'<a href="{}" {}>{}</a>'.format(href, attr, anchor_value)
 
 
 def get_link_for(obj, **kwargs):

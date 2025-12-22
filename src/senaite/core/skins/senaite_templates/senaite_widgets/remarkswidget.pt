@@ -73,7 +73,7 @@
             <div class="record-content" tal:content="structure record/html_content"></div>
           </div>
         </tal:block>
-        <div tal:condition="python:len(records) > 3" class="mt-3">
+        <div tal:condition="python:len(records) > 1" class="mt-3">
           <button type="button"
                   class="toggleRemarks btn btn-link btn-sm p-0">
             <span class="show-more-text" i18n:translate="">Show more</span>

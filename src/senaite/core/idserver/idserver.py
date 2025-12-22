@@ -187,7 +187,7 @@ def get_config(context, **kw):
     """Fetch the config dict from the Bika Setup for the given portal_type
     """
     # get the ID formatting config
-    config_map = api.get_bika_setup().getIDFormatting()
+    config_map = api.get_senaite_setup().getIDFormatting()
 
     # allow portal_type override
     portal_type = get_type_id(context, **kw)

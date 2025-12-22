@@ -31,6 +31,7 @@ from bika.lims import _
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.api import mail as mailapi
+from bika.lims.api.mail import is_valid_email_address
 from bika.lims.api.security import get_user
 from bika.lims.api.security import get_user_id
 from bika.lims.api.snapshot import take_snapshot
@@ -175,11 +176,19 @@ class EmailView(BrowserView):
         if not self.reports:
             message = _("No reports found")
             self.add_status_message(message, "error")
+        if not is_valid_email_address(self.email_sender_address):
+            message = _(
+                "The email 'From' address is invalid. Please verify the "
+                "\"Publication 'From' address\" in Setup > Notifications "
+                "and/or the \"Site 'From' address\" in Site Setup > Mail."
+            )
+            self.add_status_message(message, "error")
 
         if not all([self.email_recipients_and_responsibles,
                     self.email_subject,
                     self.email_body,
-                    self.reports]):
+                    self.reports,
+                    is_valid_email_address(self.email_sender_address)]):
             return False
         return True
 
@@ -222,13 +231,13 @@ class EmailView(BrowserView):
     def setup(self):
         """Get the setup object
         """
-        return api.get_setup()
+        return api.get_senaite_setup()
 
     @property
     def laboratory(self):
         """Laboratory object from the LIMS setup
         """
-        return api.get_setup().laboratory
+        return api.get_senaite_setup().laboratory
 
     @property
     def always_cc_responsibles(self):
@@ -310,7 +319,7 @@ class EmailView(BrowserView):
         body = self.request.get("body", None)
         if body is not None:
             return body
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         body = setup.getEmailBodySamplePublication()
         template_context = {
             "client_name": self.client_name,
