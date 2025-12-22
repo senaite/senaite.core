@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2805 Migrate Worksheets to DX
+- #2834 Handle tat as timedelta or dict during AT to DX migration
 - #2832 Fix sample type prefix validation
 - #2837 Disable Cancel Button in Sample Registration Form after Save
 - #2833 Ensure string values for ID formatting
