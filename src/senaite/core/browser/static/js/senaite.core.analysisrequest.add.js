@@ -487,7 +487,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
 
   recalculate_records() {
     return this.ajax_post_form("recalculate_records").done(function(records) {
-      console.debug("Recalculate Analyses: Records=", records);
+      console.debug("Recalculate Records=", records);
       // remember a services snapshot
       this.records_snapshot = records;
       // trigger event for whom it might concern
@@ -1000,8 +1000,10 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     me = this;
     chain = Promise.resolve();
     return $.each(record.filter_queries, function(field_name, query) {
-      var field;
-      field = $("#" + field_name + `-${arnum}`);
+      var field, field_id;
+      field_id = field_name + `-${arnum}`;
+      field = $("#" + field_id);
+      console.debug(`Apply filter query from ${record.id} to ${field_id}: ${JSON.stringify(query)}`);
       return chain = chain.then(function() {
         return me.set_reference_field_query(field, query);
       });
@@ -1009,7 +1011,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
   }
 
   set_reference_field_query(field, query) {
-    var controller, data, me, target_base_query, target_catalog, target_field_label, target_field_name, target_query, target_value;
+    var controller, data, field_id, me, target_base_query, target_catalog, target_field_label, target_field_name, target_query, target_value;
     controller = this.get_widget_controller(field);
     // No controller found, return immediately
     // -> happens when the field is hidden or absent
@@ -1018,7 +1020,8 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     }
     // set the new query
     controller.set_search_query(query);
-    console.debug(`Set custom search query for field ${field.selector}: ${JSON.stringify(query)}`);
+    field_id = field.attr("id");
+    console.debug(`Set custom search query for field ${field_id}: ${JSON.stringify(query)}`);
     // check if the target field needs to be flushed
     target_field_name = field.closest("tr[fieldname]").attr("fieldname");
     target_field_label = field.closest("tr[fieldlabel]").attr("fieldlabel");
@@ -1620,7 +1623,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
   }
 
   on_referencefield_value_changed(event) {
-    var $el, after_change, arnum, deselected, el, event_data, field_name, filter_queries, manually_deselected, me, metadata, record, ref, selected, value;
+    var $el, after_change, arnum, deselected, el, event_data, field_name, filter_queries, manually_deselected, me, metadata, ref, selected, value;
     me = this;
     el = event.currentTarget;
     $el = $(el);
@@ -1630,7 +1633,6 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     selected = event.type === "select" ? true : false;
     deselected = !selected;
     manually_deselected = this.deselected_uids[field_name] || [];
-    record = this.records_snapshot[arnum] || {};
     metadata = this.get_metadata_for(arnum, field_name);
     // reset all dependent filter queries
     if (deselected && metadata) {
@@ -2260,7 +2262,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
   }
 
   on_ajax_start() {
-    var save_and_copy_button, save_button;
+    var cancel_button, save_and_copy_button, save_button;
     console.debug("°°° on_ajax_start °°°");
     // deactivate the save button
     save_button = $("input[name=save_button]");
@@ -2270,13 +2272,18 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     save_button[0].value = _t("Loading ...");
     // deactivate the save and copy button
     save_and_copy_button = $("input[name=save_and_copy_button]");
-    return save_and_copy_button.prop({
+    save_and_copy_button.prop({
+      "disabled": true
+    });
+    // deactivate the cancel button
+    cancel_button = $("input[name=cancel_button]");
+    return cancel_button.prop({
       "disabled": true
     });
   }
 
   on_ajax_end() {
-    var save_and_copy_button, save_button;
+    var cancel_button, save_and_copy_button, save_button;
     console.debug("°°° on_ajax_end °°°");
     // reactivate the save button
     save_button = $("input[name=save_button]");
@@ -2286,7 +2293,12 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     save_button[0].value = _t("Save");
     // reactivate the save and copy button
     save_and_copy_button = $("input[name=save_and_copy_button]");
-    return save_and_copy_button.prop({
+    save_and_copy_button.prop({
+      "disabled": false
+    });
+    // reactivate the cancel button
+    cancel_button = $("input[name=cancel_button]");
+    return cancel_button.prop({
       "disabled": false
     });
   }

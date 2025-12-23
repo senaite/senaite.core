@@ -46,7 +46,7 @@ class PrimaryAnalysisRequestViewlet(ViewletBase):
         # If current user is a client contact, rely on Setup's ShowPartitions
         client = api.get_current_client()
         if client:
-            if not api.get_setup().getShowPartitions():
+            if not api.get_senaite_setup().getShowPartitions():
                 return partitions
 
         partitions = self.context.getDescendants()

@@ -37,7 +37,7 @@ class FrontPageView(BrowserView):
     def __call__(self):
         self.icon = "{}/{}".format(
             self.portal_url, "/++resource++bika.lims.images/chevron_big.png")
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         login_url = "{}/{}".format(self.portal_url, "login")
         landingpage = setup.getLandingPage()
 
@@ -104,7 +104,7 @@ class FrontPageView(BrowserView):
     def is_dashboard_enabled(self):
         """Checks if the dashboard is enabled
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getDashboardByDefault()
 
     def is_anonymous_user(self):

@@ -68,17 +68,24 @@ def admitted_stickers_vocabulary(context):
 def default_retention_period():
     """Returns the default retention period
     """
-    period = api.get_setup().getDefaultSampleLifetime()
+    period = api.get_senaite_setup().getDefaultSampleLifetime()
     return dtime.to_timedelta(period, default=timedelta(0))
 
 
-def prefix_whitespaces_constraint(value):
-    """Check that the prefix does not contain whitespaces
+def prefix_ascii_no_whitespaces_constraint(value):
+    """Check that the prefix does not contain whitespaces and is ASCII only
     """
     if " " in value:
         raise Invalid(_(
-            u"sampletype_prefix_whitespace_validator_message",
+            u"sampletype_prefix_no_whitespace_validator_message",
             default=u"No whitespaces in prefix allowed"
+        ))
+    try:
+        str(value).encode("ascii")
+    except UnicodeEncodeError:
+        raise Invalid(_(
+            u"sampletype_prefix_ascii_validator_message",
+            default=u"Only ASCII characters in prefix allowed"
         ))
     return True
 
@@ -193,9 +200,9 @@ class ISampleTypeSchema(model.Schema):
         ),
         description=_(
             u"description_sampletype_prefix",
-            default=u"Please provide a unique profile keyword"
+            default=u"Only ASCII characters without whitespaces are allowed."
         ),
-        constraint=prefix_whitespaces_constraint,
+        constraint=prefix_ascii_no_whitespaces_constraint,
         required=True,
     )
 

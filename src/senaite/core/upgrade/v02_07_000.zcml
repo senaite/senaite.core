@@ -3,6 +3,22 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Link client contacts to users"
+      description="Ensure users are correctly linked to client contacts"
+      source="2716"
+      destination="2717"
+      handler=".v02_07_000.link_contact_users"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate setup fields to DX SenaiteSetup"
+      description="Migrate all setup field values from BikaSetup to SenaiteSetup"
+      source="2715"
+      destination="2716"
+      handler=".v02_07_000.migrate_setup_fields_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Migrate Multifile objects to Dexterity"
       description="Convert Multifile content type from Archetypes to Dexterity"
       source="2714"

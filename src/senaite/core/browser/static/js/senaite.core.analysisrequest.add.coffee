@@ -116,7 +116,7 @@ class window.AnalysisRequestAdd
   ###
   recalculate_records: =>
     @ajax_post_form("recalculate_records").done (records) ->
-      console.debug "Recalculate Analyses: Records=", records
+      console.debug "Recalculate Records=", records
       # remember a services snapshot
       @records_snapshot = records
       # trigger event for whom it might concern
@@ -653,7 +653,9 @@ class window.AnalysisRequestAdd
     me = this
     chain = Promise.resolve()
     $.each record.filter_queries, (field_name, query) ->
-      field = $("#" + field_name + "-#{arnum}")
+      field_id = field_name + "-#{arnum}"
+      field = $("#" + field_id)
+      console.debug("Apply filter query from #{record.id} to #{field_id}: #{JSON.stringify(query)}")
       chain = chain.then () ->
         me.set_reference_field_query field, query
 
@@ -674,7 +676,8 @@ class window.AnalysisRequestAdd
 
     # set the new query
     controller.set_search_query(query)
-    console.debug("Set custom search query for field #{field.selector}: #{JSON.stringify(query)}")
+    field_id = field.attr "id"
+    console.debug("Set custom search query for field #{field_id}: #{JSON.stringify(query)}")
 
     # check if the target field needs to be flushed
     target_field_name = field.closest("tr[fieldname]").attr "fieldname"
@@ -1391,7 +1394,6 @@ class window.AnalysisRequestAdd
     selected = if event.type is "select" then yes else no
     deselected = not selected
     manually_deselected = @deselected_uids[field_name] or []
-    record = @records_snapshot[arnum] or {}
     metadata = @get_metadata_for(arnum, field_name)
 
     # reset all dependent filter queries
@@ -2035,6 +2037,10 @@ class window.AnalysisRequestAdd
     save_and_copy_button = $("input[name=save_and_copy_button]")
     save_and_copy_button.prop "disabled": yes
 
+    # deactivate the cancel button
+    cancel_button = $("input[name=cancel_button]")
+    cancel_button.prop "disabled": yes
+
 
   ###*
    * Event handler when Ajax request finished
@@ -2052,6 +2058,10 @@ class window.AnalysisRequestAdd
     # reactivate the save and copy button
     save_and_copy_button = $("input[name=save_and_copy_button]")
     save_and_copy_button.prop "disabled": no
+
+    # reactivate the cancel button
+    cancel_button = $("input[name=cancel_button]")
+    cancel_button.prop "disabled": no
 
 
   ###*

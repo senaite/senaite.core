@@ -17,7 +17,7 @@
 #
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
+import copy
 import json
 from collections import OrderedDict
 from datetime import datetime
@@ -107,7 +107,7 @@ class AnalysisRequestAddView(BrowserView):
     def __call__(self):
         self.portal = api.get_portal()
         self.portal_url = self.portal.absolute_url()
-        self.setup = api.get_setup()
+        self.setup = api.get_senaite_setup()
         self.came_from = "add"
         self.tmp_ar = self.get_ar()
         self.ar_count = self.get_ar_count()
@@ -145,13 +145,13 @@ class AnalysisRequestAddView(BrowserView):
     def analyses_required(self):
         """Check if analyses are required
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getSampleAnalysesRequired()
 
     def get_currency(self):
         """Returns the configured currency
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         currency = setup.getCurrency()
         currencies = locales.getLocale("en").numbers.currencies
         return currencies[currency]
@@ -719,7 +719,7 @@ class AnalysisRequestManageView(BrowserView):
         return self.tmp_ar
 
     def get_annotation(self):
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return IAnnotations(setup)
 
     @property
@@ -1237,7 +1237,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
     def ajax_get_global_settings(self):
         """Returns the global Bika settings
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         settings = {
             "show_prices": setup.getShowPrices(),
         }
@@ -1480,7 +1480,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 continue
             metadata[key] = {obj_info["uid"]: obj_info}
 
-        return metadata
+        return copy.deepcopy(metadata)
 
     def get_template_additional_info(self, metadata):
         template_to_services = {}
@@ -1567,14 +1567,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             obj, key, record=record), objects)
         return filter(None, objects)
 
-    def object_info_cache_key(method, self, obj, key, **kw):
-        if obj is None or not key:
-            raise DontCache
-        field_name = key.lower()
-        obj_key = api.get_cache_key(obj)
-        return "-".join([field_name, obj_key] + kw.keys())
-
-    @cache(object_info_cache_key)
     def get_object_info(self, obj, key, record=None):
         """Returns the object info metadata for the passed in object and key
         :param obj: the object from which extract the info from
@@ -1649,9 +1641,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         record = record if record else {}
         sample_type_uid = record.get("SampleType")
         if api.is_uid(sample_type_uid):
-            fields = ["Template", "Specification", "Profiles", "SamplePoint"]
-            for field in fields:
-                queries[field]["sampletype_uid"] = [sample_type_uid, ""]
+            st_queries = self.get_sampletype_queries(sample_type_uid, record)
+            queries.update(st_queries)
 
         return queries
 
@@ -1713,7 +1704,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         base_info["filter_queries"] = filter_queries
 
     def show_recalculate_prices(self):
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getShowPrices()
 
     def ajax_recalculate_prices(self):
@@ -1728,7 +1719,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         records = self.get_records()
 
         client = self.get_client()
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
 
         member_discount = float(setup.getMemberDiscount())
         member_discount_applies = False
@@ -2045,7 +2036,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Creates samples for the given records
         """
         samples = []
-        request = self.request
         for record in records:
             client_uid = record.get("Client")
             client = self.get_object_by_uid(client_uid)
@@ -2066,24 +2056,50 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Create as many samples as required
             num_samples = self.get_num_samples(record)
             for idx in range(num_samples):
-                sample = crar(client, self.request, record)
-
-                # Create the attachments
-                for attachment_record in attachments:
-                    self.create_attachment(sample, attachment_record)
-
-                # Pass the new sample to all subscription hooks
-                hooks = subscribers((sample, request), IAfterCreateSampleHook)
-                # Lower sort keys are processed first
-                sorted_hooks = sorted(
-                    hooks, key=lambda x: api.to_float(getattr(x, "sort", 10)))
-                for hook in sorted_hooks:
-                    hook.update(sample, source=source)
-
-                transaction.savepoint(optimistic=True)
+                sample = self.create_sample(
+                    client, record, attachments=attachments, source=source)
                 samples.append(sample)
 
         return samples
+
+    def create_sample(self, client, record, attachments=None, source=None):
+        """Creates a single sample with proper transaction handling
+
+        :param client: The client container where the sample will be created
+        :param record: Dict with sample data (field names to values)
+        :param attachments: List of attachment records to add to the sample
+        :param source: Source object for sample hooks (e.g., for copy/partition)
+        :return: The created sample object
+        """
+        # Create a savepoint before sample creation to allow proper rollback
+        # if sample creation fails (e.g., ID generation error)
+        sp = transaction.savepoint()
+        try:
+            # Create the sample
+            sample = crar(client, self.request, record)
+
+            # Create the attachments
+            if attachments:
+                for attachment_record in attachments:
+                    self.create_attachment(sample, attachment_record)
+
+            # Pass the new sample to all subscription hooks
+            hooks = subscribers((sample, self.request), IAfterCreateSampleHook)
+            # Lower sort keys are processed first
+            sorted_hooks = sorted(
+                hooks, key=lambda x: api.to_float(getattr(x, "sort", 10)))
+            for hook in sorted_hooks:
+                hook.update(sample, source=source)
+
+            # Commit the sample creation
+            transaction.savepoint(optimistic=True)
+            return sample
+        except Exception:
+            # Roll back to the savepoint before this sample creation
+            # This properly reverts all changes including catalog entries,
+            # workflow history, annotations, etc.
+            sp.rollback()
+            raise
 
     def get_num_samples(self, record):
         """Return the number of samples to create for the given record
@@ -2103,7 +2119,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
     def is_automatic_label_printing_enabled(self):
         """Returns whether the automatic printing of barcode labels is active
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         auto_print = setup.getAutoPrintStickers()
         auto_receive = setup.getAutoreceiveSamples()
         action = "receive" if auto_receive else "register"
@@ -2113,7 +2129,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Handle redirect after sample creation or cancel
         """
         # Automatic label printing
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         auto_print = self.is_automatic_label_printing_enabled()
         # Check if immediate results entry is enabled in setup and the current
         # user has enough privileges to do so

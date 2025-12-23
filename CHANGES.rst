@@ -4,9 +4,19 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2834 Handle tat as timedelta or dict during AT to DX migration
+- #2832 Fix sample type prefix validation
+- #2837 Disable Cancel Button in Sample Registration Form after Save
+- #2833 Ensure string values for ID formatting
+- #2827 Link demo user to contact during import
+- #2836 Rollback temporary samples on error during creation
+- #2830 Fix TinyMCE hidden Cursor
+- #2829 Fix TypeError in bika_setup rejection widget
+- #2821 Migrate all fields from bika_setup to senaite setup
+- #2825 Updated webpack dependencies
+- #2826 Fix inconsistent Profile filtering on multi-sample creation
 - #2819 Fix multiuploads for cluster setups
 - #2817 Fix QR code render for multi-page stickers
-- #2818 Fix UnicodeDecodeError if analysis unit contains unicode characters
 - #2818 Fix UnicodeDecodeError if analysis unit contains unicode characters
 - #2812 Migrate MultiFile to Dexterity
 - #2815 Remove dependency to plone.app.jquerytools

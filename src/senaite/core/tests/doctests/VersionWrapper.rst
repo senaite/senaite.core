@@ -320,13 +320,12 @@ content types are migrated to DX, but we keep them here into account for
 legacy and consistency reasons:
 
 - `DurationField` type:
-
-    >>> Ca.getMaxTimeAllowed()
-    {'hours': 0, 'minutes': 0, 'days': 5}
+    >>> sorted(Ca.getMaxTimeAllowed().items())
+    [('days', 5), ('hours', 0), ('minutes', 0), ('seconds', 0)]
 
     >>> wrapper = IVersionWrapper(Ca)
-    >>> wrapper.getMaxTimeAllowed()
-    {'hours': 0, 'minutes': 0, 'days': 5}
+    >>> sorted(wrapper.getMaxTimeAllowed().items())
+    [('days', 5), ('hours', 0), ('minutes', 0), ('seconds', 0)]
 
 - `AddressField` type:
 

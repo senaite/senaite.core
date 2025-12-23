@@ -318,7 +318,7 @@ class AnalysesView(ListingView):
         """
         if api.get_current_client():
             # Current user is a client contact
-            return api.get_setup().getShowPartitions()
+            return api.get_senaite_setup().getShowPartitions()
         return True
 
     @viewcache.memoize

@@ -147,7 +147,7 @@ class BootstrapView(BrowserView):
         # do not use getSite because it's possible it could be different
         # than the actual portal url
         portal_url = self.portal_state.portal_url()
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         data = {
             "data-base-url": self.context.absolute_url(),
             "data-view-url": self.context_state.view_url(),

@@ -120,7 +120,7 @@ class CreateWorksheetModal(Modal):
     def worksheet_layout(self):
         """Return the configured workheet layout
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getWorksheetLayout()
 
     def get_analysis_categories(self):
