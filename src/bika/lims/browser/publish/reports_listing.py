@@ -204,11 +204,10 @@ class ReportsListingView(ListingView):
     def folderitem(self, obj, item, index):
         """Augment folder listing item
         """
-
         obj = api.get_object(obj)
-        ar = obj.getAnalysisRequest()
+        sample = obj.getSample()
         uid = api.get_uid(obj)
-        review_state = api.get_workflow_status_of(ar)
+        review_state = api.get_workflow_status_of(sample)
         status_title = review_state.capitalize().replace("_", " ")
         send_log = obj.getSendLog()
 
@@ -220,14 +219,14 @@ class ReportsListingView(ListingView):
             css_class="overlay_panel")
 
         item["replace"]["AnalysisRequest"] = get_link(
-            ar.absolute_url(), value=ar.Title()
+            sample.absolute_url(), value=sample.Title()
         )
 
         # Include Batch information of the primary Sample
-        batch_id = ar.getBatchID()
+        batch_id = sample.getBatchID()
         item["Batch"] = batch_id
         if batch_id:
-            batch = ar.getBatch()
+            batch = sample.getBatch()
             item["replace"]["Batch"] = get_link(
                 batch.absolute_url(), value=batch.Title()
             )
