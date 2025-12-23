@@ -128,6 +128,7 @@ from senaite.core.permissions import FieldEditSpecification
 from senaite.core.permissions import FieldEditStorageLocation
 from senaite.core.permissions import FieldEditTemplate
 from senaite.core.permissions import ManageInvoices
+from senaite.core.schema.uidreferencefield import get_backrefs
 from six.moves.urllib.parse import urljoin
 from zope.interface import alsoProvides
 from zope.interface import implements
@@ -1761,11 +1762,31 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
     def getRawReports(self):
         """Returns UIDs of reports with a reference to this sample
 
-        see: ARReport.ContainedAnalysisRequests field
+        Checks both primary and contained sample relationships
 
         :returns: List of report UIDs
         """
-        return get_backreferences(self, "ARReportAnalysisRequest")
+        report_uids = []
+
+        # ResultsReport primary sample relationship
+        primary_refs = get_backrefs(
+            self, "ResultsReport.sample")
+        report_uids.extend(primary_refs)
+
+        # ResultsReport contained samples relationship
+        contained_refs = get_backrefs(
+            self, "ResultsReport.contained_samples")
+        report_uids.extend(contained_refs)
+
+        # Remove duplicates while preserving order
+        seen = set()
+        unique_uids = []
+        for uid in report_uids:
+            if uid not in seen:
+                seen.add(uid)
+                unique_uids.append(uid)
+
+        return unique_uids
 
     def getReports(self):
         """Returns a list of report objects
