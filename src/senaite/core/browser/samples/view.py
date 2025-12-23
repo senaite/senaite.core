@@ -27,6 +27,7 @@ from bika.lims.api.security import check_permission
 from bika.lims.config import PRIORITIES
 from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import IClient
+from bika.lims.utils import get_fas_ico
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link_for
 from bika.lims.utils import get_progress_bar_html
@@ -554,14 +555,14 @@ class SamplesView(ListingView):
 
         if self.is_printing_workflow_enabled:
             item["Printed"] = ""
-            printed = obj.getPrinted if hasattr(obj, "getPrinted") else "0"
+            sample = api.get_object(obj)
+            printed = sample.getPrinted()
             print_icon = ""
             if printed == "1":
-                print_icon = get_image("ok.png", title=t(_("Printed")))
+                print_icon = get_fas_ico("circle-check", title=t(_("Printed")))
             elif printed == "2":
-                print_icon = get_image(
-                    "exclamation.png",
-                    title=t(_("Republished after last print")))
+                print_icon = get_fas_ico("circle-exclamation", title=t(
+                    _("Republished after last print")))
             item["after"]["Printed"] = print_icon
         item["SamplingDeviation"] = obj.getSamplingDeviationTitle
 
