@@ -47,6 +47,7 @@ from plone.dexterity.interfaces import IDexterityContent
 from plone.dexterity.schema import SchemaInvalidatedEvent
 from plone.dexterity.utils import addContentToContainer
 from plone.dexterity.utils import createContent
+from plone.dexterity.utils import iterSchemataForType
 from plone.dexterity.utils import resolveDottedName
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.i18n.normalizer.interfaces import IIDNormalizer
@@ -210,20 +211,36 @@ def create(container, portal_type, *args, **kwargs):
         # notify that the object was created
         notify(ObjectInitializedEvent(obj))
     else:
-        # Dexterity content type
-        content = createContent(portal_type, id=id or tmp_id, title=title)
+        # Get all schema fields for this portal type
+        schema_fields = {}
+        for schema in iterSchemataForType(portal_type):
+            for name in schema.names():
+                if name not in schema_fields:
+                    schema_fields[name] = schema.get(name)
 
-        # Call field setters instead of just setting the attributes directly.
-        # This ensures custom setters (like UIDReferenceField.set) are called
-        fields = get_fields(content)
+        # Separate schema field kwargs from other attributes
+        field_kwargs = {}
+        other_kwargs = {}
         for name, value in kwargs.items():
-            field = fields.get(name, None)
-            if hasattr(field, "set"):
-                field.set(content, value)
+            if name in schema_fields:
+                field_kwargs[name] = value
             else:
-                setattr(content, name, value)
+                other_kwargs[name] = value
+
+        # Create content with only non-schema attributes
+        content = createContent(portal_type, id=id or tmp_id, title=title,
+                                **other_kwargs)
 
         obj = addContentToContainer(container, content)
+
+        # Now set schema fields using their setters
+        # This ensures custom setters (like UIDReferenceField.set) are called
+        for name, value in field_kwargs.items():
+            field = schema_fields.get(name)
+            if field and hasattr(field, "set"):
+                field.set(obj, value)
+            else:
+                setattr(obj, name, value)
 
     return obj
 
