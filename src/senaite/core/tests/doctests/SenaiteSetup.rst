@@ -1215,11 +1215,14 @@ ID Formatting:
     >>> len(formatting)
     2
 
+Note: In Python 2, getIDFormatting returns byte strings (not unicode) to prevent
+UnicodeDecodeError when formatting IDs with UTF-8 encoded values:
+
     >>> formatting[0]["portal_type"]
-    u'AnalysisRequest'
+    'AnalysisRequest'
 
     >>> formatting[0]["form"]
-    u'AR-{seq:04d}'
+    'AR-{seq:04d}'
 
     >>> bikasetup_formatting = bikasetup.getIDFormatting()
     >>> len(bikasetup_formatting)
@@ -1237,7 +1240,7 @@ ID Formatting:
     1
 
     >>> formatting2[0]["portal_type"]
-    u'Batch'
+    'Batch'
 
     >>> senaite_formatting2 = senaite_setup.getIDFormatting()
     >>> len(senaite_formatting2)

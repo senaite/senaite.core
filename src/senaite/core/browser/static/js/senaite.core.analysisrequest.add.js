@@ -2262,7 +2262,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
   }
 
   on_ajax_start() {
-    var save_and_copy_button, save_button;
+    var cancel_button, save_and_copy_button, save_button;
     console.debug("°°° on_ajax_start °°°");
     // deactivate the save button
     save_button = $("input[name=save_button]");
@@ -2272,13 +2272,18 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     save_button[0].value = _t("Loading ...");
     // deactivate the save and copy button
     save_and_copy_button = $("input[name=save_and_copy_button]");
-    return save_and_copy_button.prop({
+    save_and_copy_button.prop({
+      "disabled": true
+    });
+    // deactivate the cancel button
+    cancel_button = $("input[name=cancel_button]");
+    return cancel_button.prop({
       "disabled": true
     });
   }
 
   on_ajax_end() {
-    var save_and_copy_button, save_button;
+    var cancel_button, save_and_copy_button, save_button;
     console.debug("°°° on_ajax_end °°°");
     // reactivate the save button
     save_button = $("input[name=save_button]");
@@ -2288,7 +2293,12 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     save_button[0].value = _t("Save");
     // reactivate the save and copy button
     save_and_copy_button = $("input[name=save_and_copy_button]");
-    return save_and_copy_button.prop({
+    save_and_copy_button.prop({
+      "disabled": false
+    });
+    // reactivate the cancel button
+    cancel_button = $("input[name=cancel_button]");
+    return cancel_button.prop({
       "disabled": false
     });
   }
