@@ -210,9 +210,19 @@ def create(container, portal_type, *args, **kwargs):
         # notify that the object was created
         notify(ObjectInitializedEvent(obj))
     else:
-        content = createContent(portal_type, **kwargs)
-        content.id = id
-        content.title = title
+        # Dexterity content type
+        content = createContent(portal_type, id=id or tmp_id, title=title)
+
+        # Call field setters instead of just setting the attributes directly.
+        # This ensures custom setters (like UIDReferenceField.set) are called
+        fields = get_fields(content)
+        for name, value in kwargs.items():
+            field = fields.get(name, None)
+            if hasattr(field, "set"):
+                field.set(content, value)
+            else:
+                setattr(content, name, value)
+
         obj = addContentToContainer(container, content)
 
     return obj
