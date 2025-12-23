@@ -558,11 +558,19 @@ class SamplesView(ListingView):
             sample = api.get_object(obj)
             printed = sample.getPrinted()
             print_icon = ""
-            if printed == "1":
-                print_icon = get_fas_ico("circle-check", title=t(_("Printed")))
+            if printed == "0":
+                print_icon = get_fas_ico("circle-xmark",
+                                         title=t(_("Not printed")),
+                                         css_class="text-secondary")
+            elif printed == "1":
+                print_icon = get_fas_ico("circle-check",
+                                         title=t(_("Printed")),
+                                         css_class="text-success")
             elif printed == "2":
-                print_icon = get_fas_ico("circle-exclamation", title=t(
-                    _("Republished after last print")))
+                print_icon = get_fas_ico(
+                    "circle-exclamation",
+                    title=t(_("Republished after last print")),
+                    css_class="text-warning")
             item["after"]["Printed"] = print_icon
         item["SamplingDeviation"] = obj.getSamplingDeviationTitle
 
