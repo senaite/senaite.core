@@ -19,10 +19,12 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from plone.autoform import directives
 from zope.deprecation import deprecate
-from plone.namedfile.field import NamedBlobFile
+from plone.namedfile.field import NamedBlobFile as NamedBlobFileField
+from plone.namedfile.file import NamedBlobFile
 from plone.supermodel import model
 from Products.CMFCore import permissions
 from senaite.core.catalog import REPORT_CATALOG
@@ -195,7 +197,7 @@ class IResultsReportSchema(model.Schema):
         required=False,
     )
 
-    pdf = NamedBlobFile(
+    pdf = NamedBlobFileField(
         title=_(u"PDF"),
         description=_(u"PDF file of the report"),
         required=False,
@@ -262,10 +264,6 @@ class IResultsReportSchema(model.Schema):
         required=False,
         default=[],
     )
-
-    # BBB: Backward compatibility aliases for renamed fields
-    analysis_request = sample
-    contained_analysis_requests = contained_samples
 
 
 @implementer(IResultsReport, IResultsReportSchema)
@@ -461,8 +459,46 @@ class ResultsReport(Container):
 
     @security.protected(permissions.ModifyPortalContent)
     def setPdf(self, value):
+        """Set PDF content
+
+        Accepts:
+        - NamedBlobFile instance (used as-is)
+        - Raw binary data (auto-converts to NamedBlobFile with default name)
+        - Dict with 'data', 'filename', 'contentType' keys
+        """
         mutator = self.mutator("pdf")
-        mutator(self, value)
+
+        if value is None:
+            mutator(self, None)
+            return
+
+        # If already a NamedBlobFile, use as-is
+        if isinstance(value, NamedBlobFile):
+            mutator(self, value)
+            return
+
+        # If it's a dict, extract components
+        if isinstance(value, dict):
+            data = value.get("data")
+            filename = value.get("filename", u"report.pdf")
+            content_type = value.get("contentType", "application/pdf")
+        # If it's raw bytes/string, use defaults
+        elif isinstance(value, (bytes, str)):
+            data = value
+            filename = u"report.pdf"
+            content_type = "application/pdf"
+        else:
+            raise ValueError(
+                "PDF value must be NamedBlobFile, bytes, or dict")
+
+        # Create NamedBlobFile instance
+        pdf_blob = NamedBlobFile(
+            data=data,
+            filename=api.safe_unicode(filename),
+            contentType=content_type
+        )
+
+        mutator(self, pdf_blob)
 
     # BBB: AT schema field property
     Pdf = property(getPdf, setPdf)
