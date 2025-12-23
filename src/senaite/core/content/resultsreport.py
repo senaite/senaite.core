@@ -21,6 +21,7 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import senaiteMessageFactory as _
 from plone.autoform import directives
+from zope.deprecation import deprecate
 from plone.namedfile.field import NamedBlobFile
 from plone.supermodel import model
 from Products.CMFCore import permissions
@@ -127,7 +128,7 @@ class IResultsReportSchema(model.Schema):
         "default",
         label=_(u"Results Report"),
         fields=[
-            "analysis_request",
+            "sample",
             "html",
             "pdf",
             "date_printed",
@@ -135,7 +136,7 @@ class IResultsReportSchema(model.Schema):
     )
 
     directives.widget(
-        "analysis_request",
+        "sample",
         UIDReferenceWidgetFactory,
         catalog=SAMPLE_CATALOG,
         query={
@@ -148,7 +149,7 @@ class IResultsReportSchema(model.Schema):
             {"name": "getClientTitle", "label": _("Client")},
         ],
     )
-    analysis_request = UIDReferenceField(
+    sample = UIDReferenceField(
         title=_(
             u"label_resultsreport_sample",
             default=u"Primary Sample"),
@@ -156,12 +157,13 @@ class IResultsReportSchema(model.Schema):
             u"description_resultsreport_sample",
             default=u"The primary sample of the PDF"),
         allowed_types=("AnalysisRequest",),
+        relationship="ResultsReport.sample",
         multi_valued=False,
         required=True,
     )
 
     directives.widget(
-        "contained_analysis_requests",
+        "contained_samples",
         UIDReferenceWidgetFactory,
         catalog=SAMPLE_CATALOG,
         query={
@@ -174,7 +176,7 @@ class IResultsReportSchema(model.Schema):
             {"name": "getClientTitle", "label": _("Client")},
         ],
     )
-    contained_analysis_requests = UIDReferenceField(
+    contained_samples = UIDReferenceField(
         title=_(
             u"label_resultsreport_contained_samples",
             default=u"Contained Samples"),
@@ -182,6 +184,7 @@ class IResultsReportSchema(model.Schema):
             u"description_resultsreport_contained_samples",
             default=u"Contained samples in the PDF"),
         allowed_types=("AnalysisRequest",),
+        relationship="ResultsReport.contained_samples",
         multi_valued=True,
         required=False,
     )
@@ -213,7 +216,7 @@ class IResultsReportSchema(model.Schema):
         "metadata",
         label=_(u"Metadata"),
         fields=[
-            "contained_analysis_requests",
+            "contained_samples",
             "metadata",
             "recipients",
             "send_log",
@@ -260,6 +263,10 @@ class IResultsReportSchema(model.Schema):
         default=[],
     )
 
+    # BBB: Backward compatibility aliases for renamed fields
+    analysis_request = sample
+    contained_analysis_requests = contained_samples
+
 
 @implementer(IResultsReport, IResultsReportSchema)
 class ResultsReport(Container):
@@ -278,29 +285,85 @@ class ResultsReport(Container):
         """Return the title of the report
         """
         # Use the primary sample ID as the title
-        ar = self.getAnalysisRequest()
-        if ar:
-            return ar.Title()
+        sample = self.getSample()
+        if sample:
+            return sample.Title()
         return self.getId()
 
+    def getSample(self):
+        """Get the primary sample object
+        """
+        accessor = self.accessor("sample")
+        return accessor(self)
+
+    def getContainedSamples(self):
+        """Get the contained sample objects
+        """
+        accessor = self.accessor("contained_samples")
+        return accessor(self)
+
+    @security.protected(permissions.View)
+    def getRawSample(self):
+        accessor = self.accessor("sample", raw=True)
+        return accessor(self)
+
+    @security.protected(permissions.View)
+    def getSampleUID(self):
+        """Get the UID of the primary sample
+        """
+        return self.getRawSample()
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSample(self, value):
+        mutator = self.mutator("sample")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    Sample = property(getSample, setSample)
+
+    @security.protected(permissions.View)
+    def getRawContainedSamples(self):
+        accessor = self.accessor("contained_samples", raw=True)
+        return accessor(self)
+
+    @security.protected(permissions.View)
+    def getContainedSampleUIDs(self):
+        """Get the UIDs of the contained samples
+        """
+        return self.getRawContainedSamples()
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setContainedSamples(self, value):
+        mutator = self.mutator("contained_samples")
+        mutator(self, value)
+
+    # BBB: AT schema field property
+    ContainedSamples = property(
+        getContainedSamples,
+        setContainedSamples
+    )
+
+    # BBB: Deprecated methods with old field names
+    @deprecate("Use getSample() instead. "
+               "Will be removed in SENAITE 3.0")
     def getAnalysisRequest(self):
         """Get the primary analysis request object
         """
-        accessor = self.accessor("analysis_request")
-        return accessor(self)
+        return self.getSample()
 
+    @deprecate("Use getContainedSamples() instead. "
+               "Will be removed in SENAITE 3.0")
     def getContainedAnalysisRequests(self):
         """Get the contained analysis request objects
         """
-        accessor = self.accessor("contained_analysis_requests")
-        return accessor(self)
+        return self.getContainedSamples()
 
     def getClient(self):
-        """Get the client from the primary analysis request
+        """Get the client from the primary sample
         """
-        ar = self.getAnalysisRequest()
-        if ar:
-            return ar.getClient()
+        sample = self.getSample()
+        if sample:
+            return sample.getClient()
         return None
 
     @security.protected(permissions.View)
@@ -319,40 +382,48 @@ class ResultsReport(Container):
 
     # AT-style getters/setters for backward compatibility
 
+    @deprecate("Use getRawSample() instead. "
+               "Will be removed in SENAITE 3.0")
     @security.protected(permissions.View)
     def getRawAnalysisRequest(self):
-        accessor = self.accessor("analysis_request", raw=True)
-        return accessor(self)
+        return self.getRawSample()
 
+    @deprecate("Use getSampleUID() instead. "
+               "Will be removed in SENAITE 3.0")
     @security.protected(permissions.View)
     def getAnalysisRequestUID(self):
         """Get the UID of the primary analysis request
         """
-        return self.getRawAnalysisRequest()
+        return self.getSampleUID()
 
+    @deprecate("Use setSample() instead. "
+               "Will be removed in SENAITE 3.0")
     @security.protected(permissions.ModifyPortalContent)
     def setAnalysisRequest(self, value):
-        mutator = self.mutator("analysis_request")
-        mutator(self, value)
+        return self.setSample(value)
 
     # BBB: AT schema field property
     AnalysisRequest = property(getAnalysisRequest, setAnalysisRequest)
 
+    @deprecate("Use getRawContainedSamples() instead. "
+               "Will be removed in SENAITE 3.0")
     @security.protected(permissions.View)
     def getRawContainedAnalysisRequests(self):
-        accessor = self.accessor("contained_analysis_requests", raw=True)
-        return accessor(self)
+        return self.getRawContainedSamples()
 
+    @deprecate("Use getContainedSampleUIDs() instead. "
+               "Will be removed in SENAITE 3.0")
     @security.protected(permissions.View)
     def getContainedAnalysisRequestUIDs(self):
         """Get the UIDs of the contained analysis requests
         """
-        return self.getRawContainedAnalysisRequests()
+        return self.getContainedSampleUIDs()
 
+    @deprecate("Use setContainedSamples() instead. "
+               "Will be removed in SENAITE 3.0")
     @security.protected(permissions.ModifyPortalContent)
     def setContainedAnalysisRequests(self, value):
-        mutator = self.mutator("contained_analysis_requests")
-        mutator(self, value)
+        return self.setContainedSamples(value)
 
     # BBB: AT schema field property
     ContainedAnalysisRequests = property(
