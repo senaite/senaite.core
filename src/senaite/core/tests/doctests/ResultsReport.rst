@@ -537,3 +537,268 @@ Test getting recipients when none are set:
 
     >>> edge_report.getRecipients() is None or len(edge_report.getRecipients()) == 0
     True
+
+
+Printing Workflow
+.................
+
+The printing workflow allows lab managers to track when results reports have
+been printed. When enabled, a "Print Sample" action becomes available for
+published samples, which sets the `date_printed` field on the most recent report.
+
+Enable the printing workflow and self-verification in setup:
+
+    >>> setup.setPrintingWorkflowEnabled(True)
+    >>> setup.getPrintingWorkflowEnabled()
+    True
+
+    >>> setup.setSelfVerificationEnabled(True)
+
+Create a new sample for testing the printing workflow:
+
+    >>> sample_print = new_sample(
+    ...     client, contact, sampletype, [service_ph])
+    >>> sample_print.getId()
+    'W-0003'
+
+The sample starts in sample_due state:
+
+    >>> api.get_workflow_status_of(sample_print)
+    'sample_due'
+
+Receive the sample:
+
+    >>> _ = doActionFor(sample_print, "receive")
+    >>> api.get_workflow_status_of(sample_print)
+    'sample_received'
+
+Submit and verify the analyses:
+
+    >>> for analysis in sample_print.getAnalyses(full_objects=True):
+    ...     analysis.setResult("7.5")
+    ...     _ = doActionFor(analysis, "submit")
+    ...     _ = doActionFor(analysis, "verify")
+
+Check the sample is now verified:
+
+    >>> api.get_workflow_status_of(sample_print)
+    'verified'
+
+Create a results report for the sample (as `senaite.impress` would do):
+
+    >>> report_print = api.create(
+    ...     sample_print, "ResultsReport", id="report-print-001")
+    >>> report_print.setSample(sample_print.UID())
+    >>> report_print.setHtml(
+    ...     "<html><body><h1>Report for {}</h1></body></html>".format(
+    ...         sample_print.getId()))
+    >>> pdf_data = b"%PDF-1.4 report for printing"
+    >>> report_print.setPdf(NamedBlobFile(
+    ...     data=pdf_data,
+    ...     filename=u"report.pdf",
+    ...     contentType="application/pdf"))
+
+Publish the sample (this transitions the sample and all its analyses):
+
+    >>> _ = doActionFor(sample_print, "publish")
+    >>> api.get_workflow_status_of(sample_print)
+    'published'
+
+At this point, the report has no DatePrinted set:
+
+    >>> report_print.getDatePrinted() is None
+    True
+
+Now simulate the "Print Sample" workflow action. This action is triggered
+when a user clicks "Print Sample" in the sample listing or view. The action
+sets the `date_printed` field on the most recent report:
+
+    >>> from DateTime import DateTime
+    >>> report_print.setDatePrinted(
+    ...     DateTime().asdatetime().replace(tzinfo=None))
+
+After setting the DatePrinted (as the print_sample action does), verify it:
+
+    >>> report_print.getDatePrinted() is not None
+    True
+
+The `date_printed` should be a datetime object:
+
+    >>> from datetime import datetime as py_datetime
+    >>> isinstance(report_print.getDatePrinted(), py_datetime)
+    True
+
+
+Relationship Keys and getRawReports
+....................................
+
+The ResultsReport schema uses relationship keys that allow samples to look up
+their associated reports via getRawReports(). This uses the backreference
+mechanism from the UIDReferenceField relationships.
+
+Test the primary sample relationship:
+
+    >>> raw_reports = sample_print.getRawReports()
+    >>> report_print.UID() in raw_reports
+    True
+
+Create another sample and a multi-sample report:
+
+    >>> sample_multi1 = new_sample(
+    ...     client, contact, sampletype, [service_ph])
+    >>> sample_multi1.getId()
+    'W-0004'
+
+    >>> sample_multi2 = new_sample(
+    ...     client, contact, sampletype, [service_temp])
+    >>> sample_multi2.getId()
+    'W-0005'
+
+Receive, submit, verify, and publish both samples:
+
+    >>> for sample_obj in [sample_multi1, sample_multi2]:
+    ...     _ = doActionFor(sample_obj, "receive")
+    ...     for analysis in sample_obj.getAnalyses(full_objects=True):
+    ...         analysis.setResult("25.0")
+    ...         _ = doActionFor(analysis, "submit")
+    ...         _ = doActionFor(analysis, "verify")
+    ...     _ = doActionFor(sample_obj, "publish")
+
+Create a multi-sample report with sample_multi1 as primary and both samples
+as contained samples:
+
+    >>> multi_report = api.create(
+    ...     sample_multi1, "ResultsReport", id="report-multi-001")
+    >>> multi_report.setSample(sample_multi1.UID())
+    >>> multi_report.setContainedSamples(
+    ...     [sample_multi1.UID(), sample_multi2.UID()])
+    >>> multi_report.setHtml(
+    ...     "<html><body><h1>Multi-sample Report</h1></body></html>")
+    >>> multi_report.setPdf(NamedBlobFile(
+    ...     data=b"%PDF-1.4 multi-sample report",
+    ...     filename=u"multi-report.pdf",
+    ...     contentType="application/pdf"))
+    >>> transaction.commit()
+
+The primary sample should find the report via the primary relationship:
+
+    >>> raw_reports_1 = sample_multi1.getRawReports()
+    >>> multi_report.UID() in raw_reports_1
+    True
+
+The contained sample should also find the report via the contained
+samples relationship:
+
+    >>> raw_reports_2 = sample_multi2.getRawReports()
+    >>> multi_report.UID() in raw_reports_2
+    True
+
+Verify that each sample can retrieve the multi-report object:
+
+    >>> report_catalog = api.get_tool(REPORT_CATALOG)
+    >>> reports_for_sample1 = [api.get_object(uid) for uid in raw_reports_1]
+    >>> multi_report in reports_for_sample1
+    True
+
+    >>> reports_for_sample2 = [api.get_object(uid) for uid in raw_reports_2]
+    >>> multi_report in reports_for_sample2
+    True
+
+Test the print workflow with the multi-sample report:
+
+    >>> multi_report.getDatePrinted() is None
+    True
+
+Simulate printing the primary sample (this sets DatePrinted on the report):
+
+    >>> multi_report.setDatePrinted(
+    ...     DateTime().asdatetime().replace(tzinfo=None))
+    >>> multi_report.getDatePrinted() is not None
+    True
+
+The report should still be findable via both samples after printing:
+
+    >>> multi_report.UID() in sample_multi1.getRawReports()
+    True
+
+    >>> multi_report.UID() in sample_multi2.getRawReports()
+    True
+
+
+Backward Compatibility with Old Field Names
+............................................
+
+The refactored ResultsReport maintains backward compatibility with the old
+field names "analysis_request" and "contained_analysis_requests".
+
+Test that the old getter methods work with deprecation warnings:
+
+    >>> report_compat = api.create(
+    ...     sample, "ResultsReport", id="report-compat-001")
+    >>> report_compat.setAnalysisRequest(sample.UID())
+
+The old getter should return the same object as the new getter:
+
+    >>> report_compat.getAnalysisRequest() == report_compat.getSample()
+    True
+
+    >>> report_compat.getAnalysisRequest() == sample
+    True
+
+Test the old setter and getter for contained samples:
+
+    >>> report_compat.setContainedAnalysisRequests(
+    ...     [sample.UID(), sample2.UID()])
+    >>> len(report_compat.getContainedAnalysisRequests())
+    2
+
+    >>> report_compat.getContainedAnalysisRequests() == \
+    ...     report_compat.getContainedSamples()
+    True
+
+Test the old UID getters:
+
+    >>> report_compat.getAnalysisRequestUID() == sample.UID()
+    True
+
+    >>> report_compat.getAnalysisRequestUID() == \
+    ...     report_compat.getSampleUID()
+    True
+
+    >>> uids = report_compat.getContainedAnalysisRequestUIDs()
+    >>> uids == report_compat.getContainedSampleUIDs()
+    True
+
+    >>> len(uids)
+    2
+
+Test the old AT-style properties:
+
+    >>> report_compat.AnalysisRequest == report_compat.Sample
+    True
+
+    >>> report_compat.ContainedAnalysisRequests == \
+    ...     report_compat.ContainedSamples
+    True
+
+Test the raw accessors:
+
+    >>> report_compat.getRawAnalysisRequest() == \
+    ...     report_compat.getRawSample()
+    True
+
+    >>> report_compat.getRawContainedAnalysisRequests() == \
+    ...     report_compat.getRawContainedSamples()
+    True
+
+Verify that setting via old names updates the new fields:
+
+    >>> test_report = api.create(
+    ...     sample, "ResultsReport", id="report-test-001")
+    >>> test_report.setAnalysisRequest(sample2.UID())
+    >>> test_report.getSample() == sample2
+    True
+
+    >>> test_report.setContainedAnalysisRequests([sample.UID()])
+    >>> test_report.getContainedSamples()[0] == sample
+    True
