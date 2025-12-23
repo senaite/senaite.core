@@ -853,21 +853,10 @@ def migrate_arreport_to_dx(src, destination=None):
     # Manually set the fields
     # NOTE: always convert string values to unicode for dexterity fields!
 
-    # Get the primary analysis request
-    ar = src.getAnalysisRequest()
-    if ar:
-        target.analysis_request = api.get_uid(ar)
-
-    # Get contained analysis requests
-    contained_ars = src.getContainedAnalysisRequests()
-    if contained_ars:
-        target.contained_analysis_requests = [
-            api.get_uid(ar) for x in contained_ars if x]
-
     # Get Metadata (RecordField -> Dict)
     metadata = src.getMetadata()
     if metadata:
-        # Store as plain dict (matching AT's RecordField behavior)
+        # Store as plain dict
         target.metadata = metadata if isinstance(metadata, dict) else {}
 
     # Get SendLog (RecordsField -> DataGridField)
@@ -877,10 +866,9 @@ def migrate_arreport_to_dx(src, destination=None):
         sendlog_list = sendlog if isinstance(sendlog, list) else []
         for record in sendlog_list:
             if "email_send_date" in record and record["email_send_date"]:
-                dt = dtime.to_DT(record["email_send_date"])
-                if dt:
-                    # Convert Zope DateTime to Python datetime (naive)
-                    dt = dt.asdatetime().replace(tzinfo=None)
+                email_send_date = record.get("email_send_date")
+                if email_send_date:
+                    dt = dtime.to_dt(email_send_date)
                     record["email_send_date"] = dt
         target.send_log = sendlog_list
 
@@ -952,6 +940,23 @@ def migrate_arreport_to_dx(src, destination=None):
 
     # change the ID *after* the original object was removed
     migrator.copy_id(src, target)
+
+    # IMPORTANT:
+    #
+    # We set these values *after* the UID was copied to ensure that the
+    # backreferences are correctly created on the sample!
+
+    # Get the primary analysis request and migrate its backreference
+    sample = src.getAnalysisRequest()
+
+    if sample:
+        target.setSample(api.get_uid(sample))
+
+    # Get contained analysis requests and migrate their backreferences
+    contained_samples = src.getContainedAnalysisRequests()
+    if contained_samples:
+        uids = [api.get_uid(ref) for ref in contained_samples if ref]
+        target.setContainedSamples(uids)
 
     # Reindex the object
     target.reindexObject()
