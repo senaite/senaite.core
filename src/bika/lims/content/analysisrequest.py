@@ -1793,7 +1793,17 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
         :returns: List of report objects
         """
-        return list(map(api.get_object, self.getRawReports()))
+        reports = []
+        report_uids = self.getRawReports()
+        for uid in report_uids:
+            report = api.get_object(uid, None)
+            if report:
+                reports.append(report)
+            else:
+                logger.warning("AnalysisRequest.getReports: "
+                               "Report with UID %s not found", uid)
+                continue
+        return reports
 
     def getPrinted(self):
         """ returns "0", "1" or "2" to indicate Printed state.
@@ -1808,7 +1818,13 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         if not report_uids:
             return "0"
 
-        last_report = api.get_object(report_uids[-1])
+        last_report_uid = report_uids[-1]
+        last_report = api.get_object(last_report_uid, None)
+        if not last_report:
+            logger.warning("AnalysisRequest.getPrinted: "
+                            "Report with UID %s not found", last_report_uid)
+            return "0"
+
         if last_report.getDatePrinted():
             return "1"
 
