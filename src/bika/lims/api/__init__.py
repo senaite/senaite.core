@@ -215,8 +215,7 @@ def create(container, portal_type, *args, **kwargs):
         schema_fields = {}
         for schema in iterSchemataForType(portal_type):
             for name in schema.names():
-                if name not in schema_fields:
-                    schema_fields[name] = schema.get(name)
+                schema_fields[name] = schema.get(name)
 
         # Separate schema field kwargs from other attributes
         field_kwargs = {}
