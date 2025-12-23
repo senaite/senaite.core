@@ -4,6 +4,14 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2819 Fix multiuploads for cluster setups
+- #2817 Fix QR code render for multi-page stickers
+- #2818 Fix UnicodeDecodeError if analysis unit contains unicode characters
+- #2818 Fix UnicodeDecodeError if analysis unit contains unicode characters
+- #2812 Migrate MultiFile to Dexterity
+- #2815 Remove dependency to plone.app.jquerytools
+- #2816 Fix custom actions and behaviors are missing
+- #2801 Global Contacts
 - #2795 Migrate Client Contacts to Dexterity
 - #2811 Fix typo in recalculation message ("Result recalucated" → "Result recalculated")
 - #2809 Prioritize after create sample susbcriber hooks

@@ -1413,6 +1413,35 @@ A lab contact should not be a identified as client contact:
     False
 
 
+Checking if an object is a global Contact
+.........................................
+
+Let's create a first a global contact for the test
+
+    >>> contacts = senaite_setup.contacts
+    >>> global_contact = api.create(contacts, "Contact", Firstname="Betty", Lastname="Rubble")
+
+First, we check if the object is a contact:
+
+    >>> api.is_contact(global_contact)
+    True
+
+It should also be a global contact:
+
+    >>> api.is_global_contact(global_contact)
+    True
+
+A client contact should not be identified as a global contact:
+
+    >>> api.is_global_contact(client_contact)
+    False
+
+A lab contact should not be a identified as global contact:
+
+    >>> api.is_global_contact(lab_contact)
+    False
+
+
 Checking if an object is a Lab Contact
 ......................................
 
@@ -2017,6 +2046,34 @@ Empty strings are returned unchanged:
     >>> api.text_to_html(text, wrap="div")
     ''
 
+Converting a value to unicode
+.............................
+
+This function converts a value to unicode:
+
+    >>> api.safe_unicode("ä")
+    u'\xe4'
+
+    >>> api.safe_unicode("1337")
+    u'1337'
+
+    >>> api.safe_unicode(u"1337")
+    u'1337'
+
+    >>> api.safe_unicode(1337)
+    u'1337'
+
+    >>> api.safe_unicode(1337L)
+    u'1337'
+
+    >>> api.safe_unicode([1,2,3])
+    u'[1, 2, 3]'
+
+None values just return the default:
+
+    >>> api.safe_unicode(None)
+    u''
+
 
 Converting a string to UTF8
 ...........................
@@ -2443,7 +2500,7 @@ Move the contact to the destination client:
     >>> dest.hasObject(id)
     False
     >>> contact
-    <Contact at /plone/clients/client-5/contact-3>
+    <Contact at /plone/clients/client-5/contact-4>
     >>> contact = api.move_object(contact, dest, check_constraints=False)
     >>> api.get_parent(contact) == dest
     True
@@ -2452,7 +2509,7 @@ Move the contact to the destination client:
     >>> orig.hasObject(id)
     False
     >>> contact
-    <Contact at /plone/clients/client-6/contact-3>
+    <Contact at /plone/clients/client-6/contact-4>
 
 It does nothing if destination is the same as the origin:
 
@@ -2465,7 +2522,7 @@ Trying to move the object into itself is not possible:
     >>> api.move_object(contact, contact)
     Traceback (most recent call last):
     [...]
-    ValueError: Cannot move object into itself: <Contact at contact-3>
+    ValueError: Cannot move object into itself: <Contact at contact-4>
 
 Trying to move an object to another folder without permissions is not possible:
 
@@ -2484,7 +2541,7 @@ Unless we grant enough permissions to remove the object from origin:
     >>> dest.hasObject(id)
     False
     >>> contact
-    <Contact at /plone/clients/client-5/contact-3>
+    <Contact at /plone/clients/client-5/contact-4>
 
 Still, destination container must allow the object's type:
 

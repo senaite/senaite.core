@@ -21,4 +21,34 @@
     provides="senaite.core.interfaces.IAfterCreateSampleHook"
     factory=".sample.AfterCreateSampleHook"/>
 
+  <!-- MultiUpload field processing after object is added (DX) -->
+  <subscriber
+    for="plone.dexterity.interfaces.IDexterityContent
+         zope.lifecycleevent.interfaces.IObjectAddedEvent"
+    handler=".multiupload.on_object_added"/>
+
+  <!-- MultiUpload field processing after object modification (DX) -->
+  <subscriber
+    for="plone.dexterity.interfaces.IDexterityContent
+         zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+    handler=".multiupload.on_object_modified"/>
+
+  <!-- MultiUpload field processing after object creation (AT) -->
+  <subscriber
+    for="*
+         Products.Archetypes.interfaces.IObjectInitializedEvent"
+    handler=".multiupload.on_object_added"/>
+
+  <!-- MultiUpload field processing after object modification (AT) -->
+  <subscriber
+    for="*
+         Products.Archetypes.interfaces.IObjectEditedEvent"
+    handler=".multiupload.on_object_modified"/>
+
+  <!-- Subscriber when client attachments were deleted -->
+  <subscriber
+    for="bika.lims.interfaces.IClient
+         senaite.core.events.attachments.IAttachmentsDeletedEvent"
+    handler=".client.on_attachments_deleted"/>
+
 </configure>

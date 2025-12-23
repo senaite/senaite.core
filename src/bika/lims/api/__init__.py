@@ -66,10 +66,10 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.RegistrationTool import get_member_by_login_name
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import base_hasattr
-from Products.CMFPlone.utils import safe_unicode
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
 from senaite.core.interfaces import IContact
+from senaite.core.interfaces import IContacts
 from senaite.core.interfaces import ITemporaryObject
 from z3c.form.validator import Data as ValidatorData
 from zope import globalrequest
@@ -1638,7 +1638,23 @@ def is_client_contact(brain_or_object):
     if not is_object(brain_or_object):
         return False
     obj = get_object(brain_or_object)
-    return IContact.providedBy(obj)
+    return IContact.providedBy(obj) and not is_global_contact(obj)
+
+
+def is_global_contact(brain_or_object):
+    """Checks if the brain or object is a global contact
+
+    :returns: True if the brain or object is a global contact, False otherwise
+    """
+    if not is_object(brain_or_object):
+        return False
+    obj = get_object(brain_or_object)
+    if not IContact.providedBy(obj):
+        return False
+    parent = get_parent(brain_or_object)
+    if not IContacts.providedBy(parent):
+        return False
+    return True
 
 
 def is_contact(brain_or_object):
@@ -1649,6 +1665,8 @@ def is_contact(brain_or_object):
     if is_client_contact(brain_or_object):
         return True
     if is_lab_contact(brain_or_object):
+        return True
+    if is_global_contact(brain_or_object):
         return True
     return False
 
@@ -2006,6 +2024,36 @@ def text_to_html(text, wrap="p", encoding="utf8"):
             tag=wrap, html=html)
     # return encoded html
     return html.encode(encoding)
+
+
+def safe_unicode(value, default=u""):
+    """Safely convert a value to a unicode string
+
+    :param value: Value to be converted to unicode
+    :param default: Default value if conversion fails
+    :returns: Unicode string
+    """
+    if value is None:
+        return default
+
+    # If already unicode, return as is
+    if isinstance(value, six.text_type):
+        return value
+
+    try:
+        # First convert to str (handles int, long, etc.)
+        try:
+            value = str(value)
+        except UnicodeDecodeError:
+            # If value is bytes with non-ASCII chars
+            value = value.encode("utf8")
+
+        # Convert to unicode
+        if isinstance(value, six.binary_type):
+            return value.decode("utf8")
+        return six.text_type(value)
+    except Exception:
+        return default
 
 
 def to_utf8(string, default=_marker):

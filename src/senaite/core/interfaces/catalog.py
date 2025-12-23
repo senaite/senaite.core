@@ -79,3 +79,8 @@ class IClientCatalog(ISenaiteCatalogObject):
 class IContactCatalog(ISenaiteCatalogObject):
     """Marker interface for Senaite contact catalog
     """
+
+
+class IAttachmentsCatalog(ISenaiteCatalogObject):
+    """Marker interface for Senaite attachments catalog
+    """

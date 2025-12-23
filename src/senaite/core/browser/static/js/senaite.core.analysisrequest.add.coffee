@@ -605,20 +605,23 @@ class window.AnalysisRequestAdd
     # (multi-) reference fields, e.g. CC Contacts of selected Contact
     if @is_reference_field field
       manually_deselected = @deselected_uids[field_name] or []
-      # filter out values that were manually deselected
-      values = values.filter (value) ->
-        return value.uid not in manually_deselected
+      current_value = @get_reference_field_value field
 
-      # get a list of uids
-      uids = values.map (value) ->
-        return value.uid
-
-      # update reference field data records
-      values.forEach (value) =>
-        @set_reference_field_records field, value
+      to_set = []
+      values.forEach (value, index) ->
+        # skip manually deselected references
+        if value.uid in manually_deselected
+          return
+        # skip if the `if_empty` flag is set and the field is not empty
+        if_empty = value.if_empty? and value.if_empty is true
+        if if_empty and current_value.length > 0
+          return
+        # remember the others
+        to_set.push value.uid
 
       # update reference field values
-      @set_reference_field field, uids
+      if to_set.length > 0
+        @set_reference_field field, to_set
 
     # other fields, e.g. default CC Emails of Client
     else

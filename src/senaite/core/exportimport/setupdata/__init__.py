@@ -26,10 +26,9 @@ import transaction
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from senaite.core.idserver import renameAfterCreation
+from bika.lims.api import safe_unicode as u
 from bika.lims.interfaces import ISetupDataSetList
 from bika.lims.utils import getFromString
-from senaite.core.i18n import translate as t
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_unicode
 from bika.lims.utils import to_utf8
@@ -44,6 +43,8 @@ from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.exportimport.dataimport import SetupDataSetList as SDL
+from senaite.core.i18n import translate as t
+from senaite.core.idserver import renameAfterCreation
 from senaite.core.schema.addressfield import BILLING_ADDRESS
 from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
 from senaite.core.schema.addressfield import POSTAL_ADDRESS
@@ -871,14 +872,16 @@ class Instruments(WorksheetImporter):
                         msg[0] + " Error on sheet: " + self.sheetname)
 
             # Attaching the Instrument's manual if exists
-            if row.get('UserManualFile', None):
-                row_dict = {'DocumentID': row.get('UserManualID', 'manual'),
-                            'DocumentVersion': '',
-                            'DocumentLocation': '',
-                            'DocumentType': 'Manual',
-                            'File': row.get('UserManualFile', None)
-                            }
+            if row.get("UserManualFile", None):
+                row_dict = {
+                    "DocumentID": row.get("UserManualID", "manual"),
+                    "DocumentVersion": "",
+                    "DocumentoLcation": "",
+                    "DocumentType": "Manual",
+                    "File": row.get("UserManualFile", None)
+                }
                 addDocument(self, row_dict, obj)
+
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
             notify(ObjectInitializedEvent(obj))
@@ -1015,26 +1018,26 @@ class Instrument_Documents(WorksheetImporter):
     def Import(self):
         bsc = getToolByName(self.context, SETUP_CATALOG)
         for row in self.get_rows(3):
-            if not row.get('instrument', ''):
+            if not row.get("instrument", ""):
                 continue
             folder = self.get_object(
-                bsc, 'Instrument', row.get('instrument', ''))
+                bsc, "Instrument", row.get("instrument", ""))
             addDocument(self, row, folder)
 
 
 def addDocument(self, row_dict, folder):
-    """
-    This function adds a multifile object to the instrument folder
+    """This function adds a multifile object to the instrument folder
+
     :param row_dict: the dictionary which contains the document information
     :param folder: the instrument object
     """
     if folder:
         # This content type need a file
-        if row_dict.get('File', None):
+        if row_dict.get("File", None):
             path = resource_filename(
                 self.dataset_project,
                 "setupdata/%s/%s" % (self.dataset_name,
-                                     row_dict['File'])
+                                     row_dict["File"])
             )
             try:
                 file_data = read_file(path)
@@ -1043,30 +1046,30 @@ def addDocument(self, row_dict, folder):
                 logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
 
             # Obtain all created instrument documents content type
-            catalog = getToolByName(self.context, SETUP_CATALOG)
-            documents_brains = catalog.searchResults(
-                {'portal_type': 'Multifile'})
-            # If a the new document has the same DocumentID as a created document, this object won't be created.
+            documents_brains = api.search({"portal_type": "Multifile"})
+            # If a the new document has the same DocumentID as a created
+            # document, this object won't be created.
             idAlreadyInUse = False
-            for item in documents_brains:
-                if item.getObject().getDocumentID() == row_dict.get('DocumentID', ''):
-                    warning = "The ID '%s' used for this document is already in use on instrument '%s', consequently " \
-                              "the file hasn't been upload." % (row_dict.get(
-                                  'DocumentID', ''), row_dict.get('instrument', ''))
-                    self.context.plone_utils.addPortalMessage(warning)
+            for brain in documents_brains:
+                obj = api.get_object(brain)
+                instrument = obj.aq_parent
+                doc_id = obj.getDocumentID()
+                new_doc_id = row_dict.get("DocumentID", "")
+                if doc_id == new_doc_id:
+                    msg = "The ID '%s' used for this document is already in " \
+                          "use on instrument '%s', consequently the file " \
+                          "hasn't been upload." % (
+                              doc_id, api.get_title(instrument))
+                    self.context.plone_utils.addPortalMessage(msg)
                     idAlreadyInUse = True
             if not idAlreadyInUse:
-                obj = _createObjectByType("Multifile", folder, tmpID())
-                obj.edit(
-                    DocumentID=row_dict.get('DocumentID', ''),
-                    DocumentVersion=row_dict.get('DocumentVersion', ''),
-                    DocumentLocation=row_dict.get('DocumentLocation', ''),
-                    DocumentType=row_dict.get('DocumentType', ''),
-                    File=file_data
-                )
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+                obj = api.create(folder, "Multifile", **dict(
+                    document_id=u(row_dict.get("DocumentID", "")),
+                    document_version=u(row_dict.get("DocumentVersion", "")),
+                    document_location=u(row_dict.get("DocumentLocation", "")),
+                    document_type=u(row_dict.get("DocumentType", "")),
+                    file=file_data
+                ))
 
 
 class Instrument_Maintenance_Tasks(WorksheetImporter):
