@@ -202,7 +202,10 @@ class AjaxFetchRemarks(BrowserView):
         if not obj:
             return {"success": False}
 
-        remarks = copy.deepcopy(self.get_remarks_by_field(obj, field_name))
+        value = self.get_remarks_by_field(obj, field_name)
+        if not value:
+            return {"success": False}
+        remarks = copy.deepcopy(value)
         remarks.sort(lambda x, y: cmp(y["created"], x["created"]))
         for r in remarks:
             r["created"] = to_localized_time(r["created"],

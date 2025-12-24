@@ -35,6 +35,8 @@ class RemarksField(List, BaseField):
     """
 
     def __init__(self, **kwargs):
+        default = kwargs.get("default")
+        kwargs["default"] = default or []
         List.__init__(self, **kwargs)
         BaseField.__init__(self, **kwargs)
 
