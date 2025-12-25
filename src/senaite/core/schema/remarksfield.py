@@ -29,6 +29,19 @@ from zope.schema import List
 from zope.schema.interfaces import IFromUnicode
 
 
+def fill_remark_object(value):
+    user_id = get_user_id()
+    properties = api.get_user_properties(user_id)
+    fullname = properties and properties.get("fullname") or user_id
+    return {
+        "id": tmpID(),
+        "user_id": user_id,
+        "user_name": fullname,
+        "created": now(),
+        "content": value,
+    }
+
+
 @implementer(IRemarksField, IFromUnicode)
 class RemarksField(List, BaseField):
     """A field that handles a remarks for DX content types
@@ -58,15 +71,7 @@ class RemarksField(List, BaseField):
         return super(RemarksField, self).get(object) or []
 
     def add(self, object, value):
-        user_id = get_user_id()
-        properties = api.get_user_properties(user_id)
-        fullname = properties and properties.get("fullname") or user_id
         remarks = self.get(object)
-        remarks.append({
-            "id": tmpID(),
-            "user_id": user_id,
-            "user_name": fullname,
-            "created": now(),
-            "content": value,
-        })
+        new_remark = fill_remark_object(value)
+        remarks.append(new_remark)
         self.set(object, remarks)

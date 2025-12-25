@@ -21,24 +21,29 @@
 import copy
 import six
 
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from bika.lims import api
 from bika.lims.decorators import returns_json
 from senaite.core.api.dtime import to_localized_time
 from senaite.core.schema.interfaces import IRemarksField
+from senaite.core.schema.remarksfield import fill_remark_object
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.p3compat import cmp
 from senaite.core.permissions import FieldEditRemarks
 from senaite.core.z3cform.interfaces import IRemarksWidget
-from z3c.form.browser.widget import HTMLFormElement
+from z3c.form.browser import widget
 from z3c.form.converter import BaseDataConverter
 from z3c.form.interfaces import INPUT_MODE
 from z3c.form.interfaces import DISPLAY_MODE
+from z3c.form.interfaces import IAddForm
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.interfaces import IWidget
 from z3c.form.widget import FieldWidget
 from z3c.form.widget import Widget
+from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.component import adapter
 from zope.interface import implementer
 
@@ -76,6 +81,8 @@ class RemarksDataConverter(BaseDataConverter):
     def toFieldValue(self, value):
         """Converts from widget value to safe_unicode
         """
+        if api.is_string(value):
+            value = fill_remark_object(value)
         values = self.to_list_of_dicts(value)
         return self.to_safe_unicode(values)
 
@@ -109,10 +116,38 @@ class RemarksDataConverter(BaseDataConverter):
 
 
 @implementer(IRemarksWidget)
-class RemarksWidget(HTMLFormElement, Widget):
+class RemarksWidget(widget.HTMLFormElement, Widget):
     """SENAITE Remarks Widget
     """
     klass = u"senaite-remarks-widget"
+
+    def update(self):
+        widget.HTMLFormElement.update(self)
+        Widget.update(self)
+        widget.addFieldClass(self)
+
+    def render(self):
+        if self.is_add_form():
+            return ViewPageTemplateFile("add.pt")(self)
+        return Widget.render(self)
+
+    def is_add_form(self):
+        """Check if we are in an add form
+        :returns: True if in add form, False if in edit form
+        """
+        # Check if the parent form implements IAddForm
+        form = getattr(self, "form", None)
+        if form is None:
+            return False
+        is_add = IAddForm.providedBy(form)
+
+        # form maybe includes into group(fieldset)
+        # check that recursively
+        parent = aq_parent(aq_inner(form))
+        while not is_add and parent is not None:
+            is_add = IAddForm.providedBy(parent)
+            parent = aq_parent(aq_inner(parent))
+        return is_add
 
     def localized_time(self, value):
         return to_localized_time(value,
