@@ -69,7 +69,7 @@ First, reset to defaults:
 
     >>> setup.setSidebarFolders(())
     >>> setup.setSidebarNavigationDepth(3)
-    >>> setup.setSidebarDisplayedTypes(())
+    >>> setup.setSidebarSkipTypes(())
 
 By default, no folders are selected:
 
@@ -81,9 +81,9 @@ Default navigation depth is 3:
     >>> setup.getSidebarNavigationDepth()
     3
 
-No portal types are filtered by default:
+No portal types are skipped by default:
 
-    >>> setup.getSidebarDisplayedTypes()
+    >>> setup.getSidebarSkipTypes()
     ()
 
 
@@ -107,13 +107,13 @@ Set maximum depth to 2:
     2
 
 
-Test setting displayed types
-............................
+Test setting skip types
+.......................
 
-Filter to only show specific portal types:
+Skip specific portal types from navigation:
 
-    >>> setup.setSidebarDisplayedTypes(("Client", "AnalysisRequest"))
-    >>> setup.getSidebarDisplayedTypes()
+    >>> setup.setSidebarSkipTypes(("Client", "AnalysisRequest"))
+    >>> setup.getSidebarSkipTypes()
     ('Client', 'AnalysisRequest')
 
 
@@ -152,12 +152,12 @@ Should return the configured depth:
     2
 
 
-Test getting displayed types
-............................
+Test getting skip types
+.......................
 
-Should return the configured types:
+Should return the configured types to skip:
 
-    >>> view.get_displayed_types()
+    >>> view.get_skip_types()
     ('Client', 'AnalysisRequest')
 
 
@@ -250,7 +250,7 @@ queried using its optimal catalog:
     >>> tree_data = view._build_tree(
     ...     navigation_root=portal,
     ...     navigation_depth=2,
-    ...     displayed_types=None,
+    ...     skip_types=None,
     ...     selected_folders=("clients",)
     ... )
     >>> # Verify the clients folder appears in the tree
@@ -279,7 +279,7 @@ Set up folders and build tree:
     >>> data = view._build_tree(
     ...     navigation_root=portal,
     ...     navigation_depth=2,
-    ...     displayed_types=None,
+    ...     skip_types=None,
     ...     selected_folders=("clients", "samples")
     ... )
     >>> data is not None
@@ -312,7 +312,7 @@ With no folders selected, tree should be empty:
     >>> data = view._build_tree(
     ...     navigation_root=portal,
     ...     navigation_depth=2,
-    ...     displayed_types=None,
+    ...     skip_types=None,
     ...     selected_folders=()
     ... )
     >>> data["children"]
@@ -363,7 +363,7 @@ Test that current item is properly detected:
 
     >>> # Reset configuration for this test
     >>> setup.setSidebarFolders(("clients",))
-    >>> setup.setSidebarDisplayedTypes(())
+    >>> setup.setSidebarSkipTypes(())
     >>> setup.setSidebarNavigationDepth(3)
 
     >>> # Get the clients folder URL
@@ -381,19 +381,19 @@ Test that current item is properly detected:
     True
 
 
-Test portal type filtering
-..........................
+Test portal type skipping
+.........................
 
-Test that portal type filtering works correctly:
+Test that portal type skipping works correctly:
 
     >>> setup.setSidebarFolders(("clients",))
-    >>> setup.setSidebarDisplayedTypes(("Client",))
+    >>> setup.setSidebarSkipTypes(("Client",))
 
-    >>> # Build tree with type filtering
+    >>> # Build tree with type skipping
     >>> data = view._build_tree(
     ...     navigation_root=portal,
     ...     navigation_depth=2,
-    ...     displayed_types=("Client",),
+    ...     skip_types=("Client",),
     ...     selected_folders=("clients",)
     ... )
 
@@ -409,7 +409,7 @@ Test the full JSON API response:
 
     >>> # Reset to default state
     >>> setup.setSidebarFolders(("clients", "samples", "methods"))
-    >>> setup.setSidebarDisplayedTypes(())
+    >>> setup.setSidebarSkipTypes(())
     >>> setup.setSidebarNavigationDepth(3)
 
     >>> # Get JSON response
@@ -435,4 +435,4 @@ Reset configuration to defaults:
 
     >>> setup.setSidebarFolders(())
     >>> setup.setSidebarNavigationDepth(3)
-    >>> setup.setSidebarDisplayedTypes(())
+    >>> setup.setSidebarSkipTypes(())
