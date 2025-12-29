@@ -284,37 +284,28 @@ class SidebarNavigationAPI(BrowserView):
         :returns: Dict with item data or None if brain is invalid
         """
         try:
-            id = api.get_id(brain)
-            title = api.get_title(brain)
-            description = api.get_description(brain)
-            portal_type = api.get_portal_type(brain)
-            review_state = api.get_review_status(brain)
-
-            # swallow missing values
-            if id is Missing.Value:
-                raise ValueError("id is Missing.Value")
-            if title is Missing.Value:
-                raise ValueError("title is Missing.Value")
-            if description is Missing.Value:
-                raise ValueError("description is Missing.Value")
-            if portal_type is Missing.Value:
-                raise ValueError("portal_type is Missing.Value")
-            if review_state is Missing.Value:
-                raise ValueError("review_state is Missing.Value")
-
-            return {
-                "id": id,
-                "Title": title,
-                "Description": description,
+            item = {
+                "id": api.get_id(brain),
+                "Title": api.get_title(brain),
+                "Description": api.get_description(brain),
                 "getURL": api.get_url(brain),
                 "portal_type": api.get_portal_type(brain),
                 "path": api.get_path(brain),
                 "depth": depth,
-                "review_state": review_state,
+                "review_state": api.get_review_status(brain),
                 "show_children": True,
                 "item": brain,
                 "children": []
             }
+
+            # Check each value for Missing.Value
+            for key, value in item.items():
+                if value is Missing.Value:
+                    raise ValueError(
+                        "%s is Missing.Value" % key)
+
+            return item
+
         except Exception as e:
             # Log and skip invalid brains (stale catalog entries)
             logger.warning(
