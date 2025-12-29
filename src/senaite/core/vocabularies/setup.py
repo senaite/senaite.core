@@ -21,8 +21,7 @@
 from bika.lims import _
 from bika.lims import api
 from senaite.core.api import geo
-from senaite.core.config.setup import SKIP_NAV_FOLDER_TYPES
-from senaite.core.config.setup import SKIP_NAV_PORTAL_TYPES
+from senaite.core.config.setup import SKIP_NAV_TYPES
 from zope.i18n.locales import locales
 from zope.interface import implementer
 from zope.schema.interfaces import IVocabularyFactory
@@ -159,7 +158,7 @@ class TopLevelFoldersVocabulary(object):
             # Check if object is AT or DX
             if not api.is_object(obj):
                 continue
-            if api.get_portal_type(obj) in SKIP_NAV_FOLDER_TYPES:
+            if api.get_portal_type(obj) in SKIP_NAV_TYPES:
                 continue
             # Get title and id
             title = api.get_title(obj)
@@ -181,7 +180,7 @@ class NavigationPortalTypesVocabulary(object):
 
         # Get all portal types
         for portal_type in portal_types.objectIds():
-            if portal_type in SKIP_NAV_PORTAL_TYPES:
+            if portal_type in SKIP_NAV_TYPES:
                 continue
             fti = portal_types.getTypeInfo(portal_type)
             if fti:
