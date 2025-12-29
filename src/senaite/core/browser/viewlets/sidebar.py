@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
+import Missing
 
 from bika.lims import api
 from plone.app.viewletmanager.manager import OrderedViewletManager
@@ -283,15 +284,33 @@ class SidebarNavigationAPI(BrowserView):
         :returns: Dict with item data or None if brain is invalid
         """
         try:
+            id = api.get_id(brain)
+            title = api.get_title(brain)
+            description = api.get_description(brain)
+            portal_type = api.get_portal_type(brain)
+            review_state = api.get_review_status(brain)
+
+            # swallow missing values
+            if id is Missing.Value:
+                raise ValueError("id is Missing.Value")
+            if title is Missing.Value:
+                raise ValueError("title is Missing.Value")
+            if description is Missing.Value:
+                raise ValueError("description is Missing.Value")
+            if portal_type is Missing.Value:
+                raise ValueError("portal_type is Missing.Value")
+            if review_state is Missing.Value:
+                raise ValueError("review_state is Missing.Value")
+
             return {
-                "id": api.get_id(brain),
-                "Title": api.get_title(brain),
-                "Description": api.get_description(brain),
+                "id": id,
+                "Title": title,
+                "Description": description,
                 "getURL": api.get_url(brain),
                 "portal_type": api.get_portal_type(brain),
                 "path": api.get_path(brain),
                 "depth": depth,
-                "review_state": api.get_review_status(brain),
+                "review_state": review_state,
                 "show_children": True,
                 "item": brain,
                 "children": []
