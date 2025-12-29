@@ -184,8 +184,7 @@ class NavigationPortalTypesVocabulary(object):
                 continue
             fti = portal_types.getTypeInfo(portal_type)
             if fti:
-                # Use the title from FTI (user-friendly name)
-                title = fti.Title() or portal_type
+                title = portal_type
                 items.append((portal_type, portal_type, title))
 
         # Sort by title

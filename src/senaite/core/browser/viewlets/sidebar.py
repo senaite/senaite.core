@@ -113,10 +113,10 @@ class SidebarNavigationAPI(BrowserView):
         """
         return self.setup.getSidebarNavigationDepth()
 
-    def get_displayed_types(self, default=None):
-        """Return the displayed types
+    def get_skip_types(self, default=None):
+        """Return the types to skip
         """
-        return self.setup.getSidebarDisplayedTypes()
+        return self.setup.getSidebarSkipTypes()
 
     def get_selected_folders(self, default=None):
         """Return the selected folders
@@ -194,14 +194,14 @@ class SidebarNavigationAPI(BrowserView):
 
         navigation_root = self.get_navigation_root()
         navigation_depth = self.get_navigation_depth()
-        displayed_types = self.get_displayed_types()
+        skip_types = self.get_skip_types()
         selected_folders = self.get_selected_folders()
 
         # Build tree using uid_catalog
         data = self._build_tree(
             navigation_root,
             navigation_depth,
-            displayed_types,
+            skip_types,
             selected_folders,
             show_more=show_more
         )
@@ -209,7 +209,7 @@ class SidebarNavigationAPI(BrowserView):
         # Process into JSON-friendly format
         return self._process_navigation_tree(data, current_url)
 
-    def _build_tree(self, navigation_root, navigation_depth, displayed_types,
+    def _build_tree(self, navigation_root, navigation_depth, skip_types,
                     selected_folders=None, show_more=False):
         """Build navigation tree
 
@@ -220,7 +220,7 @@ class SidebarNavigationAPI(BrowserView):
 
         :param navigation_root: The navigation root object
         :param navigation_depth: Maximum depth to query
-        :param displayed_types: Tuple of portal types to include
+        :param skip_types: Tuple of portal types to exclude
         :param selected_folders: Tuple of folder IDs to include at root level
         :param show_more: If True, show more items with expanded limit
         :returns: Dict with tree structure
@@ -264,7 +264,7 @@ class SidebarNavigationAPI(BrowserView):
                     parent_brain,
                     max_depth=navigation_depth,
                     current_depth=1,
-                    displayed_types=displayed_types,
+                    skip_types=skip_types,
                     show_more=show_more
                 )
                 folder_item["children"] = children_data.get("items", [])
@@ -313,7 +313,7 @@ class SidebarNavigationAPI(BrowserView):
             return None
 
     def _get_children_recursive(self, parent_brain, max_depth, current_depth,
-                                displayed_types=None, show_more=False):
+                                skip_types=None, show_more=False):
         """Recursively get children using catalog depth=1 query
 
         Uses a catalog query with depth=1 for optimal performance on large
@@ -322,7 +322,7 @@ class SidebarNavigationAPI(BrowserView):
         :param parent_brain: Parent catalog brain
         :param max_depth: Maximum depth to query
         :param current_depth: Current depth level
-        :param displayed_types: Tuple of portal types to include
+        :param skip_types: Tuple of portal types to exclude
         :param show_more: If True, show more items with expanded limit
         :returns: Dict with items, has_more flag, and total_count
         """
@@ -350,37 +350,28 @@ class SidebarNavigationAPI(BrowserView):
                 "sort_order": "ascending",
             })
 
-        # limit to displayed types if specified
-        if displayed_types:
-            query["portal_type"] = displayed_types
-
-        # Apply limit only when not showing more items
-        limit = 10
-        if not show_more:
-            # Use sort_limit for performance - query for limit+1 to detect
-            # if there are more items
-            query["sort_limit"] = limit + 1
-
         logger.info("Query catalog %s for children of %s at depth %d: %s" % (
             catalog.id, parent_path, current_depth, str(query)))
 
         brains = catalog(**query)
 
-        # Check if we have more items than the limit (only when not show_more)
-        has_more = False
-        total_count = len(brains)
-
-        if not show_more and len(brains) > limit:
-            has_more = True
-            children_to_process = brains[:limit]
-        else:
-            # When show_more=True, process all brains
-            children_to_process = brains
-            has_more = False
-
-        # Build items for children
+        # Build items for children, filtering skip_types in the loop
         children = []
-        for brain in children_to_process:
+        has_more = False
+        limit = 10
+        skip_types = skip_types or ()
+
+        for brain in brains:
+            # Skip types that should be excluded
+            portal_type = api.get_portal_type(brain)
+            if portal_type in skip_types:
+                continue
+
+            # Check limit only when not showing more items
+            if not show_more and len(children) >= limit:
+                has_more = True
+                break
+
             # Create item from brain
             item = self._create_item_from_brain(
                 brain, depth=current_depth + 1)
@@ -395,7 +386,7 @@ class SidebarNavigationAPI(BrowserView):
                     brain,
                     max_depth=max_depth,
                     current_depth=current_depth + 1,
-                    displayed_types=displayed_types,
+                    skip_types=skip_types,
                     show_more=show_more
                 )
                 item["children"] = children_data.get("items", [])
@@ -407,7 +398,7 @@ class SidebarNavigationAPI(BrowserView):
         return {
             "items": children,
             "has_more": has_more,
-            "total_count": total_count
+            "total_count": len(brains)
         }
 
     def _process_navigation_tree(self, tree_data, current_url=""):

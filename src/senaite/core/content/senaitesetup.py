@@ -882,14 +882,14 @@ class ISetupSchema(model.Schema):
         max=3,
     )
 
-    sidebar_displayed_types = schema.Tuple(
+    sidebar_skip_types = schema.Tuple(
         title=_(
-            u"title_senaitesetup_sidebar_displayed_types",
-            default=u"Sidebar displayed portal types"
+            u"title_senaitesetup_sidebar_skip_types",
+            default=u"Sidebar skipped portal types"
         ),
         description=_(
-            u"description_senaitesetup_sidebar_displayed_types",
-            default=u"Select which content types should be displayed in the "
+            u"description_senaitesetup_sidebar_skip_types",
+            default=u"Select which content types should be excluded from the "
                     u"sidebar navigation. If none are selected, all content "
                     u"types will be shown."
         ),
@@ -897,7 +897,7 @@ class ISetupSchema(model.Schema):
             vocabulary="senaite.core.vocabularies.navigation_portal_types"
         ),
         required=False,
-        default=(),
+        default=("AnalysisRequest", ),
     )
 
     # Sampling
@@ -1232,7 +1232,7 @@ class ISetupSchema(model.Schema):
             "show_lab_name_in_login",
             "sidebar_folders",
             "sidebar_navigation_depth",
-            "sidebar_displayed_types",
+            "sidebar_skip_types",
         ]
     )
 
@@ -1508,17 +1508,17 @@ class Setup(Container):
         return mutator(self, value)
 
     @security.protected(permissions.View)
-    def getSidebarDisplayedTypes(self):
-        """Returns the sidebar displayed portal types
+    def getSidebarSkipTypes(self):
+        """Returns the sidebar skipped portal types
         """
-        accessor = self.accessor("sidebar_displayed_types")
+        accessor = self.accessor("sidebar_skip_types")
         return accessor(self) or ()
 
     @security.protected(permissions.ModifyPortalContent)
-    def setSidebarDisplayedTypes(self, value):
-        """Set the sidebar displayed portal types
+    def setSidebarSkipTypes(self, value):
+        """Set the sidebar skipped portal types
         """
-        mutator = self.mutator("sidebar_displayed_types")
+        mutator = self.mutator("sidebar_skip_types")
         return mutator(self, value)
 
     @security.protected(permissions.View)
