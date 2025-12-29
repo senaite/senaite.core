@@ -897,7 +897,7 @@ class ISetupSchema(model.Schema):
             vocabulary="senaite.core.vocabularies.navigation_portal_types"
         ),
         required=False,
-        default=("AnalysisRequest", ),
+        default=("AnalysisRequest", "Attachment", ),
     )
 
     # Sampling
