@@ -176,7 +176,6 @@ class NavigationPortalTypesVocabulary(object):
     """
 
     def __call__(self, context):
-        from bika.lims import api
         portal_types = api.get_tool("portal_types")
         items = []
 
