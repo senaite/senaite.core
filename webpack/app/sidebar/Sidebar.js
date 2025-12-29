@@ -9,8 +9,7 @@ import {SidebarNavigation} from "./components/SidebarNavigation";
 
 /**
  * Main Sidebar Component
- * Modern sidebar with smooth animations, collapsible sections,
- * and improved accessibility
+ * Modern sidebar with smooth animations and collapsible sections
  *
  * Features:
  * - Toggle button for persistent state
@@ -55,9 +54,6 @@ export const Sidebar = () => {
 
     container.className = classes.join(" ");
     container.style.width = isMinimized ? "50px" : `${width}px`;
-    container.setAttribute("aria-expanded", !isMinimized);
-    container.setAttribute("role", "navigation");
-    container.setAttribute("aria-label", "Main navigation");
   }, [isMinimized, isToggled, isLoading, isSearchActive, width]);
 
   // Manage body scroll for mobile
@@ -111,7 +107,6 @@ export const Sidebar = () => {
         <div
           className={`sidebar-backdrop ${showBackdrop ? "show" : ""}`}
           onClick={handleBackdropClick}
-          aria-hidden="true"
         />,
         document.body
       )}
@@ -157,7 +152,6 @@ export const Sidebar = () => {
         <div
           className={`resize-handle ${isResizing ? "resizing" : ""}`}
           onMouseDown={startResize}
-          aria-label="Resize sidebar"
         />
       )}
     </>

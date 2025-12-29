@@ -70,7 +70,7 @@ export const SidebarItem = ({
         <span className={level === 1 ? "node-title" : "child-title"}>
           {item.title}
         </span>
-        {hasChildren && <span className="caret" aria-hidden="true" />}
+        {hasChildren && <span className="caret" />}
       </a>
 
       {hasChildren && (

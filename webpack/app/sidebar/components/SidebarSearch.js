@@ -37,7 +37,6 @@ export const SidebarSearch = ({onSearch, onFocus, onBlur}) => {
         onInput={handleInput}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        aria-label="Search navigation"
       />
     </div>
   );
