@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Hide navigation control panel"
+      description="Hide navigation control panel from the site setup in favor of the new one in SENAITE setup"
+      source="2717"
+      destination="2718"
+      handler=".v02_07_000.import_controlpanel"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Link client contacts to users"
       description="Ensure users are correctly linked to client contacts"
       source="2716"
