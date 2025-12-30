@@ -19,7 +19,9 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import _
+from bika.lims import api
 from senaite.core.api import geo
+from senaite.core.config.setup import SKIP_NAV_TYPES
 from zope.i18n.locales import locales
 from zope.interface import implementer
 from zope.schema.interfaces import IVocabularyFactory
@@ -141,6 +143,55 @@ class NumberOfVerificationsVocabulary(object):
         return SimpleVocabulary.fromItems(items)
 
 
+@implementer(IVocabularyFactory)
+class TopLevelFoldersVocabulary(object):
+    """Vocabulary of top-level folders in the portal
+    """
+
+    def __call__(self, context):
+        portal = api.get_portal()
+        items = []
+
+        # Get all immediate children of portal
+        for obj_id in portal.objectIds():
+            obj = portal[obj_id]
+            # Check if object is AT or DX
+            if not api.is_object(obj):
+                continue
+            if api.get_portal_type(obj) in SKIP_NAV_TYPES:
+                continue
+            # Get title and id
+            title = api.get_title(obj)
+            items.append((obj_id, obj_id, title))
+
+        # Sort by title
+        items.sort(key=lambda x: x[2])
+        return SimpleVocabulary.fromItems(items)
+
+
+@implementer(IVocabularyFactory)
+class NavigationPortalTypesVocabulary(object):
+    """Vocabulary of portal types with friendly names for navigation
+    """
+
+    def __call__(self, context):
+        portal_types = api.get_tool("portal_types")
+        items = []
+
+        # Get all portal types
+        for portal_type in portal_types.objectIds():
+            if portal_type in SKIP_NAV_TYPES:
+                continue
+            fti = portal_types.getTypeInfo(portal_type)
+            if fti:
+                title = portal_type
+                items.append((portal_type, portal_type, title))
+
+        # Sort by title
+        items.sort(key=lambda x: x[2])
+        return SimpleVocabulary.fromItems(items)
+
+
 # Factory instances
 CurrenciesVocabularyFactory = CurrenciesVocabulary()
 CountriesVocabularyFactory = CountriesVocabulary()
@@ -150,3 +201,5 @@ WorksheetLayoutVocabularyFactory = WorksheetLayoutVocabulary()
 WeekdaysVocabularyFactory = WeekdaysVocabulary()
 MultiVerificationTypeVocabularyFactory = MultiVerificationTypeVocabulary()
 NumberOfVerificationsVocabularyFactory = NumberOfVerificationsVocabulary()
+TopLevelFoldersVocabularyFactory = TopLevelFoldersVocabulary()
+NavigationPortalTypesVocabularyFactory = NavigationPortalTypesVocabulary()
