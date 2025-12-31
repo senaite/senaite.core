@@ -5,9 +5,17 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Migrate ARReport to Dexterity ResultsReport"
       description="Convert ARReport content type from Archetypes to Dexterity"
+      source="2718"
+      destination="2719"
+      handler=".v02_07_000.migrate_arreport_to_resultsreport"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Hide navigation control panel"
+      description="Hide navigation control panel from the site setup in favor of the new one in SENAITE setup"
       source="2717"
       destination="2718"
-      handler=".v02_07_000.migrate_arreport_to_resultsreport"
+      handler=".v02_07_000.import_controlpanel"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
