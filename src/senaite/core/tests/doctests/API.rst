@@ -414,6 +414,29 @@ Catalog brains are also supported::
     >>> api.get_fields(brain).get("ClientID")
     <Field ClientID(string:rw)>
 
+You can also pass a Dexterity portal type name to get the fields for that type
+without needing an instance. This includes all fields from the main schema and
+behaviors::
+
+    >>> from collections import OrderedDict
+    >>> fields = api.get_fields("Contact")
+    >>> isinstance(fields, OrderedDict)
+    True
+
+The fields include all schema fields and behavior fields::
+
+    >>> "title" in fields
+    True
+
+    >>> "description" in fields
+    True
+
+    >>> "email" in fields
+    True
+
+Note: For Archetypes types, you must pass an object or brain instance, not a
+portal type string.
+
 
 Getting the ID of a Content
 ...........................
