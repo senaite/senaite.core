@@ -162,6 +162,7 @@ class IResultsReportSchema(model.Schema):
         relationship="ResultsReport.sample",
         multi_valued=False,
         required=True,
+        default=None,
     )
 
     directives.widget(
@@ -189,18 +190,21 @@ class IResultsReportSchema(model.Schema):
         relationship="ResultsReport.contained_samples",
         multi_valued=True,
         required=False,
+        default=[],
     )
 
     html = schema.Text(
         title=_(u"HTML"),
         description=_(u"HTML content of the report"),
         required=False,
+        default=u"",
     )
 
     pdf = NamedBlobFileField(
         title=_(u"PDF"),
         description=_(u"PDF file of the report"),
         required=False,
+        default=None,
     )
 
     directives.widget(
@@ -211,6 +215,7 @@ class IResultsReportSchema(model.Schema):
         title=_(u"Date Printed"),
         description=_(u"Date when the report was printed"),
         required=False,
+        default=None,
     )
 
     # Advanced fields
