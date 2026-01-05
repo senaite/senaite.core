@@ -431,7 +431,7 @@ The fields include all schema fields and behavior fields::
     >>> "description" in fields
     True
 
-    >>> "email" in fields
+    >>> "email_address" in fields
     True
 
 Note: For Archetypes types, you must pass an object or brain instance, not a
