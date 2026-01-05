@@ -1822,7 +1822,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         last_report = api.get_object(last_report_uid, None)
         if not last_report:
             logger.warning("AnalysisRequest.getPrinted: "
-                            "Report with UID %s not found", last_report_uid)
+                           "Report with UID %s not found", last_report_uid)
             return "0"
 
         if last_report.getDatePrinted():
