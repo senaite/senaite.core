@@ -218,22 +218,44 @@ def create(container, portal_type, *args, **kwargs):
         from bika.lims.api.snapshot import resume_snapshots_for
         from bika.lims.api.snapshot import take_snapshot
 
-        # Dexterity content creation using original createContent()
-        # Pause snapshots to prevent automatic snapshot during creation,
-        # then manually create snapshot after all fields are set
+        # Dexterity content creation
+        # Schema fields (especially UID reference fields) must be set AFTER
+        # the object has a UID assigned, which happens in addContentToContainer
 
-        # Create the content with id and title
+        # Get all schema fields for this portal type
+        schema_fields = get_fields(portal_type)
+
+        # Separate schema field kwargs from other attributes
+        field_kwargs = {}
+        other_kwargs = {}
+        for name, value in kwargs.items():
+            if name in schema_fields:
+                field_kwargs[name] = value
+            else:
+                other_kwargs[name] = value
+
+        # Create content with only non-schema attributes
         # Note: createContent() fires ObjectCreatedEvent, but this does not
         # trigger snapshots for Dexterity (only ObjectAddedEvent does)
         content = createContent(portal_type, id=id or tmp_id, title=title,
-                                **kwargs)
+                                **other_kwargs)
 
         # Pause snapshots to prevent ObjectAddedEvent from creating
-        # an incomplete snapshot
+        # an incomplete snapshot (fields not yet set)
         pause_snapshots_for(content)
 
         # Add content to container (this assigns UID via ObjectAddedEvent)
         obj = addContentToContainer(container, content)
+
+        # Now set schema fields using their setters
+        # This ensures custom setters (like UIDReferenceField.set) are called
+        # AFTER the object has a UID for proper backreference handling
+        for name, value in field_kwargs.items():
+            field = schema_fields.get(name)
+            if field and hasattr(field, "set"):
+                field.set(obj, value)
+            else:
+                setattr(obj, name, value)
 
         # Resume snapshots and manually create the initial snapshot
         # now that the object is fully initialized with all fields set
