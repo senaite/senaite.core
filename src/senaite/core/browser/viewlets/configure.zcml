@@ -113,6 +113,15 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Sidebar Navigation JSON API -->
+  <browser:page
+      name="sidebar-navigation-json"
+      for="*"
+      class=".sidebar.SidebarNavigationAPI"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- The global sections -->
   <browser:viewlet
       name="plone.global_sections"
