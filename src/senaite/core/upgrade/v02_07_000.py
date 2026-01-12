@@ -532,6 +532,9 @@ def create_setup_contacts_folder(tool):
     """
     logger.info("Creating Contacts container in setup folder ...")
 
+    # Ensure old AT types are flushed first
+    remove_at_portal_types(tool)
+
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
     tool.runImportStepFromProfile(profile, "actions")
