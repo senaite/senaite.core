@@ -26,7 +26,7 @@ from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IWorkflowActionUIDsAdapter
 from DateTime import DateTime
-from senaite.core.catalog import REPORT_CATALOG
+from senaite.core.api import dtime
 from zope.interface import implements
 
 
@@ -175,29 +175,25 @@ class WorkflowActionPrintSampleAdapter(WorkflowActionGenericAdapter):
         # Redirect the user to success page
         return self.success(transitioned)
 
+    def get_last_report(sample):
+        reports = sample.getRawReports()
+        if reports:
+            return api.get_object(reports[-1], None)
+        return None
+
     def set_printed_time(self, sample):
         """Updates the printed time of the last results report from the sample
         """
         if api.get_workflow_status_of(sample) != "published":
             return False
 
-        query = {
-            "portal_type": ["ResultsReport"],
-            "path": {
-                "query": api.get_path(sample),
-                "depth": 1
-            },
-            "sort_on": "created",
-            "sort_order": "ascending"
-        }
-        reports = api.search(query, REPORT_CATALOG)
-        if not reports:
+        # Get the last report
+        last_report = self.get_last_report(sample)
+        if not last_report:
             return False
 
-        # Get the last report
-        last_report = api.get_object(reports[-1])
-        # Convert to naive datetime to avoid pytz pickling issues
-        last_report.setDatePrinted(DateTime().asdatetime().replace(tzinfo=None))
+        timestamp = dtime.now().replace(tzinfo=None)
+        last_report.setDatePrinted(timestamp)
         sample.reindexObject(idxs=["getPrinted"])
         return True
 
