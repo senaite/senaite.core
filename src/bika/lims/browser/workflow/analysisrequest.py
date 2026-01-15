@@ -175,7 +175,7 @@ class WorkflowActionPrintSampleAdapter(WorkflowActionGenericAdapter):
         # Redirect the user to success page
         return self.success(transitioned)
 
-    def get_last_report(sample):
+    def get_last_report(self, sample):
         reports = sample.getRawReports()
         if reports:
             return api.get_object(reports[-1], None)
