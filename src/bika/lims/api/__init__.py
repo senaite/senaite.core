@@ -786,7 +786,7 @@ def get_fields(brain_or_object_or_portal_type):
     # Handle portal_type (string parameter)
     # NOTE: Only supports Dexterity types. For Archetypes types, pass an
     # object or brain instead.
-    if isinstance(brain_or_object_or_portal_type, basestring):
+    if is_string(brain_or_object_or_portal_type):
         portal_type = brain_or_object_or_portal_type
         # For Dexterity types, use iterSchemataForType
         fields = []
