@@ -1783,9 +1783,9 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         return list(OrderedDict.fromkeys(report_uids))
 
     def getReports(self):
-        """Returns a list of report objects
+        """Returns a sorted list of report objects
 
-        :returns: List of report objects
+        :returns: List of report objects sorted by creation date
         """
         reports = []
         report_uids = self.getRawReports()
@@ -1797,7 +1797,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
                 logger.warning("AnalysisRequest.getReports: "
                                "Report with UID %s not found", uid)
                 continue
-        return reports
+        return list(sorted(reports, key=lambda r: r.created()))
 
     def getPrinted(self):
         """ returns "0", "1" or "2" to indicate Printed state.
@@ -1812,18 +1812,14 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         if not report_uids:
             return "0"
 
-        last_report_uid = report_uids[-1]
-        last_report = api.get_object(last_report_uid, None)
-        if not last_report:
-            logger.warning("AnalysisRequest.getPrinted: "
-                           "Report with UID %s not found", last_report_uid)
-            return "0"
+        # get the last reports sorted on creation date
+        reports = self.getReports()
+        last_report = reports[-1]
 
         if last_report.getDatePrinted():
             return "1"
 
-        for report_uid in report_uids[:-1]:
-            report = api.get_object(report_uid)
+        for report in reports[:-1]:
             if report.getDatePrinted():
                 return "2"
 

@@ -176,10 +176,10 @@ class WorkflowActionPrintSampleAdapter(WorkflowActionGenericAdapter):
         return self.success(transitioned)
 
     def get_last_report(self, sample):
-        reports = sample.getRawReports()
-        if reports:
-            return api.get_object(reports[-1], None)
-        return None
+        reports = sample.getReports()
+        if not reports:
+            return None
+        return reports[-1]
 
     def set_printed_time(self, sample):
         """Updates the printed time of the last results report from the sample
@@ -192,7 +192,7 @@ class WorkflowActionPrintSampleAdapter(WorkflowActionGenericAdapter):
         if not last_report:
             return False
 
-        timestamp = dtime.now().replace(tzinfo=None)
+        timestamp = dtime.now()
         last_report.setDatePrinted(timestamp)
         sample.reindexObject(idxs=["getPrinted"])
         return True

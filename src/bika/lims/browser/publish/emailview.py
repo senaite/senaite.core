@@ -435,7 +435,7 @@ class EmailView(BrowserView):
         actor = get_user_id()
         userprops = api.get_user_properties(user)
         actor_fullname = userprops.get("fullname", actor)
-        email_send_date = dtime.now().replace(tzinfo=None)
+        email_send_date = dtime.now()
         email_recipients = self.email_recipients
         email_responsibles = self.email_responsibles
         email_subject = self.email_subject
@@ -460,15 +460,11 @@ class EmailView(BrowserView):
     def write_sendlog(self):
         """Write email sendlog
         """
-        # Convert Zope DateTime to naive Python datetime for z3c.form
-        # compatibility (tzinfo=None to avoid pytz pickling issues)
-        timestamp = DateTime().asdatetime().replace(tzinfo=None)
-
         for report in self.reports:
             # get the current sendlog records
             records = report.getSendLog()
             # create a new record with the current data
-            new_record = self.make_sendlog_record(email_send_date=timestamp)
+            new_record = self.make_sendlog_record(email_send_date=dtime.now())
             # set the new record to the existing records
             records.append(new_record)
             report.setSendLog(records)
