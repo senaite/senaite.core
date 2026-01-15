@@ -884,10 +884,9 @@ def migrate_arreport_to_dx(src, destination=None):
                     record["email_send_date"] = dt
         target.send_log = sendlog_list
 
-    # Get HTML content
-    html = src.getHtml()
-    if html:
-        target.html = u(html)
+    # XXX: We removed the raw HTML field entirely from the DX content!
+    # https://github.com/senaite/senaite.core/pull/2831#discussion_r2684057824
+    # html = src.getHtml()
 
     # Get PDF file
     pdf_data = src.getPdf()

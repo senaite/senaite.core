@@ -193,13 +193,6 @@ class IResultsReportSchema(model.Schema):
         default=[],
     )
 
-    html = schema.Text(
-        title=_(u"HTML"),
-        description=_(u"HTML content of the report"),
-        required=False,
-        default=u"",
-    )
-
     pdf = NamedBlobFileField(
         title=_(u"PDF"),
         description=_(u"PDF file of the report"),
@@ -433,24 +426,6 @@ class ResultsReport(Container):
         getContainedAnalysisRequests,
         setContainedAnalysisRequests
     )
-
-    @security.protected(permissions.View)
-    def getRawHtml(self):
-        accessor = self.accessor("html", raw=True)
-        return accessor(self)
-
-    @security.protected(permissions.View)
-    def getHtml(self):
-        accessor = self.accessor("html")
-        return accessor(self)
-
-    @security.protected(permissions.ModifyPortalContent)
-    def setHtml(self, value):
-        mutator = self.mutator("html")
-        mutator(self, value)
-
-    # BBB: AT schema field property
-    Html = property(getHtml, setHtml)
 
     @security.protected(permissions.View)
     def getRawPdf(self):
