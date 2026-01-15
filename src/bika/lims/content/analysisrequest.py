@@ -21,6 +21,7 @@
 import base64
 import functools
 import re
+from collections import OrderedDict
 from collections import defaultdict
 from datetime import datetime
 from decimal import Decimal
@@ -1779,14 +1780,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         report_uids.extend(contained_refs)
 
         # Remove duplicates while preserving order
-        seen = set()
-        unique_uids = []
-        for uid in report_uids:
-            if uid not in seen:
-                seen.add(uid)
-                unique_uids.append(uid)
-
-        return unique_uids
+        return list(OrderedDict.fromkeys(report_uids))
 
     def getReports(self):
         """Returns a list of report objects
