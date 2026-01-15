@@ -260,6 +260,8 @@ def create(container, portal_type, *args, **kwargs):
         # Resume snapshots and manually create the initial snapshot
         # now that the object is fully initialized with all fields set
         resume_snapshots_for(obj)
+        # Manually reindex the object to ensure all indexes are updated
+        obj.reindexObject()
         take_snapshot(obj, action="create")
 
     return obj
