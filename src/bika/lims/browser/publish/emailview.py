@@ -25,7 +25,6 @@ from collections import OrderedDict
 from string import Template
 
 import six
-
 import transaction
 from bika.lims import _
 from bika.lims import api
@@ -38,12 +37,12 @@ from bika.lims.api.snapshot import take_snapshot
 from bika.lims.decorators import returns_json
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.utils import to_utf8
-from DateTime import DateTime
 from plone.memoize import view
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.api import dtime
 from ZODB.POSException import POSKeyError
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
@@ -435,7 +434,7 @@ class EmailView(BrowserView):
         actor = get_user_id()
         userprops = api.get_user_properties(user)
         actor_fullname = userprops.get("fullname", actor)
-        email_send_date = DateTime()
+        email_send_date = dtime.now()
         email_recipients = self.email_recipients
         email_responsibles = self.email_responsibles
         email_subject = self.email_subject
@@ -460,13 +459,11 @@ class EmailView(BrowserView):
     def write_sendlog(self):
         """Write email sendlog
         """
-        timestamp = DateTime()
-
         for report in self.reports:
             # get the current sendlog records
             records = report.getSendLog()
             # create a new record with the current data
-            new_record = self.make_sendlog_record(email_send_date=timestamp)
+            new_record = self.make_sendlog_record(email_send_date=dtime.now())
             # set the new record to the existing records
             records.append(new_record)
             report.setSendLog(records)

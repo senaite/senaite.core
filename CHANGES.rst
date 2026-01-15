@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2831 Migrate ARReport to Dexterity
 - #2838 Fix 'add_permission' error when upgrading from 2711 to 2718
 - #2835 New Sidebar Navigation
 - #2834 Handle tat as timedelta or dict during AT to DX migration

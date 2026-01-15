@@ -60,7 +60,6 @@ def initialize(context):
     from bika.lims.content.analysisrequestsfolder import AnalysisRequestsFolder
     from bika.lims.content.analysisservice import AnalysisService
     from bika.lims.content.analysisspec import AnalysisSpec
-    from bika.lims.content.arreport import ARReport
     from bika.lims.content.artemplate import ARTemplate
     from bika.lims.content.attachment import Attachment
     from bika.lims.content.attachmenttype import AttachmentType

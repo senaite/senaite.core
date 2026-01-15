@@ -37,7 +37,7 @@ class AnalysisRequestPublishedResults(ReportsListingView):
         sample_uid = api.get_uid(context)
 
         self.contentFilter = {
-            "portal_type": "ARReport",
+            "portal_type": ["ResultsReport"],
             "path": {
                 "query": client_path,
                 "depth": 2,
