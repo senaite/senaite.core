@@ -37,7 +37,6 @@ from bika.lims.api.snapshot import take_snapshot
 from bika.lims.decorators import returns_json
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.utils import to_utf8
-from DateTime import DateTime
 from plone.memoize import view
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
