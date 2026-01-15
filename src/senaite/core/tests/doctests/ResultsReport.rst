@@ -24,6 +24,7 @@ Needed Imports:
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor
     >>> from senaite.core.catalog import REPORT_CATALOG
+    >>> from senaite.core.api import dtime
     >>> from datetime import datetime
 
 Functional Helpers:
@@ -257,9 +258,10 @@ Date Printed
 Set the date when the report was printed:
 
     >>> print_date = datetime(2025, 1, 15, 10, 30, 0)
+    >>> print_date = dtime.to_zone(print_date, dtime.get_os_timezone())
     >>> report.setDatePrinted(print_date)
-    >>> report.getDatePrinted()
-    datetime.datetime(2025, 1, 15, 10, 30)
+    >>> report.getDatePrinted() == print_date
+    True
 
 The AT-style property should work:
 
