@@ -131,7 +131,6 @@ class IResultsReportSchema(model.Schema):
         label=_(u"Results Report"),
         fields=[
             "sample",
-            "html",
             "pdf",
             "date_printed",
         ]
@@ -266,10 +265,10 @@ class IResultsReportSchema(model.Schema):
 
 @implementer(IResultsReport, IResultsReportSchema)
 class ResultsReport(Container):
-    """A results report for analysis requests, containing the report itself
-       in pdf and html format. It includes information about the date when it
-       was published, from whom, the report recipients (and their emails) and
-       the publication mode
+    """A results report for analysis requests, containing the report itself in
+       pdf format. It includes information about the date when it was
+       published, from whom, the report recipients (and their emails) and the
+       publication mode
     """
     # Catalogs where this type will be catalogued
     _catalogs = [REPORT_CATALOG]

@@ -1,10 +1,10 @@
 Results Report
 --------------
 
-The ResultsReport content type stores published reports with their PDF and HTML
-content, metadata about the report format and template, send log for email
-tracking, and recipient information. This is the Dexterity successor to the
-Archetypes-based ARReport.
+The ResultsReport content type stores published reports with their PDF content,
+metadata about the report format and template, send log for email tracking, and
+recipient information. This is the Dexterity successor to the Archetypes-based
+ARReport.
 
 Running this test from the buildout directory::
 
@@ -231,20 +231,8 @@ The AT-style property should also work:
     True
 
 
-Report Content (HTML and PDF)
-.............................
-
-Set HTML content:
-
-    >>> html_content = "<html><body><h1>Report for W-0001</h1></body></html>"
-    >>> report.setHtml(html_content)
-    >>> report.getHtml() == html_content
-    True
-
-The AT-style property should work:
-
-    >>> report.Html == html_content
-    True
+Report Content PDF
+..................
 
 Set PDF content:
 
@@ -484,7 +472,6 @@ Set all fields as senaite.impress would:
     >>> new_report.setAnalysisRequest(sample.UID())
     >>> new_report.setContainedAnalysisRequests(
     ...     [sample.UID(), sample2.UID()])
-    >>> new_report.setHtml(html)
     >>> new_report.setPdf(pdf)
     >>> new_report.setMetadata(metadata)
     >>> new_report.setDatePrinted(datetime.now())
@@ -496,9 +483,6 @@ Verify everything was set correctly:
 
     >>> len(new_report.getContainedAnalysisRequests())
     2
-
-    >>> new_report.getHtml() == html
-    True
 
     >>> new_report.getPdf().data == pdf_data
     True
@@ -589,9 +573,6 @@ Create a results report for the sample (as `senaite.impress` would do):
     >>> report_print = api.create(
     ...     sample_print, "ResultsReport", id="report-print-001")
     >>> report_print.setSample(sample_print.UID())
-    >>> report_print.setHtml(
-    ...     "<html><body><h1>Report for {}</h1></body></html>".format(
-    ...         sample_print.getId()))
     >>> pdf_data = b"%PDF-1.4 report for printing"
     >>> report_print.setPdf(NamedBlobFile(
     ...     data=pdf_data,
@@ -672,8 +653,6 @@ as contained samples:
     >>> multi_report.setSample(sample_multi1.UID())
     >>> multi_report.setContainedSamples(
     ...     [sample_multi1.UID(), sample_multi2.UID()])
-    >>> multi_report.setHtml(
-    ...     "<html><body><h1>Multi-sample Report</h1></body></html>")
     >>> multi_report.setPdf(NamedBlobFile(
     ...     data=b"%PDF-1.4 multi-sample report",
     ...     filename=u"multi-report.pdf",
