@@ -31,6 +31,7 @@ from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.interfaces import IResultsReport
+from senaite.core.schema import DatetimeField
 from senaite.core.schema import UIDReferenceField
 from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
@@ -56,7 +57,7 @@ class ISendLogRow(Interface):
         required=False,
         default=u"",
     )
-    email_send_date = schema.Datetime(
+    email_send_date = DatetimeField(
         title=_(u"Email Send Date"),
         required=False,
         default=None,
@@ -203,7 +204,7 @@ class IResultsReportSchema(model.Schema):
         "date_printed",
         DatetimeWidgetFactory,
     )
-    date_printed = schema.Datetime(
+    date_printed = DatetimeField(
         title=_(u"Date Printed"),
         description=_(u"Date when the report was printed"),
         required=False,
