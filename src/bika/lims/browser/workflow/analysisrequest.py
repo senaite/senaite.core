@@ -26,6 +26,7 @@ from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IWorkflowActionUIDsAdapter
 from DateTime import DateTime
+from senaite.core.catalog import REPORT_CATALOG
 from zope.interface import implements
 
 
@@ -189,7 +190,7 @@ class WorkflowActionPrintSampleAdapter(WorkflowActionGenericAdapter):
             "sort_on": "created",
             "sort_order": "ascending"
         }
-        reports = api.search(query, "senaite_catalog_report")
+        reports = api.search(query, REPORT_CATALOG)
         if not reports:
             return False
 
