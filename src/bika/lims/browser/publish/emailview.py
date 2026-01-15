@@ -25,7 +25,6 @@ from collections import OrderedDict
 from string import Template
 
 import six
-
 import transaction
 from bika.lims import _
 from bika.lims import api
@@ -44,6 +43,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.api import dtime
 from ZODB.POSException import POSKeyError
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
@@ -435,9 +435,7 @@ class EmailView(BrowserView):
         actor = get_user_id()
         userprops = api.get_user_properties(user)
         actor_fullname = userprops.get("fullname", actor)
-        # Convert Zope DateTime to naive Python datetime for z3c.form
-        # compatibility (tzinfo=None to avoid pytz pickling issues)
-        email_send_date = DateTime().asdatetime().replace(tzinfo=None)
+        email_send_date = dtime.now().replace(tzinfo=None)
         email_recipients = self.email_recipients
         email_responsibles = self.email_responsibles
         email_subject = self.email_subject
