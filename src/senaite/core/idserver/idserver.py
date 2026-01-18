@@ -32,7 +32,7 @@ from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IAnalysisRequestRetest
 from bika.lims.interfaces import IAnalysisRequestSecondary
-from bika.lims.interfaces import IARReport
+from senaite.core.interfaces import IResultsReport
 from DateTime import DateTime
 from Products.ATContentTypes.utils import DT2dt
 from senaite.core.idserver.alphanumber import Alphanumber
@@ -288,7 +288,7 @@ def get_variables(context, **kw):
                 "secondary_count": secondary_count,
             })
 
-    elif IARReport.providedBy(context):
+    elif IResultsReport.providedBy(context):
         variables.update({
             "clientId": parent.getClientID(),
         })

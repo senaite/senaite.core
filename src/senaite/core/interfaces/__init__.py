@@ -541,6 +541,11 @@ class IWorksheetTemplate(Interface):
     """
 
 
+class IResultsReport(Interface):
+    """Marker interface for Results Report
+    """
+
+
 class ISimpleFile(Interface):
     """Marker interface for simple files
     """

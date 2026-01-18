@@ -42,7 +42,7 @@ class ReportsListingView(ListingView):
 
         self.catalog = REPORT_CATALOG
         self.contentFilter = {
-            "portal_type": "ARReport",
+            "portal_type": ["ResultsReport"],
             "path": {
                 "query": api.get_path(self.context),
                 "depth": 2,
@@ -173,10 +173,19 @@ class ReportsListingView(ListingView):
     def get_filesize(self, pdf):
         """Compute the filesize of the PDF
         """
+        if not pdf:
+            return 0
         try:
-            filesize = float(pdf.get_size())
+            if hasattr(pdf, "size"):
+                filesize = float(pdf.size)
+            elif hasattr(pdf, "getSize"):
+                filesize = float(pdf.getSize())
+            elif hasattr(pdf, "data"):
+                filesize = float(len(pdf.data))
+            else:
+                return 0
             return filesize / 1024
-        except (POSKeyError, TypeError):
+        except (POSKeyError, TypeError, AttributeError):
             return 0
 
     def localize_date(self, date):
@@ -195,11 +204,10 @@ class ReportsListingView(ListingView):
     def folderitem(self, obj, item, index):
         """Augment folder listing item
         """
-
         obj = api.get_object(obj)
-        ar = obj.getAnalysisRequest()
+        sample = obj.getSample()
         uid = api.get_uid(obj)
-        review_state = api.get_workflow_status_of(ar)
+        review_state = api.get_workflow_status_of(sample)
         status_title = review_state.capitalize().replace("_", " ")
         send_log = obj.getSendLog()
 
@@ -211,14 +219,14 @@ class ReportsListingView(ListingView):
             css_class="overlay_panel")
 
         item["replace"]["AnalysisRequest"] = get_link(
-            ar.absolute_url(), value=ar.Title()
+            sample.absolute_url(), value=sample.Title()
         )
 
         # Include Batch information of the primary Sample
-        batch_id = ar.getBatchID()
+        batch_id = sample.getBatchID()
         item["Batch"] = batch_id
         if batch_id:
-            batch = ar.getBatch()
+            batch = sample.getBatch()
             item["replace"]["Batch"] = get_link(
                 batch.absolute_url(), value=batch.Title()
             )
