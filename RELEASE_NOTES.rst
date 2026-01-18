@@ -4,6 +4,19 @@ Release notes
 Update from 2.6.0 to 2.7.0
 --------------------------
 
+**IMPORTANT: Allocate Sufficient Time for This Upgrade**
+
+Version 2.7.0 introduces a number of significant changes that require careful
+planning. If you maintain custom add-ons, you should take time to review the
+update and assess whether your code will need adjustments.
+
+Especially the following upgrade steps are known to take long, as they involve
+migrating a lot of objects in the ZODB:
+
+- Upgrade step 2719: Migrate ARReport to Dexterity
+  https://github.com/senaite/senaite.core/pull/2831
+
+
 **IMPORTANT: Manual Reindexing of "modified" Index May Be Required**
 
 Version 2.7.0 introduces an update to the internal catalogs by adding a new `modified` index and metadata column. This change enables improved sorting and filtering by the last modification date for cataloged objects throughout SENAITE.

@@ -33,6 +33,7 @@ from senaite.core import logger
 from senaite.core.api import dtime
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
+from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
@@ -49,6 +50,7 @@ from senaite.core.setuphandlers import add_dexterity_items
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade.utils import permanently_allow_type_for
 from zope.component import getMultiAdapter
 from zope.interface import alsoProvides
 
@@ -56,6 +58,7 @@ version = "2.7.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
 REMOVE_AT_TYPES = [
+    "ARReport",
     "Contact",
     "Multifile",
 ]
@@ -779,3 +782,194 @@ def migrate_setup_fields_to_dx(tool):
         migrated, skipped, errors))
 
     logger.info("Migrating setup fields [DONE]")
+
+
+@upgradestep(product, version)
+def migrate_arreport_to_resultsreport(tool):
+    """Migrate ARReport from Archetypes to Dexterity ResultsReport
+    """
+    logger.info("Migrating ARReport to Dexterity ResultsReport ...")
+
+    # Remove AT portal type and install DX portal type
+    remove_at_portal_types(tool)
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # Update AnalysisRequest to allow ResultsReport as subobject
+    permanently_allow_type_for("AnalysisRequest", "ResultsReport")
+
+    # Find all ARReport objects
+    catalog = api.get_tool(REPORT_CATALOG)
+    query = {"portal_type": "ARReport"}
+    brains = catalog(query)
+    total = len(brains)
+    logger.info("Found {} ARReport objects to migrate".format(total))
+
+    for num, brain in enumerate(brains, start=1):
+        # Get the object
+        arreport = api.get_object(brain)
+
+        if num % 100 == 0:
+            logger.info("Progress: {}/{} reports migrated".format(num, total))
+
+        # Skip if already migrated to Dexterity
+        if not api.is_at_content(arreport):
+            logger.info("[{}/{}] Already migrated: {}".format(
+                num, total, api.get_path(arreport)))
+            continue
+
+        try:
+            migrate_arreport_to_dx(arreport)
+        except Exception as e:
+            logger.error("Error migrating {}: {}".format(
+                api.get_path(arreport), str(e)))
+            continue
+
+    logger.info("Migrating ARReport to Dexterity ResultsReport [DONE]")
+
+
+def migrate_arreport_to_dx(src, destination=None):
+    """Migrate an AT ARReport to DX ResultsReport in the destination folder
+
+    :param src: The source AT object
+    :param destination: The destination folder. If `None`, the parent folder
+                        of the source object is taken
+    """
+
+    # migrate the contents from the old AT container to the new one
+    old_portal_type = "ARReport"
+    new_portal_type = "ResultsReport"
+
+    if api.get_portal_type(src) != old_portal_type:
+        logger.error("Not an '{}' object: {}".format(old_portal_type, src))
+        return
+
+    # Create the object if it does not exist yet
+    src_id = src.getId()
+    target_id = src_id
+
+    # check if we migrate within the same folder
+    if destination is None:
+        # use a temporary ID for the migrated content
+        target_id = tmpID()
+        # set the destination to the source parent
+        destination = api.get_parent(src)
+
+    target = destination.get(target_id)
+    if not target:
+        # Don't use the api to skip the auto-id generation
+        target = createContent(new_portal_type, id=target_id)
+        destination._setObject(target_id, target)
+        target = destination._getOb(target_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+
+    # Get Metadata (RecordField -> Dict)
+    metadata = src.getMetadata()
+    if metadata:
+        # Store as plain dict
+        target.metadata = metadata if isinstance(metadata, dict) else {}
+
+    # Get SendLog (RecordsField -> DataGridField)
+    sendlog = src.getSendLog()
+    if sendlog:
+        # Convert datetime fields to Python datetime (naive)
+        sendlog_list = sendlog if isinstance(sendlog, list) else []
+        for record in sendlog_list:
+            if "email_send_date" in record and record["email_send_date"]:
+                email_send_date = record.get("email_send_date")
+                if email_send_date:
+                    dt = dtime.to_dt(email_send_date)
+                    record["email_send_date"] = dt
+        target.send_log = sendlog_list
+
+    # XXX: We removed the raw HTML field entirely from the DX content!
+    # https://github.com/senaite/senaite.core/pull/2831#discussion_r2684057824
+    # html = src.getHtml()
+
+    # Get PDF file
+    pdf_data = src.getPdf()
+    if pdf_data:
+        if isinstance(pdf_data, BlobWrapper):
+            filename = pdf_data.getFilename() or "report.pdf"
+            content_type = pdf_data.getContentType()
+            data = pdf_data.data
+            target.pdf = NamedBlobFile(
+                data=data,
+                filename=u(filename),
+                contentType=content_type
+            )
+
+    # Get Recipients (RecordsField -> DataGridField)
+    recipients = src.getRecipients()
+    if recipients:
+        target.recipients = recipients if isinstance(
+            recipients, list) else []
+
+    # Get DatePrinted
+    date_printed = src.getDatePrinted()
+    if date_printed:
+        target.date_printed = dtime.to_dt(date_printed)
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter(
+        (src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID
+    migrator.copy_uid(src, target)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # move eventual contents from source to target
+    if api.is_folderish(src):
+        if src.objectIds():
+            cp = src.manage_cutObjects(ids=src.objectIds())
+            target.manage_pasteObjects(cp)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    # IMPORTANT:
+    #
+    # We set these values *after* the UID was copied to ensure that the
+    # backreferences are correctly created on the sample!
+
+    # Get the primary analysis request and migrate its backreference
+    sample = src.getAnalysisRequest()
+
+    if sample:
+        target.setSample(api.get_uid(sample))
+
+    # Get contained analysis requests and migrate their backreferences
+    contained_samples = src.getContainedAnalysisRequests()
+    if contained_samples:
+        uids = [api.get_uid(ref) for ref in contained_samples if ref]
+        target.setContainedSamples(uids)
+
+    # Reindex the object
+    target.reindexObject()
+
+    logger.info("Migrated ARReport from %s -> %s" % (src, target))
