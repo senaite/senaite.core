@@ -193,14 +193,42 @@ class EditForm {
   }
 
   /**
+  * check field type for text control
+  */
+  is_text_control(field) {
+    const tagName = field.tagName.toLowerCase();
+    const fieldType = field.type.toLowerCase();
+    const textTypes = ["text", "search", "tel", "url", "email", "password",
+      "date", "month", "week", "time", "datetime-local", "number"
+    ];
+    const isTextControl = tagName === "input" && textTypes.includes(fieldType);
+
+    return isTextControl || tagName === "textarea";
+  }
+
+  /**
    * set field readonly
    */
-  set_field_readonly(field, message=null) {
-    field.setAttribute("readonly", "");
-    // Only text controls can be made read-only, since for other controls (such
-    // as checkboxes and buttons) there is no useful distinction between being
-    // read-only and being disabled. We cover other controls like select here.
-    field.setAttribute("disabled", "");
+  set_field_readonly(form, field, message=null) {
+    // Only text controls can be made read-only
+    if (this.is_text_control(field)) {
+      field.setAttribute("readonly", "");
+    } else {
+      // since for other controls (such as checkboxes and buttons)
+      // there is no useful distinction between being
+      // read-only and being disabled.
+      const fieldName = field.name;
+      let hiddenField = document.createElement("input");
+      hiddenField.setAttribute("type", "hidden");
+      hiddenField.setAttribute("name", fieldName);
+      hiddenField.setAttribute("value", field.value);
+
+      field.setAttribute("disabled", "");
+      field.setAttribute("name", "disabled-" + fieldName);
+      // insert hidden control to first positions into form for search by name
+      form.prepend(hiddenField);
+    }
+
     let existing_message = field.parentElement.querySelector("div.message");
     if (existing_message) {
       existing_message.innerHTML = _t(message)
@@ -215,20 +243,36 @@ class EditForm {
   /**
    * set field editable
    */
-  set_field_editable(field, message=null) {
-    field.removeAttribute("readonly");
-    // Only text controls can be made read-only, since for other controls (such
-    // as checkboxes and buttons) there is no useful distinction between being
-    // read-only and being disabled. We cover other controls like select here.
-    field.removeAttribute("disabled");
-    let existing_message = field.parentElement.querySelector("div.message");
+  set_field_editable(form, field, message=null) {
+    // Only text controls can be made read-only
+    let formField = field
+    if (this.is_text_control(field)) {
+      field.removeAttribute("readonly");
+    } else {
+      // since for other controls (such as checkboxes and buttons)
+      // there is no useful distinction between being
+      // read-only and being disabled. We cover other controls like select here.
+
+      const fieldName = field.name;
+      form.removeChild(field);
+
+      const disabledFieldName = "disabled-" + fieldName;
+      let disabledField = this.get_form_field_by_name(form, disabledFieldName);
+      if (disabledField) {
+        formField = disabledField
+        disabledField.removeAttribute("disabled");
+        disabledField.setAttribute("name", fieldName);
+      }
+    }
+
+    let existing_message = formField.parentElement.querySelector("div.message");
     if (existing_message) {
       existing_message.innerHTML = _t(message)
     } else {
       let div = document.createElement("div");
       div.className = "message text-secondary small";
       div.innerHTML = _t(message);
-      field.parentElement.appendChild(div);
+      formField.parentElement.appendChild(div);
     }
   }
 
@@ -436,7 +480,7 @@ class EditForm {
       ({name, message, ...rest} = record);
       let el = this.get_form_field_by_name(form, name);
       if (!el) continue;
-      this.set_field_readonly(el, message);
+      this.set_field_readonly(form, el, message);
     }
 
     // editable fields
@@ -445,7 +489,7 @@ class EditForm {
       ({name, message, ...rest} = record);
       let el = this.get_form_field_by_name(form, name);
       if (!el) continue;
-      this.set_field_editable(el, message);
+      this.set_field_editable(form, el, message);
     }
 
     // updated fields
