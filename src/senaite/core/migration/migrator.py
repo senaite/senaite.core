@@ -103,8 +103,16 @@ class ContentMigrator(object):
         # make sure that both AT/DX paths are uncatalogued
         rel_url = getRelURL(uid_catalog, obj.getPhysicalPath())
         abs_url = "/".join(obj.getPhysicalPath())
-        uid_catalog.uncatalog_object(rel_url)
-        uid_catalog.uncatalog_object(abs_url)
+
+        # Try to uncatalog with both path variations
+        # Only uncatalog if the path exists in the catalog
+        for path in [rel_url, abs_url]:
+            if path in uid_catalog._catalog.uids:
+                try:
+                    uid_catalog.uncatalog_object(path)
+                except Exception:
+                    pass
+
         # uncatalog from registered catalogs
         obj.unindexObject()
 

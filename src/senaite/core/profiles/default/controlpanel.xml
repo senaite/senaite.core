@@ -123,7 +123,7 @@
   <configlet title="Navigation" action_id="NavigationSettings" appId="Plone"
              category="plone-general" condition_expr=""
              icon_expr="string:$portal_url/navigation_icon.png"
-             url_expr="string:${portal_url}/@@navigation-controlpanel" visible="True">
+             url_expr="string:${portal_url}/@@navigation-controlpanel" visible="False">
     <permission>Plone Site Setup: Navigation</permission>
   </configlet>
 

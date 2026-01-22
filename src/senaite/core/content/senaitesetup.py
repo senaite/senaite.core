@@ -846,6 +846,60 @@ class ISetupSchema(model.Schema):
         default=False,
     )
 
+    sidebar_folders = schema.Tuple(
+        title=_(
+            u"title_senaitesetup_sidebar_folders",
+            default=u"Sidebar navigation folders"
+        ),
+        description=_(
+            u"description_senaitesetup_sidebar_folders",
+            default=u"Select which top-level folders should be displayed in "
+                    u"the sidebar navigation. The order of selection determines "
+                    u"the display order in the sidebar. If none are selected, "
+                    u"all folders will be shown in the default order."
+        ),
+        value_type=schema.Choice(
+            vocabulary="senaite.core.vocabularies.top_level_folders"
+        ),
+        required=False,
+        default=("clients", "samples", "methods", "batches", "worksheets"),
+    )
+
+    sidebar_navigation_depth = schema.Int(
+        title=_(
+            u"title_senaitesetup_sidebar_navigation_depth",
+            default=u"Sidebar navigation depth"
+        ),
+        description=_(
+            u"description_senaitesetup_sidebar_navigation_depth",
+            default=u"Maximum depth of the sidebar navigation tree. "
+                    u"Level 1 shows only top-level folders, level 2 includes "
+                    u"their children, and so on."
+        ),
+        required=True,
+        default=1,
+        min=1,
+        max=3,
+    )
+
+    sidebar_skip_types = schema.Tuple(
+        title=_(
+            u"title_senaitesetup_sidebar_skip_types",
+            default=u"Sidebar skipped portal types"
+        ),
+        description=_(
+            u"description_senaitesetup_sidebar_skip_types",
+            default=u"Select which content types should be excluded from the "
+                    u"sidebar navigation. If none are selected, all content "
+                    u"types will be shown."
+        ),
+        value_type=schema.Choice(
+            vocabulary="senaite.core.vocabularies.navigation_portal_types"
+        ),
+        required=False,
+        default=("AnalysisRequest", "Attachment", ),
+    )
+
     # Sampling
     printing_workflow_enabled = schema.Bool(
         title=_(u"Enable the Results Report Printing workflow"),
@@ -1176,6 +1230,9 @@ class ISetupSchema(model.Schema):
             "site_logo",
             "site_logo_css",
             "show_lab_name_in_login",
+            "sidebar_folders",
+            "sidebar_navigation_depth",
+            "sidebar_skip_types",
         ]
     )
 
@@ -1419,6 +1476,49 @@ class Setup(Container):
         """Show/hide the laboratory name in the login page
         """
         mutator = self.mutator("show_lab_name_in_login")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getSidebarFolders(self):
+        """Returns the sidebar navigation folders
+        """
+        accessor = self.accessor("sidebar_folders")
+        return accessor(self) or ()
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSidebarFolders(self, value):
+        """Set the sidebar navigation folders
+        """
+        mutator = self.mutator("sidebar_folders")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getSidebarNavigationDepth(self):
+        """Returns the sidebar navigation depth
+        """
+        accessor = self.accessor("sidebar_navigation_depth")
+        depth = accessor(self)
+        return depth if depth is not None else 3
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSidebarNavigationDepth(self, value):
+        """Set the sidebar navigation depth
+        """
+        mutator = self.mutator("sidebar_navigation_depth")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getSidebarSkipTypes(self):
+        """Returns the sidebar skipped portal types
+        """
+        accessor = self.accessor("sidebar_skip_types")
+        return accessor(self) or ()
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSidebarSkipTypes(self, value):
+        """Set the sidebar skipped portal types
+        """
+        mutator = self.mutator("sidebar_skip_types")
         return mutator(self, value)
 
     @security.protected(permissions.View)
