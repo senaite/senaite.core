@@ -83,6 +83,11 @@ class IListingWidget(IWidget):
     """
 
 
+class IRemarksWidget(IWidget):
+    """Remarks view widget
+    """
+
+
 class ISelectOtherWidget(IWidget):
     """Allows to select a pre-populated option from a select element along with
     manual introduction when the built-in option 'Other' is selected
