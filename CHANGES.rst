@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2775 Auto-add CCContact when hidden on Sample Add form
+- #2828 RemarksField type for Dexterity content types
+- #2841 Fix detection limit misconfiguration in analysis service edit view
 - #2840 Fix setting readonly form fields
 - #2831 Migrate ARReport to Dexterity
 - #2838 Fix 'add_permission' error when upgrading from 2711 to 2718
