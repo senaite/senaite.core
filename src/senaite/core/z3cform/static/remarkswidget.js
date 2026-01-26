@@ -50,6 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
             $(remarkWidget).on("click", "input#save-remarks", (event) => {
+                event.preventDefault();
                 const widget = $(event.target).closest(".remarks-widget");
                 const uid = widget.attr("data-uid");
                 const fieldName = widget.attr("data-fieldname");

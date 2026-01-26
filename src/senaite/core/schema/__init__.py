@@ -37,6 +37,7 @@ from .interfaces import IEmailField
 from .interfaces import IGPSCoordinatesField
 from .interfaces import IIntField
 from .interfaces import IMultiUploadField
+from .interfaces import IRemarksField
 from .interfaces import IRichTextField
 from .multiuploadfield import MultiUploadField
 from .interfaces import IRemarksField
