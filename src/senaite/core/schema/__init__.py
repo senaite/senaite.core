@@ -40,7 +40,6 @@ from .interfaces import IMultiUploadField
 from .interfaces import IRemarksField
 from .interfaces import IRichTextField
 from .multiuploadfield import MultiUploadField
-from .interfaces import IRemarksField
 from .phonefield import IPhoneField
 from .phonefield import PhoneField
 from .remarksfield import RemarksField
