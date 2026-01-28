@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2805 Migrate Worksheets to DX
+- #2775 Auto-add CCContact when hidden on Sample Add form
 - #2828 RemarksField type for Dexterity content types
 - #2841 Fix detection limit misconfiguration in analysis service edit view
 - #2840 Fix setting readonly form fields
