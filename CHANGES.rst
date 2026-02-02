@@ -3,7 +3,7 @@ Changelog
 
 2.7.0 (unreleased)
 ------------------
-
+- #2776 Refactor: rename SiteView.setCookie to set_cookie in dashboard.pt
 - #2775 Auto-add CCContact when hidden on Sample Add form
 - #2828 RemarksField type for Dexterity content types
 - #2841 Fix detection limit misconfiguration in analysis service edit view

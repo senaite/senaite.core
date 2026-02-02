@@ -250,12 +250,12 @@
            e.preventDefault();
            var barchartid = $(this).attr("target-id");
            if ($("#" + barchartid).is(":visible")) {
-             senaite.core.controllers.SiteView.setCookie("visible." + barchartid, 0);
+             senaite.core.controllers.SiteView.set_cookie("visible." + barchartid, 0);
              $("#" + barchartid + "-period").hide();
              $("#" + barchartid).hide();
              $("#" + barchartid).closest("div.dashboard-panels").find(".dashboard-info-panel-wrapper").show();
            } else {
-             senaite.core.controllers.SiteView.setCookie("visible." + barchartid, 1);
+             senaite.core.controllers.SiteView.set_cookie("visible." + barchartid, 1);
              $("#" + barchartid + "-period").show();
              $("#" + barchartid).show();
              $("#" + barchartid).closest("div.dashboard-panels").find(".dashboard-info-panel-wrapper").hide();
