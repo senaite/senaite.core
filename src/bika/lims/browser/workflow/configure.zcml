@@ -190,24 +190,6 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
-  <!-- Worksheet: "assign" analyses -->
-  <adapter
-    name="workflow_action_assign"
-    for="bika.lims.interfaces.IWorksheet
-         zope.publisher.interfaces.browser.IBrowserRequest"
-    factory=".worksheet.WorkflowActionAssignAdapter"
-    provides="bika.lims.interfaces.IWorkflowActionAdapter"
-    permission="zope.Public" />
-
-  <!-- Worksheet: "reassign" analyst -->
-  <adapter
-    name="workflow_action_reassign"
-    for="bika.lims.interfaces.IWorksheetFolder
-         zope.publisher.interfaces.browser.IBrowserRequest"
-    factory=".worksheet.WorkflowActionReassignAdapter"
-    provides="bika.lims.interfaces.IWorkflowActionAdapter"
-    permission="zope.Public" />
-
   <!-- Analysis: "submit" from inside AnalysisRequest context -->
   <adapter
     name="workflow_action_submit"
@@ -220,7 +202,7 @@
   <!-- Analysis: "submit" from inside Worksheet context -->
   <adapter
     name="workflow_action_submit"
-    for="bika.lims.interfaces.IWorksheet
+    for="senaite.core.interfaces.IWorksheet
          zope.publisher.interfaces.browser.IBrowserRequest"
     factory=".analysis.WorkflowActionSubmitAdapter"
     provides="bika.lims.interfaces.IWorkflowActionAdapter"

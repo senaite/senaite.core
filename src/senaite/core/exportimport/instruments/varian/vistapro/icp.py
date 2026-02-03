@@ -212,7 +212,7 @@ class Export(BrowserView):
         # If routine analysis, COL B is the AR ID + sample type.
         # If Reference analysis, COL B is the Ref Sample.
         # If Duplicate analysis, COL B is the Worksheet.
-        lyt = self.context.getLayout()
+        lyt = self.context.getLayoutView()
         lyt.sort(cmp=lambda x, y: cmp(int(x['position']), int(y['position'])))
         rows = []
 

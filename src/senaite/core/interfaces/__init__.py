@@ -511,6 +511,26 @@ class ISampleTypes(Interface):
     """
 
 
+class IWorksheet(Interface):
+    """Marker interface for Worksheet
+    """
+
+
+class IWorksheets(Interface):
+    """Marker interface for worksheets folder
+    """
+
+
+class IWorksheetLayouts(Interface):
+    """Marker interface for additional Worksheet layouts
+    """
+
+    def getResultLayouts(self):
+        """Returns tuples of layouts for analyses results view
+        where key is the name of the view and value is name of layout
+        """
+
+
 class IWorksheetTemplates(Interface):
     """Marker interface for Worksheet Templates
     """

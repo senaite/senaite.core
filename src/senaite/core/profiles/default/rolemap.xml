@@ -405,10 +405,6 @@
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
-    <permission name="senaite.core: Transition: Reject Worksheet" acquire="False">
-      <role name="LabManager"/>
-      <role name="Manager"/>
-    </permission>
     <permission name="senaite.core: Transition: Remove Worksheet" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>

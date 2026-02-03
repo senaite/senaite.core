@@ -494,24 +494,26 @@ class DashboardView(BrowserView):
         # Active Worksheets (all)
         total = self.search_count(query, bc.id)
 
+        ws_folder = 'worksheets?list_review_state={}'
+
         # Open worksheets
         name = _('Results pending')
         desc = _('Results pending')
-        purl = 'worksheets?list_review_state=open'
+        purl = ws_folder.format('open')
         query['review_state'] = ['open']
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Worksheets to be verified
         name = _('To be verified')
         desc = _('To be verified')
-        purl = 'worksheets?list_review_state=to_be_verified'
+        purl = ws_folder.format('to_be_verified')
         query['review_state'] = ['to_be_verified', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Worksheets verified
         name = _('Verified')
         desc = _('Verified')
-        purl = 'worksheets?list_review_state=verified'
+        purl = ws_folder.format('verified')
         query['review_state'] = ['verified', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 

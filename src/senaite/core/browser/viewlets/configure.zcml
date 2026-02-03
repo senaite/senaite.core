@@ -249,7 +249,7 @@
 
   <!-- Worksheet Attachments Viewlet -->
   <browser:viewlet
-      for="bika.lims.interfaces.IWorksheet"
+      for="senaite.core.interfaces.IWorksheet"
       name="worksheet_attachments"
       class=".attachments.WorksheetAttachmentsViewlet"
       manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"

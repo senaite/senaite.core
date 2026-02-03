@@ -208,7 +208,7 @@ class Export(BrowserView):
         # Column C is the well number
         # Column D empty
         # Column E should always be 1 (2 indicates a duplicate from the same cup)
-        layout = self.context.getLayout()
+        layout = self.context.getLayoutView()
         rows = []
         # tmprows = []
         col_a = 1

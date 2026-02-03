@@ -11,7 +11,6 @@
   <permission>senaite.core: Transition: Assign Analysis</permission>
   <permission>senaite.core: Edit Worksheet</permission>
   <permission>senaite.core: Transition: Retract</permission>
-  <permission>senaite.core: Transition: Reject Worksheet</permission>
   <permission>senaite.core: Transition: Remove Worksheet</permission>
   <permission>senaite.core: Transition: Unassign Analysis</permission>
   <permission>senaite.core: View Results</permission>
@@ -43,7 +42,6 @@
 
     <!-- Transitions -->
     <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
-    <permission-map name="senaite.core: Transition: Reject Worksheet" acquired="False"/>
     <permission-map name="senaite.core: Transition: Remove Worksheet" acquired="True"/>
     <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
@@ -54,40 +52,10 @@
   </state>
   <!-- /STATE: Open -->
 
-
-  <!-- STATE: Rejected -->
-  <state state_id="rejected" title="Rejected" i18n:attributes="title">
-    <exit-transition transition_id="" />
-    <permission-map name="senaite.core: Edit Worksheet" acquired="False"/>
-    <permission-map name="senaite.core: View Results" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="Modify portal content" acquired="False">
-      <permission-role>Manager</permission-role>
-    </permission-map>
-
-    <!-- Transitions -->
-    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Reject Worksheet" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Remove Worksheet" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="False"/>
-
-    <!-- Type-specific permissions -->
-    <permission-map name="senaite.core: Worksheet: Add Attachment" acquired="False"/>
-
-  </state>
-  <!-- /STATE: Rejected -->
-
-
   <!-- STATE: To be verified -->
   <state state_id="to_be_verified" title="To be verified" i18n:attributes="title">
     <exit-transition transition_id="verify" />
     <exit-transition transition_id="retract" />
-    <exit-transition transition_id="reject" />
     <exit-transition transition_id="rollback_to_open" />
     <permission-map name="senaite.core: Edit Worksheet" acquired="False">
       <permission-role>LabManager</permission-role>
@@ -108,7 +76,6 @@
 
     <!-- Transitions -->
     <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
-    <permission-map name="senaite.core: Transition: Reject Worksheet" acquired="True"/>
     <permission-map name="senaite.core: Transition: Remove Worksheet" acquired="False"/>
     <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
     <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
@@ -137,7 +104,6 @@
 
     <!-- Transitions -->
     <permission-map name="senaite.core: Transition: Assign Analysis" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Reject Worksheet" acquired="False"/>
     <permission-map name="senaite.core: Transition: Remove Worksheet" acquired="False"/>
     <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
     <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="False"/>
@@ -146,14 +112,6 @@
     <permission-map name="senaite.core: Worksheet: Add Attachment" acquired="False"/>
   </state>
   <!-- /STATE: Verified -->
-
-  <transition transition_id="reject" title="Reject" new_state="rejected" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Reject</action>
-    <guard>
-      <guard-permission>senaite.core: Transition: Reject Worksheet</guard-permission>
-      <guard-expression>python:here.guard_handler("reject")</guard-expression>
-    </guard>
-  </transition>
 
   <!-- Transition: retract
   Shortcut that retracts all analyses the Worksheet contains.
