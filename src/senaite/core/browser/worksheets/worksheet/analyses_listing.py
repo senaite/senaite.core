@@ -203,12 +203,12 @@ class AnalysesView(BaseView):
                 return True
         return False
 
-    def get_analyses(self, full_objects=False):
+    def get_analyses(self):
         """Return all analyses of the current view
 
         :returns: List of analyses
         """
-        return self.context.getAnalyses(full_objects=full_objects)
+        return self.context.getAnalyses()
 
     @view.memoize
     def is_analysis_remarks_enabled(self):
