@@ -215,6 +215,36 @@ def receive_sample(sample, check_permission=False, date_received=None):
     return True
 
 
+def apply_custom_units(sample):
+    """Apply custom units to the sample analyses
+
+    :param sample: the sample that contains the analyses
+    """
+    # mapping of service UID -> custom unit
+    mapping = {}
+    for profile in sample.getProfiles():
+        for setting in profile.getAnalysisServicesSettings():
+            unit = setting.get("unit")
+            if not unit:
+                continue
+            mapping[setting.get("uid")] = unit
+
+    if not mapping:
+        return
+
+    # Use objectValues for temporary samples (during creation)
+    if api.is_temporary(sample):
+        analyses = sample.objectValues(spec="Analysis")
+    else:
+        analyses = sample.getAnalyses(full_objects=True)
+
+    for analysis in analyses:
+        uid = analysis.getRawAnalysisService()
+        unit = mapping.get(uid)
+        if unit:
+            analysis.setUnit(unit)
+
+
 def apply_hidden_services(sample):
     """
     Applies the hidden setting to the sample analyses in accordance with the

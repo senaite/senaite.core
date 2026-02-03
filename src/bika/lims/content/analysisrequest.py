@@ -59,6 +59,7 @@ from bika.lims.interfaces import IClient
 from bika.lims.interfaces import ISubmitted
 from bika.lims.utils import getUsers
 from bika.lims.utils import tmpID
+from bika.lims.utils.analysisrequest import apply_custom_units
 from bika.lims.utils.analysisrequest import apply_hidden_services
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import getTransitionUsers
@@ -1563,6 +1564,9 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
         # apply hidden services *after* the profiles have been set
         apply_hidden_services(self)
+
+        # apply custom units *after* the profiles have been set
+        apply_custom_units(self)
 
     def getClient(self):
         """Returns the client this object is bound to. We override getClient
