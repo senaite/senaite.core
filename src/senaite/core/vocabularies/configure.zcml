@@ -66,4 +66,12 @@
       component=".setup.NavigationPortalTypesVocabularyFactory"
       name="senaite.core.vocabularies.navigation_portal_types" />
 
+  <utility
+      component=".instruments.AvailableInstrumentsFactory"
+      name="senaite.core.vocabularies.available_instruments" />
+
+  <utility
+      component=".methods.AvailableMethodsFactory"
+      name="senaite.core.vocabularies.available_methods" />
+
 </configure>

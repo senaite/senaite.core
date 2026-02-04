@@ -20,10 +20,10 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IListingSearchableTextProvider
-from bika.lims.interfaces import IWorksheet
 from plone.indexer import indexer
 from senaite.core import logger
 from senaite.core.catalog import WORKSHEET_CATALOG
+from senaite.core.interfaces import IWorksheet
 from senaite.core.interfaces import IWorksheetCatalog
 from zope.component import getAdapters
 

@@ -22,6 +22,8 @@ from bika.lims import _
 from bika.lims import api
 from senaite.core.api import geo
 from senaite.core.config.setup import SKIP_NAV_TYPES
+from senaite.core.interfaces import IWorksheetLayouts
+from zope.component import getUtilitiesFor
 from zope.i18n.locales import locales
 from zope.interface import implementer
 from zope.schema.interfaces import IVocabularyFactory
@@ -88,13 +90,13 @@ class WorksheetLayoutVocabulary(object):
     """Vocabulary of worksheet layout options
     """
 
-    def __call__(self, context):
-        items = [
-            ("analyses_classic_view", "analyses_classic_view", _(u"Classic")),
-            ("analyses_transposed_view", "analyses_transposed_view",
-             _(u"Transposed")),
-        ]
-        return SimpleVocabulary.fromItems(items)
+    def __call__(self, context=None):
+        layouts = []
+        for name, utility in getUtilitiesFor(IWorksheetLayouts):
+            items = utility.getResultLayouts()
+            [layouts.append((key, key, title)) for key, title in items]
+
+        return SimpleVocabulary.fromItems(layouts)
 
 
 @implementer(IVocabularyFactory)

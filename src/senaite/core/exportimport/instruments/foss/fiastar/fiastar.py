@@ -63,7 +63,7 @@ class Export(BrowserView):
 
         # for looking up "cup" number (= slot) of ARs
         parent_to_slot = {}
-        layout = self.context.getLayout()
+        layout = self.context.getLayoutView()
         for x in range(len(layout)):
             a_uid = layout[x]['analysis_uid']
             p_uid = uc(UID=a_uid)[0].getObject().aq_parent.UID()

@@ -24,18 +24,20 @@ from senaite.core.permissions import EditWorksheet
 from senaite.core.permissions import ManageWorksheets
 
 
-def ObjectModifiedEventHandler(instance, event):
-    """Actions to be taken when Setup object is modified
-    """
-    update_worksheet_manage_permissions(instance)
-
-
-def update_worksheet_manage_permissions(senaite_setup):
+def on_senaite_setup_modified(senaite_setup, event):
     """Updates the permissions 'Manage Worksheets' and 'Edit Worksheet' based
-    on the setting 'RestrictWorksheetManagement' from Setup
+    on the setting 'restrict_worksheet_management' from Senaite Setup
+    """
+    update_worksheets_permissions(senaite_setup)
+
+
+def update_worksheets_permissions(senaite_setup):
+    """Updates the permissions 'Manage Worksheets' and 'Edit Worksheet' based
+    on the setting 'restrict_worksheet_management' from Senaite Setup
     """
     roles = ["LabManager", "Manager"]
-    if not senaite_setup.getRestrictWorksheetManagement():
+    restrict = senaite_setup.getRestrictWorksheetManagement()
+    if not restrict:
         # LabManagers, Analysts and LabClerks can create and manage worksheets
         roles.extend(["Analyst", "LabClerk"])
 

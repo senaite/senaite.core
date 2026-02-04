@@ -2732,7 +2732,7 @@ the system:
 
     >>> portal_types = api.get_portal_types()
     >>> sorted(portal_types)
-    ['ARReport', 'ARTemplate', 'ARTemplates', ..., 'WorksheetTemplates']
+    ['ARReport', 'ARTemplate', 'ARTemplates', ..., 'Worksheets']
 
 
 Check if an id is valid
