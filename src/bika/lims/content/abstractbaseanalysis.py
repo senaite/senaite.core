@@ -117,9 +117,8 @@ Unit = StringField(
     )
 )
 
+
 # A selection of units that are able to update Unit.
-
-
 class UnitChoicesField(RecordsField):
     """Custom RecordsField that converts super/subscript
     HTML tags to Unicode characters for display.
