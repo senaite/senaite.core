@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate Worksheet objects to Dexterity"
+      description="Convert Worksheet content type from Archetypes to Dexterity"
+      source="2719"
+      destination="2720"
+      handler=".v02_07_000.migrate_worksheets_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Migrate ARReport to Dexterity ResultsReport"
       description="Convert ARReport content type from Archetypes to Dexterity"
       source="2718"

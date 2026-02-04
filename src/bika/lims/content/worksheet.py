@@ -140,6 +140,7 @@ schema['title'].required = 0
 schema['title'].widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
 
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2805
 class Worksheet(BaseFolder, HistoryAwareMixin):
     """A worksheet is a logical group of Analyses accross ARs
     """

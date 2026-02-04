@@ -106,9 +106,15 @@ class IWorksheetViewRegistry(ISenaiteRegistry):
     """View settings for worksheets
     """
     model.fieldset(
-        "worksheet_view",
-        label=_(u"Worksheet View"),
-        description=_("Worksheet view configuration"),
+        "worksheet_settings",
+        label=_(
+            u"label_registry_worksheet_settings",
+            default=u"Worksheet"
+        ),
+        description=_(
+            u"description_registry_worksheet_settings",
+            default=u"Worksheet view configuration"
+        ),
         fields=[
             "worksheetview_analysis_columns_order",
             "worksheet_print_templates_order",
