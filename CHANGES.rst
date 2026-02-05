@@ -4,6 +4,15 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2776 Refactor: rename SiteView.setCookie to set_cookie in dashboard.pt
+- #2805 Migrate Worksheets to DX
+- #2775 Auto-add CCContact when hidden on Sample Add form
+- #2828 RemarksField type for Dexterity content types
+- #2841 Fix detection limit misconfiguration in analysis service edit view
+- #2840 Fix setting readonly form fields
+- #2831 Migrate ARReport to Dexterity
+- #2838 Fix 'add_permission' error when upgrading from 2711 to 2718
+- #2835 New Sidebar Navigation
 - #2834 Handle tat as timedelta or dict during AT to DX migration
 - #2832 Fix sample type prefix validation
 - #2837 Disable Cancel Button in Sample Registration Form after Save

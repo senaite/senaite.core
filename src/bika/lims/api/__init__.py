@@ -47,6 +47,7 @@ from plone.dexterity.interfaces import IDexterityContent
 from plone.dexterity.schema import SchemaInvalidatedEvent
 from plone.dexterity.utils import addContentToContainer
 from plone.dexterity.utils import createContent
+from plone.dexterity.utils import iterSchemataForType
 from plone.dexterity.utils import resolveDottedName
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.i18n.normalizer.interfaces import IIDNormalizer
@@ -74,6 +75,7 @@ from senaite.core.interfaces import ITemporaryObject
 from z3c.form.validator import Data as ValidatorData
 from zope import globalrequest
 from zope.annotation.interfaces import IAttributeAnnotatable
+from zope.component import createObject
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.container.contained import notifyContainerModified
@@ -84,6 +86,7 @@ from zope.interface import Invalid
 from zope.interface import alsoProvides
 from zope.interface import directlyProvides
 from zope.interface import noLongerProvides
+from zope.lifecycleevent import ObjectCreatedEvent
 from zope.lifecycleevent import ObjectMovedEvent
 from zope.publisher.browser import TestRequest
 from zope.schema import getFieldsInOrder
@@ -210,10 +213,56 @@ def create(container, portal_type, *args, **kwargs):
         # notify that the object was created
         notify(ObjectInitializedEvent(obj))
     else:
-        content = createContent(portal_type, **kwargs)
-        content.id = id
-        content.title = title
+        # Avoid circular imports
+        from bika.lims.api.snapshot import pause_snapshots_for
+        from bika.lims.api.snapshot import resume_snapshots_for
+        from bika.lims.api.snapshot import take_snapshot
+
+        # Dexterity content creation
+        # Schema fields (especially UID reference fields) must be set AFTER
+        # the object has a UID assigned, which happens in addContentToContainer
+
+        # Get all schema fields for this portal type
+        schema_fields = get_fields(portal_type)
+
+        # Separate schema field kwargs from other attributes
+        field_kwargs = {}
+        other_kwargs = {}
+        for name, value in kwargs.items():
+            if name in schema_fields:
+                field_kwargs[name] = value
+            else:
+                other_kwargs[name] = value
+
+        # Create content with only non-schema attributes
+        # Note: createContent() fires ObjectCreatedEvent, but this does not
+        # trigger snapshots for Dexterity (only ObjectAddedEvent does)
+        content = createContent(portal_type, id=id or tmp_id, title=title,
+                                **other_kwargs)
+
+        # Pause snapshots to prevent ObjectAddedEvent from creating
+        # an incomplete snapshot (fields not yet set)
+        pause_snapshots_for(content)
+
+        # Add content to container (this assigns UID via ObjectAddedEvent)
         obj = addContentToContainer(container, content)
+
+        # Now set schema fields using their setters
+        # This ensures custom setters (like UIDReferenceField.set) are called
+        # AFTER the object has a UID for proper backreference handling
+        for name, value in field_kwargs.items():
+            field = schema_fields.get(name)
+            if field and hasattr(field, "set"):
+                field.set(obj, value)
+            else:
+                setattr(obj, name, value)
+
+        # Resume snapshots and manually create the initial snapshot
+        # now that the object is fully initialized with all fields set
+        resume_snapshots_for(obj)
+        # Manually reindex the object to ensure all indexes are updated
+        obj.reindexObject()
+        take_snapshot(obj, action="create")
 
     return obj
 
@@ -726,15 +775,29 @@ def disable_behavior(portal_type, behavior_id):
     notify(SchemaInvalidatedEvent(portal_type))
 
 
-def get_fields(brain_or_object):
-    """Get a name to field mapping of the object
+def get_fields(brain_or_object_or_portal_type):
+    """Get a name to field mapping of the object or portal type
 
-    :param brain_or_object: A single catalog brain or content object
-    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
+    :param brain_or_object_or_portal_type: A catalog brain, content object,
+        or portal type name
+    :type brain_or_object_or_portal_type: ATContentType/DexterityContentType/
+        CatalogBrain/string
     :returns: Mapping of name -> field
     :rtype: OrderedDict
     """
-    obj = get_object(brain_or_object)
+    # Handle portal_type (string parameter)
+    # NOTE: Only supports Dexterity types. For Archetypes types, pass an
+    # object or brain instead.
+    if is_string(brain_or_object_or_portal_type):
+        portal_type = brain_or_object_or_portal_type
+        # For Dexterity types, use iterSchemataForType
+        fields = []
+        for schema in iterSchemataForType(portal_type):
+            fields.extend(getFieldsInOrder(schema))
+        return OrderedDict(fields)
+
+    # Handle brain_or_object parameter (existing behavior)
+    obj = get_object(brain_or_object_or_portal_type)
     schema = get_schema(obj)
     if is_dexterity_content(obj):
         # get the fields directly provided by the interface
@@ -817,8 +880,10 @@ def get_url(brain_or_object):
     :returns: Absolute URL
     :rtype: string
     """
-    if is_brain(brain_or_object) and base_hasattr(brain_or_object, "getURL"):
-        return brain_or_object.getURL()
+    if is_brain(brain_or_object):
+        request = get_request()
+        path = get_path(brain_or_object)
+        return request.physicalPathToURL(path, relative=0)
     return get_object(brain_or_object).absolute_url()
 
 
@@ -952,7 +1017,15 @@ def get_path(brain_or_object):
     :rtype: string
     """
     if is_brain(brain_or_object):
-        return brain_or_object.getPath()
+        path = brain_or_object.getPath()
+        # Handle uid_catalog brains that may return relative paths
+        # Check if path is missing the portal path prefix
+        portal = get_portal()
+        portal_path = "/".join(portal.getPhysicalPath())
+        if not path.startswith(portal_path):
+            # Prepend portal path
+            path = "/".join([portal_path, path])
+        return path
     return "/".join(get_object(brain_or_object).getPhysicalPath())
 
 

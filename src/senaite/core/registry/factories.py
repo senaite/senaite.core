@@ -18,10 +18,8 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.config import WS_TEMPLATES_ADDON_DIR
-
 from senaite.core.interfaces import ISenaiteRegistryFactory
-
+from senaite.core.config.worksheet import WS_TEMPLATES_ADDON_DIR
 from plone.resource.utils import iterDirectoriesOfType
 from plone.registry.recordsproxy import RecordsProxy
 

@@ -37,10 +37,12 @@ from .interfaces import IEmailField
 from .interfaces import IGPSCoordinatesField
 from .interfaces import IIntField
 from .interfaces import IMultiUploadField
+from .interfaces import IRemarksField
 from .interfaces import IRichTextField
 from .multiuploadfield import MultiUploadField
 from .phonefield import IPhoneField
 from .phonefield import PhoneField
+from .remarksfield import RemarksField
 from .richtextfield import RichTextField
 from .selectotherfield import ISelectOtherField
 from .selectotherfield import SelectOtherField
@@ -57,6 +59,7 @@ classImplementsFirst(GPSCoordinatesField, IGPSCoordinatesField)
 classImplementsFirst(IntField, IIntField)
 classImplementsFirst(MultiUploadField, IMultiUploadField)
 classImplementsFirst(PhoneField, IPhoneField)
+classImplementsFirst(RemarksField, IRemarksField)
 classImplementsFirst(RichTextField, IRichTextField)
 classImplementsFirst(SelectOtherField, ISelectOtherField)
 classImplementsFirst(UIDReferenceField, IUIDReferenceField)

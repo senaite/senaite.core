@@ -217,6 +217,7 @@ def add_senaite_setup(portal):
     """
     items = [
         # ID, Title, FTI
+        ("worksheets", "Worksheets", "Worksheets"),
         ("setup", "SENAITE Setup", "Setup"),
     ]
     add_dexterity_items(portal, items)

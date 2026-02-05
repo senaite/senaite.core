@@ -88,10 +88,12 @@ And is not possible to remove unless empty:
 If we do "remove", the Worksheet object is deleted:
 
     >>> container = ws.aq_parent
-    >>> len(container.objectValues("Worksheet"))
+    >>> objects = container.objectValues()
+    >>> len(filter(lambda w: w.portal_type == "Worksheet", objects))
     1
     >>> success = do_action_for(ws, "remove")
-    >>> len(container.objectValues("Worksheet"))
+    >>> objects = container.objectValues()
+    >>> len(filter(lambda w: w.portal_type == "Worksheet", objects))
     0
 
 Try now for all possible statuses:
@@ -108,14 +110,6 @@ For `to_be_verified` status:
 
     >>> api.get_workflow_status_of(ws)
     'to_be_verified'
-    >>> isTransitionAllowed(ws, "remove")
-    False
-
-For `rejected` status:
-
-    >>> success = do_action_for(ws, "reject")
-    >>> api.get_workflow_status_of(ws)
-    'rejected'
     >>> isTransitionAllowed(ws, "remove")
     False
 

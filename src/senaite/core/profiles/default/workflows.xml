@@ -50,7 +50,7 @@
     <type type_id="AnalysisSpecs">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
-    <type type_id="ARReport">
+    <type type_id="ResultsReport">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
     <type type_id="SampleTemplates">
@@ -335,7 +335,7 @@
     <type type_id="Worksheet">
       <bound-workflow workflow_id="senaite_worksheet_workflow"/>
     </type>
-    <type type_id="WorksheetFolder">
+    <type type_id="Worksheets">
       <bound-workflow workflow_id="senaite_worksheets_workflow"/>
     </type>
     <!-- /Bindings to type-specific workflow definitions -->

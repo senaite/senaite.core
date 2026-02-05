@@ -65,68 +65,6 @@
     </value>
   </record>
 
-  <!-- Types to display in navigation -->
-  <record name="plone.displayed_types" interface="Products.CMFPlone.interfaces.controlpanel.INavigationSchema" field="displayed_types">
-    <field type="plone.registry.field.Tuple">
-      <default>
-        <element>WorksheetFolder</element>
-        <element>BatchFolder</element>
-        <element>ClientFolder</element>
-        <element>Methods</element>
-        <element>Folder</element>
-        <element>Samples</element>
-      </default>
-      <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">The content types that should be shown in the navigation and site map.</description>
-      <missing_value/>
-      <required>False</required>
-      <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Displayed content types</title>
-      <value_type type="plone.registry.field.Choice">
-        <vocabulary>plone.app.vocabularies.ReallyUserFriendlyTypes</vocabulary>
-      </value_type>
-    </field>
-    <value>
-      <!-- Work Items -->
-      <element>Samples</element>
-      <element>BatchFolder</element>
-      <element>ClientFolder</element>
-      <element>Folder</element>
-      <element>Methods</element>
-      <element>WorksheetFolder</element>
-      <!-- Setup Items -->
-      <element>AnalysisCategories</element>
-      <element>AnalysisProfiles</element>
-      <element>AnalysisServices</element>
-      <element>AnalysisSpecifications</element>
-      <element>AnalysisTemplates</element>
-      <element>AttachmentTypes</element>
-      <element>Auditlog</element>
-      <element>BatchLabels</element>
-      <element>Calculations</element>
-      <element>ContainerTypes</element>
-      <element>Containers</element>
-      <element>DynamicAnalysisSpecs</element>
-      <element>InstrumentLocations</element>
-      <element>InstrumentTypes</element>
-      <element>Instruments</element>
-      <element>LabContacts</element>
-      <element>LabDepartments</element>
-      <element>LabProducts</element>
-      <element>Laboratory</element>
-      <element>Manufacturers</element>
-      <element>ReferenceDefinitions</element>
-      <element>SampleConditions</element>
-      <element>SampleMatrices</element>
-      <element>SamplePoints</element>
-      <element>SamplePreservations</element>
-      <element>SampleTypes</element>
-      <element>SamplingDeviations</element>
-      <element>StorageLocations</element>
-      <element>SubGroups</element>
-      <element>Suppliers</element>
-      <element>WorksheetTemplates</element>
-    </value>
-  </record>
-
   <!-- Languages -->
   <record name="plone.available_languages" interface="plone.i18n.interfaces.ILanguageSchema" field="available_languages">
     <field type="plone.registry.field.List">

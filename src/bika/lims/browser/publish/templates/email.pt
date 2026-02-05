@@ -151,7 +151,7 @@
                   <a href="#"
                      class="report-link"
                      target="_blank"
-                     tal:attributes="href string:${report/obj/absolute_url}/Pdf">
+                     tal:attributes="href string:${report/obj/absolute_url}/@@display-file/pdf">
                     <img tal:attributes="alt report/filename;
                                          title string:${report/filename}(${report/filesize})"
                          src="++resource++senaite.core.browser.publish/img/pdf.png" width="32" />
