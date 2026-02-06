@@ -42,6 +42,7 @@ from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces import ISubmitted
 from bika.lims.utils import check_permission
 from bika.lims.utils import format_supsub
+from senaite.core.utils import format_supsub_unicode
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import get_fas_ico
 from bika.lims.utils import get_image
@@ -547,9 +548,11 @@ class AnalysesView(ListingView):
         unit_choices = obj.getUnitChoices()
         vocab = []
         for unit in unit_choices:
+            value = unit.get("value", "")
+            formatted = format_supsub_unicode(value)
             vocab.append({
-                "ResultValue": unit['value'],
-                "ResultText": unit['value'],
+                "ResultValue": value,
+                "ResultText": formatted,
             })
         return vocab
 
