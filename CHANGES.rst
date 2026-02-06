@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2847 Remove nonexisting getSamplePointTitle column index
 - #2776 Refactor: rename SiteView.setCookie to set_cookie in dashboard.pt
 - #2805 Migrate Worksheets to DX
 - #2775 Auto-add CCContact when hidden on Sample Add form
