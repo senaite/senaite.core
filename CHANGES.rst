@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2844 Allow unit selection in profiles
+- #2846 Fix Unit super-/subscript rendering 
+- #2847 Remove nonexisting getSamplePointTitle column index
 - #2776 Refactor: rename SiteView.setCookie to set_cookie in dashboard.pt
 - #2805 Migrate Worksheets to DX
 - #2775 Auto-add CCContact when hidden on Sample Add form
