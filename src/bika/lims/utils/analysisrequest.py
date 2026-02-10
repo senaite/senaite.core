@@ -247,6 +247,7 @@ def apply_custom_units(sample):
         unit = mapping.get(uid)
         if unit:
             analysis.setUnit(unit)
+            analysis.reindexObject(idxs=["getUnit"])
 
 
 def apply_hidden_services(sample):
