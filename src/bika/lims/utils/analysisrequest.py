@@ -108,6 +108,10 @@ def create_analysisrequest(client, request, values, analyses=None,
     # https://github.com/senaite/senaite.core/issues/1326
     apply_hidden_services(ar)
 
+    # Apply custom units from profiles to the analyses
+    # https://github.com/senaite/senaite.core/pull/2844
+    apply_custom_units(ar)
+
     # Handle rejection reasons
     rejection_reasons = resolve_rejection_reasons(values)
     ar.setRejectionReasons(rejection_reasons)
