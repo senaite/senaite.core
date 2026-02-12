@@ -181,7 +181,6 @@ class ServicesWidget(DefaultListingWidget):
         """
         return check_permission(FieldEditProfiles, self.context)
 
-    @view.memoize
     def get_editable_columns(self):
         """Return editable fields
         """
@@ -189,6 +188,33 @@ class ServicesWidget(DefaultListingWidget):
         if self.is_edit_allowed():
             columns = ["Hidden"]
         return columns
+
+    def get_record_value(self, uid, key, default):
+        """Get a value from the saved records or return default
+
+        :param uid: UID of the service
+        :param key: key to look up in the record
+        :param default: fallback value if not found
+        """
+        record = self.records.get(uid) or {}
+        return record.get(key, default)
+
+    def get_unit_vocabulary(self, service):
+        """Returns a vocabulary with all the units available
+
+        The vocabulary is a list of dictionaries. Each dictionary
+        has the following structure:
+
+            {"ResultValue": <unit>,
+             "ResultText": <unit>}
+
+        :param service: A single service object
+        :returns: A list of dicts
+        """
+        return [
+            {"ResultValue": u["value"], "ResultText": u["value"]}
+            for u in service.getUnitChoices()
+        ]
 
     def extract(self):
         """Extract the value from the request for the field
@@ -202,10 +228,20 @@ class ServicesWidget(DefaultListingWidget):
         # extract the data from the form for the field
         records = []
         hidden_services = form.get("Hidden", {})
+        # Unit comes as a list of dicts from the listing form
+        units = form.get("Unit", [])
+        if isinstance(units, list):
+            custom_units = units[0] if units else {}
+        elif isinstance(units, dict):
+            custom_units = units
+        else:
+            custom_units = {}
+
         for uid in selected:
             records.append({
                 "uid": uid,
                 "hidden": hidden_services.get(uid) == "on",
+                "unit": custom_units.get(uid),
             })
 
         return records
@@ -241,21 +277,10 @@ class ServicesWidget(DefaultListingWidget):
                 self.categories.append(category)
             item["category"] = category
 
-        hidden = False
-        # get the hidden setting from the records
-        if self.records.get(uid):
-            record = self.records.get(uid, {}) or {}
-            hidden = record.get("hidden", False)
-        else:
-            # get the default value from the service
-            hidden = obj.getHidden()
-
         item["replace"]["Title"] = get_link(url, value=title)
         item["Price"] = self.format_price(obj.Price)
         item["allow_edit"] = self.get_editable_columns()
         item["selected"] = False
-        item["Hidden"] = hidden
-        item["replace"]["Hidden"] = _("Yes") if hidden else _("No")
         item["selected"] = uid in self.records
         item["Keyword"] = keyword
         item["replace"]["Keyword"] = "<code>{}</code>".format(keyword)
@@ -271,10 +296,19 @@ class ServicesWidget(DefaultListingWidget):
         else:
             item["methods"] = ""
 
-        # Unit
-        unit = obj.getUnit()
+        # Apply hidden settings
+        hidden = self.get_record_value(uid, "hidden", obj.getHidden())
+        item["Hidden"] = hidden
+        item["replace"]["Hidden"] = _("Yes") if hidden else _("No")
+
+        # Apply unit settings
+        unit = self.get_record_value(uid, "unit", obj.getUnit())
         item["Unit"] = unit or ""
         item["replace"]["Unit"] = unit and format_supsub(unit) or ""
+        unit_choices = self.get_unit_vocabulary(obj)
+        if unit_choices:
+            item["choices"]["Unit"] = unit_choices
+            item["allow_edit"].append("Unit")
 
         # Icons
         after_icons = ""
