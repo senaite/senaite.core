@@ -67,6 +67,7 @@ REMOVE_AT_TYPES = [
     "Contact",
     "Multifile",
     "Worksheet",
+    "WorksheetFolder",
 ]
 
 PORTAL_FOLDER_ITEMS = {
@@ -1020,18 +1021,22 @@ def migrate_worksheets_to_dx(tool):
     type_info = pt.getTypeInfo(portal)
     allowed_types = type_info.allowed_content_types
 
-    # temporarily append WorksheetFolder as an allowed type
-    portal_type = "WorksheetFolder"
-    if portal_type not in type_info.allowed_content_types:
-        type_info.allowed_content_types = allowed_types + (portal_type,)
+    origin = None
+    # check if WS folder is AT
+    ws_container = portal.get("worksheets", None)
+    if ws_container is not None and api.is_at_content(ws_container):
+        # temporarily append WorksheetFolder as an allowed type
+        portal_type = "WorksheetFolder"
+        if portal_type not in type_info.allowed_content_types:
+            type_info.allowed_content_types = allowed_types + (portal_type,)
 
-    # Rename old AT worksheets folder
-    portal.manage_renameObject("worksheets", "worksheets-old")
+        # Rename old AT worksheets folder
+        portal.manage_renameObject("worksheets", "worksheets-old")
 
-    # restore the allowed_types
-    type_info.allowed_content_types = allowed_types
+        # restore the allowed_types
+        type_info.allowed_content_types = allowed_types
 
-    origin = portal.get("worksheets-old")
+        origin = portal.get("worksheets-old")
 
     # ensure old AT types are flushed first
     remove_at_portal_types(tool)
@@ -1046,7 +1051,8 @@ def migrate_worksheets_to_dx(tool):
     new_dx_folder = get_destination_folder("worksheets")
 
     # un-catalog the old container
-    uncatalog_object(origin)
+    if origin:
+        uncatalog_object(origin)
 
     # Find all AT Worksheet objects
     query = {"portal_type": "Worksheet"}
@@ -1064,7 +1070,7 @@ def migrate_worksheets_to_dx(tool):
         migrate_worksheet_to_dx(worksheet, new_dx_folder)
 
     # remove old AT folder
-    if len(origin) == 0:
+    if origin and len(origin) == 0:
         portal.manage_delObjects(["worksheets-old"])
 
     logger.info("Convert Worksheet's to Dexterity [DONE]")
@@ -1101,7 +1107,11 @@ def migrate_worksheet_to_dx(src, destination):
     :param src: The source AT object
     :param destination: The destination folder
     """
-    # src_id = src.getId()
+    if not api.is_at_content(src):
+        api.move_object(src, destination, check_constraints=False)
+        logger.info("Already migrated: {}".format(api.get_path(src)))
+        return
+
     target_id = tmpID()
 
     target = destination.get(target_id)

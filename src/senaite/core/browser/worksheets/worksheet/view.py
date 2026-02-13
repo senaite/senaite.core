@@ -21,6 +21,7 @@
 from Products.Five.browser import BrowserView
 
 from bika.lims import api
+from bika.lims import bikaMessageFactory as _
 
 
 class WorksheetView(BrowserView):
@@ -32,12 +33,15 @@ class WorksheetView(BrowserView):
         self.request = request
 
     def __call__(self):
-        view = "add_analyses"
-        if self.context.getAnalyses():
-            view = "manage_results"
+        view = "manage_results"
+        if not self.context.getAnalyses():
+            view = "add_analyses"
+            msg = _(
+                u"no_analyses_were_added_message",
+                default=u"No analyses were added",
+            )
+            self.context.plone_utils.addPortalMessage(msg, "info")
 
-        redirect_url = "{}/{}".format(api.get_url(self.context), view)
-        self.request.response.redirect(redirect_url)
-        return
-
-
+        ws_url = api.get_url(self.context)
+        redirect_url = "{}/{}".format(ws_url, view)
+        return self.request.response.redirect(redirect_url)

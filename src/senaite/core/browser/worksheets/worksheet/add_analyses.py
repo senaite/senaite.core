@@ -165,14 +165,20 @@ class AddAnalysesView(ListingView):
             CheckAuthenticator(self.request)
             success = self.handle_submit()
             if success:
-                self.add_status_message(_("Changes saved."))
-                redirect_url = "{}/{}".format(
-                    api.get_url(self.context), "manage_results")
-                self.request.response.redirect(redirect_url)
-            else:
-                self.add_status_message(
-                    _("No analyses were added to this worksheet."),
-                    level="warning")
+                message = _(
+                    u"changes_saved",
+                    default=u"Changes saved."
+                )
+                self.add_status_message(message)
+                ws_url = api.get_url(self.context)
+                redirect_url = "{}/{}".format(ws_url, "manage_results")
+                return self.request.response.redirect(redirect_url)
+
+            message = _(
+                u"no_analyses_added_to_this_worksheet",
+                default=u"No analyses added to this worksheet."
+            )
+            self.add_status_message(message, "warning")
             return self.template()
 
         # handle subpath calls
