@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
-import json
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.memoize.view import memoize
