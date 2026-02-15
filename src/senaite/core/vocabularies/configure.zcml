@@ -74,4 +74,29 @@
       component=".methods.AvailableMethodsFactory"
       name="senaite.core.vocabularies.available_methods" />
 
+  <!-- Analysis edit modal vocabularies -->
+  <utility
+      component=".analysis.AnalysisMethodsVocabularyFactory"
+      name="senaite.core.vocabularies.analysis.methods" />
+
+  <utility
+      component=".analysis.AnalysisInstrumentsVocabularyFactory"
+      name="senaite.core.vocabularies.analysis.instruments" />
+
+  <utility
+      component=".analysis.AnalysisAnalystsVocabularyFactory"
+      name="senaite.core.vocabularies.analysis.analysts" />
+
+  <utility
+      component=".analysis.AnalysisUnitsVocabularyFactory"
+      name="senaite.core.vocabularies.analysis.units" />
+
+  <utility
+      component=".analysis.AnalysisDLOperandsVocabularyFactory"
+      name="senaite.core.vocabularies.analysis.dl_operands" />
+
+  <utility
+      component=".analysis.AnalysisResultOptionsVocabularyFactory"
+      name="senaite.core.vocabularies.analysis.result_options" />
+
 </configure>
