@@ -151,23 +151,12 @@ window.SiteView = class SiteView {
     let val = $el.val();
 
     // Replace comma with dot
-    val = val.replace(',', '.');
+    val = val.replace(/,/g, '.');
 
-    // Keep only digits, dot, and minus
-    val = val.replace(/[^0-9.-]/g, '');
-
-    // Allow only one leading minus
-    if (val.indexOf('-') > 0) {
-      val = val.replace(/-/g, '');
-    } else if ((val.match(/-/g) || []).length > 1) {
-      val = '-' + val.replace(/-/g, '');
-    }
-
-    // Remove all but the first dot
-    const firstDotIndex = val.indexOf('.');
-    if (firstDotIndex !== -1) {
-      val = val.slice(0, firstDotIndex + 1) + val.slice(firstDotIndex + 1).replace(/\./g, '');
-    }
+    // Strip characters not valid in numeric expressions
+    // Allow: digits, dot, minus, plus, e/E (exponential),
+    //        < and > (detection limit operators), spaces
+    val = val.replace(/[^0-9.eE<>\-+\s]/g, '');
 
     $el.val(val);
   }
