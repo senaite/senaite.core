@@ -25,7 +25,7 @@ from plone.memoize.view import memoize
 from senaite.app.listing import ListingView
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
+from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import getUsers
 from bika.lims.utils import get_display_list
 from bika.lims.utils import get_link

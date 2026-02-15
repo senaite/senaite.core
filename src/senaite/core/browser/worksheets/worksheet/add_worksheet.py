@@ -21,7 +21,7 @@
 from Products.Five.browser import BrowserView
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
+from bika.lims import senaiteMessageFactory as _
 from senaite.core.api.worksheet import create_worksheet
 
 

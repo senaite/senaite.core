@@ -19,7 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
+from bika.lims import senaiteMessageFactory as _
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.api.worksheet import create_worksheet
 from senaite.core.browser.modals import Modal
@@ -55,7 +55,7 @@ class CreateWorksheetModal(Modal):
     def handle_submit(self, REQUEST=None):
         """Extract categories from request and create worksheet
         """
-        analyst = self.request.form.get("analyst", "")
+        analyst = self.request.form.get("analyst")
         template = self.request.form.get("template", "")
         instrument = self.request.form.get("instrument", "")
         analyses = self.get_analyses()
