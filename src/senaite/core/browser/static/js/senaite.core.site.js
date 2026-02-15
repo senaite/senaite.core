@@ -20,6 +20,7 @@ window.SiteView = class SiteView {
     this.on_numeric_field_input = this.on_numeric_field_input.bind(this);
     this.on_numeric_field_keypress = this.on_numeric_field_keypress.bind(this);
     this.on_overlay_panel_click = this.on_overlay_panel_click.bind(this);
+    this.on_modal_link_click = this.on_modal_link_click.bind(this);
   }
 
   load() {
@@ -42,6 +43,7 @@ window.SiteView = class SiteView {
     });
 
     $(document).on("click", "a.overlay_panel", this.on_overlay_panel_click);
+    $(document).on("click", "a.modal_link", this.on_modal_link_click);
 
     $(document).on({
       ajaxStart: () => $("body").addClass("loading"),
@@ -168,6 +170,23 @@ window.SiteView = class SiteView {
     }
 
     $el.val(val);
+  }
+
+  on_modal_link_click(e) {
+    e.preventDefault();
+    var $el = $(e.currentTarget);
+    var url = $el.attr("href");
+    var form_id = $el.data("form_id");
+    var listings = window.senaite &&
+                   window.senaite.core &&
+                   window.senaite.core.listings;
+    // load the modal via the listing
+    var listing = listings && listings[form_id];
+    if (listing) {
+      var parsed = new URL(url, window.location);
+      var uid = parsed.searchParams.get("uid");
+      listing.loadModal(url, [uid]);
+    }
   }
 
   on_overlay_panel_click(e) {

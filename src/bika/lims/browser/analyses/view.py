@@ -729,7 +729,24 @@ class AnalysesView(ListingView):
         item['Keyword'] = obj.getKeyword
         item['Unit'] = format_supsub(obj.getUnit) if obj.getUnit else ''
         item['retested'] = obj.getRetestOfUID and True or False
-        item['replace']['Service'] = '<strong>{}</strong>'.format(obj.Title)
+        if self.is_analysis_edition_allowed(obj):
+            modal_url = "{}/edit_analysis_modal".format(
+                api.get_url(self.context))
+            item["replace"]["Service"] = (
+                '<a href="{url}?uid={uid}" '
+                'class="modal_link" '
+                'data-form_id="{form_id}">'
+                '<strong>{title}</strong></a>'
+            ).format(
+                url=modal_url,
+                uid=obj.UID,
+                form_id=self.form_id,
+                title=obj.Title,
+            )
+        else:
+            item["replace"]["Service"] = (
+                "<strong>{}</strong>".format(obj.Title)
+            )
 
         # Append info link before the service
         # see: bika.lims.site.coffee for the attached event handler
