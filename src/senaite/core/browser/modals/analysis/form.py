@@ -386,21 +386,22 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
         form_data = self.request.form
 
         # Map form field names to AT field names
-        field_map = {
-            "Result": "Result",
-            "Uncertainty": "Uncertainty",
-            "Method": "Method",
-            "Instrument": "Instrument",
-            "Analyst": "Analyst",
-            "Unit": "Unit",
-            "DetectionLimitOperand": (
-                "DetectionLimitOperand"
-            ),
-            "Remarks": "Remarks",
-            "ResultCaptureDate": "ResultCaptureDate",
-        }
+        # NOTE: Order matters — Uncertainty must be set
+        # after Result and DetectionLimitOperand because
+        # those setters may reset the uncertainty value.
+        field_map = [
+            ("DetectionLimitOperand", "DetectionLimitOperand"),
+            ("Result", "Result"),
+            ("Method", "Method"),
+            ("Instrument", "Instrument"),
+            ("Analyst", "Analyst"),
+            ("Unit", "Unit"),
+            ("Remarks", "Remarks"),
+            ("ResultCaptureDate", "ResultCaptureDate"),
+            ("Uncertainty", "Uncertainty"),
+        ]
 
-        for form_name, at_name in field_map.items():
+        for form_name, at_name in field_map:
             if form_name not in form_data:
                 continue
             value = form_data[form_name]
