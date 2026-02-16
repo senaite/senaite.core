@@ -67,7 +67,6 @@ from senaite.core.permissions import FieldEditAnalysisResult
 from senaite.core.permissions import TransitionVerify
 from senaite.core.permissions import ViewResults
 from senaite.core.permissions import ViewRetractedAnalyses
-from senaite.core.registry import get_registry_record
 from zope.component import getAdapters
 from zope.component import getMultiAdapter
 
@@ -270,29 +269,40 @@ class AnalysesView(ListingView):
 
     @viewcache.memoize
     def get_default_columns_order(self):
-        """Return the default column order from the registry
+        """Return the default column order from setup
 
         :returns: List of column keys
         """
-        name = "sampleview_analysis_columns_order"
-        columns_order = get_registry_record(name, default=[]) or []
-        return columns_order
+        setup = api.get_senaite_setup()
+        return list(
+            setup.getSampleviewAnalysisColumnsOrder()
+        )
 
     def reorder_analysis_columns(self):
-        """Reorder analysis columns based on registry configuration
+        """Reorder analysis columns based on setup config
+
+        Selected columns are shown in order, unselected
+        columns are hidden.
         """
         columns_order = self.get_default_columns_order()
         if not columns_order:
             return
-        # compute columns that are missing in the config
-        missing_columns = filter(
-            lambda col: col not in columns_order, self.columns.keys())
-        # prepare the new sort order for the columns
-        ordered_columns = columns_order + missing_columns
+
+        # hide columns not in the selected list
+        all_keys = list(self.columns.keys())
+        for key in all_keys:
+            if key not in columns_order:
+                self.columns[key]["toggle"] = False
+
+        # append columns not in the selection
+        # (e.g. dynamically added interim columns)
+        remaining = [
+            k for k in all_keys if k not in columns_order
+        ]
+        ordered_columns = columns_order + remaining
 
         # set the order in each review state
         for rs in self.review_states:
-            # set a copy of the new ordered columns list
             rs["columns"] = ordered_columns[:]
 
     def calculate_interim_columns_position(self, review_state):
@@ -849,6 +859,12 @@ class AnalysesView(ListingView):
         interim_keys = self.interim_columns.keys()
         interim_keys.reverse()
 
+        # Check if interims should be visible based on
+        # whether AdditionalValues is in the selected
+        # columns order
+        columns_order = self.get_default_columns_order()
+        show_interims = "AdditionalValues" in columns_order
+
         # add InterimFields keys to columns
         for col_id in interim_keys:
             if col_id not in self.columns:
@@ -857,17 +873,19 @@ class AnalysesView(ListingView):
                     "input_width": "6",
                     "input_class": "ajax_calculate numeric",
                     "sortable": False,
-                    "toggle": True,
+                    "toggle": show_interims,
                     "ajax": True,
                 }
 
         if self.allow_edit:
             new_states = []
             for state in self.review_states:
-                pos = self.calculate_interim_columns_position(state)
-                for col_id in interim_keys:
-                    if col_id not in state["columns"]:
-                        state["columns"].insert(pos, col_id)
+                if show_interims:
+                    pos = self.calculate_interim_columns_position(
+                        state)
+                    for col_id in interim_keys:
+                        if col_id not in state["columns"]:
+                            state["columns"].insert(pos, col_id)
                 new_states.append(state)
             self.review_states = new_states
             # Allow selecting individual analyses
@@ -882,20 +900,34 @@ class AnalysesView(ListingView):
         # self.json_specs = json.dumps(self.specs)
         self.json_interim_fields = json.dumps(self.interim_fields)
 
-        # Display method and instrument columns only if at least one of the
-        # analyses requires them to be displayed for selection
+        # Display method and instrument columns only if at least
+        # one of the analyses requires them to be displayed for
+        # selection AND the column is in the selected order
         show_method_column = self.is_method_column_required(items)
         if "Method" in self.columns:
-            self.columns["Method"]["toggle"] = show_method_column
+            self.columns["Method"]["toggle"] = (
+                show_method_column
+                and "Method" in columns_order
+            )
 
-        show_instrument_column = self.is_instrument_column_required(items)
+        show_instrument_column = (
+            self.is_instrument_column_required(items)
+        )
         if "Instrument" in self.columns:
-            self.columns["Instrument"]["toggle"] = show_instrument_column
+            self.columns["Instrument"]["toggle"] = (
+                show_instrument_column
+                and "Instrument" in columns_order
+            )
 
         # show unit selection column only if required
-        show_unit_column = self.is_unit_selection_column_required(items)
+        show_unit_column = (
+            self.is_unit_selection_column_required(items)
+        )
         if "Unit" in self.columns:
-            self.columns["Unit"]["toggle"] = show_unit_column
+            self.columns["Unit"]["toggle"] = (
+                show_unit_column
+                and "Unit" in columns_order
+            )
 
         return items
 
@@ -1428,7 +1460,9 @@ class AnalysesView(ListingView):
         # Show Detection Limit Operand Selector
         item["DetectionLimitOperand"] = obj.getDetectionLimitOperand()
         item["allow_edit"].append("DetectionLimitOperand")
-        self.columns["DetectionLimitOperand"]["toggle"] = True
+        columns_order = self.get_default_columns_order()
+        if "DetectionLimitOperand" in columns_order:
+            self.columns["DetectionLimitOperand"]["toggle"] = True
 
         # Prepare selection list for LDL/UDL
         choices = [

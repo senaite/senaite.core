@@ -116,33 +116,8 @@ class IWorksheetViewRegistry(ISenaiteRegistry):
             default=u"Worksheet view configuration"
         ),
         fields=[
-            "worksheetview_analysis_columns_order",
             "worksheet_print_templates_order",
         ],
-    )
-
-    worksheetview_analysis_columns_order = schema.List(
-        title=_(u"Analysis columns order"),
-        description=_(
-            u"Default column order for worksheet analysis listings"
-        ),
-        value_type=schema.ASCIILine(title=u"Column"),
-        required=False,
-        default=[
-            "Pos",
-            "Service",
-            "AdditionalValues",
-            "DetectionLimitOperand",
-            "Result",
-            "Uncertainty",
-            "Specification",
-            "retested",
-            "Method",
-            "Instrument",
-            "Attachments",
-            "DueDate",
-            "state_title",
-        ]
     )
 
     worksheet_print_templates_order = schema.List(
@@ -167,7 +142,6 @@ class ISampleViewRegistry(ISenaiteRegistry):
             "sampleview_collapse_field_analysis_table",
             "sampleview_collapse_lab_analysis_table",
             "sampleview_collapse_qc_analysis_table",
-            "sampleview_analysis_columns_order",
         ],
     )
     sampleview_collapse_field_analysis_table = schema.Bool(
@@ -189,36 +163,6 @@ class ISampleViewRegistry(ISenaiteRegistry):
         description=_("Collapse qc analysis table in sample view"),
         default=True,
         required=False,
-    )
-
-    sampleview_analysis_columns_order = schema.List(
-        title=_(u"Analysis columns order"),
-        description=_(
-            u"Default column order for sample analysis listings"
-        ),
-        value_type=schema.ASCIILine(title=u"Column"),
-        required=False,
-        default=[
-            "created",
-            "Service",
-            "AdditionalValues",
-            "DetectionLimitOperand",
-            "Result",
-            "Uncertainty",
-            "Unit",
-            "Specification",
-            "retested",
-            "Method",
-            "Instrument",
-            "Calculation",
-            "Attachments",
-            "SubmittedBy",
-            "Analyst",
-            "CaptureDate",
-            "DueDate",
-            "state_title",
-            "Hidden",
-        ]
     )
 
 
