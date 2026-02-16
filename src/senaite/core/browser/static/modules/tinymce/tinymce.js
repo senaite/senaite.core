@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.3.2 (2026-01-14)
+ * TinyMCE version 8.3.0 (2025-12-10)
  */
 
 (function () {
@@ -22713,7 +22713,7 @@
     // We need to create a temporary document instead of using the global document since
     // innerHTML on a detached element will still make http requests to the images
     const lazyTempDocument = cached(() => document.implementation.createHTMLDocument('undo'));
-    const shouldBeFragmented = (body) => body.querySelector(`iframe, ${ucVideoNodeName}`) !== null;
+    const hasIframes = (body) => body.querySelector('iframe') !== null;
     const createFragmentedLevel = (fragments) => {
         return {
             type: 'fragmented',
@@ -22735,7 +22735,7 @@
     const createFromEditor = (editor) => {
         const tempAttrs = editor.serializer.getTempAttrs();
         const body = trim$1(editor.getBody(), tempAttrs);
-        return shouldBeFragmented(body) ? createFragmentedLevel(read$2(body, true)) : createCompleteLevel(trim$2(body.innerHTML));
+        return hasIframes(body) ? createFragmentedLevel(read$2(body, true)) : createCompleteLevel(trim$2(body.innerHTML));
     };
     const applyToEditor = (editor, level, before) => {
         const bookmark = before ? level.beforeBookmark : level.bookmark;
@@ -40581,14 +40581,14 @@
          * @property minorVersion
          * @type String
          */
-        minorVersion: '3.2',
+        minorVersion: '3.0',
         /**
          * Release date of TinyMCE build.
          *
          * @property releaseDate
          * @type String
          */
-        releaseDate: '2026-01-14',
+        releaseDate: '2025-12-10',
         /**
          * Collection of language pack data.
          *

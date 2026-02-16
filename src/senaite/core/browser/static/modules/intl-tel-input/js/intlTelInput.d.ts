@@ -262,7 +262,7 @@ declare module "modules/core/icons" {
     export const buildClearIcon: (id: number) => string;
 }
 declare module "modules/core/ui" {
-    import { Country, Iso2 } from "intl-tel-input/data";
+    import { Country } from "intl-tel-input/data";
     import { AllOptions } from "modules/types/public-api";
     export default class UI {
         private readonly options;
@@ -287,7 +287,6 @@ declare module "modules/core/ui" {
         hiddenInput: HTMLInputElement;
         hiddenInputCountry: HTMLInputElement;
         highlightedItem: HTMLElement | null;
-        selectedItem: HTMLElement | null;
         readonly hadInitialPlaceholder: boolean;
         constructor(input: HTMLInputElement, options: AllOptions, id: number);
         generateMarkup(countries: Country[]): void;
@@ -304,7 +303,6 @@ declare module "modules/core/ui" {
         updateSearchResultsA11yText(): void;
         scrollTo(element: HTMLElement): void;
         highlightListItem(listItem: HTMLElement | null, shouldFocus: boolean): void;
-        updateSelectedItem(iso2: Iso2 | ""): void;
         filterCountries(matchedCountries: Country[]): void;
         destroy(): void;
     }
@@ -319,7 +317,7 @@ declare module "modules/data/country-data" {
     }
     export const processAllCountries: (options: AllOptions) => Country[];
     export const translateCountryNames: (countries: Country[], options: AllOptions) => void;
-    export const processDialCodes: (countries: Country[]) => DialCodeProcessingResult;
+    export const processDialCodes: (countries: Country[], options: AllOptions) => DialCodeProcessingResult;
     export const sortCountries: (countries: Country[], options: AllOptions) => void;
     export const cacheSearchTokens: (countries: Country[]) => void;
 }
@@ -370,18 +368,12 @@ declare module "intl-tel-input" {
         private defaultCountry;
         private abortController;
         private dropdownAbortController;
-        private userNumeralSet;
         private resolveAutoCountryPromise;
         private rejectAutoCountryPromise;
         private resolveUtilsScriptPromise;
         private rejectUtilsScriptPromise;
         constructor(input: HTMLInputElement, customOptions?: SomeOptions);
         private static _getIsAndroid;
-        private _updateNumeralSet;
-        private _mapAsciiToUserNumerals;
-        private _normaliseNumerals;
-        private _getTelInputValue;
-        private _setTelInputValue;
         private _createInitPromises;
         _init(): void;
         private _processCountryData;

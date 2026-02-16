@@ -13,6 +13,10 @@
   --iti-triangle-border: calc(var(--iti-arrow-width) / 2);
   --iti-arrow-padding: 6px;
   --iti-arrow-color: #555;
+  --iti-path-flags-1x: url("../img/flags.webp");
+  --iti-path-flags-2x: url("../img/flags@2x.webp");
+  --iti-path-globe-1x: url("../img/globe.webp");
+  --iti-path-globe-2x: url("../img/globe@2x.webp");
   --iti-flag-sprite-width: 3904px;
   --iti-flag-sprite-height: 12px;
   --iti-mobile-popup-margin: 30px;
@@ -1256,10 +1260,4 @@
   .iti__globe {
     background-image: var(--iti-path-globe-2x);
   }
-}
-:root {
-  --iti-path-flags-1x: url("../img/flags.webp");
-  --iti-path-flags-2x: url("../img/flags@2x.webp");
-  --iti-path-globe-1x: url("../img/globe.webp");
-  --iti-path-globe-2x: url("../img/globe@2x.webp");
 }
