@@ -861,9 +861,12 @@ class AnalysesView(ListingView):
 
         # Check if interims should be visible based on
         # whether AdditionalValues is in the selected
-        # columns order
+        # columns order (empty = no restriction = show all)
         columns_order = self.get_default_columns_order()
-        show_interims = "AdditionalValues" in columns_order
+        show_interims = (
+            not columns_order
+            or "AdditionalValues" in columns_order
+        )
 
         # add InterimFields keys to columns
         for col_id in interim_keys:
@@ -907,7 +910,8 @@ class AnalysesView(ListingView):
         if "Method" in self.columns:
             self.columns["Method"]["toggle"] = (
                 show_method_column
-                and "Method" in columns_order
+                and (not columns_order
+                     or "Method" in columns_order)
             )
 
         show_instrument_column = (
@@ -916,7 +920,8 @@ class AnalysesView(ListingView):
         if "Instrument" in self.columns:
             self.columns["Instrument"]["toggle"] = (
                 show_instrument_column
-                and "Instrument" in columns_order
+                and (not columns_order
+                     or "Instrument" in columns_order)
             )
 
         # show unit selection column only if required
@@ -926,7 +931,8 @@ class AnalysesView(ListingView):
         if "Unit" in self.columns:
             self.columns["Unit"]["toggle"] = (
                 show_unit_column
-                and "Unit" in columns_order
+                and (not columns_order
+                     or "Unit" in columns_order)
             )
 
         return items
@@ -1461,7 +1467,8 @@ class AnalysesView(ListingView):
         item["DetectionLimitOperand"] = obj.getDetectionLimitOperand()
         item["allow_edit"].append("DetectionLimitOperand")
         columns_order = self.get_default_columns_order()
-        if "DetectionLimitOperand" in columns_order:
+        if (not columns_order
+                or "DetectionLimitOperand" in columns_order):
             self.columns["DetectionLimitOperand"]["toggle"] = True
 
         # Prepare selection list for LDL/UDL
