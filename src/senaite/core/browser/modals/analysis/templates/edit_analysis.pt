@@ -1,0 +1,370 @@
+<tal:css define="portal context/@@plone_portal_state/portal_url">
+  <link rel="stylesheet" type="text/css"
+        tal:attributes="href string:${portal}/++plone++senaite.core.edit_analysis/css/edit_analysis.css"/>
+</tal:css>
+
+<div class="edit-analysis-modal modal-dialog
+            modal-dialog-centered modal-dialog-scrollable
+            modal-lg modal-fullscreen-on-mobile"
+     tal:define="analysis_title view/get_analysis_title;
+                 analysis_uid view/get_analysis_uid;
+                 result_type view/get_result_type;
+                 result_options view/get_result_options;
+                 result_unit view/get_unit;
+                 interims view/get_interims;
+                 view_url view/get_analysis_url;
+                 is_calculated view/is_calculated">
+  <div class="modal-content">
+
+    <!-- Header -->
+    <div class="modal-header">
+      <h5 class="modal-title">
+        <i class="fas fa-edit mr-1"></i>
+        <span i18n:translate="">Edit</span>:
+        <span tal:content="analysis_title"/>
+      </h5>
+      <button type="button" class="close"
+              data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      <form name="edit-analysis-form"
+            class="edit-analysis-form"
+            method="POST"
+            enctype="multipart/form-data"
+            tal:attributes="action string:${view_url}/edit_analysis_modal">
+
+        <!-- Result (select-type) -->
+        <div class="form-group row"
+             tal:condition="python:result_type == 'select'
+                            and result_options
+                            and view.is_field_visible('result')">
+          <label class="col-sm-4 col-form-label col-form-label-sm"
+                 i18n:translate="">Result</label>
+          <div class="col-sm-8">
+            <div class="input-group input-group-sm">
+              <select name="Result"
+                      class="form-control"
+                      tal:define="current view/get_result">
+                <option value=""></option>
+                <tal:opt repeat="opt result_options">
+                  <option tal:define="val python:opt.get('ResultValue', '');
+                                      txt python:opt.get('ResultText', '')"
+                          tal:attributes="value val;
+                                          selected python:str(val) == str(current) or None"
+                          tal:content="txt"/>
+                </tal:opt>
+              </select>
+              <div class="input-group-append"
+                   tal:condition="result_unit">
+                <span class="input-group-text"
+                      tal:content="structure result_unit"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result (text input, non-select) -->
+        <div class="form-group row"
+             tal:condition="python:(result_type != 'select'
+                            or not result_options)
+                            and view.is_field_visible('result')
+                            and not is_calculated">
+          <label class="col-sm-4 col-form-label col-form-label-sm"
+                 i18n:translate="">Result</label>
+          <div class="col-sm-8">
+            <div class="input-group input-group-sm">
+              <input type="text" name="Result"
+                     class="form-control numeric"
+                     tal:attributes="value view/get_result"/>
+              <div class="input-group-append"
+                   tal:condition="result_unit">
+                <span class="input-group-text"
+                      tal:content="structure result_unit"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result (display-only, calculated) -->
+        <div class="form-group row"
+             tal:condition="python:view.is_field_visible('result')
+                            and is_calculated
+                            and result_type != 'select'">
+          <label class="col-sm-4 col-form-label col-form-label-sm"
+                 i18n:translate="">Result</label>
+          <div class="col-sm-8">
+            <div class="field-display">
+              <span tal:content="view/get_result"/>
+              <span tal:condition="result_unit"
+                    class="text-muted ml-1"
+                    tal:content="structure result_unit"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hidden from report (checkbox, next to result) -->
+        <div class="form-group row"
+             tal:condition="python:view.is_field_visible('hidden')">
+          <label class="col-sm-4 col-form-label col-form-label-sm"
+                 for="edit-analysis-hidden"
+                 i18n:translate="">Hidden from report</label>
+          <div class="col-sm-8 d-flex align-items-center">
+            <input type="checkbox"
+                   id="edit-analysis-hidden"
+                   name="Hidden"
+                   value="1"
+                   tal:attributes="checked python:view.is_hidden() and 'checked' or None"/>
+          </div>
+        </div>
+
+        <!-- Detection Limit Operand -->
+        <div class="form-group row"
+             tal:condition="python:view.is_field_visible('detection_limit_operand')"
+             tal:define="current view/get_dl_operand">
+          <label class="col-sm-4 col-form-label col-form-label-sm"
+                 i18n:translate="">Detection Limit</label>
+          <div class="col-sm-8">
+            <select name="DetectionLimitOperand"
+                    class="form-control form-control-sm"
+                    tal:define="ops python:[('', ''), ('<', '<'), ('>', '>')]">
+              <tal:opt repeat="op ops">
+                <option tal:attributes="value python:op[0];
+                                        selected python:op[0] == current or None"
+                        tal:content="python:op[1]"/>
+              </tal:opt>
+            </select>
+          </div>
+        </div>
+
+        <!-- Uncertainty -->
+        <div class="form-group row"
+             tal:condition="python:view.is_field_visible('uncertainty')">
+          <label class="col-sm-4 col-form-label col-form-label-sm"
+                 i18n:translate="">Uncertainty</label>
+          <div class="col-sm-8">
+            <div class="input-group input-group-sm">
+              <div class="input-group-prepend">
+                <span class="input-group-text">&plusmn;</span>
+              </div>
+              <input type="text" name="Uncertainty"
+                     class="form-control numeric"
+                     tal:attributes="value view/get_uncertainty"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Method -->
+        <div class="form-group row"
+             tal:condition="python:view.is_field_visible('method')"
+             tal:define="current view/get_method_uid;
+                         methods view/get_methods">
+          <label class="col-sm-4 col-form-label col-form-label-sm"
+                 i18n:translate="">Method</label>
+          <div class="col-sm-8">
+            <select name="Method"
+                    class="form-control form-control-sm">
+              <option value=""></option>
+              <tal:opt repeat="m methods">
+                <option tal:attributes="value python:m['uid'];
+                                        selected python:m['uid'] == current or None"
+                        tal:content="python:m['title']"/>
+              </tal:opt>
+            </select>
+          </div>
+        </div>
+
+        <!-- Instrument -->
+        <div class="form-group row"
+             tal:condition="python:view.is_field_visible('instrument')"
+             tal:define="current view/get_instrument_uid;
+                         instruments view/get_instruments">
+          <label class="col-sm-4 col-form-label col-form-label-sm"
+                 i18n:translate="">Instrument</label>
+          <div class="col-sm-8">
+            <select name="Instrument"
+                    class="form-control form-control-sm">
+              <option value=""></option>
+              <tal:opt repeat="inst instruments">
+                <option tal:attributes="value python:inst['uid'];
+                                        selected python:inst['uid'] == current or None"
+                        tal:content="python:inst['title']"/>
+              </tal:opt>
+            </select>
+          </div>
+        </div>
+
+        <!-- Analyst -->
+        <div class="form-group row"
+             tal:condition="python:view.is_field_visible('analyst')"
+             tal:define="current view/get_analyst;
+                         analysts view/get_analysts">
+          <label class="col-sm-4 col-form-label col-form-label-sm"
+                 i18n:translate="">Analyst</label>
+          <div class="col-sm-8">
+            <select name="Analyst"
+                    class="form-control form-control-sm">
+              <option value=""></option>
+              <tal:opt repeat="a analysts">
+                <option tal:attributes="value python:a['username'];
+                                        selected python:a['username'] == current or None"
+                        tal:content="python:a['fullname']"/>
+              </tal:opt>
+            </select>
+          </div>
+        </div>
+
+        <!-- Unit -->
+        <div class="form-group row"
+             tal:condition="python:view.is_field_visible('unit')"
+             tal:define="current view/get_unit;
+                         choices view/get_unit_choices">
+          <label class="col-sm-4 col-form-label col-form-label-sm"
+                 i18n:translate="">Unit</label>
+          <div class="col-sm-8">
+            <select name="Unit"
+                    class="form-control form-control-sm">
+              <tal:opt repeat="choice choices">
+                <option tal:attributes="value choice;
+                                        selected python:choice == current or None"
+                        tal:content="choice"/>
+              </tal:opt>
+            </select>
+          </div>
+        </div>
+
+        <!-- Result Capture Date -->
+        <div class="form-group row"
+             tal:condition="python:view.is_field_visible('result_capture_date')">
+          <label class="col-sm-4 col-form-label col-form-label-sm"
+                 i18n:translate="">Result Capture Date</label>
+          <div class="col-sm-8">
+            <input type="date" name="ResultCaptureDate"
+                   class="form-control form-control-sm"
+                   tal:attributes="value view/get_result_capture_date"/>
+          </div>
+        </div>
+
+        <!-- Remarks -->
+        <div class="form-group row"
+             tal:condition="python:view.is_field_visible('remarks')">
+          <label class="col-sm-4 col-form-label col-form-label-sm"
+                 i18n:translate="">Remarks</label>
+          <div class="col-sm-8">
+            <textarea name="Remarks"
+                      class="form-control form-control-sm"
+                      rows="3"
+                      tal:content="view/get_remarks"/>
+          </div>
+        </div>
+
+        <!-- Interim Fields -->
+        <tal:interims repeat="interim interims">
+          <div class="form-group row"
+               tal:condition="python:not interim.get('hidden', False)"
+               tal:define="keyword python:interim.get('keyword', '');
+                           title python:interim.get('title', keyword);
+                           value python:interim.get('value', '');
+                           unit python:interim.get('unit', '');
+                           result_type python:interim.get('result_type', '');
+                           options python:interim.get('options', [])">
+            <label class="col-sm-4 col-form-label col-form-label-sm"
+                   tal:content="title"/>
+            <div class="col-sm-8">
+
+              <!-- Select (single) -->
+              <select tal:condition="python:options
+                                     and result_type not in
+                                     ('multichoice', 'multiselect',
+                                      'multiselect_duplicates')"
+                      class="form-control form-control-sm"
+                      tal:attributes="name keyword">
+                <option value=""></option>
+                <tal:opt repeat="opt options">
+                  <option tal:define="opt_val python:opt.get('value', '');
+                                      opt_text python:opt.get('text', '')"
+                          tal:attributes="value opt_val;
+                                          selected python:str(opt_val) == str(value) or None"
+                          tal:content="opt_text"/>
+                </tal:opt>
+              </select>
+
+              <!-- Multi-select -->
+              <select tal:condition="python:options
+                                     and result_type in
+                                     ('multichoice', 'multiselect',
+                                      'multiselect_duplicates')"
+                      class="form-control form-control-sm"
+                      multiple="multiple"
+                      tal:define="values python:view.parse_multi_value(value)"
+                      tal:attributes="name string:${keyword}:list">
+                <tal:opt repeat="opt options">
+                  <option tal:define="opt_val python:opt.get('value', '');
+                                      opt_text python:opt.get('text', '')"
+                          tal:attributes="value opt_val;
+                                          selected python:str(opt_val) in values or None"
+                          tal:content="opt_text"/>
+                </tal:opt>
+              </select>
+
+              <!-- Datetime -->
+              <input tal:condition="python:not options
+                                    and result_type == 'datetime'"
+                     type="date"
+                     class="form-control form-control-sm"
+                     tal:attributes="name keyword;
+                                     value value"/>
+
+              <!-- String -->
+              <input tal:condition="python:not options
+                                    and result_type == 'string'"
+                     type="text"
+                     class="form-control form-control-sm"
+                     tal:attributes="name keyword;
+                                     value value"/>
+
+              <!-- Numeric (default) -->
+              <div tal:condition="python:not options
+                                  and result_type not in
+                                  ('string', 'datetime')"
+                   class="input-group input-group-sm">
+                <input type="text"
+                       class="form-control numeric"
+                       tal:attributes="name keyword;
+                                       value value"/>
+                <div class="input-group-append"
+                     tal:condition="unit">
+                  <span class="input-group-text"
+                        tal:content="unit"/>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </tal:interims>
+
+        <!-- Actions -->
+        <div class="form-group row mt-3">
+          <div class="col-sm-8">
+            <button type="submit"
+                    class="btn btn-sm btn-primary"
+                    i18n:translate="">Save</button>
+          </div>
+        </div>
+
+        <!-- Hidden fields -->
+        <input type="hidden" name="submitted" value="1"/>
+        <input tal:replace="structure context/@@authenticator/authenticator"/>
+        <input type="hidden" name="uid" value=""
+               tal:attributes="value analysis_uid"/>
+        <input type="hidden" name="uids" value=""
+               tal:attributes="value analysis_uid"/>
+
+      </form>
+    </div>
+
+  </div>
+</div>
