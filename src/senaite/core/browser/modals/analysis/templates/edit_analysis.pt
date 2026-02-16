@@ -37,17 +37,36 @@
             enctype="multipart/form-data"
             tal:attributes="action string:${view_url}/edit_analysis_modal">
 
-        <!-- Result (select-type) -->
+        <!-- Result: DL operand | Result | ± Uncertainty | Unit -->
         <div class="form-group row"
-             tal:condition="python:result_type == 'select'
-                            and result_options
-                            and view.is_field_visible('result')">
+             tal:condition="python:view.is_field_visible('result')"
+             tal:define="dl_visible python:view.is_field_visible('detection_limit_operand');
+                         unc_visible python:view.is_field_visible('uncertainty');
+                         current_dl view/get_dl_operand">
           <label class="col-sm-4 col-form-label col-form-label-sm"
                  i18n:translate="">Result</label>
           <div class="col-sm-8">
             <div class="input-group input-group-sm">
-              <select name="Result"
-                      class="form-control"
+
+              <!-- DL operand -->
+              <div class="input-group-prepend"
+                   tal:condition="dl_visible">
+                <select name="DetectionLimitOperand"
+                        class="form-control form-control-sm dl-operand-select"
+                        tal:define="ops python:[('', ''), ('<', '<'), ('>', '>')]">
+                  <tal:opt repeat="op ops">
+                    <option tal:attributes="value python:op[0];
+                                            selected python:op[0] == current_dl or None"
+                            tal:content="python:op[1]"/>
+                  </tal:opt>
+                </select>
+              </div>
+
+              <!-- Result: select-type -->
+              <select tal:condition="python:result_type == 'select'
+                                     and result_options"
+                      name="Result"
+                      class="custom-select"
                       tal:define="current view/get_result">
                 <option value=""></option>
                 <tal:opt repeat="opt result_options">
@@ -58,55 +77,46 @@
                           tal:content="txt"/>
                 </tal:opt>
               </select>
-              <div class="input-group-append"
-                   tal:condition="result_unit">
-                <span class="input-group-text"
-                      tal:content="structure result_unit"/>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- Result (text input, non-select) -->
-        <div class="form-group row"
-             tal:condition="python:(result_type != 'select'
-                            or not result_options)
-                            and view.is_field_visible('result')
-                            and not is_calculated">
-          <label class="col-sm-4 col-form-label col-form-label-sm"
-                 i18n:translate="">Result</label>
-          <div class="col-sm-8">
-            <div class="input-group input-group-sm">
-              <input type="text" name="Result"
+              <!-- Result: text input -->
+              <input tal:condition="python:(result_type != 'select'
+                                     or not result_options)
+                                     and not is_calculated"
+                     type="text" name="Result"
                      class="form-control numeric"
                      tal:attributes="value view/get_result"/>
+
+              <!-- Result: calculated (read-only) -->
+              <input tal:condition="python:is_calculated
+                                    and result_type != 'select'"
+                     type="text"
+                     class="form-control"
+                     readonly="readonly"
+                     tabindex="-1"
+                     tal:attributes="value view/get_result"/>
+
+              <!-- ± Uncertainty -->
+              <div class="input-group-append input-group-prepend"
+                   tal:condition="unc_visible">
+                <span class="input-group-text">&plusmn;</span>
+              </div>
+              <input tal:condition="unc_visible"
+                     type="text" name="Uncertainty"
+                     class="form-control form-control-sm numeric"
+                     tal:attributes="value view/get_uncertainty"/>
+
+              <!-- Unit -->
               <div class="input-group-append"
                    tal:condition="result_unit">
                 <span class="input-group-text"
                       tal:content="structure result_unit"/>
               </div>
+
             </div>
           </div>
         </div>
 
-        <!-- Result (display-only, calculated) -->
-        <div class="form-group row"
-             tal:condition="python:view.is_field_visible('result')
-                            and is_calculated
-                            and result_type != 'select'">
-          <label class="col-sm-4 col-form-label col-form-label-sm"
-                 i18n:translate="">Result</label>
-          <div class="col-sm-8">
-            <div class="field-display">
-              <span tal:content="view/get_result"/>
-              <span tal:condition="result_unit"
-                    class="text-muted ml-1"
-                    tal:content="structure result_unit"/>
-            </div>
-          </div>
-        </div>
-
-        <!-- Hidden from report (checkbox, next to result) -->
+        <!-- Hidden from report -->
         <div class="form-group row"
              tal:condition="python:view.is_field_visible('hidden')">
           <label class="col-sm-4 col-form-label col-form-label-sm"
@@ -118,42 +128,6 @@
                    name="Hidden"
                    value="1"
                    tal:attributes="checked python:view.is_hidden() and 'checked' or None"/>
-          </div>
-        </div>
-
-        <!-- Detection Limit Operand -->
-        <div class="form-group row"
-             tal:condition="python:view.is_field_visible('detection_limit_operand')"
-             tal:define="current view/get_dl_operand">
-          <label class="col-sm-4 col-form-label col-form-label-sm"
-                 i18n:translate="">Detection Limit</label>
-          <div class="col-sm-8">
-            <select name="DetectionLimitOperand"
-                    class="form-control form-control-sm"
-                    tal:define="ops python:[('', ''), ('<', '<'), ('>', '>')]">
-              <tal:opt repeat="op ops">
-                <option tal:attributes="value python:op[0];
-                                        selected python:op[0] == current or None"
-                        tal:content="python:op[1]"/>
-              </tal:opt>
-            </select>
-          </div>
-        </div>
-
-        <!-- Uncertainty -->
-        <div class="form-group row"
-             tal:condition="python:view.is_field_visible('uncertainty')">
-          <label class="col-sm-4 col-form-label col-form-label-sm"
-                 i18n:translate="">Uncertainty</label>
-          <div class="col-sm-8">
-            <div class="input-group input-group-sm">
-              <div class="input-group-prepend">
-                <span class="input-group-text">&plusmn;</span>
-              </div>
-              <input type="text" name="Uncertainty"
-                     class="form-control numeric"
-                     tal:attributes="value view/get_uncertainty"/>
-            </div>
           </div>
         </div>
 
