@@ -428,7 +428,7 @@
                                   and result_type ==
                                   'multiselect_duplicates'"
                    tal:define="sel_values python:
-                       view.parse_multi_value(value) + ['']"
+                       [v for v in view.parse_multi_value(value) if v] or ['']"
                    class="multiselect-duplicates">
                 <tal:sel repeat="sel_val sel_values">
                   <select class="form-control form-control-sm mb-1"
@@ -448,7 +448,7 @@
               <!-- Multi-value (text inputs) -->
               <div tal:condition="python:result_type == 'multivalue'"
                    tal:define="vals python:
-                       view.parse_multi_value(value) + ['']"
+                       [v for v in view.parse_multi_value(value) if v] or ['']"
                    class="multivalue">
                 <tal:val repeat="v vals">
                   <input type="text"

@@ -183,14 +183,14 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
         """Returns the current result as a list of values
 
         For multiselect types, parses the JSON array.
-        Appends an empty string for the "add new" selector.
+        Empty values are filtered out.
+        Returns at least one empty entry if no values exist.
         """
         values = self.parse_multi_value(
             self.get_result()
         )
-        # append empty entry for adding a new selection
-        values.append("")
-        return values
+        values = [v for v in values if v]
+        return values or [""]
 
     def is_calculated(self):
         """Check if the analysis result is calculated
