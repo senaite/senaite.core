@@ -1,7 +1,10 @@
-<tal:css define="portal context/@@plone_portal_state/portal_url">
+<tal:resources define="portal context/@@plone_portal_state/portal_url">
   <link rel="stylesheet" type="text/css"
         tal:attributes="href string:${portal}/++plone++senaite.core.edit_analysis/css/edit_analysis.css"/>
-</tal:css>
+  <script type="text/javascript"
+          tal:attributes="src string:${portal}/++plone++senaite.core.edit_analysis/js/edit_analysis.js"
+          defer="defer"></script>
+</tal:resources>
 
 <div class="edit-analysis-modal modal-dialog
             modal-dialog-centered modal-dialog-scrollable
@@ -45,49 +48,64 @@
           <label class="col-sm-4 col-form-label col-form-label-sm"
                  i18n:translate="">Result</label>
           <div class="col-sm-8">
-            <div class="input-group input-group-sm">
+
+            <!-- Single-line result types (inside input-group) -->
+            <div class="input-group input-group-sm"
+                 tal:condition="python:result_type not in
+                     ('multichoice', 'multiselect',
+                      'multiselect_duplicates',
+                      'multivalue')">
 
               <!-- DL operand -->
               <div class="input-group-prepend"
                    tal:condition="dl_visible">
                 <select name="DetectionLimitOperand"
-                        class="form-control form-control-sm dl-operand-select"
-                        tal:define="ops python:[('', ''), ('<', '<'), ('>', '>')]">
+                        class="form-control form-control-sm
+                               dl-operand-select"
+                        tal:define="ops python:[
+                            ('', ''),
+                            ('<', '<'),
+                            ('>', '>')]">
                   <tal:opt repeat="op ops">
-                    <option tal:attributes="value python:op[0];
-                                            selected python:op[0] == current_dl or None"
+                    <option tal:attributes="
+                        value python:op[0];
+                        selected python:op[0] == current_dl
+                                 or None"
                             tal:content="python:op[1]"/>
                   </tal:opt>
                 </select>
               </div>
 
               <!-- Result: select-type -->
-              <select tal:condition="python:result_type == 'select'
+              <select tal:condition="python:result_type ==
+                                     'select'
                                      and result_options"
                       name="Result"
                       class="custom-select"
                       tal:define="current view/get_result">
                 <option value=""></option>
                 <tal:opt repeat="opt result_options">
-                  <option tal:define="val python:opt.get('ResultValue', '');
-                                      txt python:opt.get('ResultText', '')"
-                          tal:attributes="value val;
-                                          selected python:str(val) == str(current) or None"
+                  <option tal:define="
+                      val python:opt.get('ResultValue', '');
+                      txt python:opt.get('ResultText', '')"
+                          tal:attributes="
+                      value val;
+                      selected python:str(val) == str(current)
+                               or None"
                           tal:content="txt"/>
                 </tal:opt>
               </select>
 
               <!-- Result: text input -->
-              <input tal:condition="python:(result_type != 'select'
-                                     or not result_options)
-                                     and not is_calculated"
+              <input tal:condition="python:(result_type not in
+                         ('select',) or not result_options)
+                         and not is_calculated"
                      type="text" name="Result"
                      class="form-control numeric"
                      tal:attributes="value view/get_result"/>
 
               <!-- Result: calculated (read-only) -->
-              <input tal:condition="python:is_calculated
-                                    and result_type != 'select'"
+              <input tal:condition="is_calculated"
                      type="text"
                      class="form-control"
                      readonly="readonly"
@@ -95,14 +113,18 @@
                      tal:attributes="value view/get_result"/>
 
               <!-- ± Uncertainty -->
-              <div class="input-group-append input-group-prepend"
+              <div class="input-group-append
+                          input-group-prepend"
                    tal:condition="unc_visible">
-                <span class="input-group-text">&plusmn;</span>
+                <span class="input-group-text">
+                  &plusmn;</span>
               </div>
               <input tal:condition="unc_visible"
                      type="text" name="Uncertainty"
-                     class="form-control form-control-sm numeric"
-                     tal:attributes="value view/get_uncertainty"/>
+                     class="form-control form-control-sm
+                            numeric"
+                     tal:attributes="
+                         value view/get_uncertainty"/>
 
               <!-- Unit -->
               <div class="input-group-append"
@@ -112,6 +134,104 @@
               </div>
 
             </div>
+
+            <!-- Multi-line result types (outside input-group) -->
+
+            <!-- Result: multi-select -->
+            <select tal:condition="python:result_type ==
+                                   'multiselect'
+                                   and result_options"
+                    name="Result:list"
+                    class="custom-select custom-select-sm"
+                    multiple="multiple"
+                    tal:define="values python:
+                        view.parse_multi_value(
+                            view.get_result())">
+              <tal:opt repeat="opt result_options">
+                <option tal:define="
+                    val python:opt.get('ResultValue', '');
+                    txt python:opt.get('ResultText', '')"
+                        tal:attributes="
+                    value val;
+                    selected python:str(val) in values
+                             or None"
+                        tal:content="txt"/>
+              </tal:opt>
+            </select>
+
+            <!-- Result: multiple choice (checkboxes) -->
+            <div tal:condition="python:result_type ==
+                                'multichoice'
+                                and result_options"
+                 tal:define="values python:
+                     view.parse_multi_value(
+                         view.get_result())"
+                 class="multichoice">
+              <tal:opt repeat="opt result_options">
+                <div class="custom-control custom-checkbox"
+                     tal:define="
+                     val python:opt.get('ResultValue', '');
+                     txt python:opt.get('ResultText', '')">
+                  <input type="checkbox"
+                         class="custom-control-input"
+                         name="Result:list"
+                         tal:attributes="
+                     value val;
+                     id string:result-${val};
+                     checked python:str(val) in values
+                             or None"/>
+                  <label class="custom-control-label"
+                         tal:attributes="
+                             for string:result-${val}"
+                         tal:content="txt"/>
+                </div>
+              </tal:opt>
+            </div>
+
+            <!-- Result: multi-select with duplicates -->
+            <div tal:condition="python:result_type ==
+                                'multiselect_duplicates'
+                                and result_options"
+                 tal:define="result_values
+                     view/get_result_values"
+                 class="multiselect-duplicates">
+              <tal:sel repeat="selected result_values">
+                <select name="Result:list"
+                        class="custom-select
+                               custom-select-sm mb-1"
+                        tal:define="sel_val selected">
+                  <option value=""></option>
+                  <tal:opt repeat="opt result_options">
+                    <option tal:define="
+                        val python:opt.get(
+                            'ResultValue', '');
+                        txt python:opt.get(
+                            'ResultText', '')"
+                            tal:attributes="
+                        value val;
+                        selected python:str(val) ==
+                                 str(sel_val) or None"
+                            tal:content="txt"/>
+                  </tal:opt>
+                </select>
+              </tal:sel>
+            </div>
+
+            <!-- Result: multi-value (text inputs) -->
+            <div tal:condition="python:result_type ==
+                                'multivalue'"
+                 tal:define="result_values
+                     view/get_result_values"
+                 class="multivalue">
+              <tal:val repeat="val result_values">
+                <input type="text"
+                       name="Result:list"
+                       class="form-control
+                              form-control-sm mb-1"
+                       tal:attributes="value val"/>
+              </tal:val>
+            </div>
+
           </div>
         </div>
 
@@ -267,9 +387,7 @@
 
               <!-- Multi-select -->
               <select tal:condition="python:options
-                                     and result_type in
-                                     ('multichoice', 'multiselect',
-                                      'multiselect_duplicates')"
+                                     and result_type == 'multiselect'"
                       class="form-control form-control-sm"
                       multiple="multiple"
                       tal:define="values python:view.parse_multi_value(value)"
@@ -283,13 +401,81 @@
                 </tal:opt>
               </select>
 
+              <!-- Multiple choice (checkboxes) -->
+              <div tal:condition="python:options
+                                  and result_type == 'multichoice'"
+                   tal:define="values python:view.parse_multi_value(value)"
+                   class="multichoice">
+                <tal:opt repeat="opt options">
+                  <div class="custom-control custom-checkbox"
+                       tal:define="opt_val python:opt.get('value', '');
+                                   opt_text python:opt.get('text', '')">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           tal:attributes="value opt_val;
+                                           name string:${keyword}:list;
+                                           id string:${keyword}-${opt_val};
+                                           checked python:str(opt_val) in values or None"/>
+                    <label class="custom-control-label"
+                           tal:attributes="for string:${keyword}-${opt_val}"
+                           tal:content="opt_text"/>
+                  </div>
+                </tal:opt>
+              </div>
+
+              <!-- Multi-select with duplicates -->
+              <div tal:condition="python:options
+                                  and result_type ==
+                                  'multiselect_duplicates'"
+                   tal:define="sel_values python:
+                       view.parse_multi_value(value) + ['']"
+                   class="multiselect-duplicates">
+                <tal:sel repeat="sel_val sel_values">
+                  <select class="form-control form-control-sm mb-1"
+                          tal:attributes="name string:${keyword}:list">
+                    <option value=""></option>
+                    <tal:opt repeat="opt options">
+                      <option tal:define="opt_val python:opt.get('value', '');
+                                          opt_text python:opt.get('text', '')"
+                              tal:attributes="value opt_val;
+                                              selected python:str(opt_val) == str(sel_val) or None"
+                              tal:content="opt_text"/>
+                    </tal:opt>
+                  </select>
+                </tal:sel>
+              </div>
+
+              <!-- Multi-value (text inputs) -->
+              <div tal:condition="python:result_type == 'multivalue'"
+                   tal:define="vals python:
+                       view.parse_multi_value(value) + ['']"
+                   class="multivalue">
+                <tal:val repeat="v vals">
+                  <input type="text"
+                         class="form-control form-control-sm mb-1"
+                         tal:attributes="name string:${keyword}:list;
+                                         value v"/>
+                </tal:val>
+              </div>
+
               <!-- Datetime -->
-              <input tal:condition="python:not options
-                                    and result_type == 'datetime'"
-                     type="date"
-                     class="form-control form-control-sm"
-                     tal:attributes="name keyword;
-                                     value value"/>
+              <div tal:condition="python:not options
+                                  and result_type == 'datetime'"
+                   tal:define="date_val python:view.parse_date(value);
+                               time_val python:view.parse_time(value)"
+                   class="input-group input-group-sm datetimewidget">
+                <input type="date"
+                       class="form-control form-control-sm"
+                       tal:attributes="name string:${keyword}-date;
+                                       value date_val"/>
+                <input type="time"
+                       class="form-control form-control-sm"
+                       tal:attributes="name string:${keyword}-time;
+                                       value time_val"/>
+                <input type="hidden"
+                       tal:attributes="name keyword;
+                                       value value"/>
+              </div>
 
               <!-- String -->
               <input tal:condition="python:not options
@@ -302,7 +488,7 @@
               <!-- Numeric (default) -->
               <div tal:condition="python:not options
                                   and result_type not in
-                                  ('string', 'datetime')"
+                                  ('string', 'datetime', 'multivalue')"
                    class="input-group input-group-sm">
                 <input type="text"
                        class="form-control numeric"
