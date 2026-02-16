@@ -51,15 +51,10 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
     _saved = False
 
     def __init__(self, context, request):
-        super(EditAnalysisForm, self).__init__(
-            context, request
-        )
-        uid = (
-            request.get("uid")
-            or request.form.get("uid")
-        )
+        super(EditAnalysisForm, self).__init__(context, request)
+        uid = request.get("uid") or request.form.get("uid")
         self._analysis = api.get_object_by_uid(uid)
-        self.context = self._analysis
+        self.context = self.analysis
 
     def __call__(self):
         """Handle form submission or render the form
@@ -71,10 +66,20 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
             return ""
         return self.render()
 
+    @property
+    def analysis(self):
+        return self._analysis
+
+    @property
+    def sample(self):
+        if self.analysis is None:
+            return None
+        return self.analysis.getRequest()
+
     def getContent(self):
         """Return the proxy that populates widgets
         """
-        return AnalysisSchemaProxy(self._analysis)
+        return AnalysisSchemaProxy(self.analysis)
 
     # -- Permission checks via z3c.form widgets --
 
@@ -88,7 +93,7 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
 
     def updateWidgets(self):
         super(EditAnalysisForm, self).updateWidgets()
-        analysis = self._analysis
+        analysis = self.analysis
 
         # Hide result for select-type results
         # (template renders a custom select)
@@ -139,37 +144,39 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
     def get_analysis_title(self):
         """Returns the analysis title
         """
-        return api.get_title(self._analysis)
+        analysis_title = api.get_title(self.analysis) or ""
+        sample_title = api.get_title(self.sample) or ""
+        return "{} &rarr; {}".format(sample_title, analysis_title)
 
     def get_analysis_uid(self):
         """Returns the analysis UID
         """
-        return api.get_uid(self._analysis)
+        return api.get_uid(self.analysis)
 
     def get_analysis_url(self):
         """Returns the analysis absolute URL
         """
-        return self._analysis.absolute_url()
+        return self.analysis.absolute_url()
 
     def get_result(self):
         """Returns the current result value
         """
-        return self._analysis.getResult() or ""
+        return self.analysis.getResult() or ""
 
     def get_result_type(self):
         """Returns the result type
         """
-        return self._analysis.getResultType() or "numeric"
+        return self.analysis.getResultType() or "numeric"
 
     def get_result_options(self):
         """Returns result options for select-type results
         """
         options = copy.copy(
-            self._analysis.getResultOptions()
+            self.analysis.getResultOptions()
         )
         if not options:
             return []
-        sort_by = self._analysis.getResultOptionsSorting()
+        sort_by = self.analysis.getResultOptionsSorting()
         if sort_by:
             sort_key, sort_order = sort_by.split("-")
             reverse = sort_order == "desc"
@@ -183,23 +190,23 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
     def is_calculated(self):
         """Check if the analysis result is calculated
         """
-        return bool(self._analysis.getCalculation())
+        return bool(self.analysis.getCalculation())
 
     def get_uncertainty(self):
         """Returns the current uncertainty value
         """
-        return self._analysis.getUncertainty() or ""
+        return self.analysis.getUncertainty() or ""
 
     def get_method_uid(self):
         """Returns the current method UID
         """
-        method = self._analysis.getMethod()
+        method = self.analysis.getMethod()
         return api.get_uid(method) if method else ""
 
     def get_methods(self):
         """Returns allowed methods as list of dicts
         """
-        methods = self._analysis.getAllowedMethods()
+        methods = self.analysis.getAllowedMethods()
         result = []
         for method in methods:
             result.append({
@@ -211,7 +218,7 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
     def get_instrument_uid(self):
         """Returns the current instrument UID
         """
-        instrument = self._analysis.getInstrument()
+        instrument = self.analysis.getInstrument()
         return api.get_uid(instrument) if instrument else ""
 
     def get_instruments(self):
@@ -229,7 +236,7 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
     def get_analyst(self):
         """Returns the current analyst username
         """
-        return self._analysis.getAnalyst() or ""
+        return self.analysis.getAnalyst() or ""
 
     def get_analysts(self):
         """Returns available analysts as list of dicts
@@ -253,36 +260,36 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
     def get_unit(self):
         """Returns the current unit
         """
-        return self._analysis.getUnit() or ""
+        return self.analysis.getUnit() or ""
 
     def get_unit_choices(self):
         """Returns unit choices as list of strings
         """
-        choices = self._analysis.getUnitChoices() or []
+        choices = self.analysis.getUnitChoices() or []
         return [c.get("value", "") for c in choices]
 
     def get_dl_operand(self):
         """Returns the current detection limit operand
         """
         return (
-            self._analysis.getDetectionLimitOperand() or ""
+            self.analysis.getDetectionLimitOperand() or ""
         )
 
     def is_hidden(self):
         """Returns whether analysis is hidden from report
         """
-        return self._analysis.getHidden()
+        return self.analysis.getHidden()
 
     def get_remarks(self):
         """Returns the current remarks
         """
-        return self._analysis.getRemarks() or ""
+        return self.analysis.getRemarks() or ""
 
     def get_result_capture_date(self):
         """Returns the result capture date in ISO format
         """
         from senaite.core.api import dtime
-        capture_date = self._analysis.getResultCaptureDate()
+        capture_date = self.analysis.getResultCaptureDate()
         if not capture_date:
             return ""
         return dtime.to_iso_format(capture_date)
@@ -291,7 +298,7 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
         """Returns interim fields from the analysis
         """
         raw_interims = (
-            self._analysis.getInterimFields() or []
+            self.analysis.getInterimFields() or []
         )
         interims = copy.deepcopy(raw_interims)
         result = []
@@ -345,7 +352,7 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
     def _get_valid_instruments(self):
         """Return valid instruments filtered by method
         """
-        analysis = self._analysis
+        analysis = self.analysis
         instruments = analysis.getAllowedInstruments()
         method = analysis.getMethod()
         if method:
@@ -360,7 +367,7 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
     def _is_uncertainty_editable(self):
         """Check if uncertainty is manually editable
         """
-        analysis = self._analysis
+        analysis = self.analysis
         if not analysis.getAllowManualUncertainty():
             return False
         if analysis.getDetectionLimitOperand() in [
@@ -374,7 +381,7 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
     def handle_submit(self):
         """Save form data via IDataManager
         """
-        analysis = self._analysis
+        analysis = self.analysis
         dm = queryAdapter(analysis, IDataManager)
         if dm is None:
             logger.error(

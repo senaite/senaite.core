@@ -20,8 +20,7 @@
     <div class="modal-header">
       <h5 class="modal-title">
         <i class="fas fa-edit mr-1"></i>
-        <span i18n:translate="">Edit</span>:
-        <span tal:content="analysis_title"/>
+        <span tal:content="structure analysis_title"/>
       </h5>
       <button type="button" class="close"
               data-dismiss="modal" aria-label="Close">
