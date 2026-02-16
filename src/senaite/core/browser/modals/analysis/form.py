@@ -95,14 +95,6 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
         super(EditAnalysisForm, self).updateWidgets()
         analysis = self.analysis
 
-        # Hide result for select-type results
-        # (template renders a custom select)
-        result_type = self.get_result_type()
-        result_options = analysis.getResultOptions() or []
-        if result_type == "select" and result_options:
-            if "result" in self.widgets:
-                self.widgets["result"].mode = HIDDEN_MODE
-
         # Hide DL operand if selector not enabled
         if not analysis.getDetectionLimitSelector():
             if "detection_limit_operand" in self.widgets:
