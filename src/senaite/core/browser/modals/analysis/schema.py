@@ -24,6 +24,19 @@ from plone.autoform import directives
 from plone.supermodel import model
 from zope import schema
 
+# Permissions
+PERM_EDIT_RESULT = "senaite.core.permissions.FieldEditAnalysisResult"
+PERM_EDIT_HIDDEN = "senaite.core.permissions.FieldEditAnalysisHidden"
+PERM_EDIT_REMARKS = "senaite.core.permissions.FieldEditAnalysisRemarks"
+
+# Vocabulary base path
+VOCAB_PREFIX = "senaite.core.vocabularies.analysis"
+VOCAB_METHODS = "{}.methods".format(VOCAB_PREFIX)
+VOCAB_INSTRUMENTS = "{}.instruments".format(VOCAB_PREFIX)
+VOCAB_ANALYSTS = "{}.analysts".format(VOCAB_PREFIX)
+VOCAB_UNITS = "{}.units".format(VOCAB_PREFIX)
+VOCAB_DL_OPERANDS = "{}.dl_operands".format(VOCAB_PREFIX)
+
 
 class IEditAnalysisSchema(model.Schema):
     """Schema for the Edit Analysis modal form.
@@ -33,7 +46,7 @@ class IEditAnalysisSchema(model.Schema):
     """
 
     directives.write_permission(
-        result="senaite.core.permissions.FieldEditAnalysisResult"
+        result=PERM_EDIT_RESULT
     )
     result = schema.TextLine(
         title=_(u"Result"),
@@ -41,7 +54,7 @@ class IEditAnalysisSchema(model.Schema):
     )
 
     directives.write_permission(
-        uncertainty="senaite.core.permissions.FieldEditAnalysisResult"
+        uncertainty=PERM_EDIT_RESULT
     )
     uncertainty = schema.TextLine(
         title=_(u"Uncertainty"),
@@ -49,52 +62,52 @@ class IEditAnalysisSchema(model.Schema):
     )
 
     directives.write_permission(
-        method="senaite.core.permissions.FieldEditAnalysisResult"
+        method=PERM_EDIT_RESULT
     )
     method = schema.Choice(
         title=_(u"Method"),
-        vocabulary="senaite.core.vocabularies.analysis.methods",
+        vocabulary=VOCAB_METHODS,
         required=False,
     )
 
     directives.write_permission(
-        instrument="senaite.core.permissions.FieldEditAnalysisResult"
+        instrument=PERM_EDIT_RESULT
     )
     instrument = schema.Choice(
         title=_(u"Instrument"),
-        vocabulary="senaite.core.vocabularies.analysis.instruments",
+        vocabulary=VOCAB_INSTRUMENTS,
         required=False,
     )
 
     directives.write_permission(
-        analyst="senaite.core.permissions.FieldEditAnalysisResult"
+        analyst=PERM_EDIT_RESULT
     )
     analyst = schema.Choice(
         title=_(u"Analyst"),
-        vocabulary="senaite.core.vocabularies.analysis.analysts",
+        vocabulary=VOCAB_ANALYSTS,
         required=False,
     )
 
     directives.write_permission(
-        unit="senaite.core.permissions.FieldEditAnalysisResult"
+        unit=PERM_EDIT_RESULT
     )
     unit = schema.Choice(
         title=_(u"Unit"),
-        vocabulary="senaite.core.vocabularies.analysis.units",
+        vocabulary=VOCAB_UNITS,
         required=False,
     )
 
     directives.write_permission(
-        detection_limit_operand="senaite.core.permissions.FieldEditAnalysisResult"
+        detection_limit_operand=PERM_EDIT_RESULT
     )
     detection_limit_operand = schema.Choice(
         title=_(u"Detection Limit"),
-        vocabulary="senaite.core.vocabularies.analysis.dl_operands",
+        vocabulary=VOCAB_DL_OPERANDS,
         required=False,
     )
 
     directives.write_permission(
-        hidden="senaite.core.permissions.FieldEditAnalysisHidden"
+        hidden=PERM_EDIT_HIDDEN
     )
     hidden = schema.Bool(
         title=_(u"Hidden from report"),
@@ -102,7 +115,7 @@ class IEditAnalysisSchema(model.Schema):
     )
 
     directives.write_permission(
-        remarks="senaite.core.permissions.FieldEditAnalysisRemarks"
+        remarks=PERM_EDIT_REMARKS
     )
     remarks = schema.Text(
         title=_(u"Remarks"),
@@ -110,7 +123,7 @@ class IEditAnalysisSchema(model.Schema):
     )
 
     directives.write_permission(
-        result_capture_date="senaite.core.permissions.FieldEditAnalysisResult"
+        result_capture_date=PERM_EDIT_RESULT
     )
     result_capture_date = schema.TextLine(
         title=_(u"Result Capture Date"),
