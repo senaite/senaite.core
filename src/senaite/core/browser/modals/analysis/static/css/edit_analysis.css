@@ -26,3 +26,16 @@
   font-size: .875rem;
   color: #6c757d;
 }
+.edit-analysis-form .input-group-sm .custom-select {
+  height: calc(1.5em + .5rem + 2px);
+  padding: .25rem .5rem;
+  font-size: .875rem;
+  line-height: 1.5;
+}
+.edit-analysis-form .dl-operand-select {
+  max-width: 4.5rem;
+  flex: 0 0 auto;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: 0;
+}
