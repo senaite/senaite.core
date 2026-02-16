@@ -229,7 +229,7 @@
                  i18n:translate="">Remarks</label>
           <div class="col-sm-8">
             <textarea name="Remarks"
-                      class="form-control form-control-sm"
+                      class="form-control form-control-sm w-100"
                       rows="3"
                       tal:content="view/get_remarks"/>
           </div>
