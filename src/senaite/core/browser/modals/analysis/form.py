@@ -179,6 +179,19 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
             )
         return options
 
+    def get_result_values(self):
+        """Returns the current result as a list of values
+
+        For multiselect types, parses the JSON array.
+        Appends an empty string for the "add new" selector.
+        """
+        values = self.parse_multi_value(
+            self.get_result()
+        )
+        # append empty entry for adding a new selection
+        values.append("")
+        return values
+
     def is_calculated(self):
         """Check if the analysis result is calculated
         """
@@ -339,6 +352,27 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
             return json.loads(value)
         return [value]
 
+    def parse_date(self, value):
+        """Extract the date part from a datetime string
+
+        Expected format: "YYYY-MM-DD HH:MM" or "YYYY-MM-DD"
+        """
+        if not value:
+            return ""
+        return str(value).strip().split(" ")[0]
+
+    def parse_time(self, value):
+        """Extract the time part from a datetime string
+
+        Expected format: "YYYY-MM-DD HH:MM"
+        """
+        if not value:
+            return ""
+        parts = str(value).strip().split(" ")
+        if len(parts) > 1:
+            return parts[1]
+        return ""
+
     # -- Private helpers --
 
     def _get_valid_instruments(self):
@@ -402,6 +436,9 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
             value = form_data[form_name]
             if value is None:
                 value = ""
+            # Filter empty strings from multi-select lists
+            if isinstance(value, list):
+                value = [v for v in value if v]
             dm.set(at_name, value)
 
         # Handle Hidden checkbox (absent = unchecked)
