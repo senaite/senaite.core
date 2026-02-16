@@ -386,9 +386,6 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
         form_data = self.request.form
 
         # Map form field names to AT field names
-        # NOTE: Order matters — Uncertainty must be set
-        # after Result and DetectionLimitOperand because
-        # those setters may reset the uncertainty value.
         field_map = [
             ("DetectionLimitOperand", "DetectionLimitOperand"),
             ("Result", "Result"),
@@ -398,7 +395,6 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
             ("Unit", "Unit"),
             ("Remarks", "Remarks"),
             ("ResultCaptureDate", "ResultCaptureDate"),
-            ("Uncertainty", "Uncertainty"),
         ]
 
         for form_name, at_name in field_map:
@@ -420,6 +416,14 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
             keyword = interim.get("keyword", "")
             if keyword and keyword in form_data:
                 dm.set(keyword, form_data[keyword])
+
+        # Set uncertainty last — setDetectionLimitOperand
+        # and setResult both call setUncertainty("") as a
+        # side effect, so any earlier dm.set would be wiped.
+        if "Uncertainty" in form_data:
+            analysis.setUncertainty(
+                form_data["Uncertainty"]
+            )
 
         analysis.reindexObject()
         event.notify(ObjectEditedEvent(analysis))
