@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2850 Edit popup for sample analyses
 - #2848 Patch transaction commit hook for catalog queue to avoid double indexing
 - #2844 Allow unit selection in profiles
 - #2846 Fix Unit super-/subscript rendering 
