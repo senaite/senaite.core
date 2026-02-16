@@ -40,15 +40,6 @@ from .schema import IEditAnalysisSchema
 
 class EditAnalysisForm(AutoExtensibleForm, form.Form):
     """z3c.form-based modal for editing an analysis.
-
-    Uses AutoExtensibleForm + IEditAnalysisSchema with
-    plone.autoform directives for automatic permission-based
-    field omission. Fields present in self.widgets indicate
-    the user has write permission.
-
-    All HTML rendering and form submission handling is done
-    manually (Bootstrap 4) to avoid z3c.form widget/extraction
-    conflicts.
     """
     schema = IEditAnalysisSchema
     ignoreContext = False
