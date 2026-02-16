@@ -227,16 +227,63 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
         return api.get_uid(instrument) if instrument else ""
 
     def get_instruments(self):
-        """Returns valid instruments as list of dicts
+        """Returns allowed instruments as list of dicts
+
+        Includes out-of-date instruments with a label and
+        disabled flag, matching the listing behavior.
         """
-        instruments = self._get_valid_instruments()
+        instruments = self._get_allowed_instruments()
+        is_qc = api.get_portal_type(
+            self.analysis
+        ) == "ReferenceAnalysis"
         result = []
         for instrument in instruments:
-            result.append({
-                "uid": api.get_uid(instrument),
-                "title": api.get_title(instrument),
-            })
+            uid = api.get_uid(instrument)
+            title = api.get_title(instrument)
+            if instrument.isValid():
+                result.append({
+                    "uid": uid,
+                    "title": title,
+                    "disabled": False,
+                })
+            elif is_qc:
+                result.append({
+                    "uid": uid,
+                    "title": u"{} (Out of date)".format(
+                        title),
+                    "disabled": False,
+                })
+            elif instrument.isOutOfDate():
+                result.append({
+                    "uid": uid,
+                    "title": u"{} (Out of date)".format(
+                        title),
+                    "disabled": False,
+                })
+        result.sort(key=lambda x: x["title"].lower())
         return result
+
+    def get_method_instrument_mapping(self):
+        """Returns JSON mapping of method UID to instrument UIDs
+
+        Used by the JS to filter instruments when the method
+        changes. An empty string key holds the instruments
+        available when no method is selected.
+        """
+        analysis = self.analysis
+        instruments = self._get_allowed_instruments()
+        all_uids = [api.get_uid(i) for i in instruments]
+        mapping = {"": all_uids}
+        for method in analysis.getAllowedMethods():
+            method_uid = api.get_uid(method)
+            method_instruments = method.getInstruments()
+            valid_uids = [
+                api.get_uid(i)
+                for i in instruments
+                if i in method_instruments
+            ]
+            mapping[method_uid] = valid_uids
+        return json.dumps(mapping)
 
     def get_analyst(self):
         """Returns the current analyst username
@@ -375,20 +422,13 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
 
     # -- Private helpers --
 
-    def _get_valid_instruments(self):
-        """Return valid instruments filtered by method
+    def _get_allowed_instruments(self):
+        """Return all allowed instruments
+
+        Includes out-of-date instruments so they can be
+        displayed with appropriate labels.
         """
-        analysis = self.analysis
-        instruments = analysis.getAllowedInstruments()
-        method = analysis.getMethod()
-        if method:
-            method_instruments = method.getInstruments()
-            instruments = list(
-                set(instruments).intersection(
-                    method_instruments
-                )
-            )
-        return [i for i in instruments if i.isValid()]
+        return self.analysis.getAllowedInstruments()
 
     def _is_uncertainty_editable(self):
         """Check if uncertainty is manually editable

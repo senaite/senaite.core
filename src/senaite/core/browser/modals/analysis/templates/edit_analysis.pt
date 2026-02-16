@@ -252,18 +252,23 @@
 
         <!-- Method -->
         <div class="form-group row"
-             tal:condition="python:view.is_field_visible('method')"
+             tal:condition="python:view.is_field_visible(
+                 'method')"
              tal:define="current view/get_method_uid;
                          methods view/get_methods">
-          <label class="col-sm-4 col-form-label col-form-label-sm"
+          <label class="col-sm-4 col-form-label
+                        col-form-label-sm"
                  i18n:translate="">Method</label>
           <div class="col-sm-8">
             <select name="Method"
+                    id="edit-analysis-method"
                     class="form-control form-control-sm">
               <option value=""></option>
               <tal:opt repeat="m methods">
-                <option tal:attributes="value python:m['uid'];
-                                        selected python:m['uid'] == current or None"
+                <option tal:attributes="
+                    value python:m['uid'];
+                    selected python:m['uid'] == current
+                             or None"
                         tal:content="python:m['title']"/>
               </tal:opt>
             </select>
@@ -272,18 +277,28 @@
 
         <!-- Instrument -->
         <div class="form-group row"
-             tal:condition="python:view.is_field_visible('instrument')"
+             tal:condition="python:view.is_field_visible(
+                 'instrument')"
              tal:define="current view/get_instrument_uid;
-                         instruments view/get_instruments">
-          <label class="col-sm-4 col-form-label col-form-label-sm"
+                         instruments view/get_instruments;
+                         mapping view/get_method_instrument_mapping">
+          <label class="col-sm-4 col-form-label
+                        col-form-label-sm"
                  i18n:translate="">Instrument</label>
           <div class="col-sm-8">
             <select name="Instrument"
-                    class="form-control form-control-sm">
+                    id="edit-analysis-instrument"
+                    class="form-control form-control-sm"
+                    tal:attributes="
+                        data-method-instruments mapping">
               <option value=""></option>
               <tal:opt repeat="inst instruments">
-                <option tal:attributes="value python:inst['uid'];
-                                        selected python:inst['uid'] == current or None"
+                <option tal:attributes="
+                    value python:inst['uid'];
+                    selected python:inst['uid'] == current
+                             or None;
+                    disabled python:inst.get('disabled')
+                             or None"
                         tal:content="python:inst['title']"/>
               </tal:opt>
             </select>
