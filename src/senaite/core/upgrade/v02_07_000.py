@@ -67,7 +67,6 @@ REMOVE_AT_TYPES = [
     "Contact",
     "Multifile",
     "Worksheet",
-    "WorksheetFolder",
 ]
 
 PORTAL_FOLDER_ITEMS = {
@@ -214,12 +213,12 @@ def update_analysis_catalog_indexes(tool):
     logger.info("Update analysis catalog indexes [DONE]")
 
 
-def remove_at_portal_types(tool):
+def remove_at_portal_types(tool, remove_at_types=REMOVE_AT_TYPES):
     """Remove obsolete AT portal type information
     """
     logger.info("Remove AT types from portal_types tool ...")
     pt = api.get_tool("portal_types")
-    for type_name in REMOVE_AT_TYPES:
+    for type_name in remove_at_types:
         fti = pt.getTypeInfo(type_name)
         # keep DX FTIs
         if isinstance(fti, DexterityFTI):
@@ -234,7 +233,7 @@ def remove_at_portal_types(tool):
     # factory_tool to not shortcut `createObject?type_name=` on object creation
     ft = api.get_tool("portal_factory")
     at_types = ft.getFactoryTypes().keys()
-    at_types = filter(lambda name: name not in REMOVE_AT_TYPES, at_types)
+    at_types = filter(lambda name: name not in remove_at_types, at_types)
     ft.manage_setPortalFactoryTypes(listOfTypeIds=at_types)
 
     logger.info("Remove AT types from portal_types tool ... [DONE]")
@@ -1072,6 +1071,9 @@ def migrate_worksheets_to_dx(tool):
     # remove old AT folder
     if origin and len(origin) == 0:
         portal.manage_delObjects(["worksheets-old"])
+
+    # remove only AT WorksheetFolder type
+    remove_at_portal_types(tool, ["WorksheetFolder"])
 
     logger.info("Convert Worksheet's to Dexterity [DONE]")
 
