@@ -24,7 +24,6 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.api.worksheet import create_worksheet
 from senaite.core.browser.modals import Modal
 from senaite.core.catalog import SETUP_CATALOG
-from six import string_types
 
 
 class CreateWorksheetModal(Modal):
@@ -78,16 +77,16 @@ class CreateWorksheetModal(Modal):
         categories = self.request.form.get("categories", [])
         samples = list(map(api.get_object, self.uids))
 
-        if isinstance(categories, string_types):
-            categories = [categories]
-        # filter out non-UIDs and map to object
-        categories = map(api.get_object, filter(api.is_uid, categories))
+        categories = filter(None, api.to_list(categories))
+        # filter out non-UIDs
+        categories = list(filter(api.is_uid, categories))
 
         analyses = []
         for sample in samples:
             for analysis in sample.getAnalyses(full_objects=True):
-                # skip analyses that do not belong to the selected categories
-                if categories and analysis.getCategory() not in categories:
+                # if categories not empty then skip analyses that do not belong
+                # to the selected categories
+                if categories and analysis.getRawCategory() not in categories:
                     continue
                 analyses.append(analysis)
         return analyses

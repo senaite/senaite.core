@@ -21,7 +21,7 @@
 from Products.Five.browser import BrowserView
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
+from bika.lims import senaiteMessageFactory as _
 
 
 class WorksheetView(BrowserView):
@@ -34,7 +34,7 @@ class WorksheetView(BrowserView):
 
     def __call__(self):
         view = "manage_results"
-        if not self.context.getAnalyses():
+        if not self.context.getRawAnalyses():
             view = "add_analyses"
             msg = _(
                 u"no_analyses_were_added_message",
