@@ -22,6 +22,7 @@
 from bika.lims import senaiteMessageFactory as _
 from plone.autoform import directives
 from plone.supermodel import model
+from senaite.core.schema.datetimefield import DatetimeField
 from zope import schema
 
 # Permissions
@@ -125,7 +126,7 @@ class IEditAnalysisSchema(model.Schema):
     directives.write_permission(
         result_capture_date=PERM_EDIT_RESULT
     )
-    result_capture_date = schema.TextLine(
+    result_capture_date = DatetimeField(
         title=_(u"Result Capture Date"),
         required=False,
     )
