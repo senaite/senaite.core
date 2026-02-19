@@ -118,8 +118,8 @@ class AnalysisSchemaProxy(object):
     def result_capture_date(self):
         capture_date = self._analysis.getResultCaptureDate()
         if not capture_date:
-            return u""
-        return dtime.to_iso_format(capture_date)
+            return None
+        return dtime.to_dt(capture_date)
 
     @result_capture_date.setter
     def result_capture_date(self, value):
