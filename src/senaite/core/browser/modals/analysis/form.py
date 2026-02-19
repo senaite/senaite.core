@@ -28,6 +28,7 @@ from plone.autoform.form import AutoExtensibleForm
 from Products.Archetypes.event import ObjectEditedEvent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
+from senaite.core.api import dtime
 from senaite.core.interfaces.datamanager import IDataManager
 from z3c.form import form
 from z3c.form.interfaces import HIDDEN_MODE
@@ -338,13 +339,28 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
         return self.analysis.getRemarks() or ""
 
     def get_result_capture_date(self):
-        """Returns the result capture date in ISO format
+        """Returns the combined date+time for the hidden field (YYYY-MM-DD HH:MM)
         """
-        from senaite.core.api import dtime
         capture_date = self.analysis.getResultCaptureDate()
         if not capture_date:
             return ""
-        return dtime.to_iso_format(capture_date)
+        return dtime.date_to_string(capture_date, fmt="%Y-%m-%d %H:%M")
+
+    def get_result_capture_date_part(self):
+        """Returns the date portion (YYYY-MM-DD) for the date input
+        """
+        capture_date = self.analysis.getResultCaptureDate()
+        if not capture_date:
+            return ""
+        return dtime.date_to_string(capture_date, fmt="%Y-%m-%d")
+
+    def get_result_capture_time_part(self):
+        """Returns the time portion (HH:MM) for the time input
+        """
+        capture_date = self.analysis.getResultCaptureDate()
+        if not capture_date:
+            return ""
+        return dtime.date_to_string(capture_date, fmt="%H:%M")
 
     def get_interims(self):
         """Returns interim fields from the analysis

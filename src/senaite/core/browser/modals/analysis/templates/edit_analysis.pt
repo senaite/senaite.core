@@ -350,9 +350,23 @@
           <label class="col-sm-4 col-form-label col-form-label-sm"
                  i18n:translate="">Result Capture Date</label>
           <div class="col-sm-8">
-            <input type="date" name="ResultCaptureDate"
-                   class="form-control form-control-sm"
-                   tal:attributes="value view/get_result_capture_date"/>
+            <div class="input-group flex-nowrap d-inline-flex w-auto datetimewidget">
+              <input type="date"
+                     class="form-control form-control-sm"
+                     tal:attributes="
+                           target string:ResultCaptureDate;
+                           name string:ResultCaptureDate-date;
+                           value view/get_result_capture_date_part"/>
+              <input type="time"
+                     class="form-control form-control-sm"
+                     tal:attributes="
+                           target string:ResultCaptureDate;
+                           name string:ResultCaptureDate-time;
+                           value view/get_result_capture_time_part"/>
+              <input type="hidden"
+                     name="ResultCaptureDate"
+                     tal:attributes="value view/get_result_capture_date"/>
+            </div>
           </div>
         </div>
 
