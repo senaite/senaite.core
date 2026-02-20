@@ -1,0 +1,45 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="senaite.core">
+
+  <plone:static
+      directory="static"
+      type="plone"
+      name="senaite.core.edit_analysis"/>
+
+  <browser:page
+      name="edit_analysis_modal"
+      for="*"
+      class=".form.EditAnalysisForm"
+      permission="senaite.core.permissions.FieldEditAnalysisResult"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Analysis edit modal vocabularies -->
+  <utility
+      component=".vocabularies.AnalysisMethodsVocabularyFactory"
+      name="senaite.core.vocabularies.analysis.methods" />
+
+  <utility
+      component=".vocabularies.AnalysisInstrumentsVocabularyFactory"
+      name="senaite.core.vocabularies.analysis.instruments" />
+
+  <utility
+      component=".vocabularies.AnalysisAnalystsVocabularyFactory"
+      name="senaite.core.vocabularies.analysis.analysts" />
+
+  <utility
+      component=".vocabularies.AnalysisUnitsVocabularyFactory"
+      name="senaite.core.vocabularies.analysis.units" />
+
+  <utility
+      component=".vocabularies.AnalysisDLOperandsVocabularyFactory"
+      name="senaite.core.vocabularies.analysis.dl_operands" />
+
+  <utility
+      component=".vocabularies.AnalysisResultOptionsVocabularyFactory"
+      name="senaite.core.vocabularies.analysis.result_options" />
+
+</configure>

@@ -34,7 +34,9 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 class SetAnalysisConditionsView(BrowserView):
     """View for the update of analysis conditions
     """
-    template = ViewPageTemplateFile("templates/set_analysis_conditions.pt")
+    template = ViewPageTemplateFile(
+        "templates/set_analysis_conditions.pt"
+    )
 
     def __call__(self):
         if self.request.form.get("submitted", False):
@@ -46,21 +48,24 @@ class SetAnalysisConditionsView(BrowserView):
         """
         redirect_url = api.get_url(self.context)
         if message is not None:
-            self.context.plone_utils.addPortalMessage(message, level)
+            self.context.plone_utils.addPortalMessage(
+                message, level
+            )
         return self.request.response.redirect(redirect_url)
 
     def get_analysis(self):
         uid = self.get_uid_from_request()
         obj = api.get_object_by_uid(uid)
         if IRequestAnalysis.providedBy(obj):
-            # Only analyses that implement IRequestAnalysis support conditions
             return obj
         return None
 
     def get_uid_from_request(self):
         """Returns the uid from the request, if any
         """
-        uid = self.request.form.get("uid", self.request.get("uid"))
+        uid = self.request.form.get(
+            "uid", self.request.get("uid")
+        )
         if api.is_uid(uid):
             return uid
         return None
@@ -70,10 +75,12 @@ class SetAnalysisConditionsView(BrowserView):
         return api.get_title(analysis)
 
     def get_conditions(self):
-        """Returns the conditions to display in the form, those with empty or
-        non-set value included
+        """Returns the conditions to display in the form,
+        those with empty or non-set value included
         """
-        conditions = self.get_analysis().getConditions(empties=True)
+        conditions = self.get_analysis().getConditions(
+            empties=True
+        )
         conditions = copy.deepcopy(conditions)
         for condition in conditions:
             choices = condition.get("choices", "")
@@ -82,10 +89,13 @@ class SetAnalysisConditionsView(BrowserView):
 
             if condition.get("type") == "file":
                 uid = condition.get("value")
-                condition["attachment"] = self.get_attachment_info(uid)
+                condition["attachment"] = (
+                    self.get_attachment_info(uid)
+                )
 
         # Move conditions from "file" type to the end:
-        #   Cannot set conditions with a '<' char when others are from file
+        #   Cannot set conditions with a '<' char when
+        #   others are from file
         #   https://github.com/senaite/senaite.core/pulls/2231
         def files_last(condition1, condition2):
             type1 = condition1.get("type")
@@ -96,7 +106,9 @@ class SetAnalysisConditionsView(BrowserView):
         return sorted(conditions, cmp=files_last)
 
     def get_attachment_info(self, uid):
-        attachment = api.get_object_by_uid(uid, default=None)
+        attachment = api.get_object_by_uid(
+            uid, default=None
+        )
         if not isinstance(attachment, Attachment):
             return {}
 
@@ -106,29 +118,51 @@ class SetAnalysisConditionsView(BrowserView):
             "uid": api.get_uid(attachment),
             "id": api.get_id(attachment),
             "url": url,
-            "download_url": "{}/at_download/AttachmentFile".format(url),
+            "download_url": (
+                "{}/at_download/AttachmentFile".format(url)
+            ),
             "filename": at_file.filename,
         }
 
     def handle_submit(self):
         analysis = self.get_analysis()
         title = safe_unicode(api.get_title(analysis))
-        if not check_permission(FieldEditAnalysisConditions, analysis):
-            message = _("Not allowed to update conditions: {}").format(title)
-            return self.redirect(message=message, level="error")
+        if not check_permission(
+            FieldEditAnalysisConditions, analysis
+        ):
+            message = _(
+                "Not allowed to update conditions: {}"
+            ).format(title)
+            return self.redirect(
+                message=message, level="error"
+            )
 
         # Sort the conditions as they were initially set
-        conditions = self.request.form.get("conditions", [])
-        original = self.get_analysis().getConditions(empties=True)
-        original = [cond.get("title") for cond in original]
+        conditions = self.request.form.get(
+            "conditions", []
+        )
+        original = self.get_analysis().getConditions(
+            empties=True
+        )
+        original = [
+            cond.get("title") for cond in original
+        ]
 
         def original_order(condition1, condition2):
-            index1 = original.index(condition1.get("title"))
-            index2 = original.index(condition2.get("title"))
+            index1 = original.index(
+                condition1.get("title")
+            )
+            index2 = original.index(
+                condition2.get("title")
+            )
             return (index1 > index2) - (index1 < index2)
-        conditions = sorted(conditions, cmp=original_order)
+        conditions = sorted(
+            conditions, cmp=original_order
+        )
 
         # Update the conditions
         analysis.setConditions(conditions)
-        message = _("Analysis conditions updated: {}").format(title)
+        message = _(
+            "Analysis conditions updated: {}"
+        ).format(title)
         return self.redirect(message=message)

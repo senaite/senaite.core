@@ -176,7 +176,10 @@
       const el = event.target;
       if (!el.value) return;
 
-      const btn = el.closest(".ArchetypesRemarksWidget").querySelector("input.saveRemarks");
+      const widget = el.closest(".ArchetypesRemarksWidget");
+      if (!widget) return;
+
+      const btn = widget.querySelector("input.saveRemarks");
       if (btn) btn.disabled = false;
     }
 
