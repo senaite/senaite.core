@@ -175,6 +175,12 @@ schema = BikaSchema.copy() + Schema((
                 "sort_order": "ascending"
             },
             columns=[
+                {
+                    "name": "scope",
+                    "width": "10",
+                    "align": "center",
+                    "label": "",
+                },
                 {"name": "Title", "label": _("Name")},
                 {"name": "getEmailAddress", "label": _("Email")},
             ],
@@ -211,6 +217,12 @@ schema = BikaSchema.copy() + Schema((
                 "sort_order": "ascending"
             },
             columns=[
+                {
+                    "name": "scope",
+                    "width": "10",
+                    "align": "center",
+                    "label": "",
+                },
                 {"name": "Title", "label": _("Name")},
                 {"name": "getEmailAddress", "label": _("Email")},
             ],
