@@ -97,11 +97,7 @@ schema = Organisation.schema.copy() + Schema((
                 "If set, this contact is automatically "
                 "selected in the sample add form."),
             catalog=CONTACT_CATALOG,
-            query={
-                "is_active": True,
-                "sort_on": "sortable_title",
-                "sort_order": "ascending",
-            },
+            query="get_contact_field_query",
             colModel=[
                 {
                     "columnName": "scope",
@@ -394,6 +390,22 @@ class Client(Organisation):
         brains = api.search(query)
         contacts = map(api.get_object, brains)
         return list(contacts)
+
+    @security.public
+    def get_contact_field_query(self):
+        """Return the catalog query for contact reference widgets.
+
+        Used as a named query by the PrimaryContact widget to restrict
+        results to contacts relevant for this client: contacts belonging
+        to this client and global contacts (not under any client)
+        """
+        uid = api.get_uid(self)
+        return {
+            "getParentUID": [uid, ""],
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        }
 
     @security.public
     def getDecimalMark(self):
