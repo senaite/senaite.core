@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2852 Allow to set primary sample contact in client
 - #2848 Patch transaction commit hook for catalog queue to avoid double indexing
 - #2844 Allow unit selection in profiles
 - #2846 Fix Unit super-/subscript rendering 
