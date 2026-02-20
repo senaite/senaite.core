@@ -74,4 +74,13 @@
       component=".methods.AvailableMethodsFactory"
       name="senaite.core.vocabularies.available_methods" />
 
+  <utility
+      component=".setup.AnalysisColumnsVocabularyFactory"
+      name="senaite.core.vocabularies.analysis_columns" />
+
+  <utility
+      component=".setup.WorksheetAnalysisColumnsVocabularyFactory"
+      name="senaite.core.vocabularies.worksheet_analysis_columns"
+      />
+
 </configure>

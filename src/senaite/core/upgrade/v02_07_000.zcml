@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate analysis columns order to setup"
+      description="Move analysis columns order settings from registry to SENAITE setup"
+      source="2720"
+      destination="2721"
+      handler=".v02_07_000.migrate_analysis_columns_to_setup"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Migrate Worksheet objects to Dexterity"
       description="Convert Worksheet content type from Archetypes to Dexterity"
       source="2719"
