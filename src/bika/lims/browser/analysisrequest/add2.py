@@ -436,6 +436,10 @@ class AnalysisRequestAddView(BrowserView):
         """
         catalog = api.get_tool(CONTACT_CATALOG)
         client = client or self.get_client()
+        if client:
+            primary = client.getPrimaryContact()
+            if primary and api.is_active(primary):
+                return primary
         path = api.get_path(self.context)
         if client:
             path = api.get_path(client)
