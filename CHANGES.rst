@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2852 Allow to set primary sample contact in client
+- #2849 Fix migrate Worksheet step for retry running. Refactoring create worksheet
 - #2850 Edit popup for sample analyses
 - #2848 Patch transaction commit hook for catalog queue to avoid double indexing
 - #2844 Allow unit selection in profiles

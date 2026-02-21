@@ -1386,7 +1386,9 @@ def get_catalogs_for(brain_or_object, default=PORTAL_CATALOG):
     # => Lookup catalogs by FTI
     if len(catalogs) == 0:
         fti = get_fti(portal_type)
-        if fti.product:
+        if fti is None:
+            catalogs = []
+        elif fti.product:
             # AT content type
             # => Looup via archetype_tool
             archetype_tool = get_tool("archetype_tool")
