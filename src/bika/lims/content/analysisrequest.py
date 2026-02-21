@@ -167,9 +167,8 @@ schema = BikaSchema.copy() + Schema((
             ui_item="Title",
             catalog=CONTACT_CATALOG,
             # Base query - gets overridden with client-specific query at
-            #  runtime to include both client contacts and global contacts
+            # runtime to include both client contacts and global contacts
             query={
-                "getParentUID": "",
                 "is_active": True,
                 "sort_on": "sortable_title",
                 "sort_order": "ascending"
@@ -211,7 +210,6 @@ schema = BikaSchema.copy() + Schema((
             # Base query - gets overridden with client-specific query at
             # runtime to include both client contacts and global contacts
             query={
-                "getParentUID": "",
                 "is_active": True,
                 "sort_on": "sortable_title",
                 "sort_order": "ascending"
