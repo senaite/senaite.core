@@ -38,6 +38,7 @@ from bika.lims.interfaces import IAddSampleObjectInfo
 from bika.lims.interfaces import IAddSampleRecordsValidator
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
 from bika.lims.interfaces.field import IUIDReferenceField
+from bika.lims.utils import get_client as get_client_from_chain
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from BTrees.OOBTree import OOBTree
 from DateTime import DateTime
@@ -435,6 +436,10 @@ class AnalysisRequestAddView(BrowserView):
         """
         catalog = api.get_tool(CONTACT_CATALOG)
         client = client or self.get_client()
+        if client:
+            primary = client.getPrimaryContact()
+            if primary and api.is_active(primary):
+                return primary
         path = api.get_path(self.context)
         if client:
             path = api.get_path(client)
@@ -474,8 +479,8 @@ class AnalysisRequestAddView(BrowserView):
         context = self.context
         fieldname = field.getName()
 
-        # hide the Client field on client and batch contexts
-        if fieldname == "Client" and context.portal_type in ("Client", ):
+        # hide the Client field when within a client context at any depth
+        if fieldname == "Client" and get_client_from_chain(context):
             return False
 
         # hide the Batch field on batch contexts
