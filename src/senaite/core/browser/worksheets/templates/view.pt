@@ -17,14 +17,9 @@
 
         <form class="form form-inline"
               name="worksheet-add-form"
-              tal:attributes="action string:${context/absolute_url}/worksheet_add"
-              method="POST">
-
-          <!-- N.B. the class is picked up by bika.lims.worksheet.get_template_instrument -->
-          <input tal:condition="python:context.portal_type == 'Worksheets'"
-                 type="hidden"
-                 class="templateinstruments"
-                 tal:attributes="value view/getTemplateInstruments"/>
+              method="POST"
+              enctype="multipart/form-data"
+              tal:attributes="action string:${context/absolute_url}/add_worksheet">
 
           <div class="input-group input-group-sm flex-nowrap d-inline-flex w-auto">
             <div class="input-group-prepend">
@@ -87,6 +82,10 @@
               </tal:add_actions>
             </div>
           </div>
+
+          <!-- hidden fields -->
+          <input type="hidden" name="submitted" value="1" />
+          <input tal:replace="structure context/@@authenticator/authenticator"/>
 
         </form>
       </div>

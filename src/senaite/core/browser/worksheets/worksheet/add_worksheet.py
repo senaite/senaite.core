@@ -21,7 +21,8 @@
 from Products.Five.browser import BrowserView
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
+from bika.lims import senaiteMessageFactory as _
+from senaite.core.api.worksheet import create_worksheet
 
 
 class AddWorksheetView(BrowserView):
@@ -33,10 +34,12 @@ class AddWorksheetView(BrowserView):
         super(AddWorksheetView, self).__init__(context, request)
 
     def __call__(self):
-        # Validation
-        analyst = self.request.get("analyst", "")
-        template = self.request.get("template", "")
-        instrument = self.request.get("instrument", "")
+        if not self.request.form.get("submitted", False):
+            return self.request.response.redirect(self.context.absolute_url())
+
+        analyst = self.request.form.get("analyst", "")
+        template = self.request.form.get("template", "")
+        instrument = self.request.form.get("instrument", "")
 
         if not analyst:
             message = _(
@@ -44,42 +47,26 @@ class AddWorksheetView(BrowserView):
                 default=u"Analyst must be specified.",
             )
             self.add_status_message(message, "warning")
-            self.request.RESPONSE.redirect(self.context.absolute_url())
-            return
+            return self.request.response.redirect(self.context.absolute_url())
 
-        portal = api.get_portal()
-        ws_container = portal.get("worksheets")
-        ws = api.create(ws_container, "Worksheet")
+        ws = create_worksheet(analyst=analyst, instrument=instrument,
+                              template=template)
 
-        # Set analyst and instrument
-        ws.setAnalyst(analyst)
-        if instrument:
-            ws.setInstrument(instrument)
-
-        # Set the default layout for results display
-        ws_layout = api.get_senaite_setup().getWorksheetLayout()
-        ws.setResultsLayout(ws_layout)
-        ws_url = ws.absolute_url()
-        # overwrite saved context UID for event subscribers
-        self.request["context_uid"] = ws.UID()
-
-        # if no template was specified, redirect to blank worksheet
-        if not template:
-            self.request.RESPONSE.redirect(ws_url + "/add_analyses")
-            return
-
-        ws.applyWorksheetTemplate(template)
-        ws.reindexObject()
-
-        if ws.getLayoutView():
-            self.request.RESPONSE.redirect(ws_url + "/manage_results")
-        else:
-            msg = _(
-                u"no_analyses_were_added_message",
-                default=u"No analyses were added",
+        if not ws:
+            message = _(
+                u"worksheet_not_created",
+                default=u"Worksheet not created.",
             )
-            self.add_status_message(msg)
-            self.request.RESPONSE.redirect(ws_url + "/add_analyses")
+            self.add_status_message(message, "error")
+            return self.request.response.redirect(self.context.absolute_url())
+
+        message = _(
+            u"worksheet_created",
+            default=u"Created worksheet ${ws_id}",
+            mapping={"ws_id": ws.getId()},
+        )
+        self.add_status_message(message)
+        return self.request.response.redirect(api.get_url(ws))
 
     def add_status_message(self, message, level="info"):
         """Set a portal status message

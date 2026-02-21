@@ -21,9 +21,9 @@
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.api.worksheet import create_worksheet
 from senaite.core.browser.modals import Modal
 from senaite.core.catalog import SETUP_CATALOG
-from six import string_types
 
 
 class CreateWorksheetModal(Modal):
@@ -55,73 +55,41 @@ class CreateWorksheetModal(Modal):
         """Extract categories from request and create worksheet
         """
         analyst = self.request.form.get("analyst")
+        template = self.request.form.get("template", "")
+        instrument = self.request.form.get("instrument", "")
+        analyses = self.get_analyses()
+
+        ws = create_worksheet(analyst=analyst, instrument=instrument,
+                              template=template, analyses=analyses)
+
+        if not ws:
+            return self.template()
+        message = _(
+            u"worksheet_created",
+            default=u"Created worksheet ${ws_id}",
+            mapping={"ws_id": ws.getId()},
+        )
+        self.add_status_message(message)
+        # redirect to the new worksheet
+        return api.get_url(ws)
+
+    def get_analyses(self):
         categories = self.request.form.get("categories", [])
-        template = self.request.form.get("template")
         samples = list(map(api.get_object, self.uids))
 
-        if isinstance(categories, string_types):
-            categories = [categories]
+        categories = filter(None, api.to_list(categories))
         # filter out non-UIDs
-        categories = filter(api.is_uid, categories)
-
-        worksheet = self.create_worksheet_for(
-            samples, analyst, categories, template)
-        self.add_status_message(
-            _("Created worksheet %s" % api.get_id(worksheet)), level="info")
-        # redirect to the new worksheet
-        return api.get_url(worksheet)
-
-    def create_worksheet_for(self, samples, analyst, categories, template):
-        """Create a new worksheet
-
-        The new worksheet contains the analyses of all samples that are in
-        the given categories.
-
-        :param samples: Sample objects or UIDs
-        :param categories: Category objects or UIDs
-        :param template: Worksheet template
-        :returns: new created Worksheet
-        """
-        categories = map(api.get_object, categories)
+        categories = list(filter(api.is_uid, categories))
 
         analyses = []
-        unassigned_analyses = []
         for sample in samples:
             for analysis in sample.getAnalyses(full_objects=True):
-                # collect all unassigned analyses
-                if analysis.getWorksheetUID() is None:
-                    unassigned_analyses.append(analysis)
-                # skip analyses that do not belong to the selected categories
-                if analysis.getCategory() not in categories:
+                # if categories not empty then skip analyses that do not belong
+                # to the selected categories
+                if categories and analysis.getRawCategory() not in categories:
                     continue
                 analyses.append(analysis)
-
-        # create the new worksheet
-        ws = api.create(self.worksheet_folder, "Worksheet")
-        ws.setAnalyst(analyst)
-        ws.addAnalyses(analyses)
-        ws.setResultsLayout(self.worksheet_layout)
-
-        # apply the worksheet template to all unassigned analyses
-        wst = api.get_object(template, None)
-        if wst:
-            ws.applyWorksheetTemplate(wst, analyses=unassigned_analyses)
-
-        return ws
-
-    @property
-    def worksheet_folder(self):
-        """Return the worksheet root folder
-        """
-        portal = api.get_portal()
-        return portal.restrictedTraverse("worksheets")
-
-    @property
-    def worksheet_layout(self):
-        """Return the configured worksheet layout
-        """
-        setup = api.get_senaite_setup()
-        return setup.getWorksheetLayout()
+        return analyses
 
     def get_analysis_categories(self):
         """Return analysis categories of the selected samples

@@ -81,7 +81,7 @@
 
   <browser:page
       for="senaite.core.interfaces.IWorksheets"
-      name="worksheet_add"
+      name="add_worksheet"
       class=".add_worksheet.AddWorksheetView"
       permission="senaite.core.permissions.AddWorksheet"
       layer="senaite.core.interfaces.ISenaiteCore"
