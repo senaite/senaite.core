@@ -1193,3 +1193,56 @@ def migrate_worksheet_to_dx(src, destination):
     migrator.copy_id(src, target)
 
     logger.info("Migrated Worksheet from %s -> %s" % (src, target))
+
+
+@upgradestep(product, version)
+def migrate_analysis_columns_to_setup(tool):
+    """Migrate analysis columns order from registry to setup
+    """
+    logger.info(
+        "Migrating analysis columns order to setup ..."
+    )
+    from senaite.core.registry import get_registry_record
+    from senaite.core.vocabularies.setup import ANALYSIS_COLUMNS
+    from senaite.core.vocabularies.setup import (
+        WORKSHEET_ANALYSIS_COLUMNS,
+    )
+
+    setup = api.get_senaite_setup()
+
+    # Migrate sample view columns
+    registry_sample = get_registry_record(
+        "sampleview_analysis_columns_order", default=[]
+    ) or []
+    if registry_sample:
+        all_keys = list(ANALYSIS_COLUMNS.keys())
+        # append missing columns in their default order
+        missing = [
+            k for k in all_keys if k not in registry_sample
+        ]
+        migrated = tuple(registry_sample) + tuple(missing)
+        setup.setSampleviewAnalysisColumnsOrder(migrated)
+        logger.info(
+            "Migrated sample view columns: %s" % list(migrated)
+        )
+
+    # Migrate worksheet view columns
+    registry_ws = get_registry_record(
+        "worksheetview_analysis_columns_order", default=[]
+    ) or []
+    if registry_ws:
+        all_keys = list(WORKSHEET_ANALYSIS_COLUMNS.keys())
+        # append missing columns in their default order
+        missing = [
+            k for k in all_keys if k not in registry_ws
+        ]
+        migrated = tuple(registry_ws) + tuple(missing)
+        setup.setWorksheetviewAnalysisColumnsOrder(migrated)
+        logger.info(
+            "Migrated worksheet view columns: %s"
+            % list(migrated)
+        )
+
+    logger.info(
+        "Migrating analysis columns order to setup [DONE]"
+    )

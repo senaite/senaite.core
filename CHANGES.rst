@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2852 Allow to set primary sample contact in client
+- #2850 Edit popup for sample analyses
 - #2848 Patch transaction commit hook for catalog queue to avoid double indexing
 - #2844 Allow unit selection in profiles
 - #2846 Fix Unit super-/subscript rendering 

@@ -20,6 +20,7 @@ window.SiteView = class SiteView {
     this.on_numeric_field_input = this.on_numeric_field_input.bind(this);
     this.on_numeric_field_keypress = this.on_numeric_field_keypress.bind(this);
     this.on_overlay_panel_click = this.on_overlay_panel_click.bind(this);
+    this.on_modal_link_click = this.on_modal_link_click.bind(this);
   }
 
   load() {
@@ -42,6 +43,7 @@ window.SiteView = class SiteView {
     });
 
     $(document).on("click", "a.overlay_panel", this.on_overlay_panel_click);
+    $(document).on("click", "a.modal_link", this.on_modal_link_click);
 
     $(document).on({
       ajaxStart: () => $("body").addClass("loading"),
@@ -149,25 +151,31 @@ window.SiteView = class SiteView {
     let val = $el.val();
 
     // Replace comma with dot
-    val = val.replace(',', '.');
+    val = val.replace(/,/g, '.');
 
-    // Keep only digits, dot, and minus
-    val = val.replace(/[^0-9.-]/g, '');
-
-    // Allow only one leading minus
-    if (val.indexOf('-') > 0) {
-      val = val.replace(/-/g, '');
-    } else if ((val.match(/-/g) || []).length > 1) {
-      val = '-' + val.replace(/-/g, '');
-    }
-
-    // Remove all but the first dot
-    const firstDotIndex = val.indexOf('.');
-    if (firstDotIndex !== -1) {
-      val = val.slice(0, firstDotIndex + 1) + val.slice(firstDotIndex + 1).replace(/\./g, '');
-    }
+    // Strip characters not valid in numeric expressions
+    // Allow: digits, dot, minus, plus, e/E (exponential),
+    //        < and > (detection limit operators), spaces
+    val = val.replace(/[^0-9.eE<>\-+\s]/g, '');
 
     $el.val(val);
+  }
+
+  on_modal_link_click(e) {
+    e.preventDefault();
+    var $el = $(e.currentTarget);
+    var url = $el.attr("href");
+    var form_id = $el.data("form_id");
+    var listings = window.senaite &&
+                   window.senaite.core &&
+                   window.senaite.core.listings;
+    // load the modal via the listing
+    var listing = listings && listings[form_id];
+    if (listing) {
+      var parsed = new URL(url, window.location);
+      var uid = parsed.searchParams.get("uid");
+      listing.loadModal(url, [uid]);
+    }
   }
 
   on_overlay_panel_click(e) {
