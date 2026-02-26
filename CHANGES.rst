@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2854 Allow to set sample CC contacts in client
+- #2853 Fix hidden Client field is missing in sample add form
 - #2852 Allow to set primary sample contact in client
 - #2849 Fix migrate Worksheet step for retry running. Refactoring create worksheet
 - #2850 Edit popup for sample analyses

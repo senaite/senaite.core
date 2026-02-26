@@ -335,7 +335,8 @@ class AnalysisRequestAddView(BrowserView):
             return context.getClient()
         elif parent.portal_type == "Batch":
             return context.getClient()
-        return None
+        # Fallback: walk the full acquisition chain up to find a client
+        return get_client_from_chain(context)
 
     def get_sample(self):
         """Returns the Sample
@@ -503,6 +504,16 @@ class AnalysisRequestAddView(BrowserView):
             if visible is False and visibility != "hidden":
                 continue
             out.append(field)
+
+        # Fields configured as 'edit' but forced hidden by is_field_visible
+        # (e.g. Client when inside a client context) must appear as hidden
+        # inputs so the form submission carries their value.
+        if visibility == "hidden":
+            for field in mv.get_fields_with_visibility("edit", mode):
+                if self.is_field_visible(field) is False:
+                    if field not in out:
+                        out.append(field)
+
         return out
 
     def get_service_categories(self, restricted=True):
