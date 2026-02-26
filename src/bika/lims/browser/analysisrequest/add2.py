@@ -1012,7 +1012,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             })
 
         if client:
-            for cc in client.getCCContact():
+            for cc in client.getCCContacts():
                 add_cc(cc)
         if contact:
             for cc in contact.getCCContact():
