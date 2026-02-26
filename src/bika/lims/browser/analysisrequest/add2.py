@@ -972,7 +972,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # Set the default contact, but only if empty. The Contact field is
         # flushed each time the Client changes, so we can assume that if there
-        # is a selected contact, it belongs to current client already
+        # is a selected contact, it belongs to current client already.
+        # get_contact_info already merges the client's CCContacts, so the
+        # Contact cascade carries the full merged CCContact list.
         default_contact = self.get_default_contact(client=obj)
         if default_contact:
             contact_info = self.get_contact_info(default_contact)
@@ -988,28 +990,50 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         return info
 
+    def _get_merged_cc_contact_values(self, client, contact):
+        """Return a merged, deduplicated CCContact value list.
+
+        Combines CCContacts from the client and from the given contact
+        (primary contact). Client entries come first.
+        """
+        seen = set()
+        values = []
+
+        def add_cc(cc):
+            uid = api.get_uid(cc)
+            if uid in seen:
+                return
+            seen.add(uid)
+            values.append({
+                "uid": uid,
+                "title": cc.getFullname(),
+                "fullname": cc.getFullname(),
+                "email": cc.getEmailAddress(),
+            })
+
+        if client:
+            for cc in client.getCCContact():
+                add_cc(cc)
+        if contact:
+            for cc in contact.getCCContact():
+                add_cc(cc)
+
+        return values
+
     @cache(cache_key)
     def get_contact_info(self, obj):
-        """Returns the client info of an object
+        """Returns the contact info of an object
         """
-
         info = self.get_base_info(obj)
         fullname = obj.getFullname()
         email = obj.getEmailAddress()
 
-        # Note: It might get a circular dependency when calling:
-        #       map(self.get_contact_info, obj.getCCContact())
-        cccontacts = []
-        for contact in obj.getCCContact():
-            uid = api.get_uid(contact)
-            fullname = contact.getFullname()
-            email = contact.getEmailAddress()
-            cccontacts.append({
-                "uid": uid,
-                "title": fullname,
-                "fullname": fullname,
-                "email": email
-            })
+        # Merge CCContacts from the contact's parent client (if any) and the
+        # contact itself, deduplicated by UID.
+        # Note: do NOT call get_contact_info recursively on CCContacts here
+        #       to avoid circular dependencies.
+        client = get_client_from_chain(obj)
+        cccontacts = self._get_merged_cc_contact_values(client, obj)
 
         info.update({
             "fullname": fullname,
