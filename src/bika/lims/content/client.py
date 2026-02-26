@@ -126,7 +126,7 @@ schema = Organisation.schema.copy() + Schema((
         allowed_types=("Contact", ),
         multiValued=1,
         widget=ReferenceWidget(
-            label=_("CC Contact"),
+            label=_("CC Contacts"),
             description=_(
                 "Default CC contacts for new samples. "
                 "If set, these contacts are automatically "
