@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2025-04-03 13:20+0000\n"
+"POT-Creation-Date: 2026-02-27 11:53+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: English (Spain) (https://www.transifex.com/senaite/teams/87045/en_ES/)\n"
@@ -52,10 +52,6 @@ msgstr ""
 msgid "Disable globally"
 msgstr ""
 
-#: senaite/core/profiles/default/registry.xml
-msgid "Displayed content types"
-msgstr ""
-
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:314
 msgid "Enabled"
 msgstr ""
@@ -95,6 +91,10 @@ msgstr ""
 
 #: senaite/core/profiles/default/actions.xml
 msgid "Log out"
+msgstr ""
+
+#: senaite/core/skins/senaite_templates/senaite_widgets/recordswidget.pt:275
+msgid "More"
 msgstr ""
 
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:79
@@ -145,10 +145,6 @@ msgstr ""
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Site title"
-msgstr ""
-
-#: senaite/core/profiles/default/registry.xml
-msgid "The content types that should be shown in the navigation and site map."
 msgstr ""
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:218
@@ -621,16 +617,6 @@ msgstr ""
 #. Default: "Edit"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:52
 msgid "label_edit"
-msgstr ""
-
-#. Default: "You are editing the default view of a container. If you wanted to edit the container itself, ${go_here}."
-#: senaite/core/skins/senaite_templates/edit_macros.pt:49
-msgid "label_edit_default_view_container"
-msgstr ""
-
-#. Default: "go here"
-#: senaite/core/skins/senaite_templates/edit_macros.pt:49
-msgid "label_edit_default_view_container_go_here"
 msgstr ""
 
 #. Default: "Enable"
