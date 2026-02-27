@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-02-27 13:33+0000\n"
+"POT-Creation-Date: 2026-02-27 19:36+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: English (Spain) (https://www.transifex.com/senaite/teams/87045/en_ES/)\n"
@@ -6874,7 +6874,7 @@ msgstr ""
 
 #. Date format used with the datepicker jqueryui plugin.
 #. Please only use 'dd', 'mm', 'yy', '-', '/', '.' in this string.
-#. Default: "mm/dd/yy"
+#. Default: "yy-mm-dd"
 msgid "date_format_short_datepicker"
 msgstr ""
 
