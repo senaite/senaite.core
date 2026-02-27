@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-02-27 11:53+0000\n"
+"POT-Creation-Date: 2026-02-27 13:33+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Spanish (Uruguay) (https://app.transifex.com/senaite/teams/87045/es_UY/)\n"
@@ -5428,7 +5428,6 @@ msgstr ""
 msgid "Show less"
 msgstr ""
 
-# senaite.app.listing: Show more
 #: senaite/core/skins/senaite_templates/senaite_widgets/remarkswidget.pt:79
 msgid "Show more"
 msgstr ""
@@ -6841,6 +6840,7 @@ msgstr ""
 msgid "changes_saved"
 msgstr ""
 
+#. Results edition not allowed: ${inv}"
 #. Default: "Some analyses use out-of-date or uncalibrated instruments. Results edition not allowed: ${inv}"
 #: senaite/core/browser/worksheets/worksheet/manage_results.py:214
 msgid "check_instrument_validity_message"
@@ -7127,11 +7127,20 @@ msgstr ""
 msgid "description_bikasetup_immediateresultsentry"
 msgstr ""
 
+#. sent to primary contacts and laboratory managers when a sample is
+#. invalidated. The following placeholders are supported: <code title='The ID
+#. of the sample'>$sample_id</code>, <code title='The ID of the sample
+#. retest'>$retest_id</code>, <code title='The link to the
+#. retest'>$retest_link</code>, <code title='The reason(s) for
+#. invalidation'>$reason</code>, <code title='The address of the
+#. lab'>$lab_address</code>."
 #. Default: "Define the template for the email body that will be automatically sent to primary contacts and laboratory managers when a sample is invalidated. The following placeholders are supported: <code title='The ID of the sample'>$sample_id</code>, <code title='The ID of the sample retest'>$retest_id</code>, <code title='The link to the retest'>$retest_link</code>, <code title='The reason(s) for invalidation'>$reason</code>, <code title='The address of the lab'>$lab_address</code>."
 #: bika/lims/content/bikasetup.py:946
 msgid "description_bikasetup_invalidation_email_body"
 msgstr ""
 
+#. a sample. If enabled, the '$reason' placeholder in the sample invalidation
+#. notification email body will be replaced with the entered reason."
 #. Default: "Specify whether providing a reason is mandatory when invalidating a sample. If enabled, the '$reason' placeholder in the sample invalidation notification email body will be replaced with the entered reason."
 #: bika/lims/content/bikasetup.py:913
 msgid "description_bikasetup_invalidation_reason_required"
@@ -7287,6 +7296,7 @@ msgstr ""
 msgid "description_multifile_document_location"
 msgstr ""
 
+#. image, ...)"
 #. Default: "Type of document (e.g. user manual, instrument specifications, image, ...)"
 #: senaite/core/content/multifile.py:83
 msgid "description_multifile_document_type"
@@ -7370,21 +7380,29 @@ msgstr ""
 msgid "description_registry_import_analysis_submit"
 msgstr ""
 
+#. matching the source sample structure. Each partition will be created with
+#. the same configuration (sample type, container, preservation) and analyses
+#. as the source partition."
 #. Default: "When enabled, copying a sample will also create partitions matching the source sample structure. Each partition will be created with the same configuration (sample type, container, preservation) and analyses as the source partition."
 #: senaite/core/registry/schema.py:342
 msgid "description_registry_sample_add_copy_partitions"
 msgstr ""
 
+#. copying analyses to a new sample in the sample add form."
 #. Default: "Add all analyses workflow states that should be skipped when copying analyses to a new sample in the sample add form."
 #: senaite/core/registry/schema.py:373
 msgid "description_registry_sample_add_skip_analyses_in_states"
 msgstr ""
 
+#. copying a sample. Only analyses that directly belong to the source sample
+#. will be copied to the new sample."
 #. Default: "When enabled, analyses from partitions will be excluded when copying a sample. Only analyses that directly belong to the source sample will be copied to the new sample."
 #: senaite/core/registry/schema.py:358
 msgid "description_registry_sample_add_skip_partition_analyses"
 msgstr ""
 
+#. upon sample creation. This option is disabled by default, but certain add-
+#. ons may depend on it to operate correctly."
 #. Default: "When enabled, triggers “before” and “after” transition events upon sample creation. This option is disabled by default, but certain add-ons may depend on it to operate correctly."
 #: senaite/core/registry/schema.py:405
 msgid "description_registry_trigger_events_on_sample_creation"
@@ -7647,6 +7665,9 @@ msgstr ""
 msgid "description_senaitesetup_allow_manual_result_capture_date"
 msgstr ""
 
+#. to them or for unassigned analyses. When disabled, users can only submit
+#. results for analyses assigned to themselves. This setting does not apply to
+#. users with role Lab Manager."
 #. Default: "When enabled, users can submit results for analyses not assigned to them or for unassigned analyses. When disabled, users can only submit results for analyses assigned to themselves. This setting does not apply to users with role Lab Manager."
 #: senaite/core/content/senaitesetup.py:436
 msgid "description_senaitesetup_allow_to_submit_not_assigned"
@@ -7658,16 +7679,20 @@ msgstr ""
 msgid "description_senaitesetup_always_cc_responsibles_in_report_emails"
 msgstr ""
 
+#. 0 disables automatic log-off"
 #. Default: "The number of minutes before a user is automatically logged off. 0 disables automatic log-off"
 #: senaite/core/content/senaitesetup.py:408
 msgid "description_senaitesetup_auto_log_off"
 msgstr ""
 
+#. results are verified. Otherwise, users with enough privileges have to
+#. manually verify the sample afterwards. Default: enabled"
 #. Default: "When enabled, the sample is automatically verified as soon as all results are verified. Otherwise, users with enough privileges have to manually verify the sample afterwards. Default: enabled"
 #: senaite/core/content/senaitesetup.py:635
 msgid "description_senaitesetup_auto_verify_samples"
 msgstr ""
 
+#. when the list is long"
 #. Default: "Group analysis services by category in the LIMS tables, helpful when the list is long"
 #: senaite/core/content/senaitesetup.py:580
 msgid "description_senaitesetup_categorise_analysis_services"
@@ -7705,6 +7730,7 @@ msgstr ""
 msgid "description_senaitesetup_default_country"
 msgstr ""
 
+#. to create new Samples"
 #. Default: "Default value of the 'Sample count' when users click 'ADD' button to create new Samples"
 #: senaite/core/content/senaitesetup.py:725
 msgid "description_senaitesetup_default_number_of_ars_to_add"
@@ -7717,6 +7743,7 @@ msgstr ""
 msgid "description_senaitesetup_email_from_sample_publication"
 msgstr ""
 
+#. analysis in results entry view"
 #. Default: "If enabled, a free text field will be displayed close to each analysis in results entry view"
 #: senaite/core/content/senaitesetup.py:622
 msgid "description_senaitesetup_enable_analysis_remarks"
@@ -7727,11 +7754,14 @@ msgstr ""
 msgid "description_senaitesetup_enable_ar_specs"
 msgstr ""
 
+#. 'Reject' option will be displayed in the actions menu."
 #. Default: "Select this to activate the rejection workflow for Samples. A 'Reject' option will be displayed in the actions menu."
 #: senaite/core/content/senaitesetup.py:739
 msgid "description_senaitesetup_enable_rejection_workflow"
 msgstr ""
 
+#. displayed in scientific notation using the letter 'e' to indicate the
+#. exponent. The precision can be configured in individual Analysis Services."
 #. Default: "Result values with at least this number of significant digits are displayed in scientific notation using the letter 'e' to indicate the exponent. The precision can be configured in individual Analysis Services."
 #: senaite/core/content/senaitesetup.py:606
 msgid "description_senaitesetup_exponential_format_threshold"
@@ -7744,11 +7774,15 @@ msgstr ""
 msgid "description_senaitesetup_immediateresultsentry"
 msgstr ""
 
+#. a sample. If enabled, the '$reason' placeholder in the sample invalidation
+#. notification email body will be replaced with the entered reason."
 #. Default: "Specify whether providing a reason is mandatory when invalidating a sample. If enabled, the '$reason' placeholder in the sample invalidation notification email body will be replaced with the entered reason."
 #: senaite/core/content/senaitesetup.py:392
 msgid "description_senaitesetup_invalidation_reason_required"
 msgstr ""
 
+#. Dashboard is not selected as the default front page. If no landing page is
+#. selected, the default frontpage is displayed."
 #. Default: "The landing page is shown for non-authenticated users if the Dashboard is not selected as the default front page. If no landing page is selected, the default frontpage is displayed."
 #: senaite/core/content/senaitesetup.py:855
 msgid "description_senaitesetup_landing_page"
@@ -7761,16 +7795,22 @@ msgstr ""
 msgid "description_senaitesetup_maxnumberofsamplesadd"
 msgstr ""
 
+#. for clients flagged as 'members', normally co-operative members or
+#. associates deserving of this discount"
 #. Default: "The discount percentage entered here, is applied to the prices for clients flagged as 'members', normally co-operative members or associates deserving of this discount"
 #: senaite/core/content/senaitesetup.py:505
 msgid "description_senaitesetup_member_discount"
 msgstr ""
 
+#. acceptable minimum number of results before QC statistics will be
+#. calculated and plotted"
 #. Default: "Using too few data points does not make statistical sense. Set an acceptable minimum number of results before QC statistics will be calculated and plotted"
 #: senaite/core/content/senaitesetup.py:564
 msgid "description_senaitesetup_minimum_results"
 msgstr ""
 
+#. considered as 'verified'. This setting can be overrided for any Analysis in
+#. Analysis Service edit view. By default, 1"
 #. Default: "Number of required verifications before a given result being considered as 'verified'. This setting can be overrided for any Analysis in Analysis Service edit view. By default, 1"
 #: senaite/core/content/senaitesetup.py:668
 msgid "description_senaitesetup_number_of_required_verifications"
@@ -7783,16 +7823,21 @@ msgstr ""
 msgid "description_senaitesetup_publication_email_text"
 msgstr ""
 
+#. rejecting a sample."
 #. Default: "Enter the predefined rejection reasons that users can select when rejecting a sample."
 #: senaite/core/content/senaitesetup.py:754
 msgid "description_senaitesetup_rejection_reasons"
 msgstr ""
 
+#. When disabled, analysts and lab clerks can also manage worksheets. Note:
+#. This setting is automatically enabled and locked when worksheet access is
+#. restricted to assigned analysts."
 #. Default: "When enabled, only lab managers can create and manage worksheets. When disabled, analysts and lab clerks can also manage worksheets. Note: This setting is automatically enabled and locked when worksheet access is restricted to assigned analysts."
 #: senaite/core/content/senaitesetup.py:452
 msgid "description_senaitesetup_restrict_worksheet_management"
 msgstr ""
 
+#. are assigned. When disabled, analysts have access to all worksheets."
 #. Default: "When enabled, analysts can only access worksheets to which they are assigned. When disabled, analysts have access to all worksheets."
 #: senaite/core/content/senaitesetup.py:422
 msgid "description_senaitesetup_restrict_worksheet_users_access"
@@ -7808,6 +7853,8 @@ msgstr ""
 msgid "description_senaitesetup_sampleanalysesrequired"
 msgstr ""
 
+#. order of selection determines the display order. Unselected columns are
+#. hidden. Leave empty to show all columns in default order."
 #. Default: "Select which columns to display in sample analysis listings. The order of selection determines the display order. Unselected columns are hidden. Leave empty to show all columns in default order."
 #: senaite/core/content/senaitesetup.py:785
 msgid "description_senaitesetup_sampleview_columns_order"
@@ -7823,6 +7870,10 @@ msgstr ""
 msgid "description_senaitesetup_scientific_notation_results"
 msgstr ""
 
+#. verify it. This setting only take effect for those users with a role
+#. assigned that allows them to verify results (by default, managers,
+#. labmanagers and verifiers). This setting can be overrided for a given
+#. Analysis in Analysis Service edit view. By default, disabled."
 #. Default: "If enabled, a user who submitted a result will also be able to verify it. This setting only take effect for those users with a role assigned that allows them to verify results (by default, managers, labmanagers and verifiers). This setting can be overrided for a given Analysis in Analysis Service edit view. By default, disabled."
 #: senaite/core/content/senaitesetup.py:650
 msgid "description_senaitesetup_self_verification_enabled"
@@ -7834,41 +7885,56 @@ msgstr ""
 msgid "description_senaitesetup_show_lab_name_in_login"
 msgstr ""
 
+#. deactivated, partitions won't be included in listings and no info message
+#. with links to the primary sample will be displayed to client contacts."
 #. Default: "Select to show sample partitions to client contacts. If deactivated, partitions won't be included in listings and no info message with links to the primary sample will be displayed to client contacts."
 #: senaite/core/content/senaitesetup.py:879
 msgid "description_senaitesetup_show_partitions"
 msgstr ""
 
+#. navigation. The order of selection determines the display order in the
+#. sidebar. If none are selected, all folders will be shown in the default
+#. order."
 #. Default: "Select which top-level folders should be displayed in the sidebar navigation. The order of selection determines the display order in the sidebar. If none are selected, all folders will be shown in the default order."
 #: senaite/core/content/senaitesetup.py:894
 msgid "description_senaitesetup_sidebar_folders"
 msgstr ""
 
+#. top-level folders, level 2 includes their children, and so on."
 #. Default: "Maximum depth of the sidebar navigation tree. Level 1 shows only top-level folders, level 2 includes their children, and so on."
 #: senaite/core/content/senaitesetup.py:913
 msgid "description_senaitesetup_sidebar_navigation_depth"
 msgstr ""
 
+#. navigation. If none are selected, all content types will be shown."
 #. Default: "Select which content types should be excluded from the sidebar navigation. If none are selected, all content types will be shown."
 #: senaite/core/content/senaitesetup.py:930
 msgid "description_senaitesetup_sidebar_skip_types"
 msgstr ""
 
+#. setting can enable/disable verifying/consecutively verifying more than once
+#. for the same user."
 #. Default: "Choose type of multiple verification for the same user. This setting can enable/disable verifying/consecutively verifying more than once for the same user."
 #: senaite/core/content/senaitesetup.py:684
 msgid "description_senaitesetup_type_of_multi_verification"
 msgstr ""
 
+#. system wide but can be overwritten on individual items"
 #. Default: "Enter percentage value eg. 14.0. This percentage is applied system wide but can be overwritten on individual items"
 #: senaite/core/content/senaitesetup.py:522
 msgid "description_senaitesetup_vat"
 msgstr ""
 
+#. view. Classic layout displays the Samples in rows and the analyses in
+#. columns. Transposed layout displays the Samples in columns and the analyses
+#. in rows."
 #. Default: "Preferred layout of the results entry table in the Worksheet view. Classic layout displays the Samples in rows and the analyses in columns. Transposed layout displays the Samples in columns and the analyses in rows."
 #: senaite/core/content/senaitesetup.py:826
 msgid "description_senaitesetup_worksheet_layout"
 msgstr ""
 
+#. The order of selection determines the display order. Unselected columns are
+#. hidden. Leave empty to show all columns in default order."
 #. Default: "Select which columns to display in worksheet analysis listings. The order of selection determines the display order. Unselected columns are hidden. Leave empty to show all columns in default order."
 #: senaite/core/content/senaitesetup.py:805
 msgid "description_senaitesetup_wsview_columns_order"
@@ -8346,6 +8412,7 @@ msgstr ""
 msgid "label_department_manager"
 msgstr ""
 
+#. edit the container itself, ${go_here}."
 #. Default: "You are editing the default view of a container. If you wanted to edit the container itself, ${go_here}."
 #: senaite/core/skins/senaite_templates/bikasetup_edit.pt:28
 msgid "label_edit_default_view_container"
@@ -10248,6 +10315,7 @@ msgstr ""
 msgid "no_data_instrument_message"
 msgstr ""
 
+#. view."
 #. Default: "Layout view '${view}' not found. Set '${default}' as layout view."
 #: senaite/core/browser/worksheets/worksheet/manage_results.py:66
 msgid "not_found_worksheet_layout_message"
@@ -11300,6 +11368,7 @@ msgstr ""
 msgid "validator_lloq_above_uloq"
 msgstr ""
 
+#. associated with other objects, such as QC analyses."
 #. Default: "The Reference Sample ID cannot be changed because it is already associated with other objects, such as QC analyses."
 #: bika/lims/validators.py:1586
 msgid "validator_referencesample_id_children"
@@ -11310,6 +11379,8 @@ msgstr ""
 msgid "validator_referencesample_id_exists"
 msgstr ""
 
+#. letters, numbers, underscores ('_'), or hyphens ('-'), and verify that no
+#. other Reference Sample with the same ID already exists."
 #. Default: "The Reference Sample ID is invalid. Ensure it contains only letters, numbers, underscores ('_'), or hyphens ('-'), and verify that no other Reference Sample with the same ID already exists."
 #: bika/lims/validators.py:1576
 msgid "validator_referencesample_id_invalid"

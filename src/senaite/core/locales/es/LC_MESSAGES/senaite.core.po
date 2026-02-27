@@ -1,18 +1,18 @@
 # Translators:
-# Ramon Bartl <rb@ridingbytes.com>, 2018
 # Pau Soliva <psoliva@naralabs.com>, 2019
 # Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2020
 # ELvira Aylon <elvira@icb.csic.es>, 2021
 # Mathias Hochkofler, 2023
 # David Molins, 2024
 # Jordi Puiggené <jpuiggene@naralabs.com>, 2025
+# Ramon Bartl <rb@ridingbytes.com>, 2026
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-02-27 11:53+0000\n"
+"POT-Creation-Date: 2026-02-27 13:33+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
-"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2025\n"
+"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2026\n"
 "Language-Team: Spanish (https://app.transifex.com/senaite/teams/87045/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -5436,7 +5436,6 @@ msgstr "Mostrar los últimos registros de importación automática"
 msgid "Show less"
 msgstr "Mostrar menos"
 
-# senaite.app.listing: Show more
 #: senaite/core/skins/senaite_templates/senaite_widgets/remarkswidget.pt:79
 msgid "Show more"
 msgstr "Más"
@@ -6849,8 +6848,10 @@ msgstr "Cambios guardados."
 msgid "changes_saved"
 msgstr "Cambios guardados."
 
+#. Results edition not allowed: ${inv}"
 #. Default: "Some analyses use out-of-date or uncalibrated instruments. Results edition not allowed: ${inv}"
 #: senaite/core/browser/worksheets/worksheet/manage_results.py:214
+#, fuzzy
 msgid "check_instrument_validity_message"
 msgstr "Algunos análisis utilizan instrumentos no calibrados o caducados. Edición de resultados no permitida: ${inv}"
 
@@ -6919,6 +6920,7 @@ msgstr "Departamento responsable del servicio de análisis."
 #. view."
 #. Default: "This service will not appear for selection on the sample registration form if the elapsed time since sample collection exceeds the holding time limit. Exceeding this time limit may result in unreliable or compromised data, as the integrity of the sample can degrade over time. Consequently, any results obtained after this period may not accurately reflect the sample's true composition, impacting data validity. Note: This setting does not affect the test's availability in the 'Manage Analyses' view."
 #: bika/lims/content/abstractbaseanalysis.py:457
+#, fuzzy
 msgid "description_analysis_maxholdingtime"
 msgstr "Este servicio no estará disponible para su selección en el formulario de registro de muestra si el tiempo transcurrido desde la recogida de la muestra supera el límite del tiempo de estabilidad. Superar este límite puede dar lugar a datos poco fiables o comprometidos, ya que la integridad de la muestra puede deteriorarse con el tiempo. Nota: Esta configuración no afecta a la disponibilidad del análisis en la vista 'Gestionar análisis'."
 
@@ -6964,6 +6966,7 @@ msgstr "Lista de unidades de medida soportados por este análisis. Asegúrese de
 #. reports."
 #. Default: "To be displayed below each Analysis Category section on results reports."
 #: senaite/core/content/analysiscategory.py:64
+#, fuzzy
 msgid "description_analysiscategory_comments"
 msgstr "Se mostrará debajo de cada sección de categoría de análisis en los informes de resultados."
 
@@ -6975,6 +6978,7 @@ msgstr "Seleccione el departamento responsable"
 #. Duplicate values are ordered alphabetically."
 #. Default: "Float value from 0.0 - 1000.0 indicating the sort order. Duplicate values are ordered alphabetically."
 #: senaite/core/content/analysiscategory.py:99
+#, fuzzy
 msgid "description_analysiscategory_sort_key"
 msgstr "Valor decimal de 0.0 a 1000.0 que indica el orden de clasificación. Los valores duplicados se ordenan alfabéticamente."
 
@@ -6996,6 +7000,7 @@ msgstr "Proporcione el precio sin IVA"
 #. price"
 #. Default: "Please provide the VAT in percent that is added to the profile price"
 #: senaite/core/content/analysisprofile.py:161
+#, fuzzy
 msgid "description_analysisprofile_profile_vat"
 msgstr "Proporcione el IVA en porcentaje que se añade al precio del perfil"
 
@@ -7005,6 +7010,7 @@ msgstr "Proporcione el IVA en porcentaje que se añade al precio del perfil"
 #. the sample type of the sample."
 #. Default: "Sample types for which this analysis profile is supported. This profile won't be available for selection in sample creation and edit forms unless the selected sample type is one of these. If no sample type is set here, this profile will always be available for selection, regardless of the sample type of the sample."
 #: senaite/core/content/analysisprofile.py:184
+#, fuzzy
 msgid "description_analysisprofile_sampletypes"
 msgstr "Tipos de muestra para los que se admite este perfil de análisis. Este perfil no estará disponible para su selección en los formularios de creación y edición de muestras a menos que el tipo de muestra seleccionado sea uno de estos. Si no se establece ningún tipo de muestra, el perfil estará siempre disponible independientemente del tipo de muestra."
 
@@ -7099,6 +7105,7 @@ msgstr "Cliente al que pertenece este lote. Cuando el usuario indique un cliente
 #. entered manually for analyses"
 #. Default: "If this option is activated, the result capture date can be entered manually for analyses"
 #: bika/lims/content/bikasetup.py:396
+#, fuzzy
 msgid "description_bikasetup_allow_manual_result_capture_date"
 msgstr "Si esta opción está activada, la fecha de captura del resultado puede introducirse manualmente para los análisis"
 
@@ -7118,6 +7125,7 @@ msgstr "Marque esta casilla si desea que las listas de análisis dentro de la vi
 #. not active"
 #. Default: "Select this to make DateSampled field required on sample creation. This functionality only takes effect when 'Sampling workflow' is not active"
 #: bika/lims/content/bikasetup.py:689
+#, fuzzy
 msgid "description_bikasetup_date_sampled_required"
 msgstr "Seleccione esto para que el campo Fecha de muestreo sea obligatorio al crear la muestra. Esta funcionalidad solo tiene efecto cuando el flujo de trabajo de muestreo no está activo"
 
@@ -7133,6 +7141,7 @@ msgstr "Texto por defecto del cuerpo del correo electrónico que debe utilizarse
 #. portal's 'Mail settings'."
 #. Default: "E-mail to use as the 'From' address for outgoing e-mails when publishing results reports. This address overrides the value set at portal's 'Mail settings'."
 #: bika/lims/content/bikasetup.py:805
+#, fuzzy
 msgid "description_bikasetup_email_from_sample_publication"
 msgstr "Correo electrónico para usar como dirección 'De' en los correos de publicación de informes de resultados. Esta dirección reemplaza el valor establecido en la configuración de correo del portal."
 
@@ -7144,13 +7153,24 @@ msgstr "Correo electrónico para usar como dirección 'De' en los correos de pub
 msgid "description_bikasetup_immediateresultsentry"
 msgstr "Marque esta casilla si desea que el usuario pueda efectuar el registro directo de resultados justo después de crear la muestra, ya sean para análisis de campo o para análisis de laboratorio. Esta funcionalidad es útil por ejemplo para la captura de resultados durante el muestreo."
 
+#. sent to primary contacts and laboratory managers when a sample is
+#. invalidated. The following placeholders are supported: <code title='The ID
+#. of the sample'>$sample_id</code>, <code title='The ID of the sample
+#. retest'>$retest_id</code>, <code title='The link to the
+#. retest'>$retest_link</code>, <code title='The reason(s) for
+#. invalidation'>$reason</code>, <code title='The address of the
+#. lab'>$lab_address</code>."
 #. Default: "Define the template for the email body that will be automatically sent to primary contacts and laboratory managers when a sample is invalidated. The following placeholders are supported: <code title='The ID of the sample'>$sample_id</code>, <code title='The ID of the sample retest'>$retest_id</code>, <code title='The link to the retest'>$retest_link</code>, <code title='The reason(s) for invalidation'>$reason</code>, <code title='The address of the lab'>$lab_address</code>."
 #: bika/lims/content/bikasetup.py:946
+#, fuzzy
 msgid "description_bikasetup_invalidation_email_body"
 msgstr "Defina la plantilla del cuerpo del correo electrónico que se enviará automáticamente a los contactos principales y a los responsables de laboratorio cuando se invalide una muestra. Los marcadores disponibles son: $sample_id, $retest_id, $retest_link, $reason, $lab_address."
 
+#. a sample. If enabled, the '$reason' placeholder in the sample invalidation
+#. notification email body will be replaced with the entered reason."
 #. Default: "Specify whether providing a reason is mandatory when invalidating a sample. If enabled, the '$reason' placeholder in the sample invalidation notification email body will be replaced with the entered reason."
 #: bika/lims/content/bikasetup.py:913
+#, fuzzy
 msgid "description_bikasetup_invalidation_reason_required"
 msgstr "Especifique si es obligatorio indicar un motivo al invalidar una muestra. Si está activado, el marcador '$reason' en el cuerpo del correo de notificación de invalidación será reemplazado por el motivo introducido."
 
@@ -7246,6 +7266,7 @@ msgstr "Métodos admitidos por este instrumento analítico"
 #. unique."
 #. Default: "For each interface of this instrument, you can define a folder where the system should look for the results files while automatically importing results. Having a folder for each Instrument and inside that folder creating different folders for each of its Interfaces can be a good approach. You can use Interface codes to be sure that folder names are unique."
 #: bika/lims/content/instrument.py:267
+#, fuzzy
 msgid "description_instrument_result_file_folder"
 msgstr "Para cada interfaz de este instrumento, puede definir una carpeta donde el sistema buscará los archivos de resultados al importar automáticamente. Se recomienda crear una carpeta por instrumento y dentro subcarpetas por interfaz. Puede usar los códigos de interfaz para garantizar que los nombres de carpeta sean únicos."
 
@@ -7299,6 +7320,7 @@ msgstr "Proporcione el precio sin IVA"
 #. price"
 #. Default: "Please provide the VAT in percent that is added to the labproduct price"
 #: senaite/core/content/labproduct.py:102
+#, fuzzy
 msgid "description_labproduct_vat"
 msgstr "Proporcione el IVA en porcentaje que se añade al precio del producto"
 
@@ -7307,8 +7329,10 @@ msgstr "Proporcione el IVA en porcentaje que se añade al precio del producto"
 msgid "description_multifile_document_location"
 msgstr "Ubicación donde se archiva el conjunto de documentos"
 
+#. image, ...)"
 #. Default: "Type of document (e.g. user manual, instrument specifications, image, ...)"
 #: senaite/core/content/multifile.py:83
+#, fuzzy
 msgid "description_multifile_document_type"
 msgstr "Tipo de documento (p.ej. manual de usuario, especificaciones del instrumento, imagen, ...)"
 
@@ -7358,6 +7382,7 @@ msgstr "Seleccione la definición de referencia para la muestra."
 #. will only show for the fields listed here."
 #. Default: "Add all field names that support to enter multiple values using the paste popup in the sample add form. Please note that the paste button will only show for the fields listed here."
 #: senaite/core/registry/schema.py:389
+#, fuzzy
 msgid "description_registry_allow_multi_paste"
 msgstr "Añada todos los nombres de campo que admitan introducir múltiples valores mediante el popup de pegado en el formulario de registro de muestra. El botón de pegado solo se mostrará para los campos indicados aquí."
 
@@ -7365,6 +7390,7 @@ msgstr "Añada todos los nombres de campo que admitan introducir múltiples valo
 #. catalogs. A restart is required for these changes to take effect."
 #. Default: "Define the relationship between portal types and the additional catalogs in which these portal types should be indexed, beyond the default catalogs. A restart is required for these changes to take effect."
 #: senaite/core/registry/schema.py:293
+#, fuzzy
 msgid "description_registry_catalog_mappings"
 msgstr "Defina la relación entre los tipos de portal y los catálogos adicionales en los que deben indexarse, más allá de los catálogos predeterminados. Se requiere reiniciar para que los cambios surtan efecto."
 
@@ -7372,12 +7398,14 @@ msgstr "Defina la relación entre los tipos de portal y los catálogos adicional
 #. listing"
 #. Default: "Select the default landing page. This is used when a Client user logs into the system, or when a client is selected from the client folder listing"
 #: senaite/core/registry/schema.py:66
+#, fuzzy
 msgid "description_registry_client_landing_page"
 msgstr "Seleccione la página de inicio predeterminada. Se usa cuando un usuario de cliente inicia sesión o cuando se selecciona un cliente desde el listado de clientes."
 
 #. structure of the site via Generic Setup"
 #. Default: "List of portal types to be skipped when exporting the content structure of the site via Generic Setup"
 #: senaite/core/registry/schema.py:253
+#, fuzzy
 msgid "description_registry_generic_setup_skip_export_types"
 msgstr "Lista de tipos de portal que se omitirán al exportar la estructura de contenido del sitio mediante Generic Setup"
 
@@ -7391,23 +7419,35 @@ msgstr "Adjuntar el archivo de importación a todos los análisis asignados a la
 msgid "description_registry_import_analysis_submit"
 msgstr "Enviar automáticamente los análisis al importar"
 
+#. matching the source sample structure. Each partition will be created with
+#. the same configuration (sample type, container, preservation) and analyses
+#. as the source partition."
 #. Default: "When enabled, copying a sample will also create partitions matching the source sample structure. Each partition will be created with the same configuration (sample type, container, preservation) and analyses as the source partition."
 #: senaite/core/registry/schema.py:342
+#, fuzzy
 msgid "description_registry_sample_add_copy_partitions"
 msgstr "Cuando está activado, al copiar una muestra también se crearán particiones que coincidan con la estructura de la muestra original. Cada partición se creará con la misma configuración (tipo de muestra, recipiente, conservación) y análisis que la partición de origen."
 
+#. copying analyses to a new sample in the sample add form."
 #. Default: "Add all analyses workflow states that should be skipped when copying analyses to a new sample in the sample add form."
 #: senaite/core/registry/schema.py:373
+#, fuzzy
 msgid "description_registry_sample_add_skip_analyses_in_states"
 msgstr "Añada todos los estados del flujo de trabajo de análisis que deben omitirse al copiar análisis a una nueva muestra en el formulario de registro de muestra."
 
+#. copying a sample. Only analyses that directly belong to the source sample
+#. will be copied to the new sample."
 #. Default: "When enabled, analyses from partitions will be excluded when copying a sample. Only analyses that directly belong to the source sample will be copied to the new sample."
 #: senaite/core/registry/schema.py:358
+#, fuzzy
 msgid "description_registry_sample_add_skip_partition_analyses"
 msgstr "Cuando está activado, los análisis de las particiones se excluirán al copiar una muestra. Solo se copiarán los análisis que pertenecen directamente a la muestra de origen."
 
+#. upon sample creation. This option is disabled by default, but certain add-
+#. ons may depend on it to operate correctly."
 #. Default: "When enabled, triggers “before” and “after” transition events upon sample creation. This option is disabled by default, but certain add-ons may depend on it to operate correctly."
 #: senaite/core/registry/schema.py:405
+#, fuzzy
 msgid "description_registry_trigger_events_on_sample_creation"
 msgstr "Cuando está activado, se desencadenan los eventos de transición 'before' y 'after' al crear una muestra. Esta opción está desactivada por defecto, pero algunos complementos pueden necesitarla para funcionar correctamente."
 
@@ -7548,6 +7588,7 @@ msgstr "Seleccione la plantilla de muestra."
 #. dam. The default, unchecked, indicates 'grab' samples"
 #. Default: "Check this box if the samples taken at this point are 'composite' and put together from more than one sub sample, e.g. several surface samples from a dam mixed together to be a representative sample for the dam. The default, unchecked, indicates 'grab' samples"
 #: senaite/core/content/samplepoint.py:147
+#, fuzzy
 msgid "description_samplepoint_composite"
 msgstr "Marque esta casilla si las muestras de este punto son 'compuestas', formadas por más de una submuestra, p.ej. varias muestras superficiales de un embalse mezcladas para obtener una muestra representativa. El valor por defecto, sin marcar, indica muestras 'puntuales'."
 
@@ -7560,6 +7601,7 @@ msgstr "La altura o profundidad a la que debe tomarse la muestra"
 #. significantly influence the results and conclusions drawn from the study."
 #. Default: "The geographical point or area from which samples are taken for further analysis. It plays a pivotal role in research as it can significantly influence the results and conclusions drawn from the study."
 #: senaite/core/content/samplepoint.py:76
+#, fuzzy
 msgid "description_samplepoint_location"
 msgstr "El punto geográfico o área del que se toman las muestras para su análisis."
 
@@ -7576,6 +7618,7 @@ msgstr "Lista de tipos de muestra que pueden ser recogidos de estea localizació
 #. frequency here, e.g. weekly"
 #. Default: "If a sample is taken periodically at this sample point, enter frequency here, e.g. weekly"
 #: senaite/core/content/samplepoint.py:103
+#, fuzzy
 msgid "description_samplepoint_sampling_frequency"
 msgstr "Si el muestreo es periódico en este punto, indique la frecuencia, p.ej. semanal"
 
@@ -7585,12 +7628,14 @@ msgstr "Si el muestreo es periódico en este punto, indique la frecuencia, p.ej.
 #. regardless of the type."
 #. Default: "The list of sample types that can be collected at this sample point. The field for the selection of a sample point in sample creation and edit forms will be filtered in accordance. Still, sample points that do not have any sample type assigned will always be available for selection, regardless of the type."
 #: senaite/core/content/samplepoint.py:126
+#, fuzzy
 msgid "description_samplepoint_sampling_sample_types"
 msgstr "Lista de tipos de muestra que pueden recogerse en este punto de muestreo. El campo de selección de punto de muestreo en los formularios de muestra se filtrará en consecuencia. Los puntos sin tipo de muestra asignado siempre estarán disponibles para su selección."
 
 #. sample is received"
 #. Default: "Automatically redirect the user to the partitions view when the sample is received"
 #: senaite/core/content/sampletemplate.py:258
+#, fuzzy
 msgid "description_sampletemplate_auto_partition"
 msgstr "Redirigir automáticamente al usuario a la vista de particiones al recibir la muestra"
 
@@ -7602,6 +7647,7 @@ msgstr "Seleccionar si la muestra es una mezcla de submuestras"
 #. ID'"
 #. Default: "Each line defines a new partition identified by the 'Partition ID'"
 #: senaite/core/content/sampletemplate.py:245
+#, fuzzy
 msgid "description_sampletemplate_partitions"
 msgstr "Cada línea define una nueva partición identificada por el 'ID de partición'"
 
@@ -7641,6 +7687,7 @@ msgstr "El tipo de recipiente por defecto. Este tipo de recipiente se asignará 
 #. before they expire and cannot be analysed any further"
 #. Default: "The period for which unpreserved samples of this type can be kept before they expire and cannot be analysed any further"
 #: senaite/core/content/sampletype.py:153
+#, fuzzy
 msgid "description_sampletype_duration_period"
 msgstr "El periodo durante el que las muestras sin conservar de este tipo pueden mantenerse antes de que caduquen y no puedan analizarse más"
 
@@ -7652,6 +7699,7 @@ msgstr "Las muestras de este tipo deben tratarse como peligrosas"
 #. kg'."
 #. Default: "The minimum sample volume required for analysis eg. '10 ml' or '1 kg'."
 #: senaite/core/content/sampletype.py:214
+#, fuzzy
 msgid "description_sampletype_min_volume"
 msgstr "El volumen mínimo de muestra requerido para el análisis, p.ej. '10 ml' o '1 kg'."
 
@@ -7668,11 +7716,16 @@ msgstr "Seleccione la base o matriz del tipo de muestra."
 #. entered manually for analyses"
 #. Default: "If this option is activated, the result capture date can be entered manually for analyses"
 #: senaite/core/content/senaitesetup.py:342
+#, fuzzy
 msgid "description_senaitesetup_allow_manual_result_capture_date"
 msgstr "Si esta opción está activada, la fecha de captura del resultado puede introducirse manualmente para los análisis"
 
+#. to them or for unassigned analyses. When disabled, users can only submit
+#. results for analyses assigned to themselves. This setting does not apply to
+#. users with role Lab Manager."
 #. Default: "When enabled, users can submit results for analyses not assigned to them or for unassigned analyses. When disabled, users can only submit results for analyses assigned to themselves. This setting does not apply to users with role Lab Manager."
 #: senaite/core/content/senaitesetup.py:436
+#, fuzzy
 msgid "description_senaitesetup_allow_to_submit_not_assigned"
 msgstr "Cuando está activado, los usuarios pueden enviar resultados para análisis no asignados o no asignados a ellos. Cuando está desactivado, los usuarios solo pueden enviar resultados para análisis asignados a ellos mismos. Esta configuración no se aplica a los usuarios con rol de Responsable de laboratorio."
 
@@ -7683,18 +7736,25 @@ msgstr "Cuando está activado, los usuarios pueden enviar resultados para análi
 msgid "description_senaitesetup_always_cc_responsibles_in_report_emails"
 msgstr "Marque esta casilla si desea que los responsables de departamentos involucrados también reciban correos electrónicos en copia al publicar informes de resultados."
 
+#. 0 disables automatic log-off"
 #. Default: "The number of minutes before a user is automatically logged off. 0 disables automatic log-off"
 #: senaite/core/content/senaitesetup.py:408
+#, fuzzy
 msgid "description_senaitesetup_auto_log_off"
 msgstr "Número de minutos antes de que el usuario cierre sesión automáticamente. 0 desactiva el cierre de sesión automático"
 
+#. results are verified. Otherwise, users with enough privileges have to
+#. manually verify the sample afterwards. Default: enabled"
 #. Default: "When enabled, the sample is automatically verified as soon as all results are verified. Otherwise, users with enough privileges have to manually verify the sample afterwards. Default: enabled"
 #: senaite/core/content/senaitesetup.py:635
+#, fuzzy
 msgid "description_senaitesetup_auto_verify_samples"
 msgstr "Cuando está activado, la muestra se verifica automáticamente en cuanto se verifican todos los resultados. En caso contrario, los usuarios con privilegios suficientes deben verificar la muestra manualmente. Por defecto: activado"
 
+#. when the list is long"
 #. Default: "Group analysis services by category in the LIMS tables, helpful when the list is long"
 #: senaite/core/content/senaitesetup.py:580
+#, fuzzy
 msgid "description_senaitesetup_categorise_analysis_services"
 msgstr "Agrupar los servicios de análisis por categoría en las tablas del LIMS, útil cuando la lista es larga"
 
@@ -7717,6 +7777,7 @@ msgstr "Seleccione esto para activar el panel de control como página principal 
 #. not active"
 #. Default: "Select this to make DateSampled field required on sample creation. This functionality only takes effect when 'Sampling workflow' is not active"
 #: senaite/core/content/senaitesetup.py:367
+#, fuzzy
 msgid "description_senaitesetup_date_sampled_required"
 msgstr "Seleccione esto para que el campo Fecha de muestreo sea obligatorio al crear la muestra. Esta funcionalidad solo tiene efecto cuando el flujo de trabajo de muestreo no está activo"
 
@@ -7730,8 +7791,10 @@ msgstr "Separador decimal preferido para los informes."
 msgid "description_senaitesetup_default_country"
 msgstr "Seleccione el país que el sitio mostrará por defecto"
 
+#. to create new Samples"
 #. Default: "Default value of the 'Sample count' when users click 'ADD' button to create new Samples"
 #: senaite/core/content/senaitesetup.py:725
+#, fuzzy
 msgid "description_senaitesetup_default_number_of_ars_to_add"
 msgstr "Valor predeterminado del campo 'Número de muestras' cuando los usuarios hacen clic en 'AÑADIR' para crear nuevas muestras"
 
@@ -7739,11 +7802,14 @@ msgstr "Valor predeterminado del campo 'Número de muestras' cuando los usuarios
 #. portal's 'Mail settings'."
 #. Default: "E-mail to use as the 'From' address for outgoing e-mails when publishing results reports. This address overrides the value set at portal's 'Mail settings'."
 #: senaite/core/content/senaitesetup.py:241
+#, fuzzy
 msgid "description_senaitesetup_email_from_sample_publication"
 msgstr "Correo electrónico para usar como dirección 'De' en los correos de publicación de informes de resultados. Esta dirección reemplaza el valor establecido en la configuración de correo del portal."
 
+#. analysis in results entry view"
 #. Default: "If enabled, a free text field will be displayed close to each analysis in results entry view"
 #: senaite/core/content/senaitesetup.py:622
+#, fuzzy
 msgid "description_senaitesetup_enable_analysis_remarks"
 msgstr "Si está activado, se mostrará un campo de texto libre junto a cada análisis en la vista de entrada de resultados"
 
@@ -7752,13 +7818,18 @@ msgstr "Si está activado, se mostrará un campo de texto libre junto a cada an�
 msgid "description_senaitesetup_enable_ar_specs"
 msgstr "Especificaciones de análisis editadas directamente en la muestra."
 
+#. 'Reject' option will be displayed in the actions menu."
 #. Default: "Select this to activate the rejection workflow for Samples. A 'Reject' option will be displayed in the actions menu."
 #: senaite/core/content/senaitesetup.py:739
+#, fuzzy
 msgid "description_senaitesetup_enable_rejection_workflow"
 msgstr "Seleccione esto para activar el flujo de trabajo de rechazo para las muestras. Se mostrará la opción 'Rechazar' en el menú de acciones."
 
+#. displayed in scientific notation using the letter 'e' to indicate the
+#. exponent. The precision can be configured in individual Analysis Services."
 #. Default: "Result values with at least this number of significant digits are displayed in scientific notation using the letter 'e' to indicate the exponent. The precision can be configured in individual Analysis Services."
 #: senaite/core/content/senaitesetup.py:606
+#, fuzzy
 msgid "description_senaitesetup_exponential_format_threshold"
 msgstr "Los valores de resultados con al menos este número de dígitos significativos se muestran en notación científica usando la letra 'e' para indicar el exponente. La precisión puede configurarse en cada Servicio de análisis."
 
@@ -7770,13 +7841,19 @@ msgstr "Los valores de resultados con al menos este número de dígitos signific
 msgid "description_senaitesetup_immediateresultsentry"
 msgstr "Permite que el usuario pueda efectuar la introducción directa de resultados justo después de crear la muestra. Esta funcionalidad es útil para por ejemplo la captura de resultados durante el muestreo."
 
+#. a sample. If enabled, the '$reason' placeholder in the sample invalidation
+#. notification email body will be replaced with the entered reason."
 #. Default: "Specify whether providing a reason is mandatory when invalidating a sample. If enabled, the '$reason' placeholder in the sample invalidation notification email body will be replaced with the entered reason."
 #: senaite/core/content/senaitesetup.py:392
+#, fuzzy
 msgid "description_senaitesetup_invalidation_reason_required"
 msgstr "Especifique si es obligatorio indicar un motivo al invalidar una muestra. Si está activado, el marcador '$reason' en el cuerpo del correo de notificación de invalidación será reemplazado por el motivo introducido."
 
+#. Dashboard is not selected as the default front page. If no landing page is
+#. selected, the default frontpage is displayed."
 #. Default: "The landing page is shown for non-authenticated users if the Dashboard is not selected as the default front page. If no landing page is selected, the default frontpage is displayed."
 #: senaite/core/content/senaitesetup.py:855
+#, fuzzy
 msgid "description_senaitesetup_landing_page"
 msgstr "La página de inicio se muestra para usuarios no autenticados si el Panel de control no está seleccionado como página principal por defecto. Si no se selecciona ninguna página de inicio, se muestra la página de bienvenida predeterminada."
 
@@ -7788,18 +7865,27 @@ msgstr "La página de inicio se muestra para usuarios no autenticados si el Pane
 msgid "description_senaitesetup_maxnumberofsamplesadd"
 msgstr "Número máximo de muestras que se pueden crear de acuerdo con el valor establecido para el campo 'Número de muestras' en el formulario de registro."
 
+#. for clients flagged as 'members', normally co-operative members or
+#. associates deserving of this discount"
 #. Default: "The discount percentage entered here, is applied to the prices for clients flagged as 'members', normally co-operative members or associates deserving of this discount"
 #: senaite/core/content/senaitesetup.py:505
+#, fuzzy
 msgid "description_senaitesetup_member_discount"
 msgstr "El porcentaje de descuento introducido aquí se aplica a los precios para los clientes marcados como 'miembros', normalmente miembros de cooperativas o asociados que merecen este descuento"
 
+#. acceptable minimum number of results before QC statistics will be
+#. calculated and plotted"
 #. Default: "Using too few data points does not make statistical sense. Set an acceptable minimum number of results before QC statistics will be calculated and plotted"
 #: senaite/core/content/senaitesetup.py:564
+#, fuzzy
 msgid "description_senaitesetup_minimum_results"
 msgstr "Usar pocos datos no tiene sentido estadístico. Establezca un número mínimo aceptable de resultados antes de que se calculen y representen las estadísticas de QC"
 
+#. considered as 'verified'. This setting can be overrided for any Analysis in
+#. Analysis Service edit view. By default, 1"
 #. Default: "Number of required verifications before a given result being considered as 'verified'. This setting can be overrided for any Analysis in Analysis Service edit view. By default, 1"
 #: senaite/core/content/senaitesetup.py:668
+#, fuzzy
 msgid "description_senaitesetup_number_of_required_verifications"
 msgstr "Número de verificaciones requeridas antes de que un resultado se considere 'verificado'. Esta configuración puede sobreescribirse para cualquier análisis en la vista de edición del Servicio de análisis. Por defecto, 1"
 
@@ -7811,18 +7897,26 @@ msgstr "Número de verificaciones requeridas antes de que un resultado se consid
 msgid "description_senaitesetup_publication_email_text"
 msgstr "Texto por defecto del cuerpo del correo electrónico que debe utilizarse por defecto cuando al enviar informes de resultados a los destinatarios seleccionados. Puede utilizar las palabras reservadas siguientes: $client_name (nombre de cliente), $recipients (lista de recipientes), $lab_name (nombre del laboratorio), $lab_address (dirección física del laboratorio)."
 
+#. rejecting a sample."
 #. Default: "Enter the predefined rejection reasons that users can select when rejecting a sample."
 #: senaite/core/content/senaitesetup.py:754
+#, fuzzy
 msgid "description_senaitesetup_rejection_reasons"
 msgstr "Introduzca los motivos de rechazo predefinidos que los usuarios pueden seleccionar al rechazar una muestra."
 
+#. When disabled, analysts and lab clerks can also manage worksheets. Note:
+#. This setting is automatically enabled and locked when worksheet access is
+#. restricted to assigned analysts."
 #. Default: "When enabled, only lab managers can create and manage worksheets. When disabled, analysts and lab clerks can also manage worksheets. Note: This setting is automatically enabled and locked when worksheet access is restricted to assigned analysts."
 #: senaite/core/content/senaitesetup.py:452
+#, fuzzy
 msgid "description_senaitesetup_restrict_worksheet_management"
 msgstr "Cuando está activado, solo los responsables de laboratorio pueden crear y gestionar hojas de trabajo. Cuando está desactivado, también los analistas y recepcionistas pueden gestionarlas. Nota: Esta configuración se activa y bloquea automáticamente cuando el acceso a hojas de trabajo está restringido a los analistas asignados."
 
+#. are assigned. When disabled, analysts have access to all worksheets."
 #. Default: "When enabled, analysts can only access worksheets to which they are assigned. When disabled, analysts have access to all worksheets."
 #: senaite/core/content/senaitesetup.py:422
+#, fuzzy
 msgid "description_senaitesetup_restrict_worksheet_users_access"
 msgstr "Cuando está activado, los analistas solo pueden acceder a las hojas de trabajo que tienen asignadas. Cuando está desactivado, los analistas tienen acceso a todas las hojas de trabajo."
 
@@ -7836,8 +7930,11 @@ msgstr "Separador decimal preferido para los resultados"
 msgid "description_senaitesetup_sampleanalysesrequired"
 msgstr "Marque esta casilla si desea que sea obligatorio seleccionar como mínimo un análisis durante el registro de muestra."
 
+#. order of selection determines the display order. Unselected columns are
+#. hidden. Leave empty to show all columns in default order."
 #. Default: "Select which columns to display in sample analysis listings. The order of selection determines the display order. Unselected columns are hidden. Leave empty to show all columns in default order."
 #: senaite/core/content/senaitesetup.py:785
+#, fuzzy
 msgid "description_senaitesetup_sampleview_columns_order"
 msgstr "Seleccione las columnas que se mostrarán en los listados de análisis de muestras. El orden de selección determina el orden de visualización. Las columnas no seleccionadas se ocultan. Si no se selecciona ninguna, se muestran todas las columnas en el orden predeterminado."
 
@@ -7851,54 +7948,83 @@ msgstr "Formato de notación científica preferido para los informes"
 msgid "description_senaitesetup_scientific_notation_results"
 msgstr "Formato de notación científica preferido para los resultados"
 
+#. verify it. This setting only take effect for those users with a role
+#. assigned that allows them to verify results (by default, managers,
+#. labmanagers and verifiers). This setting can be overrided for a given
+#. Analysis in Analysis Service edit view. By default, disabled."
 #. Default: "If enabled, a user who submitted a result will also be able to verify it. This setting only take effect for those users with a role assigned that allows them to verify results (by default, managers, labmanagers and verifiers). This setting can be overrided for a given Analysis in Analysis Service edit view. By default, disabled."
 #: senaite/core/content/senaitesetup.py:650
+#, fuzzy
 msgid "description_senaitesetup_self_verification_enabled"
 msgstr "Si está activado, el usuario que envió un resultado también podrá verificarlo. Esta configuración solo tiene efecto para los usuarios con un rol que les permite verificar resultados (por defecto, administradores, responsables de laboratorio y verificadores). Por defecto, desactivado."
 
 #. page, above the access credentials."
 #. Default: "When selected, the laboratory name will be displayedin the login page, above the access credentials."
 #: senaite/core/content/senaitesetup.py:380
+#, fuzzy
 msgid "description_senaitesetup_show_lab_name_in_login"
 msgstr "Cuando está seleccionado, el nombre del laboratorio se mostrará en la página de inicio de sesión, encima de las credenciales de acceso."
 
+#. deactivated, partitions won't be included in listings and no info message
+#. with links to the primary sample will be displayed to client contacts."
 #. Default: "Select to show sample partitions to client contacts. If deactivated, partitions won't be included in listings and no info message with links to the primary sample will be displayed to client contacts."
 #: senaite/core/content/senaitesetup.py:879
+#, fuzzy
 msgid "description_senaitesetup_show_partitions"
 msgstr "Seleccione para mostrar las particiones de muestra a los contactos de cliente. Si está desactivado, las particiones no se incluirán en los listados y no se mostrará ningún mensaje informativo con enlaces a la muestra principal a los contactos de cliente."
 
+#. navigation. The order of selection determines the display order in the
+#. sidebar. If none are selected, all folders will be shown in the default
+#. order."
 #. Default: "Select which top-level folders should be displayed in the sidebar navigation. The order of selection determines the display order in the sidebar. If none are selected, all folders will be shown in the default order."
 #: senaite/core/content/senaitesetup.py:894
+#, fuzzy
 msgid "description_senaitesetup_sidebar_folders"
 msgstr "Seleccione las carpetas de primer nivel que deben mostrarse en la navegación lateral. El orden de selección determina el orden de visualización en la barra lateral. Si no se selecciona ninguna, se muestran todas las carpetas en el orden predeterminado."
 
+#. top-level folders, level 2 includes their children, and so on."
 #. Default: "Maximum depth of the sidebar navigation tree. Level 1 shows only top-level folders, level 2 includes their children, and so on."
 #: senaite/core/content/senaitesetup.py:913
+#, fuzzy
 msgid "description_senaitesetup_sidebar_navigation_depth"
 msgstr "Profundidad máxima del árbol de navegación lateral. El nivel 1 muestra solo las carpetas de primer nivel, el nivel 2 incluye sus elementos hijos, y así sucesivamente."
 
+#. navigation. If none are selected, all content types will be shown."
 #. Default: "Select which content types should be excluded from the sidebar navigation. If none are selected, all content types will be shown."
 #: senaite/core/content/senaitesetup.py:930
+#, fuzzy
 msgid "description_senaitesetup_sidebar_skip_types"
 msgstr "Seleccione los tipos de contenido que deben excluirse de la navegación lateral. Si no se selecciona ninguno, se mostrarán todos los tipos de contenido."
 
+#. setting can enable/disable verifying/consecutively verifying more than once
+#. for the same user."
 #. Default: "Choose type of multiple verification for the same user. This setting can enable/disable verifying/consecutively verifying more than once for the same user."
 #: senaite/core/content/senaitesetup.py:684
+#, fuzzy
 msgid "description_senaitesetup_type_of_multi_verification"
 msgstr "Seleccione el tipo de verificación múltiple para el mismo usuario. Esta configuración puede activar o desactivar la verificación o verificación consecutiva más de una vez para el mismo usuario."
 
+#. system wide but can be overwritten on individual items"
 #. Default: "Enter percentage value eg. 14.0. This percentage is applied system wide but can be overwritten on individual items"
 #: senaite/core/content/senaitesetup.py:522
+#, fuzzy
 msgid "description_senaitesetup_vat"
 msgstr "Introduzca el porcentaje de IVA, p.ej. 14.0. Este porcentaje se aplica en todo el sistema pero puede sobreescribirse en elementos individuales"
 
+#. view. Classic layout displays the Samples in rows and the analyses in
+#. columns. Transposed layout displays the Samples in columns and the analyses
+#. in rows."
 #. Default: "Preferred layout of the results entry table in the Worksheet view. Classic layout displays the Samples in rows and the analyses in columns. Transposed layout displays the Samples in columns and the analyses in rows."
 #: senaite/core/content/senaitesetup.py:826
+#, fuzzy
 msgid "description_senaitesetup_worksheet_layout"
 msgstr "Distribución preferida de la tabla de entrada de resultados en la vista de hoja de trabajo. La distribución clásica muestra las muestras en filas y los análisis en columnas. La distribución transpuesta muestra las muestras en columnas y los análisis en filas."
 
+#. The order of selection determines the display order. Unselected columns are
+#. hidden. Leave empty to show all columns in default order."
 #. Default: "Select which columns to display in worksheet analysis listings. The order of selection determines the display order. Unselected columns are hidden. Leave empty to show all columns in default order."
 #: senaite/core/content/senaitesetup.py:805
+#, fuzzy
 msgid "description_senaitesetup_wsview_columns_order"
 msgstr "Seleccione las columnas que se mostrarán en los listados de análisis de hojas de trabajo. El orden de selección determina el orden de visualización. Las columnas no seleccionadas se ocultan. Si no se selecciona ninguna, se muestran todas las columnas en el orden predeterminado."
 
@@ -7963,6 +8089,7 @@ msgstr "Título del sitio"
 #. Duplicate values are ordered alphabetically."
 #. Default: "Float value from 0.0 - 1000.0 indicating the sort order. Duplicate values are ordered alphabetically."
 #: senaite/core/content/subgroup.py:60
+#, fuzzy
 msgid "description_subgroup_sort_key"
 msgstr "Valor decimal de 0.0 a 1000.0 que indica el orden de clasificación. Los valores duplicados se ordenan alfabéticamente."
 
@@ -7979,6 +8106,7 @@ msgstr "Número de identificación bancaria nacional (NIB)"
 #. contact profile."
 #. Default: "User is linked to a contact. Please change your settings in the contact profile."
 #: senaite/core/browser/user/userdatapanel.py:82
+#, fuzzy
 msgid "description_user_contact"
 msgstr "El usuario está vinculado a un contacto. Cambie sus configuraciones en el perfil del contacto."
 
@@ -8006,6 +8134,7 @@ msgstr "Seleccione los análisis que deben incluirse en la hoja de trabajo"
 #. indicate which sample position it should be a duplicate of"
 #. Default: "Specify the size of the Worksheet, e.g. corresponding to a specific instrument's tray size. Then select an Analysis 'type' per Worksheet position. Where QC samples are selected, also select which Reference Sample should be used. If a duplicate analysis is selected, indicate which sample position it should be a duplicate of"
 #: senaite/core/content/worksheettemplate.py:315
+#, fuzzy
 msgid "description_worksheettemplate_template_layout"
 msgstr "Especifique el tamaño de la hoja de trabajo, p.ej. según el tamaño de bandeja de un instrumento específico. A continuación, seleccione el 'tipo' de análisis por posición. Para las posiciones de QC, seleccione también la muestra de referencia a usar. Si se selecciona un análisis duplicado, indique de qué posición de muestra debe ser duplicado."
 
@@ -8017,6 +8146,7 @@ msgstr "No se encontró la posición de análisis para el duplicado."
 #. routine analysis."
 #. Default: "Duplicate in position ${dup} references this, so it must be a routine analysis."
 #: senaite/core/browser/form/adapters/worksheettemplate.py:164
+#, fuzzy
 msgid "duplicate_reference_this_position"
 msgstr "El duplicado en la posición ${dup} referencia esta posición, por lo que debe ser un análisis de rutina."
 
@@ -8132,6 +8262,7 @@ msgstr "Departamento"
 #. detection capability of the method at a reliable level."
 #. Default: "The Lower Limit of Detection (LLOD) is the lowest concentration of a parameter that can be reliably detected by a specified testing methodology with a defined level of confidence. Results below this threshold are typically reported as '< LLOD' (or 'Not Detected'), indicating that the parameter's concentration, if present, is below the detection capability of the method at a reliable level."
 #: bika/lims/content/abstractbaseanalysis.py:207
+#, fuzzy
 msgid "label_analysis_lower_limit_of_detection_description"
 msgstr "El Límite inferior de detección (LLOD) es la concentración mínima de un parámetro que puede detectarse de forma fiable mediante una metodología de análisis específica con un nivel de confianza definido. Los resultados por debajo de este umbral se notifican típicamente como '< LLOD' (o 'No detectado'), indicando que la concentración del parámetro, si está presente, está por debajo de la capacidad de detección del método."
 
@@ -8148,6 +8279,7 @@ msgstr "Límite inferior de detección (LLOD)"
 #. cannot be determined reliably."
 #. Default: "The Lower Limit of Quantification (LLOQ) is the lowest concentration of a parameter that can be reliably and accurately measured using the specified testing methodology, with acceptable levels of precision and accuracy. Results below this value cannot be quantified with confidence and are typically reported as '< LOQ' (or 'Detected but < LOQ'), indicating that while the parameter may be present, its exact concentration cannot be determined reliably."
 #: bika/lims/content/abstractbaseanalysis.py:231
+#, fuzzy
 msgid "label_analysis_lower_limit_of_quantification_description"
 msgstr "El Límite inferior de cuantificación (LLOQ) es la concentración mínima de un parámetro que puede medirse de forma fiable y precisa mediante la metodología de análisis especificada. Los resultados por debajo de este valor se notifican típicamente como '< LCQ' (o 'Detectado pero < LCQ'), indicando que el parámetro puede estar presente pero su concentración exacta no puede determinarse con fiabilidad."
 
@@ -8184,6 +8316,7 @@ msgstr "Unidades para selección"
 #. the method."
 #. Default: "The Upper Limit of Detection (ULOD) is the highest concentration of a parameter that can be reliably measured using a specified testing methodology. Beyond this limit, results may no longer be accurate or valid due to instrument saturation or methodological limitations. Results exceeding this threshold are typically reported as '> ULOD', indicating that the parameter's concentration is above the reliable detection range of the method."
 #: bika/lims/content/abstractbaseanalysis.py:277
+#, fuzzy
 msgid "label_analysis_upper_limit_of_detection_description"
 msgstr "El Límite superior de detección (ULOD) es la concentración máxima de un parámetro que puede medirse de forma fiable mediante una metodología de análisis específica. Los resultados que superen este umbral se notifican típicamente como '> ULOD', indicando que la concentración del parámetro está por encima del rango de detección fiable del método."
 
@@ -8199,6 +8332,7 @@ msgstr "Límite superior de detección (ULOD)"
 #. exact concentration cannot be determined reliably."
 #. Default: "The Upper Limit of Quantification (ULOQ) is the highest concentration of a parameter that can be reliably and accurately measured using the specified testing methodology, with acceptable levels of precision and accuracy. Results above this value cannot be quantified with confidence and are typically reported as '> ULOQ', indicating that its exact concentration cannot be determined reliably."
 #: bika/lims/content/abstractbaseanalysis.py:255
+#, fuzzy
 msgid "label_analysis_upper_limit_of_quantification_description"
 msgstr "El Límite superior de cuantificación (ULOQ) es la concentración máxima de un parámetro que puede medirse de forma fiable y precisa mediante la metodología especificada. Los resultados por encima de este valor se notifican típicamente como '> ULOQ', indicando que su concentración exacta no puede determinarse con fiabilidad."
 
@@ -8377,8 +8511,10 @@ msgstr "Tipo de recipiente"
 msgid "label_department_manager"
 msgstr "Encargado del departamento"
 
+#. edit the container itself, ${go_here}."
 #. Default: "You are editing the default view of a container. If you wanted to edit the container itself, ${go_here}."
 #: senaite/core/skins/senaite_templates/bikasetup_edit.pt:28
+#, fuzzy
 msgid "label_edit_default_view_container"
 msgstr "Está editando la vista predeterminada de un contenedor. Si desea editar el contenedor en sí, ${go_here}."
 
@@ -10279,8 +10415,10 @@ msgstr "No se añadieron análisis"
 msgid "no_data_instrument_message"
 msgstr "El instrumento no tiene ninguna interfaz de datos seleccionada"
 
+#. view."
 #. Default: "Layout view '${view}' not found. Set '${default}' as layout view."
 #: senaite/core/browser/worksheets/worksheet/manage_results.py:66
+#, fuzzy
 msgid "not_found_worksheet_layout_message"
 msgstr "Vista de distribución '${view}' no encontrada. Se establece '${default}' como vista de distribución."
 
@@ -11322,17 +11460,21 @@ msgstr "actualizado cada 2 horas"
 #. Lower Limit of Quantification (LLOQ)."
 #. Default: "The Lower Limit of Detection (LLOD) cannot be greater than the Lower Limit of Quantification (LLOQ)."
 #: bika/lims/validators.py:1491
+#, fuzzy
 msgid "validator_llod_above_lloq"
 msgstr "El Límite inferior de detección (LLOD) no puede ser superior al Límite inferior de cuantificación (LLOQ)."
 
 #. or equal to the Upper Limit of Quantification (ULOQ)."
 #. Default: "The Lower Limit of Quantification (LLOQ) cannot be greater than or equal to the Upper Limit of Quantification (ULOQ)."
 #: bika/lims/validators.py:1519
+#, fuzzy
 msgid "validator_lloq_above_uloq"
 msgstr "El Límite inferior de cuantificación (LLOQ) no puede ser superior o igual al Límite superior de cuantificación (ULOQ)."
 
+#. associated with other objects, such as QC analyses."
 #. Default: "The Reference Sample ID cannot be changed because it is already associated with other objects, such as QC analyses."
 #: bika/lims/validators.py:1586
+#, fuzzy
 msgid "validator_referencesample_id_children"
 msgstr "El ID de la muestra de referencia no se puede cambiar porque ya está asociado a otros objetos, como análisis de QC."
 
@@ -11341,14 +11483,18 @@ msgstr "El ID de la muestra de referencia no se puede cambiar porque ya está as
 msgid "validator_referencesample_id_exists"
 msgstr "Ya existe una muestra de referencia con el ID '%s'."
 
+#. letters, numbers, underscores ('_'), or hyphens ('-'), and verify that no
+#. other Reference Sample with the same ID already exists."
 #. Default: "The Reference Sample ID is invalid. Ensure it contains only letters, numbers, underscores ('_'), or hyphens ('-'), and verify that no other Reference Sample with the same ID already exists."
 #: bika/lims/validators.py:1576
+#, fuzzy
 msgid "validator_referencesample_id_invalid"
 msgstr "El ID de la muestra de referencia no es válido. Asegúrese de que solo contiene letras, números, guiones bajos ('_') o guiones ('-'), y verifique que no existe ninguna otra muestra de referencia con el mismo ID."
 
 #. the Upper Limit of Detection (ULOD)."
 #. Default: "The Upper Limit of Quantification (LLOQ) cannot be greater than the Upper Limit of Detection (ULOD)."
 #: bika/lims/validators.py:1547
+#, fuzzy
 msgid "validator_uloq_above_ulod"
 msgstr "El Límite superior de cuantificación (ULOQ) no puede ser superior al Límite superior de detección (ULOD)."
 
