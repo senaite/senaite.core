@@ -621,7 +621,7 @@ class InstrumentCertificationsView(ListingView):
     """
 
     def __init__(self, context, request, **kwargs):
-        BikaListingView.__init__(self, context, request, **kwargs)
+        ListingView.__init__(self, context, request, **kwargs)
         self.catalog = SETUP_CATALOG
         self.contentFilter = {
             "portal_type": "InstrumentCertification",
