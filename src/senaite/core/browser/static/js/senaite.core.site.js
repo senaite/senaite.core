@@ -301,6 +301,15 @@ window.SiteView = class SiteView {
       try {
         const iwin = $iframe[0].contentWindow;
         const href = iwin.location.href;
+        // Forward ESC from the iframe document to close the parent modal.
+        // Bootstrap's keyboard handler only listens on the parent document,
+        // but focus lives inside the iframe when the user interacts with it.
+        $(iwin.document).off("keydown.iframe_esc").on("keydown.iframe_esc", (ev) => {
+          if (ev.key === "Escape" || ev.keyCode === 27) {
+            $modal.modal("hide");
+          }
+        });
+
         if (!edit_view) {
           // No edit suffix (e.g. sample view): always hide chrome.
           // Modal stays open until the user closes it manually.
@@ -314,7 +323,6 @@ window.SiteView = class SiteView {
         } else {
           // Navigated away from the edit form: save or cancel triggered
           $modal.modal("hide");
-          window.location.reload();
         }
       } catch (ex) {
         // Ignore cross-origin access errors
@@ -322,6 +330,12 @@ window.SiteView = class SiteView {
     });
 
     $iframe.attr("src", url);
+
+    // Reload the listing whenever the modal closes, regardless of how
+    // (save, cancel, ESC, X button). A single handler covers all paths.
+    $modal.off("hidden.bs.modal").on("hidden.bs.modal", () => {
+      window.location.reload();
+    });
 
     // Enable dragging and resizing once the modal is visible.
     // Bootstrap's margin:auto conflicts with jQuery UI's position
