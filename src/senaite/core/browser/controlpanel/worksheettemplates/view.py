@@ -25,11 +25,11 @@ from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import get_link_for
 from senaite.core.permissions import AddWorksheetTemplate
 from senaite.core.i18n import translate
-from senaite.app.listing import ListingView
+from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from senaite.core.catalog import SETUP_CATALOG
 
 
-class WorksheetTemplatesView(ListingView):
+class WorksheetTemplatesView(ControlPanelListingView):
     """Listing View for Worksheet Templates
     """
 

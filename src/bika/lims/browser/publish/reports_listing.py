@@ -27,7 +27,7 @@ from bika.lims import senaiteMessageFactory as _
 from bika.lims.api import to_utf8
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
-from senaite.app.listing import ListingView
+from senaite.core.browser.listing.base import ListingView
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.permissions.sample import can_publish
 from ZODB.POSException import POSKeyError

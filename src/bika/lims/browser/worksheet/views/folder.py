@@ -23,7 +23,7 @@ import json
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
+from senaite.core.browser.listing.base import ListingView
 from bika.lims.utils import get_display_list
 from bika.lims.utils import get_link
 from bika.lims.utils import get_progress_bar_html
@@ -39,7 +39,7 @@ from senaite.core.permissions.worksheet import can_manage_worksheets
 from plone.memoize.view import memoize
 
 
-class FolderView(BikaListingView):
+class FolderView(ListingView):
     """Listing view for Worksheets
     """
     template = ViewPageTemplateFile("../templates/worksheets.pt")

@@ -53,7 +53,7 @@ from DateTime import DateTime
 from plone.memoize import view as viewcache
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFPlone.utils import safe_unicode
-from senaite.app.listing import ListingView
+from senaite.core.browser.listing.base import ListingView
 from senaite.core.api import dtime
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SETUP_CATALOG

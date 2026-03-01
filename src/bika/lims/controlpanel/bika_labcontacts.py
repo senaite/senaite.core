@@ -25,7 +25,7 @@ from Products.Archetypes import atapi
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api import user as api_user
-from bika.lims.browser.bika_listing import BikaListingView
+from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ILabContacts
 from senaite.core.permissions import AddLabContact
@@ -41,7 +41,7 @@ from senaite.core.catalog import CONTACT_CATALOG
 # TODO: Separate content and view into own modules!
 
 
-class LabContactsView(BikaListingView):
+class LabContactsView(ControlPanelListingView):
 
     def __init__(self, context, request):
         super(LabContactsView, self).__init__(context, request)

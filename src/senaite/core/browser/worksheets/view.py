@@ -22,7 +22,7 @@ import collections
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.memoize.view import memoize
-from senaite.app.listing import ListingView
+from senaite.core.browser.listing.base import ListingView
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
