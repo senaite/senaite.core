@@ -21,6 +21,8 @@ window.SiteView = class SiteView {
     this.on_numeric_field_keypress = this.on_numeric_field_keypress.bind(this);
     this.on_overlay_panel_click = this.on_overlay_panel_click.bind(this);
     this.on_modal_link_click = this.on_modal_link_click.bind(this);
+    this.on_iframe_edit_link_click = this.on_iframe_edit_link_click.bind(this);
+    this.open_iframe_edit_modal = this.open_iframe_edit_modal.bind(this);
   }
 
   load() {
@@ -44,6 +46,8 @@ window.SiteView = class SiteView {
 
     $(document).on("click", "a.overlay_panel", this.on_overlay_panel_click);
     $(document).on("click", "a.modal_link", this.on_modal_link_click);
+    $(document).on(
+      "click", "a.iframe-edit-link", this.on_iframe_edit_link_click);
 
     $(document).on({
       ajaxStart: () => $("body").addClass("loading"),
@@ -176,6 +180,180 @@ window.SiteView = class SiteView {
       var uid = parsed.searchParams.get("uid");
       listing.loadModal(url, [uid]);
     }
+  }
+
+  on_iframe_edit_link_click(e) {
+    e.preventDefault();
+    const $el = $(e.currentTarget);
+    const url = $el.attr("href");
+    const title = $el.data("title") || $el.text().trim() || "";
+    // edit_view="" means the modal shows the object's own view (no /edit);
+    // in that case the modal never auto-closes on navigation.
+    const edit_view = $el.data("edit-view") !== undefined
+      ? String($el.data("edit-view"))
+      : "edit";
+    this.open_iframe_edit_modal(url, title, edit_view);
+  }
+
+  hide_iframe_chrome(doc) {
+    if (!doc || !doc.body) return;
+
+    // AT edit forms use #content; Dexterity forms have #content-core
+    const content = doc.getElementById("content-core")
+                 || doc.getElementById("content");
+    if (!content) return;
+
+    // Walk up to body, collecting every ancestor of the content node
+    const ancestors = new Set();
+    let node = content;
+    while (node && node !== doc.body) {
+      ancestors.add(node);
+      node = node.parentElement;
+    }
+
+    // Recursively hide every element not on the ancestor path.
+    // Stop at the content node itself — its children must remain visible.
+    // Inline display:none preserves DOM structure so MutationObservers
+    // in editform.js / search.js keep working.
+    function hide_non_ancestors(parent) {
+      if (parent === content) return;
+      Array.from(parent.children).forEach(function(child) {
+        if (!ancestors.has(child)) {
+          child.style.setProperty("display", "none", "important");
+        } else {
+          hide_non_ancestors(child);
+        }
+      });
+    }
+    hide_non_ancestors(doc.body);
+
+    doc.body.style.padding = "0";
+    doc.body.style.margin = "0";
+    // Allow the iframe body to scroll so that absolutely-positioned
+    // dropdowns extending below the viewport become reachable.
+    // The extra padding-bottom ensures there is always scrollable space
+    // below the last form field even when the form fills the viewport.
+    doc.body.style.overflowY = "auto";
+    content.style.paddingBottom = "30vh";
+  }
+
+  open_iframe_edit_modal(url, title, edit_view) {
+    // edit_view controls the load behaviour:
+    //   "edit" (default) — auto-close when the URL no longer looks like
+    //                      an edit form (save/cancel detected).
+    //   ""               — always hide chrome, never auto-close; the user
+    //                      closes the modal manually (e.g. sample view).
+    if (edit_view === undefined) edit_view = "edit";
+    const MODAL_ID = "senaite-iframe-edit-modal";
+    let $modal = $(`#${MODAL_ID}`);
+
+    if (!$modal.length) {
+      $modal = $(`
+        <div id="${MODAL_ID}" class="modal fade" tabindex="-1" role="dialog">
+          <style>
+            #${MODAL_ID} .modal-dialog {
+              max-width: 90vw;
+              margin: 1rem auto;
+              /* Bootstrap sets pointer-events:none on .modal-dialog;
+                 override so jQuery UI resize handles receive events. */
+              pointer-events: auto;
+            }
+            #${MODAL_ID} .modal-header {
+              cursor: move;
+            }
+            @media (max-width: 576px) {
+              #${MODAL_ID} .modal-dialog {
+                max-width: 100%;
+                width: 100%;
+                margin: 0;
+              }
+              #${MODAL_ID} .modal-content {
+                border-radius: 0;
+                min-height: 100vh;
+              }
+              #${MODAL_ID} iframe {
+                height: calc(100vh - 56px) !important;
+              }
+            }
+          </style>
+          <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body p-0">
+                <iframe style="width:100%;height:80vh;border:0;"
+                        src="about:blank"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>`);
+      $("body").append($modal);
+    }
+
+    $modal.find(".modal-title").text(title);
+
+    const $iframe = $modal.find("iframe");
+    $iframe.off("load").on("load", () => {
+      try {
+        const iwin = $iframe[0].contentWindow;
+        const href = iwin.location.href;
+        if (!edit_view) {
+          // No edit suffix (e.g. sample view): always hide chrome.
+          // Modal stays open until the user closes it manually.
+          this.hide_iframe_chrome(iwin.document);
+        } else if (href.match(/\/(@@)?(base_)?edit(\?.*)?$/)) {
+          // Still on an edit form (AT uses base_edit as form action,
+          // so a validation error lands on /base_edit not /edit) —
+          // hide chrome on every load
+          // (initial load and re-render on validation errors)
+          this.hide_iframe_chrome(iwin.document);
+        } else {
+          // Navigated away from the edit form: save or cancel triggered
+          $modal.modal("hide");
+          window.location.reload();
+        }
+      } catch (ex) {
+        // Ignore cross-origin access errors
+      }
+    });
+
+    $iframe.attr("src", url);
+
+    // Enable dragging and resizing once the modal is visible.
+    // Bootstrap's margin:auto conflicts with jQuery UI's position
+    // management, so we reset margin to 0 before the first drag/resize.
+    $modal.off("shown.bs.modal").on("shown.bs.modal", () => {
+      const $dialog = $modal.find(".modal-dialog");
+      const $iframe = $modal.find("iframe");
+
+      const reset_margin = () => $dialog.css("margin", "0");
+
+      if (typeof $dialog.draggable === "function") {
+        $dialog.draggable({
+          handle: ".modal-header",
+          // No containment — allow dragging partially off-screen
+          start: reset_margin
+        });
+      }
+
+      if (typeof $dialog.resizable === "function") {
+        $dialog.resizable({
+          handles: "ne, nw, se, sw",
+          start: reset_margin,
+          resize(_event, ui) {
+            // Keep the iframe filling the modal body as it resizes
+            const header_h = $dialog.find(".modal-header").outerHeight();
+            $iframe.css("height", (ui.size.height - header_h) + "px");
+          }
+        });
+      }
+    });
+
+    $modal.modal("show");
   }
 
   on_overlay_panel_click(e) {
