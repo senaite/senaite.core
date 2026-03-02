@@ -33,6 +33,8 @@ class WorksheetTemplatesView(ControlPanelListingView):
     """Listing View for Worksheet Templates
     """
 
+    edit_icon_column = "Name"
+
     def __init__(self, context, request):
         super(WorksheetTemplatesView, self).__init__(context, request)
 
@@ -132,6 +134,7 @@ class WorksheetTemplatesView(ControlPanelListingView):
         :index: current index of the item
         """
         obj = api.get_object(obj)
+        item["Name"] = api.get_title(obj)
         item["Description"] = api.get_description(obj)
         item["replace"]["Name"] = get_link_for(obj)
 

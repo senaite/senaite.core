@@ -33,6 +33,8 @@ from senaite.core.permissions import AddSupplier
 
 class SuppliersView(ControlPanelListingView):
 
+    edit_icon_column = "Name"
+
     def __init__(self, context, request):
         super(SuppliersView, self).__init__(context, request)
 
