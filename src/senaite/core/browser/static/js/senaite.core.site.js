@@ -285,7 +285,7 @@ window.SiteView = class SiteView {
                 </button>
               </div>
               <div class="modal-body p-0">
-                <iframe style="width:100%;height:80vh;border:0;"
+                <iframe style="width:100%;height:80vh;border:0;opacity:0;"
                         src="about:blank"></iframe>
               </div>
             </div>
@@ -315,12 +315,14 @@ window.SiteView = class SiteView {
           // Non-edit view (e.g. sample view, manage_results): always hide
           // chrome and keep the modal open until the user closes it manually.
           this.hide_iframe_chrome(iwin.document);
+          $iframe.css("opacity", "1");
         } else if (href.match(/\/(@@)?(base_)?edit(\?.*)?$/)) {
           // Still on an edit form (AT uses base_edit as form action,
           // so a validation error lands on /base_edit not /edit) —
           // hide chrome on every load
           // (initial load and re-render on validation errors)
           this.hide_iframe_chrome(iwin.document);
+          $iframe.css("opacity", "1");
         } else {
           // Navigated away from the edit form: save or cancel triggered
           $modal.modal("hide");
@@ -330,7 +332,7 @@ window.SiteView = class SiteView {
       }
     });
 
-    $iframe.attr("src", url);
+    $iframe.css("opacity", "0").attr("src", url);
 
     // Reload the listing whenever the modal closes, regardless of how
     // (save, cancel, ESC, X button). A single handler covers all paths.
