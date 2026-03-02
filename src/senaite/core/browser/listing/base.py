@@ -62,7 +62,7 @@ class ListingView(BaseListingView):
         return None
 
     def _add_iframe_edit_link(self, item):
-        url = item.get("url", "")
+        url = safe_unicode(item.get("url", ""))
         col = self._get_edit_icon_column(item)
         title = safe_unicode(item.get(col, "")) if col else u""
         if not url or not title or not col:
