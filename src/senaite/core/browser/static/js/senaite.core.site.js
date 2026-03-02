@@ -310,9 +310,10 @@ window.SiteView = class SiteView {
           }
         });
 
-        if (!edit_view) {
-          // No edit suffix (e.g. sample view): always hide chrome.
-          // Modal stays open until the user closes it manually.
+        const is_edit_form = edit_view === "edit";
+        if (!is_edit_form) {
+          // Non-edit view (e.g. sample view, manage_results): always hide
+          // chrome and keep the modal open until the user closes it manually.
           this.hide_iframe_chrome(iwin.document);
         } else if (href.match(/\/(@@)?(base_)?edit(\?.*)?$/)) {
           // Still on an edit form (AT uses base_edit as form action,

@@ -44,6 +44,10 @@ class WorksheetsView(ListingView):
     """
     template = ViewPageTemplateFile("templates/view.pt")
 
+    # Open the worksheet manage view instead of the generic /edit form.
+    # No URL suffix needed — the manage view is the default view.
+    edit_view = "manage_results"
+
     def __init__(self, context, request):
         super(WorksheetsView, self).__init__(context, request)
 
