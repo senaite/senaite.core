@@ -119,6 +119,41 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
 
+    UIDReferenceField(
+        "CCContacts",
+        schemata="Preferences",
+        required=0,
+        allowed_types=("Contact", ),
+        multiValued=1,
+        widget=ReferenceWidget(
+            label=_("CC Contacts"),
+            description=_(
+                "Default CC contacts for new samples. "
+                "If set, these contacts are automatically "
+                "selected in the sample add form."),
+            catalog=CONTACT_CATALOG,
+            query="get_contact_field_query",
+            colModel=[
+                {
+                    "columnName": "scope",
+                    "width": "10",
+                    "label": "",
+                    "align": "center",
+                },
+                {
+                    "columnName": "getFullname",
+                    "width": "50",
+                    "label": _("Name"),
+                },
+                {
+                    "columnName": "getEmailAddress",
+                    "width": "40",
+                    "label": _("Email"),
+                },
+            ],
+        ),
+    ),
+
     EmailsField(
         "CCEmails",
         schemata="Preferences",
