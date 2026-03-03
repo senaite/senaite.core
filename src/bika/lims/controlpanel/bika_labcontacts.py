@@ -43,6 +43,8 @@ from senaite.core.catalog import CONTACT_CATALOG
 
 class LabContactsView(ControlPanelListingView):
 
+    edit_icon_column = "Fullname"
+
     def __init__(self, context, request):
         super(LabContactsView, self).__init__(context, request)
 
