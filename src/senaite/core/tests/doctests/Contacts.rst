@@ -38,7 +38,7 @@ Create a global Contact in the setup contacts folder:
     ...     setup.contacts,
     ...     "Contact",
     ...     Firstname="Rita",
-    ...     Lastname="Mohale",
+    ...     Surname="Mohale",
     ...     EmailAddress="rita@lab.test",
     ... )
     >>> processing = processQueue()
@@ -84,7 +84,7 @@ Create a LabContact with known attributes:
     ...     bikasetup.bika_labcontacts,
     ...     "LabContact",
     ...     Firstname="William",
-    ...     Lastname="Testperson",
+    ...     Surname="Testperson",
     ...     EmailAddress="william@lab.test",
     ... )
     >>> processing = processQueue()

@@ -12,10 +12,7 @@
 
   <!-- Contact Indexer -->
   <adapter name="listing_searchable_text"
-      factory=".contact.listing_searchable_text"
-      for="senaite.core.interfaces.IContact
-           senaite.core.interfaces.catalog.IContactCatalog"
-      provides="plone.indexer.interfaces.IIndexer"/>
+      factory=".contact.listing_searchable_text"/>
   <adapter name="listing_searchable_text"
       factory=".contact.listing_searchable_text"
       for="bika.lims.interfaces.ILabContact
@@ -27,10 +24,7 @@
            senaite.core.interfaces.catalog.IContactCatalog"
       provides="plone.indexer.interfaces.IIndexer"/>
   <adapter name="getParentUID"
-      factory=".contact.getParentUID"
-      for="senaite.core.interfaces.IContact
-           senaite.core.interfaces.catalog.IContactCatalog"
-      provides="plone.indexer.interfaces.IIndexer"/>
+      factory=".contact.getParentUID"/>
   <adapter name="getParentUID"
       factory=".contact.getParentUID"
       for="bika.lims.interfaces.ILabContact
@@ -42,10 +36,7 @@
            senaite.core.interfaces.catalog.IContactCatalog"
       provides="plone.indexer.interfaces.IIndexer"/>
   <adapter name="sortable_title"
-      factory=".contact.sortable_title"
-      for="senaite.core.interfaces.IContact
-           senaite.core.interfaces.catalog.IContactCatalog"
-      provides="plone.indexer.interfaces.IIndexer"/>
+      factory=".contact.sortable_title"/>
   <adapter name="sortable_title"
       factory=".contact.sortable_title"
       for="bika.lims.interfaces.ILabContact
