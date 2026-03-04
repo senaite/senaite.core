@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-02-27 19:36+0000\n"
+"POT-Creation-Date: 2026-03-04 10:54+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2026\n"
 "Language-Team: German (https://app.transifex.com/senaite/teams/87045/de/)\n"
@@ -859,8 +859,12 @@ msgstr "Absteigend durch \"Ergebniswert\""
 msgid "CBID"
 msgstr "CBID"
 
+#: bika/lims/content/client.py:129
+msgid "CC Contacts"
+msgstr ""
+
 #: bika/lims/content/analysisrequest.py:236
-#: bika/lims/content/client.py:127
+#: bika/lims/content/client.py:162
 msgid "CC Emails"
 msgstr "CC E-Mails"
 
@@ -1306,7 +1310,7 @@ msgstr "Zu beachten"
 msgid "Contact"
 msgstr "Kontakt"
 
-#: bika/lims/browser/analysisrequest/add2.py:1923
+#: bika/lims/browser/analysisrequest/add2.py:1947
 msgid "Contact does not belong to the selected client"
 msgstr "Kontakt gehört nicht zum ausgewählten Kunden"
 
@@ -1494,7 +1498,7 @@ msgstr "Aktuell"
 msgid "Current ID server counter values"
 msgstr "Aktuelle Zählerwerte des ID-Servers"
 
-#: bika/lims/content/client.py:202
+#: bika/lims/content/client.py:237
 msgid "Custom decimal mark"
 msgstr "Standard Dezimaltrenner"
 
@@ -1648,9 +1652,13 @@ msgstr "Bis zur nächsten Kalibrierung deaktivieren"
 msgid "Deactivate"
 msgstr "Deaktivieren"
 
-#: bika/lims/content/client.py:203
+#: bika/lims/content/client.py:238
 msgid "Decimal mark to use in the reports from this Client."
 msgstr "Dezimaltrenner zur Verwendung für diesen Kunden"
+
+#: bika/lims/content/client.py:130
+msgid "Default CC contacts for new samples. If set, these contacts are automatically selected in the sample add form."
+msgstr ""
 
 #: bika/lims/content/analysisservice.py:165
 msgid "Default Container"
@@ -1660,7 +1668,7 @@ msgstr "Standardbehälter"
 msgid "Default Department"
 msgstr "Standard-Abteilung"
 
-#: bika/lims/content/client.py:128
+#: bika/lims/content/client.py:163
 msgid "Default Emails to CC all published Samples for this client"
 msgstr "Standard E-Mail-Adressen in CC für zu veröffentlichende Proben dieses Kunden."
 
@@ -1693,7 +1701,7 @@ msgid "Default count of Sample to add."
 msgstr "Standardanzahl an Proben die hinzugefügt werden"
 
 #: bika/lims/content/bikasetup.py:311
-#: bika/lims/content/client.py:190
+#: bika/lims/content/client.py:225
 msgid "Default decimal mark"
 msgstr "Standard-Dezimaltrenner"
 
@@ -2351,7 +2359,7 @@ msgstr "Transitionen laden"
 msgid "Field"
 msgstr "Feld"
 
-#: bika/lims/browser/analysisrequest/add2.py:1979
+#: bika/lims/browser/analysisrequest/add2.py:2003
 msgid "Field '{}' is required"
 msgstr "Das Feld '{}' ist erforderlich"
 
@@ -2372,7 +2380,7 @@ msgstr "Vor-Ort-Konservierung"
 msgid "Field Title"
 msgstr "Titel des Felds"
 
-#: bika/lims/browser/analysisrequest/add2.py:1317
+#: bika/lims/browser/analysisrequest/add2.py:1341
 msgid "Field flushed"
 msgstr "Feld geleert"
 
@@ -3601,7 +3609,7 @@ msgstr "Keine Probe für {sid} gefunden"
 msgid "No Sample with '{allowed_ar_states}' statesfound, and no QC analyses found for {sid}, "
 msgstr "Keine Probe mit dem Status '{allowed_ar_states}' gefunden und keine QC-Analysen für {sid} gefunden, "
 
-#: bika/lims/browser/analysisrequest/add2.py:2046
+#: bika/lims/browser/analysisrequest/add2.py:2070
 msgid "No Samples could be created."
 msgstr "Es konnten keine Proben erzeugt werden"
 
@@ -3731,7 +3739,7 @@ msgstr "Für ${contact_fullname} existiert kein Benutzer und er kann sich nicht 
 msgid "No user profile could be found for the linked user. Please contact the lab administrator to get further support or try to relink the user."
 msgstr "Es konnte kein Benutzerprofil für den verknüpften Benutzer gefunden werden. Bitte kontaktieren Sie den Labor Administrator für weiteren Support oder versuchen Sie den Benutzer erneut zu verknüpfen."
 
-#: bika/lims/browser/analysisrequest/add2.py:1914
+#: bika/lims/browser/analysisrequest/add2.py:1938
 msgid "No valid contact"
 msgstr "Kein gültiger Kontakt"
 
@@ -4846,7 +4854,7 @@ msgstr "Anrede"
 msgid "Sample"
 msgstr "Probe"
 
-#: bika/lims/browser/analysisrequest/add2.py:2052
+#: bika/lims/browser/analysisrequest/add2.py:2076
 msgid "Sample ${AR} was successfully created."
 msgstr "Probe ${AR} wurde erfolgreich erstellt."
 
@@ -4943,7 +4951,7 @@ msgstr "Probenansicht"
 msgid "Sample collected by the laboratory"
 msgstr "Probe im Labor genommen"
 
-#: bika/lims/browser/analysisrequest/add2.py:1849
+#: bika/lims/browser/analysisrequest/add2.py:1873
 msgid "Sample creation cancelled"
 msgstr "Probenerstellung abgebrochen"
 
@@ -5009,7 +5017,7 @@ msgstr "Probennehmer für Probe erforderlich %s"
 msgid "Samples"
 msgstr "Proben"
 
-#: bika/lims/browser/analysisrequest/add2.py:2049
+#: bika/lims/browser/analysisrequest/add2.py:2073
 msgid "Samples ${ARs} were successfully created."
 msgstr "Proben ${ARs} wurden erfolgreich erstellt."
 
@@ -5797,7 +5805,7 @@ msgstr "Das Datum wann die Probe konserviert wurde"
 msgid "The date when the sample was received"
 msgstr "Das Datum an dem die Probe empfangen wurde"
 
-#: bika/lims/content/client.py:191
+#: bika/lims/content/client.py:226
 msgid "The decimal mark selected in Bika Setup will be used."
 msgstr "Dezimalzeichen im LIMS Setup wird verwendet."
 
@@ -5970,7 +5978,7 @@ msgstr "Die eindeutige Kennung für diese Referenzprobe. Falls angegeben, verwen
 msgid "The unique keyword used to identify the analysis service in import files of bulk Sample requests and results imports from instruments. It is also used to identify dependent analysis services in user defined results calculations"
 msgstr "Das eindeutige Kennwort zur Identifikation von Analyseleistungen für den Datenimport von Instrumenten. Ebenfalls findet es Verwendung für Ergebnisberechungen."
 
-#: bika/lims/browser/analysisrequest/add2.py:1318
+#: bika/lims/browser/analysisrequest/add2.py:1342
 msgid "The value of field '%s' was emptied. Please select a new value."
 msgstr "Der Wert des Feldes '%s' wurde geleert. Bitte einen neuen Wert auswählen."
 
@@ -6267,7 +6275,7 @@ msgstr "Anhänge Aktualisieren"
 msgid "Upload a scanned signature to be used on printed analysis results reports. Ideal size is 250 pixels wide by 150 high"
 msgstr "Hier können Sie ihre gescannte Unterschrift zur Verwendung auf Ergebnisberichten hochladen. Die ideale Größe beträgt 250 Pixel breit x 150 Pixel hoch"
 
-#: bika/lims/content/client.py:215
+#: bika/lims/content/client.py:250
 msgid "Upload files and images for this client. Files will be stored in the client folder and can be downloaded later."
 msgstr "Dateien und Bilder für diesen Kunden hochladen. Dateien werden im Kundenordner gespeichert und können später heruntergeladen werden."
 
@@ -7195,12 +7203,12 @@ msgid "description_category_department"
 msgstr "Wählen Sie die zuständige Abteilung aus"
 
 #. Default: "Always expand the selected categories"
-#: bika/lims/content/client.py:149
+#: bika/lims/content/client.py:184
 msgid "description_client_defaultcategories"
 msgstr "Erweitern Sie immer die ausgewählten Kategorien"
 
 #. Default: "Show only selected categories"
-#: bika/lims/content/client.py:173
+#: bika/lims/content/client.py:208
 msgid "description_client_restrictcategories"
 msgstr "Nur ausgewählte Kategorien anzeigen"
 
@@ -8162,7 +8170,7 @@ msgstr "Inhalt der Datei"
 
 #. ${record_index}' (${num_samples}) is above ${max_num_samples}"
 #. Default: "The number of samples to create for the record 'Sample ${record_index}' (${num_samples}) is above ${max_num_samples}"
-#: bika/lims/browser/analysisrequest/add2.py:1938
+#: bika/lims/browser/analysisrequest/add2.py:1962
 #, fuzzy
 msgid "error_analyssirequest_numsamples_above_max"
 msgstr "Die Anzahl der für den Datensatz 'Probe ${record_index}' (${num_samples}) zu erstellenden Proben liegt über ${max_num_samples}"
@@ -8477,12 +8485,12 @@ msgid "label_category_department"
 msgstr "Abteilung"
 
 #. Default: "Default categories"
-#: bika/lims/content/client.py:146
+#: bika/lims/content/client.py:181
 msgid "label_client_defaultcategories"
 msgstr "Standardkategorien"
 
 #. Default: "Restrict categories"
-#: bika/lims/content/client.py:170
+#: bika/lims/content/client.py:205
 msgid "label_client_restrictcategories"
 msgstr "Kategorien einschränken"
 
