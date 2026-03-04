@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-02-27 19:36+0000\n"
+"POT-Creation-Date: 2026-03-04 10:54+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2025\n"
 "Language-Team: Lithuanian (https://app.transifex.com/senaite/teams/87045/lt/)\n"
@@ -851,8 +851,12 @@ msgstr ""
 msgid "CBID"
 msgstr ""
 
+#: bika/lims/content/client.py:129
+msgid "CC Contacts"
+msgstr ""
+
 #: bika/lims/content/analysisrequest.py:236
-#: bika/lims/content/client.py:127
+#: bika/lims/content/client.py:162
 msgid "CC Emails"
 msgstr "CC e-paštas"
 
@@ -1298,7 +1302,7 @@ msgstr ""
 msgid "Contact"
 msgstr "Kontaktiniai duomenys"
 
-#: bika/lims/browser/analysisrequest/add2.py:1923
+#: bika/lims/browser/analysisrequest/add2.py:1947
 msgid "Contact does not belong to the selected client"
 msgstr ""
 
@@ -1486,7 +1490,7 @@ msgstr "Einamasis"
 msgid "Current ID server counter values"
 msgstr ""
 
-#: bika/lims/content/client.py:202
+#: bika/lims/content/client.py:237
 msgid "Custom decimal mark"
 msgstr ""
 
@@ -1640,8 +1644,12 @@ msgstr ""
 msgid "Deactivate"
 msgstr ""
 
-#: bika/lims/content/client.py:203
+#: bika/lims/content/client.py:238
 msgid "Decimal mark to use in the reports from this Client."
+msgstr ""
+
+#: bika/lims/content/client.py:130
+msgid "Default CC contacts for new samples. If set, these contacts are automatically selected in the sample add form."
 msgstr ""
 
 #: bika/lims/content/analysisservice.py:165
@@ -1652,7 +1660,7 @@ msgstr ""
 msgid "Default Department"
 msgstr ""
 
-#: bika/lims/content/client.py:128
+#: bika/lims/content/client.py:163
 msgid "Default Emails to CC all published Samples for this client"
 msgstr ""
 
@@ -1685,7 +1693,7 @@ msgid "Default count of Sample to add."
 msgstr ""
 
 #: bika/lims/content/bikasetup.py:311
-#: bika/lims/content/client.py:190
+#: bika/lims/content/client.py:225
 msgid "Default decimal mark"
 msgstr ""
 
@@ -2343,7 +2351,7 @@ msgstr ""
 msgid "Field"
 msgstr ""
 
-#: bika/lims/browser/analysisrequest/add2.py:1979
+#: bika/lims/browser/analysisrequest/add2.py:2003
 msgid "Field '{}' is required"
 msgstr ""
 
@@ -2364,7 +2372,7 @@ msgstr ""
 msgid "Field Title"
 msgstr ""
 
-#: bika/lims/browser/analysisrequest/add2.py:1317
+#: bika/lims/browser/analysisrequest/add2.py:1341
 msgid "Field flushed"
 msgstr ""
 
@@ -3593,7 +3601,7 @@ msgstr ""
 msgid "No Sample with '{allowed_ar_states}' statesfound, and no QC analyses found for {sid}, "
 msgstr ""
 
-#: bika/lims/browser/analysisrequest/add2.py:2046
+#: bika/lims/browser/analysisrequest/add2.py:2070
 msgid "No Samples could be created."
 msgstr ""
 
@@ -3723,7 +3731,7 @@ msgstr ""
 msgid "No user profile could be found for the linked user. Please contact the lab administrator to get further support or try to relink the user."
 msgstr ""
 
-#: bika/lims/browser/analysisrequest/add2.py:1914
+#: bika/lims/browser/analysisrequest/add2.py:1938
 msgid "No valid contact"
 msgstr ""
 
@@ -4836,7 +4844,7 @@ msgstr ""
 msgid "Sample"
 msgstr ""
 
-#: bika/lims/browser/analysisrequest/add2.py:2052
+#: bika/lims/browser/analysisrequest/add2.py:2076
 msgid "Sample ${AR} was successfully created."
 msgstr ""
 
@@ -4933,7 +4941,7 @@ msgstr ""
 msgid "Sample collected by the laboratory"
 msgstr ""
 
-#: bika/lims/browser/analysisrequest/add2.py:1849
+#: bika/lims/browser/analysisrequest/add2.py:1873
 msgid "Sample creation cancelled"
 msgstr ""
 
@@ -4999,7 +5007,7 @@ msgstr ""
 msgid "Samples"
 msgstr ""
 
-#: bika/lims/browser/analysisrequest/add2.py:2049
+#: bika/lims/browser/analysisrequest/add2.py:2073
 msgid "Samples ${ARs} were successfully created."
 msgstr ""
 
@@ -5787,7 +5795,7 @@ msgstr ""
 msgid "The date when the sample was received"
 msgstr ""
 
-#: bika/lims/content/client.py:191
+#: bika/lims/content/client.py:226
 msgid "The decimal mark selected in Bika Setup will be used."
 msgstr ""
 
@@ -5960,7 +5968,7 @@ msgstr ""
 msgid "The unique keyword used to identify the analysis service in import files of bulk Sample requests and results imports from instruments. It is also used to identify dependent analysis services in user defined results calculations"
 msgstr ""
 
-#: bika/lims/browser/analysisrequest/add2.py:1318
+#: bika/lims/browser/analysisrequest/add2.py:1342
 msgid "The value of field '%s' was emptied. Please select a new value."
 msgstr ""
 
@@ -6257,7 +6265,7 @@ msgstr ""
 msgid "Upload a scanned signature to be used on printed analysis results reports. Ideal size is 250 pixels wide by 150 high"
 msgstr ""
 
-#: bika/lims/content/client.py:215
+#: bika/lims/content/client.py:250
 msgid "Upload files and images for this client. Files will be stored in the client folder and can be downloaded later."
 msgstr ""
 
@@ -7165,12 +7173,12 @@ msgid "description_category_department"
 msgstr ""
 
 #. Default: "Always expand the selected categories"
-#: bika/lims/content/client.py:149
+#: bika/lims/content/client.py:184
 msgid "description_client_defaultcategories"
 msgstr ""
 
 #. Default: "Show only selected categories"
-#: bika/lims/content/client.py:173
+#: bika/lims/content/client.py:208
 msgid "description_client_restrictcategories"
 msgstr ""
 
@@ -8066,7 +8074,7 @@ msgstr ""
 
 #. ${record_index}' (${num_samples}) is above ${max_num_samples}"
 #. Default: "The number of samples to create for the record 'Sample ${record_index}' (${num_samples}) is above ${max_num_samples}"
-#: bika/lims/browser/analysisrequest/add2.py:1938
+#: bika/lims/browser/analysisrequest/add2.py:1962
 msgid "error_analyssirequest_numsamples_above_max"
 msgstr ""
 
@@ -8376,12 +8384,12 @@ msgid "label_category_department"
 msgstr ""
 
 #. Default: "Default categories"
-#: bika/lims/content/client.py:146
+#: bika/lims/content/client.py:181
 msgid "label_client_defaultcategories"
 msgstr ""
 
 #. Default: "Restrict categories"
-#: bika/lims/content/client.py:170
+#: bika/lims/content/client.py:205
 msgid "label_client_restrictcategories"
 msgstr ""
 
