@@ -33,6 +33,7 @@ from persistent.list import PersistentList
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from senaite.core import logger
 from senaite.core.api import dtime
+from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
@@ -1256,3 +1257,30 @@ def migrate_analysis_columns_to_setup(tool):
     logger.info(
         "Migrating analysis columns order to setup [DONE]"
     )
+
+
+@upgradestep(product, version)
+def reindex_labcontact_searchable_text(tool):
+    """Reindex contact catalog indexes for LabContact and SupplierContact
+
+    The listing_searchable_text, sortable_title and getParentUID adapters
+    were only registered for the new DX Contact type
+    (senaite.core.interfaces.IContact), causing the indexes to store no
+    data for the legacy AT LabContact and SupplierContact types. Explicit
+    ZCML registrations were added for bika.lims.interfaces.ILabContact and
+    bika.lims.interfaces.ISupplierContact. This step reindexes the affected
+    indexes so existing objects are correctly indexed.
+    """
+    indexes = [
+        "listing_searchable_text",
+        "sortable_title",
+        "getParentUID",
+    ]
+    for index in indexes:
+        logger.info(
+            "Reindexing %s in contact catalog ..." % index
+        )
+        reindex_index(CONTACT_CATALOG, index)
+        logger.info(
+            "Reindexing %s in contact catalog [DONE]" % index
+        )
