@@ -1261,20 +1261,26 @@ def migrate_analysis_columns_to_setup(tool):
 
 @upgradestep(product, version)
 def reindex_labcontact_searchable_text(tool):
-    """Reindex listing_searchable_text for LabContact and SupplierContact
+    """Reindex contact catalog indexes for LabContact and SupplierContact
 
-    The listing_searchable_text adapter was only registered for the new
-    DX Contact type (senaite.core.interfaces.IContact), causing the
-    ZCTextIndex to store no data for the legacy AT LabContact and
-    SupplierContact types. Explicit ZCML registrations were added for
-    bika.lims.interfaces.ILabContact and bika.lims.interfaces.ISupplierContact.
-    This step reindexes the affected index so existing objects become
-    searchable.
+    The listing_searchable_text, sortable_title and getParentUID adapters
+    were only registered for the new DX Contact type
+    (senaite.core.interfaces.IContact), causing the indexes to store no
+    data for the legacy AT LabContact and SupplierContact types. Explicit
+    ZCML registrations were added for bika.lims.interfaces.ILabContact and
+    bika.lims.interfaces.ISupplierContact. This step reindexes the affected
+    indexes so existing objects are correctly indexed.
     """
-    logger.info(
-        "Reindexing listing_searchable_text in contact catalog ..."
-    )
-    reindex_index(CONTACT_CATALOG, "listing_searchable_text")
-    logger.info(
-        "Reindexing listing_searchable_text in contact catalog [DONE]"
-    )
+    indexes = [
+        "listing_searchable_text",
+        "sortable_title",
+        "getParentUID",
+    ]
+    for index in indexes:
+        logger.info(
+            "Reindexing %s in contact catalog ..." % index
+        )
+        reindex_index(CONTACT_CATALOG, index)
+        logger.info(
+            "Reindexing %s in contact catalog [DONE]" % index
+        )
