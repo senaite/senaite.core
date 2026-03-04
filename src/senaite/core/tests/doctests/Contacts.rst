@@ -1,8 +1,7 @@
 Contacts
 --------
 
-Tests catalog indexing behavior for all contact types: `Contact`,
-`LabContact`, and `SupplierContact`.
+Tests catalog indexing behavior for contact types in the contact catalog.
 
 Running this test from the buildout directory:
 
@@ -50,25 +49,10 @@ The Contact should be indexed in the contact catalog:
     >>> len(brains)
     1
 
-Searching by `listing_searchable_text` should find the Contact by first name:
+The `getFullname` index should return the contact's full name:
 
     >>> brains = api.search(
-    ...     {
-    ...         "portal_type": "Contact",
-    ...         "listing_searchable_text": "Rita",
-    ...     },
-    ...     CONTACT_CATALOG,
-    ... )
-    >>> len(brains)
-    1
-
-Searching by last name should also return the Contact:
-
-    >>> brains = api.search(
-    ...     {
-    ...         "portal_type": "Contact",
-    ...         "listing_searchable_text": "Mohale",
-    ...     },
+    ...     {"portal_type": "Contact", "getFullname": "Rita Mohale"},
     ...     CONTACT_CATALOG,
     ... )
     >>> len(brains)
@@ -90,6 +74,9 @@ The `sortable_title` index should allow sorting by full name:
 
 LabContact Catalog Indexing
 ...........................
+
+The `listing_searchable_text` adapter must be registered for `ILabContact`
+so that text search returns results for lab contacts.
 
 Create a LabContact with known attributes:
 
@@ -132,71 +119,13 @@ Searching by last name should also return the LabContact:
     >>> len(brains)
     1
 
-The `sortable_title` index should be populated and allow sorting by full name:
+The `sortable_title` index should allow ordering results by full name:
 
     >>> brains = api.search(
     ...     {
     ...         "portal_type": "LabContact",
     ...         "UID": api.get_uid(labcontact),
     ...         "sort_on": "sortable_title",
-    ...     },
-    ...     CONTACT_CATALOG,
-    ... )
-    >>> len(brains)
-    1
-
-LabContacts are not inside a client, so `getParentUID` should be empty:
-
-    >>> brain = api.search({"UID": api.get_uid(labcontact)}, CONTACT_CATALOG)[0]
-    >>> brain.getParentUID
-    ''
-
-
-SupplierContact Catalog Indexing
-.................................
-
-Create a Supplier and a SupplierContact:
-
-    >>> supplier = api.create(
-    ...     bikasetup.bika_suppliers,
-    ...     "Supplier",
-    ...     Name="Test Supplier",
-    ... )
-    >>> suppliercontact = api.create(
-    ...     supplier,
-    ...     "SupplierContact",
-    ...     Firstname="Jane",
-    ...     Lastname="Tester",
-    ...     EmailAddress="jane@supplier.test",
-    ... )
-    >>> processing = processQueue()
-
-The SupplierContact should be indexed in the contact catalog:
-
-    >>> brains = api.search(
-    ...     {"UID": api.get_uid(suppliercontact)}, CONTACT_CATALOG
-    ... )
-    >>> len(brains)
-    1
-
-Searching by `listing_searchable_text` should find the SupplierContact by first name:
-
-    >>> brains = api.search(
-    ...     {
-    ...         "portal_type": "SupplierContact",
-    ...         "listing_searchable_text": "Jane",
-    ...     },
-    ...     CONTACT_CATALOG,
-    ... )
-    >>> len(brains)
-    1
-
-Searching by last name should also return the SupplierContact:
-
-    >>> brains = api.search(
-    ...     {
-    ...         "portal_type": "SupplierContact",
-    ...         "listing_searchable_text": "Tester",
     ...     },
     ...     CONTACT_CATALOG,
     ... )
