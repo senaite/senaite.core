@@ -4,7 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
-- #2856 Fix searchable zext index for lab contacts
+- #2856 Fix searchable text index for lab-/supplier contacts
 - #2854 Allow to set sample CC contacts in client
 - #2853 Fix hidden Client field is missing in sample add form
 - #2852 Allow to set primary sample contact in client
