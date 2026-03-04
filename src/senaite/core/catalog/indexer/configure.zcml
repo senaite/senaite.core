@@ -11,7 +11,10 @@
   <adapter name="client_searchable_text" factory=".client.client_searchable_text"/>
 
   <!-- Contact Indexer -->
-  <adapter name="listing_searchable_text" factory=".contact.listing_searchable_text"/>
+  <adapter name="listing_searchable_text"
+      factory=".contact.listing_searchable_text"
+      for="senaite.core.interfaces.IContact
+           senaite.core.interfaces.catalog.IContactCatalog"/>
   <adapter name="listing_searchable_text"
       factory=".contact.listing_searchable_text"
       for="bika.lims.interfaces.ILabContact
@@ -20,8 +23,30 @@
       factory=".contact.listing_searchable_text"
       for="bika.lims.interfaces.ISupplierContact
            senaite.core.interfaces.catalog.IContactCatalog"/>
-  <adapter name="getParentUID" factory=".contact.getParentUID"/>
-  <adapter name="sortable_title" factory=".contact.sortable_title"/>
+  <adapter name="getParentUID"
+      factory=".contact.getParentUID"
+      for="senaite.core.interfaces.IContact
+           senaite.core.interfaces.catalog.IContactCatalog"/>
+  <adapter name="getParentUID"
+      factory=".contact.getParentUID"
+      for="bika.lims.interfaces.ILabContact
+           senaite.core.interfaces.catalog.IContactCatalog"/>
+  <adapter name="getParentUID"
+      factory=".contact.getParentUID"
+      for="bika.lims.interfaces.ISupplierContact
+           senaite.core.interfaces.catalog.IContactCatalog"/>
+  <adapter name="sortable_title"
+      factory=".contact.sortable_title"
+      for="senaite.core.interfaces.IContact
+           senaite.core.interfaces.catalog.IContactCatalog"/>
+  <adapter name="sortable_title"
+      factory=".contact.sortable_title"
+      for="bika.lims.interfaces.ILabContact
+           senaite.core.interfaces.catalog.IContactCatalog"/>
+  <adapter name="sortable_title"
+      factory=".contact.sortable_title"
+      for="bika.lims.interfaces.ISupplierContact
+           senaite.core.interfaces.catalog.IContactCatalog"/>
 
   <!-- Label Indexer -->
   <adapter name="labels" factory=".label.labels"/>
