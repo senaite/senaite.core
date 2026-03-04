@@ -1,13 +1,12 @@
-LabContact
-----------
+Contacts
+--------
 
-Tests that the `listing_searchable_text`, `sortable_title`, and `getParentUID`
-indexes are correctly populated for `LabContact` and `SupplierContact` objects
-in the contact catalog.
+Tests catalog indexing behavior for all contact types: `Contact`,
+`LabContact`, and `SupplierContact`.
 
 Running this test from the buildout directory:
 
-    bin/test test_textual_doctests -t LabContact
+    bin/test test_textual_doctests -t Contacts
 
 
 Test Setup
@@ -25,13 +24,72 @@ Variables:
 
     >>> portal = self.portal
     >>> request = self.request
+    >>> setup = portal.setup
     >>> bikasetup = portal.bika_setup
 
     >>> setRoles(portal, TEST_USER_ID, ["LabManager"])
 
 
-LabContact listing_searchable_text Indexing
-...........................................
+Contact Catalog Indexing
+........................
+
+Create a global Contact in the setup contacts folder:
+
+    >>> contact = api.create(
+    ...     setup.contacts,
+    ...     "Contact",
+    ...     Firstname="Rita",
+    ...     Lastname="Mohale",
+    ...     EmailAddress="rita@lab.test",
+    ... )
+    >>> processing = processQueue()
+
+The Contact should be indexed in the contact catalog:
+
+    >>> brains = api.search({"UID": api.get_uid(contact)}, CONTACT_CATALOG)
+    >>> len(brains)
+    1
+
+Searching by `listing_searchable_text` should find the Contact by first name:
+
+    >>> brains = api.search(
+    ...     {
+    ...         "portal_type": "Contact",
+    ...         "listing_searchable_text": "Rita",
+    ...     },
+    ...     CONTACT_CATALOG,
+    ... )
+    >>> len(brains)
+    1
+
+Searching by last name should also return the Contact:
+
+    >>> brains = api.search(
+    ...     {
+    ...         "portal_type": "Contact",
+    ...         "listing_searchable_text": "Mohale",
+    ...     },
+    ...     CONTACT_CATALOG,
+    ... )
+    >>> len(brains)
+    1
+
+The `sortable_title` index should allow sorting by full name:
+
+    >>> brains = api.search(
+    ...     {
+    ...         "portal_type": "Contact",
+    ...         "UID": api.get_uid(contact),
+    ...         "sort_on": "sortable_title",
+    ...     },
+    ...     CONTACT_CATALOG,
+    ... )
+    >>> len(brains)
+    1
+
+
+LabContact Catalog Indexing
+...........................
 
 Create a LabContact with known attributes:
 
@@ -42,9 +100,6 @@ Create a LabContact with known attributes:
     ...     Lastname="Testperson",
     ...     EmailAddress="william@lab.test",
     ... )
-
-Process the indexing queue to ensure the object is cataloged:
-
     >>> processing = processQueue()
 
 The LabContact should be indexed in the contact catalog:
@@ -77,12 +132,7 @@ Searching by last name should also return the LabContact:
     >>> len(brains)
     1
 
-
-LabContact sortable_title Indexing
-...................................
-
-The `sortable_title` index should be populated and allow sorting by full name.
-Query with a sort to verify the index is present:
+The `sortable_title` index should be populated and allow sorting by full name:
 
     >>> brains = api.search(
     ...     {
@@ -95,21 +145,15 @@ Query with a sort to verify the index is present:
     >>> len(brains)
     1
 
+LabContacts are not inside a client, so `getParentUID` should be empty:
 
-LabContact getParentUID Indexing
-.................................
-
-LabContacts are not inside a client, so `getParentUID` should return an empty
-string:
-
-    >>> brains = api.search({"UID": api.get_uid(labcontact)}, CONTACT_CATALOG)
-    >>> brain = brains[0]
+    >>> brain = api.search({"UID": api.get_uid(labcontact)}, CONTACT_CATALOG)[0]
     >>> brain.getParentUID
     ''
 
 
-SupplierContact listing_searchable_text Indexing
-................................................
+SupplierContact Catalog Indexing
+.................................
 
 Create a Supplier and a SupplierContact:
 
@@ -125,9 +169,6 @@ Create a Supplier and a SupplierContact:
     ...     Lastname="Tester",
     ...     EmailAddress="jane@supplier.test",
     ... )
-
-Process the indexing queue:
-
     >>> processing = processQueue()
 
 The SupplierContact should be indexed in the contact catalog:
@@ -138,7 +179,7 @@ The SupplierContact should be indexed in the contact catalog:
     >>> len(brains)
     1
 
-Searching by `listing_searchable_text` should find the SupplierContact:
+Searching by `listing_searchable_text` should find the SupplierContact by first name:
 
     >>> brains = api.search(
     ...     {
