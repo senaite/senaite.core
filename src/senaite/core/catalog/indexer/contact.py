@@ -20,20 +20,21 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IClient
+from plone.indexer.delegate import DelegatingIndexerFactory
 
 
-def sortable_title(instance):
+def _sortable_title(instance):
     return instance.getFullname().lower()
 
 
-def getParentUID(instance):
+def _getParentUID(instance):
     parent = instance.aq_parent
     if not IClient.providedBy(parent):
         return ""
     return parent.UID()
 
 
-def listing_searchable_text(instance):
+def _listing_searchable_text(instance):
     """Extract search tokens for ZC text index
     """
 
@@ -61,3 +62,8 @@ def listing_searchable_text(instance):
 
     # return a single unicode string with all the concatenated tokens
     return u" ".join(map(api.safe_unicode, tokens))
+
+
+sortable_title = DelegatingIndexerFactory(_sortable_title)
+getParentUID = DelegatingIndexerFactory(_getParentUID)
+listing_searchable_text = DelegatingIndexerFactory(_listing_searchable_text)
