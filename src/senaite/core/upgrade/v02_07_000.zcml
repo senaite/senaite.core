@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Reindex LabContact catalog indexes"
+      description="Reindex listing_searchable_text, sortable_title and getParentUID in contact catalog for LabContact and SupplierContact"
+      source="2721"
+      destination="2722"
+      handler=".v02_07_000.reindex_labcontact_searchable_text"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Migrate analysis columns order to setup"
       description="Move analysis columns order settings from registry to SENAITE setup"
       source="2720"

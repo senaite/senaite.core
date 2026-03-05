@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-02-27 19:36+0000\n"
+"POT-Creation-Date: 2026-03-04 10:54+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Núria Regué Sorribes, 2025\n"
 "Language-Team: Catalan (https://app.transifex.com/senaite/teams/87045/ca/)\n"
@@ -855,8 +855,12 @@ msgstr "Per valor, descendent"
 msgid "CBID"
 msgstr "CBID"
 
+#: bika/lims/content/client.py:129
+msgid "CC Contacts"
+msgstr ""
+
 #: bika/lims/content/analysisrequest.py:236
-#: bika/lims/content/client.py:127
+#: bika/lims/content/client.py:162
 msgid "CC Emails"
 msgstr "Correus en còpia"
 
@@ -1302,7 +1306,7 @@ msgstr "Consideracions"
 msgid "Contact"
 msgstr "Contacte"
 
-#: bika/lims/browser/analysisrequest/add2.py:1923
+#: bika/lims/browser/analysisrequest/add2.py:1947
 msgid "Contact does not belong to the selected client"
 msgstr "El contacte que heu seleccionat no pertany al client indicat"
 
@@ -1490,7 +1494,7 @@ msgstr "Disponible"
 msgid "Current ID server counter values"
 msgstr ""
 
-#: bika/lims/content/client.py:202
+#: bika/lims/content/client.py:237
 msgid "Custom decimal mark"
 msgstr "Caràcter de puntuació decimal personalitzat"
 
@@ -1644,9 +1648,13 @@ msgstr "Desactiva l'instrument de mesura fins al pròxim test intern de calibrat
 msgid "Deactivate"
 msgstr "Desactiva"
 
-#: bika/lims/content/client.py:203
+#: bika/lims/content/client.py:238
 msgid "Decimal mark to use in the reports from this Client."
 msgstr "Caràcter de puntuació decimal que cal utilitzar en els informes de resultats per aquest client."
+
+#: bika/lims/content/client.py:130
+msgid "Default CC contacts for new samples. If set, these contacts are automatically selected in the sample add form."
+msgstr ""
 
 #: bika/lims/content/analysisservice.py:165
 msgid "Default Container"
@@ -1656,7 +1664,7 @@ msgstr "Recipient per defecte"
 msgid "Default Department"
 msgstr "Departament predeterminat"
 
-#: bika/lims/content/client.py:128
+#: bika/lims/content/client.py:163
 msgid "Default Emails to CC all published Samples for this client"
 msgstr "Introduïu els correus electrònics que voleu que s'afegeixin en còpia quan s'enviïn informes de resultats d'anàlisi de mostres que pertanyin a aquest client."
 
@@ -1689,7 +1697,7 @@ msgid "Default count of Sample to add."
 msgstr "Nombre de mostres a crear de manera predeterminada."
 
 #: bika/lims/content/bikasetup.py:311
-#: bika/lims/content/client.py:190
+#: bika/lims/content/client.py:225
 msgid "Default decimal mark"
 msgstr "Caràcter de puntuació decimal predeterminat"
 
@@ -2347,7 +2355,7 @@ msgstr "Consulta les transicions disponibles"
 msgid "Field"
 msgstr "Camp"
 
-#: bika/lims/browser/analysisrequest/add2.py:1979
+#: bika/lims/browser/analysisrequest/add2.py:2003
 msgid "Field '{}' is required"
 msgstr "El camp «{}» és obligatori"
 
@@ -2368,7 +2376,7 @@ msgstr "La conservació es fa en recol·lectar la mostra"
 msgid "Field Title"
 msgstr "Títol del camp"
 
-#: bika/lims/browser/analysisrequest/add2.py:1317
+#: bika/lims/browser/analysisrequest/add2.py:1341
 msgid "Field flushed"
 msgstr "S'ha buidat el camp"
 
@@ -3597,7 +3605,7 @@ msgstr ""
 msgid "No Sample with '{allowed_ar_states}' statesfound, and no QC analyses found for {sid}, "
 msgstr ""
 
-#: bika/lims/browser/analysisrequest/add2.py:2046
+#: bika/lims/browser/analysisrequest/add2.py:2070
 msgid "No Samples could be created."
 msgstr "No s'ha creat cap mostra."
 
@@ -3727,7 +3735,7 @@ msgstr "No hi ha cap usuari registrat al sistema per a ${contact_fullname}. Ompl
 msgid "No user profile could be found for the linked user. Please contact the lab administrator to get further support or try to relink the user."
 msgstr "No s'ha trobat cap perfil d'usuari per a l'usuari vinculat. Contacteu amb l'administrador del sistema si necessiteu ajuda o intenteu tornar a vincular l'usuari."
 
-#: bika/lims/browser/analysisrequest/add2.py:1914
+#: bika/lims/browser/analysisrequest/add2.py:1938
 msgid "No valid contact"
 msgstr "El contacte no és vàlid"
 
@@ -4840,7 +4848,7 @@ msgstr "Tractament"
 msgid "Sample"
 msgstr "Mostreja"
 
-#: bika/lims/browser/analysisrequest/add2.py:2052
+#: bika/lims/browser/analysisrequest/add2.py:2076
 msgid "Sample ${AR} was successfully created."
 msgstr ""
 
@@ -4937,7 +4945,7 @@ msgstr ""
 msgid "Sample collected by the laboratory"
 msgstr ""
 
-#: bika/lims/browser/analysisrequest/add2.py:1849
+#: bika/lims/browser/analysisrequest/add2.py:1873
 msgid "Sample creation cancelled"
 msgstr ""
 
@@ -5003,7 +5011,7 @@ msgstr ""
 msgid "Samples"
 msgstr "Mostres"
 
-#: bika/lims/browser/analysisrequest/add2.py:2049
+#: bika/lims/browser/analysisrequest/add2.py:2073
 msgid "Samples ${ARs} were successfully created."
 msgstr ""
 
@@ -5791,7 +5799,7 @@ msgstr "Indiqueu la data quan es va conservar de la mostra."
 msgid "The date when the sample was received"
 msgstr ""
 
-#: bika/lims/content/client.py:191
+#: bika/lims/content/client.py:226
 msgid "The decimal mark selected in Bika Setup will be used."
 msgstr "Marqueu aquesta casella de selecció si voleu utilitzar el símbol de separació decimal de la configuració general."
 
@@ -5964,7 +5972,7 @@ msgstr ""
 msgid "The unique keyword used to identify the analysis service in import files of bulk Sample requests and results imports from instruments. It is also used to identify dependent analysis services in user defined results calculations"
 msgstr "Paraula clau que identifica unívocament el servei d'anàlisi en importar mostres i fitxers de resultats d'instruments de mesura. Aquesta paraula clau també es pot utilitzar com a paràmetre en les expressions de càlculs per tal que els resultats de les anàlisis corresponents s'utilitzin com a variables d'entrada."
 
-#: bika/lims/browser/analysisrequest/add2.py:1318
+#: bika/lims/browser/analysisrequest/add2.py:1342
 msgid "The value of field '%s' was emptied. Please select a new value."
 msgstr ""
 
@@ -6261,7 +6269,7 @@ msgstr "Actualitza els fitxers adjunts"
 msgid "Upload a scanned signature to be used on printed analysis results reports. Ideal size is 250 pixels wide by 150 high"
 msgstr "Utilitzeu aquest camp per a pujar un fitxer d'imatge amb la signatura digitalitzada del contacte. Aquesta imatge s'encastarà en els informes de resultats quan el contacte sigui cap de departament, hagi intervingut en la verificació o publicació de la mostra o d'algun dels resultats. Les dimensions recomanades són 250 x 150 píxels."
 
-#: bika/lims/content/client.py:215
+#: bika/lims/content/client.py:250
 msgid "Upload files and images for this client. Files will be stored in the client folder and can be downloaded later."
 msgstr ""
 
@@ -7171,12 +7179,12 @@ msgid "description_category_department"
 msgstr ""
 
 #. Default: "Always expand the selected categories"
-#: bika/lims/content/client.py:149
+#: bika/lims/content/client.py:184
 msgid "description_client_defaultcategories"
 msgstr ""
 
 #. Default: "Show only selected categories"
-#: bika/lims/content/client.py:173
+#: bika/lims/content/client.py:208
 msgid "description_client_restrictcategories"
 msgstr ""
 
@@ -8077,7 +8085,7 @@ msgstr ""
 
 #. ${record_index}' (${num_samples}) is above ${max_num_samples}"
 #. Default: "The number of samples to create for the record 'Sample ${record_index}' (${num_samples}) is above ${max_num_samples}"
-#: bika/lims/browser/analysisrequest/add2.py:1938
+#: bika/lims/browser/analysisrequest/add2.py:1962
 msgid "error_analyssirequest_numsamples_above_max"
 msgstr ""
 
@@ -8387,12 +8395,12 @@ msgid "label_category_department"
 msgstr ""
 
 #. Default: "Default categories"
-#: bika/lims/content/client.py:146
+#: bika/lims/content/client.py:181
 msgid "label_client_defaultcategories"
 msgstr ""
 
 #. Default: "Restrict categories"
-#: bika/lims/content/client.py:170
+#: bika/lims/content/client.py:205
 msgid "label_client_restrictcategories"
 msgstr ""
 

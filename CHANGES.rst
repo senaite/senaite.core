@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2855 Open edit modal for listing items
+- #2856 Fix catalog indexer for lab-/supplier contacts
 - #2854 Allow to set sample CC contacts in client
 - #2853 Fix hidden Client field is missing in sample add form
 - #2852 Allow to set primary sample contact in client
