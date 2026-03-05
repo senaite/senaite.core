@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2858 Fix sticker selection fields are rendered as text
 - #2856 Fix catalog indexer for lab-/supplier contacts
 - #2854 Allow to set sample CC contacts in client
 - #2853 Fix hidden Client field is missing in sample add form
