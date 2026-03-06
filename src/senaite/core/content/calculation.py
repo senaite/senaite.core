@@ -478,7 +478,7 @@ class Calculation(Container):
 
         return deps
 
-    def getCalculationDependants(self, deps=None):
+    def getCalculationDependents(self, deps=None):
         """Return a flat list of services who depend on this calculation.
 
         This refers only to services who's Calculation UIDReferenceField have
@@ -496,9 +496,13 @@ class Calculation(Container):
         for service in services:
             calc = service.getCalculation()
             if calc and calc.UID() != self.UID():
-                calc.getCalculationDependants(deps)
+                calc.getCalculationDependents(deps)
             deps.append(service)
         return deps
+
+    # BBB: alternate spelling used in older code
+    def getCalculationDependants(self, deps=None):
+        return self.getCalculationDependents(deps=deps)
 
     # BBB: AT schema field property
     InterimFields = property(getInterimFields, setInterimFields)
