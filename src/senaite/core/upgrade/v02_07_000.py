@@ -434,32 +434,6 @@ def update_analysis_catalog_indexes(tool):
     logger.info("Update analysis catalog indexes [DONE]")
 
 
-def remove_at_portal_types(tool):
-    """Remove obsolete AT portal type information
-    """
-    logger.info("Remove AT types from portal_types tool ...")
-    pt = api.get_tool("portal_types")
-    for type_name in REMOVE_AT_TYPES:
-        fti = pt.getTypeInfo(type_name)
-        # keep DX FTIs
-        if isinstance(fti, DexterityFTI):
-            logger.info("Type '{}' is already a DX FTI".format(fti))
-            continue
-        elif not fti:
-            # Removed already
-            continue
-        pt.manage_delObjects(fti.getId())
-
-    # remove from AT's factory tool as well. This is necessary for the AT's
-    # factory_tool to not shortcut `createObject?type_name=` on object creation
-    ft = api.get_tool("portal_factory")
-    at_types = ft.getFactoryTypes().keys()
-    at_types = filter(lambda name: name not in REMOVE_AT_TYPES, at_types)
-    ft.manage_setPortalFactoryTypes(listOfTypeIds=at_types)
-
-    logger.info("Remove AT types from portal_types tool ... [DONE]")
-
-
 def get_destination_folder(folder_id):
     """Returns the folder with the given name
     """
