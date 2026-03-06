@@ -95,4 +95,10 @@
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".referencesample.EditForm"/>
 
+  <!-- Edit Form: Senaite Setup -->
+  <adapter
+      for="senaite.core.interfaces.ISetup
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".senaitesetup.EditForm"/>
+
 </configure>

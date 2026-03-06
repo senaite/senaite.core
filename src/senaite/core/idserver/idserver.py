@@ -32,7 +32,7 @@ from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IAnalysisRequestRetest
 from bika.lims.interfaces import IAnalysisRequestSecondary
-from bika.lims.interfaces import IARReport
+from senaite.core.interfaces import IResultsReport
 from DateTime import DateTime
 from Products.ATContentTypes.utils import DT2dt
 from senaite.core.idserver.alphanumber import Alphanumber
@@ -187,7 +187,7 @@ def get_config(context, **kw):
     """Fetch the config dict from the Bika Setup for the given portal_type
     """
     # get the ID formatting config
-    config_map = api.get_bika_setup().getIDFormatting()
+    config_map = api.get_senaite_setup().getIDFormatting()
 
     # allow portal_type override
     portal_type = get_type_id(context, **kw)
@@ -288,7 +288,7 @@ def get_variables(context, **kw):
                 "secondary_count": secondary_count,
             })
 
-    elif IARReport.providedBy(context):
+    elif IResultsReport.providedBy(context):
         variables.update({
             "clientId": parent.getClientID(),
         })

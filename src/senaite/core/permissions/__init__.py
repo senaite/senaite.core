@@ -74,7 +74,6 @@ from .worksheet.permissions import AddWorksheet
 from .worksheet.permissions import AddWorksheetTemplate
 from .worksheet.permissions import EditWorksheet
 from .worksheet.permissions import ManageWorksheets
-from .worksheet.permissions import TransitionRejectWorksheet
 from .worksheet.permissions import TransitionRemoveWorksheet
 from .worksheet.permissions import WorksheetAddAttachment
 # Analysis permissions
@@ -87,16 +86,15 @@ from .analysis.permissions import TransitionRejectAnalysis
 # When the module gets initialized (bika.lims.__init__), the function initialize
 # will look through these Add permissions attributes when registering types and
 # will automatically associate them with their types.
+AddARTemplate = "senaite.core: Add ARTemplate"
 AddAnalysis = "senaite.core: Add Analysis"
 AddAnalysisCategory = "senaite.core: Add AnalysisCategory"
 AddAnalysisProfile = "senaite.core: Add AnalysisProfile"
 AddAnalysisService = "senaite.core: Add AnalysisService"
 AddAnalysisSpec = "senaite.core: Add AnalysisSpec"
-AddARTemplate = "senaite.core: Add ARTemplate"
-AddSampleTemplate = "senaite.core: Add SampleTemplate"
 AddAttachment = "senaite.core: Add Attachment"
-AddAutoImportLog = "senaite.core: Add AutoImportLog"
 AddAttachmentType = "senaite.core: Add AttachmentType"
+AddAutoImportLog = "senaite.core: Add AutoImportLog"
 AddBatch = "senaite.core: Add Batch"
 AddBatchLabel = "senaite.core: Add BatchLabel"
 AddCalculation = "senaite.core: Add Calculation"
@@ -120,6 +118,7 @@ AddReferenceDefinition = "senaite.core: Add ReferenceDefinition"
 AddSampleCondition = "senaite.core: Add SampleCondition"
 AddSampleMatrix = "senaite.core: Add SampleMatrix"
 AddSamplePoint = "senaite.core: Add SamplePoint"
+AddSampleTemplate = "senaite.core: Add SampleTemplate"
 AddSampleType = "senaite.core: Add SampleType"
 AddSamplingDeviation = "senaite.core: Add SamplingDeviation"
 AddStorageLocation = "senaite.core: Add StorageLocation"

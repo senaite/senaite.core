@@ -21,6 +21,7 @@
 import base64
 import functools
 import re
+from collections import OrderedDict
 from collections import defaultdict
 from datetime import datetime
 from decimal import Decimal
@@ -58,6 +59,7 @@ from bika.lims.interfaces import IClient
 from bika.lims.interfaces import ISubmitted
 from bika.lims.utils import getUsers
 from bika.lims.utils import tmpID
+from bika.lims.utils.analysisrequest import apply_custom_units
 from bika.lims.utils.analysisrequest import apply_hidden_services
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import getTransitionUsers
@@ -128,6 +130,7 @@ from senaite.core.permissions import FieldEditSpecification
 from senaite.core.permissions import FieldEditStorageLocation
 from senaite.core.permissions import FieldEditTemplate
 from senaite.core.permissions import ManageInvoices
+from senaite.core.schema.uidreferencefield import get_backrefs
 from six.moves.urllib.parse import urljoin
 from zope.interface import alsoProvides
 from zope.interface import implements
@@ -163,14 +166,20 @@ schema = BikaSchema.copy() + Schema((
             },
             ui_item="Title",
             catalog=CONTACT_CATALOG,
-            # TODO: Make custom query to handle parent client UID
+            # Base query - gets overridden with client-specific query at
+            # runtime to include both client contacts and global contacts
             query={
-                "getParentUID": "",
                 "is_active": True,
                 "sort_on": "sortable_title",
                 "sort_order": "ascending"
             },
             columns=[
+                {
+                    "name": "scope",
+                    "width": "10",
+                    "align": "center",
+                    "label": "",
+                },
                 {"name": "Title", "label": _("Name")},
                 {"name": "getEmailAddress", "label": _("Email")},
             ],
@@ -198,14 +207,20 @@ schema = BikaSchema.copy() + Schema((
             },
             ui_item="Title",
             catalog=CONTACT_CATALOG,
-            # TODO: Make custom query to handle parent client UID
+            # Base query - gets overridden with client-specific query at
+            # runtime to include both client contacts and global contacts
             query={
-                "getParentUID": "",
                 "is_active": True,
                 "sort_on": "sortable_title",
                 "sort_order": "ascending"
             },
             columns=[
+                {
+                    "name": "scope",
+                    "width": "10",
+                    "align": "center",
+                    "label": "",
+                },
                 {"name": "Title", "label": _("Name")},
                 {"name": "getEmailAddress", "label": _("Email")},
             ],
@@ -1432,7 +1447,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
     @property
     def bika_setup(self):
-        return api.get_bika_setup()
+        return api.get_senaite_setup()
 
     def Title(self):
         """ Return the Request ID as title """
@@ -1559,6 +1574,9 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
         # apply hidden services *after* the profiles have been set
         apply_hidden_services(self)
+
+        # apply custom units *after* the profiles have been set
+        apply_custom_units(self)
 
     def getClient(self):
         """Returns the client this object is bound to. We override getClient
@@ -1759,18 +1777,41 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
     def getRawReports(self):
         """Returns UIDs of reports with a reference to this sample
 
-        see: ARReport.ContainedAnalysisRequests field
+        Checks both primary and contained sample relationships
 
         :returns: List of report UIDs
         """
-        return get_backreferences(self, "ARReportAnalysisRequest")
+        report_uids = []
+
+        # ResultsReport primary sample relationship
+        primary_refs = get_backrefs(
+            self, "ResultsReport.sample")
+        report_uids.extend(primary_refs)
+
+        # ResultsReport contained samples relationship
+        contained_refs = get_backrefs(
+            self, "ResultsReport.contained_samples")
+        report_uids.extend(contained_refs)
+
+        # Remove duplicates while preserving order
+        return list(OrderedDict.fromkeys(report_uids))
 
     def getReports(self):
-        """Returns a list of report objects
+        """Returns a sorted list of report objects
 
-        :returns: List of report objects
+        :returns: List of report objects sorted by creation date
         """
-        return list(map(api.get_object, self.getRawReports()))
+        reports = []
+        report_uids = self.getRawReports()
+        for uid in report_uids:
+            report = api.get_object(uid, None)
+            if report:
+                reports.append(report)
+            else:
+                logger.warning("AnalysisRequest.getReports: "
+                               "Report with UID %s not found", uid)
+                continue
+        return list(sorted(reports, key=lambda r: r.created()))
 
     def getPrinted(self):
         """ returns "0", "1" or "2" to indicate Printed state.
@@ -1785,12 +1826,14 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         if not report_uids:
             return "0"
 
-        last_report = api.get_object(report_uids[-1])
+        # get the last reports sorted on creation date
+        reports = self.getReports()
+        last_report = reports[-1]
+
         if last_report.getDatePrinted():
             return "1"
 
-        for report_uid in report_uids[:-1]:
-            report = api.get_object(report_uid)
+        for report in reports[:-1]:
             if report.getDatePrinted():
                 return "2"
 

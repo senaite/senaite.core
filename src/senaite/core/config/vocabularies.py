@@ -59,3 +59,11 @@ RESULT_TYPES = (
     ("multiselect_duplicates", _("Multiple selection (with duplicates)")),
     ("multichoice", _("Multiple choices")),
 )
+
+SCINOTATION_OPTIONS = (
+    ('1', 'aE+b / aE-b'),
+    ('2', 'ax10^b / ax10^-b'),
+    ('3', 'ax10^b / ax10^-b (with superscript)'),
+    ('4', 'a·10^b / a·10^-b'),
+    ('5', 'a·10^b / a·10^-b (with superscript)'),
+)

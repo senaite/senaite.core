@@ -11,6 +11,7 @@ Test Setup
 
 Needed Imports:
 
+    >>> import transaction
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
@@ -70,6 +71,7 @@ We need to create some basic objects for the test:
     >>> Fe = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
     >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
     >>> bikasetup.setSelfVerificationEnabled(True)
+    >>> transaction.commit()
 
 Retest transition and guard basic constraints
 .............................................

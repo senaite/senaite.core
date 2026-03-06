@@ -150,7 +150,7 @@ Since we haven't received any analysis requests, this worksheet remains empty:
 
     >>> worksheet.getAnalyses()
     []
-    >>> worksheet.getLayout()
+    >>> worksheet.getLayoutView()
     []
 
 Receive the Analysis Requests and apply again the Worksheet Template:
@@ -552,7 +552,7 @@ And reassign the template to the worksheet:
 None of these new samples have been added:
 
     >>> new_samp_uids = map(api.get_uid, samples)
-    >>> container_uids = map(lambda l: l["container_uid"], worksheet.getLayout())
+    >>> container_uids = map(lambda l: l["container_uid"], worksheet.getLayoutView())
     >>> [u for u in new_samp_uids if u in container_uids]
     []
 
@@ -577,7 +577,7 @@ The second slot contains now 'Fe' too:
 
 While none of the analyses from new samples have been added:
 
-    >>> container_uids = map(lambda l: l["container_uid"], worksheet.getLayout())
+    >>> container_uids = map(lambda l: l["container_uid"], worksheet.getLayoutView())
     >>> [u for u in new_samp_uids if u in container_uids]
     []
 

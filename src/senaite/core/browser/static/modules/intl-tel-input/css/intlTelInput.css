@@ -3,6 +3,7 @@
   --iti-border-color: #ccc;
   --iti-dialcode-color: #999;
   --iti-dropdown-bg: white;
+  --iti-search-icon-color: #999;
   --iti-spacer-horizontal: 8px;
   --iti-flag-height: 12px;
   --iti-flag-width: 16px;
@@ -28,12 +29,6 @@
 .iti * {
   box-sizing: border-box;
 }
-.iti__hide {
-  display: none;
-}
-.iti__v-hide {
-  visibility: hidden;
-}
 .iti__a11y-text {
   width: 1px;
   height: 1px;
@@ -52,6 +47,7 @@
   position: absolute;
   top: 0;
   bottom: 0;
+  left: 0;
   padding: var(--iti-border-width);
 }
 .iti__selected-country {
@@ -86,10 +82,6 @@
   border-right: var(--iti-triangle-border) solid transparent;
   border-top: var(--iti-arrow-height) solid var(--iti-arrow-color);
 }
-[dir=rtl] .iti__arrow {
-  margin-right: var(--iti-arrow-padding);
-  margin-left: 0;
-}
 .iti__arrow--up {
   border-top: none;
   border-bottom: var(--iti-arrow-height) solid var(--iti-arrow-color);
@@ -110,14 +102,78 @@
   width: 100%;
   border-width: 0;
   border-radius: 3px;
+  padding-left: 30px;
+  padding-right: 28px;
+}
+[dir=rtl] .iti__search-input {
+  padding-left: inherit;
+  padding-right: 30px;
+  background-position: right 8px center;
 }
 .iti__search-input + .iti__country-list {
   border-top: 1px solid var(--iti-border-color);
+}
+.iti__search-input::-webkit-search-cancel-button {
+  appearance: none;
+}
+.iti__search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.iti__search-icon {
+  position: absolute;
+  left: 8px;
+  display: flex;
+  pointer-events: none;
+}
+[dir=rtl] .iti__search-icon {
+  left: auto;
+  right: 8px;
+}
+.iti__search-icon-svg {
+  stroke: var(--iti-search-icon-color);
+  fill: none;
+  stroke-width: 3;
+}
+.iti__search-clear {
+  position: absolute;
+  right: 4px;
+  background: transparent;
+  border: 0;
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease;
+  width: 24px;
+  height: 24px;
+}
+.iti__search-clear .iti__search-clear-x {
+  stroke-width: 2;
+}
+.iti__search-clear .iti__search-clear-bg {
+  fill: var(--iti-search-icon-color);
+}
+[dir=rtl] .iti__search-clear {
+  right: auto;
+  left: 4px;
+}
+.iti__search-clear:hover, .iti__search-clear:focus-visible {
+  background: var(--iti-hover-color);
+  outline: none;
+}
+.iti__no-results {
+  text-align: center;
+  padding: 30px 0;
 }
 .iti__country-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  cursor: pointer;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
 }
@@ -151,7 +207,7 @@
   margin-right: 0;
   margin-left: var(--iti-spacer-horizontal);
 }
-.iti--allow-dropdown .iti__country-container:not(:has(+ input[disabled])):not(:has(+ input[readonly])):hover, .iti--allow-dropdown .iti__country-container:not(:has(+ input[disabled])):not(:has(+ input[readonly])):hover button {
+.iti--allow-dropdown .iti__country-container:not(:has(+ input[disabled])):not(:has(+ input[readonly])) button.iti__selected-country {
   cursor: pointer;
 }
 .iti--allow-dropdown .iti__country-container:not(:has(+ input[disabled])):not(:has(+ input[readonly])) .iti__selected-country-primary:hover,
@@ -160,10 +216,6 @@
 }
 .iti .iti__selected-dial-code {
   margin-left: 4px;
-}
-[dir=rtl] .iti .iti__selected-dial-code {
-  margin-left: 0;
-  margin-right: 4px;
 }
 .iti--container {
   position: fixed;
@@ -174,6 +226,12 @@
 }
 .iti--container:hover {
   cursor: pointer;
+}
+.iti__hide {
+  display: none;
+}
+.iti__v-hide {
+  visibility: hidden;
 }
 
 .iti--fullscreen-popup.iti--container {

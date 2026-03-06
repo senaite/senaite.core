@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 7.9.1 (2025-05-29)
+ * TinyMCE version 8.3.0 (2025-12-10)
  */
 
 (function () {
@@ -10,13 +10,12 @@
     /* eslint-disable @typescript-eslint/no-wrapper-object-types */
     const getPrototypeOf = Object.getPrototypeOf;
     const hasProto = (v, constructor, predicate) => {
-        var _a;
         if (predicate(v, constructor.prototype)) {
             return true;
         }
         else {
             // String-based fallback time
-            return ((_a = v.constructor) === null || _a === void 0 ? void 0 : _a.name) === constructor.name;
+            return v.constructor?.name === constructor.name;
         }
     };
     const typeOf = (x) => {
@@ -78,6 +77,11 @@
      * strict-null-checks
      */
     class Optional {
+        tag;
+        value;
+        // Sneaky optimisation: every instance of Optional.none is identical, so just
+        // reuse the same object
+        static singletonNone = new Optional(false);
         // The internal representation has a `tag` and a `value`, but both are
         // private: able to be console.logged, but not able to be accessed by code
         constructor(tag, value) {
@@ -245,7 +249,7 @@
          */
         getOrDie(message) {
             if (!this.tag) {
-                throw new Error(message !== null && message !== void 0 ? message : 'Called getOrDie on None');
+                throw new Error(message ?? 'Called getOrDie on None');
             }
             else {
                 return this.value;
@@ -309,11 +313,7 @@
             return this.tag ? `some(${this.value})` : 'none()';
         }
     }
-    // Sneaky optimisation: every instance of Optional.none is identical, so just
-    // reuse the same object
-    Optional.singletonNone = new Optional(false);
 
-    /* eslint-disable @typescript-eslint/unbound-method */
     const nativeSlice = Array.prototype.slice;
     const nativePush = Array.prototype.push;
     const flatten = (xs) => {
@@ -349,7 +349,6 @@
     //
     // Use the native keys if it is available (IE9+), otherwise fall back to manually filtering
     const keys = Object.keys;
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     const hasOwnProperty = Object.hasOwnProperty;
     const each = (obj, f) => {
         const props = keys(obj);
@@ -639,8 +638,7 @@
             resolve(reader.result);
         };
         reader.onerror = () => {
-            var _a;
-            reject((_a = reader.error) === null || _a === void 0 ? void 0 : _a.message);
+            reject(reader.error?.message);
         };
         reader.readAsDataURL(blob);
     });
@@ -680,9 +678,8 @@
         }
     };
     const getAttrib = (image, name) => {
-        var _a;
         if (image.hasAttribute(name)) {
-            return (_a = image.getAttribute(name)) !== null && _a !== void 0 ? _a : '';
+            return image.getAttribute(name) ?? '';
         }
         else {
             return '';
@@ -765,10 +762,21 @@
     const setBorderStyle = (image, value) => {
         image.style.borderStyle = value;
     };
-    const getBorderStyle = (image) => { var _a; return (_a = image.style.borderStyle) !== null && _a !== void 0 ? _a : ''; };
+    const getBorderStyle = (image) => image.style.borderStyle ?? '';
     const isFigure = (elm) => isNonNullable(elm) && elm.nodeName === 'FIGURE';
     const isImage = (elm) => elm.nodeName === 'IMG';
-    const getIsDecorative = (image) => DOM.getAttrib(image, 'alt').length === 0 && DOM.getAttrib(image, 'role') === 'presentation';
+    const getIsDecorative = (image) => {
+        const alt = DOM.getAttrib(image, 'alt');
+        const role = DOM.getAttrib(image, 'role');
+        // WCAG Technique H67: Using null alt text and no title attribute on img elements for images that AT should ignore
+        // Source: https://www.w3.org/TR/WCAG20-TECHS/H67.html
+        // Key point: Decorative images should have alt="" and either no title or empty title (title="")
+        // ARIA 1.2 Specification: Defines role="presentation" and role="none" as synonymous roles
+        // Source: https://www.w3.org/TR/wai-aria-1.2/
+        // Key point: These roles remove semantic meaning and prohibit aria-label and aria-labelledby
+        const hasAlt = image.hasAttribute('alt');
+        return (hasAlt && alt.length === 0) || (role === 'presentation') || (role === 'none');
+    };
     const getAlt = (image) => {
         if (getIsDecorative(image)) {
             return '';
@@ -793,7 +801,6 @@
         isDecorative: false
     });
     const getStyleValue = (normalizeCss, data) => {
-        var _a;
         const image = document.createElement('img');
         updateAttrib(image, 'style', data.style);
         if (getHspace(image) || data.hspace !== '') {
@@ -808,7 +815,7 @@
         if (getBorderStyle(image) || data.borderStyle !== '') {
             setBorderStyle(image, data.borderStyle);
         }
-        return normalizeCss((_a = image.getAttribute('style')) !== null && _a !== void 0 ? _a : '');
+        return normalizeCss(image.getAttribute('style') ?? '');
     };
     const create = (normalizeCss, data) => {
         const image = document.createElement('img');
@@ -911,12 +918,11 @@
         return imgElm;
     };
     const splitTextBlock = (editor, figure) => {
-        var _a;
         const dom = editor.dom;
         const textBlockElements = filter(editor.schema.getTextBlockElements(), (_, parentElm) => !editor.schema.isValidChild(parentElm, 'figure'));
         const textBlock = dom.getParent(figure.parentNode, (node) => hasNonNullableKey(textBlockElements, node.nodeName), editor.getBody());
         if (textBlock) {
-            return (_a = dom.split(textBlock, figure)) !== null && _a !== void 0 ? _a : figure;
+            return dom.split(textBlock, figure) ?? figure;
         }
         else {
             return figure;
@@ -930,7 +936,7 @@
         const elm = create((css) => normalizeCss$1(editor, css), data);
         editor.dom.setAttrib(elm, 'data-mce-id', '__mcenew');
         editor.focus();
-        editor.selection.setContent(elm.outerHTML);
+        editor.insertContent(elm.outerHTML);
         const insertedElm = editor.dom.select('*[data-mce-id="__mcenew"]')[0];
         editor.dom.setAttrib(insertedElm, 'data-mce-id', null);
         if (isFigure(insertedElm)) {
@@ -1523,16 +1529,13 @@
             }));
         }
     };
-    const createBlobCache = (editor) => (file, blobUri, dataUrl) => {
-        var _a;
-        return editor.editorUpload.blobCache.create({
-            blob: file,
-            blobUri,
-            name: (_a = file.name) === null || _a === void 0 ? void 0 : _a.replace(/\.[^\.]+$/, ''),
-            filename: file.name,
-            base64: dataUrl.split(',')[1]
-        });
-    };
+    const createBlobCache = (editor) => (file, blobUri, dataUrl) => editor.editorUpload.blobCache.create({
+        blob: file,
+        blobUri,
+        name: file.name?.replace(/\.[^\.]+$/, ''),
+        filename: file.name,
+        base64: dataUrl.split(',')[1]
+    });
     const addToBlobCache = (editor) => (blobInfo) => {
         editor.editorUpload.blobCache.add(blobInfo);
     };
@@ -1543,12 +1546,11 @@
     const parseStyle = (editor) => (cssText) => editor.dom.parseStyle(cssText);
     const serializeStyle = (editor) => (stylesArg, name) => editor.dom.serializeStyle(stylesArg, name);
     const uploadImage = (editor) => (blobInfo) => global$1(editor).upload([blobInfo], false).then((results) => {
-        var _a;
         if (results.length === 0) {
             return Promise.reject('Failed to upload image');
         }
         else if (results[0].status === false) {
-            return Promise.reject((_a = results[0].error) === null || _a === void 0 ? void 0 : _a.message);
+            return Promise.reject(results[0].error?.message);
         }
         else {
             return results[0];

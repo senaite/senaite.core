@@ -24,9 +24,9 @@ from bika.lims import workflow as wf
 from bika.lims.api import security
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
-from bika.lims.interfaces import IWorksheet
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from plone.memoize.request import cache
+from senaite.core.interfaces import IWorksheet
 
 
 def is_worksheet_context():
@@ -276,7 +276,7 @@ def guard_publish(analysis):
 def user_can_manage_worksheets():
     """Return whether the current user has privileges to manage worksheets
     """
-    if not api.get_setup().getRestrictWorksheetManagement():
+    if not api.get_senaite_setup().getRestrictWorksheetManagement():
         # There is no restriction, everybody can manage worksheets
         return True
 
@@ -315,14 +315,14 @@ def current_user_was_last_verifier(analysis):
 def is_consecutive_multi_verification_allowed(analysis):
     """Returns whether multiple verification and consecutive verification is
     allowed or not"""
-    multi_type = api.get_setup().getTypeOfmultiVerification()
+    multi_type = api.get_senaite_setup().getTypeOfmultiVerification()
     return multi_type != "self_multi_not_cons"
 
 
 def is_multi_verification_allowed(analysis):
     """Returns whether multi verification is allowed or not
     """
-    multi_type = api.get_setup().getTypeOfmultiVerification()
+    multi_type = api.get_senaite_setup().getTypeOfmultiVerification()
     return multi_type != "self_multi_disabled"
 
 

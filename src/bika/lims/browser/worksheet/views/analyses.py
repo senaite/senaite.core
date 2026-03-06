@@ -35,7 +35,6 @@ from senaite.core.i18n import translate as t
 from bika.lims.utils import to_int
 from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.core.registry import get_registry_record
 
 
 class AnalysesView(BaseView):
@@ -66,7 +65,7 @@ class AnalysesView(BaseView):
         self.expand_all_categories = False
         self.show_search = False
 
-        self.bika_setup = api.get_bika_setup()
+        self.bika_setup = api.get_senaite_setup()
         self.items_rowspans = dict()
 
         self.columns = collections.OrderedDict((
@@ -175,12 +174,19 @@ class AnalysesView(BaseView):
 
     @view.memoize
     def get_default_columns_order(self):
-        """Return the default column order from the registry
+        """Return the default column order from setup
+
+        Empty selection means use defaults (all columns).
 
         :returns: List of column keys
         """
-        name = "worksheetview_analysis_columns_order"
-        columns_order = get_registry_record(name, default=[]) or []
+        setup = api.get_senaite_setup()
+        columns_order = list(
+            setup.getWorksheetviewAnalysisColumnsOrder()
+        )
+        # empty selection = use defaults
+        if not columns_order:
+            return []
         # Always put `Pos` column first
         try:
             columns_order.remove("Pos")
@@ -213,7 +219,7 @@ class AnalysesView(BaseView):
     def is_analysis_remarks_enabled(self):
         """Check if analysis remarks are enabled
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getEnableAnalysisRemarks()
 
     def isItemAllowed(self, obj):

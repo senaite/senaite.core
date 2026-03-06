@@ -27,6 +27,7 @@ from bika.lims.api.security import check_permission
 from bika.lims.config import PRIORITIES
 from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import IClient
+from bika.lims.utils import get_fas_ico
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link_for
 from bika.lims.utils import get_progress_bar_html
@@ -100,7 +101,7 @@ class SamplesView(ListingView):
         self.url = api.get_url(self.context)
 
         # Toggle some columns if the sampling workflow is enabled
-        sampling_enabled = api.get_setup().getSamplingWorkflowEnabled()
+        sampling_enabled = api.get_senaite_setup().getSamplingWorkflowEnabled()
 
         now = DateTime().strftime("%Y-%m-%d %H:%M")
 
@@ -209,7 +210,6 @@ class SamplesView(ListingView):
             ("getSamplePointTitle", {
                 "title": _("Sample Point"),
                 "sortable": True,
-                "index": "getSamplePointTitle",
                 "toggle": False}),
             ("getStorageLocation", {
                 "title": _("Storage Location"),
@@ -554,18 +554,22 @@ class SamplesView(ListingView):
 
         if self.is_printing_workflow_enabled:
             item["Printed"] = ""
-            printed = obj.getPrinted if hasattr(obj, "getPrinted") else "0"
+            sample = api.get_object(obj)
+            printed = sample.getPrinted()
             print_icon = ""
             if printed == "0":
-                print_icon = get_image("delete.png",
-                                       title=t(_("Not printed yet")))
+                print_icon = get_fas_ico("circle-xmark",
+                                         title=t(_("Not printed")),
+                                         css_class="text-secondary")
             elif printed == "1":
-                print_icon = get_image("ok.png",
-                                       title=t(_("Printed")))
+                print_icon = get_fas_ico("circle-check",
+                                         title=t(_("Printed")),
+                                         css_class="text-success")
             elif printed == "2":
-                print_icon = get_image(
-                    "exclamation.png",
-                    title=t(_("Republished after last print")))
+                print_icon = get_fas_ico(
+                    "circle-exclamation",
+                    title=t(_("Republished after last print")),
+                    css_class="text-warning")
             item["after"]["Printed"] = print_icon
         item["SamplingDeviation"] = obj.getSamplingDeviationTitle
 
@@ -663,7 +667,7 @@ class SamplesView(ListingView):
         """Purges unnecessary review statuses
         """
         remove_filters = []
-        setup = api.get_bika_setup()
+        setup = api.get_senaite_setup()
         if not setup.getSamplingWorkflowEnabled():
             remove_filters.append("to_be_sampled")
         if not setup.getScheduleSamplingEnabled():
@@ -786,7 +790,7 @@ class SamplesView(ListingView):
 
     @property
     def is_printing_workflow_enabled(self):
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getPrintingWorkflowEnabled()
 
     def str_date(self, date, long_format=1, default=""):
@@ -810,7 +814,7 @@ class SamplesView(ListingView):
             return False
         if api.get_current_client():
             # If current user is a client contact, delegate to ShowPartitions
-            return api.get_setup().getShowPartitions()
+            return api.get_senaite_setup().getShowPartitions()
         return True
 
     @property

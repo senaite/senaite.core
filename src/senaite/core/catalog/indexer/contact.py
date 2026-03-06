@@ -20,33 +20,25 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IContact
-from bika.lims.interfaces import ILabContact
-from bika.lims.interfaces import ISupplierContact
 from plone.indexer import indexer
+from senaite.core.interfaces import IContact
 from senaite.core.interfaces.catalog import IContactCatalog
 
 
 @indexer(IContact, IContactCatalog)
-@indexer(ILabContact, IContactCatalog)
-@indexer(ISupplierContact, IContactCatalog)
 def sortable_title(instance):
     return instance.getFullname().lower()
 
 
 @indexer(IContact, IContactCatalog)
-@indexer(ILabContact, IContactCatalog)
-@indexer(ISupplierContact, IContactCatalog)
 def getParentUID(instance):
     parent = instance.aq_parent
     if not IClient.providedBy(parent):
-        return None
+        return ""
     return parent.UID()
 
 
 @indexer(IContact, IContactCatalog)
-@indexer(ILabContact, IContactCatalog)
-@indexer(ISupplierContact, IContactCatalog)
 def listing_searchable_text(instance):
     """Extract search tokens for ZC text index
     """

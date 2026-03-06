@@ -26,6 +26,7 @@ from bika.lims import api
 from bika.lims.browser.fields import EmailsField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
+from senaite.core.catalog import CONTACT_CATALOG
 from bika.lims.config import DECIMAL_MARKS
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.attachment import Attachment
@@ -44,6 +45,8 @@ from Products.CMFCore import permissions
 from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
 from Products.CMFCore.utils import _checkPermission
 from Products.CMFPlone.RegistrationTool import get_member_by_login_name
+from senaite.core.browser.fields.multiupload import MultiUploadField
+from senaite.core.browser.widgets.multiuploadwidget import MultiUploadWidget
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from zope.interface import implements
 
@@ -78,6 +81,76 @@ schema = Organisation.schema.copy() + Schema((
         default=False,
         widget=BooleanWidget(
             label=_("Member discount applies"),
+        ),
+    ),
+
+    UIDReferenceField(
+        "PrimaryContact",
+        schemata="Preferences",
+        required=0,
+        allowed_types=("Contact", ),
+        multi_valued=False,
+        widget=ReferenceWidget(
+            label=_("Primary Contact"),
+            description=_(
+                "Default contact for new samples. "
+                "If set, this contact is automatically "
+                "selected in the sample add form."),
+            catalog=CONTACT_CATALOG,
+            query="get_contact_field_query",
+            colModel=[
+                {
+                    "columnName": "scope",
+                    "width": "10",
+                    "label": "",
+                    "align": "center",
+                },
+                {
+                    "columnName": "getFullname",
+                    "width": "50",
+                    "label": _("Name"),
+                },
+                {
+                    "columnName": "getEmailAddress",
+                    "width": "40",
+                    "label": _("Email"),
+                },
+            ],
+        ),
+    ),
+
+    UIDReferenceField(
+        "CCContacts",
+        schemata="Preferences",
+        required=0,
+        allowed_types=("Contact", ),
+        multiValued=1,
+        widget=ReferenceWidget(
+            label=_("CC Contacts"),
+            description=_(
+                "Default CC contacts for new samples. "
+                "If set, these contacts are automatically "
+                "selected in the sample add form."),
+            catalog=CONTACT_CATALOG,
+            query="get_contact_field_query",
+            colModel=[
+                {
+                    "columnName": "scope",
+                    "width": "10",
+                    "label": "",
+                    "align": "center",
+                },
+                {
+                    "columnName": "getFullname",
+                    "width": "50",
+                    "label": _("Name"),
+                },
+                {
+                    "columnName": "getEmailAddress",
+                    "width": "40",
+                    "label": _("Email"),
+                },
+            ],
         ),
     ),
 
@@ -166,6 +239,19 @@ schema = Organisation.schema.copy() + Schema((
                 "Decimal mark to use in the reports from this Client."),
             format="select",
         )
+    ),
+
+    MultiUploadField(
+        "Attachments",
+        schemata="default",
+        widget=MultiUploadWidget(
+            max_filesize=10485760,  # in Bytes, default 10 MB
+            label=_("Attachments"),
+            description=_(
+                "Upload files and images for this client. "
+                "Files will be stored in the client folder and can be "
+                "downloaded later."),
+        ),
     ),
 ))
 
@@ -339,6 +425,22 @@ class Client(Organisation):
         brains = api.search(query)
         contacts = map(api.get_object, brains)
         return list(contacts)
+
+    @security.public
+    def get_contact_field_query(self):
+        """Return the catalog query for contact reference widgets.
+
+        Used as a named query by the PrimaryContact widget to restrict
+        results to contacts relevant for this client: contacts belonging
+        to this client and global contacts (not under any client)
+        """
+        uid = api.get_uid(self)
+        return {
+            "getParentUID": [uid, ""],
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        }
 
     @security.public
     def getDecimalMark(self):

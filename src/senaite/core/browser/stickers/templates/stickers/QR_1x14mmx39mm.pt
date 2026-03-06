@@ -5,6 +5,7 @@
   <!-- QR Code -->
   <div class="qrcode"
        data-size="36"
+       data-render="image"
        tal:attributes="data-text python:sample_id;">
   </div>
 

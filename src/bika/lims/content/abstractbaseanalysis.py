@@ -26,6 +26,7 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets.decimal import DecimalWidget
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
+from senaite.core.api import dtime
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.config import SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
@@ -52,6 +53,7 @@ from Products.Archetypes.Widget import IntegerWidget
 from Products.Archetypes.Widget import SelectionWidget
 from Products.Archetypes.Widget import StringWidget
 from Products.CMFCore.permissions import View
+from senaite.core.utils import format_supsub_unicode
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.catalog import SETUP_CATALOG
 from zope.interface import implements
@@ -115,8 +117,25 @@ Unit = StringField(
     )
 )
 
-# A selection of units that are able to update Unit. 
-UnitChoices = RecordsField(
+
+# A selection of units that are able to update Unit.
+class UnitChoicesField(RecordsField):
+    """Custom RecordsField that converts super/subscript
+    HTML tags to Unicode characters for display.
+    """
+
+    def getViewFor(self, instance, idx, subfield,
+                   joinWith=", "):
+        """Return Unicode-formatted value for display
+        """
+        raw = self.getRaw(instance)[idx].get(
+            subfield, "")
+        if type(raw) in (type(()), type([])):
+            raw = joinWith.join(raw)
+        return format_supsub_unicode(raw).strip()
+
+
+UnitChoices = UnitChoicesField(
     "UnitChoices",
     schemata="Description",
     type="UnitChoices",
@@ -1186,7 +1205,15 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         return: a dictionary with the keys "days", "hours" and "minutes"
         """
         tat = self.Schema().getField("MaxTimeAllowed").get(self)
-        return tat or self.bika_setup.getDefaultTurnaroundTime()
+        if tat:
+            return tat
+
+        value = self.bika_setup.getDefaultTurnaroundTime()
+        if isinstance(value, dict):
+            return value
+
+        # Convert timedelta to dict for AT format:
+        return dtime.timedelta_to_dict(value, default={})
 
     @security.public
     def getMaxHoldingTime(self):

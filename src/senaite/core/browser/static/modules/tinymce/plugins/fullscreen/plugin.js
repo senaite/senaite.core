@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 7.9.1 (2025-05-29)
+ * TinyMCE version 8.3.0 (2025-12-10)
  */
 
 (function () {
@@ -7,13 +7,12 @@
 
     /* eslint-disable @typescript-eslint/no-wrapper-object-types */
     const hasProto = (v, constructor, predicate) => {
-        var _a;
         if (predicate(v, constructor.prototype)) {
             return true;
         }
         else {
             // String-based fallback time
-            return ((_a = v.constructor) === null || _a === void 0 ? void 0 : _a.name) === constructor.name;
+            return v.constructor?.name === constructor.name;
         }
     };
     const typeOf = (x) => {
@@ -59,7 +58,6 @@
             return value;
         };
     };
-    // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
     function curry(fn, ...initialArgs) {
         return (...restArgs) => {
             const all = initialArgs.concat(restArgs);
@@ -85,6 +83,11 @@
      * strict-null-checks
      */
     class Optional {
+        tag;
+        value;
+        // Sneaky optimisation: every instance of Optional.none is identical, so just
+        // reuse the same object
+        static singletonNone = new Optional(false);
         // The internal representation has a `tag` and a `value`, but both are
         // private: able to be console.logged, but not able to be accessed by code
         constructor(tag, value) {
@@ -252,7 +255,7 @@
          */
         getOrDie(message) {
             if (!this.tag) {
-                throw new Error(message !== null && message !== void 0 ? message : 'Called getOrDie on None');
+                throw new Error(message ?? 'Called getOrDie on None');
             }
             else {
                 return this.value;
@@ -316,9 +319,6 @@
             return this.tag ? `some(${this.value})` : 'none()';
         }
     }
-    // Sneaky optimisation: every instance of Optional.none is identical, so just
-    // reuse the same object
-    Optional.singletonNone = new Optional(false);
 
     const nativePush = Array.prototype.push;
     const map = (xs, f) => {
@@ -677,7 +677,7 @@
     const detectBrowser$1 = (browsers, userAgentData) => {
         return findMap(userAgentData.brands, (uaBrand) => {
             const lcBrand = uaBrand.brand.toLowerCase();
-            return find$1(browsers, (browser) => { var _a; return lcBrand === ((_a = browser.brand) === null || _a === void 0 ? void 0 : _a.toLowerCase()); })
+            return find$1(browsers, (browser) => lcBrand === browser.brand?.toLowerCase())
                 .map((info) => ({
                 current: info.name,
                 version: Version.nu(parseInt(uaBrand.version, 10), 0)
@@ -1108,9 +1108,7 @@
 
     // some elements, such as mathml, don't have style attributes
     // others, such as angular elements, have style attributes that aren't a CSSStyleDeclaration
-    const isSupported = (dom) => 
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    dom.style !== undefined && isFunction(dom.style.getPropertyValue);
+    const isSupported = (dom) => dom.style !== undefined && isFunction(dom.style.getPropertyValue);
 
     // Node.contains() is very, very, very good performance
     // http://jsperf.com/closest-vs-contains/5
@@ -1461,7 +1459,7 @@
         const isTouch = global$1.deviceType.isTouch();
         const editorContainerStyle = editorContainer.style;
         const iframe = editor.iframeElement;
-        const iframeStyle = iframe === null || iframe === void 0 ? void 0 : iframe.style;
+        const iframeStyle = iframe?.style;
         const handleClasses = (handler) => {
             handler(body, 'tox-fullscreen');
             handler(documentElement, 'tox-fullscreen');

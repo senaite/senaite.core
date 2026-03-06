@@ -132,10 +132,4 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <plone:static
-      directory="templates/print"
-      type="worksheets"
-      name="Worksheet Print Templates"
-  />
-
 </configure>

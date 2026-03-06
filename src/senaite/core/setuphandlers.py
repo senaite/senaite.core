@@ -37,6 +37,7 @@ from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import AUDITLOG_CATALOG
 from senaite.core.catalog import CATALOG_MAPPINGS
 from senaite.core.catalog import AnalysisCatalog
+from senaite.core.catalog import AttachmentsCatalog
 from senaite.core.catalog import AuditlogCatalog
 from senaite.core.catalog import AutoImportLogCatalog
 from senaite.core.catalog import ClientCatalog
@@ -97,8 +98,23 @@ CONTENTS_TO_DELETE = (
     "events",
 )
 
+# Mapping of portal types to additional behaviors that should be enabled
+# Format: {"portal_type": ("behavior.interface", ...)}
+ADD_BEHAVIORS = {
+    # Kept for example purposes only. File and Image types are now  implemented
+    # with SimpleFile and SimpleImage content types
+    #
+    # "File": (
+    #     "plone.app.referenceablebehavior.referenceable.IReferenceable",
+    # ),
+    # "Image": (
+    #     "plone.app.referenceablebehavior.referenceable.IReferenceable",
+    # ),
+}
+
 CATALOGS = (
     AnalysisCatalog,
+    AttachmentsCatalog,
     AuditlogCatalog,
     AutoImportLogCatalog,
     ClientCatalog,
@@ -201,6 +217,7 @@ def add_senaite_setup(portal):
     """
     items = [
         # ID, Title, FTI
+        ("worksheets", "Worksheets", "Worksheets"),
         ("setup", "SENAITE Setup", "Setup"),
     ]
     add_dexterity_items(portal, items)
@@ -236,6 +253,7 @@ def add_senaite_setup_items(portal):
         ("instrumentlocations", "Instrument Locations", "InstrumentLocations"),
         ("samplecontainers", "Sample Containers", "SampleContainers"),
         ("attachmenttypes", "Attachment Types", "AttachmentTypes"),
+        ("contacts", "Contacts", "Contacts"),
         ("dynamicanalysisspecs", "Dynamic Analysis Specifications",
          "DynamicAnalysisSpecs"),
         ("interpretationtemplates", "Interpretation Templates",
@@ -582,6 +600,9 @@ def post_install(portal_setup):
     # always apply the skins profile last to ensure our layers are first
     _run_import_step(portal, "skins", profile=profile_id)
 
+    # Setup additional behaviors for content types
+    setup_content_type_behaviors(portal)
+
     logger.info("SENAITE CORE post install handler [DONE]")
 
 
@@ -595,3 +616,57 @@ def setup_markup_schema(portal):
     settings = registry.forInterface(IMarkupSchema, prefix='plone')
     settings.default_type = u"text/html"
     settings.allowed_types = ("text/html", )
+
+
+def setup_content_type_behaviors(portal, behaviors_mapping=None):
+    """Enable additional behaviors for content types
+
+    Adds behaviors defined in the ADD_BEHAVIORS mapping to their respective
+    portal types. This ensures content types have the required behaviors
+    enabled, such as IReferenceable for File/Image types to make them
+    referenceable by UID.
+
+    :param portal: The portal object
+    :param behaviors_mapping: Optional custom mapping
+    """
+    if behaviors_mapping is None:
+        behaviors_mapping = ADD_BEHAVIORS
+
+    if not behaviors_mapping:
+        logger.info("No additional behaviors to setup")
+        return
+
+    logger.info("Setup additional behaviors for content types...")
+
+    pt = api.get_tool("portal_types")
+
+    for portal_type_name, behavior_names in behaviors_mapping.items():
+        if portal_type_name not in pt.objectIds():
+            logger.warning("Portal type '{}' not found, skipping".format(
+                portal_type_name))
+            continue
+
+        fti = pt[portal_type_name]
+
+        # Get current behaviors
+        current_behaviors = list(getattr(fti, "behaviors", []))
+
+        # Track if we added any behaviors
+        added = []
+
+        # Add each behavior if not already present
+        for behavior_name in behavior_names:
+            if behavior_name not in current_behaviors:
+                current_behaviors.append(behavior_name)
+                added.append(behavior_name)
+
+        # Update FTI if we added any behaviors
+        if added:
+            fti.behaviors = tuple(current_behaviors)
+            logger.info("Added behaviors to '{}': {}".format(
+                portal_type_name, ", ".join(added)))
+        else:
+            logger.info("All behaviors already enabled for '{}'".format(
+                portal_type_name))
+
+    logger.info("Setup additional behaviors for content types [DONE]")

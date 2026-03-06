@@ -1,0 +1,100 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="senaite.core">
+  <body>
+    <metal:content-title fill-slot="content-title">
+      <h1>
+        <img tal:condition="view/icon | nothing"
+             tal:attributes="src view/icon"/>
+        <span tal:replace="structure view/title"/>
+      </h1>
+
+      <div class="worksheet_add_controls mb-2"
+           tal:condition="python:view.can_add()">
+
+        <form class="form form-inline"
+              name="worksheet-add-form"
+              method="POST"
+              enctype="multipart/form-data"
+              tal:attributes="action string:${context/absolute_url}/add_worksheet">
+
+          <div class="input-group input-group-sm flex-nowrap d-inline-flex w-auto">
+            <div class="input-group-prepend">
+              <span class="input-group-text" i18n:translate="">
+                Create new worksheet
+              </span>
+            </div>
+            <!-- Analyst -->
+            <select name="analyst"
+                    class="analyst selectpicker"
+                    data-style="dropdown-toggle btn-sm btn-light border rounded-0"
+                    data-live-search="true"
+                    tal:define="alist view/getAnalysts">
+              <option value="" i18n:translate="">Select analyst</option>
+              <tal:options repeat="option alist">
+                <option
+                  tal:condition="python:option"
+                  tal:attributes="value python:option"
+                  tal:content="python:alist.getValue(option)"/>
+              </tal:options>
+            </select>
+            <!-- Worksheet Template -->
+            <div class="input-group input-group-append">
+              <select name="template"
+                      class="template selectpicker"
+                      data-style="dropdown-toggle btn-sm btn-light border rounded-0"
+                      data-live-search="true"
+                      tal:define="wstlist view/getWorksheetTemplates">
+                <option value="" i18n:translate="">Select template</option>
+                <tal:options repeat="option wstlist">
+                  <option
+                    tal:attributes="value python:option"
+                    tal:content="python:wstlist.getValue(option)"/>
+                </tal:options>
+              </select>
+            </div>
+            <!-- Instrument -->
+            <div class="input-group input-group-append">
+              <select name="instrument"
+                      class="instrument selectpicker form-control form-control-sm"
+                      data-style="dropdown-toggle btn-sm btn-light border rounded-0"
+                      data-live-search="true"
+                      tal:define="instrlist view/getInstruments">
+                <option value="" i18n:translate="">Select instrument</option>
+                <tal:options repeat="option instrlist">
+                  <option
+                    tal:attributes="value python:option"
+                    tal:content="python:instrlist.getValue(option)"/>
+                </tal:options>
+              </select>
+            </div>
+            <!-- Add button -->
+            <div class="input-group input-group-append">
+              <tal:add_actions repeat="add_item python:view.context_actions.keys()">
+                <input type="submit"
+                       class="btn btn-sm btn-primary"
+                       tal:attributes="name add_item;
+                             value add_item;
+                             href python:view.context_actions[add_item]['url'];"/>
+              </tal:add_actions>
+            </div>
+          </div>
+
+          <!-- hidden fields -->
+          <input type="hidden" name="submitted" value="1" />
+          <input tal:replace="structure context/@@authenticator/authenticator"/>
+
+        </form>
+      </div>
+    </metal:content-title>
+
+    <metal:content-core fill-slot="content-core">
+      <div id="folderlisting-main-table"
+           tal:content="structure view/contents_table"/>
+    </metal:content-core>
+
+  </body>
+</html>

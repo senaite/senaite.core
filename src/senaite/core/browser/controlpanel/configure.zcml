@@ -26,6 +26,7 @@
   <include package=".batchlabels" />
   <include package=".calculations" />
   <include package=".containertypes" />
+  <include package=".contacts" />
   <include package=".departments" />
   <include package=".dynamicanalysisspecs" />
   <include package=".instrumentlocations" />

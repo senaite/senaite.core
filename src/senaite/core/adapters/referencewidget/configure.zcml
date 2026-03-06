@@ -9,6 +9,20 @@
       factory=".dataproviders.ReferenceWidgetDataProvider"
       />
 
+  <!-- Data provider for reference widgets on Client context -->
+  <adapter
+      for="bika.lims.interfaces.IClient
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".dataproviders.ClientReferenceWidgetDataProvider"
+      />
+
+  <!-- Data provider for reference widgets on AnalysisRequest context -->
+  <adapter
+      for="bika.lims.interfaces.IAnalysisRequest
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".dataproviders.AnalysisRequestReferenceWidgetDataProvider"
+      />
+
   <!-- Adapter that provides search results for the referencewidget-->
   <adapter
       for="zope.interface.Interface
@@ -33,7 +47,7 @@
       provides="senaite.core.interfaces.IReferenceWidgetVocabulary" />
 
   <adapter
-      for="bika.lims.interfaces.IContact
+      for="senaite.core.interfaces.IContact
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".vocabularies.ClientAwareReferenceWidgetVocabulary"
       provides="senaite.core.interfaces.IReferenceWidgetVocabulary" />

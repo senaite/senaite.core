@@ -5,6 +5,57 @@ Changelog
 ------------------
 
 - #2600 Migrate Calculations to DX
+- #2856 Fix catalog indexer for lab-/supplier contacts
+- #2854 Allow to set sample CC contacts in client
+- #2853 Fix hidden Client field is missing in sample add form
+- #2852 Allow to set primary sample contact in client
+- #2849 Fix migrate Worksheet step for retry running. Refactoring create worksheet
+- #2850 Edit popup for sample analyses
+- #2848 Patch transaction commit hook for catalog queue to avoid double indexing
+- #2844 Allow unit selection in profiles
+- #2846 Fix Unit super-/subscript rendering 
+- #2847 Remove nonexisting getSamplePointTitle column index
+- #2776 Refactor: rename SiteView.setCookie to set_cookie in dashboard.pt
+- #2805 Migrate Worksheets to DX
+- #2775 Auto-add CCContact when hidden on Sample Add form
+- #2828 RemarksField type for Dexterity content types
+- #2841 Fix detection limit misconfiguration in analysis service edit view
+- #2840 Fix setting readonly form fields
+- #2831 Migrate ARReport to Dexterity
+- #2838 Fix 'add_permission' error when upgrading from 2711 to 2718
+- #2835 New Sidebar Navigation
+- #2834 Handle tat as timedelta or dict during AT to DX migration
+- #2832 Fix sample type prefix validation
+- #2837 Disable Cancel Button in Sample Registration Form after Save
+- #2833 Ensure string values for ID formatting
+- #2827 Link demo user to contact during import
+- #2836 Rollback temporary samples on error during creation
+- #2830 Fix TinyMCE hidden Cursor
+- #2829 Fix TypeError in bika_setup rejection widget
+- #2821 Migrate all fields from bika_setup to senaite setup
+- #2825 Updated webpack dependencies
+- #2826 Fix inconsistent Profile filtering on multi-sample creation
+- #2819 Fix multiuploads for cluster setups
+- #2817 Fix QR code render for multi-page stickers
+- #2818 Fix UnicodeDecodeError if analysis unit contains unicode characters
+- #2812 Migrate MultiFile to Dexterity
+- #2815 Remove dependency to plone.app.jquerytools
+- #2816 Fix custom actions and behaviors are missing
+- #2801 Global Contacts
+- #2795 Migrate Client Contacts to Dexterity
+- #2811 Fix typo in recalculation message ("Result recalucated" → "Result recalculated")
+- #2809 Prioritize after create sample susbcriber hooks
+- #2808 Sticky form tabbing
+- #2807 Fix traceback when emailing results report and email 'From' not set
+- #2806 Allow to create sample partitions on copy
+- #2804 Allow to skip analyses from partitions on copy
+- #2803 Allow to skip analyses in WF states on copy
+- #2802 Fix KeyError in DX address widget country lookup
+- #2800 Fix WrongContainedType on object creation/update via jsonapi
+- #2799 Fix Reference Sample import supplier data
+- #2797 Fix sticker rendering error when no configured template was found
+- #2793 Fix APIError: Expected string type, got '<type 'NoneType'>'
+- #2792 Add setting to trigger transition events on sample creation
 - #2791 Add TextLineField that strips the value and properly handle encodings
 - #2790 Fix "Show more" button does not appear for the 2nd and 3rd sample remarks
 - #2785 Fix Formatted specification interval rendering is not shown for analyses and reference analyses

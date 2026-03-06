@@ -55,6 +55,7 @@ from senaite.core.i18n import translate as t
 from senaite.core.i18n import get_dt_format
 from senaite.core.permissions import FieldEditAnalysisResult
 from senaite.core.permissions import ViewResults
+from senaite.core.schema.uidreferencefield import get_backrefs
 from six import string_types
 
 # A link directly to the AnalysisService object used to create the analysis
@@ -1146,7 +1147,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """This method is used to populate catalog values
         Returns WS UID if this analysis is assigned to a worksheet, or None.
         """
-        uids = get_backreferences(self, relationship="WorksheetAnalysis")
+        uids = get_backrefs(self, relationship="WorksheetAnalysis")
         if not uids:
             return None
 

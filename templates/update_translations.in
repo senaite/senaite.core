@@ -77,11 +77,18 @@ echo -n "" > $LOCALES/en/LC_MESSAGES/senaite.core.po
 $I18N rebuild-pot --pot $LOCALES/senaite.core-bika.pot --exclude "$EXCLUDE" --create senaite.core $SRC_BIKA
 # Re-scan the source code for new strings and create a temporary senaite.core-tmp.pot
 $I18N rebuild-pot --pot $LOCALES/senaite.core-tmp.pot --exclude "$EXCLUDE" --create senaite.core $SRC
-# Merge the manual translations of senaite.core-bika.pot into the temporary senaite.core-tmp.pot
+# Filter out entries from senaite.core-bika.pot that are already in senaite.core-tmp.pot
+# to avoid "Key is already in target-catalog" merge warnings from code migrated to senaite.core
+$I18N filter $LOCALES/senaite.core-bika.pot $LOCALES/senaite.core-tmp.pot > $LOCALES/senaite.core-bika-filtered.pot
+mv $LOCALES/senaite.core-bika-filtered.pot $LOCALES/senaite.core-bika.pot
+# Merge the bika-exclusive strings into the temporary senaite.core-tmp.pot
 $I18N merge --pot $LOCALES/senaite.core-tmp.pot --merge $LOCALES/senaite.core-bika.pot
 rm $LOCALES/senaite.core-bika.pot
-# Merge the manual translations of senaite.core-manual.pot into the temporary senaite.core-tmp.pot
-$I18N merge --pot $LOCALES/senaite.core-tmp.pot --merge $LOCALES/senaite.core-manual.pot
+# Filter out entries from senaite.core-manual.pot already in senaite.core-tmp.pot,
+# then merge only the remaining manual-exclusive strings
+$I18N filter $LOCALES/senaite.core-manual.pot $LOCALES/senaite.core-tmp.pot > $LOCALES/senaite.core-manual-filtered.pot
+$I18N merge --pot $LOCALES/senaite.core-tmp.pot --merge $LOCALES/senaite.core-manual-filtered.pot
+rm $LOCALES/senaite.core-manual-filtered.pot
 # Overwrite the existing senaite.core.pot
 mv $LOCALES/senaite.core-tmp.pot $LOCALES/senaite.core.pot
 # Synchronize all .po files with the new senaite.core.pot

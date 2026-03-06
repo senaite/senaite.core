@@ -103,7 +103,7 @@ class PrintView(BrowserView):
     def get_default_decimal_mark(self):
         """Returns the default decimal mark from the setup
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getDecimalMark()
 
     def get_analyses_data_by_title(self, ar_data, title):

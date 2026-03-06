@@ -21,7 +21,7 @@
       />
 
   <browser:page
-      for="bika.lims.interfaces.IWorksheet"
+      for="senaite.core.interfaces.IWorksheet"
       name="attachments_view"
       class=".attachment.AttachmentsView"
       permission="zope.Public"

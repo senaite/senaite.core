@@ -23,16 +23,18 @@ import copy
 from AccessControl import ClassSecurityInfo
 from bika.lims import senaiteMessageFactory as _
 from senaite.core.schema import AddressField
+from senaite.core.schema import EmailField
+from senaite.core.schema import PhoneField
 from senaite.core.schema.addressfield import BILLING_ADDRESS
 from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
 from senaite.core.schema.addressfield import POSTAL_ADDRESS
 from senaite.core.z3cform.widgets.address import AddressWidget
 from senaite.core.content.base import Container
 from plone.supermodel import model
-from plone.schema.email import Email
 from plone.autoform import directives
 from Products.CMFCore import permissions
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.z3cform.widgets.phone import PhoneWidgetFactory
 from zope import schema
 from zope.interface import implementer
 
@@ -57,7 +59,8 @@ class IOrganizationSchema(model.Schema):
         required=False,
     )
 
-    phone = schema.TextLine(
+    directives.widget("phone", PhoneWidgetFactory)
+    phone = PhoneField(
         title=_(
             u"title_organization_phone",
             default=u"Phone"
@@ -65,7 +68,8 @@ class IOrganizationSchema(model.Schema):
         required=False,
     )
 
-    fax = schema.TextLine(
+    directives.widget("fax", PhoneWidgetFactory)
+    fax = PhoneField(
         title=_(
             u"title_organization_fax",
             default=u"Fax"
@@ -85,7 +89,7 @@ class IOrganizationSchema(model.Schema):
         ]
     )
 
-    email = Email(
+    email = EmailField(
         title=_(
             u"title_organization_email",
             default=u"Email"

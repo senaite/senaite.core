@@ -25,7 +25,6 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget
-from bika.lims.browser.widgets import RejectionSetupWidget
 from bika.lims.browser.widgets.decimal import DecimalWidget
 from bika.lims.browser.worksheet.tools import getWorksheetLayouts
 from bika.lims.config import CURRENCIES
@@ -45,6 +44,7 @@ from Products.Archetypes.atapi import InAndOutWidget
 from Products.Archetypes.atapi import IntegerField
 from Products.Archetypes.atapi import IntegerWidget
 from Products.Archetypes.atapi import LinesField
+from Products.Archetypes.atapi import LinesWidget
 from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.atapi import StringField
@@ -60,9 +60,7 @@ from senaite.core.api import geo
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.interfaces import IHideActionsMenu
-from senaite.core.interfaces import INumberGenerator
 from senaite.core.p3compat import cmp
-from zope.component import getUtility
 from zope.interface import implements
 
 
@@ -156,6 +154,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Security",
         required=1,
         default=0,
+        accessor="getAutoLogOff",
+        edit_accessor="getAutoLogOff",
+        mutator="setAutoLogOff",
         widget=IntegerWidget(
             label=_("Automatic log-off"),
             description=_(
@@ -167,36 +168,47 @@ schema = BikaFolderSchema.copy() + Schema((
         'RestrictWorksheetUsersAccess',
         schemata="Security",
         default=True,
+        accessor="getRestrictWorksheetUsersAccess",
+        edit_accessor="getRestrictWorksheetUsersAccess",
+        mutator="setRestrictWorksheetUsersAccess",
         widget=BooleanWidget(
-            label=_("Allow access to worksheets only to assigned analysts"),
-            description=_("If unchecked, analysts will have access to all worksheets.")
+            label=_("Restrict worksheet access to assigned analysts"),
+            description=_("When enabled, analysts can only access worksheets to "
+                          "which they are assigned. When disabled, analysts have "
+                          "access to all worksheets.")
         )
     ),
     BooleanField(
         'AllowToSubmitNotAssigned',
         schemata="Security",
         default=True,
+        accessor="getAllowToSubmitNotAssigned",
+        edit_accessor="getAllowToSubmitNotAssigned",
+        mutator="setAllowToSubmitNotAssigned",
         widget=BooleanWidget(
-            label=_("Allow to submit results for unassigned analyses or for "
-                    "analyses assigned to others"),
+            label=_("Allow submission of results for unassigned analyses"),
             description=_(
-                "If unchecked, users will only be able to submit results "
-                "for the analyses they are assigned to, and the submission of "
-                "results for unassigned analyses won't be permitted. This "
-                "setting does not apply to users with role Lab Manager")
+                "When enabled, users can submit results for analyses not "
+                "assigned to them or for unassigned analyses. When disabled, "
+                "users can only submit results for analyses assigned to "
+                "themselves. This setting does not apply to users with role "
+                "Lab Manager.")
         )
     ),
     BooleanField(
         'RestrictWorksheetManagement',
         schemata="Security",
         default=True,
+        accessor="getRestrictWorksheetManagement",
+        edit_accessor="getRestrictWorksheetManagement",
+        mutator="setRestrictWorksheetManagement",
         widget=BooleanWidget(
-            label=_("Only lab managers can create and manage worksheets"),
-            description=_("If unchecked, analysts and lab clerks will "
-                          "be able to manage Worksheets, too. If the "
-                          "users have restricted access only to those "
-                          "worksheets for which they are assigned, "
-                          "this option will be checked and readonly.")
+            label=_("Restrict worksheet management to lab managers"),
+            description=_("When enabled, only lab managers can create and manage "
+                          "worksheets. When disabled, analysts and lab clerks can "
+                          "also manage worksheets. Note: This setting is "
+                          "automatically enabled and locked when worksheet access "
+                          "is restricted to assigned analysts.")
         )
     ),
     # NOTE: This is a Proxy Field which delegates to the SENAITE Registry!
@@ -204,6 +216,9 @@ schema = BikaFolderSchema.copy() + Schema((
         "EnableGlobalAuditlog",
         schemata="Security",
         default=False,
+        accessor="getEnableGlobalAuditlog",
+        edit_accessor="getEnableGlobalAuditlog",
+        mutator="setEnableGlobalAuditlog",
         widget=BooleanWidget(
             label=_("Enable global Audit Log"),
             description=_(
@@ -218,6 +233,9 @@ schema = BikaFolderSchema.copy() + Schema((
         'ShowPrices',
         schemata="Accounting",
         default=True,
+        accessor="getShowPrices",
+        edit_accessor="getShowPrices",
+        mutator="setShowPrices",
         widget=BooleanWidget(
             label=_("Include and display pricing information"),
         )
@@ -228,6 +246,9 @@ schema = BikaFolderSchema.copy() + Schema((
         required=1,
         vocabulary=CURRENCIES,
         default='EUR',
+        accessor="getCurrency",
+        edit_accessor="getCurrency",
+        mutator="setCurrency",
         widget=SelectionWidget(
             label=_("Currency"),
             description=_("Select the currency the site will use to display prices."),
@@ -240,6 +261,9 @@ schema = BikaFolderSchema.copy() + Schema((
         required=1,
         vocabulary='getCountries',
         default='',
+        accessor="getDefaultCountry",
+        edit_accessor="getDefaultCountry",
+        mutator="setDefaultCountry",
         widget=SelectionWidget(
             label=_("Country"),
             description=_("Select the country the site will show by default"),
@@ -250,6 +274,9 @@ schema = BikaFolderSchema.copy() + Schema((
         'MemberDiscount',
         schemata="Accounting",
         default='33.33',
+        accessor="getMemberDiscount",
+        edit_accessor="getMemberDiscount",
+        mutator="setMemberDiscount",
         widget=DecimalWidget(
             label=_("Member discount %"),
             description=_(
@@ -262,6 +289,9 @@ schema = BikaFolderSchema.copy() + Schema((
         'VAT',
         schemata="Accounting",
         default='19.00',
+        accessor="getVAT",
+        edit_accessor="getVAT",
+        mutator="setVAT",
         widget=DecimalWidget(
             label=_("VAT %"),
             description=_(
@@ -274,6 +304,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Results Reports",
         vocabulary=DECIMAL_MARKS,
         default=".",
+        accessor="getDecimalMark",
+        edit_accessor="getDecimalMark",
+        mutator="setDecimalMark",
         widget=SelectionWidget(
             label=_("Default decimal mark"),
             description=_("Preferred decimal mark for reports."),
@@ -285,6 +318,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Results Reports",
         default='1',
         vocabulary=SCINOTATION_OPTIONS,
+        accessor="getScientificNotationReport",
+        edit_accessor="getScientificNotationReport",
+        mutator="setScientificNotationReport",
         widget=SelectionWidget(
             label=_("Default scientific notation format for reports"),
             description=_("Preferred scientific notation format for reports"),
@@ -296,6 +332,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Results Reports",
         required=1,
         default=5,
+        accessor="getMinimumResults",
+        edit_accessor="getMinimumResults",
+        mutator="setMinimumResults",
         widget=IntegerWidget(
             label=_("Minimum number of results for QC stats calculations"),
             description=_(
@@ -308,6 +347,9 @@ schema = BikaFolderSchema.copy() + Schema((
         'CategoriseAnalysisServices',
         schemata="Analyses",
         default=False,
+        accessor="getCategoriseAnalysisServices",
+        edit_accessor="getCategoriseAnalysisServices",
+        mutator="setCategoriseAnalysisServices",
         widget=BooleanWidget(
             label=_("Categorise analysis services"),
             description=_("Group analysis services by category in the LIMS tables, helpful when the list is long")
@@ -317,6 +359,9 @@ schema = BikaFolderSchema.copy() + Schema((
         "CategorizeSampleAnalyses",
         schemata="Analyses",
         default=False,
+        accessor="getCategorizeSampleAnalyses",
+        edit_accessor="getCategorizeSampleAnalyses",
+        mutator="setCategorizeSampleAnalyses",
         widget=BooleanWidget(
             label=_("label_bikasetup_categorizesampleanalyses",
                     default="Categorize sample analyses"),
@@ -328,6 +373,9 @@ schema = BikaFolderSchema.copy() + Schema((
         "SampleAnalysesRequired",
         schemata="Analyses",
         default=True,
+        accessor="getSampleAnalysesRequired",
+        edit_accessor="getSampleAnalysesRequired",
+        mutator="setSampleAnalysesRequired",
         widget=BooleanWidget(
             label=_("label_bikasetup_sampleanalysesrequired",
                     default="Require sample analyses"),
@@ -339,6 +387,9 @@ schema = BikaFolderSchema.copy() + Schema((
         "AllowManualResultCaptureDate",
         schemata="Analyses",
         default=True,
+        accessor="getAllowManualResultCaptureDate",
+        edit_accessor="getAllowManualResultCaptureDate",
+        mutator="setAllowManualResultCaptureDate",
         widget=BooleanWidget(
             label=_("label_bikasetup_allow_manual_result_capture_date",
                     default="Allow to set the result capture date"),
@@ -352,6 +403,9 @@ schema = BikaFolderSchema.copy() + Schema((
         'EnableARSpecs',
         schemata="Analyses",
         default=False,
+        accessor="getEnableARSpecs",
+        edit_accessor="getEnableARSpecs",
+        mutator="setEnableARSpecs",
         widget=BooleanWidget(
             label=_("Enable Sample Specifications"),
             description=_(
@@ -364,6 +418,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Analyses",
         required=1,
         default=7,
+        accessor="getExponentialFormatThreshold",
+        edit_accessor="getExponentialFormatThreshold",
+        mutator="setExponentialFormatThreshold",
         widget=IntegerWidget(
             label=_("Exponential format threshold"),
             description=_(
@@ -377,6 +434,9 @@ schema = BikaFolderSchema.copy() + Schema((
         "ImmediateResultsEntry",
         schemata="Analyses",
         default=False,
+        accessor="getImmediateResultsEntry",
+        edit_accessor="getImmediateResultsEntry",
+        mutator="setImmediateResultsEntry",
         widget=BooleanWidget(
             label=_("label_bikasetup_immediateresultsentry",
                     default=u"Immediate results entry"),
@@ -393,6 +453,9 @@ schema = BikaFolderSchema.copy() + Schema((
         'EnableAnalysisRemarks',
         schemata="Analyses",
         default=False,
+        accessor="getEnableAnalysisRemarks",
+        edit_accessor="getEnableAnalysisRemarks",
+        mutator="setEnableAnalysisRemarks",
         widget=BooleanWidget(
             label=_("Add a remarks field to all analyses"),
             description=_(
@@ -405,6 +468,9 @@ schema = BikaFolderSchema.copy() + Schema((
         "AutoVerifySamples",
         schemata="Analyses",
         default=True,
+        accessor="getAutoVerifySamples",
+        edit_accessor="getAutoVerifySamples",
+        mutator="setAutoVerifySamples",
         widget=BooleanWidget(
             label=_("Automatic verification of samples"),
             description=_(
@@ -419,6 +485,9 @@ schema = BikaFolderSchema.copy() + Schema((
         'SelfVerificationEnabled',
         schemata="Analyses",
         default=False,
+        accessor="getSelfVerificationEnabled",
+        edit_accessor="getSelfVerificationEnabled",
+        mutator="setSelfVerificationEnabled",
         widget=BooleanWidget(
             label=_("Allow self-verification of results"),
             description=_(
@@ -435,6 +504,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Analyses",
         default=1,
         vocabulary="_getNumberOfRequiredVerificationsVocabulary",
+        accessor="getNumberOfRequiredVerifications",
+        edit_accessor="getNumberOfRequiredVerifications",
+        mutator="setNumberOfRequiredVerifications",
         widget=SelectionWidget(
             format="select",
             label=_("Number of required verifications"),
@@ -449,6 +521,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Analyses",
         default='self_multi_enabled',
         vocabulary=MULTI_VERIFICATION_TYPE,
+        accessor="getTypeOfmultiVerification",
+        edit_accessor="getTypeOfmultiVerification",
+        mutator="setTypeOfmultiVerification",
         widget=SelectionWidget(
             label=_("Multi Verification type"),
             description=_(
@@ -463,6 +538,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Analyses",
         vocabulary=DECIMAL_MARKS,
         default=".",
+        accessor="getResultsDecimalMark",
+        edit_accessor="getResultsDecimalMark",
+        mutator="setResultsDecimalMark",
         widget=SelectionWidget(
             label=_("Default decimal mark"),
             description=_("Preferred decimal mark for results"),
@@ -474,6 +552,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Analyses",
         default='1',
         vocabulary=SCINOTATION_OPTIONS,
+        accessor="getScientificNotationResults",
+        edit_accessor="getScientificNotationResults",
+        mutator="setScientificNotationResults",
         widget=SelectionWidget(
             label=_("Default scientific notation format for results"),
             description=_("Preferred scientific notation format for results"),
@@ -485,6 +566,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Appearance",
         default=DEFAULT_WORKSHEET_LAYOUT,
         vocabulary=getWorksheetLayouts(),
+        accessor="getWorksheetLayout",
+        edit_accessor="getWorksheetLayout",
+        mutator="setWorksheetLayout",
         widget=SelectionWidget(
             label=_("Default layout in worksheet view"),
             description=_("Preferred layout of the results entry table "
@@ -500,6 +584,9 @@ schema = BikaFolderSchema.copy() + Schema((
         'DashboardByDefault',
         schemata="Appearance",
         default=True,
+        accessor="getDashboardByDefault",
+        edit_accessor="getDashboardByDefault",
+        mutator="setDashboardByDefault",
         widget=BooleanWidget(
             label=_("Use Dashboard as default front page"),
             description=_("Select this to activate the dashboard as a default front page.")
@@ -519,6 +606,9 @@ schema = BikaFolderSchema.copy() + Schema((
         mode="rw",
         multiValued=0,
         relationship="SetupLandingPage",
+        accessor="getLandingPage",
+        edit_accessor="getLandingPage",
+        mutator="setLandingPage",
         widget=ReferenceWidget(
             label=_(
                 "label_setup_landingpage",
@@ -545,6 +635,9 @@ schema = BikaFolderSchema.copy() + Schema((
         'PrintingWorkflowEnabled',
         schemata="Sampling",
         default=False,
+        accessor="getPrintingWorkflowEnabled",
+        edit_accessor="getPrintingWorkflowEnabled",
+        mutator="setPrintingWorkflowEnabled",
         widget=BooleanWidget(
             label=_("Enable the Results Report Printing workflow"),
             description=_("Select this to allow the user to set an "
@@ -557,6 +650,9 @@ schema = BikaFolderSchema.copy() + Schema((
         'SamplingWorkflowEnabled',
         schemata="Sampling",
         default=False,
+        accessor="getSamplingWorkflowEnabled",
+        edit_accessor="getSamplingWorkflowEnabled",
+        mutator="setSamplingWorkflowEnabled",
         widget=BooleanWidget(
             label=_("Enable Sampling"),
             description=_("Select this to activate the sample collection workflow steps.")
@@ -566,6 +662,9 @@ schema = BikaFolderSchema.copy() + Schema((
         'ScheduleSamplingEnabled',
         schemata="Sampling",
         default=False,
+        accessor="getScheduleSamplingEnabled",
+        edit_accessor="getScheduleSamplingEnabled",
+        mutator="setScheduleSamplingEnabled",
         widget=BooleanWidget(
             label=_("Enable Sampling Scheduling"),
             description=_(
@@ -579,6 +678,9 @@ schema = BikaFolderSchema.copy() + Schema((
         "DateSampledRequired",
         schemata="Sampling",
         default=True,
+        accessor="getDateSampledRequired",
+        edit_accessor="getDateSampledRequired",
+        mutator="setDateSampledRequired",
         widget=BooleanWidget(
             label=_(
                 "label_bikasetup_date_sampled_required",
@@ -596,6 +698,9 @@ schema = BikaFolderSchema.copy() + Schema((
         "AutoreceiveSamples",
         schemata="Sampling",
         default=False,
+        accessor="getAutoreceiveSamples",
+        edit_accessor="getAutoreceiveSamples",
+        mutator="setAutoreceiveSamples",
         widget=BooleanWidget(
             label=_("Auto-receive samples"),
             description=_(
@@ -609,6 +714,9 @@ schema = BikaFolderSchema.copy() + Schema((
         'ShowPartitions',
         schemata="Appearance",
         default=False,
+        accessor="getShowPartitions",
+        edit_accessor="getShowPartitions",
+        mutator="setShowPartitions",
         widget=BooleanWidget(
             label=_("Display sample partitions to clients"),
             description=_(
@@ -622,6 +730,9 @@ schema = BikaFolderSchema.copy() + Schema((
         'SamplePreservationEnabled',
         schemata="Sampling",
         default=False,
+        accessor="getSamplePreservationEnabled",
+        edit_accessor="getSamplePreservationEnabled",
+        mutator="setSamplePreservationEnabled",
         widget=BooleanWidget(
             label=_("Enable Sample Preservation"),
             description=_("")
@@ -633,6 +744,9 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary=WEEKDAYS,
         default=tuple(map(str, range(7))),
         required=1,
+        accessor="getWorkdays",
+        edit_accessor="getWorkdays",
+        mutator="setWorkdays",
         widget=InAndOutWidget(
             visible=True,
             label=_("Laboratory Workdays"),
@@ -646,6 +760,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Sampling",
         required=1,
         default={"days": 5, "hours": 0, "minutes": 0},
+        accessor="getDefaultTurnaroundTime",
+        edit_accessor="getDefaultTurnaroundTime",
+        mutator="setDefaultTurnaroundTime",
         widget=DurationWidget(
             label=_("Default turnaround time for analyses."),
             description=_(
@@ -661,6 +778,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Sampling",
         required=1,
         default={"days": 30, "hours": 0, "minutes": 0},
+        accessor="getDefaultSampleLifetime",
+        edit_accessor="getDefaultSampleLifetime",
+        mutator="setDefaultSampleLifetime",
         widget=DurationWidget(
             label=_("Default sample retention period"),
             description=_(
@@ -674,6 +794,9 @@ schema = BikaFolderSchema.copy() + Schema((
         "EmailFromSamplePublication",
         default_method='getEmailFromSamplePublication',
         schemata="Notifications",
+        accessor="getEmailFromSamplePublication",
+        edit_accessor="getEmailFromSamplePublication",
+        mutator="setEmailFromSamplePublication",
         widget=StringWidget(
             label=_(
                 "label_bikasetup_email_from_sample_publication",
@@ -696,7 +819,9 @@ schema = BikaFolderSchema.copy() + Schema((
         default_output_type="text/x-html-safe",
         schemata="Notifications",
         # Needed to fetch the default value from the registry
+        accessor="getEmailBodySamplePublication",
         edit_accessor="getEmailBodySamplePublication",
+        mutator="setEmailBodySamplePublication",
         widget=RichWidget(
             label=_(
                 "label_bikasetup_email_body_sample_publication",
@@ -718,6 +843,9 @@ schema = BikaFolderSchema.copy() + Schema((
         "AlwaysCCResponsiblesInReportEmail",
         schemata="Notifications",
         default=True,
+        accessor="getAlwaysCCResponsiblesInReportEmail",
+        edit_accessor="getAlwaysCCResponsiblesInReportEmail",
+        mutator="setAlwaysCCResponsiblesInReportEmail",
         widget=BooleanWidget(
             label=_(
                 "label_bikasetup_always_cc_responsibles_in_report_emails",
@@ -732,6 +860,9 @@ schema = BikaFolderSchema.copy() + Schema((
         'NotifyOnSampleRejection',
         schemata="Notifications",
         default=False,
+        accessor="getNotifyOnSampleRejection",
+        edit_accessor="getNotifyOnSampleRejection",
+        mutator="setNotifyOnSampleRejection",
         widget=BooleanWidget(
             label=_("Email notification on Sample rejection"),
             description=_("Select this to activate automatic notifications "
@@ -750,6 +881,9 @@ schema = BikaFolderSchema.copy() + Schema((
                 "For further information, please contact us under the "
                 "following address.<br/><br/>"
                 "$lab_address",
+        accessor="getEmailBodySampleRejection",
+        edit_accessor="getEmailBodySampleRejection",
+        mutator="setEmailBodySampleRejection",
         widget=RichWidget(
             label=_("Email body for Sample Rejection notifications"),
             description=_(
@@ -768,6 +902,9 @@ schema = BikaFolderSchema.copy() + Schema((
         "InvalidationReasonRequired",
         schemata="Notifications",
         default=True,
+        accessor="getInvalidationReasonRequired",
+        edit_accessor="getInvalidationReasonRequired",
+        mutator="setInvalidationReasonRequired",
         widget=BooleanWidget(
             label=_(
                 "label_bikasetup_invalidation_reason_required",
@@ -798,6 +935,9 @@ schema = BikaFolderSchema.copy() + Schema((
             "action has been initiated. "
             "<br/><br/> "
             "$lab_address",
+        accessor="getEmailBodySampleInvalidation",
+        edit_accessor="getEmailBodySampleInvalidation",
+        mutator="setEmailBodySampleInvalidation",
         widget=RichWidget(
             label=_(
                 "label_bikasetup_invalidation_email_body",
@@ -827,6 +967,9 @@ schema = BikaFolderSchema.copy() + Schema((
         "AutoPrintStickers",
         schemata="Sticker",
         vocabulary=STICKER_AUTO_OPTIONS,
+        accessor="getAutoPrintStickers",
+        edit_accessor="getAutoPrintStickers",
+        mutator="setAutoPrintStickers",
         widget=SelectionWidget(
             format='select',
             label=_("Automatic Sticker Printing"),
@@ -848,6 +991,9 @@ schema = BikaFolderSchema.copy() + Schema((
         "AutoStickerTemplate",
         schemata="Sticker",
         vocabulary_factory="senaite.core.vocabularies.stickers",
+        accessor="getAutoStickerTemplate",
+        edit_accessor="getAutoStickerTemplate",
+        mutator="setAutoStickerTemplate",
         widget=SelectionWidget(
             format='select',
             label=_("Default Sticker Template"),
@@ -863,6 +1009,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Sticker",
         vocabulary_factory="senaite.core.vocabularies.stickers",
         default="Code_128_1x48mm.pt",
+        accessor="getSmallStickerTemplate",
+        edit_accessor="getSmallStickerTemplate",
+        mutator="setSmallStickerTemplate",
         widget=SelectionWidget(
             format='select',
             label=_("Small Sticker Template"),
@@ -879,6 +1028,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Sticker",
         vocabulary_factory="senaite.core.vocabularies.stickers",
         default="Code_128_1x72mm.pt",
+        accessor="getLargeStickerTemplate",
+        edit_accessor="getLargeStickerTemplate",
+        mutator="setLargeStickerTemplate",
         widget=SelectionWidget(
             format='select',
             label=_("Large Sticker Template"),
@@ -895,6 +1047,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Sticker",
         required=True,
         default=1,
+        accessor="getDefaultNumberOfCopies",
+        edit_accessor="getDefaultNumberOfCopies",
+        mutator="setDefaultNumberOfCopies",
         widget=IntegerWidget(
             label=_("Default Number of Copies"),
             description=_(
@@ -907,6 +1062,9 @@ schema = BikaFolderSchema.copy() + Schema((
     IDFormattingField(
         'IDFormatting',
         schemata="ID Server",
+        accessor="getIDFormatting",
+        edit_accessor="getIDFormatting",
+        mutator="setIDFormatting",
         default=[
             {
                 'form': 'B-{seq:03d}',
@@ -1032,14 +1190,17 @@ schema = BikaFolderSchema.copy() + Schema((
             rows=30,
         ),
     ),
-    RecordsField(
-        'RejectionReasons',
+    LinesField(
+        "RejectionReasons",
         schemata="Analyses",
-        widget=RejectionSetupWidget(
-            label=_("Enable the rejection workflow"),
-            description=_("Select this to activate the rejection workflow "
-                          "for Samples. A 'Reject' option will be displayed in "
-                          "the actions menu.")
+        # NOTE: accessors/mutators needed to display the proxied values!
+        accessor="getRejectionReasons",
+        edit_accessor="getRejectionReasons",
+        mutator="setRejectionReasons",
+        widget=LinesWidget(
+            label=_("Rejection Reasons"),
+            description=_("List of predefined rejection reasons. "
+                          "Enter one reason per line.")
         ),
     ),
     IntegerField(
@@ -1047,6 +1208,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Analyses",
         required=0,
         default=4,
+        accessor="getDefaultNumberOfARsToAdd",
+        edit_accessor="getDefaultNumberOfARsToAdd",
+        mutator="setDefaultNumberOfARsToAdd",
         widget=IntegerWidget(
             label=_("Default count of Sample to add."),
             description=_("Default value of the 'Sample count' when users click 'ADD' button to create new Samples"),
@@ -1057,6 +1221,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Analyses",
         required=0,
         default=10,
+        accessor="getMaxNumberOfSamplesAdd",
+        edit_accessor="getMaxNumberOfSamplesAdd",
+        mutator="setMaxNumberOfSamplesAdd",
         widget=IntegerWidget(
             label=_(
                 u"label_senaitesetup_maxnumberofsamplesadd",
@@ -1076,6 +1243,9 @@ schema = BikaFolderSchema.copy() + Schema((
         "ShowLabNameInLogin",
         schemata="Appearance",
         default=False,
+        accessor="getShowLabNameInLogin",
+        edit_accessor="getShowLabNameInLogin",
+        mutator="setShowLabNameInLogin",
         widget=BooleanWidget(
             label=_(
                 u"title_senaitesetup_show_lab_name_in_login",
@@ -1152,26 +1322,19 @@ class BikaSetup(folder.ATFolder):
         return items
 
     def isRejectionWorkflowEnabled(self):
-        """Return true if the rejection workflow is enabled (its checkbox is set)
+        """Return true if the rejection workflow is enabled
         """
-        widget = self.getRejectionReasons()
-        # widget will be something like:
-        # [{'checkbox': u'on', 'textfield-2': u'b', 'textfield-1': u'c', 'textfield-0': u'a'}]
-        if len(widget) > 0:
-            checkbox = widget[0].get('checkbox', False)
-            return True if checkbox == 'on' and len(widget[0]) > 1 else False
-        else:
-            return False
+        return self.getEnableRejectionWorkflow()
 
     def getRejectionReasonsItems(self):
         """Return the list of predefined rejection reasons
+
+        .. deprecated::
+            This method now simply returns getRejectionReasons() as both
+            return the same format (simple list). Kept for backwards
+            compatibility.
         """
-        reasons = self.getRejectionReasons()
-        if not reasons:
-            return []
-        reasons = reasons[0]
-        keys = filter(lambda key: key != "checkbox", reasons.keys())
-        return map(lambda key: reasons[key], sorted(keys)) or []
+        return self.getRejectionReasons()
 
     def _getNumberOfRequiredVerificationsVocabulary(self):
         """
@@ -1182,15 +1345,6 @@ class BikaSetup(folder.ATFolder):
         """
         items = [(1, '1'), (2, '2'), (3, '3'), (4, '4')]
         return IntDisplayList(list(items))
-
-    def getIDServerValuesHTML(self):
-        number_generator = getUtility(INumberGenerator)
-        keys = number_generator.keys()
-        values = number_generator.values()
-        results = []
-        for i in range(len(keys)):
-            results.append('%s: %s' % (keys[i], values[i]))
-        return "\n".join(results)
 
     def getEmailFromSamplePublication(self):
         """Get the value from the senaite setup
@@ -1325,25 +1479,6 @@ class BikaSetup(folder.ATFolder):
         if setup:
             setup.setAllowManualResultCaptureDate(value)
 
-    def getMaxNumberOfSamplesAdd(self):
-        """Get the value from the senaite setup
-        """
-        setup = api.get_senaite_setup()
-        # setup is `None` during initial site content structure installation
-        if setup:
-            return setup.getMaxNumberOfSamplesAdd()
-        return self.getField("MaxNumberOfSamplesAdd").default
-
-    def setMaxNumberOfSamplesAdd(self, value):
-        """Set the value in the senaite setup
-        """
-        setup = api.get_senaite_setup()
-        # setup is `None` during initial site content structure installation
-        if setup:
-            # we get a string value here!
-            value = api.to_int(value, default=10)
-            setup.setMaxNumberOfSamplesAdd(value)
-
     def getShowLabNameInLogin(self):
         """Get the value from the senaite setup
         """
@@ -1394,6 +1529,758 @@ class BikaSetup(folder.ATFolder):
         # setup is `None` during initial site content structure installation
         if setup:
             setup.setInvalidationReasonRequired(value)
+
+    # Proxy methods for Security fields
+    def getRestrictWorksheetUsersAccess(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            return setup.getRestrictWorksheetUsersAccess()
+
+    def setRestrictWorksheetUsersAccess(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            setup.setRestrictWorksheetUsersAccess(value)
+
+    def getAllowToSubmitNotAssigned(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            return setup.getAllowToSubmitNotAssigned()
+
+    def setAllowToSubmitNotAssigned(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            setup.setAllowToSubmitNotAssigned(value)
+
+    def getRestrictWorksheetManagement(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            return setup.getRestrictWorksheetManagement()
+
+    def setRestrictWorksheetManagement(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            setup.setRestrictWorksheetManagement(value)
+
+    # Proxy methods for Accounting fields
+    def getShowPrices(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            return setup.getShowPrices()
+
+    def setShowPrices(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            setup.setShowPrices(value)
+
+    def getCurrency(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            return setup.getCurrency()
+
+    def setCurrency(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            setup.setCurrency(value)
+
+    def getDefaultCountry(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            return setup.getDefaultCountry()
+
+    def setDefaultCountry(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            setup.setDefaultCountry(value)
+
+    def getMemberDiscount(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            return setup.getMemberDiscount()
+
+    def setMemberDiscount(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            setup.setMemberDiscount(value)
+
+    def getVAT(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            return setup.getVAT()
+
+    def setVAT(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        if setup:
+            setup.setVAT(value)
+
+    def getDecimalMark(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getDecimalMark()
+
+    def setDecimalMark(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setDecimalMark(value)
+
+    def getScientificNotationReport(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getScientificNotationReport()
+
+    def setScientificNotationReport(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setScientificNotationReport(value)
+
+    def getMinimumResults(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getMinimumResults()
+
+    def setMinimumResults(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setMinimumResults(value)
+
+    def getCategoriseAnalysisServices(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getCategoriseAnalysisServices()
+
+    def setCategoriseAnalysisServices(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setCategoriseAnalysisServices(value)
+
+    def getEnableARSpecs(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getEnableARSpecs()
+
+    def setEnableARSpecs(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setEnableARSpecs(value)
+
+    def getExponentialFormatThreshold(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getExponentialFormatThreshold()
+
+    def setExponentialFormatThreshold(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setExponentialFormatThreshold(value)
+
+    def getEnableAnalysisRemarks(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getEnableAnalysisRemarks()
+
+    def setEnableAnalysisRemarks(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setEnableAnalysisRemarks(value)
+
+    def getAutoVerifySamples(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getAutoVerifySamples()
+
+    def setAutoVerifySamples(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setAutoVerifySamples(value)
+
+    def getSelfVerificationEnabled(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getSelfVerificationEnabled()
+
+    def setSelfVerificationEnabled(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setSelfVerificationEnabled(value)
+
+    def getNumberOfRequiredVerifications(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getNumberOfRequiredVerifications()
+
+    def setNumberOfRequiredVerifications(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setNumberOfRequiredVerifications(value)
+
+    def getTypeOfmultiVerification(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getTypeOfmultiVerification()
+
+    def setTypeOfmultiVerification(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setTypeOfmultiVerification(value)
+
+    def getResultsDecimalMark(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getResultsDecimalMark()
+
+    def setResultsDecimalMark(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setResultsDecimalMark(value)
+
+    def getScientificNotationResults(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getScientificNotationResults()
+
+    def setScientificNotationResults(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setScientificNotationResults(value)
+
+    def getDefaultNumberOfARsToAdd(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getDefaultNumberOfARsToAdd()
+
+    def setDefaultNumberOfARsToAdd(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setDefaultNumberOfARsToAdd(value)
+
+    def getEnableRejectionWorkflow(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getEnableRejectionWorkflow()
+        return False
+
+    def setEnableRejectionWorkflow(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setEnableRejectionWorkflow(value)
+
+    def getRejectionReasons(self):
+        """Get the rejection reasons from senaite setup
+        Returns a simple list of unicode strings
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getRejectionReasons()
+        return []
+
+    def setRejectionReasons(self, value):
+        """Set the rejection reasons in senaite setup
+        Accepts a simple list of strings
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setRejectionReasons(value)
+
+    def getMaxNumberOfSamplesAdd(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getMaxNumberOfSamplesAdd()
+
+    def setMaxNumberOfSamplesAdd(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setMaxNumberOfSamplesAdd(value)
+
+    def getWorksheetLayout(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getWorksheetLayout()
+
+    def setWorksheetLayout(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setWorksheetLayout(value)
+
+    def getDashboardByDefault(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getDashboardByDefault()
+
+    def setDashboardByDefault(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setDashboardByDefault(value)
+
+    def getLandingPage(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getLandingPage()
+
+    def setLandingPage(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setLandingPage(value)
+
+    def getShowPartitions(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getShowPartitions()
+
+    def setShowPartitions(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setShowPartitions(value)
+
+    def getPrintingWorkflowEnabled(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getPrintingWorkflowEnabled()
+
+    def setPrintingWorkflowEnabled(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setPrintingWorkflowEnabled(value)
+
+    def getSamplingWorkflowEnabled(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getSamplingWorkflowEnabled()
+
+    def setSamplingWorkflowEnabled(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setSamplingWorkflowEnabled(value)
+
+    def getScheduleSamplingEnabled(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getScheduleSamplingEnabled()
+
+    def setScheduleSamplingEnabled(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setScheduleSamplingEnabled(value)
+
+    def getAutoreceiveSamples(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getAutoreceiveSamples()
+
+    def setAutoreceiveSamples(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setAutoreceiveSamples(value)
+
+    def getSamplePreservationEnabled(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getSamplePreservationEnabled()
+
+    def setSamplePreservationEnabled(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setSamplePreservationEnabled(value)
+
+    def getWorkdays(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getWorkdays()
+
+    def setWorkdays(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setWorkdays(value)
+
+    def getDefaultTurnaroundTime(self):
+        """Get the value from the senaite setup
+        """
+        from senaite.core.api import dtime
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            value = setup.getDefaultTurnaroundTime()
+            # Convert timedelta to dict for AT form
+            return dtime.timedelta_to_dict(value, default={})
+        return {}
+
+    def setDefaultTurnaroundTime(self, value):
+        """Set the value in the senaite setup
+        """
+        from senaite.core.api import dtime
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            # Convert dict to timedelta for DX storage
+            td_value = dtime.to_timedelta(value, default=None)
+            if td_value is not None:
+                setup.setDefaultTurnaroundTime(td_value)
+
+    def getDefaultSampleLifetime(self):
+        """Get the value from the senaite setup
+        """
+        from senaite.core.api import dtime
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            value = setup.getDefaultSampleLifetime()
+            # Convert timedelta to dict for AT form
+            return dtime.timedelta_to_dict(value, default={})
+        return {}
+
+    def setDefaultSampleLifetime(self, value):
+        """Set the value in the senaite setup
+        """
+        from senaite.core.api import dtime
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            # Convert dict to timedelta for DX storage
+            td_value = dtime.to_timedelta(value, default=None)
+            if td_value is not None:
+                setup.setDefaultSampleLifetime(td_value)
+
+    def getNotifyOnSampleRejection(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getNotifyOnSampleRejection()
+
+    def setNotifyOnSampleRejection(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setNotifyOnSampleRejection(value)
+
+    def getEmailBodySampleRejection(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getEmailBodySampleRejection()
+
+    def setEmailBodySampleRejection(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setEmailBodySampleRejection(value)
+
+    def getEmailBodySampleInvalidation(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getEmailBodySampleInvalidation()
+
+    def setEmailBodySampleInvalidation(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setEmailBodySampleInvalidation(value)
+
+    def getAutoPrintStickers(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getAutoPrintStickers()
+
+    def setAutoPrintStickers(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setAutoPrintStickers(value)
+
+    def getAutoStickerTemplate(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getAutoStickerTemplate()
+
+    def setAutoStickerTemplate(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setAutoStickerTemplate(value)
+
+    def getSmallStickerTemplate(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getSmallStickerTemplate()
+
+    def setSmallStickerTemplate(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setSmallStickerTemplate(value)
+
+    def getLargeStickerTemplate(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getLargeStickerTemplate()
+
+    def setLargeStickerTemplate(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setLargeStickerTemplate(value)
+
+    def getDefaultNumberOfCopies(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getDefaultNumberOfCopies()
+
+    def setDefaultNumberOfCopies(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setDefaultNumberOfCopies(value)
+
+    def getIDFormatting(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getIDFormatting()
+        return []
+
+    def setIDFormatting(self, value):
+        """Set the value in the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            setup.setIDFormatting(value)
+
+    def getIDServerValuesHTML(self):
+        """Get the value from the senaite setup
+        """
+        setup = api.get_senaite_setup()
+        # setup is `None` during initial site content structure installation
+        if setup:
+            return setup.getIDServerValuesHTML()
+        return ""
 
 
 registerType(BikaSetup, PROJECTNAME)

@@ -167,3 +167,14 @@ span.options:has(> input.hide-title) {
     display: flex;
     justify-content: center;
 }
+
+/* TinyMCE editor content padding to prevent cursor from being hidden
+   by focus border */
+.mce-content-body {
+  padding: 8px !important;
+}
+
+/* For inline TinyMCE editors */
+.mce-edit-focus {
+  padding: 8px !important;
+}

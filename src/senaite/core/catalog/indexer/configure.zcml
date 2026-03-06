@@ -11,9 +11,42 @@
   <adapter name="client_searchable_text" factory=".client.client_searchable_text"/>
 
   <!-- Contact Indexer -->
-  <adapter name="listing_searchable_text" factory=".contact.listing_searchable_text"/>
-  <adapter name="getParentUID" factory=".contact.getParentUID"/>
-  <adapter name="sortable_title" factory=".contact.sortable_title"/>
+  <adapter name="listing_searchable_text"
+      factory=".contact.listing_searchable_text"/>
+  <adapter name="listing_searchable_text"
+      factory=".contact.listing_searchable_text"
+      for="bika.lims.interfaces.ILabContact
+           senaite.core.interfaces.catalog.IContactCatalog"
+      provides="plone.indexer.interfaces.IIndexer"/>
+  <adapter name="listing_searchable_text"
+      factory=".contact.listing_searchable_text"
+      for="bika.lims.interfaces.ISupplierContact
+           senaite.core.interfaces.catalog.IContactCatalog"
+      provides="plone.indexer.interfaces.IIndexer"/>
+  <adapter name="getParentUID"
+      factory=".contact.getParentUID"/>
+  <adapter name="getParentUID"
+      factory=".contact.getParentUID"
+      for="bika.lims.interfaces.ILabContact
+           senaite.core.interfaces.catalog.IContactCatalog"
+      provides="plone.indexer.interfaces.IIndexer"/>
+  <adapter name="getParentUID"
+      factory=".contact.getParentUID"
+      for="bika.lims.interfaces.ISupplierContact
+           senaite.core.interfaces.catalog.IContactCatalog"
+      provides="plone.indexer.interfaces.IIndexer"/>
+  <adapter name="sortable_title"
+      factory=".contact.sortable_title"/>
+  <adapter name="sortable_title"
+      factory=".contact.sortable_title"
+      for="bika.lims.interfaces.ILabContact
+           senaite.core.interfaces.catalog.IContactCatalog"
+      provides="plone.indexer.interfaces.IIndexer"/>
+  <adapter name="sortable_title"
+      factory=".contact.sortable_title"
+      for="bika.lims.interfaces.ISupplierContact
+           senaite.core.interfaces.catalog.IContactCatalog"
+      provides="plone.indexer.interfaces.IIndexer"/>
 
   <!-- Label Indexer -->
   <adapter name="labels" factory=".label.labels"/>
@@ -33,9 +66,9 @@
   <!-- SubGroup Indexer -->
   <adapter name="sortable_title" factory=".subgroup.sortable_title"/>
 
-  <!-- ARReport Indexer -->
-  <adapter name="sample_uid" factory=".arreport.sample_uid"/>
-  <adapter name="arreport_searchable_text" factory=".arreport.arreport_searchable_text"/>
+  <!-- ResultsReport Indexer -->
+  <adapter name="sample_uid" factory=".resultsreport.sample_uid"/>
+  <adapter name="resultsreport_searchable_text" factory=".resultsreport.resultsreport_searchable_text"/>
 
   <!-- Auditlog Indexer -->
   <adapter name="action" factory=".auditlog.action"/>
@@ -88,5 +121,9 @@
   <!-- AnalysisSpec Indexer -->
   <adapter name="sampletype_title" factory=".analysisspec.sampletype_title"/>
   <adapter name="sampletype_uid" factory=".analysisspec.sampletype_uid"/>
+
+  <!-- Attachment Indexer (SimpleFile/SimpleImage) -->
+  <adapter name="listing_searchable_text" factory=".attachment.listing_searchable_text"/>
+  <adapter name="listing_searchable_text" factory=".attachment.listing_searchable_text_image"/>
 
 </configure>

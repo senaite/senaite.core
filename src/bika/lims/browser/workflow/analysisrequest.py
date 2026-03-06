@@ -26,6 +26,7 @@ from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IWorkflowActionUIDsAdapter
 from DateTime import DateTime
+from senaite.core.api import dtime
 from zope.interface import implements
 
 
@@ -174,18 +175,25 @@ class WorkflowActionPrintSampleAdapter(WorkflowActionGenericAdapter):
         # Redirect the user to success page
         return self.success(transitioned)
 
+    def get_last_report(self, sample):
+        reports = sample.getReports()
+        if not reports:
+            return None
+        return reports[-1]
+
     def set_printed_time(self, sample):
         """Updates the printed time of the last results report from the sample
         """
         if api.get_workflow_status_of(sample) != "published":
             return False
 
-        reports = sample.objectIds("ARReport")
-        if not reports:
+        # Get the last report
+        last_report = self.get_last_report(sample)
+        if not last_report:
             return False
 
-        last_report = sample.get(reports[-1])
-        last_report.setDatePrinted(DateTime())
+        timestamp = dtime.now()
+        last_report.setDatePrinted(timestamp)
         sample.reindexObject(idxs=["getPrinted"])
         return True
 
@@ -376,7 +384,7 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
         """Returns whether the assignment of specs at analysis level within
         sample context is enabled or not
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getEnableARSpecs()
 
     def is_hidden(self, service):

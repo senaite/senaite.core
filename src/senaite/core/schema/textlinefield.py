@@ -3,10 +3,11 @@
 import six
 
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.schema.fields import BaseField
 from zope import schema
 
 
-class TextLineField(schema.TextLine):
+class TextLineField(schema.TextLine, BaseField):
     """A text field with no newlines and without leading and trailing spaces.
     """
 

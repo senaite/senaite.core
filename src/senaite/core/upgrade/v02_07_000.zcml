@@ -11,6 +11,134 @@
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Reindex LabContact catalog indexes"
+      description="Reindex listing_searchable_text, sortable_title and getParentUID in contact catalog for LabContact and SupplierContact"
+      source="2721"
+      destination="2722"
+      handler=".v02_07_000.reindex_labcontact_searchable_text"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate analysis columns order to setup"
+      description="Move analysis columns order settings from registry to SENAITE setup"
+      source="2720"
+      destination="2721"
+      handler=".v02_07_000.migrate_analysis_columns_to_setup"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate Worksheet objects to Dexterity"
+      description="Convert Worksheet content type from Archetypes to Dexterity"
+      source="2719"
+      destination="2720"
+      handler=".v02_07_000.migrate_worksheets_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate ARReport to Dexterity ResultsReport"
+      description="Convert ARReport content type from Archetypes to Dexterity"
+      source="2718"
+      destination="2719"
+      handler=".v02_07_000.migrate_arreport_to_resultsreport"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Hide navigation control panel"
+      description="Hide navigation control panel from the site setup in favor of the new one in SENAITE setup"
+      source="2717"
+      destination="2718"
+      handler=".v02_07_000.import_controlpanel"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Link client contacts to users"
+      description="Ensure users are correctly linked to client contacts"
+      source="2716"
+      destination="2717"
+      handler=".v02_07_000.link_contact_users"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate setup fields to DX SenaiteSetup"
+      description="Migrate all setup field values from BikaSetup to SenaiteSetup"
+      source="2715"
+      destination="2716"
+      handler=".v02_07_000.migrate_setup_fields_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate Multifile objects to Dexterity"
+      description="Convert Multifile content type from Archetypes to Dexterity"
+      source="2714"
+      destination="2715"
+      handler=".v02_07_000.migrate_multifiles_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add custom file/image types"
+      description="Add SampleFile and SampleImage types and setup custom Attachments Catalog"
+      source="2713"
+      destination="2714"
+      handler=".v02_07_000.setup_custom_image_and_file_types"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Fix custom actions and behaviors are missing"
+      description="Fix custom actions and behaviors are missing"
+      source="2712"
+      destination="2713"
+      handler=".v02_07_000.notify_upgrade"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Create global Contacts container"
+      description="Create Contacts container in setup folder"
+      source="2711"
+      destination="2712"
+      handler=".v02_07_000.create_setup_contacts_folder"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate Contact objects to Dexterity"
+      description="Convert Contact content type from Archetypes to Dexterity"
+      source="2710"
+      destination="2711"
+      handler=".v02_07_000.migrate_contacts_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add registry key to copy sample structure with partitions"
+      description="Allows to copy the entire sample structure including partitions when copying a sample"
+      source="2709"
+      destination="2710"
+      handler=".v02_07_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add registry key to skip partition analyses on copy"
+      description="Allows to skip analyses from partitions when copying a sample"
+      source="2708"
+      destination="2709"
+      handler=".v02_07_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add registry key to skip analyses in defined WF states"
+      description="Allows to define WF states for Analyses to skip for new copies, e.g. rejected etc."
+      source="2707"
+      destination="2708"
+      handler=".v02_07_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add registry key for trigger events on sample creation"
+      description="Allows to define if after and before events have to be triggered on sample creation"
+      source="2706"
+      destination="2707"
+      handler=".v02_07_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Add registry key for instrument import submit handling"
       description="Allow to submit imported analysis manually"
       source="2705"
