@@ -19,11 +19,13 @@
 # Some rights reserved, see README and LICENSE.
 
 import copy
+import json
 from collections import OrderedDict
 from datetime import timedelta
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
+from bika.lims.api import snapshot as snap_api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api.analysis import get_dependencies
 from bika.lims.api.analysis import get_dependents
@@ -314,20 +316,57 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
 
     @security.public
     def getCalculation(self):
-        """Return current assigned calculation
+        """Return the linked Calculation object, or None.
+
+        Resolves the CalculationUID stored at linking time to a live object.
+        Returns None if no calculation was linked or the object is not found.
+        Used for display and navigation; formula evaluation uses the
+        snapshotted CalculationFormula field instead.
         """
-        field = self.getField("Calculation")
-        calculation = field.get(self)
-        if not calculation:
+        uid = self.getField("CalculationUID").get(self)
+        if not uid:
             return None
-        return calculation
+        return api.get_object_by_uid(uid, default=None)
+
+    @security.public
+    def getRawCalculation(self):
+        """Return the UID of the linked Calculation, or an empty string.
+        """
+        return self.getField("CalculationUID").get(self) or ""
 
     @security.public
     def setCalculation(self, value):
-        self.getField("Calculation").set(self, value)
-        # TODO Something weird here
-        # Reset interims so they get extended with those from calculation
-        # see bika.lims.browser.fields.interimfieldsfield.set
+        """Link a Calculation and snapshot its formula, imports and version.
+
+        Stamps CalculationUID, CalculationFormula, CalculationImports and
+        CalculationVersion onto the analysis from the given Calculation object
+        at the moment of linking.  Subsequent edits to the Calculation do not
+        affect analyses that have already been linked.
+
+        Also freezes the Calculation's interim field definitions into the
+        analysis so that calculateResult needs no live Calculation lookup.
+        """
+        if value:
+            calc = api.get_object(value)
+            uid = api.get_uid(calc)
+            formula = calc.getMinifiedFormula()
+            imports = json.dumps(calc.getPythonImports() or [])
+            version = api.get_version(calc) or 0
+        else:
+            calc = None
+            uid = ""
+            formula = ""
+            imports = json.dumps([])
+            version = 0
+
+        self.getField("CalculationUID").set(self, uid)
+        self.getField("CalculationFormula").set(self, formula)
+        self.getField("CalculationImports").set(self, imports)
+        self.getField("CalculationVersion").set(self, version)
+
+        # Freeze interim field definitions from the calculation into the
+        # analysis. InterimFieldsField.set merges any calculation interims
+        # that are not already present on the analysis.
         interim_fields = copy.deepcopy(self.getInterimFields())
         self.setInterimFields(interim_fields)
 
