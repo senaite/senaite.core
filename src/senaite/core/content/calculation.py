@@ -388,9 +388,17 @@ class Calculation(Container):
             keys = row.keys()
             if "value" not in keys:
                 row["value"] = ""
-            # convert None values to empty string to avoid value conversion to "None"
+            # convert None values to empty string to avoid value conversion
+            # to "None"
             if row["value"] is None:
                 row["value"] = ""
+            # normalize old AT 'type' field to new DX 'result_type'
+            if "result_type" not in keys:
+                old_type = row.pop("type", "")
+                row["result_type"] = "string" if old_type == "string" \
+                    else "numeric"
+            if "choices" not in keys:
+                row["choices"] = u""
             new_value.append(row)
 
         # extract the keywords from the new calculation interims
