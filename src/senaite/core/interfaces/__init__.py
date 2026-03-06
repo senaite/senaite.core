@@ -149,11 +149,6 @@ class ITemporaryObject(Interface):
     """
 
 
-class IVersionWrapper(Interface):
-    """Content wrapper that allows to retrieve versioned attributes
-    """
-
-
 class ISetup(Interface):
     """Marker interface for setup folder
     """
