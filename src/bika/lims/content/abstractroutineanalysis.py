@@ -315,42 +315,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         raise NotImplementedError("getSiblings is not implemented.")
 
     @security.public
-    def setCalculation(self, value):
-        """Link a Calculation and snapshot its formula, imports and version.
-
-        Stamps CalculationUID, CalculationFormula, CalculationImports and
-        CalculationVersion onto the analysis from the given Calculation object
-        at the moment of linking.  Subsequent edits to the Calculation do not
-        affect analyses that have already been linked.
-
-        Also freezes the Calculation's interim field definitions into the
-        analysis so that calculateResult needs no live Calculation lookup.
-        """
-        if value:
-            calc = api.get_object(value)
-            uid = api.get_uid(calc)
-            formula = calc.getMinifiedFormula()
-            imports = json.dumps(calc.getPythonImports() or [])
-            version = api.get_version(calc) or 0
-        else:
-            calc = None
-            uid = ""
-            formula = ""
-            imports = json.dumps([])
-            version = 0
-
-        self.getField("CalculationUID").set(self, uid)
-        self.getField("CalculationFormula").set(self, formula)
-        self.getField("CalculationImports").set(self, imports)
-        self.getField("CalculationVersion").set(self, version)
-
-        # Freeze interim field definitions from the calculation into the
-        # analysis. InterimFieldsField.set merges any calculation interims
-        # that are not already present on the analysis.
-        interim_fields = copy.deepcopy(self.getInterimFields())
-        self.setInterimFields(interim_fields)
-
-    @security.public
     def getDependents(self, with_retests=False, recursive=False):
         """Returns a list of analyses who depend on us to calculate their result.
 
