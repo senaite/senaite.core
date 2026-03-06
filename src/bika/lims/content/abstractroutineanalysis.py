@@ -19,13 +19,11 @@
 # Some rights reserved, see README and LICENSE.
 
 import copy
-import json
 from collections import OrderedDict
 from datetime import timedelta
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
-from bika.lims.api import snapshot as snap_api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api.analysis import get_dependencies
 from bika.lims.api.analysis import get_dependents
