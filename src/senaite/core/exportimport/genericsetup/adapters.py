@@ -114,10 +114,11 @@ class ATFieldNodeAdapter(NodeAdapterBase):
             # Always handle the value as unicode
             return json.dumps(safe_unicode(value))
         except TypeError:
-            logger.error(
-                "ParseError: '{}.{} ('{}')' is not JSON serializable!".format(
+            logger.warning(
+                "Cannot export field '{}.{}' ({}): not JSON serializable,"
+                " exporting as empty string".format(
                     self.context.getId(), self.field.getName(), repr(value)))
-            return ""
+            return json.dumps("")
 
     def parse_json_value(self, value):
         return json.loads(value)
