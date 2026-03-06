@@ -31,7 +31,6 @@ from bika.lims.interfaces import IInvalidated
 from bika.lims.utils import tmpID
 from persistent.list import PersistentList
 from plone.app.blob.field import BlobWrapper
-from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
 from plone.namedfile.file import NamedBlobFile
 from Products.CMFEditions.interfaces import IVersioned
