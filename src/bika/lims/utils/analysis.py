@@ -80,7 +80,18 @@ def create_analysis(context, source, **kwargs):
         "AnalysisService": service,
         "InterimFields": interim_fields,
     })
-    return api.copy_object(source, **kwargs)
+    analysis = api.copy_object(source, **kwargs)
+
+    # When the source is an AnalysisService, snapshot the Calculation.
+    # The service stores its calculation in an AT 'Calculation' field,
+    # while Analysis uses CalculationUID + snapshot fields. The field
+    # name mismatch means copy_object cannot transfer it automatically.
+    if IAnalysisService.providedBy(source):
+        calc = service.getCalculation()
+        if calc:
+            analysis.setCalculation(calc)
+
+    return analysis
 
 
 def get_significant_digits(numeric_value):
