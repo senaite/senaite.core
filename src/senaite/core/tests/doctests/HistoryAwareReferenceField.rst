@@ -133,8 +133,16 @@ Now we change the calculation formula:
     '2 * ([Ca] + [Mg])'
     >>> notify_edited(calc)
 
-The calculation of the analysis should be unchanged:
+``getCalculation()`` returns the live Calculation object (for display and
+navigation), so it reflects the updated formula:
 
     >>> th_calc = th.getCalculation()
     >>> th_calc.getFormula()
+    '2 * ([Ca] + [Mg])'
+
+The analysis preserves the formula snapshot from linking time in the
+``CalculationFormula`` field. Formula evaluation uses this snapshot, so
+existing analyses are not affected by later Calculation changes:
+
+    >>> th.getCalculationFormula()
     '[Ca] + [Mg]'
