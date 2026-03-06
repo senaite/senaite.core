@@ -25,6 +25,7 @@ from bika.lims import api
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IBaseAnalysis
 from bika.lims.interfaces import IReferenceSample
+from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import format_supsub
@@ -86,7 +87,9 @@ def create_analysis(context, source, **kwargs):
     # The service stores its calculation in an AT 'Calculation' field,
     # while Analysis uses CalculationUID + snapshot fields. The field
     # name mismatch means copy_object cannot transfer it automatically.
-    if IAnalysisService.providedBy(source):
+    # Only routine analyses support setCalculation (not ReferenceAnalysis).
+    if IAnalysisService.providedBy(source) and \
+            IRoutineAnalysis.providedBy(analysis):
         calc = service.getCalculation()
         if calc:
             analysis.setCalculation(calc)
