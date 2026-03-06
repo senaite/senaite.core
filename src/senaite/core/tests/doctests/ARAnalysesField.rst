@@ -505,26 +505,23 @@ Now we assign the `Total Hardness` Analysis Service:
     >>> analysis
     <Analysis at /plone/clients/client-1/water-0001/THCaCO3>
 
-The created Analysis has a version wrapped calculation of the Analysis Service attached:
+The created Analysis has the live Calculation object attached:
 
     >>> analysis_calc = analysis.getCalculation()
     >>> analysis_calc
-    <VersionWrapper:Calculation(calculation-4@v1)>
+    <Calculation at /plone/bika_setup/bika_calculations/calculation-4>
 
-This means, it has the same version as the service on creation time;
+The formula and Python imports are snapshotted onto the Analysis at
+linking time, so later edits to the Calculation do not affect it:
 
-    >>> analysis_calc.get_version()
-    1
+    >>> analysis.getCalculationFormula() == calc4.getMinifiedFormula()
+    True
 
-    >>> api.get_version(analysisservice4.getCalculation())
-    1
+    >>> analysis.getCalculationImports() == calc4.getPythonImports()
+    True
 
-And therefore, the analysis calculation has the same interims as the service calculation:
-
-    >>> map(lambda x: str(x["keyword"]), analysis_calc.getInterimFields())
-    ['A']
-
-The Analysis now inherits the Interim Fields of the Analysis Service and the Calculation:
+The Analysis now inherits the Interim Fields of the Analysis Service and
+the Calculation, frozen at linking time:
 
     >>> map(lambda x: x["keyword"], analysis.getInterimFields())
     ['B', 'A']
@@ -536,17 +533,6 @@ Change the Interim Field of the Calculation to `C`:
 
     >>> calc4.setInterimFields([interim3])
     >>> notify_edited(calc4)
-    >>> map(lambda x: str(x["keyword"]), calc4.getInterimFields())
-    ['C']
-
-
-This creates a new version of the calculation:
-
-    >>> api.get_version(analysisservice4.getCalculation())
-    2
-
-And the Calculation should return the new interims:
-
     >>> map(lambda x: str(x["keyword"]), calc4.getInterimFields())
     ['C']
 
@@ -573,20 +559,11 @@ The calculation should be still there:
 
     >>> analysis_calc = analysis.getCalculation()
     >>> analysis_calc
-    <VersionWrapper:Calculation(calculation-4@v1)>
-
-However, the version of the initial calculation remains unless we flush the field first:
-
-    >>> analysis_calc.get_version()
-    1
-
-Consequently, it returns also the same Interim Fields as the Calculation in this version:
-
-    >>> map(lambda x: str(x["keyword"]), analysis_calc.getInterimFields())
-    ['A']
+    <Calculation at /plone/bika_setup/bika_calculations/calculation-4>
 
 The existing Analysis retains the initial Interim Fields of the Analysis
-Service, together with the interim from the associated Calculation:
+Service, together with the interim from the associated Calculation,
+because they were frozen at the time the Analysis was first linked:
 
     >>> map(lambda x: x["keyword"], analysis.getInterimFields())
     ['B', 'A']
