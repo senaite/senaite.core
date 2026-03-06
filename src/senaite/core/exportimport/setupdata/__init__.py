@@ -1391,23 +1391,23 @@ class Calculations(WorksheetImporter):
 
     def get_interim_fields(self):
         # preload Calculation Interim Fields sheet
-        sheetname = 'Calculation Interim Fields'
+        sheetname = "Calculation Interim Fields"
         worksheet = self.workbook[sheetname]
         if not worksheet:
             return
         self.interim_fields = {}
         rows = self.get_rows(3, worksheet=worksheet)
         for row in rows:
-            calc_title = row['Calculation_title']
+            calc_title = row["Calculation_title"]
             if calc_title not in self.interim_fields.keys():
                 self.interim_fields[calc_title] = []
             self.interim_fields[calc_title].append({
-                'keyword': row['keyword'],
-                'title': row.get('title', ''),
-                'type': 'int',
-                'hidden': ('hidden' in row and row['hidden']) and True or False,
-                'value': row['value'],
-                'unit': row['unit'] and row['unit'] or ''})
+                "keyword": row["keyword"],
+                "title": row.get("title", ""),
+                "type": "int",
+                "hidden": ("hidden" in row and row["hidden"]) and True or False,
+                "value": row["value"],
+                "unit": row["unit"] and row["unit"] or ""})
 
     def Import(self):
         self.get_interim_fields()
@@ -1417,25 +1417,25 @@ class Calculations(WorksheetImporter):
             if not calc_title:
                 continue
             calc_interims = self.interim_fields.get(calc_title, [])
-            formula = row.get('Formula')
+            formula = row.get("Formula")
             # scan formula for dep services
             keywords = re.compile(r"\[([^\.^\]]+)\]").findall(formula)
             # remove interims from deps
-            interim_keys = [k['keyword'] for k in calc_interims]
+            interim_keys = [k["keyword"] for k in calc_interims]
             dep_keywords = [k for k in keywords if k not in interim_keys]
 
             obj = api.create(container, "Calculation",
                              title=calc_title,
-                             description=row.get('description'),
+                             description=row.get("description"),
                              InterimFields=calc_interims,
                              Formula=formula)
 
             for kw in dep_keywords:
                 self.defer(src_obj=obj,
-                           src_field='DependentServices',
+                           src_field="dependent_services",
                            dest_catalog=SETUP_CATALOG,
-                           dest_query={'portal_type': 'AnalysisService',
-                                       'getKeyword': kw}
+                           dest_query={"portal_type": "AnalysisService",
+                                       "getKeyword": kw}
                            )
 
         # Now we have the calculations registered, try to assign default calcs
@@ -1443,11 +1443,11 @@ class Calculations(WorksheetImporter):
         sheet = self.workbook["Methods"]
         bsc = getToolByName(self.context, SETUP_CATALOG)
         for row in self.get_rows(3, sheet):
-            if row.get('title', '') and row.get('Calculation_title', ''):
-                meth = self.get_object(bsc, "Method", row.get('title'))
+            if row.get("title", "") and row.get("Calculation_title", ""):
+                meth = self.get_object(bsc, "Method", row.get("title"))
                 if meth and not meth.getCalculation():
                     calctit = safe_unicode(
-                        row['Calculation_title']).encode('utf-8')
+                        row["Calculation_title"]).encode("utf-8")
                     calc = self.get_object(bsc, "Calculation", calctit)
                     if calc:
                         meth.setCalculation(calc.UID())
