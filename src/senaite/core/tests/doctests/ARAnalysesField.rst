@@ -509,7 +509,7 @@ The created Analysis has the live Calculation object attached:
 
     >>> analysis_calc = analysis.getCalculation()
     >>> analysis_calc
-    <Calculation at /plone/bika_setup/bika_calculations/calculation-4>
+    <Calculation at /plone/setup/calculations/calculation-4>
 
 The formula and Python imports are snapshotted onto the Analysis at
 linking time, so later edits to the Calculation do not affect it:
@@ -559,7 +559,7 @@ The calculation should be still there:
 
     >>> analysis_calc = analysis.getCalculation()
     >>> analysis_calc
-    <Calculation at /plone/bika_setup/bika_calculations/calculation-4>
+    <Calculation at /plone/setup/calculations/calculation-4>
 
 The existing Analysis retains the initial Interim Fields of the Analysis
 Service, together with the interim from the associated Calculation,
