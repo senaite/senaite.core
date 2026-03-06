@@ -235,6 +235,26 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         self.getField("CalculationImports").set(
             self, json.dumps(value or []))
 
+    @security.public
+    def getCalculation(self):
+        """Return the linked Calculation object, or None.
+
+        Resolves the CalculationUID stored at linking time to a live object.
+        Returns None if no calculation was linked or the object is not found.
+        Used for display and navigation; formula evaluation uses the
+        snapshotted CalculationFormula field instead.
+        """
+        uid = self.getField("CalculationUID").get(self)
+        if not uid:
+            return None
+        return api.get_object_by_uid(uid, default=None)
+
+    @security.public
+    def getRawCalculation(self):
+        """Return the UID of the linked Calculation, or an empty string.
+        """
+        return self.getField("CalculationUID").get(self) or ""
+
     @deprecated('[1705] Currently returns the Analysis object itself.  If you '
                 'need to get the service, use getAnalysisService instead')
     @security.public
