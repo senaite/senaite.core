@@ -143,9 +143,9 @@ This service matches the service specified in the file from which the import wil
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-4>
 
     >>> interim_calc = api.create(calculations, 'Calculation', title='Test-Total-Pest')
-    >>> pest1 = {'keyword': 'pest1', 'title': 'Pesticide 1', 'value': 0, 'type': 'int', 'hidden': False, 'unit': ''}
-    >>> pest2 = {'keyword': 'pest2', 'title': 'Pesticide 2', 'value': 0, 'type': 'int', 'hidden': False, 'unit': ''}
-    >>> pest3 = {'keyword': 'pest3', 'title': 'Pesticide 3', 'value': 0, 'type': 'int', 'hidden': False, 'unit': ''}
+    >>> pest1 = {'keyword': 'pest1', 'title': 'Pesticide 1', 'value': 0, 'result_type': 'numeric', 'choices': u'', 'hidden': False, 'unit': ''}
+    >>> pest2 = {'keyword': 'pest2', 'title': 'Pesticide 2', 'value': 0, 'result_type': 'numeric', 'choices': u'', 'hidden': False, 'unit': ''}
+    >>> pest3 = {'keyword': 'pest3', 'title': 'Pesticide 3', 'value': 0, 'result_type': 'numeric', 'choices': u'', 'hidden': False, 'unit': ''}
     >>> interims = [pest1, pest2, pest3]
     >>> interim_calc.setInterimFields(interims)
     >>> self.assertEqual(interim_calc.getInterimFields(), interims)

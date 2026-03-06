@@ -54,9 +54,9 @@ We need to create some basic objects for the test:
     >>> supplier = api.create(setup.suppliers, "Supplier", Name="Naralabs")
 
     >>> interim_calc = api.create(calculations, 'Calculation', title='Test-Total-Pest')
-    >>> pest1 = {'keyword': 'pest1', 'title': 'Pesticide 1', 'value': 12.3, 'type': 'int', 'hidden': False, 'unit': ''}
-    >>> pest2 = {'keyword': 'pest2', 'title': 'Pesticide 2', 'value': 14.89, 'type': 'int', 'hidden': False, 'unit': ''}
-    >>> pest3 = {'keyword': 'pest3', 'title': 'Pesticide 3', 'value': 16.82, 'type': 'int', 'hidden': False, 'unit': ''}
+    >>> pest1 = {'keyword': 'pest1', 'title': 'Pesticide 1', 'value': 12.3, 'result_type': 'numeric', 'choices': u'', 'hidden': False, 'unit': ''}
+    >>> pest2 = {'keyword': 'pest2', 'title': 'Pesticide 2', 'value': 14.89, 'result_type': 'numeric', 'choices': u'', 'hidden': False, 'unit': ''}
+    >>> pest3 = {'keyword': 'pest3', 'title': 'Pesticide 3', 'value': 16.82, 'result_type': 'numeric', 'choices': u'', 'hidden': False, 'unit': ''}
     >>> interims = [pest1, pest2, pest3]
     >>> interim_calc.setInterimFields(interims)
     >>> self.assertEqual(interim_calc.getInterimFields(), interims)
