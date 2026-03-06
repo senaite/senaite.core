@@ -349,18 +349,29 @@ def migrate_calculation_to_dx(src, destination=None):
     # change the ID *after* the original object was removed
     migrator.copy_id(src, target)
 
-    # We need to migrate all Analyses that linked to this Calculation!
+    # Stamp the snapshotted calculation data onto every Analysis that
+    # referenced this Calculation via the old AT reference_catalog entry.
+    # We set each field directly to avoid triggering the new setCalculation
+    # side-effects (interim merging) on already-initialized analyses and to
+    # avoid any dependency on the old Calculation AT field still existing.
     rc = api.get_tool("reference_catalog")
     refs = rc.getBackReferences(src, relationship="AnalysisCalculation")
+    calc_uid = api.get_uid(target)
+    calc_formula = target.getMinifiedFormula()
+    calc_imports = json.dumps(target.getPythonImports() or [])
+    calc_version = api.get_version(target) or 0
     for ref in refs:
         analysis = ref.getSourceObject()
         if not analysis:
-            # This can happen for Analyses in stale Samples, i.e. those with
+            # This can happen for Analyses in stale Samples, i.e. those
             # with a temporary ID.
             logger.warn("Cannot migrate Analysis {}. No source object found."
                         .format(ref))
             continue
-        analysis.setCalculation(target)
+        analysis.getField("CalculationUID").set(analysis, calc_uid)
+        analysis.getField("CalculationFormula").set(analysis, calc_formula)
+        analysis.getField("CalculationImports").set(analysis, calc_imports)
+        analysis.getField("CalculationVersion").set(analysis, calc_version)
         analysis.deleteReferences(relationship="AnalysisCalculation")
 
     logger.info("Migrated Calculation from %s -> %s" % (src, target))
