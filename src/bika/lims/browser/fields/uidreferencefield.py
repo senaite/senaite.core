@@ -29,12 +29,10 @@ from persistent.dict import PersistentDict
 from persistent.list import PersistentList
 from Products.Archetypes.Field import Field
 from Products.Archetypes.Field import StringField
-from senaite.core.interfaces import IVersionWrapper
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
 
 BACKREFS_STORAGE = "bika.lims.browser.fields.uidreferencefield.backreferences"
-VERSION_STORAGE = "bika.lims.browser.fields.uidreferencefield.versions"
 
 
 class ReferenceException(Exception):
@@ -52,16 +50,11 @@ class UIDReferenceField(StringField):
         'default': '',
         'default_content_type': 'text/plain',
         'relationship': '',
-        'version_aware': False,
     })
 
     implements(IUIDReferenceField)
 
     security = ClassSecurityInfo()
-
-    @security.public
-    def is_version_aware(self):
-        return getattr(self, "version_aware", False)
 
     @property
     def keep_backreferences(self):
@@ -155,22 +148,6 @@ class UIDReferenceField(StringField):
         if full_objects:
             references = [api.get_object(ref) for ref in references]
 
-        # handle version aware references
-        if self.is_version_aware():
-            versioned_refs = []
-            versions = get_version_storage(context)
-            for ref in references:
-                ref = api.get_object(ref)
-                uid = api.get_uid(ref)
-                ref_version = versions.get(uid)
-                wrapper = IVersionWrapper(ref)
-                if ref_version == -1:
-                    wrapper.load_latest_version()
-                else:
-                    wrapper.load_version(ref_version)
-                versioned_refs.append(wrapper)
-            references = versioned_refs
-
         if self.multiValued:
             return references
         elif references:
@@ -253,14 +230,6 @@ class UIDReferenceField(StringField):
         uids = [self.get_uid(item) for item in value]
         uids = filter(None, uids)
 
-        # handle version aware references
-        if self.is_version_aware():
-            version_storage = get_version_storage(context)
-            for uid in uids:
-                target = api.get_object(uid)
-                version = api.get_version(target)
-                version_storage[uid] = version
-
         # Back-reference current object to referenced objects
         if self.keep_backreferences:
             self._set_backreferences(context, uids, **kwargs)
@@ -276,13 +245,6 @@ def get_storage(context):
     if annotation.get(BACKREFS_STORAGE) is None:
         annotation[BACKREFS_STORAGE] = PersistentDict()
     return annotation[BACKREFS_STORAGE]
-
-
-def get_version_storage(context):
-    annotation = IAnnotations(context)
-    if annotation.get(VERSION_STORAGE) is None:
-        annotation[VERSION_STORAGE] = PersistentDict()
-    return annotation[VERSION_STORAGE]
 
 
 def _get_catalog_for_uid(uid):
