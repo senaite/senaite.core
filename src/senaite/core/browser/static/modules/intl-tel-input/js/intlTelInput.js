@@ -1,5 +1,5 @@
 /*
- * International Telephone Input v25.12.5
+ * International Telephone Input v25.15.1
  * https://github.com/jackocnr/intl-tel-input.git
  * Licensed under the MIT license
  */
@@ -2277,6 +2277,7 @@ var factoryOutput = (() => {
   var UI = class {
     constructor(input, options, id2) {
       this.highlightedItem = null;
+      this.selectedItem = null;
       input.dataset.intlTelInputId = id2.toString();
       this.telInput = input;
       this.options = options;
@@ -2538,8 +2539,7 @@ var factoryOutput = (() => {
       for (let i = 0; i < this.countries.length; i++) {
         const c = this.countries[i];
         const liClass = buildClassNames({
-          [CLASSES.COUNTRY_ITEM]: true,
-          [CLASSES.HIGHLIGHT]: i === 0
+          [CLASSES.COUNTRY_ITEM]: true
         });
         const listItem = createEl("li", {
           id: `iti-${this.id}__item-${c.iso2}`,
@@ -2642,17 +2642,15 @@ var factoryOutput = (() => {
         container.scrollTop = newScrollTop - heightDifference;
       }
     }
-    //* Remove highlighting from other list items and highlight the given item.
+    //* Remove highlighting from the previous list item and highlight the new one.
     highlightListItem(listItem, shouldFocus) {
       const prevItem = this.highlightedItem;
       if (prevItem) {
         prevItem.classList.remove(CLASSES.HIGHLIGHT);
-        prevItem.setAttribute(ARIA.SELECTED, "false");
       }
       this.highlightedItem = listItem;
       if (this.highlightedItem) {
         this.highlightedItem.classList.add(CLASSES.HIGHLIGHT);
-        this.highlightedItem.setAttribute(ARIA.SELECTED, "true");
         if (this.options.countrySearch) {
           const activeDescendant = this.highlightedItem.getAttribute("id") || "";
           this.searchInput.setAttribute(ARIA.ACTIVE_DESCENDANT, activeDescendant);
@@ -2660,6 +2658,21 @@ var factoryOutput = (() => {
       }
       if (shouldFocus) {
         this.highlightedItem.focus();
+      }
+    }
+    updateSelectedItem(iso2) {
+      if (this.selectedItem && this.selectedItem.dataset.countryCode !== iso2) {
+        this.selectedItem.setAttribute(ARIA.SELECTED, "false");
+        this.selectedItem = null;
+      }
+      if (iso2 && !this.selectedItem) {
+        const newListItem = this.countryList.querySelector(
+          `[data-country-code="${iso2}"]`
+        );
+        if (newListItem) {
+          newListItem.setAttribute(ARIA.SELECTED, "true");
+          this.selectedItem = newListItem;
+        }
       }
     }
     //* Country search: Filter the country list to the given array of countries.
@@ -2713,6 +2726,7 @@ var factoryOutput = (() => {
       this.hiddenInput = null;
       this.hiddenInputCountry = null;
       this.highlightedItem = null;
+      this.selectedItem = null;
       for (const c of this.countries) {
         delete c.nodeById[this.id];
       }
@@ -2748,11 +2762,11 @@ var factoryOutput = (() => {
       }
     }
   };
-  var processDialCodes = (countries, options) => {
+  var processDialCodes = (countries) => {
     const dialCodes = /* @__PURE__ */ new Set();
     let dialCodeMaxLen = 0;
     const dialCodeToIso2Map = {};
-    const _addToDialCodeMap = (iso2, dialCode, priority) => {
+    const _addToDialCodeMap = (iso2, dialCode) => {
       if (!iso2 || !dialCode) {
         return;
       }
@@ -2766,10 +2780,10 @@ var factoryOutput = (() => {
       if (iso2List.includes(iso2)) {
         return;
       }
-      const index = priority !== void 0 ? priority : iso2List.length;
-      iso2List[index] = iso2;
+      iso2List.push(iso2);
     };
-    for (const c of countries) {
+    const countriesSortedByPriority = [...countries].sort((a, b) => a.priority - b.priority);
+    for (const c of countriesSortedByPriority) {
       if (!dialCodes.has(c.dialCode)) {
         dialCodes.add(c.dialCode);
       }
@@ -2777,14 +2791,7 @@ var factoryOutput = (() => {
         const partialDialCode = c.dialCode.substring(0, k);
         _addToDialCodeMap(c.iso2, partialDialCode);
       }
-      _addToDialCodeMap(c.iso2, c.dialCode, c.priority);
-    }
-    if (options.onlyCountries.length || options.excludeCountries.length) {
-      dialCodes.forEach((dialCode) => {
-        dialCodeToIso2Map[dialCode] = dialCodeToIso2Map[dialCode].filter(Boolean);
-      });
-    }
-    for (const c of countries) {
+      _addToDialCodeMap(c.iso2, c.dialCode);
       if (c.areaCodes) {
         const rootIso2Code = dialCodeToIso2Map[c.dialCode][0];
         for (const areaCode of c.areaCodes) {
@@ -2919,8 +2926,7 @@ var factoryOutput = (() => {
       this.promise = this._createInitPromises();
       this.countries = processAllCountries(this.options);
       const { dialCodes, dialCodeMaxLen, dialCodeToIso2Map } = processDialCodes(
-        this.countries,
-        this.options
+        this.countries
       );
       this.dialCodes = dialCodes;
       this.dialCodeMaxLen = dialCodeMaxLen;
@@ -2930,6 +2936,45 @@ var factoryOutput = (() => {
     }
     static _getIsAndroid() {
       return typeof navigator !== "undefined" ? /Android/i.test(navigator.userAgent) : false;
+    }
+    _updateNumeralSet(str) {
+      if (/[\u0660-\u0669]/.test(str)) {
+        this.userNumeralSet = "arabic-indic";
+      } else if (/[\u06F0-\u06F9]/.test(str)) {
+        this.userNumeralSet = "persian";
+      } else {
+        this.userNumeralSet = "ascii";
+      }
+    }
+    _mapAsciiToUserNumerals(str) {
+      if (!this.userNumeralSet) {
+        this._updateNumeralSet(this.ui.telInput.value);
+      }
+      if (this.userNumeralSet === "ascii") {
+        return str;
+      }
+      const base = this.userNumeralSet === "arabic-indic" ? 1632 : 1776;
+      return str.replace(/[0-9]/g, (d) => String.fromCharCode(base + Number(d)));
+    }
+    // Normalize Eastern Arabic (U+0660-0669) and Persian/Extended Arabic-Indic (U+06F0-06F9) numerals to ASCII 0-9
+    _normaliseNumerals(str) {
+      if (!str) {
+        return "";
+      }
+      this._updateNumeralSet(str);
+      if (this.userNumeralSet === "ascii") {
+        return str;
+      }
+      const base = this.userNumeralSet === "arabic-indic" ? 1632 : 1776;
+      const regex = this.userNumeralSet === "arabic-indic" ? /[\u0660-\u0669]/g : /[\u06F0-\u06F9]/g;
+      return str.replace(regex, (ch) => String.fromCharCode(48 + (ch.charCodeAt(0) - base)));
+    }
+    _getTelInputValue() {
+      const inputValue = this.ui.telInput.value.trim();
+      return this._normaliseNumerals(inputValue);
+    }
+    _setTelInputValue(asciiValue) {
+      this.ui.telInput.value = this._mapAsciiToUserNumerals(asciiValue);
     }
     _createInitPromises() {
       const autoCountryPromise = new Promise((resolve, reject) => {
@@ -2965,8 +3010,9 @@ var factoryOutput = (() => {
     //* 1. Extracting a dial code from the given number
     //* 2. Using explicit initialCountry
     _setInitialState(overrideAutoCountry = false) {
-      const attributeValue = this.ui.telInput.getAttribute("value");
-      const inputValue = this.ui.telInput.value;
+      const attributeValueRaw = this.ui.telInput.getAttribute("value");
+      const attributeValue = this._normaliseNumerals(attributeValueRaw);
+      const inputValue = this._getTelInputValue();
       const useAttribute = attributeValue && attributeValue.startsWith("+") && (!inputValue || !inputValue.startsWith("+"));
       const val = useAttribute ? attributeValue : inputValue;
       const dialCode = this._getDialCode(val);
@@ -3137,35 +3183,34 @@ var factoryOutput = (() => {
         countrySearch
       } = this.options;
       let userOverrideFormatting = false;
-      if (REGEX.ALPHA_UNICODE.test(this.ui.telInput.value)) {
+      if (REGEX.ALPHA_UNICODE.test(this._getTelInputValue())) {
         userOverrideFormatting = true;
       }
       const handleInputEvent = (e) => {
+        const inputValue = this._getTelInputValue();
         if (this.isAndroid && e?.data === "+" && separateDialCode && allowDropdown && countrySearch) {
           const currentCaretPos = this.ui.telInput.selectionStart || 0;
-          const valueBeforeCaret = this.ui.telInput.value.substring(
-            0,
-            currentCaretPos - 1
-          );
-          const valueAfterCaret = this.ui.telInput.value.substring(currentCaretPos);
-          this.ui.telInput.value = valueBeforeCaret + valueAfterCaret;
+          const valueBeforeCaret = inputValue.substring(0, currentCaretPos - 1);
+          const valueAfterCaret = inputValue.substring(currentCaretPos);
+          this._setTelInputValue(valueBeforeCaret + valueAfterCaret);
           this._openDropdownWithPlus();
           return;
         }
-        if (this._updateCountryFromNumber(this.ui.telInput.value)) {
+        if (this._updateCountryFromNumber(inputValue)) {
           this._triggerCountryChange();
         }
         const isFormattingChar = e?.data && REGEX.NON_PLUS_NUMERIC.test(e.data);
-        const isPaste = e?.inputType === INPUT_TYPES.PASTE && this.ui.telInput.value;
+        const isPaste = e?.inputType === INPUT_TYPES.PASTE && inputValue;
         if (isFormattingChar || isPaste && !strictMode) {
           userOverrideFormatting = true;
-        } else if (!REGEX.NON_PLUS_NUMERIC.test(this.ui.telInput.value)) {
+        } else if (!REGEX.NON_PLUS_NUMERIC.test(inputValue)) {
           userOverrideFormatting = false;
         }
         const isSetNumber = e?.detail && e.detail["isSetNumber"];
-        if (formatAsYouType && !userOverrideFormatting && !isSetNumber) {
+        const isAscii = this.userNumeralSet === "ascii";
+        if (formatAsYouType && !userOverrideFormatting && !isSetNumber && isAscii) {
           const currentCaretPos = this.ui.telInput.selectionStart || 0;
-          const valueBeforeCaret = this.ui.telInput.value.substring(
+          const valueBeforeCaret = inputValue.substring(
             0,
             currentCaretPos
           );
@@ -3177,7 +3222,7 @@ var factoryOutput = (() => {
           const fullNumber = this._getFullNumber();
           const formattedValue = formatNumberAsYouType(
             fullNumber,
-            this.ui.telInput.value,
+            inputValue,
             intlTelInput.utils,
             this.selectedCountryData,
             this.options.separateDialCode
@@ -3188,7 +3233,7 @@ var factoryOutput = (() => {
             currentCaretPos,
             isDeleteForwards
           );
-          this.ui.telInput.value = formattedValue;
+          this._setTelInputValue(formattedValue);
           this.ui.telInput.setSelectionRange(newCaretPos, newCaretPos);
         }
       };
@@ -3211,12 +3256,18 @@ var factoryOutput = (() => {
               return;
             }
             if (strictMode) {
-              const value = this.ui.telInput.value;
-              const alreadyHasPlus = value.startsWith("+");
+              const inputValue = this._getTelInputValue();
+              const alreadyHasPlus = inputValue.startsWith("+");
               const isInitialPlus = !alreadyHasPlus && this.ui.telInput.selectionStart === 0 && e.key === "+";
-              const isNumeric = /^[0-9]$/.test(e.key);
+              const normalisedKey = this._normaliseNumerals(e.key);
+              const isNumeric = /^[0-9]$/.test(normalisedKey);
               const isAllowedChar = separateDialCode ? isNumeric : isInitialPlus || isNumeric;
-              const newValue = value.slice(0, this.ui.telInput.selectionStart) + e.key + value.slice(this.ui.telInput.selectionEnd);
+              const input = this.ui.telInput;
+              const selStart = input.selectionStart;
+              const selEnd = input.selectionEnd;
+              const before = inputValue.slice(0, selStart);
+              const after = inputValue.slice(selEnd);
+              const newValue = before + e.key + after;
               const newFullNumber = this._getFullNumber(newValue);
               const coreNumber = intlTelInput.utils.getCoreNumber(
                 newFullNumber,
@@ -3243,34 +3294,38 @@ var factoryOutput = (() => {
           const input = this.ui.telInput;
           const selStart = input.selectionStart;
           const selEnd = input.selectionEnd;
-          const before = input.value.slice(0, selStart);
-          const after = input.value.slice(selEnd);
+          const inputValue = this._getTelInputValue();
+          const before = inputValue.slice(0, selStart);
+          const after = inputValue.slice(selEnd);
           const iso2 = this.selectedCountryData.iso2;
-          const pasted = e.clipboardData.getData("text");
+          const pastedRaw = e.clipboardData.getData("text");
+          const pasted = this._normaliseNumerals(pastedRaw);
           const initialCharSelected = selStart === 0 && selEnd > 0;
-          const allowLeadingPlus = !input.value.startsWith("+") || initialCharSelected;
+          const allowLeadingPlus = !inputValue.startsWith("+") || initialCharSelected;
           const allowedChars = pasted.replace(REGEX.NON_PLUS_NUMERIC_GLOBAL, "");
           const hasLeadingPlus = allowedChars.startsWith("+");
           const numerics = allowedChars.replace(/\+/g, "");
           const sanitised = hasLeadingPlus && allowLeadingPlus ? `+${numerics}` : numerics;
           let newVal = before + sanitised + after;
-          let coreNumber = intlTelInput.utils.getCoreNumber(newVal, iso2);
-          while (coreNumber.length === 0 && newVal.length > 0) {
-            newVal = newVal.slice(0, -1);
-            coreNumber = intlTelInput.utils.getCoreNumber(newVal, iso2);
-          }
-          if (!coreNumber) {
-            return;
-          }
-          if (this.maxCoreNumberLength && coreNumber.length > this.maxCoreNumberLength) {
-            if (input.selectionEnd === input.value.length) {
-              const trimLength = coreNumber.length - this.maxCoreNumberLength;
-              newVal = newVal.slice(0, newVal.length - trimLength);
-            } else {
+          if (newVal.length > 5) {
+            let coreNumber = intlTelInput.utils.getCoreNumber(newVal, iso2);
+            while (coreNumber.length === 0 && newVal.length > 0) {
+              newVal = newVal.slice(0, -1);
+              coreNumber = intlTelInput.utils.getCoreNumber(newVal, iso2);
+            }
+            if (!coreNumber) {
               return;
             }
+            if (this.maxCoreNumberLength && coreNumber.length > this.maxCoreNumberLength) {
+              if (input.selectionEnd === inputValue.length) {
+                const trimLength = coreNumber.length - this.maxCoreNumberLength;
+                newVal = newVal.slice(0, newVal.length - trimLength);
+              } else {
+                return;
+              }
+            }
           }
-          input.value = newVal;
+          this._setTelInputValue(newVal);
           const caretPos = selStart + sanitised.length;
           input.setSelectionRange(caretPos, caretPos);
           input.dispatchEvent(new InputEvent("input", { bubbles: true }));
@@ -3421,6 +3476,7 @@ var factoryOutput = (() => {
             this._handleEnterKey();
           } else if (e.key === KEYS.ESC) {
             this._closeDropdown();
+            this.ui.selectedCountry.focus();
           }
         }
         if (!this.options.countrySearch && REGEX.HIDDEN_SEARCH_CHAR.test(e.key)) {
@@ -3521,7 +3577,7 @@ var factoryOutput = (() => {
         );
       }
       number = this._beforeSetNumber(number);
-      this.ui.telInput.value = number;
+      this._setTelInputValue(number);
     }
     //* Check if need to select a new country based on the given number
     //* Note: called from _setInitialState, keyup handler, setNumber.
@@ -3599,11 +3655,14 @@ var factoryOutput = (() => {
       }
       return null;
     }
-    //* Update the selected country, dial code (if separateDialCode), placeholder, title, and active list item.
+    //* Update the selected country, dial code (if separateDialCode), placeholder, title, and selected list item.
     //* Note: called from _setInitialState, _updateCountryFromNumber, _selectListItem, setCountry.
     _setCountry(iso2) {
-      const { separateDialCode, showFlags, i18n } = this.options;
+      const { separateDialCode, showFlags, i18n, allowDropdown } = this.options;
       const prevIso2 = this.selectedCountryData.iso2 || "";
+      if (allowDropdown) {
+        this.ui.updateSelectedItem(iso2);
+      }
       this.selectedCountryData = iso2 ? this.countryByIso2.get(iso2) : {};
       if (this.selectedCountryData.iso2) {
         this.defaultCountry = this.selectedCountryData.iso2;
@@ -3695,7 +3754,8 @@ var factoryOutput = (() => {
       const dialCode = listItem.dataset[DATA_KEYS.DIAL_CODE];
       this._updateDialCode(dialCode);
       if (this.options.formatOnDisplay) {
-        this._updateValFromNumber(this.ui.telInput.value);
+        const inputValue = this._getTelInputValue();
+        this._updateValFromNumber(inputValue);
       }
       this.ui.telInput.focus();
       if (countryChanged) {
@@ -3709,11 +3769,12 @@ var factoryOutput = (() => {
       }
       this.ui.dropdownContent.classList.add(CLASSES.HIDE);
       this.ui.selectedCountry.setAttribute(ARIA.EXPANDED, "false");
-      if (this.ui.highlightedItem) {
-        this.ui.highlightedItem.setAttribute(ARIA.SELECTED, "false");
-      }
       if (this.options.countrySearch) {
         this.ui.searchInput.removeAttribute(ARIA.ACTIVE_DESCENDANT);
+        if (this.ui.highlightedItem) {
+          this.ui.highlightedItem.classList.remove(CLASSES.HIGHLIGHT);
+          this.ui.highlightedItem = null;
+        }
       }
       this.ui.dropdownArrow.classList.remove(CLASSES.ARROW_UP);
       this.dropdownAbortController.abort();
@@ -3726,7 +3787,7 @@ var factoryOutput = (() => {
     //* Replace any existing dial code with the new one
     //* Note: called from _selectListItem and setCountry
     _updateDialCode(newDialCodeBare) {
-      const inputVal = this.ui.telInput.value;
+      const inputVal = this._getTelInputValue();
       const newDialCode = `+${newDialCodeBare}`;
       let newNumber;
       if (inputVal.startsWith("+")) {
@@ -3736,7 +3797,7 @@ var factoryOutput = (() => {
         } else {
           newNumber = newDialCode;
         }
-        this.ui.telInput.value = newNumber;
+        this._setTelInputValue(newNumber);
       }
     }
     //* Try and extract a valid international dial code from a full telephone number.
@@ -3773,7 +3834,7 @@ var factoryOutput = (() => {
     }
     //* Get the input val, adding the dial code if separateDialCode is enabled.
     _getFullNumber(overrideVal) {
-      const val = overrideVal || this.ui.telInput.value.trim();
+      const val = overrideVal ? this._normaliseNumerals(overrideVal) : this._getTelInputValue();
       const { dialCode } = this.selectedCountryData;
       let prefix;
       const numericVal = getNumeric(val);
@@ -3816,8 +3877,9 @@ var factoryOutput = (() => {
     //* This is called when the utils request completes.
     handleUtils() {
       if (intlTelInput.utils) {
-        if (this.ui.telInput.value) {
-          this._updateValFromNumber(this.ui.telInput.value);
+        const inputValue = this._getTelInputValue();
+        if (inputValue) {
+          this._updateValFromNumber(inputValue);
         }
         if (this.selectedCountryData.iso2) {
           this._updatePlaceholder();
@@ -3860,11 +3922,13 @@ var factoryOutput = (() => {
     getNumber(format) {
       if (intlTelInput.utils) {
         const { iso2 } = this.selectedCountryData;
-        return intlTelInput.utils.formatNumber(
-          this._getFullNumber(),
+        const fullNumber = this._getFullNumber();
+        const formattedNumber = intlTelInput.utils.formatNumber(
+          fullNumber,
           iso2,
           format
         );
+        return this._mapAsciiToUserNumerals(formattedNumber);
       }
       return "";
     }
@@ -3952,15 +4016,17 @@ var factoryOutput = (() => {
         this._setCountry(iso2Lower);
         this._updateDialCode(this.selectedCountryData.dialCode);
         if (this.options.formatOnDisplay) {
-          this._updateValFromNumber(this.ui.telInput.value);
+          const inputValue = this._getTelInputValue();
+          this._updateValFromNumber(inputValue);
         }
         this._triggerCountryChange();
       }
     }
     //* Set the input value and update the country.
     setNumber(number) {
-      const countryChanged = this._updateCountryFromNumber(number);
-      this._updateValFromNumber(number);
+      const normalisedNumber = this._normaliseNumerals(number);
+      const countryChanged = this._updateCountryFromNumber(normalisedNumber);
+      this._updateValFromNumber(normalisedNumber);
       if (countryChanged) {
         this._triggerCountryChange();
       }
@@ -4045,7 +4111,7 @@ var factoryOutput = (() => {
       attachUtils,
       startedLoadingUtilsScript: false,
       startedLoadingAutoCountry: false,
-      version: "25.12.5"
+      version: "25.15.1"
     }
   );
   var intl_tel_input_default = intlTelInput;

@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.3.0 (2025-12-10)
+ * TinyMCE version 8.3.2 (2026-01-14)
  */
 
 (function () {
@@ -29453,6 +29453,7 @@
         attachUiMotherships(editor, uiRoot, uiRefs);
         editor.on('PostRender', () => {
             OuterContainer.setSidebar(outerContainer, rawUiConfig.sidebar, getSidebarShow(editor));
+            OuterContainer.setViews(outerContainer, rawUiConfig.views);
         });
         // TINY-10343: Using `SkinLoaded` instead of `PostRender` because if the skin loading takes too long you run in to rendering problems since things are measured before the CSS is being applied
         editor.on('SkinLoaded', () => {
@@ -29462,7 +29463,6 @@
             setToolbar(editor, uiRefs, rawUiConfig, backstage);
             lastToolbarWidth.set(editor.getWin().innerWidth);
             OuterContainer.setMenubar(outerContainer, identifyMenus(editor, rawUiConfig));
-            OuterContainer.setViews(outerContainer, rawUiConfig.views);
             setupEvents$1(editor, uiRefs);
         });
         const socket = OuterContainer.getSocket(outerContainer).getOrDie('Could not find expected socket element');
