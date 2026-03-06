@@ -400,6 +400,7 @@ class TestCalculations(DataTestCase):
                 interims.append({'keyword': k, 'title': k, 'value': v,
                                  'hidden': False,
                                  'result_type': result_type,
+                                 'choices': u'',
                                  'unit': ''})
             self.calculation.setInterimFields(interims)
             self.assertTrue(self.calculation.getInterimFields() == interims)
@@ -478,8 +479,8 @@ class TestCalculations(DataTestCase):
             interims = []
             for k, v in f['interims'].items():
                 interims.append({'keyword': k, 'title': k, 'value': v,
-                                 'hidden': False, 'type': 'int',
-                                 'unit': ''})
+                                 'hidden': False, 'result_type': 'numeric',
+                                 'choices': u'', 'unit': ''})
             self.calculation.setInterimFields(interims)
             self.assertEqual(self.calculation.getInterimFields(), interims)
 
@@ -531,11 +532,13 @@ class TestCalculations(DataTestCase):
                     for i in interims:
                         if i['keyword'] in f['interims']:
                             ival = float(f['interims'][i['keyword']])
+                            result_type = i.get(
+                                'result_type', i.get('type', ''))
                             intermap.append({'keyword': i['keyword'],
                                              'value': ival,
                                              'title': i['title'],
                                              'hidden': i['hidden'],
-                                             'type': i['type'],
+                                             'result_type': result_type,
                                              'unit': i['unit']})
                         else:
                             intermap.append(i)
@@ -560,8 +563,8 @@ class TestCalculations(DataTestCase):
             interims = []
             for k, v in f['interims'].items():
                 interims.append({'keyword': k, 'title': k, 'value': v,
-                                 'hidden': False, 'type': 'int',
-                                 'unit': ''})
+                                 'hidden': False, 'result_type': 'numeric',
+                                 'choices': u'', 'unit': ''})
             self.calculation.setInterimFields(interims)
             self.assertEqual(self.calculation.getInterimFields(), interims)
 
@@ -615,11 +618,13 @@ class TestCalculations(DataTestCase):
                     for i in interims:
                         if i['keyword'] in f['interims']:
                             ival = float(f['interims'][i['keyword']])
+                            result_type = i.get(
+                                'result_type', i.get('type', ''))
                             intermap.append({'keyword': i['keyword'],
                                              'value': ival,
                                              'title': i['title'],
                                              'hidden': i['hidden'],
-                                             'type': i['type'],
+                                             'result_type': result_type,
                                              'unit': i['unit']})
                         else:
                             intermap.append(i)
