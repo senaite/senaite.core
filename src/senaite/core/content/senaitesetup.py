@@ -1083,39 +1083,43 @@ class ISetupSchema(model.Schema):
         vocabulary=schema.vocabulary.SimpleVocabulary([
             schema.vocabulary.SimpleTerm("None", "None", _(u"None")),
             schema.vocabulary.SimpleTerm("register", "register",
-                                          _(u"Register")),
+                                         _(u"Register")),
             schema.vocabulary.SimpleTerm("receive", "receive", _(u"Receive")),
         ]),
         required=False,
         default="None",
     )
 
-    auto_sticker_template = schema.TextLine(
+    auto_sticker_template = schema.Choice(
         title=_(u"Default Sticker Template"),
         description=_(
             u"Select the default sticker template used for automatic printing."
         ),
+        vocabulary="senaite.core.vocabularies.stickers",
+        default=u"Code_128_1x48mm.pt",
         required=False,
     )
 
-    small_sticker_template = schema.TextLine(
+    small_sticker_template = schema.Choice(
         title=_(u"Small Sticker Template"),
         description=_(
             u"Choose the default template for 'small' stickers. Note: "
             u"Sample-specific 'small' stickers are configured based on their "
             u"sample type."
         ),
+        vocabulary="senaite.core.vocabularies.stickers",
         default=u"Code_128_1x48mm.pt",
         required=False,
     )
 
-    large_sticker_template = schema.TextLine(
+    large_sticker_template = schema.Choice(
         title=_(u"Large Sticker Template"),
         description=_(
             u"Choose the default template for 'large' stickers. Note: "
             u"Sample-specific 'large' stickers are configured based on their "
             u"sample type."
         ),
+        vocabulary="senaite.core.vocabularies.stickers",
         default=u"Code_128_1x72mm.pt",
         required=False,
     )
