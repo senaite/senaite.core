@@ -195,7 +195,7 @@ window.SiteView = class SiteView {
     this.open_iframe_edit_modal(url, title, edit_view);
   }
 
-  hide_iframe_chrome(doc) {
+  isolate_content_area(doc) {
     if (!doc || !doc.body) return;
 
     // AT edit forms use #content; Dexterity forms have #content-core
@@ -313,15 +313,16 @@ window.SiteView = class SiteView {
         const is_edit_form = edit_view === "edit";
         if (!is_edit_form) {
           // Non-edit view (e.g. sample view, manage_results): always hide
-          // chrome and keep the modal open until the user closes it manually.
-          this.hide_iframe_chrome(iwin.document);
+          // surrounding page elements and keep the modal open until the
+          // user closes it manually.
+          this.isolate_content_area(iwin.document);
           $iframe.css("opacity", "1");
         } else if (href.match(/\/(@@)?(base_)?edit(\?.*)?$/)) {
           // Still on an edit form (AT uses base_edit as form action,
           // so a validation error lands on /base_edit not /edit) —
-          // hide chrome on every load
+          // isolate content on every load
           // (initial load and re-render on validation errors)
-          this.hide_iframe_chrome(iwin.document);
+          this.isolate_content_area(iwin.document);
           $iframe.css("opacity", "1");
         } else {
           // Navigated away from the edit form: save or cancel triggered
