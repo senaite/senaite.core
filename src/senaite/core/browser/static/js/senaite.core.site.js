@@ -235,6 +235,11 @@ window.SiteView = class SiteView {
     // below the last form field even when the form fills the viewport.
     doc.body.style.overflowY = "auto";
     content.style.paddingBottom = "30vh";
+
+    // Suppress pencil icons inside the iframe to prevent nested modals.
+    const style = doc.createElement("style");
+    style.textContent = ".iframe-edit-icon { display: none !important; }";
+    (doc.head || doc.body).appendChild(style);
   }
 
   inject_change_detector(iwin) {
