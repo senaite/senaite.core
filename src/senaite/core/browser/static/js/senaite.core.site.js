@@ -237,6 +237,34 @@ window.SiteView = class SiteView {
     content.style.paddingBottom = "30vh";
   }
 
+  inject_change_detector(iwin) {
+    // Detect form saves: any form submit where the triggering button is
+    // not a cancel action sends a postMessage to the parent.
+    try {
+      const idoc = iwin.document;
+      idoc.querySelectorAll("form").forEach(function(form) {
+        form.addEventListener("submit", function() {
+          const active = idoc.activeElement;
+          const label = active
+            ? (active.name || active.value || "").toLowerCase()
+            : "";
+          if (label.indexOf("cancel") >= 0) return;
+          window.parent.postMessage("senaite_changes_made", "*");
+        });
+      });
+      // Detect AJAX writes (non-GET requests = data mutation)
+      const orig_open = iwin.XMLHttpRequest.prototype.open;
+      iwin.XMLHttpRequest.prototype.open = function(method) {
+        if (method && method.toUpperCase() !== "GET") {
+          window.parent.postMessage("senaite_changes_made", "*");
+        }
+        return orig_open.apply(this, arguments);
+      };
+    } catch (ex) {
+      // Ignore cross-origin or access errors
+    }
+  }
+
   open_iframe_edit_modal(url, title, edit_view) {
     // edit_view controls the load behaviour:
     //   "edit" (default) — auto-close when the URL no longer looks like
@@ -316,6 +344,7 @@ window.SiteView = class SiteView {
           // surrounding page elements and keep the modal open until the
           // user closes it manually.
           this.isolate_content_area(iwin.document);
+          this.inject_change_detector(iwin);
           $iframe.css("opacity", "1");
         } else if (href.match(/\/(@@)?(base_)?edit(\?.*)?$/)) {
           // Still on an edit form (AT uses base_edit as form action,
@@ -323,6 +352,7 @@ window.SiteView = class SiteView {
           // isolate content on every load
           // (initial load and re-render on validation errors)
           this.isolate_content_area(iwin.document);
+          this.inject_change_detector(iwin);
           $iframe.css("opacity", "1");
         } else {
           // Navigated away from the edit form: save or cancel triggered
@@ -333,12 +363,23 @@ window.SiteView = class SiteView {
       }
     });
 
+    // Track whether changes were saved in the iframe.
+    // Set to true by postMessage from inject_change_detector().
+    let changes_made = false;
+    $(window).off("message.iframe_edit").on("message.iframe_edit", (ev) => {
+      if (ev.originalEvent.data === "senaite_changes_made") {
+        changes_made = true;
+      }
+    });
+
     $iframe.css("opacity", "0").attr("src", url);
 
-    // Reload the listing whenever the modal closes, regardless of how
-    // (save, cancel, ESC, X button). A single handler covers all paths.
+    // Reload only when changes were actually saved.
     $modal.off("hidden.bs.modal").on("hidden.bs.modal", () => {
-      window.location.reload();
+      $(window).off("message.iframe_edit");
+      if (changes_made) {
+        window.location.reload();
+      }
     });
 
     // Enable dragging and resizing once the modal is visible.
