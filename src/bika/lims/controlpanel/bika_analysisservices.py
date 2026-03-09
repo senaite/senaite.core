@@ -24,7 +24,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api import analysisservice as serviceapi
 from bika.lims.api.security import check_permission
-from bika.lims.browser.bika_listing import BikaListingView
+from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IAnalysisServices
 from senaite.core.permissions import AddAnalysisService
@@ -116,7 +116,7 @@ class AnalysisServiceCopy(BrowserView):
             self.request.response.redirect(self.context.absolute_url())
 
 
-class AnalysisServicesView(BikaListingView):
+class AnalysisServicesView(ControlPanelListingView):
     """Listing table view for Analysis Services
     """
     implements(IFolderContentsView, IViewView)

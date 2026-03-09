@@ -22,7 +22,7 @@ from collections import OrderedDict
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
+from senaite.core.browser.listing.base import ListingView
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
 from bika.lims.vocabularies import CatalogVocabulary
@@ -31,10 +31,12 @@ from senaite.core.interfaces import IContacts
 from zope.interface import implements
 
 
-class ClientContactsView(BikaListingView):
+class ClientContactsView(ListingView):
     """Client Contacts listing view
     """
     implements(IContacts)
+
+    edit_icon_column = "getFullname"
 
     def __init__(self, context, request):
         super(ClientContactsView, self).__init__(context, request)

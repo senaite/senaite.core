@@ -22,7 +22,7 @@ import collections
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.memoize.view import memoize
-from senaite.app.listing import ListingView
+from senaite.core.browser.listing.base import ListingView
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
@@ -43,6 +43,10 @@ class WorksheetsView(ListingView):
     """Listing View for Worksheets
     """
     template = ViewPageTemplateFile("templates/view.pt")
+
+    # Open the worksheet manage view instead of the generic /edit form.
+    # No URL suffix needed — the manage view is the default view.
+    edit_view = "manage_results"
 
     def __init__(self, context, request):
         super(WorksheetsView, self).__init__(context, request)

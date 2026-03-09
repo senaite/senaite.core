@@ -22,7 +22,7 @@ import collections
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
+from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IContainers
 from senaite.core.permissions import AddContainer
@@ -36,7 +36,7 @@ from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 
-class ContainersView(BikaListingView):
+class ContainersView(ControlPanelListingView):
 
     def __init__(self, context, request):
         super(ContainersView, self).__init__(context, request)

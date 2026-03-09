@@ -25,7 +25,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
-from bika.lims.browser.bika_listing import BikaListingView
+from senaite.core.browser.listing.base import ListingView
 from bika.lims.browser.chart.analyses import EvolutionChart
 from bika.lims.browser.resultsimport.autoimportlogs import AutoImportLogsView
 from bika.lims.content.instrumentmaintenancetask import \
@@ -44,7 +44,7 @@ from ZODB.POSException import POSKeyError
 from zope.interface import implements
 
 
-class InstrumentMaintenanceView(BikaListingView):
+class InstrumentMaintenanceView(ListingView):
     """Listing view for instrument maintenance tasks
     """
 
@@ -172,7 +172,7 @@ class InstrumentMaintenanceView(BikaListingView):
         return item
 
 
-class InstrumentCalibrationsView(BikaListingView):
+class InstrumentCalibrationsView(ListingView):
     """Listing view for instrument calibrations
     """
 
@@ -269,7 +269,7 @@ class InstrumentCalibrationsView(BikaListingView):
         return item
 
 
-class InstrumentValidationsView(BikaListingView):
+class InstrumentValidationsView(ListingView):
     """Listing view for instrument validations
     """
 
@@ -361,7 +361,7 @@ class InstrumentValidationsView(BikaListingView):
         return item
 
 
-class InstrumentScheduleView(BikaListingView):
+class InstrumentScheduleView(ListingView):
     """Listing view for instrument scheduled tasks
     """
 
@@ -616,12 +616,12 @@ class InstrumentReferenceAnalysesView(AnalysesView):
         item["replace"]["Instrument"] = get_link_for(instrument, tabindex="-1")
 
 
-class InstrumentCertificationsView(BikaListingView):
+class InstrumentCertificationsView(ListingView):
     """Listing view for instrument certifications
     """
 
     def __init__(self, context, request, **kwargs):
-        BikaListingView.__init__(self, context, request, **kwargs)
+        ListingView.__init__(self, context, request, **kwargs)
         self.catalog = SETUP_CATALOG
         self.contentFilter = {
             "portal_type": "InstrumentCertification",
@@ -769,7 +769,7 @@ class InstrumentAutoImportLogsView(AutoImportLogsView):
         self.pagesize = 30
 
 
-class InstrumentMultifileView(BikaListingView):
+class InstrumentMultifileView(ListingView):
     """Listing view for instrument multi files
     """
 
