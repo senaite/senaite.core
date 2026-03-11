@@ -520,11 +520,11 @@ linking time, so later edits to the Calculation do not affect it:
     >>> analysis.getCalculationImports() == calc4.getPythonImports()
     True
 
-The Analysis now inherits the Interim Fields of the Analysis Service and
-the Calculation, frozen at linking time:
+The Analysis now inherits the Interim Fields of the Calculation first, then
+the Analysis Service, frozen at linking time:
 
     >>> map(lambda x: x["keyword"], analysis.getInterimFields())
-    ['B', 'A']
+    ['A', 'B']
 
 But what happens if the Interim Fields of either the Analysis Service or the
 Calculation change and the AR is updated with the same Analysis Service?
@@ -561,12 +561,11 @@ The calculation should be still there:
     >>> analysis_calc
     <Calculation at /plone/setup/calculations/calculation-4>
 
-The existing Analysis retains the initial Interim Fields of the Analysis
-Service, together with the interim from the associated Calculation,
-because they were frozen at the time the Analysis was first linked:
+The existing Analysis retains the initial Interim Fields frozen at the time
+the Analysis was first linked (calc interims first, then service-only):
 
     >>> map(lambda x: x["keyword"], analysis.getInterimFields())
-    ['B', 'A']
+    ['A', 'B']
 
 
 Worksheets
