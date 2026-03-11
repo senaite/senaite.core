@@ -66,8 +66,11 @@ def create_analysis(context, source, **kwargs):
     # use "Analysis" as portal_type unless explicitly set
     portal_type = kwargs.pop("portal_type", "Analysis")
 
-    # initialize interims with those from the service if not explicitly set
-    interim_fields = kwargs.pop("InterimFields", service.getInterimFields())
+    # initialize interims from source directly:
+    #  - AnalysisService: service-only interims; setCalculation merges the
+    #    calc interims in below (service == source in this branch)
+    #  - Analysis: frozen interims from the source are used as-is
+    interim_fields = kwargs.pop("InterimFields", source.getInterimFields())
 
     # do not copy these fields from source
     skip_fields = kwargs.pop("skip", DEFAULT_SKIP_FIELDS)
