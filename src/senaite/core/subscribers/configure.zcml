@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configure xmlns="http://namespaces.zope.org/zope">
 
+  <!-- Heartbeat background thread: started once when Zope process starts.
+       Calls @@heartbeat on every PloneSite found in the app root.
+       Stopped cleanly on process shutdown via IProcessStopping. -->
+  <subscriber
+    for="zope.processlifetime.IProcessStarting"
+    handler=".heartbeat.on_process_starting"/>
+
+  <subscriber
+    for="zope.processlifetime.IProcessStopping"
+    handler=".heartbeat.on_process_stopping"/>
+
   <!-- Contact/LabContact *modified* event handler
        This subscriber updates the properties of the linked user.  -->
   <subscriber

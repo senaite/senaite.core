@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+  <!-- Periodic heartbeat view, called by the background thread.
+       Restricted to Manager to prevent external access; the thread
+       uses unrestrictedTraverse and bypasses this check. -->
+  <browser:page
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="heartbeat"
+      class=".view.HeartbeatView"
+      permission="cmf.ManagePortal"/>
+
+</configure>

@@ -26,6 +26,7 @@
   <include package=".form"/>
   <include package=".frontpage"/>
   <include package=".globals"/>
+  <include package=".heartbeat"/>
   <include package=".idserver"/>
   <include package=".install"/>
   <include package=".label"/>
