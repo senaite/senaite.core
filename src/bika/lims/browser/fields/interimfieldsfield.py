@@ -22,9 +22,6 @@ import copy
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
-from bika.lims.interfaces import IAnalysisService
-from bika.lims.interfaces import IRoutineAnalysis
-from bika.lims.interfaces.calculation import ICalculation
 from Products.Archetypes import DisplayList
 from Products.Archetypes.Registry import registerField
 from senaite.core.browser.fields.records import RecordsField
@@ -118,46 +115,9 @@ class InterimFieldsField(RecordsField):
         interims = RecordsField.get(self, instance, **kwargs) or []
 
         # make sure we have a copy of the interims field
-        interims = copy.deepcopy(interims)
-
-        # return "additional result values" for analysis service
-        if IAnalysisService.providedBy(instance):
-            return interims
-
-        # return calculation interims
-        if ICalculation.providedBy(instance):
-            return interims
-
-        # retain local interims for routine analysis
-        if IRoutineAnalysis.providedBy(instance) and interims:
-            return interims
-
-        # return merged service + calculation interims
-        calculation = instance.getCalculation()
-        if not calculation:
-            return interims
-
-        # Ensure the analysis includes the interims from the service
-        keys = map(lambda interim: interim["keyword"], interims)
-        # Avoid references from service interims to the calculation interims
-        calc_interims = copy.deepcopy(calculation.getInterimFields())
-        calc_interims = filter(lambda inter: inter["keyword"] not in keys,
-                               calc_interims)
-
-        return interims + calc_interims
+        return copy.deepcopy(interims)
 
     def set(self, instance, value, **kwargs):
-        # Freeze interims for Routine Analyses
-        if value and IRoutineAnalysis.providedBy(instance):
-            # get the calculation interims
-            calculation = instance.getCalculation()
-            if calculation:
-                keys = map(lambda v: v["keyword"], value)
-                for inter in calculation.getInterimFields():
-                    if inter.get("keyword") in keys:
-                        continue
-                    value.append(inter)
-
         RecordsField.set(self, instance, value, **kwargs)
 
 
