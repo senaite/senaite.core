@@ -264,8 +264,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         at the moment of linking.  Subsequent edits to the Calculation do not
         affect analyses that have already been linked.
 
-        Also freezes the Calculation's interim field definitions into the
-        analysis so that calculateResult needs no live Calculation lookup.
+        Merges the Calculation's interim fields into the analysis: calc interims
+        come first, then any interims already on the analysis whose keyword is
+        not in the calculation are appended after.  This ensures calculateResult
+        needs no live Calculation lookup.
         """
         if value:
             calc = api.get_object(value)
@@ -284,10 +286,17 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         self.getField("CalculationImports").set(self, imports)
         self.getField("CalculationVersion").set(self, version)
 
-        # Freeze interim field definitions from the calculation into the
-        # analysis so that calculateResult needs no live Calculation lookup.
-        interim_fields = copy.deepcopy(self.getInterimFields())
-        self.setInterimFields(interim_fields)
+        # Merge calc interims into the analysis: calc interims come first,
+        # then any service-only interims (keywords not in the calculation).
+        if not value:
+            return
+        calc_interims = copy.deepcopy(calc.getInterimFields())
+        calc_keywords = {i.get("keyword") for i in calc_interims}
+        service_only = [
+            i for i in copy.deepcopy(self.getInterimFields())
+            if i.get("keyword") not in calc_keywords
+        ]
+        self.setInterimFields(calc_interims + service_only)
 
     @deprecated('[1705] Currently returns the Analysis object itself.  If you '
                 'need to get the service, use getAnalysisService instead')
