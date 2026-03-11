@@ -2233,22 +2233,6 @@ def to_list(value):
     return list(value)
 
 
-def deep_get(dictionary, *keys):
-    """Get value from arbitrary nested dicts
-
-    :param dictionary: source dict
-    :param keys: enumeration of keys to traverse and return value
-    :returns: the retrieved value or None
-    """
-    current = dictionary
-    for key in keys:
-        if isinstance(current, dict):
-            current = current.get(key)
-        else:
-            return None
-    return current
-
-
 def validate(obj, invariants=True):
     """Validates the full object
 
