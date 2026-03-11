@@ -401,28 +401,6 @@ class Calculation(Container):
                 row["choices"] = u""
             new_value.append(row)
 
-        # extract the keywords from the new calculation interims
-        calculation_interim_keys = list(
-            filter(None,
-                   map(lambda i: i.get("keyword"),
-                       new_value)))
-
-        # update all service interims
-        for service in self.getCalculationDependants():
-            # get the interims of the dependant service
-            service_interims = service.getInterimFields()
-            # extract the keywords from the service interims
-            service_interim_keys = map(lambda i: i.get("keyword"),
-                                       service_interims)
-            # sync new interims from the calculation -> service
-            new_interims = set(calculation_interim_keys).difference(
-                set(service_interim_keys))
-            for key in new_interims:
-                new_interim = new_value[calculation_interim_keys.index(key)]
-                service_interims.append(new_interim)
-            if new_interims:
-                service.setInterimFields(service_interims)
-
         mutator = self.mutator("interim_fields")
         mutator(self, new_value)
 
