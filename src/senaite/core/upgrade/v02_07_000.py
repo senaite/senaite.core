@@ -225,6 +225,7 @@ def migrate_calculations_to_dx(tool):
         logger.warn("Cannot remove {}. Is not empty".format(origin))
 
     remove_calculations_from_repositorytool()
+    strip_calc_interims_from_services(tool)
     logger.info("Convert Calculations to Dexterity [DONE]")
 
 
@@ -374,6 +375,53 @@ def migrate_calculation_to_dx(src, destination=None):
         analysis.deleteReferences(relationship="AnalysisCalculation")
 
     logger.info("Migrated Calculation from %s -> %s" % (src, target))
+
+
+def strip_calc_interims_from_services(tool):
+    """Remove from each AnalysisService the interim fields that are already
+    defined by its assigned calculation.
+
+    After the AT->DX Calculation migration the system uses a clean separation:
+    calculation interims and service interims are stored independently.
+    When a sample analysis is created, calc interims come first and
+    service-only interims are appended. Services must therefore not carry
+    duplicates of the calc interims.
+    """
+    logger.info("Strip calculation interims from analysis services ...")
+    brains = api.search(
+        {"portal_type": "AnalysisService"}, SETUP_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info(
+                "Processing services {}/{}".format(num, total))
+        service = api.get_object(brain)
+        _strip_calc_interims(service)
+        service._p_deactivate()
+    logger.info(
+        "Strip calculation interims from analysis services [DONE]")
+
+
+def _strip_calc_interims(service):
+    """Remove calc-sourced interims from a single service in-place."""
+    calc = service.getCalculation()
+    if not calc:
+        return
+    calc_keywords = {
+        i.get("keyword") for i in calc.getInterimFields()
+    }
+    service_interims = service.getInterimFields()
+    filtered = [
+        i for i in service_interims
+        if i.get("keyword") not in calc_keywords
+    ]
+    if len(filtered) == len(service_interims):
+        return
+    service.setInterimFields(filtered)
+    logger.info(
+        "Stripped {0} calc interim(s) from service '{1}'".format(
+            len(service_interims) - len(filtered),
+            api.get_title(service)))
 
 
 def remove_calculations_from_repositorytool():
