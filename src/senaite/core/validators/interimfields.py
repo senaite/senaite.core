@@ -250,7 +250,7 @@ class InterimFieldsValidator(validator.SimpleFieldValidator):
                 for idx, v in enumerate(value or [], start=1)}
         rows = data.values()
         services = get_by_keyword([v['keyword'] for v in rows])
-        ctx_uid = self.context.UID
+        ctx_uid = api.get_uid(self.context)
         calcs = [api.get_object(c) for c in api.search(
             {"portal_type": "Calculation", "is_active": True},
             SETUP_CATALOG) if c.UID != ctx_uid]
