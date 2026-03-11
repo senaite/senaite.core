@@ -211,6 +211,19 @@ schema = schema.copy() + Schema((
 ))
 
 
+def _normalize_interim(interim):
+    """Normalize an interim dict for storage in an AT analysis field.
+
+    DX Calculation interims use ``apply_wide`` while the AT
+    ``InterimFieldsField`` expects ``wide``.  Renames the key so
+    that the value is not silently discarded.
+    """
+    row = dict(interim)
+    if "apply_wide" in row and "wide" not in row:
+        row["wide"] = row.pop("apply_wide")
+    return row
+
+
 class AbstractAnalysis(AbstractBaseAnalysis):
     security = ClassSecurityInfo()
     displayContentsTab = False
@@ -290,7 +303,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # then any service-only interims (keywords not in the calculation).
         if not value:
             return
-        calc_interims = copy.deepcopy(calc.getInterimFields())
+        calc_interims = [
+            _normalize_interim(i)
+            for i in copy.deepcopy(calc.getInterimFields())
+        ]
         calc_keywords = {i.get("keyword") for i in calc_interims}
         service_only = [
             i for i in copy.deepcopy(self.getInterimFields())
