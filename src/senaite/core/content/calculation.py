@@ -40,6 +40,7 @@ from senaite.core.schema.fields import DataGridRow
 from senaite.core.schema.interimfields import InterimFields
 from senaite.core.schema.uidreferencefield import UIDReferenceField
 from senaite.core.validators.formula import FormulaValidator
+from senaite.core.validators.imports import ImportsValidator
 from senaite.core.validators.interimfields import \
     InterimFieldsValidationErrorView
 from senaite.core.validators.interimfields import InterimFieldsValidator
@@ -623,6 +624,12 @@ validator.WidgetValidatorDiscriminators(
     field=ICalculationSchema["interim_fields"],
 )
 component.provideAdapter(InterimFieldsValidator)
+
+validator.WidgetValidatorDiscriminators(
+    ImportsValidator,
+    field=ICalculationSchema["imports"],
+)
+component.provideAdapter(ImportsValidator)
 
 error.ErrorViewDiscriminators(
     InterimFieldsValidationErrorView,
