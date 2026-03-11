@@ -123,24 +123,25 @@ def choices_and_restype_validator():
 
 
 def calcs_interims_validator(calcs):
-    """
-    any duplicated interimfield titles must share the same keyword
-    any duplicated interimfield keywords must share the same title
+    """Validate interim field keywords against other active calculations.
+
+    A keyword used in multiple calculations must have the same column title
+    in all of them, since it identifies a shared interim value.
+
+    Deactivated calculations and the calculation being edited are excluded.
     """
     def validate(row):
         keyword = api.safe_unicode(row.get("keyword", ""))
         title = api.safe_unicode(row.get("title"))
-        dup_keyword_title = dup_title_keyword = None
+        dup_keyword_title = None
+        dup_calc_title = None
         for calc in calcs:
-            calc_interims = calc.getInterimFields()
-            for i in calc_interims:
+            for i in calc.getInterimFields():
                 int_keyword = api.safe_unicode(i.get("keyword", ""))
                 int_title = api.safe_unicode(i.get("title", ""))
                 if int_keyword == keyword and int_title != title:
                     dup_keyword_title = int_title
-                    break
-                if int_title == title and int_keyword != keyword:
-                    dup_title_keyword = int_keyword
+                    dup_calc_title = api.safe_unicode(api.get_title(calc))
                     break
             else:
                 continue
@@ -149,19 +150,11 @@ def calcs_interims_validator(calcs):
             return fail("calcs_interims_validator",
                         translate(_(
                             u"calcs_interims_validator_dup_keyword_error",
-                            default=u"keyword '${keyword}' must have column title '${title}'",
+                            default=u"keyword '${keyword}' must have column title '${title}' (defined in '${calc}')",
                             mapping={
                                 "keyword": keyword,
-                                "title": dup_keyword_title}))
-                        )
-        if dup_title_keyword:
-            return fail("calcs_interims_validator",
-                        translate(_(
-                            u"calcs_interims_validator_dup_title_error",
-                            default=u"column title '${title}' must have keyword '${keyword}'",
-                            mapping={
-                                "keyword": dup_title_keyword,
-                                "title": title}))
+                                "title": dup_keyword_title,
+                                "calc": dup_calc_title}))
                         )
         return success(row)
     return validate
@@ -259,7 +252,8 @@ class InterimFieldsValidator(validator.SimpleFieldValidator):
         services = get_by_keyword([v['keyword'] for v in rows])
         ctx_uid = self.context.UID
         calcs = [api.get_object(c) for c in api.search(
-            {"portal_type": "Calculation"}, SETUP_CATALOG) if c.UID != ctx_uid]
+            {"portal_type": "Calculation", "is_active": True},
+            SETUP_CATALOG) if c.UID != ctx_uid]
 
         _validators = [
             field_wrapper('keyword',
