@@ -425,7 +425,7 @@ def _strip_calc_interims(service):
 
 
 def remove_calculations_from_repositorytool():
-    """Remove Analysis Service from Repository Tool
+    """Remove Calculation from Repository Tool
     """
     logger.info("Remove auto versioning for Calculations ...")
     portal_type = "Calculation"
