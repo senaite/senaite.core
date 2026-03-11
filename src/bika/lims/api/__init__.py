@@ -2233,7 +2233,7 @@ def to_list(value):
     return list(value)
 
 
-def validate(obj, invariants=True):
+def validate(obj):
     """Validates the full object
 
     :param obj: the object to validate the data against
