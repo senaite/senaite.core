@@ -24,10 +24,10 @@ import six
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
-from senaite.app.listing.view import ListingView
+from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 
 
-class DynamicAnalysisSpecView(ListingView):
+class DynamicAnalysisSpecView(ControlPanelListingView):
     """A listing view that shows the contents of the Excel
     """
     def __init__(self, context, request):

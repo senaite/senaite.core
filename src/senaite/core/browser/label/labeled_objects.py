@@ -25,7 +25,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import get_link_for
 from senaite.core.i18n import translate as t
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.app.listing import ListingView
+from senaite.core.browser.listing.base import ListingView
 from senaite.core.api import label as label_api
 from senaite.core.catalog import LABEL_CATALOG
 from senaite.core.interfaces import IHaveLabels

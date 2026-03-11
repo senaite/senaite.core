@@ -23,13 +23,13 @@ import collections
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import get_link
-from senaite.app.listing import ListingView
+from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.i18n import translate
 from senaite.core.permissions import AddSubGroup
 
 
-class SubGroupsView(ListingView):
+class SubGroupsView(ControlPanelListingView):
 
     def __init__(self, context, request):
         super(SubGroupsView, self).__init__(context, request)

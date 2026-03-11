@@ -26,12 +26,14 @@ from bika.lims.utils import get_link_for
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_phone_link
 from senaite.core.i18n import translate
-from senaite.app.listing import ListingView
+from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.permissions import AddSupplier
 
 
-class SuppliersView(ListingView):
+class SuppliersView(ControlPanelListingView):
+
+    edit_icon_column = "Name"
 
     def __init__(self, context, request):
         super(SuppliersView, self).__init__(context, request)

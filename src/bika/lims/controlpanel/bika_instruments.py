@@ -22,7 +22,7 @@ import collections
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
+from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IInstruments
 from senaite.core.permissions import AddInstrument
@@ -37,7 +37,7 @@ from zope.interface.declarations import implements
 # TODO: Separate content and view into own modules!
 
 
-class InstrumentsView(BikaListingView):
+class InstrumentsView(ControlPanelListingView):
 
     def __init__(self, context, request):
         super(InstrumentsView, self).__init__(context, request)
