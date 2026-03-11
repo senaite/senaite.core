@@ -278,6 +278,9 @@ def migrate_calculation_to_dx(src, destination=None):
         interim["unit"] = src_interim.get("unit") or ""
         interim["result_type"] = src_interim.get("result_type") or "numeric"
         interim["choices"] = src_interim.get("choices") or ""
+        # AT uses 'wide'; DX IInterimField uses 'apply_wide'
+        if "wide" in interim and "apply_wide" not in interim:
+            interim["apply_wide"] = interim.pop("wide")
         target_interims.append(interim)
     target.setInterimFields(target_interims)
 
