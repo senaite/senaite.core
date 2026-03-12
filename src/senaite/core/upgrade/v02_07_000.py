@@ -279,8 +279,13 @@ def migrate_calculation_to_dx(src, destination=None):
         interim["result_type"] = src_interim.get("result_type") or "numeric"
         interim["choices"] = src_interim.get("choices") or ""
         # AT uses 'wide'; DX IInterimField uses 'apply_wide'
-        if "wide" in interim and "apply_wide" not in interim:
-            interim["apply_wide"] = interim.pop("wide")
+        wide = interim.pop("wide", False)
+        interim["apply_wide"] = bool(interim.pop("apply_wide", wide))
+        # AT boolean subfields submitted via :records:ignore_empty are absent
+        # when unchecked; normalise to explicit Python booleans so the DX
+        # form renders them correctly.
+        for key in ("allow_empty", "report", "hidden"):
+            interim[key] = bool(src_interim.get(key, False))
         target_interims.append(interim)
     target.setInterimFields(target_interims)
 
