@@ -157,7 +157,7 @@ def import_registry(tool):
     #   Module Products.CMFCore.exportimport.typeinfo, line 61, in _importNode
     #   Module Products.GenericSetup.utils, line 763, in _initProperties
     # ValueError: undefined property 'add_permission'
-    remove_at_portal_types(tool)
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     setup.runImportStepFromProfile(profile, "plone.app.registry")
 
