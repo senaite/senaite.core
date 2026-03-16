@@ -65,30 +65,34 @@ def before_reject(analysis):
 
 
 def after_retest(analysis):
-    """Function triggered before 'retest' transition takes place. Creates a
-    copy of the current analysis
+    """Function triggered after a 'retest' transition for the analysis passed
+    in is performed. Verifies and creates retests for all relatives
+    (dependents and dependencies).
     """
     # When an analysis is retested, it automatically transitions to verified,
     # so we need to mark the analysis as such
     alsoProvides(analysis, IVerified)
 
-    def verify_and_retest(relative):
-        if not ISubmitted.providedBy(relative):
-            # Result not yet submitted, no need to create a retest
-            return
-
-        # Apply the transition manually, but only if analysis can be verified
-        doActionFor(relative, "verify")
-
-        # Create the retest
-        create_retest(relative)
-
-    # Retest and auto-verify relatives, from bottom to top
+    # Collect relatives: dependents (recursive down) + dependencies (recursive
+    # up). Process dependents in reverse so furthest dependents come first.
     relatives = list(reversed(analysis.getDependents(recursive=True)))
     relatives.extend(analysis.getDependencies(recursive=True))
-    map(verify_and_retest, relatives)
 
-    # Create the retest
+    # Verify all submitted relatives first, before creating any retests.
+    # Creating a retest for a relative (e.g. Fe) before verifying its own
+    # dependents (e.g. Au) would mark Fe as "retested", causing Au's
+    # dependency resolution to pick up the unverifiable Fe retest instead of
+    # the verified Fe, blocking Au's verification.
+    for relative in relatives:
+        if ISubmitted.providedBy(relative):
+            doActionFor(relative, "verify")
+
+    # Now create retests for all submitted relatives
+    for relative in relatives:
+        if ISubmitted.providedBy(relative):
+            create_retest(relative)
+
+    # Create the retest for the analysis itself
     create_retest(analysis)
 
     # Try to rollback the Analysis Request

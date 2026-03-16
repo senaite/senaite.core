@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2600 Migrate Calculations to DX
 - #2855 Open edit modal for listing items
 - #2858 Fix sticker selection fields are rendered as text
 - #2857 Fix WrongType Error when downloading Reports

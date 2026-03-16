@@ -286,14 +286,12 @@ Reset the interim fields for analysis `Au`:
 
 Prepare a calculation that depends on `Cu` and assign it to `Fe` analysis:
 
-    >>> calc_fe = api.create(bikasetup.bika_calculations, 'Calculation', title='Calc for Fe')
-    >>> calc_fe.setFormula("[Cu]*10")
+    >>> calc_fe = api.create(setup.calculations, 'Calculation', title='Calc for Fe', Formula="[Cu]*10")
     >>> Fe.setCalculation(calc_fe)
 
 Prepare a calculation that depends on `Fe` and assign it to `Au` analysis:
 
-    >>> calc_au = api.create(bikasetup.bika_calculations, 'Calculation', title='Calc for Au')
-    >>> calc_au.setFormula("([Fe])/2")
+    >>> calc_au = api.create(setup.calculations, 'Calculation', title='Calc for Au', Formula="([Fe])/2")
     >>> Au.setCalculation(calc_au)
 
 Create an Analysis Request:

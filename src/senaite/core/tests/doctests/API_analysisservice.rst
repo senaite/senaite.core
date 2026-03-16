@@ -14,15 +14,16 @@ Test Setup
 Needed Imports::
 
     >>> from bika.lims import api
-    >>> from bika.lims.api.analysisservice import get_calculation_dependencies_for
-    >>> from bika.lims.api.analysisservice import get_calculation_dependents_for
+    >>> from senaite.core.api.analysisservice import get_calculation_dependencies_for
+    >>> from senaite.core.api.analysisservice import get_calculation_dependants_for
 
 Variables::
 
     >>> portal = self.portal
     >>> request = self.request
     >>> setup = portal.bika_setup
-    >>> calculations = setup.bika_calculations
+    >>> senaite_setup = portal.setup
+    >>> calculations = senaite_setup.calculations
     >>> analysisservices = setup.bika_analysisservices
 
 Test user::
@@ -99,28 +100,28 @@ The `Test2` service depends now on the `Test1` service:
     ['Test1']
 
 
-Calculation Dependents
+Calculation Dependants
 ......................
 
 To get all Analysis Services which depend on a specific Analysis Service, the
-API provides the function `get_calculation_dependents_for`.
+API provides the function `get_calculation_dependants_for`.
 
 The Analysis Service `Test1` references `Ca`, `Mg` and `Fe` by its calculation:
 
     >>> Test1.getCalculation().getFormula()
     '[Ca] + [Mg] + [Fe]'
 
-Therefore, the dependent service of `Ca`, `Mg` and `Fe` is `Test1`
+Therefore, the dependant service of `Ca`, `Mg` and `Fe` is `Test1`
 
-    >>> deps = get_calculation_dependents_for(Ca)
+    >>> deps = get_calculation_dependants_for(Ca)
     >>> sorted(map(lambda d: d.getKeyword(), deps.values()))
     ['Test1']
 
-    >>> deps = get_calculation_dependents_for(Mg)
+    >>> deps = get_calculation_dependants_for(Mg)
     >>> sorted(map(lambda d: d.getKeyword(), deps.values()))
     ['Test1']
 
-    >>> deps = get_calculation_dependents_for(Fe)
+    >>> deps = get_calculation_dependants_for(Fe)
     >>> sorted(map(lambda d: d.getKeyword(), deps.values()))
     ['Test1']
 
@@ -129,9 +130,9 @@ The Analysis Service `Test2` doubles the calculated result from `Test1`:
     >>> Test2.getCalculation().getFormula()
     '[Test1] * 2'
 
-Therefore, `Test2` is a dependent of `Test1`:
+Therefore, `Test2` is a dependant of `Test1`:
 
-    >>> deps = get_calculation_dependents_for(Test1)
+    >>> deps = get_calculation_dependants_for(Test1)
     >>> sorted(map(lambda d: d.getKeyword(), deps.values()))
     ['Test2']
 
@@ -150,8 +151,8 @@ But what happens when the calculation references `Test2` as well?
     >>> Test2.getCalculation().getFormula()
     '[Test1] * [Test2]'
 
-Checking the dependents of `Test2` should not cause an infinite recursion:
+Checking the dependants of `Test2` should not cause an infinite recursion:
 
-    >>> deps = get_calculation_dependents_for(Test2)
+    >>> deps = get_calculation_dependants_for(Test2)
     >>> sorted(map(lambda d: d.getKeyword(), deps.values()))
     []

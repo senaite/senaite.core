@@ -47,6 +47,10 @@ class LoadSetupData(BrowserView):
         """Set a (multi-valued) reference field
         """
         field = self.get_field(obj, fieldname)
+        if field is None:
+            logger.warning(
+                "Field '{}' not found on {}".format(fieldname, repr(obj)))
+            return
         if self.is_multi_valued(field):
             current = self.get(obj, field)
             if value not in current:
@@ -79,7 +83,8 @@ class LoadSetupData(BrowserView):
         if api.is_at_content(obj):
             mutator = field.getMutator(obj)
             mutator(value)
-        field.set(obj, value)
+        else:
+            field.set(obj, value)
 
     def solve_deferred(self, deferred=None):
         # walk through self.deferred, linking ReferenceFields as we go

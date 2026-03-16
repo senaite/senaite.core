@@ -1,9 +1,8 @@
 <?xml version="1.0"?>
 <metadata>
-  <version>2722</version>
+  <version>2723</version>
   <dependencies>
     <dependency>profile-Products.ATContentTypes:base</dependency>
-    <dependency>profile-Products.CMFEditions:CMFEditions</dependency>
     <dependency>profile-senaite.impress:default</dependency>
     <dependency>profile-senaite.app.listing:default</dependency>
     <dependency>profile-senaite.app.spotlight:default</dependency>

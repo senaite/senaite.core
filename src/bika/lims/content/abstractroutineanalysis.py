@@ -313,25 +313,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         raise NotImplementedError("getSiblings is not implemented.")
 
     @security.public
-    def getCalculation(self):
-        """Return current assigned calculation
-        """
-        field = self.getField("Calculation")
-        calculation = field.get(self)
-        if not calculation:
-            return None
-        return calculation
-
-    @security.public
-    def setCalculation(self, value):
-        self.getField("Calculation").set(self, value)
-        # TODO Something weird here
-        # Reset interims so they get extended with those from calculation
-        # see bika.lims.browser.fields.interimfieldsfield.set
-        interim_fields = copy.deepcopy(self.getInterimFields())
-        self.setInterimFields(interim_fields)
-
-    @security.public
     def getDependents(self, with_retests=False, recursive=False):
         """Returns a list of analyses who depend on us to calculate their result.
 

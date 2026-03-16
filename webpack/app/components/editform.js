@@ -642,7 +642,13 @@ class EditForm {
 
     // set reference value
     if (this.is_reference(field)) {
-      field.value = selected.join("\n");
+      // Fallback: Use raw value if selected is not set
+      if (value && selected.length == 0) {
+        selected = value.split("\n");
+      }
+      // XXX: does not work for ReactJS components!
+      // field.value = selected.join("\n");
+      this.native_set_value(field, selected.join("\n"));
     }
     // set select field
     else if (this.is_select(field)) {
@@ -689,6 +695,32 @@ class EditForm {
     }
   }
 
+  /**
+   * set input value with native setter to support ReactJS components
+   *
+   * https://stackoverflow.com/questions/23892547/what-is-the-best-way-to-trigger-onchange-event-in-react-js
+   * TL;DR: React library overrides input value setter
+   */
+  native_set_value(input, value) {
+    let setter = null;
+
+    if (input.tagName === "TEXTAREA") {
+      setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value")?.set;
+    } else if (input.tagName === "SELECT") {
+      setter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, "value")?.set;
+    } else if (input.tagName === "INPUT") {
+      setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set;
+    } else {
+      input.value = value;
+    }
+
+    if (setter) {
+      setter.call(input, value);
+    }
+
+    const event = new Event("input", { bubbles: true });
+    input.dispatchEvent(event);
+  }
 
   /**
    * trigger `modified` event on the form
@@ -914,6 +946,8 @@ class EditForm {
     if (!this.is_textarea(el)) {
       return false;
     }
+    // NOTE: This class is only used if the field is not hidden.
+    // Otherwise, it behaves like a normal textarea field.
     return el.classList.contains("queryselectwidget-value");
   }
 
