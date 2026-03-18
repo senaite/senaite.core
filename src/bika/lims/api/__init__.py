@@ -258,22 +258,15 @@ def create(container, portal_type, *args, **kwargs):
             else:
                 setattr(obj, name, value)
 
-        # Manually reindex the object to ensure all indexes are updated
-        obj.reindexObject()
-
-        # notify that the object was created. We do this here before resuming
-        # and manually taking the snapshot because IAfterAPICreatedObjectEvent
-        # extends IObjectModifiedEvent, that would trigger a version bump
-        # before the object is fully created
-        notify(AfterAPICreatedObjectEvent(obj))
-
         # Resume snapshots and manually create the initial snapshot
         # now that the object is fully initialized with all fields set
         resume_snapshots_for(obj)
-
         # Manually reindex the object to ensure all indexes are updated
         obj.reindexObject()
         take_snapshot(obj, action="create")
+
+        # notify that the object was created using api.create
+        notify(AfterAPICreatedObjectEvent(obj))
 
     return obj
 

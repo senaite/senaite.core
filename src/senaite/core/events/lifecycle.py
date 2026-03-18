@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from zope.interface import implementer
-from zope.lifecycleevent import ObjectModifiedEvent
-from zope.lifecycleevent.interfaces import IObjectModifiedEvent
+from zope.interface.interfaces import IObjectEvent
+from zope.interface.interfaces import ObjectEvent
 
 
-class IAfterAPICreatedObjectEvent(IObjectModifiedEvent):
-    """An object is being initialised, i.e. populated for the first time
-    """
+class IAfterAPICreatedObjectEvent(IObjectEvent):
+    """An object has been created using api.create"""
 
 
 @implementer(IAfterAPICreatedObjectEvent)
-class AfterAPICreatedObjectEvent(ObjectModifiedEvent):
-    """An object is being initialised, i.e. populated for the first time
-    """
+class AfterAPICreatedObjectEvent(ObjectEvent):
+    """An object has been created using api.create"""
