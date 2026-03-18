@@ -54,7 +54,7 @@ from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.memoize.volatile import DontCache
 from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.BaseObject import BaseObject
-from Products.Archetypes.event import ObjectInitializedEvent as ATInitEvent
+from Products.Archetypes.event import ObjectInitializedEvent
 from Products.Archetypes.public import StringField
 from Products.Archetypes.utils import mapply
 from Products.CMFCore.interfaces import IFolderish
@@ -69,7 +69,7 @@ from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import base_hasattr
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
-from senaite.core.events.lifecycle import ObjectInitializedEvent
+from senaite.core.events.lifecycle import AfterAPICreatedObjectEvent
 from senaite.core.interfaces import IContact
 from senaite.core.interfaces import IContacts
 from senaite.core.interfaces import ITemporaryObject
@@ -212,7 +212,7 @@ def create(container, portal_type, *args, **kwargs):
         # we are no longer under creation
         obj.unmarkCreationFlag()
         # notify that the object was created
-        notify(ATInitEvent(obj))
+        notify(ObjectInitializedEvent(obj))
     else:
         # Avoid circular imports
         from bika.lims.api.snapshot import pause_snapshots_for
@@ -264,8 +264,8 @@ def create(container, portal_type, *args, **kwargs):
         # Manually reindex the object to ensure all indexes are updated
         obj.reindexObject()
         take_snapshot(obj, action="create")
-        # notify that the object was initialized
-        notify(ObjectInitializedEvent(obj))
+        # notify that the object was created
+        notify(AfterAPICreatedObjectEvent(obj))
 
     return obj
 
