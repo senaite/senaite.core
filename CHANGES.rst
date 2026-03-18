@@ -4,7 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
-- #2859 Added a core's specific ObjectInitializedEvent for DX
+- #2859 Added a core's specific AfterAPICreatedObjectEvent for DX
 - #2600 Migrate Calculations to DX
 - #2855 Open edit modal for listing items
 - #2858 Fix sticker selection fields are rendered as text
