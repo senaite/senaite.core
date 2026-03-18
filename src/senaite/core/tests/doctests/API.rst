@@ -1165,7 +1165,7 @@ This function returns the version as an integer::
     >>> calc = api.create(portal.setup.calculations, "Calculation", title="Test Calculation")
 
     >>> api.get_version(calc)
-    1
+    0
 
 Calling the modified event will create a new version::
 
@@ -1173,7 +1173,7 @@ Calling the modified event will create a new version::
 
     >>> modified(calc)
     >>> api.get_version(calc)
-    2
+    1
 
 
 Getting a Browser View
