@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2860 Remove default selected languages
 - #2859 Added a core's specific AfterAPICreatedObjectEvent for DX
 - #2600 Migrate Calculations to DX
 - #2855 Open edit modal for listing items
@@ -17,7 +18,7 @@ Changelog
 - #2850 Edit popup for sample analyses
 - #2848 Patch transaction commit hook for catalog queue to avoid double indexing
 - #2844 Allow unit selection in profiles
-- #2846 Fix Unit super-/subscript rendering 
+- #2846 Fix Unit super-/subscript rendering
 - #2847 Remove nonexisting getSamplePointTitle column index
 - #2776 Refactor: rename SiteView.setCookie to set_cookie in dashboard.pt
 - #2805 Migrate Worksheets to DX
@@ -163,7 +164,7 @@ Changelog
 - #2660 Add logging if external calculation module import failed
 - #2654 Show Batch title or ID in Sample reference field
 - #2657 Methods from analyses are not updated on instrument change in worksheet
-- #2656 Fix AnalysisProfile keyword validator fail with non-ascii value 
+- #2656 Fix AnalysisProfile keyword validator fail with non-ascii value
 - #2646 Add SelectOtherField and SelectOtherWidget
 - #2649 Fix event subscribers are not triggered on analysis initialization
 - #2650 Fix AttributeError on analysis update with interim values via jsonapi
@@ -540,7 +541,7 @@ Changelog
 - #2131 Allow to edit the analysis service sort keys in the services listing
 - #2133 Filter Contact and CCContact by Client on first click
 - #2134 Render unit after result and interim fields
-- #2132 Add a default date for batch creation 
+- #2132 Add a default date for batch creation
 - #2129 Fix Traceback when invalidating a Sample with Remarks
 - #2128 Fix referenceresults widget view mode
 - #2127 Fix instrument expiry date display in listing view
@@ -615,14 +616,14 @@ Changelog
 - #2004 Added behavior to allow sharing objects across clients users
 - #2001 Fix Traceback when rendering UIDReferenceWidget with limited privileges
 - #1999 Allow multi-choice/multiselect interim fields in calculations
-- #1998 Fix analisys hidden status erases when submit through worksheet 
+- #1998 Fix analisys hidden status erases when submit through worksheet
 - #1997 Fix conditions not set when adding analyses via "Manage Analyses" view
 - #1995 Dynamic assingment of "Owner" role for Client Contacts
 - #1994 Support for dynamic assignment of Local Roles for context and principal
 - #1992 Fix Generic Setup XML export/import adapters for Dexterity fields
 - #1993 Avoid line wrapping in login form for small screens
 - #1990 Fix items not filtered by Worksheet Template's method in Add analyses
-- #1991 Update default worksheet layout 
+- #1991 Update default worksheet layout
 - #1887 Fix instruments not filtered by method in Worksheet Template edit view
 - #1977 Add custom worksheet layout feature
 - #1988 Multivalue support for interim fields
