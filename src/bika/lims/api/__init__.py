@@ -69,6 +69,7 @@ from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import base_hasattr
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
+from senaite.core.events.lifecycle import AfterAPICreatedObjectEvent
 from senaite.core.interfaces import IContact
 from senaite.core.interfaces import IContacts
 from senaite.core.interfaces import ITemporaryObject
@@ -263,6 +264,9 @@ def create(container, portal_type, *args, **kwargs):
         # Manually reindex the object to ensure all indexes are updated
         obj.reindexObject()
         take_snapshot(obj, action="create")
+
+        # notify that the object was created using api.create
+        notify(AfterAPICreatedObjectEvent(obj))
 
     return obj
 
