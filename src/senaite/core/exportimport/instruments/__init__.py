@@ -251,9 +251,17 @@ def getExim(exim_id):
     return interfaces and interfaces[0][1] or None
 
 
-def get_automatic_importer(exim_id, instrument, parser):
+def get_automatic_importer(exim_id, instrument, parser, override=None):
     """Returns the importer to be used for automatic imports
+
+    :param exim_id: Instrument interface ID
+    :param instrument: Instrument object
+    :param parser: Parser instance
+    :param override: Override flags [override_non_empty, override_with_empty]
     """
+    if override is None:
+        override = [False, False]
+
     adapter = getExim(exim_id)
 
     if IInstrumentAutoImportInterface.providedBy(adapter):
@@ -267,7 +275,7 @@ def get_automatic_importer(exim_id, instrument, parser):
     return AnalysisResultsImporter(
         parser=parser,
         context=api.get_portal(),
-        override=[False, False],
+        override=override,
         instrument_uid=api.get_uid(instrument))
 
 
