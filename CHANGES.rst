@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2861 Allow to override results in auto-import
 - #2860 Remove default selected languages
 - #2859 Added a core's specific AfterAPICreatedObjectEvent for DX
 - #2600 Migrate Calculations to DX
