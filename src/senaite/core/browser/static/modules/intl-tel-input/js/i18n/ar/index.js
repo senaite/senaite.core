@@ -1,5 +1,24 @@
-import countryTranslations from "./countries.js";
-import interfaceTranslations from "./interface.js";
-export { countryTranslations, interfaceTranslations };
-const allTranslations = { ...countryTranslations, ...interfaceTranslations };
-export default allTranslations;
+const interfaceTranslations = {
+  selectedCountryAriaLabel: "البلد المحدد",
+  noCountrySelected: "لم يتم تحديد أي بلد",
+  countryListAriaLabel: "قائمة الدول",
+  searchPlaceholder: "يبحث",
+  clearSearchAriaLabel: "مسح البحث",
+  searchEmptyState: "لم يتم العثور على نتائج",
+  searchSummaryAria(count) {
+    if (count === 0) {
+      return "لم يتم العثور على نتائج";
+    }
+    if (count === 1) {
+      return "تم العثور على نتيجة واحدة";
+    }
+    if (count === 2) {
+      return "تم العثور على نتيجتين";
+    }
+    if (count % 100 >= 3 && count % 100 <= 10) {
+      return `تم العثور على ${count} نتائج`;
+    }
+    return `تم العثور على ${count} نتيجة`;
+  }
+};
+export default interfaceTranslations;
