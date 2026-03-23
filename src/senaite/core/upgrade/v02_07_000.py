@@ -232,6 +232,34 @@ def migrate_calculations_to_dx(tool):
     logger.info("Convert Calculations to Dexterity [DONE]")
 
 
+def _delete_orphaned_reference(rc, ref):
+    """Remove a Reference object whose source no longer exists.
+
+    AT's _deleteReference returns early when getSourceObject() is None,
+    leaving both the ZCatalog index entry and the Reference object itself
+    in the ZODB. This function handles both:
+
+    1. Uncatalogs the brain from rc._catalog so future getBackReferences
+       calls do not find this entry.
+    2. Deletes the Reference object from its annotation parent container
+       to avoid leaving orphaned ZODB data.
+
+    :param rc: The reference_catalog tool
+    :param ref: The orphaned AT Reference object
+    """
+    try:
+        path = "/".join(ref.getPhysicalPath())
+        rc._catalog.uncatalog_object(path)
+    except (AttributeError, KeyError, TypeError):
+        pass
+    try:
+        parent = ref.aq_parent
+        if parent is not None:
+            parent._delObject(ref.id)
+    except (AttributeError, KeyError, TypeError):
+        pass
+
+
 def migrate_calculation_to_dx(src, destination=None):
     """Migrate an AT profile to DX in the destination folder
 
@@ -371,19 +399,28 @@ def migrate_calculation_to_dx(src, destination=None):
     calc_formula = target.getMinifiedFormula()
     calc_imports = json.dumps(target.getPythonImports() or [])
     calc_version = api.get_version(target) or 0
+    stale_refs = 0
     for ref in refs:
         analysis = ref.getSourceObject()
         if not analysis:
-            # This can happen for Analyses in stale Samples, i.e. those
-            # with a temporary ID.
-            logger.warn("Cannot migrate Analysis {}. No source object found."
-                        .format(ref))
+            # Source Analysis no longer exists (deleted without proper
+            # reference cleanup). AT's _deleteReference bails out when
+            # sobj is None, so uncatalog the brain directly to prevent
+            # this stale entry from appearing in future catalog queries.
+            stale_refs += 1
+            logger.debug(
+                "Stale AnalysisCalculation ref skipped: {}".format(ref))
+            _delete_orphaned_reference(rc, ref)
             continue
         analysis.getField("CalculationUID").set(analysis, calc_uid)
         analysis.getField("CalculationFormula").set(analysis, calc_formula)
         analysis.getField("CalculationImports").set(analysis, calc_imports)
         analysis.getField("CalculationVersion").set(analysis, calc_version)
         analysis.deleteReferences(relationship="AnalysisCalculation")
+    if stale_refs:
+        logger.warn(
+            "Removed {} stale AnalysisCalculation ref(s) for: {}".format(
+                stale_refs, api.get_path(src)))
 
     logger.info("Migrated Calculation from %s -> %s" % (src, target))
 
