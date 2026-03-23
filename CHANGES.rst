@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2867 Remove stale AT reference objects
 - #2866 Add transaction savepoints to large upgradesteps
 - #2865 Skip problematic worksheets in upgrade step 2711
 - #2862 Updated Webpack Dependencies
