@@ -514,7 +514,7 @@ def migrate_contacts_to_dx(tool):
     logger.info("Migrating Contacts to Dexterity ...")
 
     # Ensure old AT types are flushed first
-    remove_at_portal_types(tool)
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
@@ -659,7 +659,7 @@ def migrate_multifiles_to_dx(tool):
     logger.info("Migrating Multifiles to Dexterity ...")
 
     # Ensure old AT types are flushed first
-    remove_at_portal_types(tool)
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
@@ -812,7 +812,7 @@ def create_setup_contacts_folder(tool):
     logger.info("Creating Contacts container in setup folder ...")
 
     # Ensure old AT types are flushed first
-    remove_at_portal_types(tool)
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
@@ -844,7 +844,7 @@ def setup_custom_image_and_file_types(tool):
     """
     logger.info("Setup custom File and Image types ...")
     # Ensure old AT types are flushed first
-    remove_at_portal_types(tool)
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
     portal = tool.aq_inner.aq_parent
     tool.runImportStepFromProfile(profile, "typeinfo")
     tool.runImportStepFromProfile(profile, "workflow")
@@ -1070,7 +1070,7 @@ def migrate_arreport_to_resultsreport(tool):
     logger.info("Migrating ARReport to Dexterity ResultsReport ...")
 
     # Remove AT portal type and install DX portal type
-    remove_at_portal_types(tool)
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
     tool.runImportStepFromProfile(profile, "typeinfo")
     tool.runImportStepFromProfile(profile, "workflow")
 
@@ -1288,7 +1288,7 @@ def migrate_worksheets_to_dx(tool):
         origin = portal.get("worksheets-old")
 
     # ensure old AT types are flushed first
-    remove_at_portal_types(tool)
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")

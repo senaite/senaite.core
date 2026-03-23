@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2862 Updated Webpack Dependencies
+- #2864 Fix upgrade step AT type removal calls
 - #2861 Allow to override results in auto-import
 - #2860 Remove default selected languages
 - #2859 Added a core's specific AfterAPICreatedObjectEvent for DX
