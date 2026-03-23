@@ -1,5 +1,18 @@
-import countryTranslations from "./countries.js";
-import interfaceTranslations from "./interface.js";
-export { countryTranslations, interfaceTranslations };
-const allTranslations = { ...countryTranslations, ...interfaceTranslations };
-export default allTranslations;
+const interfaceTranslations = {
+  selectedCountryAriaLabel: "Ndrysho vendin, i zgjedhur ${countryName} (${dialCode})",
+  noCountrySelected: "Zgjidh vendin",
+  countryListAriaLabel: "Lista e vendeve",
+  searchPlaceholder: "Kërko",
+  clearSearchAriaLabel: "Pastro kërkimin",
+  searchEmptyState: "Nuk u gjet asnjë rezultat",
+  searchSummaryAria(count) {
+    if (count === 0) {
+      return "Nuk u gjet asnjë rezultat";
+    }
+    if (count === 1) {
+      return "U gjet 1 rezultat";
+    }
+    return `U gjetën ${count} rezultate`;
+  }
+};
+export default interfaceTranslations;

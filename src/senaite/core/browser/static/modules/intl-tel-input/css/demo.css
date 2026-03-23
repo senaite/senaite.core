@@ -11,9 +11,8 @@ body {
 
 input,
 .button {
-  height: 35px;
   margin: 0;
-  padding: 6px 12px;
+  padding: 8px 12px;
   border-radius: 2px;
   font-family: inherit;
   font-size: 100%;
@@ -67,12 +66,9 @@ input::placeholder {
   }
   .iti {
     --iti-border-color: #5b5b5b;
-    --iti-dialcode-color: #999999;
     --iti-dropdown-bg: #0d1117;
-    --iti-arrow-color: #aaaaaa;
     --iti-hover-color: #30363d;
-    --iti-path-globe-1x: url("../img/globe_light.webp");
-    --iti-path-globe-2x: url("../img/globe_light@2x.webp");
+    --iti-icon-color: #aaa;
   }
 }
 #error-msg {

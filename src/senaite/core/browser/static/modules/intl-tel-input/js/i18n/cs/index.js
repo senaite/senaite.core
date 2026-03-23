@@ -1,5 +1,21 @@
-import countryTranslations from "./countries.js";
-import interfaceTranslations from "./interface.js";
-export { countryTranslations, interfaceTranslations };
-const allTranslations = { ...countryTranslations, ...interfaceTranslations };
-export default allTranslations;
+const interfaceTranslations = {
+  selectedCountryAriaLabel: "Vybraná země",
+  noCountrySelected: "Není vybrána žádná země",
+  countryListAriaLabel: "Seznam zemí",
+  searchPlaceholder: "Vyhledat",
+  clearSearchAriaLabel: "Vymazat vyhledávání",
+  searchEmptyState: "Nebyly nalezeny žádné výsledky",
+  searchSummaryAria(count) {
+    if (count === 0) {
+      return "Nebyly nalezeny žádné výsledky";
+    }
+    if (count === 1) {
+      return "Nalezen 1 výsledek";
+    }
+    if (count >= 2 && count <= 4) {
+      return `Nalezeny ${count} výsledky`;
+    }
+    return `Nalezeno ${count} výsledků`;
+  }
+};
+export default interfaceTranslations;
