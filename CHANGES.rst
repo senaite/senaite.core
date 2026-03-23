@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2865 Skip problematic worksheets in upgrade step 2711
 - #2862 Updated Webpack Dependencies
 - #2864 Fix upgrade step AT type removal calls
 - #2861 Allow to override results in auto-import
