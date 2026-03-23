@@ -59,6 +59,7 @@ from bika.lims.interfaces import IClient
 from bika.lims.interfaces import ISubmitted
 from bika.lims.utils import getUsers
 from bika.lims.utils import tmpID
+from bika.lims.utils.analysisrequest import apply_custom_units
 from bika.lims.utils.analysisrequest import apply_hidden_services
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import getTransitionUsers
@@ -166,14 +167,19 @@ schema = BikaSchema.copy() + Schema((
             ui_item="Title",
             catalog=CONTACT_CATALOG,
             # Base query - gets overridden with client-specific query at
-            #  runtime to include both client contacts and global contacts
+            # runtime to include both client contacts and global contacts
             query={
-                "getParentUID": "",
                 "is_active": True,
                 "sort_on": "sortable_title",
                 "sort_order": "ascending"
             },
             columns=[
+                {
+                    "name": "scope",
+                    "width": "10",
+                    "align": "center",
+                    "label": "",
+                },
                 {"name": "Title", "label": _("Name")},
                 {"name": "getEmailAddress", "label": _("Email")},
             ],
@@ -204,12 +210,17 @@ schema = BikaSchema.copy() + Schema((
             # Base query - gets overridden with client-specific query at
             # runtime to include both client contacts and global contacts
             query={
-                "getParentUID": "",
                 "is_active": True,
                 "sort_on": "sortable_title",
                 "sort_order": "ascending"
             },
             columns=[
+                {
+                    "name": "scope",
+                    "width": "10",
+                    "align": "center",
+                    "label": "",
+                },
                 {"name": "Title", "label": _("Name")},
                 {"name": "getEmailAddress", "label": _("Email")},
             ],
@@ -1563,6 +1574,9 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
         # apply hidden services *after* the profiles have been set
         apply_hidden_services(self)
+
+        # apply custom units *after* the profiles have been set
+        apply_custom_units(self)
 
     def getClient(self):
         """Returns the client this object is bound to. We override getClient

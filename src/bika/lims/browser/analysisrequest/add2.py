@@ -29,7 +29,6 @@ from bika.lims import POINTS_OF_CAPTURE
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.api.security import check_permission
 from bika.lims.decorators import returns_json
 from bika.lims.interfaces import IAddSampleConfirmation
@@ -38,6 +37,7 @@ from bika.lims.interfaces import IAddSampleObjectInfo
 from bika.lims.interfaces import IAddSampleRecordsValidator
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
 from bika.lims.interfaces.field import IUIDReferenceField
+from bika.lims.utils import get_client as get_client_from_chain
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from BTrees.OOBTree import OOBTree
 from DateTime import DateTime
@@ -51,6 +51,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.api import dtime
+from senaite.core.api.analysisservice import get_calculation_dependencies_for
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.interfaces import IAfterCreateSampleHook
@@ -334,7 +335,8 @@ class AnalysisRequestAddView(BrowserView):
             return context.getClient()
         elif parent.portal_type == "Batch":
             return context.getClient()
-        return None
+        # Fallback: walk the full acquisition chain up to find a client
+        return get_client_from_chain(context)
 
     def get_sample(self):
         """Returns the Sample
@@ -435,6 +437,10 @@ class AnalysisRequestAddView(BrowserView):
         """
         catalog = api.get_tool(CONTACT_CATALOG)
         client = client or self.get_client()
+        if client:
+            primary = client.getPrimaryContact()
+            if primary and api.is_active(primary):
+                return primary
         path = api.get_path(self.context)
         if client:
             path = api.get_path(client)
@@ -474,8 +480,8 @@ class AnalysisRequestAddView(BrowserView):
         context = self.context
         fieldname = field.getName()
 
-        # hide the Client field on client and batch contexts
-        if fieldname == "Client" and context.portal_type in ("Client", ):
+        # hide the Client field when within a client context at any depth
+        if fieldname == "Client" and get_client_from_chain(context):
             return False
 
         # hide the Batch field on batch contexts
@@ -498,6 +504,16 @@ class AnalysisRequestAddView(BrowserView):
             if visible is False and visibility != "hidden":
                 continue
             out.append(field)
+
+        # Fields configured as 'edit' but forced hidden by is_field_visible
+        # (e.g. Client when inside a client context) must appear as hidden
+        # inputs so the form submission carries their value.
+        if visibility == "hidden":
+            for field in mv.get_fields_with_visibility("edit", mode):
+                if self.is_field_visible(field) is False:
+                    if field not in out:
+                        out.append(field)
+
         return out
 
     def get_service_categories(self, restricted=True):
@@ -967,7 +983,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # Set the default contact, but only if empty. The Contact field is
         # flushed each time the Client changes, so we can assume that if there
-        # is a selected contact, it belongs to current client already
+        # is a selected contact, it belongs to current client already.
+        # get_contact_info already merges the client's CCContacts, so the
+        # Contact cascade carries the full merged CCContact list.
         default_contact = self.get_default_contact(client=obj)
         if default_contact:
             contact_info = self.get_contact_info(default_contact)
@@ -983,28 +1001,50 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         return info
 
+    def _get_merged_cc_contact_values(self, client, contact):
+        """Return a merged, deduplicated CCContact value list.
+
+        Combines CCContacts from the client and from the given contact
+        (primary contact). Client entries come first.
+        """
+        seen = set()
+        values = []
+
+        def add_cc(cc):
+            uid = api.get_uid(cc)
+            if uid in seen:
+                return
+            seen.add(uid)
+            values.append({
+                "uid": uid,
+                "title": cc.getFullname(),
+                "fullname": cc.getFullname(),
+                "email": cc.getEmailAddress(),
+            })
+
+        if client:
+            for cc in client.getCCContacts():
+                add_cc(cc)
+        if contact:
+            for cc in contact.getCCContact():
+                add_cc(cc)
+
+        return values
+
     @cache(cache_key)
     def get_contact_info(self, obj):
-        """Returns the client info of an object
+        """Returns the contact info of an object
         """
-
         info = self.get_base_info(obj)
         fullname = obj.getFullname()
         email = obj.getEmailAddress()
 
-        # Note: It might get a circular dependency when calling:
-        #       map(self.get_contact_info, obj.getCCContact())
-        cccontacts = []
-        for contact in obj.getCCContact():
-            uid = api.get_uid(contact)
-            fullname = contact.getFullname()
-            email = contact.getEmailAddress()
-            cccontacts.append({
-                "uid": uid,
-                "title": fullname,
-                "fullname": fullname,
-                "email": email
-            })
+        # Merge CCContacts from the contact's parent client (if any) and the
+        # contact itself, deduplicated by UID.
+        # Note: do NOT call get_contact_info recursively on CCContacts here
+        #       to avoid circular dependencies.
+        client = get_client_from_chain(obj)
+        cccontacts = self._get_merged_cc_contact_values(client, obj)
 
         info.update({
             "fullname": fullname,

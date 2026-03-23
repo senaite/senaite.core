@@ -27,7 +27,7 @@ from bika.lims.utils import get_link
 from bika.lims.utils import get_progress_bar_html
 from plone.memoize import view
 from Products.CMFCore.permissions import View
-from senaite.app.listing import ListingView
+from senaite.core.browser.listing.base import ListingView
 from senaite.core.catalog import SENAITE_CATALOG
 
 

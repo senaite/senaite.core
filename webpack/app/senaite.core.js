@@ -3,6 +3,7 @@ import I18N from "./components/i18n.js";
 import {i18n, _t, _p} from "./i18n-wrapper.js"
 import EditForm from "./components/editform.js"
 import Site from "./components/site.js"
+import CalculationEditForm from "./components/calculationeditform.js"
 import {initSidebar} from "./sidebar"
 import FormTabbing from "./components/formtabbing.js"
 
@@ -47,6 +48,11 @@ document.addEventListener("DOMContentLoaded", () => {
       "textarea",
     ]
   })
+
+  document.body.addEventListener("datagrid:loaded", (event) => {
+    // Init custom CalculationEditForm
+    var calculationEditForm = new CalculationEditForm()
+  });
 
   // Init Tooltips
   $(function () {

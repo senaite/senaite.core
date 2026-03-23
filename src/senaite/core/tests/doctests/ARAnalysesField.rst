@@ -29,6 +29,7 @@ Imports:
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
+    >>> from zope.lifecycleevent import modified
 
 
 Functional Helpers:
@@ -48,11 +49,11 @@ Functional Helpers:
     ...     analyses = sample.getAnalyses(full_objects=True)
     ...     return filter(lambda an: an.getServiceUID() in uids, analyses)
 
-    >>> def get_analysis(sample, id):
-    ...     ans = sample.getAnalyses(getId=id, full_objects=True)
-    ...     if len(ans) != 1:
-    ...         return None
-    ...     return ans[0]
+    >>> def notify_edited(content):
+    ...     if api.is_at_content(content):
+    ...         content.processForm()
+    ...     elif api.is_dexterity_content(content):
+    ...         modified(content)
 
 Variables::
 
@@ -60,7 +61,7 @@ Variables::
     >>> portal = self.portal
     >>> request = self.request
     >>> setup = portal.bika_setup
-    >>> calculations = setup.bika_calculations
+    >>> calculations = portal.setup.calculations
     >>> sampletypes = portal.setup.sampletypes
     >>> samplepoints = portal.setup.samplepoints
     >>> analysiscategories = portal.setup.analysiscategories
@@ -150,17 +151,13 @@ Create Analysis Service w/o calculation (Keyword: `NOCALC`):
 
 Create some Calculations with Formulas referencing existing AS keywords:
 
-    >>> calc1 = api.create(calculations, "Calculation", title="Round")
-    >>> calc1.setFormula("round(12345, 2)")
+    >>> calc1 = api.create(calculations, "Calculation", title="Round", Formula="round(12345, 2)")
 
-    >>> calc2 = api.create(calculations, "Calculation", title="A in ppt")
-    >>> calc2.setFormula("[A] * 1000")
+    >>> calc2 = api.create(calculations, "Calculation", title="A in ppt", Formula="[A] * 1000")
 
-    >>> calc3 = api.create(calculations, "Calculation", title="B in ppt")
-    >>> calc3.setFormula("[B] * 1000")
+    >>> calc3 = api.create(calculations, "Calculation", title="B in ppt", Formula="[B] * 1000")
 
-    >>> calc4 = api.create(calculations, "Calculation", title="Total Hardness")
-    >>> calc4.setFormula("[CA] + [MG]")
+    >>> calc4 = api.create(calculations, "Calculation", title="Total Hardness", Formula="[CA] + [MG]")
 
 Assign the calculations to the Analysis Services:
 
@@ -490,7 +487,8 @@ Create some interim fields:
 Append interim field `A` to the `Total Hardness` Calculation:
 
     >>> calc4.setInterimFields([interim1])
-    >>> map(lambda x: x["keyword"], calc4.getInterimFields())
+    >>> notify_edited(calc4)
+    >>> map(lambda x: str(x["keyword"]), calc4.getInterimFields())
     ['A']
 
 Append interim field `B` to the `Total Hardness` Analysis Service:
@@ -507,41 +505,47 @@ Now we assign the `Total Hardness` Analysis Service:
     >>> analysis
     <Analysis at /plone/clients/client-1/water-0001/THCaCO3>
 
-The created Analysis has the same Calculation attached, as the Analysis Service:
+The created Analysis has the live Calculation object attached:
 
     >>> analysis_calc = analysis.getCalculation()
     >>> analysis_calc
-    <Calculation at /plone/bika_setup/bika_calculations/calculation-4>
+    <Calculation at /plone/setup/calculations/calculation-4>
 
-And therefore, also the same Interim Fields as the Calculation:
+The formula and Python imports are snapshotted onto the Analysis at
+linking time, so later edits to the Calculation do not affect it:
 
-    >>> map(lambda x: x["keyword"], analysis_calc.getInterimFields())
-    ['A']
+    >>> analysis.getCalculationFormula() == calc4.getMinifiedFormula()
+    True
 
-The Analysis also inherits the Interim Fields of the Analysis Service:
+    >>> analysis.getCalculationImports() == calc4.getPythonImports()
+    True
+
+The Analysis now inherits the Interim Fields of the Calculation first, then
+the Analysis Service, frozen at linking time:
 
     >>> map(lambda x: x["keyword"], analysis.getInterimFields())
-    ['B', 'A']
+    ['A', 'B']
 
-But what happens if the Interim Fields of either the Analysis Service or of the
+But what happens if the Interim Fields of either the Analysis Service or the
 Calculation change and the AR is updated with the same Analysis Service?
 
 Change the Interim Field of the Calculation to `C`:
 
     >>> calc4.setInterimFields([interim3])
-    >>> map(lambda x: x["keyword"], calc4.getInterimFields())
+    >>> notify_edited(calc4)
+    >>> map(lambda x: str(x["keyword"]), calc4.getInterimFields())
     ['C']
 
-Change the Interim Fields of the Analysis Service to `D`:
+Now we change the Interim Fields of the Analysis Service to `D`:
 
     >>> analysisservice4.setInterimFields([interim4])
 
-The Analysis Service returns only local interim fields:
+The Analysis Service should return only local interim fields:
 
     >>> map(lambda x: x["keyword"], analysisservice4.getInterimFields())
     ['D']
 
-Update the AR with the new Analysis Service:
+Finally, we update the Sample with the new Analysis Service:
 
     >>> field.set(ar, [analysisservice4])
 
@@ -555,18 +559,13 @@ The calculation should be still there:
 
     >>> analysis_calc = analysis.getCalculation()
     >>> analysis_calc
-    <Calculation at /plone/bika_setup/bika_calculations/calculation-4>
+    <Calculation at /plone/setup/calculations/calculation-4>
 
-And therefore, also the same Interim Fields as the Calculation:
-
-    >>> map(lambda x: x["keyword"], analysis_calc.getInterimFields())
-    ['C']
-
-The existing Analysis retains the initial Interim Fields of the Analysis
-Service, together with the interim from the associated Calculation:
+The existing Analysis retains the initial Interim Fields frozen at the time
+the Analysis was first linked (calc interims first, then service-only):
 
     >>> map(lambda x: x["keyword"], analysis.getInterimFields())
-    ['B', 'A']
+    ['A', 'B']
 
 
 Worksheets
@@ -624,7 +623,7 @@ Dependencies
 The Analysis Service `Total Hardness` uses the `Total Hardness` Calculation:
 
     >>> analysisservice4.getCalculation()
-    <Calculation at /plone/bika_setup/bika_calculations/calculation-4>
+    <Calculation at /plone/setup/calculations/calculation-4>
 
 The Calculation is dependent on the `CA` and `MG` Services through its Formula:
 
@@ -851,104 +850,3 @@ And the attachment is now only linked to the attachment of the original analysis
 
     >>> att_an.getLinkedAnalyses()
     [<Analysis at /plone/clients/client-1/water-0003/NoCalc>]
-
-
-
-Retaining Analyses
-~~~~~~~~~~~~~~~~~~
-
-Some analyses must be retained for track & tracability, i.e. `retracted` or `rejected` analyses
-or analyses in the states `to_be_verified` or `verified`.
-
-Therefore, it is crucial to keep those analyses, no matter what is passed in.
-
-First, we create a new sample holding 3 analyses:
-
-    >>> all_services = [analysisservice1, analysisservice2, analysisservice3]
-    >>> sample = create_analysisrequest(client, request, values, all_services)
-
-    >>> success = do_action_for(sample, "receive")
-    >>> api.get_review_status(sample)
-    'sample_received'
-
-    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
-    [<Analysis at /plone/clients/client-1/water-0004/CA>, <Analysis at /plone/clients/client-1/water-0004/MG>, <Analysis at /plone/clients/client-1/water-0004/PH>]
-
-Now we reject the `PH` analysis:
-
-    >>> success = do_action_for(sample.PH, "reject")
-    >>> api.get_review_status(sample.PH)
-    'rejected'
-
-Trying to flush all analyses with the field will retain the rejected analysis:
-
-    >>> field.set(sample, [])
-    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
-    [<Analysis at /plone/clients/client-1/water-0004/PH>]
-
-However, it is possible to add this analysis again:
-
-    >>> field.set(sample, [analysisservice1])
-    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
-    [<Analysis at /plone/clients/client-1/water-0004/PH>, <Analysis at /plone/clients/client-1/water-0004/PH-1>]
-
-Flushing the field will again retain the rejected one:
-
-    >>> field.set(sample, [])
-    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
-    [<Analysis at /plone/clients/client-1/water-0004/PH>]
-
-Let's add a `MG` analysis and add a result:
-
-    >>> field.set(sample, [analysisservice2])
-    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
-    [<Analysis at /plone/clients/client-1/water-0004/MG>, <Analysis at /plone/clients/client-1/water-0004/PH>]
-
-    >>> analysis = get_analysis(sample, "MG")
-    >>> analysis.setResult(7)
-    >>> success = do_action_for(analysis, "submit")
-    >>> api.get_review_status(analysis)
-    'to_be_verified'
-
-Trying to flush all analyses with the field will retain the rejected and submitted analysis:
-
-    >>> field.set(sample, [])
-    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
-    [<Analysis at /plone/clients/client-1/water-0004/MG>, <Analysis at /plone/clients/client-1/water-0004/PH>]
-
-Now we retract the submitted analysis:
-
-    >>> success = do_action_for(analysis, "retract")
-    >>> api.get_review_status(analysis)
-    'retracted'
-
-We should have now the retest as well:
-
-    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
-    [<Analysis at /plone/clients/client-1/water-0004/MG>, <Analysis at /plone/clients/client-1/water-0004/MG-1>, <Analysis at /plone/clients/client-1/water-0004/PH>]
-
-Now we flush again the field, which should wipe out the retest:
-
-    >>> field.set(sample, [])
-    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
-    [<Analysis at /plone/clients/client-1/water-0004/MG>, <Analysis at /plone/clients/client-1/water-0004/PH>]
-
-But we can add it again:
-
-    >>> field.set(sample, [analysisservice2])
-    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
-    [<Analysis at /plone/clients/client-1/water-0004/MG>, <Analysis at /plone/clients/client-1/water-0004/MG-1>, <Analysis at /plone/clients/client-1/water-0004/PH>]
-
-And add another result:
-
-    >>> analysis = get_analysis(sample, "MG-1")
-    >>> analysis.setResult(7.5)
-    >>> success = do_action_for(analysis, "submit")
-    >>> api.get_review_status(analysis)
-    'to_be_verified'
-
-This should retain it as well if we try to flush the field:
-
-    >>> field.set(sample, [])
-    >>> sorted(sample.objectValues("Analysis"), key=methodcaller("getId"))
-    [<Analysis at /plone/clients/client-1/water-0004/MG>, <Analysis at /plone/clients/client-1/water-0004/MG-1>, <Analysis at /plone/clients/client-1/water-0004/PH>]

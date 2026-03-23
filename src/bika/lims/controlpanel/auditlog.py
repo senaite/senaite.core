@@ -27,7 +27,7 @@ from bika.lims.api.snapshot import get_last_snapshot
 from bika.lims.api.snapshot import get_snapshot_by_version
 from bika.lims.api.snapshot import get_snapshot_metadata
 from bika.lims.api.snapshot import get_snapshot_version
-from bika.lims.browser.bika_listing import BikaListingView
+from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IAuditLog
 from bika.lims.utils import get_link
@@ -40,7 +40,7 @@ from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 
-class AuditLogView(BikaListingView):
+class AuditLogView(ControlPanelListingView):
 
     def __init__(self, context, request):
         super(AuditLogView, self).__init__(context, request)

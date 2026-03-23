@@ -23,7 +23,6 @@ from .aranalysesfield import ARAnalysesField
 from .coordinatefield import CoordinateField
 from .durationfield import DurationField
 from .emailsfield import EmailsField
-from .historyawarereferencefield import HistoryAwareReferenceField
 from .interimfieldsfield import InterimFieldsField
 from .partitionsetupfield import PartitionSetupField
 from .referenceresultsfield import ReferenceResultsField

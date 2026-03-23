@@ -50,6 +50,16 @@ ANALYSIS_TYPES = (
     )),
 )
 
+RESULT_TYPES = (
+    ("numeric", _("Numeric")),
+    ("string", _("String")),
+    ("text", _("Text")),
+    ("select", _("Selection list")),
+    ("multiselect", _("Multiple selection")),
+    ("multiselect_duplicates", _("Multiple selection (with duplicates)")),
+    ("multichoice", _("Multiple choices")),
+)
+
 SCINOTATION_OPTIONS = (
     ('1', 'aE+b / aE-b'),
     ('2', 'ax10^b / ax10^-b'),

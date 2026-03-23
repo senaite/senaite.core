@@ -148,8 +148,13 @@ class ClientAwareReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
             client_uid = client and api.get_uid(client) or None
 
             if client_uid:
-                # Apply the search criteria for this client
-                query["getClientUID"] = [client_uid, ""]
+                portal_types = self.get_portal_types(query)
+                if "Contact" in portal_types:
+                    # Contact catalog uses getParentUID
+                    query["getParentUID"] = [client_uid, ""]
+                else:
+                    # Other client-bound types use getClientUID
+                    query["getClientUID"] = [client_uid, ""]
 
         return query
 

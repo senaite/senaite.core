@@ -149,11 +149,6 @@ class ITemporaryObject(Interface):
     """
 
 
-class IVersionWrapper(Interface):
-    """Content wrapper that allows to retrieve versioned attributes
-    """
-
-
 class ISetup(Interface):
     """Marker interface for setup folder
     """
@@ -538,6 +533,16 @@ class IWorksheetTemplates(Interface):
 
 class IWorksheetTemplate(Interface):
     """Marker interface for Worksheet Template
+    """
+
+
+class ICalculation(Interface):
+    """Marker interface for calculation
+    """
+
+
+class ICalculations(Interface):
+    """Marker interface for calculations folder
     """
 
 

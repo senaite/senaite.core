@@ -44,7 +44,7 @@ Variables:
     >>> bikasetup = portal.bika_setup
     >>> analysiscategories = setup.analysiscategories
     >>> bika_analysisservices = bikasetup.bika_analysisservices
-    >>> bika_calculations = bikasetup.bika_calculations
+    >>> calculations = setup.calculations
     >>> suppliers = setup.suppliers
 
 We need to create some basic objects for the test:
@@ -72,7 +72,7 @@ All services can be deactivated:
 
 But if we create a new Analysis Service with a calculation that depends on them:
 
-    >>> calc = api.create(bika_calculations, "Calculation", title="Total Hardness")
+    >>> calc = api.create(calculations, "Calculation", title="Total Hardness")
     >>> calc.setFormula("[Ca] + [Mg]")
     >>> hardness = api.create(bika_analysisservices, "AnalysisService", title="Total Hardness", Keyword="TotalHardness")
     >>> hardness.setCalculation(calc)

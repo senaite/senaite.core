@@ -777,6 +777,46 @@ class ISetupSchema(model.Schema):
         default=10,
     )
 
+    sampleview_analysis_columns_order = schema.Tuple(
+        title=_(
+            u"title_senaitesetup_sampleview_columns_order",
+            default=u"Sample view analysis columns"
+        ),
+        description=_(
+            u"description_senaitesetup_sampleview_columns_order",
+            default=u"Select which columns to display in "
+                    u"sample analysis listings. The order "
+                    u"of selection determines the display "
+                    u"order. Unselected columns are hidden. "
+                    u"Leave empty to show all columns in "
+                    u"default order."
+        ),
+        value_type=schema.Choice(
+            vocabulary=("senaite.core.vocabularies.analysis_columns")
+        ),
+        required=False,
+    )
+
+    worksheetview_analysis_columns_order = schema.Tuple(
+        title=_(
+            u"title_senaitesetup_wsview_columns_order",
+            default=u"Worksheet view analysis columns"
+        ),
+        description=_(
+            u"description_senaitesetup_wsview_columns_order",
+            default=u"Select which columns to display in "
+                    u"worksheet analysis listings. The "
+                    u"order of selection determines the "
+                    u"display order. Unselected columns "
+                    u"are hidden. Leave empty to show all "
+                    u"columns in default order."
+        ),
+        value_type=schema.Choice(
+            vocabulary=("senaite.core.vocabularies.worksheet_analysis_columns")
+        ),
+        required=False,
+    )
+
     # Appearance
     worksheet_layout = schema.Choice(
         title=_(
@@ -1043,39 +1083,43 @@ class ISetupSchema(model.Schema):
         vocabulary=schema.vocabulary.SimpleVocabulary([
             schema.vocabulary.SimpleTerm("None", "None", _(u"None")),
             schema.vocabulary.SimpleTerm("register", "register",
-                                          _(u"Register")),
+                                         _(u"Register")),
             schema.vocabulary.SimpleTerm("receive", "receive", _(u"Receive")),
         ]),
         required=False,
         default="None",
     )
 
-    auto_sticker_template = schema.TextLine(
+    auto_sticker_template = schema.Choice(
         title=_(u"Default Sticker Template"),
         description=_(
             u"Select the default sticker template used for automatic printing."
         ),
+        vocabulary="senaite.core.vocabularies.stickers",
+        default=u"Code_128_1x48mm.pt",
         required=False,
     )
 
-    small_sticker_template = schema.TextLine(
+    small_sticker_template = schema.Choice(
         title=_(u"Small Sticker Template"),
         description=_(
             u"Choose the default template for 'small' stickers. Note: "
             u"Sample-specific 'small' stickers are configured based on their "
             u"sample type."
         ),
+        vocabulary="senaite.core.vocabularies.stickers",
         default=u"Code_128_1x48mm.pt",
         required=False,
     )
 
-    large_sticker_template = schema.TextLine(
+    large_sticker_template = schema.Choice(
         title=_(u"Large Sticker Template"),
         description=_(
             u"Choose the default template for 'large' stickers. Note: "
             u"Sample-specific 'large' stickers are configured based on their "
             u"sample type."
         ),
+        vocabulary="senaite.core.vocabularies.stickers",
         default=u"Code_128_1x72mm.pt",
         required=False,
     )
@@ -1216,6 +1260,8 @@ class ISetupSchema(model.Schema):
             "rejection_reasons",
             "default_number_of_ars_to_add",
             "max_number_of_samples_add",
+            "sampleview_analysis_columns_order",
+            "worksheetview_analysis_columns_order",
         ]
     )
 
@@ -1989,6 +2035,42 @@ class Setup(Container):
         """
         value = api.to_int(value, default=None)
         mutator = self.mutator("max_number_of_samples_add")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getSampleviewAnalysisColumnsOrder(self):
+        """Returns the sample view analysis columns order
+        """
+        accessor = self.accessor(
+            "sampleview_analysis_columns_order"
+        )
+        return accessor(self) or ()
+
+    @security.protected(permissions.ManagePortal)
+    def setSampleviewAnalysisColumnsOrder(self, value):
+        """Set the sample view analysis columns order
+        """
+        mutator = self.mutator(
+            "sampleview_analysis_columns_order"
+        )
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getWorksheetviewAnalysisColumnsOrder(self):
+        """Returns the worksheet view analysis columns order
+        """
+        accessor = self.accessor(
+            "worksheetview_analysis_columns_order"
+        )
+        return accessor(self) or ()
+
+    @security.protected(permissions.ManagePortal)
+    def setWorksheetviewAnalysisColumnsOrder(self, value):
+        """Set the worksheet view analysis columns order
+        """
+        mutator = self.mutator(
+            "worksheetview_analysis_columns_order"
+        )
         return mutator(self, value)
 
     @security.protected(permissions.View)

@@ -34,7 +34,7 @@ from bika.lims.utils import get_progress_bar_html
 from bika.lims.utils import getUsers
 from DateTime import DateTime
 from plone.memoize import view
-from senaite.app.listing import ListingView
+from senaite.core.browser.listing.base import ListingView
 from senaite.core.api import dtime
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.i18n import translate as t
@@ -78,6 +78,10 @@ ANALYSES_NUM_TPL_HTML = Template("""<div class="d-flex flex-row">
 class SamplesView(ListingView):
     """Listing View for Samples (AnalysisRequest content type) in the System
     """
+
+    edit_icon_column = "getId"
+    # Open the SENAITE sample view (not the generic /edit form)
+    edit_view = ""
 
     def __init__(self, context, request):
         super(SamplesView, self).__init__(context, request)
@@ -210,7 +214,6 @@ class SamplesView(ListingView):
             ("getSamplePointTitle", {
                 "title": _("Sample Point"),
                 "sortable": True,
-                "index": "getSamplePointTitle",
                 "toggle": False}),
             ("getStorageLocation", {
                 "title": _("Storage Location"),

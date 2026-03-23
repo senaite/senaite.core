@@ -19,15 +19,16 @@
 # Some rights reserved, see README and LICENSE.
 
 import six
-
 from AccessControl import ClassSecurityInfo
+from Acquisition import aq_base
 from bika.lims import APIError
-from Products.Archetypes.Field import Field, StringField
-from bika.lims import logger
 from bika.lims import api
+from bika.lims import logger
 from bika.lims.interfaces.field import IUIDReferenceField
-from persistent.list import PersistentList
 from persistent.dict import PersistentDict
+from persistent.list import PersistentList
+from Products.Archetypes.Field import Field
+from Products.Archetypes.Field import StringField
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
 
@@ -282,8 +283,7 @@ def get_backreferences(context, relationship=None, as_brains=None):
       dictionary.  This value can then be modified in-place, to edit the stored
       backreferences.
     """
-
-    instance = context.aq_base
+    instance = aq_base(context)
     raw_backrefs = get_storage(instance)
 
     if not relationship:

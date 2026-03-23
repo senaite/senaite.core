@@ -114,6 +114,36 @@ class AnalysisServiceInfoView(BrowserView):
             return None
         return self.get_analysis_or_service().getCalculation()
 
+    def get_calculation_version(self):
+        """Return the calculation version to display.
+
+        For an analysis, returns the version snapshotted at linking time.
+        For a service, returns the current version of its calculation.
+        Returns None if no version is available.
+        """
+        analysis = self.get_analysis()
+        if analysis:
+            version = analysis.getCalculationVersion()
+            return version if version else None
+        calc = self.get_calculation()
+        if calc:
+            return api.get_version(calc)
+        return None
+
+    def get_calculation_formula(self):
+        """Return the formula to display.
+
+        For an analysis, returns the formula snapshotted at linking time.
+        For a service, returns the current formula of its calculation.
+        """
+        analysis = self.get_analysis()
+        if analysis:
+            return analysis.getCalculationFormula() or ""
+        calc = self.get_calculation()
+        if calc:
+            return calc.getFormula() or ""
+        return ""
+
     def get_dependent_services(self):
         if not self.get_calculation():
             return []

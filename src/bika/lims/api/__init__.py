@@ -69,6 +69,7 @@ from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import base_hasattr
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
+from senaite.core.events.lifecycle import AfterAPICreatedObjectEvent
 from senaite.core.interfaces import IContact
 from senaite.core.interfaces import IContacts
 from senaite.core.interfaces import ITemporaryObject
@@ -263,6 +264,9 @@ def create(container, portal_type, *args, **kwargs):
         # Manually reindex the object to ensure all indexes are updated
         obj.reindexObject()
         take_snapshot(obj, action="create")
+
+        # notify that the object was created using api.create
+        notify(AfterAPICreatedObjectEvent(obj))
 
     return obj
 
@@ -632,7 +636,7 @@ def is_supermodel(brain_or_object):
 
     :param brain_or_object: A single catalog brain or content object
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
-    :returns: True if the object is a catalog brain
+    :returns: True if the object is a supermodel
     :rtype: bool
     """
     # avoid circular imports
@@ -1386,7 +1390,9 @@ def get_catalogs_for(brain_or_object, default=PORTAL_CATALOG):
     # => Lookup catalogs by FTI
     if len(catalogs) == 0:
         fti = get_fti(portal_type)
-        if fti.product:
+        if fti is None:
+            catalogs = []
+        elif fti.product:
             # AT content type
             # => Looup via archetype_tool
             archetype_tool = get_tool("archetype_tool")
@@ -1457,20 +1463,6 @@ def get_roles_for_permission(permission, brain_or_object):
     return sorted(allowed)
 
 
-def is_versionable(brain_or_object, policy='at_edit_autoversion'):
-    """Checks if the passed in object is versionable.
-
-    :param brain_or_object: A single catalog brain or content object
-    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
-    :returns: True if the object is versionable
-    :rtype: bool
-    """
-    pr = get_tool("portal_repository")
-    obj = get_object(brain_or_object)
-    return pr.supportsPolicy(obj, 'at_edit_autoversion') \
-        and pr.isVersionable(obj)
-
-
 def get_version(brain_or_object):
     """Get the version of the current object
 
@@ -1479,10 +1471,8 @@ def get_version(brain_or_object):
     :returns: The current version of the object, or None if not available
     :rtype: int or None
     """
-    obj = get_object(brain_or_object)
-    if not is_versionable(obj):
-        return None
-    return getattr(aq_base(obj), "version_id", 0)
+    from bika.lims.api.snapshot import get_version
+    return get_version(get_object(brain_or_object))
 
 
 def get_view(name, context=None, request=None, default=None):

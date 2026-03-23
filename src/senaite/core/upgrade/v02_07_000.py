@@ -19,20 +19,24 @@
 # Some rights reserved, see README and LICENSE.
 
 
+import json
 from datetime import timedelta
 
 from bika.lims import api
 from bika.lims.api import safe_unicode as u
+from bika.lims.api import snapshot as snap_api
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
+from bika.lims.interfaces import IAuditable
 from bika.lims.interfaces import IInvalidated
 from bika.lims.utils import tmpID
+from persistent.list import PersistentList
 from plone.app.blob.field import BlobWrapper
-from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.utils import createContent
 from plone.namedfile.file import NamedBlobFile
-from persistent.list import PersistentList
-from bika.lims.browser.fields.uidreferencefield import get_backreferences
+from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.api import dtime
+from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
@@ -47,18 +51,23 @@ from senaite.core.schema.addressfield import BILLING_ADDRESS
 from senaite.core.schema.addressfield import NAIVE_ADDRESS
 from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
 from senaite.core.schema.addressfield import POSTAL_ADDRESS
-from senaite.core.setuphandlers import _run_import_step
 from senaite.core.schema.uidreferencefield import get_backref_storage
+from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_catalog_column
 from senaite.core.setuphandlers import add_catalog_index
 from senaite.core.setuphandlers import add_dexterity_items
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
-from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade.utils import copy_snapshots
+from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import permanently_allow_type_for
+from senaite.core.upgrade.utils import remove_at_portal_types
+from senaite.core.upgrade.utils import uncatalog_object
+from senaite.core.upgrade.v02_06_000 import get_setup_folder
 from zope.component import getMultiAdapter
 from zope.interface import alsoProvides
+from zope.interface import noLongerProvides
 
 version = "2.7.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -67,8 +76,11 @@ REMOVE_AT_TYPES = [
     "ARReport",
     "Contact",
     "Laboratory",
+    "Calculation",
+    "Calculations",
     "Multifile",
     "Worksheet",
+    "WorksheetFolder",
 ]
 
 PORTAL_FOLDER_ITEMS = {
@@ -147,7 +159,7 @@ def import_registry(tool):
     #   Module Products.CMFCore.exportimport.typeinfo, line 61, in _importNode
     #   Module Products.GenericSetup.utils, line 763, in _initProperties
     # ValueError: undefined property 'add_permission'
-    remove_at_portal_types(tool)
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     setup.runImportStepFromProfile(profile, "plone.app.registry")
 
@@ -176,6 +188,270 @@ def mark_invalidated_samples(tool):
 
 
 @upgradestep(product, version)
+def migrate_calculations_to_dx(tool):
+    """Converts existing calculations to Dexterity
+    """
+    logger.info("Convert Calculations to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # get the old container
+    origin = api.get_setup().get("bika_calculations")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("calculations")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # copy items from old -> new container
+    objects = origin.objectValues()
+    for src in objects:
+        migrate_calculation_to_dx(src, destination)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    remove_calculations_from_repositorytool()
+    strip_calc_interims_from_services(tool)
+    logger.info("Convert Calculations to Dexterity [DONE]")
+
+
+def migrate_calculation_to_dx(src, destination=None):
+    """Migrate an AT profile to DX in the destination folder
+
+    :param src: The source AT object
+    :param destination: The destination folder. If `None`, the parent folder of
+                        the source object is taken
+    """
+    # migrate the contents from the old AT container to the new one
+    portal_type = "Calculation"
+
+    if api.get_portal_type(src) != portal_type:
+        logger.error("Not a '{}' object: {}".format(portal_type, src))
+        return
+
+    # Create the object if it does not exist yet
+    src_id = src.getId()
+    target_id = src_id
+
+    # check if we migrate within the same folder
+    if destination is None:
+        # use a temporary ID for the migrated content
+        target_id = tmpID()
+        # set the destination to the source parent
+        destination = api.get_parent(src)
+
+    target = destination.get(target_id)
+    if not target:
+        # Don' use the api to skip the auto-id generation
+        target = createContent(portal_type, id=target_id)
+        destination._setObject(target_id, target)
+        target = destination._getOb(target_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = api.safe_unicode(src.Title() or "")
+    target.description = api.safe_unicode(src.Description() or "")
+    target.setPythonImports(src.getPythonImports() or [])
+    target.setFormula(src.getFormula())
+    target.setTestParameters(src.getTestParameters() or [])
+    target.setTestResult(src.getTestResult() or "")
+    target.setDependentServices(src.getDependentServices() or [])
+
+    target_interims = []
+    for src_interim in src.getInterimFields():
+        interim = src_interim.copy()
+        # ensure interim fields are unicode
+        interim["unit"] = src_interim.get("unit") or ""
+        interim["result_type"] = src_interim.get("result_type") or "numeric"
+        interim["choices"] = src_interim.get("choices") or ""
+        # AT uses 'wide'; DX IInterimField uses 'apply_wide'
+        wide = interim.pop("wide", False)
+        interim["apply_wide"] = bool(interim.pop("apply_wide", wide))
+        # AT boolean subfields submitted via :records:ignore_empty are absent
+        # when unchecked; normalise to explicit Python booleans so the DX
+        # form renders them correctly.
+        for key in ("allow_empty", "report", "hidden"):
+            interim[key] = bool(src_interim.get(key, False))
+        target_interims.append(interim)
+    target.setInterimFields(target_interims)
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter(
+        (src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID
+    migrator.copy_uid(src, target)
+
+    # create backrefs storage for newly created calculation and
+    # move there uids of AnalisysServiced dependendent on this calc
+    key = "CalculationDependentServices"
+    src_backreferences = get_backreferences(src, relationship=key)
+    target_storage = get_backref_storage(target)
+    target_backrefs = target_storage[key] = PersistentList()
+    for ref in src_backreferences:
+        target_backrefs.append(api.get_uid(ref))
+
+    # NOTE: We need to create the correct snapshot versions based on the stored
+    # versions of the repository tool
+    # migrator.copy_snapshots(src, target)
+    pr = api.get_tool("portal_repository")
+    for record in pr.getHistory(src, oldestFirst=True):
+        # get the calculation object
+        obj = record.object
+        # create a snapshot for this object
+        snapshot = snap_api.take_snapshot(obj, store=False)
+        snapshot["__metadata__"].update({
+            "actor": obj.Creator() or "migrator",
+            "modified": obj.modified().ISO(),
+            "snapshot_created": obj.created().ISO(),
+            "comments": "Migrated snapshot from AT version {0}".format(
+                record.version_id),
+        })
+        # store the snapshot on the target object
+        storage = snap_api.get_storage(target)
+        # append the JSON snapshot to the storage
+        storage.append(json.dumps(snapshot))
+
+    # provide the IAuditable interface to the target object
+    alsoProvides(target, IAuditable)
+
+    # disable the IVersioned interface on the source object
+    if IVersioned.providedBy(src):
+        noLongerProvides(src, IVersioned)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    # Stamp the snapshotted calculation data onto every Analysis that
+    # referenced this Calculation via the old AT reference_catalog entry.
+    # We set each field directly to avoid triggering the new setCalculation
+    # side-effects (interim merging) on already-initialized analyses and to
+    # avoid any dependency on the old Calculation AT field still existing.
+    rc = api.get_tool("reference_catalog")
+    refs = rc.getBackReferences(src, relationship="AnalysisCalculation")
+    calc_uid = api.get_uid(target)
+    calc_formula = target.getMinifiedFormula()
+    calc_imports = json.dumps(target.getPythonImports() or [])
+    calc_version = api.get_version(target) or 0
+    for ref in refs:
+        analysis = ref.getSourceObject()
+        if not analysis:
+            # This can happen for Analyses in stale Samples, i.e. those
+            # with a temporary ID.
+            logger.warn("Cannot migrate Analysis {}. No source object found."
+                        .format(ref))
+            continue
+        analysis.getField("CalculationUID").set(analysis, calc_uid)
+        analysis.getField("CalculationFormula").set(analysis, calc_formula)
+        analysis.getField("CalculationImports").set(analysis, calc_imports)
+        analysis.getField("CalculationVersion").set(analysis, calc_version)
+        analysis.deleteReferences(relationship="AnalysisCalculation")
+
+    logger.info("Migrated Calculation from %s -> %s" % (src, target))
+
+
+def strip_calc_interims_from_services(tool):
+    """Remove from each AnalysisService the interim fields that are already
+    defined by its assigned calculation.
+
+    After the AT->DX Calculation migration the system uses a clean separation:
+    calculation interims and service interims are stored independently.
+    When a sample analysis is created, calc interims come first and
+    service-only interims are appended. Services must therefore not carry
+    duplicates of the calc interims.
+    """
+    logger.info("Strip calculation interims from analysis services ...")
+    brains = api.search(
+        {"portal_type": "AnalysisService"}, SETUP_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info(
+                "Processing services {}/{}".format(num, total))
+        service = api.get_object(brain)
+        _strip_calc_interims(service)
+        service._p_deactivate()
+    logger.info(
+        "Strip calculation interims from analysis services [DONE]")
+
+
+def _strip_calc_interims(service):
+    """Remove calc-sourced interims from a single service in-place."""
+    calc = service.getCalculation()
+    if not calc:
+        return
+    calc_keywords = {
+        i.get("keyword") for i in calc.getInterimFields()
+    }
+    service_interims = service.getInterimFields()
+    filtered = [
+        i for i in service_interims
+        if i.get("keyword") not in calc_keywords
+    ]
+    if len(filtered) == len(service_interims):
+        return
+    service.setInterimFields(filtered)
+    logger.info(
+        "Stripped {0} calc interim(s) from service '{1}'".format(
+            len(service_interims) - len(filtered),
+            api.get_title(service)))
+
+
+def remove_calculations_from_repositorytool():
+    """Remove Calculation from Repository Tool
+    """
+    logger.info("Remove auto versioning for Calculations ...")
+    portal_type = "Calculation"
+
+    rt = api.get_tool("portal_repository")
+    mapping = rt._version_policy_mapping
+    mapping.pop(portal_type, None)
+    rt._version_policy_mapping = mapping
+    versionable_types = rt.getVersionableContentTypes()
+    if portal_type in versionable_types:
+        versionable_types.remove(portal_type)
+        rt.setVersionableContentTypes(versionable_types)
+
+    logger.info("Remove auto versioning for Calculation... [DONE]")
+
+
 def upgrade_catalog_modified_index(tool):
     """Update modified index in catalog
     """
@@ -215,32 +491,6 @@ def update_analysis_catalog_indexes(tool):
     logger.info("Update analysis catalog indexes [DONE]")
 
 
-def remove_at_portal_types(tool):
-    """Remove obsolete AT portal type information
-    """
-    logger.info("Remove AT types from portal_types tool ...")
-    pt = api.get_tool("portal_types")
-    for type_name in REMOVE_AT_TYPES:
-        fti = pt.getTypeInfo(type_name)
-        # keep DX FTIs
-        if isinstance(fti, DexterityFTI):
-            logger.info("Type '{}' is already a DX FTI".format(fti))
-            continue
-        elif not fti:
-            # Removed already
-            continue
-        pt.manage_delObjects(fti.getId())
-
-    # remove from AT's factory tool as well. This is necessary for the AT's
-    # factory_tool to not shortcut `createObject?type_name=` on object creation
-    ft = api.get_tool("portal_factory")
-    at_types = ft.getFactoryTypes().keys()
-    at_types = filter(lambda name: name not in REMOVE_AT_TYPES, at_types)
-    ft.manage_setPortalFactoryTypes(listOfTypeIds=at_types)
-
-    logger.info("Remove AT types from portal_types tool ... [DONE]")
-
-
 def get_destination_folder(folder_id):
     """Returns the folder with the given name
     """
@@ -266,7 +516,7 @@ def migrate_contacts_to_dx(tool):
     logger.info("Migrating Contacts to Dexterity ...")
 
     # Ensure old AT types are flushed first
-    remove_at_portal_types(tool)
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
@@ -411,7 +661,7 @@ def migrate_multifiles_to_dx(tool):
     logger.info("Migrating Multifiles to Dexterity ...")
 
     # Ensure old AT types are flushed first
-    remove_at_portal_types(tool)
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
@@ -685,7 +935,7 @@ def create_setup_contacts_folder(tool):
     logger.info("Creating Contacts container in setup folder ...")
 
     # Ensure old AT types are flushed first
-    remove_at_portal_types(tool)
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
@@ -717,7 +967,7 @@ def setup_custom_image_and_file_types(tool):
     """
     logger.info("Setup custom File and Image types ...")
     # Ensure old AT types are flushed first
-    remove_at_portal_types(tool)
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
     portal = tool.aq_inner.aq_parent
     tool.runImportStepFromProfile(profile, "typeinfo")
     tool.runImportStepFromProfile(profile, "workflow")
@@ -943,7 +1193,7 @@ def migrate_arreport_to_resultsreport(tool):
     logger.info("Migrating ARReport to Dexterity ResultsReport ...")
 
     # Remove AT portal type and install DX portal type
-    remove_at_portal_types(tool)
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
     tool.runImportStepFromProfile(profile, "typeinfo")
     tool.runImportStepFromProfile(profile, "workflow")
 
@@ -1143,21 +1393,25 @@ def migrate_worksheets_to_dx(tool):
     type_info = pt.getTypeInfo(portal)
     allowed_types = type_info.allowed_content_types
 
-    # temporarily append WorksheetFolder as an allowed type
-    portal_type = "WorksheetFolder"
-    if portal_type not in type_info.allowed_content_types:
-        type_info.allowed_content_types = allowed_types + (portal_type,)
+    origin = None
+    # check if WS folder is AT
+    ws_container = portal.get("worksheets", None)
+    if ws_container is not None and api.is_at_content(ws_container):
+        # temporarily append WorksheetFolder as an allowed type
+        portal_type = "WorksheetFolder"
+        if portal_type not in type_info.allowed_content_types:
+            type_info.allowed_content_types = allowed_types + (portal_type,)
 
-    # Rename old AT worksheets folder
-    portal.manage_renameObject("worksheets", "worksheets-old")
+        # Rename old AT worksheets folder
+        portal.manage_renameObject("worksheets", "worksheets-old")
 
-    # restore the allowed_types
-    type_info.allowed_content_types = allowed_types
+        # restore the allowed_types
+        type_info.allowed_content_types = allowed_types
 
-    origin = portal.get("worksheets-old")
+        origin = portal.get("worksheets-old")
 
     # ensure old AT types are flushed first
-    remove_at_portal_types(tool)
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
@@ -1169,7 +1423,8 @@ def migrate_worksheets_to_dx(tool):
     new_dx_folder = get_destination_folder("worksheets")
 
     # un-catalog the old container
-    uncatalog_object(origin)
+    if origin:
+        uncatalog_object(origin)
 
     # Find all AT Worksheet objects
     query = {"portal_type": "Worksheet"}
@@ -1187,7 +1442,7 @@ def migrate_worksheets_to_dx(tool):
         migrate_worksheet_to_dx(worksheet, new_dx_folder)
 
     # remove old AT folder
-    if len(origin) == 0:
+    if origin and len(origin) == 0:
         portal.manage_delObjects(["worksheets-old"])
 
     logger.info("Convert Worksheet's to Dexterity [DONE]")
@@ -1224,7 +1479,11 @@ def migrate_worksheet_to_dx(src, destination):
     :param src: The source AT object
     :param destination: The destination folder
     """
-    # src_id = src.getId()
+    if not api.is_at_content(src):
+        api.move_object(src, destination, check_constraints=False)
+        logger.info("Already migrated: {}".format(api.get_path(src)))
+        return
+
     target_id = tmpID()
 
     target = destination.get(target_id)
@@ -1316,3 +1575,81 @@ def migrate_worksheet_to_dx(src, destination):
     migrator.copy_id(src, target)
 
     logger.info("Migrated Worksheet from %s -> %s" % (src, target))
+
+
+@upgradestep(product, version)
+def migrate_analysis_columns_to_setup(tool):
+    """Migrate analysis columns order from registry to setup
+    """
+    logger.info(
+        "Migrating analysis columns order to setup ..."
+    )
+    from senaite.core.registry import get_registry_record
+    from senaite.core.vocabularies.setup import ANALYSIS_COLUMNS
+    from senaite.core.vocabularies.setup import WORKSHEET_ANALYSIS_COLUMNS
+
+    setup = api.get_senaite_setup()
+
+    # Migrate sample view columns
+    registry_sample = get_registry_record(
+        "sampleview_analysis_columns_order", default=[]
+    ) or []
+    if registry_sample:
+        all_keys = list(ANALYSIS_COLUMNS.keys())
+        # append missing columns in their default order
+        missing = [
+            k for k in all_keys if k not in registry_sample
+        ]
+        migrated = tuple(registry_sample) + tuple(missing)
+        setup.setSampleviewAnalysisColumnsOrder(migrated)
+        logger.info(
+            "Migrated sample view columns: %s" % list(migrated)
+        )
+
+    # Migrate worksheet view columns
+    registry_ws = get_registry_record(
+        "worksheetview_analysis_columns_order", default=[]
+    ) or []
+    if registry_ws:
+        all_keys = list(WORKSHEET_ANALYSIS_COLUMNS.keys())
+        # append missing columns in their default order
+        missing = [
+            k for k in all_keys if k not in registry_ws
+        ]
+        migrated = tuple(registry_ws) + tuple(missing)
+        setup.setWorksheetviewAnalysisColumnsOrder(migrated)
+        logger.info(
+            "Migrated worksheet view columns: %s"
+            % list(migrated)
+        )
+
+    logger.info(
+        "Migrating analysis columns order to setup [DONE]"
+    )
+
+
+@upgradestep(product, version)
+def reindex_labcontact_searchable_text(tool):
+    """Reindex contact catalog indexes for LabContact and SupplierContact
+
+    The listing_searchable_text, sortable_title and getParentUID adapters
+    were only registered for the new DX Contact type
+    (senaite.core.interfaces.IContact), causing the indexes to store no
+    data for the legacy AT LabContact and SupplierContact types. Explicit
+    ZCML registrations were added for bika.lims.interfaces.ILabContact and
+    bika.lims.interfaces.ISupplierContact. This step reindexes the affected
+    indexes so existing objects are correctly indexed.
+    """
+    indexes = [
+        "listing_searchable_text",
+        "sortable_title",
+        "getParentUID",
+    ]
+    for index in indexes:
+        logger.info(
+            "Reindexing %s in contact catalog ..." % index
+        )
+        reindex_index(CONTACT_CATALOG, index)
+        logger.info(
+            "Reindexing %s in contact catalog [DONE]" % index
+        )

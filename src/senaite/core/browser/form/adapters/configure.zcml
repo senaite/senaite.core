@@ -50,10 +50,16 @@
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".analysisservice.EditForm"/>
 
-  <!-- Edit Form: Calculation
-       XXX: Fix interface import! -->
+  <!-- Add Form: Calculation -->
   <adapter
-      for="bika.lims.interfaces.calculation.ICalculation
+      for="*
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      name="++add++Calculation"
+      factory=".calculation.EditForm"/>
+
+  <!-- Edit Form: Calculation -->
+  <adapter
+      for="senaite.core.interfaces.ICalculation
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".calculation.EditForm"/>
 

@@ -26,7 +26,7 @@ from bika.lims.utils import check_permission
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
 from Products.CMFCore.permissions import ModifyPortalContent
-from senaite.app.listing import ListingView
+from senaite.core.browser.listing.base import ListingView
 from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.config.registry import CLIENT_LANDING_PAGE
 from senaite.core.permissions import AddClient

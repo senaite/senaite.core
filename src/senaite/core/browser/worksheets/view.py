@@ -19,14 +19,13 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
-import json
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.memoize.view import memoize
-from senaite.app.listing import ListingView
+from senaite.core.browser.listing.base import ListingView
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
+from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import getUsers
 from bika.lims.utils import get_display_list
 from bika.lims.utils import get_link
@@ -45,6 +44,10 @@ class WorksheetsView(ListingView):
     """
     template = ViewPageTemplateFile("templates/view.pt")
 
+    # Open the worksheet manage view instead of the generic /edit form.
+    # No URL suffix needed — the manage view is the default view.
+    edit_view = "manage_results"
+
     def __init__(self, context, request):
         super(WorksheetsView, self).__init__(context, request)
 
@@ -58,7 +61,7 @@ class WorksheetsView(ListingView):
 
         self.context_actions = {
             _(u"listing_worksheets_action_add", default=u"Add"): {
-                "url": "worksheet_add",
+                "url": "add_worksheet",
                 "icon": "++resource++bika.lims.images/add.png",
                 "class": "worksheet_add",
                 "permission": AddWorksheet,
@@ -437,22 +440,6 @@ class WorksheetsView(ListingView):
         brains = self._get_instruments_brains()
         return get_display_list(brains)
 
-    def getTemplateInstruments(self):
-        """Returns worksheet templates as JSON
-        """
-        items = dict()
-        templates = self._get_worksheet_templates_brains()
-        for template in templates:
-            template_obj = api.get_object(template)
-            uid_template = api.get_uid(template_obj)
-            instrument = template_obj.getInstrument()
-            uid_instrument = ""
-            if instrument:
-                uid_instrument = api.get_uid(instrument)
-            items[uid_template] = uid_instrument
-
-        return json.dumps(items)
-
     def _get_worksheet_templates_brains(self):
         """Returns all active worksheet templates
 
@@ -461,6 +448,7 @@ class WorksheetsView(ListingView):
         query = {
             "portal_type": "WorksheetTemplate",
             "is_active": True,
+            "sort_on": "sortable_title",
         }
         return api.search(query, SETUP_CATALOG)
 
@@ -471,6 +459,7 @@ class WorksheetsView(ListingView):
         """
         query = {
             "portal_type": "Instrument",
-            "is_active": True
+            "is_active": True,
+            "sort_on": "sortable_title",
         }
         return api.search(query, SETUP_CATALOG)

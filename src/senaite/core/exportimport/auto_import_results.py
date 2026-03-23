@@ -67,9 +67,30 @@ class AutoImportResultsView(BrowserView):
         # return the concatenated logs
         return CR.join(self.logs)
 
+    def get_override_settings(self):
+        """Return override settings from request parameters
+
+        Reads ``override_non_empty`` and ``override_with_empty`` query
+        parameters (each ``0`` or ``1``).  Both default to ``0`` (False).
+
+        Example cron invocation::
+
+            curl -k -u admin:secret \\
+              'http://host/senaite/auto_import_results' \\
+              '?override_non_empty=1&override_with_empty=0'
+
+        :returns: [override_non_empty, override_with_empty] as booleans
+        """
+        override_non_empty = bool(
+            int(self.request.get("override_non_empty", 0)))
+        override_with_empty = bool(
+            int(self.request.get("override_with_empty", 0)))
+        return [override_non_empty, override_with_empty]
+
     def auto_import_results(self):
         """Auto import all new instrument import files
         """
+        override = self.get_override_settings()
         interfaces = []
         for brain in self.query_active_instruments():
             instrument = api.get_object(brain)
@@ -108,21 +129,27 @@ class AutoImportResultsView(BrowserView):
                                  instrument=instrument, interface=interface)
                         # skip already imported files
                         continue
-                    self.import_results(instrument, interface, folder, f)
+                    self.import_results(
+                        instrument, interface, folder, f, override=override)
 
             if not interfaces:
                 self.log("No active interfaces defined", instrument=instrument)
 
             self.log("Auto-Import finished")
 
-    def import_results(self, instrument, interface, folder, resultsfile):
+    def import_results(self, instrument, interface, folder, resultsfile,
+                       override=None):
         """Import resultsfile for instrument interface
 
         :param instrument: Instrument object
         :param interface: Interface name. e.g. generic.two_dimension
         :param folder: auto import folder path
         :param resultsfile: the filename of the imported file
+        :param override: override flags [override_non_empty, override_with_empty]
         """
+        if override is None:
+            override = [False, False]
+
         with open(os.path.join(folder, resultsfile), "r") as fileobj:
             wrapped = UploadFileWrapper(fileobj)
             parser = get_automatic_parser(interface, wrapped)
@@ -137,7 +164,8 @@ class AutoImportResultsView(BrowserView):
             tb = None
 
             # lookup automatic importer
-            importer = get_automatic_importer(interface, instrument, parser)
+            importer = get_automatic_importer(
+                interface, instrument, parser, override=override)
             try:
                 importer.process()
             except Exception:

@@ -157,6 +157,17 @@ input.button-num-positions {
   border-radius: .2rem;
 }
 
+input.hide-title {
+    + label {
+        display: none;
+    }
+}
+
+span.options:has(> input.hide-title) {
+    display: flex;
+    justify-content: center;
+}
+
 /* TinyMCE editor content padding to prevent cursor from being hidden
    by focus border */
 .mce-content-body {

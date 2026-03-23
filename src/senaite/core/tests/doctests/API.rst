@@ -94,6 +94,50 @@ Created objects are properly indexed::
     >>> brains[0].getKeyword
     'DUM'
 
+The core's ``IAfterAPICreatedObjectEvent`` is fired after a DX content is
+created via ``api.create()``. This event is useful for subscribers that need to
+act on the object after it has been fully initialized (UID assigned, fields
+set, snapshot taken)::
+
+    >>> from senaite.core.events.lifecycle import IAfterAPICreatedObjectEvent
+    >>> from zope.component import getGlobalSiteManager
+
+Register a dummy event handler that records events::
+
+    >>> initialized_events = []
+    >>> def on_initialized(obj, event):
+    ...     initialized_events.append((obj, event))
+    >>> gsm = getGlobalSiteManager()
+    >>> gsm.registerHandler(on_initialized, (None, IAfterAPICreatedObjectEvent))
+
+Create a DX content type via ``api.create()``::
+
+    >>> sampletype = api.create(
+    ...     portal.setup.sampletypes, "SampleType",
+    ...     title="Test SampleType", Prefix="TST")
+
+The event handler was called with the created object::
+
+    >>> len(initialized_events) > 0
+    True
+    >>> obj, event = initialized_events[-1]
+    >>> obj == sampletype
+    True
+    >>> IAfterAPICreatedObjectEvent.providedBy(event)
+    True
+
+The object is fully initialized when the event fires (has UID, is indexed)::
+
+    >>> api.get_uid(obj) is not None
+    True
+    >>> obj.Title()
+    'Test SampleType'
+
+Cleanup the event handler::
+
+    >>> gsm.unregisterHandler(on_initialized, (None, IAfterAPICreatedObjectEvent))
+    True
+
 
 Editing Content
 ...............
@@ -1113,38 +1157,21 @@ for the passed in object::
 
 
 
-Checking if an Object is Versionable
-....................................
-
-NOTE: Versioning is outdated!
-      This code will be removed as soon as we drop the `HistoryAwareReferenceField`
-      reference between Calculation and Analysis.
-
-Instruments are not versionable::
-
-    >>> api.is_versionable(instrument1)
-    False
-
-Calculations are versionable::
-
-    >>> calculations = bika_setup.bika_calculations
-    >>> calc = api.create(calculations, "Calculation", title="Calculation 1")
-
-    >>> api.is_versionable(calc)
-    True
-
-
 Getting the Version of an Object
 ................................
 
 This function returns the version as an integer::
 
+    >>> calc = api.create(portal.setup.calculations, "Calculation", title="Test Calculation")
+
     >>> api.get_version(calc)
     0
 
-Calling `processForm` bumps the version::
+Calling the modified event will create a new version::
 
-    >>> calc.processForm()
+    >>> from zope.lifecycleevent import modified
+
+    >>> modified(calc)
     >>> api.get_version(calc)
     1
 

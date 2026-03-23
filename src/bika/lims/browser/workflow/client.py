@@ -52,7 +52,7 @@ class WorkflowActionDownloadReportsAdapter(RequestContextAware):
                     _("Could not load PDF for sample {}"
                       .format(sample_id)), "warning")
                 continue
-            pdf.filename = "{}.pdf".format(sample_id)
+            pdf.filename = api.safe_unicode("{}.pdf".format(sample_id))
             pdfs.append(pdf)
 
         if len(pdfs) == 1:

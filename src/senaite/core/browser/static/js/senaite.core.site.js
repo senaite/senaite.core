@@ -20,6 +20,9 @@ window.SiteView = class SiteView {
     this.on_numeric_field_input = this.on_numeric_field_input.bind(this);
     this.on_numeric_field_keypress = this.on_numeric_field_keypress.bind(this);
     this.on_overlay_panel_click = this.on_overlay_panel_click.bind(this);
+    this.on_modal_link_click = this.on_modal_link_click.bind(this);
+    this.on_iframe_edit_link_click = this.on_iframe_edit_link_click.bind(this);
+    this.open_iframe_edit_modal = this.open_iframe_edit_modal.bind(this);
   }
 
   load() {
@@ -42,6 +45,9 @@ window.SiteView = class SiteView {
     });
 
     $(document).on("click", "a.overlay_panel", this.on_overlay_panel_click);
+    $(document).on("click", "a.modal_link", this.on_modal_link_click);
+    $(document).on(
+      "click", "a.iframe-edit-link", this.on_iframe_edit_link_click);
 
     $(document).on({
       ajaxStart: () => $("body").addClass("loading"),
@@ -149,25 +155,269 @@ window.SiteView = class SiteView {
     let val = $el.val();
 
     // Replace comma with dot
-    val = val.replace(',', '.');
+    val = val.replace(/,/g, '.');
 
-    // Keep only digits, dot, and minus
-    val = val.replace(/[^0-9.-]/g, '');
-
-    // Allow only one leading minus
-    if (val.indexOf('-') > 0) {
-      val = val.replace(/-/g, '');
-    } else if ((val.match(/-/g) || []).length > 1) {
-      val = '-' + val.replace(/-/g, '');
-    }
-
-    // Remove all but the first dot
-    const firstDotIndex = val.indexOf('.');
-    if (firstDotIndex !== -1) {
-      val = val.slice(0, firstDotIndex + 1) + val.slice(firstDotIndex + 1).replace(/\./g, '');
-    }
+    // Strip characters not valid in numeric expressions
+    // Allow: digits, dot, minus, plus, e/E (exponential),
+    //        < and > (detection limit operators), spaces
+    val = val.replace(/[^0-9.eE<>\-+\s]/g, '');
 
     $el.val(val);
+  }
+
+  on_modal_link_click(e) {
+    e.preventDefault();
+    var $el = $(e.currentTarget);
+    var url = $el.attr("href");
+    var form_id = $el.data("form_id");
+    var listings = window.senaite &&
+                   window.senaite.core &&
+                   window.senaite.core.listings;
+    // load the modal via the listing
+    var listing = listings && listings[form_id];
+    if (listing) {
+      var parsed = new URL(url, window.location);
+      var uid = parsed.searchParams.get("uid");
+      listing.loadModal(url, [uid]);
+    }
+  }
+
+  on_iframe_edit_link_click(e) {
+    e.preventDefault();
+    const $el = $(e.currentTarget);
+    const url = $el.attr("href");
+    const title = $el.data("title") || $el.text().trim() || "";
+    // edit_view="" means the modal shows the object's own view (no /edit);
+    // in that case the modal never auto-closes on navigation.
+    const edit_view = $el.data("edit-view") !== undefined
+      ? String($el.data("edit-view"))
+      : "edit";
+    this.open_iframe_edit_modal(url, title, edit_view);
+  }
+
+  isolate_content_area(doc) {
+    if (!doc || !doc.body) return;
+
+    // AT edit forms use #content; Dexterity forms have #content-core
+    const content = doc.getElementById("content-core")
+                 || doc.getElementById("content");
+    if (!content) return;
+
+    // Walk up to body, collecting every ancestor of the content node
+    const ancestors = new Set();
+    let node = content;
+    while (node && node !== doc.body) {
+      ancestors.add(node);
+      node = node.parentElement;
+    }
+
+    // Recursively hide every element not on the ancestor path.
+    // Stop at the content node itself — its children must remain visible.
+    // Inline display:none preserves DOM structure so MutationObservers
+    // in editform.js / search.js keep working.
+    function hide_non_ancestors(parent) {
+      if (parent === content) return;
+      Array.from(parent.children).forEach(function(child) {
+        if (!ancestors.has(child)) {
+          child.style.setProperty("display", "none", "important");
+        } else {
+          hide_non_ancestors(child);
+        }
+      });
+    }
+    hide_non_ancestors(doc.body);
+
+    doc.body.style.padding = "0";
+    doc.body.style.margin = "0";
+    // Allow the iframe body to scroll so that absolutely-positioned
+    // dropdowns extending below the viewport become reachable.
+    // The extra padding-bottom ensures there is always scrollable space
+    // below the last form field even when the form fills the viewport.
+    doc.body.style.overflowY = "auto";
+    content.style.paddingBottom = "30vh";
+
+    // Suppress pencil icons inside the iframe to prevent nested modals.
+    const style = doc.createElement("style");
+    style.textContent = ".iframe-edit-icon { display: none !important; }";
+    (doc.head || doc.body).appendChild(style);
+  }
+
+  inject_change_detector(iwin) {
+    // Detect form saves: any form submit where the triggering button is
+    // not a cancel action sends a postMessage to the parent.
+    try {
+      const idoc = iwin.document;
+      idoc.querySelectorAll("form").forEach(function(form) {
+        form.addEventListener("submit", function() {
+          const active = idoc.activeElement;
+          const label = active
+            ? (active.name || active.value || "").toLowerCase()
+            : "";
+          if (label.indexOf("cancel") >= 0) return;
+          window.parent.postMessage("senaite_changes_made", "*");
+        });
+      });
+      // Detect AJAX writes (non-GET requests = data mutation)
+      const orig_open = iwin.XMLHttpRequest.prototype.open;
+      iwin.XMLHttpRequest.prototype.open = function(method) {
+        if (method && method.toUpperCase() !== "GET") {
+          window.parent.postMessage("senaite_changes_made", "*");
+        }
+        return orig_open.apply(this, arguments);
+      };
+    } catch (ex) {
+      // Ignore cross-origin or access errors
+    }
+  }
+
+  open_iframe_edit_modal(url, title, edit_view) {
+    // edit_view controls the load behaviour:
+    //   "edit" (default) — auto-close when the URL no longer looks like
+    //                      an edit form (save/cancel detected).
+    //   ""               — always hide chrome, never auto-close; the user
+    //                      closes the modal manually (e.g. sample view).
+    if (edit_view === undefined) edit_view = "edit";
+    const MODAL_ID = "senaite-iframe-edit-modal";
+    let $modal = $(`#${MODAL_ID}`);
+
+    if (!$modal.length) {
+      $modal = $(`
+        <div id="${MODAL_ID}" class="modal fade" tabindex="-1" role="dialog">
+          <style>
+            #${MODAL_ID} .modal-dialog {
+              max-width: 90vw;
+              margin: 1rem auto;
+              /* Bootstrap sets pointer-events:none on .modal-dialog;
+                 override so jQuery UI resize handles receive events. */
+              pointer-events: auto;
+            }
+            #${MODAL_ID} .modal-header {
+              cursor: move;
+            }
+            @media (max-width: 576px) {
+              #${MODAL_ID} .modal-dialog {
+                max-width: 100%;
+                width: 100%;
+                margin: 0;
+              }
+              #${MODAL_ID} .modal-content {
+                border-radius: 0;
+                min-height: 100vh;
+              }
+              #${MODAL_ID} iframe {
+                height: calc(100vh - 56px) !important;
+              }
+            }
+          </style>
+          <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body p-0">
+                <iframe style="width:100%;height:80vh;border:0;opacity:0;"
+                        src="about:blank"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>`);
+      $("body").append($modal);
+    }
+
+    $modal.find(".modal-title").text(title);
+
+    const $iframe = $modal.find("iframe");
+    $iframe.off("load").on("load", () => {
+      try {
+        const iwin = $iframe[0].contentWindow;
+        const href = iwin.location.href;
+        // Forward ESC from the iframe document to close the parent modal.
+        // Bootstrap's keyboard handler only listens on the parent document,
+        // but focus lives inside the iframe when the user interacts with it.
+        $(iwin.document).off("keydown.iframe_esc").on("keydown.iframe_esc", (ev) => {
+          if (ev.key === "Escape" || ev.keyCode === 27) {
+            $modal.modal("hide");
+          }
+        });
+
+        const is_edit_form = edit_view === "edit";
+        if (!is_edit_form) {
+          // Non-edit view (e.g. sample view, manage_results): always hide
+          // surrounding page elements and keep the modal open until the
+          // user closes it manually.
+          this.isolate_content_area(iwin.document);
+          this.inject_change_detector(iwin);
+          $iframe.css("opacity", "1");
+        } else if (href.match(/\/(@@)?(base_)?edit(\?.*)?$/)) {
+          // Still on an edit form (AT uses base_edit as form action,
+          // so a validation error lands on /base_edit not /edit) —
+          // isolate content on every load
+          // (initial load and re-render on validation errors)
+          this.isolate_content_area(iwin.document);
+          this.inject_change_detector(iwin);
+          $iframe.css("opacity", "1");
+        } else {
+          // Navigated away from the edit form: save or cancel triggered
+          $modal.modal("hide");
+        }
+      } catch (ex) {
+        // Ignore cross-origin access errors
+      }
+    });
+
+    // Track whether changes were saved in the iframe.
+    // Set to true by postMessage from inject_change_detector().
+    let changes_made = false;
+    $(window).off("message.iframe_edit").on("message.iframe_edit", (ev) => {
+      if (ev.originalEvent.data === "senaite_changes_made") {
+        changes_made = true;
+      }
+    });
+
+    $iframe.css("opacity", "0").attr("src", url);
+
+    // Reload only when changes were actually saved.
+    $modal.off("hidden.bs.modal").on("hidden.bs.modal", () => {
+      $(window).off("message.iframe_edit");
+      if (changes_made) {
+        window.location.reload();
+      }
+    });
+
+    // Enable dragging and resizing once the modal is visible.
+    // Bootstrap's margin:auto conflicts with jQuery UI's position
+    // management, so we reset margin to 0 before the first drag/resize.
+    $modal.off("shown.bs.modal").on("shown.bs.modal", () => {
+      const $dialog = $modal.find(".modal-dialog");
+      const $iframe = $modal.find("iframe");
+
+      const reset_margin = () => $dialog.css("margin", "0");
+
+      if (typeof $dialog.draggable === "function") {
+        $dialog.draggable({
+          handle: ".modal-header",
+          // No containment — allow dragging partially off-screen
+          start: reset_margin
+        });
+      }
+
+      if (typeof $dialog.resizable === "function") {
+        $dialog.resizable({
+          handles: "ne, nw, se, sw",
+          start: reset_margin,
+          resize(_event, ui) {
+            // Keep the iframe filling the modal body as it resizes
+            const header_h = $dialog.find(".modal-header").outerHeight();
+            $iframe.css("height", (ui.size.height - header_h) + "px");
+          }
+        });
+      }
+    });
+
+    $modal.modal("show");
   }
 
   on_overlay_panel_click(e) {
