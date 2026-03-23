@@ -1309,18 +1309,33 @@ def migrate_worksheets_to_dx(tool):
     total = len(brains)
     logger.info("Found {} Worksheet objects to migrate".format(total))
 
+    catalog = api.get_tool(WORKSHEET_CATALOG)
+    problematic = []
     for num, brain in enumerate(brains, start=1):
-        # Get the object
-        worksheet = api.get_object(brain)
-
         if num % 100 == 0:
             logger.info(
                 "Progress: {}/{} worksheets migrated".format(num, total))
+        brain_path = brain.getPath()
+        try:
+            worksheet = api.get_object(brain)
+        except (AttributeError, KeyError) as exc:
+            logger.warn(
+                "Cannot get Worksheet at %s: %s" % (brain_path, exc))
+            catalog.uncatalog_object(brain_path)
+            problematic.append(brain_path)
+            continue
         migrate_worksheet_to_dx(worksheet, new_dx_folder)
 
     # remove old AT folder
     if origin and len(origin) == 0:
         portal.manage_delObjects(["worksheets-old"])
+
+    if problematic:
+        logger.warn(
+            "Migration finished with {} skipped Worksheet(s):".format(
+                len(problematic)))
+        for path in problematic:
+            logger.warn("  Stale brain removed, AT WS at: %s" % path)
 
     logger.info("Convert Worksheet's to Dexterity [DONE]")
 
