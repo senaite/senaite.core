@@ -24,9 +24,7 @@ from bika.lims.interfaces import IListingSearchableTextProvider
 from plone.indexer import indexer
 from senaite.core.interfaces.catalog import IClientCatalog
 from zope.component import getAdapters
-
-
-CLIENT_CATALOG_ID = "senaite_catalog_client"
+from senaite.core.catalog import CLIENT_CATALOG
 
 
 @indexer(IClient, IClientCatalog)
@@ -50,7 +48,7 @@ def client_searchable_text(instance):
     tokens.update(instance.getPrintAddress())
 
     # allow add-ons to contribute additional tokens via named adapters
-    catalog = api.get_tool(CLIENT_CATALOG_ID)
+    catalog = api.get_tool(CLIENT_CATALOG)
     providers = getAdapters(
         (instance, api.get_request(), catalog),
         IListingSearchableTextProvider)
