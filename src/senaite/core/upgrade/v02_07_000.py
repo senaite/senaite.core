@@ -1095,9 +1095,16 @@ def migrate_arreport_to_resultsreport(tool):
         # Get the object
         arreport = api.get_object(brain)
 
-        if num % 100 == 0:
+        if num % 1000 == 0:
             logger.info("Progress: {}/{} reports migrated".format(num, total))
-            transaction.savepoint()
+            # NOTE: We do a full transaction commit to avoid the following
+            # error during this upgrade:
+            #
+            # Traceback (innermost last):
+            #   [...]
+            #   Module ZEO.TransactionBuffer, line 56, in store
+            # IOError: [Errno 28] No space left on device
+            transaction.commit()
 
         # Skip if already migrated to Dexterity
         if not api.is_at_content(arreport):
