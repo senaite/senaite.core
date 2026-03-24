@@ -20,6 +20,7 @@
 
 
 import json
+import transaction
 from datetime import timedelta
 
 from bika.lims import api
@@ -212,8 +213,10 @@ def migrate_calculations_to_dx(tool):
 
     # copy items from old -> new container
     objects = origin.objectValues()
-    for src in objects:
+    for num, src in enumerate(objects, start=1):
         migrate_calculation_to_dx(src, destination)
+        if num % 100 == 0:
+            transaction.savepoint()
 
     # copy snapshots for the container
     copy_snapshots(origin, destination)
@@ -227,6 +230,34 @@ def migrate_calculations_to_dx(tool):
     remove_calculations_from_repositorytool()
     strip_calc_interims_from_services(tool)
     logger.info("Convert Calculations to Dexterity [DONE]")
+
+
+def _delete_orphaned_reference(rc, ref):
+    """Remove a Reference object whose source no longer exists.
+
+    AT's _deleteReference returns early when getSourceObject() is None,
+    leaving both the ZCatalog index entry and the Reference object itself
+    in the ZODB. This function handles both:
+
+    1. Uncatalogs the brain from rc._catalog so future getBackReferences
+       calls do not find this entry.
+    2. Deletes the Reference object from its annotation parent container
+       to avoid leaving orphaned ZODB data.
+
+    :param rc: The reference_catalog tool
+    :param ref: The orphaned AT Reference object
+    """
+    try:
+        path = "/".join(ref.getPhysicalPath())
+        rc._catalog.uncatalog_object(path)
+    except (AttributeError, KeyError, TypeError):
+        pass
+    try:
+        parent = ref.aq_parent
+        if parent is not None:
+            parent._delObject(ref.id)
+    except (AttributeError, KeyError, TypeError):
+        pass
 
 
 def migrate_calculation_to_dx(src, destination=None):
@@ -368,19 +399,28 @@ def migrate_calculation_to_dx(src, destination=None):
     calc_formula = target.getMinifiedFormula()
     calc_imports = json.dumps(target.getPythonImports() or [])
     calc_version = api.get_version(target) or 0
+    stale_refs = 0
     for ref in refs:
         analysis = ref.getSourceObject()
         if not analysis:
-            # This can happen for Analyses in stale Samples, i.e. those
-            # with a temporary ID.
-            logger.warn("Cannot migrate Analysis {}. No source object found."
-                        .format(ref))
+            # Source Analysis no longer exists (deleted without proper
+            # reference cleanup). AT's _deleteReference bails out when
+            # sobj is None, so uncatalog the brain directly to prevent
+            # this stale entry from appearing in future catalog queries.
+            stale_refs += 1
+            logger.debug(
+                "Stale AnalysisCalculation ref skipped: {}".format(ref))
+            _delete_orphaned_reference(rc, ref)
             continue
         analysis.getField("CalculationUID").set(analysis, calc_uid)
         analysis.getField("CalculationFormula").set(analysis, calc_formula)
         analysis.getField("CalculationImports").set(analysis, calc_imports)
         analysis.getField("CalculationVersion").set(analysis, calc_version)
         analysis.deleteReferences(relationship="AnalysisCalculation")
+    if stale_refs:
+        logger.warn(
+            "Removed {} stale AnalysisCalculation ref(s) for: {}".format(
+                stale_refs, api.get_path(src)))
 
     logger.info("Migrated Calculation from %s -> %s" % (src, target))
 
@@ -403,6 +443,7 @@ def strip_calc_interims_from_services(tool):
         if num and num % 100 == 0:
             logger.info(
                 "Processing services {}/{}".format(num, total))
+            transaction.savepoint()
         service = api.get_object(brain)
         _strip_calc_interims(service)
         service._p_deactivate()
@@ -533,6 +574,7 @@ def migrate_contacts_to_dx(tool):
 
         if num % 100 == 0:
             logger.info("Progress: {}/{} contacts migrated".format(num, total))
+            transaction.savepoint()
 
         # Skip if already migrated to Dexterity
         if not api.is_at_content(contact):
@@ -678,6 +720,7 @@ def migrate_multifiles_to_dx(tool):
 
         if num % 100 == 0:
             logger.info("Progress: {}/{} multifiles migrated".format(num, total))
+            transaction.savepoint()
 
         # Skip if already migrated to Dexterity
         if not api.is_at_content(multifile):
@@ -867,6 +910,7 @@ def link_contact_users(tool):
         if num and num % 100 == 0:
             logger.info("Linking contacts to users {0}/{1}"
                         .format(num, total))
+            transaction.savepoint()
 
         contact = api.get_object(brain)
         username = contact.getUsername()
@@ -1088,8 +1132,16 @@ def migrate_arreport_to_resultsreport(tool):
         # Get the object
         arreport = api.get_object(brain)
 
-        if num % 100 == 0:
+        if num % 1000 == 0:
             logger.info("Progress: {}/{} reports migrated".format(num, total))
+            # NOTE: We do a full transaction commit to avoid the following
+            # error during this upgrade:
+            #
+            # Traceback (innermost last):
+            #   [...]
+            #   Module ZEO.TransactionBuffer, line 56, in store
+            # IOError: [Errno 28] No space left on device
+            transaction.commit()
 
         # Skip if already migrated to Dexterity
         if not api.is_at_content(arreport):
@@ -1309,18 +1361,34 @@ def migrate_worksheets_to_dx(tool):
     total = len(brains)
     logger.info("Found {} Worksheet objects to migrate".format(total))
 
+    catalog = api.get_tool(WORKSHEET_CATALOG)
+    problematic = []
     for num, brain in enumerate(brains, start=1):
-        # Get the object
-        worksheet = api.get_object(brain)
-
         if num % 100 == 0:
             logger.info(
                 "Progress: {}/{} worksheets migrated".format(num, total))
+            transaction.savepoint()
+        brain_path = brain.getPath()
+        try:
+            worksheet = api.get_object(brain)
+        except (AttributeError, KeyError) as exc:
+            logger.warn(
+                "Cannot get Worksheet at %s: %s" % (brain_path, exc))
+            catalog.uncatalog_object(brain_path)
+            problematic.append(brain_path)
+            continue
         migrate_worksheet_to_dx(worksheet, new_dx_folder)
 
     # remove old AT folder
     if origin and len(origin) == 0:
         portal.manage_delObjects(["worksheets-old"])
+
+    if problematic:
+        logger.warn(
+            "Migration finished with {} skipped Worksheet(s):".format(
+                len(problematic)))
+        for path in problematic:
+            logger.warn("  Stale brain removed, AT WS at: %s" % path)
 
     logger.info("Convert Worksheet's to Dexterity [DONE]")
 
@@ -1331,7 +1399,10 @@ def cleanup_rejected_worksheets():
     logger.info("Cleanup rejected worksheets...")
 
     rejected_analysis_query = {"portal_type": "RejectAnalysis"}
-    for brain in api.search(rejected_analysis_query, ANALYSIS_CATALOG):
+    for num, brain in enumerate(
+            api.search(rejected_analysis_query, ANALYSIS_CATALOG)):
+        if num and num % 100 == 0:
+            transaction.savepoint()
         rejected_analysis = api.get_object(brain)
         api.delete(rejected_analysis, False)
         logger.info("Delete rejected analysis {}".format(rejected_analysis))
@@ -1340,7 +1411,10 @@ def cleanup_rejected_worksheets():
         "portal_type": "Worksheet",
         "review_state": "rejected",
     }
-    for brain in api.search(rejected_worksheets, WORKSHEET_CATALOG):
+    for num, brain in enumerate(
+            api.search(rejected_worksheets, WORKSHEET_CATALOG)):
+        if num and num % 100 == 0:
+            transaction.savepoint()
         ws = api.get_object(brain)
         if ws.objectValues():
             continue
