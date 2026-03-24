@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2868 Fix auto CC contacts set in the client for new samples
 - #2862 Updated Webpack Dependencies
 - #2864 Fix upgrade step AT type removal calls
 - #2861 Allow to override results in auto-import
