@@ -20,6 +20,7 @@
 
 
 import json
+import transaction
 from datetime import timedelta
 
 from bika.lims import api
@@ -212,8 +213,10 @@ def migrate_calculations_to_dx(tool):
 
     # copy items from old -> new container
     objects = origin.objectValues()
-    for src in objects:
+    for num, src in enumerate(objects, start=1):
         migrate_calculation_to_dx(src, destination)
+        if num % 100 == 0:
+            transaction.savepoint()
 
     # copy snapshots for the container
     copy_snapshots(origin, destination)
@@ -403,6 +406,7 @@ def strip_calc_interims_from_services(tool):
         if num and num % 100 == 0:
             logger.info(
                 "Processing services {}/{}".format(num, total))
+            transaction.savepoint()
         service = api.get_object(brain)
         _strip_calc_interims(service)
         service._p_deactivate()
@@ -533,6 +537,7 @@ def migrate_contacts_to_dx(tool):
 
         if num % 100 == 0:
             logger.info("Progress: {}/{} contacts migrated".format(num, total))
+            transaction.savepoint()
 
         # Skip if already migrated to Dexterity
         if not api.is_at_content(contact):
@@ -678,6 +683,7 @@ def migrate_multifiles_to_dx(tool):
 
         if num % 100 == 0:
             logger.info("Progress: {}/{} multifiles migrated".format(num, total))
+            transaction.savepoint()
 
         # Skip if already migrated to Dexterity
         if not api.is_at_content(multifile):
@@ -867,6 +873,7 @@ def link_contact_users(tool):
         if num and num % 100 == 0:
             logger.info("Linking contacts to users {0}/{1}"
                         .format(num, total))
+            transaction.savepoint()
 
         contact = api.get_object(brain)
         username = contact.getUsername()
@@ -1088,8 +1095,16 @@ def migrate_arreport_to_resultsreport(tool):
         # Get the object
         arreport = api.get_object(brain)
 
-        if num % 100 == 0:
+        if num % 1000 == 0:
             logger.info("Progress: {}/{} reports migrated".format(num, total))
+            # NOTE: We do a full transaction commit to avoid the following
+            # error during this upgrade:
+            #
+            # Traceback (innermost last):
+            #   [...]
+            #   Module ZEO.TransactionBuffer, line 56, in store
+            # IOError: [Errno 28] No space left on device
+            transaction.commit()
 
         # Skip if already migrated to Dexterity
         if not api.is_at_content(arreport):
@@ -1315,6 +1330,7 @@ def migrate_worksheets_to_dx(tool):
         if num % 100 == 0:
             logger.info(
                 "Progress: {}/{} worksheets migrated".format(num, total))
+            transaction.savepoint()
         brain_path = brain.getPath()
         try:
             worksheet = api.get_object(brain)
@@ -1346,7 +1362,10 @@ def cleanup_rejected_worksheets():
     logger.info("Cleanup rejected worksheets...")
 
     rejected_analysis_query = {"portal_type": "RejectAnalysis"}
-    for brain in api.search(rejected_analysis_query, ANALYSIS_CATALOG):
+    for num, brain in enumerate(
+            api.search(rejected_analysis_query, ANALYSIS_CATALOG)):
+        if num and num % 100 == 0:
+            transaction.savepoint()
         rejected_analysis = api.get_object(brain)
         api.delete(rejected_analysis, False)
         logger.info("Delete rejected analysis {}".format(rejected_analysis))
@@ -1355,7 +1374,10 @@ def cleanup_rejected_worksheets():
         "portal_type": "Worksheet",
         "review_state": "rejected",
     }
-    for brain in api.search(rejected_worksheets, WORKSHEET_CATALOG):
+    for num, brain in enumerate(
+            api.search(rejected_worksheets, WORKSHEET_CATALOG)):
+        if num and num % 100 == 0:
+            transaction.savepoint()
         ws = api.get_object(brain)
         if ws.objectValues():
             continue
