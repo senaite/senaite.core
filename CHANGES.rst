@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2869 Add adapter lookup for client searchable text index
 - #2868 Fix auto CC contacts set in the client for new samples
 - #2867 Remove stale AT reference objects
 - #2866 Add transaction savepoints to large upgradesteps
