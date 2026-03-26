@@ -1364,10 +1364,10 @@ def migrate_worksheets_to_dx(tool):
     catalog = api.get_tool(WORKSHEET_CATALOG)
     problematic = []
     for num, brain in enumerate(brains, start=1):
-        if num % 100 == 0:
+        if num % 1000 == 0:
             logger.info(
                 "Progress: {}/{} worksheets migrated".format(num, total))
-            transaction.savepoint()
+            transaction.commit()
         brain_path = brain.getPath()
         try:
             worksheet = api.get_object(brain)
