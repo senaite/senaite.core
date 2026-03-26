@@ -1322,7 +1322,9 @@ def migrate_worksheets_to_dx(tool):
     type_info = pt.getTypeInfo(portal)
     allowed_types = type_info.allowed_content_types
 
-    origin = None
+    # in case the upgrade step fails with partial migrated contents
+    origin = portal.get("worksheets-old", None)
+
     # check if WS folder is AT
     ws_container = portal.get("worksheets", None)
     if ws_container is not None and api.is_at_content(ws_container):
