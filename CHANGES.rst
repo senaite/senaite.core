@@ -4,6 +4,8 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+-#2870 Do a full commit every 1000 migrated worksheets
+
 - #2869 Add adapter lookup for client searchable text index
 - #2868 Fix auto CC contacts set in the client for new samples
 - #2867 Remove stale AT reference objects

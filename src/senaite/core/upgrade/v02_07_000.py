@@ -1322,7 +1322,9 @@ def migrate_worksheets_to_dx(tool):
     type_info = pt.getTypeInfo(portal)
     allowed_types = type_info.allowed_content_types
 
-    origin = None
+    # in case the upgrade step fails with partial migrated contents
+    origin = portal.get("worksheets-old", None)
+
     # check if WS folder is AT
     ws_container = portal.get("worksheets", None)
     if ws_container is not None and api.is_at_content(ws_container):
@@ -1364,10 +1366,10 @@ def migrate_worksheets_to_dx(tool):
     catalog = api.get_tool(WORKSHEET_CATALOG)
     problematic = []
     for num, brain in enumerate(brains, start=1):
-        if num % 100 == 0:
+        if num % 1000 == 0:
             logger.info(
                 "Progress: {}/{} worksheets migrated".format(num, total))
-            transaction.savepoint()
+            transaction.commit()
         brain_path = brain.getPath()
         try:
             worksheet = api.get_object(brain)
