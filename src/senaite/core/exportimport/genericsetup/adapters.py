@@ -99,11 +99,25 @@ class ATFieldNodeAdapter(NodeAdapterBase):
             logger.info("Skipping readonly field %s.%s" % (
                 self.context.__class__.__name__, self.field.__name__))
             return
+        # Prefer the custom mutator over field.set() to support proxy
+        # fields (e.g. bikasetup -> senaitesetup) and allow custom
+        # setters to handle format conversion during import
+        if not api.is_dexterity_content(self.context):
+            mutator = self.field.getMutator(self.context)
+            if mutator is not None:
+                return mutator(value, **kw)
         return self.field.set(self.context, value, **kw)
 
     def get_field_value(self):
         """Get the field value
         """
+        # Prefer the custom accessor over field.get() to support proxy
+        # fields (e.g. bikasetup -> senaitesetup) and ensure we export
+        # the current value rather than stale AT storage data
+        if not api.is_dexterity_content(self.context):
+            accessor = self.field.getAccessor(self.context)
+            if accessor is not None:
+                return accessor()
         return self.field.get(self.context)
 
     def get_json_value(self):
