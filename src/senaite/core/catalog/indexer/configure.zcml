@@ -54,6 +54,7 @@
 
   <!-- Sample Indexer -->
   <adapter name="assigned_state" factory=".sample.assigned_state"/>
+  <adapter name="getAnalysesKeywords" factory=".sample.getAnalysesKeywords"/>
   <adapter name="is_received" factory=".sample.is_received"/>
   <adapter name="listing_searchable_text" factory=".sample.listing_searchable_text"/>
 

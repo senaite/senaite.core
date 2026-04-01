@@ -1659,3 +1659,33 @@ def cleanup_sample_catalog(tool):
             )
 
     logger.info("Cleaning up sample catalog indexes and columns [DONE]")
+
+
+@upgradestep(product, version)
+def add_sample_catalog_indexes(tool):
+    """Add new indexes to senaite_catalog_sample
+
+    - getSampleTypeUID: FieldIndex for filtering samples by type UID.
+    - getSamplePointUID: FieldIndex for filtering samples by sample point UID.
+    - getAnalysesKeywords: KeywordIndex storing the keyword of every analysis
+      contained in the sample and its partitions. Enables queries such as
+      ``catalog(getAnalysesKeywords="glucose")`` to retrieve all samples that
+      include a specific analysis.
+    """
+    logger.info("Adding new indexes to sample catalog ...")
+    catalog = api.get_tool(SAMPLE_CATALOG)
+
+    new_indexes = [
+        ("getSampleTypeUID", "", "FieldIndex"),
+        ("getSamplePointUID", "", "FieldIndex"),
+        ("getAnalysesKeywords", "", "KeywordIndex"),
+    ]
+    for idx_id, idx_attr, idx_type in new_indexes:
+        if add_catalog_index(catalog, idx_id, idx_attr, idx_type):
+            logger.info("Reindexing '%s' in sample catalog ..." % idx_id)
+            reindex_index(SAMPLE_CATALOG, idx_id)
+            logger.info(
+                "Reindexing '%s' in sample catalog [DONE]" % idx_id
+            )
+
+    logger.info("Adding new indexes to sample catalog [DONE]")

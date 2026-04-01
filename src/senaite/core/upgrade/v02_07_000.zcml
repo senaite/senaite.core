@@ -3,6 +3,15 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add new sample catalog indexes"
+      description="Add getSampleTypeUID and getSamplePointUID FieldIndexes
+        and getAnalysesKeywords KeywordIndex to the sample catalog"
+      source="2724"
+      destination="2725"
+      handler=".v02_07_000.add_sample_catalog_indexes"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Clean up sample catalog indexes and columns"
       description="Fix title index indexed_attrs, remove Province/District
         indexes, and remove obsolete metadata columns (getClientURL,

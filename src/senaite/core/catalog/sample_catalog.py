@@ -46,6 +46,9 @@ INDEXES = BASE_INDEXES + [
     ("getReceivedBy", "", "FieldIndex"),
     ("getSampler", "", "FieldIndex"),
     ("getSamplingDate", "", "DateIndex"),
+    ("getAnalysesKeywords", "", "KeywordIndex"),
+    ("getSamplePointUID", "", "FieldIndex"),
+    ("getSampleTypeUID", "", "FieldIndex"),
     ("isRootAncestor", "", "BooleanIndex"),
     ("is_received", "", "BooleanIndex"),
     # https://zope.readthedocs.io/en/latest/zopebook/SearchingZCatalog.html

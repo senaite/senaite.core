@@ -83,6 +83,32 @@ def assigned_state(instance):
 
 
 @indexer(IAnalysisRequest)
+def getAnalysesKeywords(instance):
+    """Returns the unique set of analysis keywords contained in this sample
+    and its partitions.
+
+    Enables catalog queries of the form::
+
+        catalog(getAnalysesKeywords="glucose")
+
+    to find all samples that have an analysis with a given keyword.
+    """
+    keywords = set()
+
+    def collect_keywords(container):
+        for analysis in container.objectValues(spec="Analysis"):
+            keyword = analysis.getKeyword()
+            if keyword:
+                keywords.add(keyword)
+
+    collect_keywords(instance)
+    for partition in instance.getDescendants():
+        collect_keywords(partition)
+
+    return list(keywords)
+
+
+@indexer(IAnalysisRequest)
 def is_received(instance):
     """Returns whether the Analysis Request has been received
     """
