@@ -2,6 +2,17 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Clean up sample catalog indexes and columns"
+      description="Fix title index indexed_attrs, remove Province/District
+        indexes, and remove obsolete metadata columns (getClientURL,
+        getTemplateURL, getContactUID, getPhysicalPath, getProvince,
+        getDistrict) from the sample catalog"
+      source="2723"
+      destination="2724"
+      handler=".v02_07_000.cleanup_sample_catalog"
+      profile="senaite.core:default"/>
+
    <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Move Calculations to Senaite setup"
       description="Migrate Calculations to Senaite setup"

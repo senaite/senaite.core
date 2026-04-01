@@ -175,26 +175,12 @@ class SamplesView(ListingView):
                 "title": _("Client"),
                 "index": "getClientTitle",
                 "attr": "getClientTitle",
-                "replace_url": "getClientURL",
                 "toggle": True}),
             ("ClientID", {
                 "title": _("Client ID"),
                 "index": "getClientID",
                 "attr": "getClientID",
-                "replace_url": "getClientURL",
                 "toggle": True}),
-            ("Province", {
-                "title": _("Province"),
-                "sortable": True,
-                "index": "getProvince",
-                "attr": "getProvince",
-                "toggle": False}),
-            ("District", {
-                "title": _("District"),
-                "sortable": True,
-                "index": "getDistrict",
-                "attr": "getDistrict",
-                "toggle": False}),
             ("getClientReference", {
                 "title": _("Client Ref"),
                 "sortable": True,
@@ -516,6 +502,15 @@ class SamplesView(ListingView):
         item["replace"]["Priority"] = priority_div % (priority, priority_text)
         item["replace"]["getProfilesTitle"] = obj.getProfilesTitleStr
 
+        # Client link — resolved from UID since getClientURL is no longer
+        # stored as catalog metadata
+        client = self.get_object_by_uid(obj.getClientUID)
+        if client:
+            item["replace"]["Client"] = get_link_for(client)
+            item["replace"]["ClientID"] = get_link_for(
+                client, display_value=obj.getClientID
+            )
+
         # returns a list of
         # [verified, total, not_submitted, to_be_verified]
         analysesnum = obj.getAnalysesNum
@@ -610,7 +605,8 @@ class SamplesView(ListingView):
             item['after']['getId'] = after_icons
 
         item['Created'] = self.ulocalized_time(obj.created, long_format=1)
-        contact = self.get_object_by_uid(obj.getContactUID)
+        sample = api.get_object(obj)
+        contact = self.get_object_by_uid(sample.getContactUID())
         if contact:
             item['ClientContact'] = contact.getFullname()
             item['replace']['ClientContact'] = get_link_for(contact)

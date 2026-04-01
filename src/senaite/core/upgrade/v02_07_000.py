@@ -37,6 +37,8 @@ from plone.namedfile.file import NamedBlobFile
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.api import dtime
+from senaite.core.api.catalog import del_column
+from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
@@ -1606,3 +1608,54 @@ def reindex_labcontact_searchable_text(tool):
         logger.info(
             "Reindexing %s in contact catalog [DONE]" % index
         )
+
+
+@upgradestep(product, version)
+def cleanup_sample_catalog(tool):
+    """Clean up senaite_catalog_sample indexes and metadata columns
+
+    - Fix title FieldIndex: set indexed_attrs to "Title" so the index
+      stores the object's Title() value rather than a lowercase "title"
+      attribute that does not exist on AnalysisRequest objects.
+    - Remove obsolete FieldIndexes getProvince and getDistrict. Client
+      geography belongs on the client catalog and is not meaningful as a
+      sample catalog index; reindexing is also not triggered when client
+      address fields change.
+    - Remove stale metadata columns: getProvince, getDistrict,
+      getClientURL, getTemplateURL, getContactUID, getPhysicalPath.
+      URLs are fragile (hostname-dependent) and better resolved at render
+      time. getContactUID and getPhysicalPath are not used in any sample
+      listing column.
+    """
+    logger.info("Cleaning up sample catalog indexes and columns ...")
+    catalog = api.get_tool(SAMPLE_CATALOG)
+
+    # Fix title index: update indexed_attrs to "Title"
+    title_index = catalog.Indexes.get("title")
+    if title_index is not None:
+        if hasattr(title_index, "indexed_attrs"):
+            title_index.indexed_attrs = ["Title"]
+            logger.info("Updated title index indexed_attrs to 'Title'")
+        reindex_index(SAMPLE_CATALOG, "title")
+
+    # Remove obsolete indexes
+    for idx in ["getDistrict", "getProvince"]:
+        if del_index(catalog, idx):
+            logger.info("Removed index '%s' from sample catalog" % idx)
+
+    # Remove obsolete metadata columns
+    obsolete_columns = [
+        "getClientURL",
+        "getContactUID",
+        "getDistrict",
+        "getPhysicalPath",
+        "getProvince",
+        "getTemplateURL",
+    ]
+    for col in obsolete_columns:
+        if del_column(catalog, col):
+            logger.info(
+                "Removed column '%s' from sample catalog" % col
+            )
+
+    logger.info("Cleaning up sample catalog indexes and columns [DONE]")

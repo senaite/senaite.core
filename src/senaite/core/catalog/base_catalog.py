@@ -53,7 +53,7 @@ INDEXES = [
     ("path", "", "ExtendedPathIndex"),
     ("portal_type", "", "FieldIndex"),
     ("review_state", "", "FieldIndex"),
-    ("title", "", "FieldIndex"),
+    ("title", "Title", "FieldIndex"),
     ("UID", "", "UUIDIndex"),
 ]
 
