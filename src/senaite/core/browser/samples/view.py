@@ -577,7 +577,7 @@ class SamplesView(ListingView):
 
         # Status icons
         after_icons = ""
-        if sample.assigned_state == "assigned":
+        if obj.assigned_state == "assigned":
             after_icons += get_image("worksheet.png",
                                      title=t(_("All analyses assigned")))
         if item["review_state"] == "invalid":
