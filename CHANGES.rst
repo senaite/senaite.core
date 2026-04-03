@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2874 Fix save button visibility of sample header
+- #2875 Fix AttributeError in add_sample when rejection workflow is enabled
 - #2872 Use AT accessor/mutator in GenericSetup field adapter
 - #2870 Do a full commit every 1000 migrated worksheets
 - #2869 Add adapter lookup for client searchable text index

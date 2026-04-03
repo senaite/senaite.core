@@ -19,14 +19,9 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import api
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
-
-try:
-    from zope.component.hooks import getSite
-except Exception:
-    # Plone < 4.3
-    from zope.app.component.hooks import getSite
 
 
 class RejectionWidget(TypesWidget):
@@ -53,22 +48,8 @@ class RejectionWidget(TypesWidget):
 
     def rejectionOptionsList(self):
         "Return a sorted list with the options defined in bikasetup"
-        plone = getSite()
-        settings = plone.bika_setup
-        # RejectionReasons will return something like:
-        # [{'checkbox': u'on', 'textfield-2': u'b', 'textfield-1': u'c', 'textfield-0': u'a'}]
-        if len(settings.RejectionReasons) > 0:
-            reject_reasons = settings.RejectionReasons[0]
-        else:
-            return []
-        sorted_keys = sorted(reject_reasons.keys())
-        if 'checkbox' in sorted_keys:
-            sorted_keys.remove('checkbox')
-        # Building the list with the values only because the keys are not needed any more
-        items = []
-        for key in sorted_keys:
-            items.append(reject_reasons[key].strip())
-        return items
+        setup = api.get_senaite_setup()
+        return setup.getRejectionReasons()
 
     def isRejectionEnabled(self, dd):
         """
