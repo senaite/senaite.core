@@ -843,7 +843,7 @@ def migrate_laboratory_to_dx(tool):
     """
     logger.info("Convert Laboratory to Dexterity ...")
 
-    remove_at_portal_types(tool)
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
