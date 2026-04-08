@@ -4,6 +4,15 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2874 Fix save button visibility of sample header
+- #2875 Fix AttributeError in add_sample when rejection workflow is enabled
+- #2872 Use AT accessor/mutator in GenericSetup field adapter
+- #2870 Do a full commit every 1000 migrated worksheets
+- #2869 Add adapter lookup for client searchable text index
+- #2868 Fix auto CC contacts set in the client for new samples
+- #2867 Remove stale AT reference objects
+- #2866 Add transaction savepoints to large upgradesteps
+- #2865 Skip problematic worksheets in upgrade step 2711
 - #2862 Updated Webpack Dependencies
 - #2864 Fix upgrade step AT type removal calls
 - #2861 Allow to override results in auto-import

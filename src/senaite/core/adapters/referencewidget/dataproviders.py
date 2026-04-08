@@ -33,7 +33,7 @@ from zope.interface import implementer
 _marker = object()
 MISSING_VALUES = [_marker, Missing.Value]
 
-CONTACT_FIELD_NAMES = ("PrimaryContact", "Contact", "CCContact")
+CONTACT_FIELD_NAMES = ("PrimaryContact", "Contact", "CCContact", "CCContacts")
 
 
 def get_base_field_name(field_name):

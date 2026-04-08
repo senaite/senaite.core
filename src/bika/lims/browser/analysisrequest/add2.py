@@ -54,6 +54,7 @@ from senaite.core.api import dtime
 from senaite.core.api.analysisservice import get_calculation_dependencies_for
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.content.contact import IContactSchema
 from senaite.core.interfaces import IAfterCreateSampleHook
 from senaite.core.p3compat import cmp
 from senaite.core.permissions import TransitionMultiResults
@@ -994,6 +995,22 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 "Contact": contact_info
             })
 
+        # Set default CC Contacts from client directly, so they are filled
+        # even when no default Contact is found. When a Contact is auto-filled
+        # above, its cascade will overwrite this with the merged list (which
+        # already includes the client CCContacts).
+        # CCContact is a reference field: the JS expects a list of per-item
+        # dicts with a "uid" key. The "if_empty" flag must be on each item,
+        # not on a wrapping object (which is only valid for plain fields).
+        cc_contacts = self._get_merged_cc_contact_values(client=obj,
+                                                         contact=None)
+        if cc_contacts:
+            for cc in cc_contacts:
+                cc["if_empty"] = True
+            info["field_values"].update({
+                "CCContact": cc_contacts
+            })
+
         # Set default CC Email field
         info["field_values"].update({
             "CCEmails": {"value": obj.getCCEmails(), "if_empty": True}
@@ -1025,7 +1042,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         if client:
             for cc in client.getCCContacts():
                 add_cc(cc)
-        if contact:
+        if contact and IContactSchema.providedBy(contact):
             for cc in contact.getCCContact():
                 add_cc(cc)
 
