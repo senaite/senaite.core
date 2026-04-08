@@ -90,8 +90,6 @@ class ILaboratorySchema(IOrganizationSchema):
             default=u"Address"
         ),
         fields=[
-            "email",
-            "address",
             "lab_url",
         ]
     )
