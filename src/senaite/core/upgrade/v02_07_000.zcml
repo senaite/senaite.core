@@ -2,6 +2,14 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate Laboratory to Dexterity"
+      description="Ensure Laboratory is using Dexterity schema and clean up AT remnants"
+      source="2724"
+      destination="2725"
+      handler=".v02_07_000.migrate_laboratory_to_dx"
+      profile="senaite.core:default"/>
+
    <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Move Calculations to Senaite setup"
       description="Migrate Calculations to Senaite setup"
@@ -24,14 +32,6 @@
       source="2720"
       destination="2721"
       handler=".v02_07_000.migrate_analysis_columns_to_setup"
-      profile="senaite.core:default"/>
-
-  <genericsetup:upgradeStep
-      title="SENAITE.CORE 2.7.0: Migrate Laboratory to Dexterity"
-      description="Ensure Laboratory is using Dexterity schema and clean up AT remnants"
-      source="2720"
-      destination="2721"
-      handler=".v02_07_000.migrate_laboratory_to_dx"
       profile="senaite.core:default"/>
 
       title="SENAITE.CORE 2.7.0: Migrate Worksheet objects to Dexterity"
