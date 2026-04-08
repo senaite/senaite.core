@@ -60,6 +60,7 @@ from senaite.core.setuphandlers import add_dexterity_items
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade.utils import blob_to_named_file
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import permanently_allow_type_for
@@ -838,7 +839,7 @@ def migrate_multifile_to_dx(src, destination=None):
     logger.info("Migrated Multifile from %s -> %s" % (src, target))
 
 
-def migrate_laboratory_to_dx(tool):
+def migrate_laboratory_to_dx(tool, destination=None):
     """Migrates Laboratory to DX
     """
     logger.info("Convert Laboratory to Dexterity ...")
@@ -848,8 +849,9 @@ def migrate_laboratory_to_dx(tool):
     # run required import steps
     tool.runImportStepFromProfile(profile, "typeinfo")
 
+    portal_type = "Laboratory"
     query = {
-        "portal_type": "Laboratory",
+        "portal_type": portal_type,
     }
     brains = api.search(query, SETUP_CATALOG)
 
@@ -858,18 +860,19 @@ def migrate_laboratory_to_dx(tool):
         return
 
     src = api.get_object(brains[0])
+
     # Check if already migrated
     if not api.is_at_content(src):
         logger.info(
             "Laboratory already migrated: {}".format(api.get_path(src)))
         return
-
+    destination = api.get_senaite_setup()
     target_id = tmpID()
-    destination = api.get_parent(src)
+
     target = destination.get(target_id)
     if not target:
         # Don't use the api to skip the auto-id generation
-        target = createContent("Laboratory", id=target_id)
+        target = createContent(portal_type, id=target_id)
         destination._setObject(target_id, target)
         target = destination._getOb(target_id)
 
@@ -881,13 +884,14 @@ def migrate_laboratory_to_dx(tool):
     # Laboratory-specific fields
     target.lab_url = u(src.getLabURL() or "")
     target.supervisor = src.getRawSupervisor() or ""
-    target.confidence = src.getConfidence() or ""
+    target.confidence = src.getConfidence() or None
     target.laboratory_accredited = bool(src.getLaboratoryAccredited())
     target.accreditation_body = u(src.getAccreditationBody() or "")
     target.accreditation_body_url = u(src.getAccreditationBodyURL() or "")
     target.accreditation = u(src.getAccreditation() or "")
     target.accreditation_reference = u(src.getAccreditationReference() or "")
-    target.accreditation_body_logo = src.getAccreditationBodyLogo() or ""
+    target.accreditation_body_logo = blob_to_named_file(
+        src.getAccreditationBodyLogo(), default_filename=u"logo.png")
     target.accreditation_page_header = u(src.getAccreditationPageHeader() or "")
 
     # Organization fields (inherited from Organisation)
@@ -950,6 +954,9 @@ def migrate_laboratory_to_dx(tool):
 
     # delete the old object
     migrator.delete_object(src)
+
+    # Ensure Laboratory is allowed in its container before rename
+    permanently_allow_type_for(api.get_portal_type(destination), portal_type)
 
     # change the ID *after* the original object was removed
     migrator.copy_id(src, target)

@@ -29,12 +29,16 @@ import transaction
 from Acquisition import aq_base
 from Acquisition import aq_parent
 from bika.lims import api
+from bika.lims.api import safe_unicode as u
 from bika.lims.interfaces import IAuditable
 from Persistence import PersistentMapping
 from plone.dexterity.fti import DexterityFTI
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import get_installer
 from Products.ZCatalog.ProgressHandler import ZLogHandler
+from plone.app.blob.field import BlobWrapper
+from plone.namedfile.file import NamedBlobFile
+from plone.namedfile.file import NamedBlobImage
 from senaite.core import logger
 from senaite.core.api.catalog import add_zc_text_index
 from zope.interface import alsoProvides
@@ -426,3 +430,26 @@ def remove_at_portal_types(tool, types_to_remove=[]):
     ft.manage_setPortalFactoryTypes(listOfTypeIds=at_types)
 
     logger.info("Remove AT types from portal_types tool ... [DONE]")
+
+
+def blob_to_named_file(blob, default_filename=u"file"):
+    """Convert an AT BlobWrapper to a Dexterity NamedBlobFile/Image
+    """
+    if not blob:
+        return None
+    if not isinstance(blob, BlobWrapper):
+        return blob
+    filename = u(blob.getFilename() or default_filename)
+    content_type = blob.getContentType() or ""
+    data = blob.data
+    if content_type.startswith("image/"):
+        return NamedBlobImage(
+            data=data,
+            filename=filename,
+            contentType=content_type,
+        )
+    return NamedBlobFile(
+        data=data,
+        filename=filename,
+        contentType=content_type,
+    )
