@@ -839,7 +839,7 @@ def migrate_multifile_to_dx(src, destination=None):
     logger.info("Migrated Multifile from %s -> %s" % (src, target))
 
 
-def migrate_laboratory_to_dx(tool, destination=None):
+def migrate_laboratory_to_dx(tool):
     """Migrates Laboratory to DX
     """
     logger.info("Convert Laboratory to Dexterity ...")
