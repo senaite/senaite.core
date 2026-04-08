@@ -864,8 +864,7 @@ def migrate_laboratory_to_dx(tool):
             "Laboratory already migrated: {}".format(api.get_path(src)))
         return
 
-    src_id = src.getId()
-    target_id = src_id
+    target_id = tmpID()
     destination = api.get_parent(src)
     target = destination.get(target_id)
     if not target:
