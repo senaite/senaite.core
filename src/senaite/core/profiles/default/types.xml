@@ -130,4 +130,8 @@
   <object name="Worksheet" meta_type="Dexterity FTI" />
   <object name="Worksheets" meta_type="Dexterity FTI" />
 
+  <!-- AnalysisSpec -->
+  <object name="AnalysisSpec" meta_type="Dexterity FTI" />
+  <object name="AnalysisSpecs" meta_type="Dexterity FTI" />
+
 </object>
