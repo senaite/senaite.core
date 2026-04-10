@@ -30,7 +30,7 @@ from zope.interface.declarations import implements
 
 schema = ATFolderSchema.copy()
 
-# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/#2877
 class AnalysisSpecs(ATFolder):
     implements(IAnalysisSpecs, IHideActionsMenu)
     displayContentsTab = False

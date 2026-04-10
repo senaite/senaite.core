@@ -1718,66 +1718,83 @@ class Analysis_Services(WorksheetImporter):
 
 class Analysis_Specifications(WorksheetImporter):
 
-    def resolve_service(self, row):
+    def load_analysisspec_services(self):
+        self.spec_services = {}
+        for sheetname in ("Analysis Specification Services",
+                        "Analysis Specifications",
+                        "Results Range"):
+            worksheet = self.workbook.get(sheetname)
+            if worksheet:
+                break
+        else:
+            return
         bsc = getToolByName(self.context, SETUP_CATALOG)
-        service = bsc(
-            portal_type="AnalysisService",
-            title=safe_unicode(row["service"])
-        )
-        if not service:
-            service = bsc(
-                portal_type="AnalysisService",
-                getKeyword=safe_unicode(row["service"])
+        for row in self.get_rows(3, worksheet=worksheet):
+            title = row.get("AnalysisSpec_title") or row.get("Title") or row.get("title")
+            if not title:
+                continue
+            service = self.get_object(
+                bsc,
+                "AnalysisService",
+                row.get("service")
             )
-        service = service[0].getObject()
-        return service
+            if not service:
+                continue
+            if title not in self.spec_services:
+                self.spec_services[title] = []
+            self.spec_services[title].append({
+                "uid": service.UID(),
+                "min": row.get("min") or "0",
+                "max": row.get("max") or "0",
+            })
 
     def Import(self):
-        bucket = {}
+        self.load_analysisspec_services()
         client_catalog = getToolByName(self.context, CLIENT_CATALOG)
         setup_catalog = getToolByName(self.context, SETUP_CATALOG)
-        # collect up all values into the bucket
+
         for row in self.get_rows(3):
-            title = row.get("Title", False)
+            title = row.get("Title") or row.get("title")
             if not title:
-                title = row.get("title", False)
-                if not title:
-                    continue
+                continue
+
             parent = row["Client_title"] if row["Client_title"] else "lab"
             st = row["SampleType_title"] if row["SampleType_title"] else ""
-            service = self.resolve_service(row)
 
-            if parent not in bucket:
-                bucket[parent] = {}
-            if title not in bucket[parent]:
-                bucket[parent][title] = {"sampletype": st, "resultsrange": []}
-            bucket[parent][title]["resultsrange"].append({
-                "keyword": service.getKeyword(),
-                "min": row["min"] if row["min"] else "0",
-                "max": row["max"] if row["max"] else "0",
-            })
-        # write objects.
-        for parent in bucket.keys():
-            for title in bucket[parent]:
-                if parent == "lab":
-                    folder = self.context.bika_setup.bika_analysisspecs
-                else:
-                    proxy = client_catalog(
-                        portal_type="Client", getName=safe_unicode(parent))[0]
-                    folder = proxy.getObject()
-                st = bucket[parent][title]["sampletype"]
-                resultsrange = bucket[parent][title]["resultsrange"]
-                if st:
-                    st_uid = setup_catalog(
-                        portal_type="SampleType", title=safe_unicode(st))[0].UID
-                obj = _createObjectByType("AnalysisSpec", folder, tmpID())
-                obj.edit(title=title)
-                obj.setResultsRange(resultsrange)
-                if st:
-                    obj.setSampleType(st_uid)
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            if parent == "lab":
+                folder = self.context.setup.analysisspecs
+            else:
+                proxy = client_catalog(
+                    portal_type="Client", getName=safe_unicode(parent))
+                if not proxy:
+                    logger.warning(
+                        "Analysis_Specifications: client not found: %s, "
+                        "skipping spec '%s'" % (parent, title)
+                    )
+                    continue
+                folder = proxy[0].getObject()
+
+            if not st:
+                logger.warning(
+                    "Analysis_Specifications: 'SampleType_title' missing "
+                    "for spec '%s', skipping" % title
+                )
+                continue
+
+            st_brains = setup_catalog(
+                portal_type="SampleType", title=safe_unicode(st))
+            if not st_brains:
+                logger.warning(
+                    "Analysis_Specifications: SampleType not found: %s, "
+                    "skipping spec '%s'" % (st, title)
+                )
+                continue
+
+            st_uid = st_brains[0].UID
+
+            obj = api.create(folder, "AnalysisSpec", title=title,
+                             sample_type=st_uid)
+            obj.setResultsRange(self.spec_services.get(title, []))
 
 
 class Analysis_Profiles(WorksheetImporter):
