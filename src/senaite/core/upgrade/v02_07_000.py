@@ -73,6 +73,8 @@ version = "2.7.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
 REMOVE_AT_TYPES = [
+    "AnalysisSpec",
+    "AnalysisSpecs",
     "ARReport",
     "Contact",
     "Calculation",
@@ -546,6 +548,166 @@ def get_destination_folder(folder_id):
         add_dexterity_items(portal, items)
         folder = portal.get(folder_id)
     return folder
+
+
+@upgradestep(product, version)
+def migrate_analysisspecs_to_dx(tool):
+    """Converts existing Analysis Specifications to Dexterity
+    """
+    logger.info("Convert Analysis Specifications to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    setup = api.get_senaite_setup()
+
+    origin = api.get_setup().get("bika_analysisspecs")
+    if origin:
+        destination = get_setup_folder("analysisspecs")
+        uncatalog_object(origin)
+        objects = list(origin.objectValues())
+        for num, src in enumerate(objects, start=1):
+            migrate_analysisspec_to_dx(src, destination)
+            if num % 100 == 0:
+                transaction.savepoint()
+        copy_snapshots(origin, destination)
+        if len(origin) == 0:
+            delete_object(origin)
+        else:
+            logger.warn("Cannot remove {}. Is not empty".format(origin))
+    else:
+        logger.info("bika_analysisspecs not found, skipping lab specs")
+
+    # migrate client-level specs (each client folder)
+    query = {"portal_type": "AnalysisSpec"}
+    brains = api.search(query, SETUP_CATALOG)
+    total = len(brains)
+    logger.info("Found {} AnalysisSpec objects to migrate".format(total))
+
+    for num, brain in enumerate(brains, start=1):
+        if num % 100 == 0:
+            logger.info("Progress: {}/{} specs migrated".format(num, total))
+            transaction.savepoint()
+        src = api.get_object(brain)
+        if not api.is_at_content(src):
+            logger.info("[{}/{}] Already migrated: {}".format(
+                num, total, api.get_path(src)))
+            continue
+        # client-level specs live inside the client folder — migrate in place
+        migrate_analysisspec_to_dx(src)
+
+    logger.info("Convert Analysis Specifications to Dexterity [DONE]")
+
+
+def migrate_analysisspec_to_dx(src, destination=None):
+    """Migrate an AT AnalysisSpec to DX in the destination folder
+
+    :param src: The source AT object
+    :param destination: The destination folder. If `None`, the parent folder of
+                        the source object is taken
+    """
+    portal_type = "AnalysisSpec"
+
+    if api.get_portal_type(src) != portal_type:
+        logger.error("Not a '{}' object: {}".format(portal_type, src))
+        return
+
+    # check if we migrate within the same folder
+    if destination is None:
+        target_id = tmpID()
+        destination = api.get_parent(src)
+    else:
+        target_id = src.getId()
+
+    target = destination.get(target_id)
+    if not target:
+        # Don't use api.create to skip auto-id generation
+        target = createContent(portal_type, id=target_id)
+        destination._setObject(target_id, target)
+        target = destination._getOb(target_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = api.safe_unicode(src.Title() or "")
+    target.description = api.safe_unicode(src.Description() or "")
+
+    # sample_type: AT stores a UID via getRawSampleType()
+    raw_st = src.getRawSampleType()
+    if raw_st:
+        target.sample_type = raw_st if isinstance(raw_st, list) else [raw_st]
+
+    # dynamic_analysis_spec: AT stores a UID via getRawDynamicAnalysisSpec()
+    raw_dyn = src.getRawDynamicAnalysisSpec() \
+        if hasattr(src, "getRawDynamicAnalysisSpec") else None
+    if raw_dyn:
+        target.dynamic_analysis_spec = \
+            raw_dyn if isinstance(raw_dyn, list) else [raw_dyn]
+
+    # results_range: AT stores list of dicts keyed by uid/keyword
+    results_range = []
+    for record in (src.getResultsRange() or []):
+        uid = record.get("uid", "")
+        # AT legacy records may use keyword instead of uid — resolve it
+        if not uid:
+            keyword = record.get("keyword", "")
+            brains = api.search(
+                {"portal_type": "AnalysisService", "getKeyword": keyword},
+                SETUP_CATALOG)
+            uid = brains[0].UID if brains else ""
+        if not uid:
+            continue
+        results_range.append({
+            "uid": uid,
+            "min": record.get("min", ""),
+            "max": record.get("max", ""),
+            "warn_min": record.get("warn_min", ""),
+            "warn_max": record.get("warn_max", ""),
+            "min_operator": record.get("min_operator", "geq"),
+            "max_operator": record.get("max_operator", "leq"),
+            "hidemin": record.get("hidemin", ""),
+            "hidemax": record.get("hidemax", ""),
+            "rangecomment": record.get("rangecomment", ""),
+        })
+    target.results_range = results_range
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter((src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID
+    migrator.copy_uid(src, target)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    logger.info("Migrated AnalysisSpec from %s -> %s" % (src, target))
 
 
 @upgradestep(product, version)
