@@ -62,6 +62,7 @@ class DataGridField(PersistentField, BaseDataGridField):
     def __conform__(self, iface):
         if iface is IPersistentField:
             return _clone_persistent_field(self)
+        return None
 
 
 class DataGridRow(PersistentField, BaseDataGridRow):
@@ -73,3 +74,4 @@ class DataGridRow(PersistentField, BaseDataGridRow):
     def __conform__(self, iface):
         if iface is IPersistentField:
             return _clone_persistent_field(self)
+        return None
