@@ -20,10 +20,6 @@
 
 from senaite.core.schema.fields import DataGridField as BaseDataGridField
 from senaite.core.schema.fields import DataGridRow as BaseDataGridRow
-from senaite.core.schema.interfaces import IDataGridField as IDataGridFieldSchema
-from senaite.core.schema.interfaces import IDataGridRow as IDataGridRowSchema
-from zope.component import adapter
-from zope.interface import implementer
 
 try:
     from plone.registry.field import PersistentField
@@ -36,45 +32,44 @@ except ImportError:
         pass
 
 
+def _clone_persistent_field(field):
+    """Create a fresh clone of a persistent DataGrid field
+
+    When plone.registry registers an interface, it calls
+    IPersistentField(field_instance) for constrained properties
+    like value_type. If the field already provides IPersistentField
+    (as our DataGrid fields do via PersistentField inheritance),
+    the interface call protocol returns the same instance.
+
+    This becomes a problem when test layers tear down and re-setup:
+    the module-level field instance retains a _p_jar reference to
+    the now-closed ZODB connection, causing ConnectionStateError.
+
+    By implementing __conform__, we intercept the interface call
+    and always return a fresh clone with no ZODB connection.
+    """
+    clone = field.__class__.__new__(field.__class__)
+    clone.__dict__.update(field.__dict__)
+    return clone
+
+
 class DataGridField(PersistentField, BaseDataGridField):
     """Use this field for registry entries
 
     https://pypi.org/project/plone.registry/#persistent-fields
-    https://community.plone.org/t/there-is-no-persistent-field-equivalent-for-the-field-a-of-type-b
     """
-    pass
+
+    def __conform__(self, iface):
+        if iface is IPersistentField:
+            return _clone_persistent_field(self)
 
 
 class DataGridRow(PersistentField, BaseDataGridRow):
     """Use this field for registry entries
 
     https://pypi.org/project/plone.registry/#persistent-fields
-    https://community.plone.org/t/there-is-no-persistent-field-equivalent-for-the-field-a-of-type-b
     """
-    pass
 
-
-@implementer(IPersistentField)
-@adapter(IDataGridRowSchema)
-def datagrid_row_persistent_field_adapter(context):
-    """Create a fresh persistent DataGridRow
-
-    Avoids ConnectionStateError when the same DataGridRow instance
-    (which extends Persistent) gets reused across ZODB connections,
-    e.g. during test layer setup/teardown cycles or registry re-imports.
-    """
-    instance = DataGridRow.__new__(DataGridRow)
-    instance.__dict__.update(context.__dict__)
-    return instance
-
-
-@implementer(IPersistentField)
-@adapter(IDataGridFieldSchema)
-def datagrid_field_persistent_field_adapter(context):
-    """Create a fresh persistent DataGridField
-
-    Same rationale as datagrid_row_persistent_field_adapter.
-    """
-    instance = DataGridField.__new__(DataGridField)
-    instance.__dict__.update(context.__dict__)
-    return instance
+    def __conform__(self, iface):
+        if iface is IPersistentField:
+            return _clone_persistent_field(self)

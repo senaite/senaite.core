@@ -11,8 +11,4 @@
   <!-- ++field++ namespace -->
   <adapter factory=".traversal.FieldTraversal" name="field" />
 
-  <!-- IPersistentField adapters for DataGrid fields -->
-  <adapter factory=".registry.datagrid_row_persistent_field_adapter" />
-  <adapter factory=".registry.datagrid_field_persistent_field_adapter" />
-
 </configure>
