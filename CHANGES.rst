@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2879 Fix department and methods not displayed in services' csv export
 - #2878 Fix value of AT's SelectOtherWidget is not rendered in view mode
 - #2874 Fix save button visibility of sample header
 - #2875 Fix AttributeError in add_sample when rejection workflow is enabled
