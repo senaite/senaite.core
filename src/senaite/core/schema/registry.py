@@ -20,11 +20,19 @@
 
 from senaite.core.schema.fields import DataGridField as BaseDataGridField
 from senaite.core.schema.fields import DataGridRow as BaseDataGridRow
+from senaite.core.schema.interfaces import IDataGridField as IDataGridFieldSchema
+from senaite.core.schema.interfaces import IDataGridRow as IDataGridRowSchema
+from zope.component import adapter
+from zope.interface import implementer
 
 try:
     from plone.registry.field import PersistentField
+    from plone.registry.interfaces import IPersistentField
 except ImportError:
     class PersistentField(object):
+        pass
+
+    class IPersistentField(object):
         pass
 
 
@@ -44,3 +52,29 @@ class DataGridRow(PersistentField, BaseDataGridRow):
     https://community.plone.org/t/there-is-no-persistent-field-equivalent-for-the-field-a-of-type-b
     """
     pass
+
+
+@implementer(IPersistentField)
+@adapter(IDataGridRowSchema)
+def datagrid_row_persistent_field_adapter(context):
+    """Create a fresh persistent DataGridRow
+
+    Avoids ConnectionStateError when the same DataGridRow instance
+    (which extends Persistent) gets reused across ZODB connections,
+    e.g. during test layer setup/teardown cycles or registry re-imports.
+    """
+    instance = DataGridRow.__new__(DataGridRow)
+    instance.__dict__.update(context.__dict__)
+    return instance
+
+
+@implementer(IPersistentField)
+@adapter(IDataGridFieldSchema)
+def datagrid_field_persistent_field_adapter(context):
+    """Create a fresh persistent DataGridField
+
+    Same rationale as datagrid_row_persistent_field_adapter.
+    """
+    instance = DataGridField.__new__(DataGridField)
+    instance.__dict__.update(context.__dict__)
+    return instance
