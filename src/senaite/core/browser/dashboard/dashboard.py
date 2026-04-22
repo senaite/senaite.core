@@ -154,6 +154,8 @@ STATES_MAP = {
     "Worksheet": WORKSHEET_STATES,
 }
 
+OTHER_STATE_LABEL = _("Other status")
+
 # Colors aligned with base.scss $state-*-color variables
 STATE_COLORS = {
     "to_be_sampled": "#917A4C",
@@ -682,7 +684,7 @@ class DashboardView(BrowserView):
 
         portal_type = query["portal_type"]
         statesmap = STATES_MAP.get(portal_type, {})
-        other_label = _("Other status")
+        other_label = OTHER_STATE_LABEL
 
         # Initialize time buckets
         buckets, bucket_index = (
