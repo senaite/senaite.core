@@ -12,10 +12,22 @@
       />
 
   <browser:page
-      for="*"
-      name="dashboard_view_permissions_update"
-      class=".dashboard.DashboardViewPermissionUpdate"
-      permission="zope.Public"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="senaite-dashboard-data"
+      class=".dashboard.DashboardDataView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <browser:resource
+      name="senaite.core.dashboard.css"
+      file="css/dashboard.css"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <browser:resource
+      name="senaite.core.dashboard.js"
+      file="js/dashboard.js"
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
