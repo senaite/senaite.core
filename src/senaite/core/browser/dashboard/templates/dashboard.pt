@@ -33,34 +33,13 @@
                          data-date-to python:plone_view.toLocalizedTime(view.date_to)">
     </div>
 
-    <!-- Status Cards (async) -->
-    <h2 class="h6 text-uppercase text-muted font-weight-bold mt-4 mb-3"
-        i18n:translate="">Status</h2>
-    <div id="dashboard-status-cards"
-         class="d-flex flex-wrap mb-4"
-         style="gap: 15px;">
+    <!-- Status Cards + Quick Links (async) -->
+    <div id="dashboard-overview" class="mt-4">
       <div class="text-muted">
         <i class="fas fa-spinner fa-spin mr-2"></i>
         <span i18n:translate="">Loading...</span>
       </div>
     </div>
-
-    <!-- Quick Links (server-side, no DB queries) -->
-    <tal:links define="links python:view.get_quick_links()"
-               condition="links">
-      <h2 class="h6 text-uppercase text-muted font-weight-bold mb-3"
-          i18n:translate="">Quick Actions</h2>
-      <div class="mb-4">
-        <a class="btn btn-outline-secondary btn-sm mr-2 mb-2"
-           tal:repeat="link links"
-           tal:attributes="href link/url">
-          <i class="mr-1"
-             tal:attributes="class string:fas ${link/icon} mr-1"></i>
-          <span tal:content="link/title"
-                i18n:translate="">Action</span>
-        </a>
-      </div>
-    </tal:links>
 
     <!-- Statistics Sections (async, permission-gated) -->
     <tal:statistics condition="python:view.can_view_statistics()">

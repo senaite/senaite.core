@@ -17,72 +17,134 @@ document.addEventListener("DOMContentLoaded", function () {
   var dateFrom = config.getAttribute("data-date-from");
   var dateTo = config.getAttribute("data-date-to");
 
-  // Load status cards
-  fetchSection("status_cards", renderStatusCards);
+  // Load overview (cards + links) together
+  Promise.all([
+    fetchSection("status_cards"),
+    fetchSection("quick_links")
+  ]).then(function (results) {
+    renderOverview(results[0], results[1]);
+  });
 
   // Load statistics sections
   if (canViewStats) {
     ["analysisrequests", "analyses", "worksheets"].forEach(
       function (id) {
-        fetchSection(id, function (data) {
+        fetchSection(id).then(function (data) {
           renderStatisticsSection(id, data);
         });
       }
     );
   }
 
-  function fetchSection(section, callback) {
+  function fetchSection(section) {
     var url = baseUrl
       + "?section=" + section
       + "&p=" + periodicity;
-    fetch(url, { credentials: "same-origin" })
+    return fetch(url, { credentials: "same-origin" })
       .then(function (r) { return r.json(); })
-      .then(callback)
       .catch(function (err) {
         console.error(
           "Dashboard: failed to load " + section, err);
+        return null;
       });
   }
 
-  // --- Status Cards ---
+  // --- Overview (cards + links + empty state) ---
 
-  function renderStatusCards(cards) {
-    var el = document.getElementById(
-      "dashboard-status-cards");
-    if (!cards || cards.length === 0) {
-      el.textContent = "";
+  function renderOverview(cards, links) {
+    var el = document.getElementById("dashboard-overview");
+    if (!el) return;
+    el.textContent = "";
+
+    var hasCards = cards && cards.length > 0;
+    var hasLinks = links && links.length > 0;
+
+    // No permissions at all -- show friendly message
+    if (!hasCards && !hasLinks) {
+      var msg = document.createElement("div");
+      msg.className = "text-muted py-4";
+      var icon = document.createElement("i");
+      icon.className = "fas fa-info-circle mr-2";
+      msg.appendChild(icon);
+      msg.appendChild(document.createTextNode(
+        "No actions available. Please contact your "
+        + "laboratory manager to get permissions "
+        + "assigned."));
+      el.appendChild(msg);
       return;
     }
-    el.textContent = "";
-    cards.forEach(function (card) {
-      var a = document.createElement("a");
-      a.className = "card text-decoration-none";
-      a.style.cssText = "flex:1 1 140px;max-width:200px;";
-      a.href = card.url;
 
-      var body = document.createElement("div");
-      body.className = "card-body text-center py-3 px-3";
+    // Status cards
+    if (hasCards) {
+      var heading = document.createElement("h2");
+      heading.className = "h6 text-uppercase text-muted "
+        + "font-weight-bold mb-3";
+      heading.textContent = "Status";
+      el.appendChild(heading);
 
-      var iconDiv = document.createElement("div");
-      iconDiv.className = "text-muted mb-2";
-      var i = document.createElement("i");
-      i.className = "fas " + card.icon;
-      iconDiv.appendChild(i);
+      var wrap = document.createElement("div");
+      wrap.className = "d-flex flex-wrap mb-4";
+      wrap.style.cssText = "gap: 15px;";
+      cards.forEach(function (card) {
+        wrap.appendChild(buildStatusCard(card));
+      });
+      el.appendChild(wrap);
+    }
 
-      var count = document.createElement("div");
-      count.className = "h2 mb-1 font-weight-bold";
-      count.textContent = card.count;
+    // Quick links
+    if (hasLinks) {
+      var heading2 = document.createElement("h2");
+      heading2.className = "h6 text-uppercase text-muted "
+        + "font-weight-bold mb-3";
+      heading2.textContent = "Quick Actions";
+      el.appendChild(heading2);
 
-      var title = document.createElement("div");
-      title.className = "small text-muted text-nowrap";
-      title.textContent = card.title;
+      var linkWrap = document.createElement("div");
+      linkWrap.className = "mb-4";
+      links.forEach(function (link) {
+        var a = document.createElement("a");
+        a.className =
+          "btn btn-outline-secondary btn-sm mr-2 mb-2";
+        a.href = link.url;
+        var i = document.createElement("i");
+        i.className = "fas " + link.icon + " mr-1";
+        a.appendChild(i);
+        a.appendChild(
+          document.createTextNode(link.title));
+        linkWrap.appendChild(a);
+      });
+      el.appendChild(linkWrap);
+    }
+  }
 
-      body.appendChild(iconDiv);
-      body.appendChild(count);
-      body.appendChild(title);
-      a.appendChild(body);
-      el.appendChild(a);
-    });
+  function buildStatusCard(card) {
+    var a = document.createElement("a");
+    a.className = "card text-decoration-none";
+    a.style.cssText = "flex:1 1 140px;max-width:200px;";
+    a.href = card.url;
+
+    var body = document.createElement("div");
+    body.className = "card-body text-center py-3 px-3";
+
+    var iconDiv = document.createElement("div");
+    iconDiv.className = "text-muted mb-2";
+    var i = document.createElement("i");
+    i.className = "fas " + card.icon;
+    iconDiv.appendChild(i);
+
+    var count = document.createElement("div");
+    count.className = "h2 mb-1 font-weight-bold";
+    count.textContent = card.count;
+
+    var title = document.createElement("div");
+    title.className = "small text-muted text-nowrap";
+    title.textContent = card.title;
+
+    body.appendChild(iconDiv);
+    body.appendChild(count);
+    body.appendChild(title);
+    a.appendChild(body);
+    return a;
   }
 
   // --- Statistics Sections ---
