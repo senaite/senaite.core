@@ -21,13 +21,13 @@
 
   <browser:resource
       name="senaite.core.dashboard.css"
-      file="css/dashboard.css"
+      file="static/css/dashboard.css"
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
   <browser:resource
       name="senaite.core.dashboard.js"
-      file="js/dashboard.js"
+      file="static/js/dashboard.js"
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 

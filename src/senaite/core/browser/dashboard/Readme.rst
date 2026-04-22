@@ -70,8 +70,11 @@ Files
 ``templates/dashboard.pt``
     Page template with async JS loading.
 
-``css/dashboard.css``
+``static/css/dashboard.css``
     Styles for bar charts and statistics panels.
+
+``static/js/dashboard.js``
+    Async loading, DOM rendering, D3 bar charts.
 
 ``configure.zcml``
     View and resource registrations.
