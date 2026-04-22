@@ -1270,8 +1270,6 @@ class ISetupSchema(model.Schema):
         label=_(u"Appearance"),
         fields=[
             "worksheet_layout",
-            "dashboard_by_default",
-            "landing_page",
             "show_partitions",
             "site_logo",
             "site_logo_css",
@@ -2085,34 +2083,6 @@ class Setup(Container):
         """Set worksheet layout
         """
         mutator = self.mutator("worksheet_layout")
-        return mutator(self, value)
-
-    @security.protected(permissions.View)
-    def getDashboardByDefault(self):
-        """Get dashboard by default setting
-        """
-        accessor = self.accessor("dashboard_by_default")
-        return accessor(self)
-
-    @security.protected(permissions.ModifyPortalContent)
-    def setDashboardByDefault(self, value):
-        """Set dashboard by default setting
-        """
-        mutator = self.mutator("dashboard_by_default")
-        return mutator(self, value)
-
-    @security.protected(permissions.View)
-    def getLandingPage(self):
-        """Get landing page
-        """
-        accessor = self.accessor("landing_page")
-        return accessor(self)
-
-    @security.protected(permissions.ModifyPortalContent)
-    def setLandingPage(self, value):
-        """Set landing page
-        """
-        mutator = self.mutator("landing_page")
         return mutator(self, value)
 
     @security.protected(permissions.View)
