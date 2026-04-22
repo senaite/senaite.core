@@ -23,7 +23,7 @@ import Missing
 
 from bika.lims import api
 from bika.lims.api.security import check_permission
-from senaite.core.permissions import ViewResults
+from senaite.core.permissions import ViewNavigation
 from plone.app.viewletmanager.manager import OrderedViewletManager
 from plone.memoize.instance import memoize
 from Products.Five.browser import BrowserView
@@ -254,12 +254,12 @@ class SidebarNavigationAPI(BrowserView):
             parent_brain = brains[0]
 
             # Check if user has a SENAITE role granting
-            # access to this folder. ViewResults is granted
-            # to all SENAITE lab roles in rolemap.xml and
-            # is not acquired, so it filters out users with
-            # only Authenticated/Member roles.
+            # navigation access. ViewNavigation is granted
+            # to all SENAITE roles in rolemap.xml with
+            # acquire=False, filtering out users with only
+            # Authenticated/Member roles.
             if not check_permission(
-                    ViewResults, parent_brain):
+                    ViewNavigation, parent_brain):
                 continue
 
             # Build folder item from brain
