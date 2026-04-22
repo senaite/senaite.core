@@ -596,6 +596,7 @@ class DashboardView(BrowserView):
     def get_states_map(self, portal_type):
         if portal_type == "Analysis":
             return {
+                "registered": _("Registered"),
                 "unassigned": _("Assignment pending"),
                 "assigned": _("Results pending"),
                 "to_be_verified": _("To be verified"),
@@ -676,6 +677,9 @@ class DashboardView(BrowserView):
             # $state-cancelled-color
             "cancelled": "#000000",
             _("Cancelled"): "#000000",
+            # $state-active-color (registered/active)
+            "registered": "#007bff",
+            _("Registered"): "#007bff",
         }
 
     def _getDateStr(self, period, created):
