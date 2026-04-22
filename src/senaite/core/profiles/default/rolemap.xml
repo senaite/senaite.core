@@ -712,6 +712,11 @@
     </permission>
 
     <!-- View/Action permissions -->
+    <permission name="senaite.core: View Dashboard" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
     <permission name="senaite.core: Import Instrument Results" acquire="False">
       <role name="Analyst"/>
       <role name="LabManager"/>

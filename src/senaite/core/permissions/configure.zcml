@@ -102,6 +102,7 @@
   <permission id="senaite.core.permissions.ViewResults" title="senaite.core: View Results"/>
 
   <!-- View/Action Permissions -->
+  <permission id="senaite.core.permissions.ViewDashboard" title="senaite.core: View Dashboard"/>
   <permission id="senaite.core.permissions.ImportInstrumentResults" title="senaite.core: Import Instrument Results"/>
   <permission id="senaite.core.permissions.ViewRetractedAnalyses" title="senaite.core: View Retracted Analyses"/>
   <permission id="senaite.core.permissions.ViewLogTab" title="senaite.core: View Log Tab"/>
