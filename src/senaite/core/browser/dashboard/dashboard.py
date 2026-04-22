@@ -626,6 +626,7 @@ class DashboardView(BrowserView):
                 "to_be_verified": _("To be verified"),
                 "verified": _("Verified"),
             }
+        return {}
 
     def get_colors_palette(self):
         """State color palette
@@ -724,7 +725,7 @@ class DashboardView(BrowserView):
             query_json, catalog.id, self.periodicity)
 
     def _fill_dates_evo_cachekey(
-            method, self, query_json, catalog_name,
+            _method, self, query_json, catalog_name,
             periodicity):
         hour = time() // (60 * 60 * 2)
         return hour, catalog_name, query_json, periodicity
@@ -823,7 +824,7 @@ class DashboardView(BrowserView):
             query_json, catalog_name)
 
     def _search_count_cachekey(
-            method, self, query_json, catalog_name):
+            _method, self, query_json, catalog_name):
         period = time() // SEARCH_CACHE_TTL
         return period, catalog_name, query_json
 

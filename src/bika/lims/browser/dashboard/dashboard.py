@@ -18,5 +18,4 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-# BBB
-from senaite.core.browser.dashboard.dashboard import DashboardView  # noqa
+# BBB: DashboardView moved to senaite.core.browser.dashboard
