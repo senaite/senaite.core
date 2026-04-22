@@ -195,14 +195,6 @@
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
-      title="SENAITE.CORE 2.7.0: Add ViewDashboard and ViewNavigation permissions"
-      description="Import rolemap for new ViewDashboard and ViewNavigation permissions"
-      source="2724"
-      destination="2725"
-      handler=".v02_07_000.import_rolemap"
-      profile="senaite.core:default"/>
-
-  <genericsetup:upgradeStep
       title="Upgrade to SENAITE.CORE 2.7.0"
       source="2659"
       destination="2700"

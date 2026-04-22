@@ -185,6 +185,5 @@ ViewResults = "senaite.core: View Results"
 # TODO Security Review these "view/action" permissions
 ImportInstrumentResults = "senaite.core: Import Instrument Results"
 ViewDashboard = "senaite.core: View Dashboard"
-ViewNavigation = "senaite.core: View Navigation"
 ViewRetractedAnalyses = "senaite.core: View Retracted Analyses"
 ViewLogTab = "senaite.core: View Log Tab"

@@ -717,19 +717,6 @@
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
-    <permission name="senaite.core: View Navigation" acquire="False">
-      <role name="Analyst"/>
-      <role name="Client"/>
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Preserver"/>
-      <role name="Publisher"/>
-      <role name="RegulatoryInspector"/>
-      <role name="Sampler"/>
-      <role name="SamplingCoordinator"/>
-      <role name="Verifier"/>
-    </permission>
     <permission name="senaite.core: Import Instrument Results" acquire="False">
       <role name="Analyst"/>
       <role name="LabManager"/>

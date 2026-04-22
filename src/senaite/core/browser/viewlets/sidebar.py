@@ -22,8 +22,6 @@ import json
 import Missing
 
 from bika.lims import api
-from bika.lims.api.security import check_permission
-from senaite.core.permissions import ViewNavigation
 from plone.app.viewletmanager.manager import OrderedViewletManager
 from plone.memoize.instance import memoize
 from Products.Five.browser import BrowserView
@@ -54,10 +52,8 @@ class SidebarViewletManager(OrderedViewletManager):
 
     def available(self):
         """Check if sidebar should be shown"""
-        if self.portal_state.anonymous():
-            return False
-        portal = self.portal_state.portal()
-        return check_permission(ViewNavigation, portal)
+        is_anonymous = self.portal_state.anonymous()
+        return not is_anonymous
 
     @property
     @memoize
