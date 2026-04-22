@@ -21,6 +21,7 @@
 import json
 import Missing
 
+from AccessControl import getSecurityManager
 from bika.lims import api
 from plone.app.viewletmanager.manager import OrderedViewletManager
 from plone.memoize.instance import memoize
@@ -250,6 +251,14 @@ class SidebarNavigationAPI(BrowserView):
                 continue
 
             parent_brain = brains[0]
+
+            # Check if user has access to this folder
+            sm = getSecurityManager()
+            folder_obj = parent_brain.getObject()
+            if not sm.checkPermission(
+                    "Access contents information",
+                    folder_obj):
+                continue
 
             # Build folder item from brain
             folder_item = self._create_item_from_brain(parent_brain, depth=1)
