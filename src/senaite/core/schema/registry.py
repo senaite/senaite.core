@@ -41,9 +41,11 @@ def _clone_persistent_field(field):
     (as our DataGrid fields do via PersistentField inheritance),
     the interface call protocol returns the same instance.
 
-    This becomes a problem when test layers tear down and re-setup:
-    the module-level field instance retains a _p_jar reference to
-    the now-closed ZODB connection, causing ConnectionStateError.
+    This becomes a problem when the same field instance is stored
+    in the ZODB across multiple connections (e.g. test layer
+    setup/teardown cycles): the module-level field instance retains
+    a _p_jar reference to the now-closed ZODB connection, causing
+    ConnectionStateError.
 
     By implementing __conform__, we intercept the interface call
     and always return a fresh clone with no ZODB connection.
