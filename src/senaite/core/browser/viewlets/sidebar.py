@@ -54,8 +54,10 @@ class SidebarViewletManager(OrderedViewletManager):
 
     def available(self):
         """Check if sidebar should be shown"""
-        is_anonymous = self.portal_state.anonymous()
-        return not is_anonymous
+        if self.portal_state.anonymous():
+            return False
+        portal = self.portal_state.portal()
+        return check_permission(ViewNavigation, portal)
 
     @property
     @memoize
@@ -252,15 +254,6 @@ class SidebarNavigationAPI(BrowserView):
                 continue
 
             parent_brain = brains[0]
-
-            # Check if user has a SENAITE role granting
-            # navigation access. ViewNavigation is granted
-            # to all SENAITE roles in rolemap.xml with
-            # acquire=False, filtering out users with only
-            # Authenticated/Member roles.
-            if not check_permission(
-                    ViewNavigation, parent_brain):
-                continue
 
             # Build folder item from brain
             folder_item = self._create_item_from_brain(parent_brain, depth=1)
