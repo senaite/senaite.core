@@ -40,6 +40,7 @@ from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.utils import formatDecimalMark
+from bika.lims.utils import formatTextResult
 from bika.lims.utils.analysis import format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
 from bika.lims.workflow import getTransitionActor
@@ -1065,11 +1066,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # If string-like result, return without any formatting
         if result_type in ["string", "text"]:
-            if html:
-                result = result if api.is_string(result) else str(result)
-                result = cgi.escape(result)
-                result = result.replace("\n", "<br/>")
-            return result
+            return formatTextResult(result, html=html)
 
         # If a detection limit, return '< LDL' or '> UDL'
         dl = self.getDetectionLimitOperand()
