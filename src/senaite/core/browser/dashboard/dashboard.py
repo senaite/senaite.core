@@ -35,7 +35,6 @@ from bika.lims.api import search
 from bika.lims.browser import BrowserView
 from bika.lims.utils import get_strings
 from DateTime import DateTime
-from plone import api as ploneapi
 from plone.memoize import ram
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
