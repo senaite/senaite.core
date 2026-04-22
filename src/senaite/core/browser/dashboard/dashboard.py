@@ -634,8 +634,9 @@ class DashboardView(BrowserView):
         return self._search_count(
             query_json, catalog_name)
 
+    @staticmethod
     def _search_count_cachekey(
-            _method, self, query_json, catalog_name):
+            func, instance, query_json, catalog_name):
         period = time() // SEARCH_CACHE_TTL
         return period, catalog_name, query_json
 
@@ -653,8 +654,9 @@ class DashboardView(BrowserView):
         return self._fill_evolution(
             query_json, catalog.id, self.periodicity)
 
+    @staticmethod
     def _fill_evolution_cachekey(
-            _method, self, query_json, catalog_name,
+            func, instance, query_json, catalog_name,
             periodicity):
         hour = time() // (60 * 60 * 2)
         return hour, catalog_name, query_json, periodicity
