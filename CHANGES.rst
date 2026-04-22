@@ -5,6 +5,9 @@ Changelog
 ------------------
 
 - #2810 Migrate Laboratory to DX
+- #2880 Fix ConnectionStateError for DataGrid fields in test layers
+- #2879 Fix department and methods not displayed in services' csv export
+- #2878 Fix value of AT's SelectOtherWidget is not rendered in view mode
 - #2874 Fix save button visibility of sample header
 - #2875 Fix AttributeError in add_sample when rejection workflow is enabled
 - #2872 Use AT accessor/mutator in GenericSetup field adapter
