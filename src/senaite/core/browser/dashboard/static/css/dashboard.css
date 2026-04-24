@@ -1,0 +1,49 @@
+/* Dashboard statistics sections */
+.dashboard-section {
+  padding: 0 0 20px;
+}
+
+/* Bar chart legend */
+.dashboard-section .h2-legend {
+  font-size: 0.9em;
+  padding: 0 0 10px 2px;
+  color: #606969;
+}
+
+/* Bar chart container */
+.bar-chart {
+  width: 100%;
+  min-width: 640px;
+}
+.bar-chart-period {
+  clear: both;
+  padding: 1px 0 0 15px;
+}
+.bar-chart .axis path {
+  fill: none;
+  stroke: #d7dbdc;
+  shape-rendering: crispEdges;
+}
+.bar-chart .axis line {
+  fill: none;
+  stroke: #e8e8e8;
+  shape-rendering: crispEdges;
+}
+.bar-chart .axis text {
+  fill: #606969;
+}
+.bar-chart .bar {
+  fill: steelblue;
+}
+.bar-chart g.legend {
+  font-size: 0.8em;
+}
+.bar-chart .x.axis,
+.bar-chart .y.axis {
+  font-size: 0.75em;
+}
+.bar-chart-no-data {
+  color: #dc3545;
+  font-size: 0.9em;
+  padding: 20px;
+}
