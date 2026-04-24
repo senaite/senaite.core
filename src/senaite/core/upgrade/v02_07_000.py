@@ -118,6 +118,36 @@ def import_rolemap(tool):
 
 
 @upgradestep(product, version)
+def remove_dashboard_registry_visibility(tool):
+    """Remove legacy registry-based dashboard panel visibility
+
+    The dashboard previously used a custom registry record
+    'senaite.core.dashboard_panels_visibility' to store per-role
+    visibility settings for each dashboard section. This was a
+    hardcoded permission mapping that duplicated what Plone's
+    standard role system already provides.
+
+    The dashboard now uses a simple role check via DASHBOARD_ROLES
+    instead of the registry. This step removes the stale registry
+    record and re-imports the rolemap.
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+
+    # Import rolemap
+    setup.runImportStepFromProfile(profile, "rolemap")
+
+    # Remove stale registry record
+    from plone.registry.interfaces import IRegistry
+    from zope.component import getUtility
+    registry = getUtility(IRegistry)
+    key = "senaite.core.dashboard_panels_visibility"
+    if key in registry.records:
+        del registry.records[key]
+        logger.info("Removed registry record '%s'" % key)
+
+
+@upgradestep(product, version)
 def import_controlpanel(tool):
     """Import usersschema step from profiles
     """
