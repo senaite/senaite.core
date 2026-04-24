@@ -2,6 +2,22 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add ViewDashboard and ViewNavigation permissions"
+      description="Import rolemap for new ViewDashboard and ViewNavigation permissions"
+      source="2724"
+      destination="2725"
+      handler=".v02_07_000.import_rolemap"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove dashboard registry visibility"
+      description="Remove legacy registry-based dashboard panel visibility in favor of role-based access"
+      source="2723"
+      destination="2724"
+      handler=".v02_07_000.remove_dashboard_registry_visibility"
+      profile="senaite.core:default"/>
+
    <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Move Calculations to Senaite setup"
       description="Migrate Calculations to Senaite setup"
@@ -183,22 +199,6 @@
       description="Fix Unauthorized Error on auto_import_results"
       source="2700"
       destination="2701"
-      handler=".v02_07_000.import_rolemap"
-      profile="senaite.core:default"/>
-
-  <genericsetup:upgradeStep
-      title="SENAITE.CORE 2.7.0: Remove dashboard registry visibility"
-      description="Remove legacy registry-based dashboard panel visibility in favor of role-based access"
-      source="2723"
-      destination="2724"
-      handler=".v02_07_000.remove_dashboard_registry_visibility"
-      profile="senaite.core:default"/>
-
-  <genericsetup:upgradeStep
-      title="SENAITE.CORE 2.7.0: Add ViewDashboard and ViewNavigation permissions"
-      description="Import rolemap for new ViewDashboard and ViewNavigation permissions"
-      source="2724"
-      destination="2725"
       handler=".v02_07_000.import_rolemap"
       profile="senaite.core:default"/>
 
