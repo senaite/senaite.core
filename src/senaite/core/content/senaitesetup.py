@@ -2394,9 +2394,9 @@ class Setup(Container):
                     if normalized_row.get(key) is None:
                         normalized_row[key] = ""
                 # Ensure split_length is an int
-                if normalized_row.get("split_length"):
-                    normalized_row["split_length"] = api.to_int(
-                        normalized_row["split_length"], default=1)
+                split_length = normalized_row.get("split_length")
+                split_length_int = api.to_int(split_length, default=1)
+                normalized_row["split_length"] = max(split_length_int, 1)
                 normalized.append(normalized_row)
             value = normalized
 
