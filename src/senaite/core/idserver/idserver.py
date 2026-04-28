@@ -45,11 +45,16 @@ from zope.component import getAdapters
 from zope.component import getUtility
 from zope.component import queryAdapter
 
-AR_TYPES = [
-    "AnalysisRequest",
-    "AnalysisRequestRetest",
-    "AnalysisRequestPartition",
-    "AnalysisRequestSecondary",
+PORTAL_TYPE_SAMPLE = "AnalysisRequest"
+PORTAL_TYPE_SAMPLE_RETEST = "AnalysisRequestRetest"
+PORTAL_TYPE_SAMPLE_PARTITION = "AnalysisRequestPartition"
+PORTAL_TYPE_SAMPLE_SECONDARY = "AnalysisRequestSecondary"
+
+SAMPLE_TYPES = [
+    PORTAL_TYPE_SAMPLE,
+    PORTAL_TYPE_SAMPLE_RETEST,
+    PORTAL_TYPE_SAMPLE_PARTITION,
+    PORTAL_TYPE_SAMPLE_SECONDARY,
 ]
 
 
@@ -97,11 +102,11 @@ def get_type_id(context, **kw):
 
     # Override by provided marker interface
     if IAnalysisRequestPartition.providedBy(context):
-        return "AnalysisRequestPartition"
+        return PORTAL_TYPE_SAMPLE_PARTITION
     elif IAnalysisRequestRetest.providedBy(context):
-        return "AnalysisRequestRetest"
+        return PORTAL_TYPE_SAMPLE_RETEST
     elif IAnalysisRequestSecondary.providedBy(context):
-        return "AnalysisRequestSecondary"
+        return PORTAL_TYPE_SAMPLE_SECONDARY
 
     return api.get_portal_type(context)
 
@@ -147,6 +152,12 @@ def get_retest_count(context, default=0):
 
 def get_partition_count(context, default=0):
     """Returns the number of partitions of this AR
+
+    Uses the number generator's persistent counter so that detached
+    partitions are still counted, avoiding ID collisions when a new
+    partition is created on a parent that previously had partitions
+    detached. Falls back to the descendants count for installs where
+    the storage key was not yet populated.
     """
     if not is_ar(context):
         return default
@@ -156,11 +167,24 @@ def get_partition_count(context, default=0):
     if not parent:
         return default
 
+    # Number generator stores the highest partition number ever issued
+    # for this parent (incl. detached ones).
+    number_generator = getUtility(INumberGenerator)
+    parent_id = api.normalize_filename(api.get_id(parent))
+    key = make_storage_key(PORTAL_TYPE_SAMPLE_PARTITION, parent_id)
+    storage_count = number_generator.get(key, 0)
+
+    # The descendants count is used as a safety net: if the storage key
+    # is unset (e.g. partitions imported without going through the ID
+    # server), this ensures we still issue a number greater than any
+    # existing descendant.
+    descendants_count = len(parent.getDescendants())
+
     # XXX: we need to count one up because the new partition only shows up in
-    #      parent.getDescendants() *after* it has been renamed, because
-    #      temporary objects don't get indexed!
+    #      parent.getDescendants() / number generator *after* it has been
+    #      renamed, because temporary objects don't get indexed!
     #      https://github.com/senaite/senaite.core/pull/2632
-    return len(parent.getDescendants()) + 1
+    return max(storage_count, descendants_count) + 1
 
 
 def get_secondary_count(context, default=0):
