@@ -2,12 +2,13 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
+
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Add new sample catalog indexes"
       description="Add getSampleTypeUID and getSamplePointUID FieldIndexes
         and getAnalysesKeywords KeywordIndex to the sample catalog"
-      source="2724"
-      destination="2725"
+      source="2726"
+      destination="2727"
       handler=".v02_07_000.add_sample_catalog_indexes"
       profile="senaite.core:default"/>
 
@@ -17,9 +18,25 @@
         indexes, and remove obsolete metadata columns (getClientURL,
         getTemplateURL, getContactUID, getPhysicalPath, getProvince,
         getDistrict) from the sample catalog"
+      source="2725"
+      destination="2726"
+      handler=".v02_07_000.cleanup_sample_catalog"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add ViewDashboard and ViewNavigation permissions"
+      description="Import rolemap for new ViewDashboard and ViewNavigation permissions"
+      source="2724"
+      destination="2725"
+      handler=".v02_07_000.import_rolemap"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove dashboard registry visibility"
+      description="Remove legacy registry-based dashboard panel visibility in favor of role-based access"
       source="2723"
       destination="2724"
-      handler=".v02_07_000.cleanup_sample_catalog"
+      handler=".v02_07_000.remove_dashboard_registry_visibility"
       profile="senaite.core:default"/>
 
    <genericsetup:upgradeStep
@@ -204,14 +221,6 @@
       source="2700"
       destination="2701"
       handler=".v02_07_000.import_rolemap"
-      profile="senaite.core:default"/>
-
-  <genericsetup:upgradeStep
-      title="SENAITE.CORE 2.7.0: Remove dashboard registry visibility"
-      description="Remove legacy registry-based dashboard panel visibility in favor of role-based access"
-      source="2723"
-      destination="2724"
-      handler=".v02_07_000.remove_dashboard_registry_visibility"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
