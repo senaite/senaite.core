@@ -157,11 +157,12 @@ def get_partition_count(context, default=0):
     that previously had partitions detached. The next partition
     number is the maximum of:
 
-    - The number generator's persistent counter for this parent.
     - The highest existing partition suffix found in the parent's
-      container (covers detached partitions, which keep living in the
-      container after the detach transition).
-    - The active descendants count.
+      container. Detached partitions keep living in the container
+      after the detach transition, so this is the source of truth
+      regardless of how the ID format is configured or whether the
+      number generator counter has been seeded.
+    - The active descendants count, as a final safety net.
     """
     if not is_ar(context):
         return default
@@ -171,29 +172,20 @@ def get_partition_count(context, default=0):
     if not parent:
         return default
 
-    parent_id = api.get_id(parent)
-
-    # Number generator stores the highest partition number ever issued
-    # for this parent (incl. detached ones, when seeded).
-    number_generator = getUtility(INumberGenerator)
-    key = make_storage_key(
-        PORTAL_TYPE_SAMPLE_PARTITION, api.normalize_filename(parent_id))
-    storage_count = number_generator.get(key, 0)
-
     # Walk the parent's container for sample IDs matching the partition
     # pattern. This catches detached partitions (no longer descendants
-    # of the parent) and any partition created before the storage key
-    # was populated.
+    # of the parent) and any partition created via custom code paths
+    # that bypassed the standard ID server.
     container_count = get_max_partition_suffix_in_container(parent)
 
     # Active descendants as a final safety net.
     descendants_count = len(parent.getDescendants())
 
     # XXX: we need to count one up because the new partition only shows up in
-    #      parent.getDescendants() / number generator *after* it has been
-    #      renamed, because temporary objects don't get indexed!
+    #      parent.getDescendants() *after* it has been renamed, because
+    #      temporary objects don't get indexed!
     #      https://github.com/senaite/senaite.core/pull/2632
-    return max(storage_count, container_count, descendants_count) + 1
+    return max(container_count, descendants_count) + 1
 
 
 def get_max_partition_suffix_in_container(parent):
