@@ -569,3 +569,84 @@ Create a new Analysis Request with same format and check again:
     >>> last_number = number_generator.get("analysisrequest-NGwater")
     >>> alpha.to_decimal('AA002') == last_number
     True
+
+
+Partition IDs survive detach
+............................
+
+Partition numbers are issued by a persistent counter so that detached
+partitions are still counted, avoiding ID collisions when a new partition
+is created on a parent that previously had partitions detached.
+
+Configure a standard ID format for samples and partitions:
+
+    >>> id_formatting = [
+    ...     {'form': '{sampleType}-{seq:04d}',
+    ...      'portal_type': 'AnalysisRequest',
+    ...      'prefix': 'analysisrequest',
+    ...      'sequence_type': 'generated',
+    ...      'split_length': 1},
+    ...     {'form': '{parent_ar_id}-P{partition_count:02d}',
+    ...      'portal_type': 'AnalysisRequestPartition',
+    ...      'prefix': 'analysisrequestpartition',
+    ...      'sequence_type': 'generated',
+    ...      'split_length': 1},
+    ... ]
+    >>> setup.setIDFormatting(id_formatting)
+
+Imports for the partition flow:
+
+    >>> from bika.lims.utils.analysisrequest import create_partition
+
+Create a primary sample and receive it:
+
+    >>> primary = create_analysisrequest(client, request, values, service_uids)
+    >>> primary_id = primary.getId()
+    >>> _ = do_action_for(primary, "receive")
+
+Create the first partition. The partition gets the suffix `-P01`:
+
+    >>> p1 = create_partition(primary, request, primary.getAnalyses())
+    >>> p1.getId() == "{}-P01".format(primary_id)
+    True
+
+The number generator's counter for this parent is now 1:
+
+    >>> key = "analysisrequestpartition-{}".format(primary_id)
+    >>> number_generator.get(key)
+    1
+
+Detach the first partition. The detach unsets `ParentAnalysisRequest`,
+so the partition is no longer a descendant of the primary, but it
+keeps existing in the client folder with its `-P01` ID:
+
+    >>> _ = do_action_for(p1, "detach")
+    >>> p1.getParentAnalysisRequest() is None
+    True
+    >>> primary.getDescendants()
+    []
+
+Creating another partition must not reuse the `-P01` suffix. Before
+the fix, `get_partition_count` derived the next number from
+`parent.getDescendants()` (now empty) and produced `-P01` again,
+colliding with the still-existing detached partition. With the fix,
+the persistent counter still reports 1, so the next partition gets
+`-P02`:
+
+    >>> p2 = create_partition(primary, request, primary.getAnalyses())
+    >>> p2.getId() == "{}-P02".format(primary_id)
+    True
+    >>> number_generator.get(key)
+    2
+
+Detach `-P02` as well and create a third partition. The new partition
+gets `-P03`, even though no descendants are left:
+
+    >>> _ = do_action_for(p2, "detach")
+    >>> primary.getDescendants()
+    []
+    >>> p3 = create_partition(primary, request, primary.getAnalyses())
+    >>> p3.getId() == "{}-P03".format(primary_id)
+    True
+    >>> number_generator.get(key)
+    3
