@@ -188,30 +188,80 @@ def get_partition_count(context, default=0):
     return max(container_count, descendants_count) + 1
 
 
+PARTITION_COUNTER_PLACEHOLDER_RE = re.compile(
+    r"\{(?:partition_count|seq|alpha)[^}]*\}")
+
+
 def get_max_partition_suffix_in_container(parent):
     """Find the highest partition number issued for the given parent
-    sample by inspecting its container for sibling IDs matching the
-    pattern '<parent_id>-P<NN>'.
+    sample by inspecting its container for sibling IDs that match the
+    configured partition ID format.
+
+    Reads the partition format from the IDFormatting config so that
+    customized prefixes (e.g. '{parent_ar_id}-PART-{partition_count}')
+    are honored. Returns 0 when the prefix cannot be resolved (e.g.
+    the template references variables that are not available here),
+    in which case `get_partition_count` falls back on the descendants
+    count.
     """
-    parent_id = api.get_id(parent)
     container = api.get_parent(parent)
     if container is None:
         return 0
-    prefix = "{}-P".format(parent_id)
+
+    config = get_config(None, portal_type=PORTAL_TYPE_SAMPLE_PARTITION)
+    template = config.get("form", "")
+    if not template:
+        return 0
+
+    # Locate the counter placeholder; everything before it is the
+    # static prefix portion that identifies partitions of this parent.
+    placeholder_match = PARTITION_COUNTER_PLACEHOLDER_RE.search(template)
+    if not placeholder_match:
+        return 0
+    prefix_template = template[:placeholder_match.start()]
+
+    try:
+        prefix = prefix_template.format(
+            **_partition_prefix_variables(parent))
+    except (KeyError, ValueError, AttributeError):
+        return 0
+    if not prefix:
+        return 0
+
+    # Scan the container for sample IDs starting with this prefix and
+    # consume the leading digits as the partition counter.
+    pattern = re.compile(r"^" + re.escape(prefix) + r"(\d+)")
     max_num = 0
     for obj_id in container.objectIds():
-        if not obj_id.startswith(prefix):
+        match = pattern.match(obj_id)
+        if not match:
             continue
-        suffix = obj_id[len(prefix):]
-        # Only consider purely numeric suffixes; nested partitions
-        # (e.g. '<parent_id>-P01-P02') contain another '-' and are
-        # skipped here.
-        if not suffix.isdigit():
+        try:
+            num = int(match.group(1))
+        except ValueError:
             continue
-        num = int(suffix)
         if num > max_num:
             max_num = num
     return max_num
+
+
+def _partition_prefix_variables(parent):
+    """Return the variables commonly used in partition ID prefix
+    templates. Custom add-ons that inject exotic variables via an
+    `IIdServerVariables` adapter are not consulted here; if a custom
+    template requires those, the prefix interpolation falls back to
+    returning 0 and `get_partition_count` uses the descendants count.
+    """
+    parent_ar_id = api.get_id(parent)
+    sample_type = parent.getSampleType()
+    return {
+        "parent_ar_id": parent_ar_id,
+        "parent_base_id": strip_suffix(parent_ar_id),
+        "year": get_current_year(),
+        "yymmdd": get_yymmdd(),
+        "clientId": parent.getClientID(),
+        "sampleType": sample_type.getPrefix() if sample_type else "",
+    }
 
 
 def get_secondary_count(context, default=0):
