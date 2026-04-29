@@ -57,6 +57,8 @@ SAMPLE_TYPES = [
     PORTAL_TYPE_SAMPLE_SECONDARY,
 ]
 
+PARTITION_DETACHED_RELATIONSHIP = "AnalysisRequestDetachedFrom"
+
 
 def get_objects_in_sequence(brain_or_object, ctype, cref):
     """Return a list of items
@@ -148,9 +150,6 @@ def get_retest_count(context, default=0):
         invalidated = invalidated.getInvalidated()
 
     return count
-
-
-PARTITION_DETACHED_RELATIONSHIP = "AnalysisRequestDetachedFrom"
 
 
 def get_partition_count(context, default=0):

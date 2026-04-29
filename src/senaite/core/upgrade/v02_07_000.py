@@ -28,6 +28,7 @@ from bika.lims.api import safe_unicode as u
 from bika.lims.api import snapshot as snap_api
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.interfaces import IAuditable
+from bika.lims.interfaces import IDetachedPartition
 from bika.lims.interfaces import IInvalidated
 from bika.lims.utils import tmpID
 from persistent.list import PersistentList
@@ -117,13 +118,9 @@ def seed_detached_partition_backrefs(tool):
     pointer but no backref. Re-set the field to trigger backref
     maintenance on the link.
     """
-    from bika.lims.interfaces import IDetachedPartition
-
-    portal_type = "AnalysisRequest"
-    iface = IDetachedPartition.__identifier__
     query = {
-        "portal_type": portal_type,
-        "object_provides": iface,
+        "portal_type": "AnalysisRequest",
+        "object_provides": IDetachedPartition.__identifier__,
     }
     brains = api.search(query, SAMPLE_CATALOG)
     total = len(brains)
