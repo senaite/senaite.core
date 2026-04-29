@@ -650,3 +650,42 @@ gets `-P03`, even though no descendants are left:
     True
     >>> number_generator.get(key)
     3
+
+
+Partition IDs survive a missing storage counter
+...............................................
+
+On an install upgraded from a version that did not seed the partition
+counter, the storage key may be empty even though partitions exist.
+The partition count must still avoid colliding with already-existing
+sample IDs in the parent's container.
+
+Create a fresh primary, two partitions, then wipe the counter to
+simulate a legacy install:
+
+    >>> primary2 = create_analysisrequest(client, request, values, service_uids)
+    >>> primary2_id = primary2.getId()
+    >>> _ = do_action_for(primary2, "receive")
+    >>> q1 = create_partition(primary2, request, primary2.getAnalyses())
+    >>> q2 = create_partition(primary2, request, primary2.getAnalyses())
+    >>> q1.getId() == "{}-P01".format(primary2_id)
+    True
+    >>> q2.getId() == "{}-P02".format(primary2_id)
+    True
+
+Detach the second partition and wipe the storage counter:
+
+    >>> _ = do_action_for(q2, "detach")
+    >>> key2 = "analysisrequestpartition-{}".format(primary2_id)
+    >>> number_generator.set_number(key2, 0)
+    0
+
+The next partition must still avoid the existing `-P01` and `-P02`
+IDs in the client folder, even with no storage counter and only one
+active descendant:
+
+    >>> primary2.getDescendants()
+    [<AnalysisRequest at .../...-P01>]
+    >>> q3 = create_partition(primary2, request, primary2.getAnalyses())
+    >>> q3.getId() == "{}-P03".format(primary2_id)
+    True

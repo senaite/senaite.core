@@ -153,11 +153,15 @@ def get_retest_count(context, default=0):
 def get_partition_count(context, default=0):
     """Returns the number of partitions of this AR
 
-    Uses the number generator's persistent counter so that detached
-    partitions are still counted, avoiding ID collisions when a new
-    partition is created on a parent that previously had partitions
-    detached. Falls back to the descendants count for installs where
-    the storage key was not yet populated.
+    Avoids ID collisions when a new partition is created on a parent
+    that previously had partitions detached. The next partition
+    number is the maximum of:
+
+    - The number generator's persistent counter for this parent.
+    - The highest existing partition suffix found in the parent's
+      container (covers detached partitions, which keep living in the
+      container after the detach transition).
+    - The active descendants count.
     """
     if not is_ar(context):
         return default
@@ -167,24 +171,55 @@ def get_partition_count(context, default=0):
     if not parent:
         return default
 
+    parent_id = api.get_id(parent)
+
     # Number generator stores the highest partition number ever issued
-    # for this parent (incl. detached ones).
+    # for this parent (incl. detached ones, when seeded).
     number_generator = getUtility(INumberGenerator)
-    parent_id = api.normalize_filename(api.get_id(parent))
-    key = make_storage_key(PORTAL_TYPE_SAMPLE_PARTITION, parent_id)
+    key = make_storage_key(
+        PORTAL_TYPE_SAMPLE_PARTITION, api.normalize_filename(parent_id))
     storage_count = number_generator.get(key, 0)
 
-    # The descendants count is used as a safety net: if the storage key
-    # is unset (e.g. partitions imported without going through the ID
-    # server), this ensures we still issue a number greater than any
-    # existing descendant.
+    # Walk the parent's container for sample IDs matching the partition
+    # pattern. This catches detached partitions (no longer descendants
+    # of the parent) and any partition created before the storage key
+    # was populated.
+    container_count = get_max_partition_suffix_in_container(parent)
+
+    # Active descendants as a final safety net.
     descendants_count = len(parent.getDescendants())
 
     # XXX: we need to count one up because the new partition only shows up in
     #      parent.getDescendants() / number generator *after* it has been
     #      renamed, because temporary objects don't get indexed!
     #      https://github.com/senaite/senaite.core/pull/2632
-    return max(storage_count, descendants_count) + 1
+    return max(storage_count, container_count, descendants_count) + 1
+
+
+def get_max_partition_suffix_in_container(parent):
+    """Find the highest partition number issued for the given parent
+    sample by inspecting its container for sibling IDs matching the
+    pattern '<parent_id>-P<NN>'.
+    """
+    parent_id = api.get_id(parent)
+    container = api.get_parent(parent)
+    if container is None:
+        return 0
+    prefix = "{}-P".format(parent_id)
+    max_num = 0
+    for obj_id in container.objectIds():
+        if not obj_id.startswith(prefix):
+            continue
+        suffix = obj_id[len(prefix):]
+        # Only consider purely numeric suffixes; nested partitions
+        # (e.g. '<parent_id>-P01-P02') contain another '-' and are
+        # skipped here.
+        if not suffix.isdigit():
+            continue
+        num = int(suffix)
+        if num > max_num:
+            max_num = num
+    return max_num
 
 
 def get_secondary_count(context, default=0):
