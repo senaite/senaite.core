@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2883 Add ViewNavigation permission for sidebar access control
 - #2885 Handle missing split_length values during setup row normalization
 - #2882 Refactor dashboard with permission-based access and async loading
 - #2880 Fix ConnectionStateError for DataGrid fields in test layers
