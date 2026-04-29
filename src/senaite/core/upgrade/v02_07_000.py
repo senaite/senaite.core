@@ -108,6 +108,49 @@ def upgrade(tool):
 
 
 @upgradestep(product, version)
+def seed_detached_partition_backrefs(tool):
+    """Seed annotation backrefs for already-detached partitions.
+
+    The `DetachedFrom` field gained a `relationship` attribute so the
+    UIDReferenceField now maintains backrefs on `setDetachedFrom`. Any
+    detached partition created before this change has the forward UID
+    pointer but no backref. Re-set the field to trigger backref
+    maintenance on the link.
+    """
+    from bika.lims.interfaces import IDetachedPartition
+
+    portal_type = "AnalysisRequest"
+    iface = IDetachedPartition.__identifier__
+    query = {
+        "portal_type": portal_type,
+        "object_provides": iface,
+    }
+    brains = api.search(query, SAMPLE_CATALOG)
+    total = len(brains)
+    logger.info(
+        "Seeding DetachedFrom backrefs for {} detached partitions".format(
+            total))
+
+    seeded = 0
+    for num, brain in enumerate(brains, start=1):
+        sample = api.get_object(brain)
+        field = sample.getField("DetachedFrom")
+        if field is None:
+            continue
+        target = field.get(sample)
+        if target is None:
+            continue
+        # Re-setting via the field link API ensures the backref
+        # annotation gets created on the target.
+        field.link_reference(target, sample)
+        seeded += 1
+        if num % 100 == 0:
+            logger.info("  ... seeded {}/{}".format(num, total))
+
+    logger.info("Seeded DetachedFrom backrefs for {} samples".format(seeded))
+
+
+@upgradestep(product, version)
 def import_rolemap(tool):
     """Import rolemap step from profiles
     """

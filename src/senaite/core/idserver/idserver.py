@@ -150,19 +150,18 @@ def get_retest_count(context, default=0):
     return count
 
 
+PARTITION_DETACHED_RELATIONSHIP = "AnalysisRequestDetachedFrom"
+
+
 def get_partition_count(context, default=0):
     """Returns the number of partitions of this AR
 
-    Avoids ID collisions when a new partition is created on a parent
-    that previously had partitions detached. The next partition
-    number is the maximum of:
-
-    - The highest existing partition suffix found in the parent's
-      container. Detached partitions keep living in the container
-      after the detach transition, so this is the source of truth
-      regardless of how the ID format is configured or whether the
-      number generator counter has been seeded.
-    - The active descendants count, as a final safety net.
+    Counts both active descendants (samples with `ParentAnalysisRequest`
+    pointing to the parent) and detached partitions (samples whose
+    `ParentAnalysisRequest` was unset by the detach transition but
+    whose `DetachedFrom` still references the parent). Both sources
+    are annotation-backed backrefs, so the lookup is O(1) and works
+    regardless of ID format, custom adapters, or container layout.
     """
     if not is_ar(context):
         return default
@@ -172,96 +171,15 @@ def get_partition_count(context, default=0):
     if not parent:
         return default
 
-    # Walk the parent's container for sample IDs matching the partition
-    # pattern. This catches detached partitions (no longer descendants
-    # of the parent) and any partition created via custom code paths
-    # that bypassed the standard ID server.
-    container_count = get_max_partition_suffix_in_container(parent)
-
-    # Active descendants as a final safety net.
-    descendants_count = len(parent.getDescendants())
+    active = len(parent.getDescendants())
+    detached = len(get_backreferences(
+        parent, relationship=PARTITION_DETACHED_RELATIONSHIP))
 
     # XXX: we need to count one up because the new partition only shows up in
     #      parent.getDescendants() *after* it has been renamed, because
     #      temporary objects don't get indexed!
     #      https://github.com/senaite/senaite.core/pull/2632
-    return max(container_count, descendants_count) + 1
-
-
-PARTITION_COUNTER_PLACEHOLDER_RE = re.compile(
-    r"\{(?:partition_count|seq|alpha)[^}]*\}")
-
-
-def get_max_partition_suffix_in_container(parent):
-    """Find the highest partition number issued for the given parent
-    sample by inspecting its container for sibling IDs that match the
-    configured partition ID format.
-
-    Reads the partition format from the IDFormatting config so that
-    customized prefixes (e.g. '{parent_ar_id}-PART-{partition_count}')
-    are honored. Returns 0 when the prefix cannot be resolved (e.g.
-    the template references variables that are not available here),
-    in which case `get_partition_count` falls back on the descendants
-    count.
-    """
-    container = api.get_parent(parent)
-    if container is None:
-        return 0
-
-    config = get_config(None, portal_type=PORTAL_TYPE_SAMPLE_PARTITION)
-    template = config.get("form", "")
-    if not template:
-        return 0
-
-    # Locate the counter placeholder; everything before it is the
-    # static prefix portion that identifies partitions of this parent.
-    placeholder_match = PARTITION_COUNTER_PLACEHOLDER_RE.search(template)
-    if not placeholder_match:
-        return 0
-    prefix_template = template[:placeholder_match.start()]
-
-    try:
-        prefix = prefix_template.format(
-            **_partition_prefix_variables(parent))
-    except (KeyError, ValueError, AttributeError):
-        return 0
-    if not prefix:
-        return 0
-
-    # Scan the container for sample IDs starting with this prefix and
-    # consume the leading digits as the partition counter.
-    pattern = re.compile(r"^" + re.escape(prefix) + r"(\d+)")
-    max_num = 0
-    for obj_id in container.objectIds():
-        match = pattern.match(obj_id)
-        if not match:
-            continue
-        try:
-            num = int(match.group(1))
-        except ValueError:
-            continue
-        if num > max_num:
-            max_num = num
-    return max_num
-
-
-def _partition_prefix_variables(parent):
-    """Return the variables commonly used in partition ID prefix
-    templates. Custom add-ons that inject exotic variables via an
-    `IIdServerVariables` adapter are not consulted here; if a custom
-    template requires those, the prefix interpolation falls back to
-    returning 0 and `get_partition_count` uses the descendants count.
-    """
-    parent_ar_id = api.get_id(parent)
-    sample_type = parent.getSampleType()
-    return {
-        "parent_ar_id": parent_ar_id,
-        "parent_base_id": strip_suffix(parent_ar_id),
-        "year": get_current_year(),
-        "yymmdd": get_yymmdd(),
-        "clientId": parent.getClientID(),
-        "sampleType": sample_type.getPrefix() if sample_type else "",
-    }
+    return active + detached + 1
 
 
 def get_secondary_count(context, default=0):
