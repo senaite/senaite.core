@@ -182,6 +182,22 @@ DEFAULT_ID_FORMATTING = [
 ]
 
 
+def _record_get(record, key, default=None):
+    """Resolve a value from a DataGrid record, which may expose its
+    fields either as attributes (RecordsRecord) or as dict items.
+    """
+    try:
+        value = getattr(record, key)
+    except AttributeError:
+        value = None
+    if value is None:
+        try:
+            value = record[key]
+        except (KeyError, TypeError):
+            value = default
+    return value
+
+
 class IIDFormattingRecordSchema(Interface):
     """Schema for ID formatting configuration records
     """
@@ -1352,8 +1368,12 @@ class ISetupSchema(model.Schema):
     )
 
     @invariant
-    def validate_id_formatting(data):
+    def validate_id_formatting(data):  # noqa: pylint:disable=no-self-argument
         """Validate the IDFormatting entries.
+
+        Note: ``@invariant`` functions take the form data wrapper, not
+        a regular ``self``; the parameter name follows the
+        zope.interface convention.
 
         - Each `form` value must parse as a Python format string.
         - No duplicate `portal_type` entries (the second one would be
@@ -1383,22 +1403,6 @@ class ISetupSchema(model.Schema):
                         u"('${pt}'): ${err}",
                         mapping={"i": idx, "pt": portal_type or "",
                                  "err": str(exc)}))
-
-
-def _record_get(record, key, default=None):
-    """Resolve a value from a DataGrid record, which may expose its
-    fields either as attributes (RecordsRecord) or as dict items.
-    """
-    try:
-        value = getattr(record, key)
-    except AttributeError:
-        value = None
-    if value is None:
-        try:
-            value = record[key]
-        except (KeyError, TypeError):
-            value = default
-    return value
 
 
 @implementer(ISetup, ISetupSchema, IHideActionsMenu)
