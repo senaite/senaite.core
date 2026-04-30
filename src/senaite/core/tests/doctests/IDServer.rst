@@ -569,3 +569,82 @@ Create a new Analysis Request with same format and check again:
     >>> last_number = number_generator.get("analysisrequest-NGwater")
     >>> alpha.to_decimal('AA002') == last_number
     True
+
+
+Partition IDs survive detach
+............................
+
+Partition numbers are derived from both active descendants and detached
+partitions, so a new partition never collides with the ID of a sibling
+that was detached earlier. Both relationships use annotation-based
+backrefs and are resolved via `getDescendants` and `get_backreferences`
+respectively.
+
+Configure a standard ID format for samples and partitions:
+
+    >>> id_formatting = [
+    ...     {'form': '{sampleType}-{seq:04d}',
+    ...      'portal_type': 'AnalysisRequest',
+    ...      'prefix': 'analysisrequest',
+    ...      'sequence_type': 'generated',
+    ...      'split_length': 1},
+    ...     {'form': '{parent_ar_id}-P{partition_count:02d}',
+    ...      'portal_type': 'AnalysisRequestPartition',
+    ...      'prefix': 'analysisrequestpartition',
+    ...      'sequence_type': 'generated',
+    ...      'split_length': 1},
+    ... ]
+    >>> setup.setIDFormatting(id_formatting)
+
+Imports for the partition flow:
+
+    >>> from bika.lims.utils.analysisrequest import create_partition
+    >>> from bika.lims.browser.fields.uidreferencefield import get_backreferences
+
+Create a primary sample and receive it:
+
+    >>> primary = create_analysisrequest(client, request, values, service_uids)
+    >>> primary_id = primary.getId()
+    >>> _ = do_action_for(primary, "receive")
+
+Create the first partition. The partition gets the suffix `-P01`:
+
+    >>> p1 = create_partition(primary, request, primary.getAnalyses())
+    >>> p1.getId() == "{}-P01".format(primary_id)
+    True
+
+Detach the first partition. The detach unsets `ParentAnalysisRequest`
+and sets `DetachedFrom` to the primary, which now carries an
+annotation backref under the `AnalysisRequestDetachedFrom`
+relationship:
+
+    >>> _ = do_action_for(p1, "detach")
+    >>> p1.getParentAnalysisRequest() is None
+    True
+    >>> primary.getDescendants()
+    []
+    >>> backref = get_backreferences(
+    ...     primary, relationship="AnalysisRequestDetachedFrom")
+    >>> len(backref)
+    1
+
+Creating another partition must not reuse the `-P01` suffix. The
+detached backref keeps the count accurate, so the next partition gets
+`-P02`:
+
+    >>> p2 = create_partition(primary, request, primary.getAnalyses())
+    >>> p2.getId() == "{}-P02".format(primary_id)
+    True
+
+Detach `-P02` as well and create a third partition. The new partition
+gets `-P03`, even though no active descendants are left:
+
+    >>> _ = do_action_for(p2, "detach")
+    >>> primary.getDescendants()
+    []
+    >>> len(get_backreferences(
+    ...     primary, relationship="AnalysisRequestDetachedFrom"))
+    2
+    >>> p3 = create_partition(primary, request, primary.getAnalyses())
+    >>> p3.getId() == "{}-P03".format(primary_id)
+    True
