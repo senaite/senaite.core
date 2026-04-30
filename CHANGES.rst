@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2887 Set default Seq Type to 'generated' for partition/retest/secondary
 - #2886 Fix partition ID collision after detach
 - #2883 Add ViewNavigation permission for sidebar access control
 - #2885 Handle missing split_length values during setup row normalization
