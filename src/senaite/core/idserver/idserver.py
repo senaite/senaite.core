@@ -45,12 +45,19 @@ from zope.component import getAdapters
 from zope.component import getUtility
 from zope.component import queryAdapter
 
-AR_TYPES = [
-    "AnalysisRequest",
-    "AnalysisRequestRetest",
-    "AnalysisRequestPartition",
-    "AnalysisRequestSecondary",
+PORTAL_TYPE_SAMPLE = "AnalysisRequest"
+PORTAL_TYPE_SAMPLE_RETEST = "AnalysisRequestRetest"
+PORTAL_TYPE_SAMPLE_PARTITION = "AnalysisRequestPartition"
+PORTAL_TYPE_SAMPLE_SECONDARY = "AnalysisRequestSecondary"
+
+SAMPLE_TYPES = [
+    PORTAL_TYPE_SAMPLE,
+    PORTAL_TYPE_SAMPLE_RETEST,
+    PORTAL_TYPE_SAMPLE_PARTITION,
+    PORTAL_TYPE_SAMPLE_SECONDARY,
 ]
+
+PARTITION_DETACHED_RELATIONSHIP = "AnalysisRequestDetachedFrom"
 
 
 def get_objects_in_sequence(brain_or_object, ctype, cref):
@@ -97,11 +104,11 @@ def get_type_id(context, **kw):
 
     # Override by provided marker interface
     if IAnalysisRequestPartition.providedBy(context):
-        return "AnalysisRequestPartition"
+        return PORTAL_TYPE_SAMPLE_PARTITION
     elif IAnalysisRequestRetest.providedBy(context):
-        return "AnalysisRequestRetest"
+        return PORTAL_TYPE_SAMPLE_RETEST
     elif IAnalysisRequestSecondary.providedBy(context):
-        return "AnalysisRequestSecondary"
+        return PORTAL_TYPE_SAMPLE_SECONDARY
 
     return api.get_portal_type(context)
 
@@ -147,6 +154,13 @@ def get_retest_count(context, default=0):
 
 def get_partition_count(context, default=0):
     """Returns the number of partitions of this AR
+
+    Counts both active descendants (samples with `ParentAnalysisRequest`
+    pointing to the parent) and detached partitions (samples whose
+    `ParentAnalysisRequest` was unset by the detach transition but
+    whose `DetachedFrom` still references the parent). Both sources
+    are annotation-backed backrefs, so the lookup is O(1) and works
+    regardless of ID format, custom adapters, or container layout.
     """
     if not is_ar(context):
         return default
@@ -156,11 +170,15 @@ def get_partition_count(context, default=0):
     if not parent:
         return default
 
+    active = len(parent.getDescendants())
+    detached = len(get_backreferences(
+        parent, relationship=PARTITION_DETACHED_RELATIONSHIP))
+
     # XXX: we need to count one up because the new partition only shows up in
     #      parent.getDescendants() *after* it has been renamed, because
     #      temporary objects don't get indexed!
     #      https://github.com/senaite/senaite.core/pull/2632
-    return len(parent.getDescendants()) + 1
+    return active + detached + 1
 
 
 def get_secondary_count(context, default=0):
