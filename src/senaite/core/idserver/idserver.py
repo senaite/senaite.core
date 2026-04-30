@@ -566,8 +566,25 @@ def renameAfterCreation(obj):
     if not new_id:
         new_id = generateUniqueId(obj)
 
-    # rename the object to the new id
+    # rename the object to the new id; on failure remove the orphan
+    # temp-ID object so it does not pollute the container as a hidden
+    # entry (the savepoint above has already persisted it).
     parent = api.get_parent(obj)
-    parent.manage_renameObject(obj.id, new_id)
+    try:
+        parent.manage_renameObject(obj.id, new_id)
+    except Exception:
+        logger.exception(
+            "renameAfterCreation failed for %s -> %s", obj.id, new_id)
+        # Only remove the orphan if it is still a temporary object,
+        # so we never delete a real, already-renamed object by
+        # mistake.
+        if api.is_temporary(obj):
+            try:
+                parent._delObject(obj.id)
+                logger.info("Removed orphan temp object %s", obj.id)
+            except Exception:
+                logger.exception(
+                    "Could not remove orphan temp object %s", obj.id)
+        raise
 
     return new_id
