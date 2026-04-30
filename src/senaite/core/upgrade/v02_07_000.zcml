@@ -3,6 +3,15 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Seed DetachedFrom backrefs"
+      description="Seed annotation backrefs for detached partitions so that
+                   the partition counter accounts for them"
+      source="2725"
+      destination="2726"
+      handler=".v02_07_000.seed_detached_partition_backrefs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Add ViewDashboard and ViewNavigation permissions"
       description="Import rolemap for new ViewDashboard and ViewNavigation permissions"
       source="2724"
