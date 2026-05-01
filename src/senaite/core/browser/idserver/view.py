@@ -52,29 +52,6 @@ class _Placeholder(object):
         return "{" + self.name + "}"
 
 
-# Pretty labels for the most common portal types. Anything not listed
-# here falls back to a CamelCase rendering of the portal type.
-PORTAL_TYPE_LABELS = {
-    "analysisrequest": "Sample",
-    "analysisrequestpartition": "Partition",
-    "analysisrequestretest": "Retest",
-    "analysisrequestsecondary": "Secondary",
-    "batch": "Batch",
-    "worksheet": "Worksheet",
-    "client": "Client",
-    "contact": "Contact",
-    "labcontact": "Lab Contact",
-    "samplepoint": "Sample Point",
-    "sampletype": "Sample Type",
-    "supplier": "Supplier",
-    "instrument": "Instrument",
-    "calculation": "Calculation",
-    "method": "Method",
-    "analysisservice": "Analysis Service",
-    "report": "Report",
-}
-
-
 class IIDserverView(Interface):
     """IDServerView
     """
@@ -232,11 +209,34 @@ class IDServerView(BrowserView):
         """
         return key.split("-", 1)[0]
 
+    @property
+    def friendly_type_labels(self):
+        """Mapping of lowercased portal_type -> friendly Title, sourced
+        from the portal_types tool (user-friendly types only).
+
+        Storage keys use lowercased portal types, while FTIs are
+        registered with their canonical (CamelCase) name. We index by
+        lowercase to bridge the two.
+        """
+        if getattr(self, "_friendly_type_labels", None) is not None:
+            return self._friendly_type_labels
+        labels = {}
+        plone_utils = api.get_tool("plone_utils")
+        portal_types = api.get_tool("portal_types")
+        for portal_type in plone_utils.getUserFriendlyTypes():
+            fti = portal_types.getTypeInfo(portal_type)
+            if fti is None:
+                continue
+            labels[portal_type.lower()] = fti.Title()
+        self._friendly_type_labels = labels
+        return labels
+
     def get_label_for(self, portal_type):
         """Return a human-readable label for a portal type segment.
         """
-        if portal_type in PORTAL_TYPE_LABELS:
-            return PORTAL_TYPE_LABELS[portal_type]
+        label = self.friendly_type_labels.get(portal_type.lower())
+        if label:
+            return label
         # Fallback: split CamelCase / dash-separated into words
         spaced = re.sub(r"([a-z])([A-Z])", r"\1 \2", portal_type)
         return spaced.title()
