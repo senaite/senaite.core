@@ -227,7 +227,7 @@ class IDServerView(BrowserView):
             fti = portal_types.getTypeInfo(portal_type)
             if fti is None:
                 continue
-            labels[portal_type.lower()] = fti.Title()
+            labels[portal_type.lower()] = self.split_camel_case(fti.Title())
         self._friendly_type_labels = labels
         return labels
 
@@ -237,9 +237,19 @@ class IDServerView(BrowserView):
         label = self.friendly_type_labels.get(portal_type.lower())
         if label:
             return label
-        # Fallback: split CamelCase / dash-separated into words
-        spaced = re.sub(r"([a-z])([A-Z])", r"\1 \2", portal_type)
-        return spaced.title()
+        return self.split_camel_case(portal_type).title()
+
+    def split_camel_case(self, value):
+        """Insert spaces at CamelCase boundaries.
+
+        Handles both 'CamelCase' -> 'Camel Case' and acronym runs like
+        'AnalysisCategory' -> 'Analysis Category'.
+        """
+        if not value:
+            return value
+        spaced = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1 \2", value)
+        spaced = re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", spaced)
+        return spaced
 
     def get_tab_id_for(self, portal_type):
         """Return a CSS-safe tab id for a portal type."""
