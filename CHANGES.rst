@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2888 Improve ID Server admin views
 - #2889 Remove orphan temp objects when renameAfterCreation fails
 - #2887 Set default Seq Type to 'generated' for partition/retest/secondary
 - #2886 Fix partition ID collision after detach
