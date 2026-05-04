@@ -11570,14 +11570,6 @@ msgstr "Gefahrenkategorien"
 msgid "description_sampletype_hazard_categories"
 msgstr "GHS-Gefahrenkategorien, die für Proben dieses Probentyps gelten. Werden in Berichten und Listen als Piktogramme angezeigt."
 
-#: bika/lims/content/analysisrequest.py
-msgid "label_analysisrequest_hazard_categories"
-msgstr "Gefahrenkategorien"
-
-#: bika/lims/content/analysisrequest.py
-msgid "description_analysisrequest_hazard_categories"
-msgstr "GHS-Gefahrenkategorien für diese Probe. Leer lassen, um die Werte des Probentyps zu übernehmen."
-
 #: senaite/core/vocabularies/hazard_categories.py
 msgid "hazard_GHS01_name"
 msgstr "Explosiv"

@@ -11246,14 +11246,6 @@ msgstr ""
 msgid "description_sampletype_hazard_categories"
 msgstr ""
 
-#: bika/lims/content/analysisrequest.py
-msgid "label_analysisrequest_hazard_categories"
-msgstr ""
-
-#: bika/lims/content/analysisrequest.py
-msgid "description_analysisrequest_hazard_categories"
-msgstr ""
-
 #: senaite/core/vocabularies/hazard_categories.py
 msgid "hazard_GHS01_name"
 msgstr ""
