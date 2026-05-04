@@ -23,6 +23,7 @@ from string import Template
 
 from bika.lims import _
 from bika.lims import api
+from senaite.core import api as senaite_api
 from bika.lims.api.security import check_permission
 from bika.lims.config import PRIORITIES
 from bika.lims.interfaces import IBatch
@@ -599,9 +600,16 @@ class SamplesView(ListingView):
         if obj.getInvoiceExclude:
             after_icons += get_image("invoice_exclude.png",
                                      title=t(_("Exclude from invoice")))
-        if obj.getHazardous:
-            after_icons += get_image("hazardous.png",
-                                     title=t(_("Hazardous")))
+        for picto in senaite_api.get_pictograms_for_codes(
+                obj.getHazardCategories,
+                hazardous=bool(obj.getHazardous)):
+            after_icons += (
+                u"<img src='{url}' alt='{alt}' title='{title}' "
+                u"class='hazard-pictogram-mini' />"
+            ).format(
+                url=picto["url"],
+                alt=picto["alt"],
+                title=picto["title"])
 
         if obj.getInternalUse:
             after_icons += get_image("locked.png", title=t(_("Internal use")))

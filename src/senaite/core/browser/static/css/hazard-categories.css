@@ -27,6 +27,14 @@
   flex-shrink: 0;
 }
 
+/* Listing row inline pictograms. */
+.hazard-pictogram-mini {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+
 /* Sample title pictograms next to the sample id. */
 .sample-title .hazard-pictograms {
   display: inline-flex;

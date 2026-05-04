@@ -85,18 +85,20 @@ def get_pictogram(code, overrides=None, portal=None):
     }
 
 
-def get_pictograms_for_sample(sample):
-    """Return the pictogram view-models that apply to a sample.
+def get_pictograms_for_codes(codes, hazardous=True, portal=None):
+    """Return the pictogram view-models for a list of GHS codes.
 
-    Empty list when the sample is not hazardous. When the sample
-    is marked hazardous but has no specific category assigned (own
-    or inherited from the SampleType), a single ISO 7010 W001
-    'General warning' pictogram is returned as the fallback.
+    Empty list when ``hazardous`` is false. When ``hazardous`` is
+    true but ``codes`` is empty, returns a single ISO 7010 W001
+    'General warning' fallback. Useful for callers that already
+    have the codes (e.g. from a catalog brain) and want to avoid
+    waking the sample up.
     """
-    if not sample.getHazardous():
+    if not hazardous:
         return []
-    portal = _lims_api.get_portal()
-    codes = list(sample.getHazardCategories() or [])
+    if portal is None:
+        portal = _lims_api.get_portal()
+    codes = list(codes or [])
     if not codes:
         return [{
             "code": None,
@@ -111,3 +113,15 @@ def get_pictograms_for_sample(sample):
         if picto is not None:
             pictograms.append(picto)
     return pictograms
+
+
+def get_pictograms_for_sample(sample):
+    """Return the pictogram view-models that apply to a sample.
+
+    Wakes the sample up. For listings that already iterate over
+    catalog brains, prefer :func:`get_pictograms_for_codes` with
+    the brain metadata.
+    """
+    return get_pictograms_for_codes(
+        sample.getHazardCategories(),
+        hazardous=sample.getHazardous())
