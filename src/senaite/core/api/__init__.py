@@ -124,7 +124,7 @@ def get_pictograms_for_codes(codes, hazardous=True):
         return []
     codes = list(codes or [])
     if not codes:
-        warning = translate(WARNING_LABEL)
+        warning = translate(WARNING_LABEL, to_utf8=False)
         return [{
             "code": None,
             "url": get_warning_pictogram_url(),
