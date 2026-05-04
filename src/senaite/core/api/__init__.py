@@ -26,16 +26,19 @@ mirroring the long-standing ``bika.lims.api`` module that this package
 will gradually replace.
 """
 
+from bika.lims import senaiteMessageFactory as _
 from senaite.core.vocabularies.hazard_categories import format_title
 from senaite.core.vocabularies.hazard_categories import get_category
 from senaite.core.vocabularies.hazard_categories import get_overridden_labels
 from zope.component.hooks import getSite
+from zope.globalrequest import getRequest
+from zope.i18n import translate as zope_translate
 
 GHS_PICTOGRAM_PATH = (
     "/++plone++senaite.core.static/images/ghs/{pictogram}")
 WARNING_PICTOGRAM_PATH = (
     "/++plone++senaite.core.static/images/iso/W001.svg")
-WARNING_LABEL = u"Hazardous"
+WARNING_LABEL = _(u"hazard_warning_label", default=u"Hazardous")
 
 
 def get_portal():
@@ -53,6 +56,21 @@ def get_portal_url():
     :rtype: str
     """
     return get_portal().absolute_url()
+
+
+def translate(message, context=None):
+    """Translate an i18n message using the current request locale
+
+    :param message: Message to translate
+    :param context: Request used to resolve the locale. When ``None``
+                    the current global request is used.
+    :returns: Translated string, or the message default when no
+              translation is available
+    :rtype: unicode
+    """
+    if context is None:
+        context = getRequest()
+    return zope_translate(message, context=context)
 
 
 def get_pictogram_url(code):
@@ -129,11 +147,12 @@ def get_pictograms_for_codes(codes, hazardous=True):
         return []
     codes = list(codes or [])
     if not codes:
+        warning = translate(WARNING_LABEL)
         return [{
             "code": None,
             "url": get_warning_pictogram_url(),
-            "alt": WARNING_LABEL,
-            "title": WARNING_LABEL,
+            "alt": warning,
+            "title": warning,
         }]
     overrides = get_overridden_labels()
     pictograms = []

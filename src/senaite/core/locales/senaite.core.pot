@@ -11317,3 +11317,7 @@ msgstr ""
 #: senaite/core/vocabularies/hazard_categories.py
 msgid "hazard_GHS09_common"
 msgstr ""
+
+#: senaite/core/api/__init__.py
+msgid "hazard_warning_label"
+msgstr ""

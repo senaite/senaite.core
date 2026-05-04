@@ -11641,3 +11641,7 @@ msgstr "Umweltgefährdend"
 #: senaite/core/vocabularies/hazard_categories.py
 msgid "hazard_GHS09_common"
 msgstr "umweltgefährdend"
+
+#: senaite/core/api/__init__.py
+msgid "hazard_warning_label"
+msgstr "Gefährlich"
