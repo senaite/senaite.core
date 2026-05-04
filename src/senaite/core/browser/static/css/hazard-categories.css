@@ -50,10 +50,7 @@
   width: 32px;
   height: 32px;
 }
-.hazard-categories-display .hazard-pictogram img,
-.hazard-categories-widget .hazard-pictogram img,
-.hazard-categories-widget img.hazard-pictogram,
-.hazard-categories-display img.hazard-pictogram {
+.hazard-categories-display span.hazard-pictogram img {
   display: block;
   width: 100%;
   height: 100%;
