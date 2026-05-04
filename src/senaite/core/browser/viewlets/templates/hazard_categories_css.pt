@@ -1,2 +1,6 @@
-<link rel="stylesheet"
-      tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/css/hazard-categories.css" />
+<tal:hazard>
+  <link rel="stylesheet"
+        tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/css/hazard-categories.css" />
+  <script defer="defer"
+          tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/hazard-categories.js"></script>
+</tal:hazard>
