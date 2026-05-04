@@ -171,7 +171,7 @@ class ISampleTypeSchema(model.Schema):
 
     directives.widget(
         "hazard_categories",
-        klass="hazard-categories-widget")
+        klass=u"hazard-categories-widget")
     hazard_categories = schema.List(
         title=_(u"title_sampletype_hazard_categories",
                 default=u"Hazard categories"),
