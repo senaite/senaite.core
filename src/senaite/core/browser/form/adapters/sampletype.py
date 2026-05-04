@@ -24,17 +24,45 @@ from senaite.core.vocabularies.stickers import get_sticker_templates
 
 _DGF_WIDGET_PREFIX = "form.widgets.admitted_sticker_templates.0.widgets."
 
+HAZARDOUS_FIELD = "form.widgets.hazardous"
+HAZARD_CATEGORIES_FIELD = "form.widgets.hazard_categories"
+
+
+def _is_truthy(value):
+    """Return True if the form value represents a checked boolean."""
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (list, tuple)):
+        return any(_is_truthy(v) for v in value)
+    return str(value).lower() in ("true", "1", "selected", "on")
+
 
 class EditForm(EditFormAdapterBase):
     """Edit form adapter for Sample Type
     """
 
+    def _toggle_hazard_categories(self, hazardous):
+        """Show or hide the hazard_categories field."""
+        if hazardous:
+            self.add_show_field(HAZARD_CATEGORIES_FIELD)
+        else:
+            self.add_hide_field(HAZARD_CATEGORIES_FIELD)
+
     def initialized(self, data):
+        hazardous = False
+        if ISampleType.providedBy(self.context):
+            hazardous = bool(self.context.getHazardous())
+        self._toggle_hazard_categories(hazardous)
         return self.data
 
     def modified(self, data):
         name = data.get("name")
         value = data.get("value")
+
+        # toggle hazard categories visibility with the Hazardous flag
+        if name == HAZARDOUS_FIELD:
+            self._toggle_hazard_categories(_is_truthy(value))
+            return self.data
 
         # filter default small/large sticker
         if name == _DGF_WIDGET_PREFIX + "admitted":
