@@ -38,6 +38,7 @@ from senaite.core.schema.fields import DataGridRow
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.duration.widget import DurationWidgetFactory
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
+from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from zope import schema
 from zope.interface import Interface
 from zope.interface import Invalid
@@ -171,6 +172,7 @@ class ISampleTypeSchema(model.Schema):
 
     directives.widget(
         "hazard_categories",
+        CheckBoxFieldWidget,
         klass=u"hazard-categories-widget")
     hazard_categories = schema.List(
         title=_(u"title_sampletype_hazard_categories",
