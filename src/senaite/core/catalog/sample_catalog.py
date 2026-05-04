@@ -46,6 +46,7 @@ INDEXES = BASE_INDEXES + [
     ("getPrioritySortkey", "", "FieldIndex"),
     ("getProvince", "", "FieldIndex"),
     ("getReceivedBy", "", "FieldIndex"),
+    ("getSampleTypeUID", "", "FieldIndex"),
     ("getSampler", "", "FieldIndex"),
     ("getSamplingDate", "", "DateIndex"),
     ("isRootAncestor", "", "BooleanIndex"),

@@ -123,6 +123,8 @@ def add_hazard_categories(tool):
     can render hazard pictograms without waking up each sample.
     """
     from senaite.core.api.catalog import add_column
+    from senaite.core.api.catalog import add_index
+    from senaite.core.api.catalog import reindex_index
     from senaite.core.catalog import SAMPLE_CATALOG
 
     logger.info("Adding GHS hazard categories ...")
@@ -131,6 +133,8 @@ def add_hazard_categories(tool):
         "profile-senaite.core:default", "viewlets")
     catalog = api.get_tool(SAMPLE_CATALOG)
     add_column(catalog, "getHazardCategories")
+    if add_index(SAMPLE_CATALOG, "getSampleTypeUID", "FieldIndex"):
+        reindex_index(SAMPLE_CATALOG, "getSampleTypeUID")
     brains = catalog({"portal_type": "AnalysisRequest"})
     total = len(brains)
     logger.info("Reindexing hazard metadata on %d sample(s) ...", total)
