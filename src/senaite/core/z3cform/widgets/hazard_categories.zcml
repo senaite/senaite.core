@@ -16,4 +16,18 @@
       template="hazard_categories_input.pt"
       />
 
+  <z3c:widgetTemplate
+      mode="display"
+      widget="senaite.core.z3cform.interfaces.IHazardCategoriesWidget"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      template="hazard_categories_display.pt"
+      />
+
+  <z3c:widgetTemplate
+      mode="hidden"
+      widget="senaite.core.z3cform.interfaces.IHazardCategoriesWidget"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      template="hazard_categories_input.pt"
+      />
+
 </configure>
