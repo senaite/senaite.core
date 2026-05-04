@@ -609,7 +609,7 @@ class SamplesView(ListingView):
             ).format(
                 url=picto["url"],
                 alt=picto["alt"],
-                title=picto["title"])
+                title=picto["title"]).encode("utf-8")
 
         if obj.getInternalUse:
             after_icons += get_image("locked.png", title=t(_("Internal use")))
