@@ -601,7 +601,7 @@ class SamplesView(ListingView):
             after_icons += get_image("invoice_exclude.png",
                                      title=t(_("Exclude from invoice")))
         for picto in senaite_api.get_pictograms_for_codes(
-                obj.getHazardCategories,
+                getattr(obj, "getHazardCategories", None),
                 hazardous=bool(obj.getHazardous)):
             after_icons += (
                 u"<img src='{url}' alt='{alt}' title='{title}' "
