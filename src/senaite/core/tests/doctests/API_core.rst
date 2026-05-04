@@ -97,17 +97,6 @@ Unknown codes return ``None`` instead of a placeholder dict:
     True
 
 
-Override the displayed label for a category
-...........................................
-
-The ``overrides`` mapping bypasses translation lookups so callers
-can inject lab-specific labels:
-
-    >>> picto = api.get_pictogram("GHS01", overrides={"GHS01": u"Custom"})
-    >>> u"Custom" in picto["title"]
-    True
-
-
 Pictograms for a list of codes
 ..............................
 

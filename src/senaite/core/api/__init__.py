@@ -30,7 +30,6 @@ from bika.lims import senaiteMessageFactory as _
 from senaite.core.i18n import translate
 from senaite.core.vocabularies.hazard_categories import format_title
 from senaite.core.vocabularies.hazard_categories import get_category
-from senaite.core.vocabularies.hazard_categories import get_overridden_labels
 from zope.component.hooks import getSite
 
 GHS_PICTOGRAM_PATH = (
@@ -85,15 +84,11 @@ def get_warning_pictogram_url():
     return get_portal_url() + WARNING_PICTOGRAM_PATH
 
 
-def get_pictogram(code, overrides=None):
+def get_pictogram(code):
     """Get a view-model dict for a single GHS category
 
     :param code: GHS category code (e.g. ``"GHS01"``)
     :type code: str
-    :param overrides: Optional mapping of code -> label override. When
-                      ``None`` the registry overrides are looked up
-                      automatically.
-    :type overrides: dict or None
     :returns: ``{"code": code, "url": ..., "alt": ..., "title": ...}``
               or ``None`` when the code is unknown.
     :rtype: dict or None
@@ -101,13 +96,11 @@ def get_pictogram(code, overrides=None):
     category = get_category(code)
     if not category:
         return None
-    if overrides is None:
-        overrides = get_overridden_labels()
     return {
         "code": code,
         "url": get_pictogram_url(code),
         "alt": code,
-        "title": format_title(category, overrides),
+        "title": format_title(category),
     }
 
 
@@ -138,10 +131,9 @@ def get_pictograms_for_codes(codes, hazardous=True):
             "alt": warning,
             "title": warning,
         }]
-    overrides = get_overridden_labels()
     pictograms = []
     for code in codes:
-        picto = get_pictogram(code, overrides=overrides)
+        picto = get_pictogram(code)
         if picto is not None:
             pictograms.append(picto)
     return pictograms

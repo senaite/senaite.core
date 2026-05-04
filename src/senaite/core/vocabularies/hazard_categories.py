@@ -92,22 +92,9 @@ GHS_CATEGORIES = (
     },
 )
 
-LABELS_REGISTRY_KEY = "senaite.core.hazard_category_labels"
-
-
 def get_categories():
     """Return the GHS category list (as defined in code)."""
     return GHS_CATEGORIES
-
-
-def get_overridden_labels():
-    """Return the per-code label overrides from the registry.
-
-    Format: {"GHS01": u"Explosivstoff", ...}.
-    """
-    overrides = api.get_registry_record(
-        LABELS_REGISTRY_KEY, default=None) or {}
-    return overrides
 
 
 def get_category(code):
@@ -118,11 +105,10 @@ def get_category(code):
     return None
 
 
-def format_title(category, overrides=None):
-    """Return ``"GHSxx - Name (common)"``, honoring overrides."""
-    overrides = overrides or {}
+def format_title(category):
+    """Return ``"GHSxx - Name (common)"``."""
     code = category["code"]
-    name = overrides.get(code) or api.translate(category["name"])
+    name = api.translate(category["name"])
     common = api.translate(category["common"])
     if common:
         return u"{} - {} ({})".format(code, name, common)
@@ -134,16 +120,15 @@ class HazardCategoriesVocabulary(object):
     """Vocabulary of GHS hazard categories.
 
     Tokens and stored values are the GHS codes (``GHS01`` ... ``GHS09``),
-    so changes to translations and labels do not affect persistence.
+    so changes to translations do not affect persistence.
     """
 
     def __call__(self, context):
-        overrides = get_overridden_labels()
         terms = [
             SimpleTerm(
                 value=category["code"],
                 token=category["code"],
-                title=format_title(category, overrides),
+                title=format_title(category),
             )
             for category in GHS_CATEGORIES
         ]
