@@ -27,6 +27,7 @@ from bika.lims.interfaces import IBaseAnalysis
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import formatDecimalMark
+from bika.lims.utils import formatTextResult
 from bika.lims.utils import format_supsub
 
 DEFAULT_SKIP_FIELDS = [
@@ -457,6 +458,7 @@ def format_interim(interim_field, html=True):
     for visualization, like formatted_result and formatted_unit
     """
     separator = "<br/>" if html else ", "
+    result_type = interim_field.get("result_type", "")
 
     # copy to prevent persistent changes
     item = copy.deepcopy(interim_field)
@@ -476,6 +478,9 @@ def format_interim(interim_field, html=True):
         texts = [choices.get(v, "") for v in values]
         values = filter(None, texts)
 
+    elif result_type in ["string", "text"]:
+        # If string-like result, return without any formatting
+        values = [formatTextResult(val, html) for val in values]
     else:
         # default formatting
         setup = api.get_senaite_setup()
