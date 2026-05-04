@@ -72,6 +72,8 @@ from Products.Archetypes.atapi import ComputedWidget
 from Products.Archetypes.atapi import FileField
 from Products.Archetypes.atapi import FileWidget
 from Products.Archetypes.atapi import FixedPointField
+from Products.Archetypes.atapi import LinesField
+from Products.Archetypes.atapi import MultiSelectionWidget
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import TextField
@@ -1423,6 +1425,33 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
+
+    # Sample-level GHS hazard category override. When empty the
+    # categories are inherited from the SampleType. The legacy
+    # ``Hazardous`` boolean on SampleType is unaffected.
+    LinesField(
+        "HazardCategories",
+        mode="rw",
+        required=0,
+        default=[],
+        vocabulary="senaite.core.vocabularies.hazard_categories",
+        read_permission=View,
+        widget=MultiSelectionWidget(
+            label=_(u"label_analysisrequest_hazard_categories",
+                    default=u"Hazard categories"),
+            description=_(
+                u"description_analysisrequest_hazard_categories",
+                default=u"GHS hazard categories for this sample. "
+                        u"Leave empty to inherit from the sample "
+                        u"type."),
+            format="checkbox",
+            visible={
+                "add": "invisible",
+                "view": "visible",
+                "edit": "visible",
+            },
+        ),
+    ),
 ))
 
 
@@ -2106,6 +2135,22 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         if sample_type:
             return sample_type.getHazardous()
         return False
+
+    @security.public
+    def getHazardCategories(self):
+        """Return the effective GHS hazard categories.
+
+        Returns the sample-level override if any value is set,
+        otherwise falls back to the SampleType default. The boolean
+        ``Hazardous`` flag is independent and not consulted here.
+        """
+        own = self.getField("HazardCategories").get(self)
+        if own:
+            return list(own)
+        sample_type = self.getSampleType()
+        if sample_type:
+            return list(sample_type.getHazardCategories() or [])
+        return []
 
     @security.public
     def getSamplingWorkflowEnabled(self):

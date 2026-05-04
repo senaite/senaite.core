@@ -1,0 +1,2 @@
+<link rel="stylesheet"
+      tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/css/hazard-categories.css" />

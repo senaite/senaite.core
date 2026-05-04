@@ -109,6 +109,23 @@ def upgrade(tool):
 
 
 @upgradestep(product, version)
+def add_hazard_categories(tool):
+    """Register the GHS hazard categories field.
+
+    Nothing to migrate: the new ``hazard_categories`` field on
+    ``SampleType`` (DX) and the new ``HazardCategories`` field on
+    ``AnalysisRequest`` (AT) are picked up automatically. Existing
+    objects default to an empty list, which inherits from the
+    SampleType. The legacy ``Hazardous`` boolean is left untouched.
+    """
+    logger.info("Adding GHS hazard categories ...")
+    setup = api.get_setup_tool()
+    setup.runImportStepFromProfile(
+        "profile-senaite.core:default", "viewlets")
+    logger.info("Adding GHS hazard categories [DONE]")
+
+
+@upgradestep(product, version)
 def seed_detached_partition_backrefs(tool):
     """Seed annotation backrefs for already-detached partitions.
 

@@ -1,0 +1,75 @@
+/* Styling for the GHS hazard category multi-checkbox widget.
+ *
+ * Loaded via the HazardCategoriesStylesheet viewlet so that the
+ * pictogram next to each checkbox label appears on every form
+ * that renders the field.
+ */
+
+.hazard-categories-widget .option,
+.bika-listing-table td .multiSelectionWidget .option,
+.MultiSelectionWidget .option:has(input[value^="GHS"]) {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 12px;
+  margin-bottom: 4px;
+}
+
+/* Pictogram is injected as a CSS background on the option label.
+ * Each rule binds a GHS code to its SVG file. */
+.hazard-categories-widget .option label::before,
+.MultiSelectionWidget .option:has(input[value^="GHS"]) label::before {
+  content: "";
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  margin-right: 6px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  vertical-align: middle;
+}
+
+.option:has(input[value="GHS01"]) label::before {
+  background-image: url("../images/ghs/GHS01.svg");
+}
+.option:has(input[value="GHS02"]) label::before {
+  background-image: url("../images/ghs/GHS02.svg");
+}
+.option:has(input[value="GHS03"]) label::before {
+  background-image: url("../images/ghs/GHS03.svg");
+}
+.option:has(input[value="GHS04"]) label::before {
+  background-image: url("../images/ghs/GHS04.svg");
+}
+.option:has(input[value="GHS05"]) label::before {
+  background-image: url("../images/ghs/GHS05.svg");
+}
+.option:has(input[value="GHS06"]) label::before {
+  background-image: url("../images/ghs/GHS06.svg");
+}
+.option:has(input[value="GHS07"]) label::before {
+  background-image: url("../images/ghs/GHS07.svg");
+}
+.option:has(input[value="GHS08"]) label::before {
+  background-image: url("../images/ghs/GHS08.svg");
+}
+.option:has(input[value="GHS09"]) label::before {
+  background-image: url("../images/ghs/GHS09.svg");
+}
+
+/* Read-only / display contexts: stack pictograms with tooltips. */
+.hazard-categories-display {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.hazard-pictogram {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+}
+.hazard-pictogram img,
+.hazard-pictogram svg {
+  width: 100%;
+  height: 100%;
+}

@@ -14,6 +14,15 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Hazard Categories Stylesheet -->
+  <browser:viewlet
+      name="senaite.core.hazard_categories.css"
+      manager="plone.app.layout.viewlets.interfaces.IHtmlHead"
+      class=".hazard_categories.HazardCategoriesStylesheet"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Listing Table: Title Viewlet -->
   <browser:viewlet
       name="senaite.core.listings.title"

@@ -11237,3 +11237,91 @@ msgstr ""
 #: bika/lims/controlpanel/bika_instruments.py:173
 msgid "{} weeks and {} day(s)"
 msgstr ""
+
+#: senaite/core/content/sampletype.py
+msgid "title_sampletype_hazard_categories"
+msgstr ""
+
+#: senaite/core/content/sampletype.py
+msgid "description_sampletype_hazard_categories"
+msgstr ""
+
+#: bika/lims/content/analysisrequest.py
+msgid "label_analysisrequest_hazard_categories"
+msgstr ""
+
+#: bika/lims/content/analysisrequest.py
+msgid "description_analysisrequest_hazard_categories"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS02_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS02_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS03_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS03_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS04_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS04_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS05_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS05_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS06_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS06_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS07_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS07_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS08_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS08_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS09_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS09_common"
+msgstr ""

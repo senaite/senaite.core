@@ -3,6 +3,15 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add GHS hazard categories"
+      description="Register the GHS hazard category vocabulary and the
+                   hazard_categories field on SampleType and Sample"
+      source="2726"
+      destination="2727"
+      handler=".v02_07_000.add_hazard_categories"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Seed DetachedFrom backrefs"
       description="Seed annotation backrefs for detached partitions so that
                    the partition counter accounts for them"
