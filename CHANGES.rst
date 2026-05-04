@@ -11,6 +11,7 @@ Changelog
 - #2883 Add ViewNavigation permission for sidebar access control
 - #2885 Handle missing split_length values during setup row normalization
 - #2882 Refactor dashboard with permission-based access and async loading
+- #2881 Add text support for interim fields
 - #2880 Fix ConnectionStateError for DataGrid fields in test layers
 - #2879 Fix department and methods not displayed in services' csv export
 - #2878 Fix value of AT's SelectOtherWidget is not rendered in view mode
