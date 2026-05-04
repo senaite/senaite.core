@@ -11645,3 +11645,19 @@ msgstr "umweltgefährdend"
 #: senaite/core/api/__init__.py
 msgid "hazard_warning_label"
 msgstr "Gefährlich"
+
+#: bika/lims/content/referencedefinition.py
+msgid "label_referencedefinition_hazard_categories"
+msgstr "Gefahrenkategorien"
+
+#: bika/lims/content/referencedefinition.py
+msgid "description_referencedefinition_hazard_categories"
+msgstr "GHS-Gefahrenkategorien, die für Proben dieser Referenzdefinition gelten."
+
+#: bika/lims/content/referencesample.py
+msgid "label_referencesample_hazard_categories"
+msgstr "Gefahrenkategorien"
+
+#: bika/lims/content/referencesample.py
+msgid "description_referencesample_hazard_categories"
+msgstr "GHS-Gefahrenkategorien für diese Referenzprobe. Leer lassen, um die Werte der Referenzdefinition zu übernehmen."

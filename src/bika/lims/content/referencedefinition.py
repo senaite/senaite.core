@@ -28,6 +28,8 @@ from bika.lims.interfaces import IDeactivable
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
+from Products.Archetypes.public import LinesField
+from Products.Archetypes.public import MultiSelectionWidget
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import registerType
 from zope.interface import implements
@@ -87,6 +89,22 @@ schema = BikaSchema.copy() + Schema((
             ),
         ),
     ),
+
+    LinesField(
+        "HazardCategories",
+        schemata="Description",
+        default=[],
+        vocabulary="getHazardCategoriesVocabulary",
+        widget=MultiSelectionWidget(
+            label=_("label_referencedefinition_hazard_categories",
+                    default=u"Hazard categories"),
+            description=_(
+                "description_referencedefinition_hazard_categories",
+                default=u"GHS hazard categories that apply to samples "
+                        u"of this reference definition."),
+            format="checkbox",
+        ),
+    ),
 ))
 
 schema["title"].schemata = "Description"
@@ -104,6 +122,20 @@ class ReferenceDefinition(BaseContent):
     def _renameAfterCreation(self, check_auto_id=False):
         from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
+
+    def getHazardCategoriesVocabulary(self):
+        """Return AT DisplayList for the HazardCategories field.
+
+        :returns: GHS hazard categories vocabulary
+        :rtype: Products.Archetypes.atapi.DisplayList
+        """
+        from Products.Archetypes.atapi import DisplayList
+        from senaite.core.vocabularies.hazard_categories import (
+            GHS_CATEGORIES, format_title)
+        return DisplayList([
+            (cat["code"], format_title(cat))
+            for cat in GHS_CATEGORIES
+        ])
 
 
 registerType(ReferenceDefinition, PROJECTNAME)

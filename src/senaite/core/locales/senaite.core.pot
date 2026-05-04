@@ -11321,3 +11321,19 @@ msgstr ""
 #: senaite/core/api/__init__.py
 msgid "hazard_warning_label"
 msgstr ""
+
+#: bika/lims/content/referencedefinition.py
+msgid "label_referencedefinition_hazard_categories"
+msgstr ""
+
+#: bika/lims/content/referencedefinition.py
+msgid "description_referencedefinition_hazard_categories"
+msgstr ""
+
+#: bika/lims/content/referencesample.py
+msgid "label_referencesample_hazard_categories"
+msgstr ""
+
+#: bika/lims/content/referencesample.py
+msgid "description_referencesample_hazard_categories"
+msgstr ""
