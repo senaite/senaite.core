@@ -18,17 +18,13 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import api
-from senaite.core.vocabularies.hazard_categories import get_category
+from senaite.core.api.hazard_categories import get_pictogram_url
 from senaite.core.z3cform.interfaces import IHazardCategoriesWidget
 from z3c.form.browser import checkbox
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.widget import FieldWidget
 from zope.interface import implementer
 from zope.interface import implementer_only
-
-PICTOGRAM_BASE_URL = (
-    "{portal_url}/++plone++senaite.core.static/images/ghs/{pictogram}")
 
 
 @implementer_only(IHazardCategoriesWidget)
@@ -38,13 +34,7 @@ class HazardCategoriesWidget(checkbox.CheckBoxWidget):
     klass = u"hazard-categories-widget"
 
     def pictogram_url(self, value):
-        category = get_category(value)
-        if not category:
-            return u""
-        portal_url = api.get_portal().absolute_url()
-        return PICTOGRAM_BASE_URL.format(
-            portal_url=portal_url,
-            pictogram=category["pictogram"])
+        return get_pictogram_url(value)
 
 
 @implementer(IFieldWidget)

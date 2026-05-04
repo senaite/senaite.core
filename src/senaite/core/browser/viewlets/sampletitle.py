@@ -18,19 +18,11 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import api
 from plone.app.layout.viewlets.common import GlobalSectionsViewlet as Base
 from plone.memoize.instance import memoize
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.core.vocabularies.hazard_categories import format_title
-from senaite.core.vocabularies.hazard_categories import get_category
-from senaite.core.vocabularies.hazard_categories import get_overridden_labels
+from senaite.core.api.hazard_categories import get_pictograms_for_sample
 from zope.component import getMultiAdapter
-
-GHS_PICTOGRAM_URL = (
-    "{portal_url}/++plone++senaite.core.static/images/ghs/{pictogram}")
-W001_PICTOGRAM_URL = (
-    "{portal_url}/++plone++senaite.core.static/images/iso/W001.svg")
 
 
 class SampleTitleViewlet(Base):
@@ -54,37 +46,7 @@ class SampleTitleViewlet(Base):
         return self.context.getHazardous()
 
     def hazard_pictograms(self):
-        """Return a list of {url, alt, title} for the hazard icons.
-
-        Renders one pictogram per assigned GHS category. When the
-        sample is marked hazardous but no category was selected, a
-        single ISO 7010 W001 'General warning' pictogram is shown
-        as the fallback.
-        """
-        if not self.is_hazardous():
-            return []
-        portal_url = api.get_portal().absolute_url()
-        codes = list(self.context.getHazardCategories() or [])
-        if not codes:
-            return [{
-                "url": W001_PICTOGRAM_URL.format(portal_url=portal_url),
-                "alt": "Hazardous",
-                "title": "Hazardous",
-            }]
-        overrides = get_overridden_labels()
-        items = []
-        for code in codes:
-            category = get_category(code)
-            if not category:
-                continue
-            items.append({
-                "url": GHS_PICTOGRAM_URL.format(
-                    portal_url=portal_url,
-                    pictogram=category["pictogram"]),
-                "alt": code,
-                "title": format_title(category, overrides),
-            })
-        return items
+        return get_pictograms_for_sample(self.context)
 
     def exclude_invoice(self):
         return self.context.getInvoiceExclude()
