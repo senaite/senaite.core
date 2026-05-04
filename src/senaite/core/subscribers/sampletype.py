@@ -24,6 +24,18 @@ from senaite.core.catalog import SAMPLE_CATALOG
 
 HAZARD_FIELDS = ("hazardous", "hazard_categories")
 
+# Sample workflow states that are still subject to change. Closed
+# states (published, invalid, cancelled, rejected) are skipped on
+# reindex because the data is frozen anyway and reindexing them on
+# every SampleType edit becomes prohibitive on large databases.
+ACTIVE_SAMPLE_STATES = (
+    "sample_registered",
+    "sample_due",
+    "sample_received",
+    "to_be_verified",
+    "verified",
+)
+
 
 def _hazard_fields_changed(event):
     """True if any hazard-relevant field is in the event description.
@@ -57,11 +69,14 @@ def on_sampletype_modified(sample_type, event):
         return
     uid = api.get_uid(sample_type)
     catalog = api.get_tool(SAMPLE_CATALOG)
-    brains = catalog(getSampleTypeUID=uid)
+    brains = catalog({
+        "getSampleTypeUID": uid,
+        "review_state": list(ACTIVE_SAMPLE_STATES),
+    })
     if not brains:
         return
     logger.info(
-        "Reindexing hazard metadata on %d sample(s) of type '%s'",
+        "Reindexing hazard metadata on %d active sample(s) of type '%s'",
         len(brains), api.get_id(sample_type))
     for brain in brains:
         sample = api.get_object(brain)
