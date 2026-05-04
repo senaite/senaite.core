@@ -480,7 +480,7 @@ def format_interim(interim_field, html=True):
 
     elif result_type in ["string", "text"]:
         # If string-like result, return without any formatting
-        values = [formatTextResult(value, html) for value in values]
+        values = [formatTextResult(val, html) for val in values]
     else:
         # default formatting
         setup = api.get_senaite_setup()
