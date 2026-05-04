@@ -6,11 +6,16 @@
     </i>
     <!-- Title -->
     <span class="documentFirstHeading" tal:content="context/id"></span>
-    <!-- Hazardous icon -->
-    <i class="hazardous-icon" title="Hazardous" i18n:attributes="title"
-       tal:condition="python:view.is_hazardous()">
-      <svg tal:replace="structure view/theme_view/icon_data/hazardous" />
-    </i>
+    <!-- Hazard pictograms: one per GHS category, or the ISO 7010
+         W001 generic warning when only the boolean is set. -->
+    <span class="hazard-pictograms"
+          tal:condition="python:view.is_hazardous()">
+      <img tal:repeat="picto python:view.hazard_pictograms()"
+           class="hazard-pictogram"
+           tal:attributes="src python:picto['url'];
+                           alt python:picto['alt'];
+                           title python:picto['title']" />
+    </span>
     <!-- Exclude Invoice Icon -->
     <i class="exclude-from-invoice-icon" title="Exclude from invoice" i18n:attributes="title"
        tal:condition="python:view.exclude_invoice()">

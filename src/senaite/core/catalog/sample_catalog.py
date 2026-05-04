@@ -78,6 +78,7 @@ COLUMNS = BASE_COLUMNS + [
     "getDescendantsUIDs",
     "getDistrict",
     "getDueDate",
+    "getHazardCategories",
     "getHazardous",
     "getInternalUse",
     "getInvoiceExclude",

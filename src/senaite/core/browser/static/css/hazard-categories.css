@@ -27,6 +27,18 @@
   flex-shrink: 0;
 }
 
+/* Sample title pictograms next to the sample id. */
+.sample-title .hazard-pictograms {
+  display: inline-flex;
+  vertical-align: middle;
+  gap: 4px;
+  margin-left: 6px;
+}
+.sample-title .hazard-pictogram {
+  width: 28px;
+  height: 28px;
+}
+
 /* Read-only / display contexts: stack pictograms with tooltips. */
 .hazard-categories-display {
   display: inline-flex;

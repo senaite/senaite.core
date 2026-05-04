@@ -110,18 +110,37 @@ def upgrade(tool):
 
 @upgradestep(product, version)
 def add_hazard_categories(tool):
-    """Register the GHS hazard categories field.
+    """Register the GHS hazard categories field and metadata column.
 
-    Nothing to migrate: the new ``hazard_categories`` field on
-    ``SampleType`` (DX) and the new ``HazardCategories`` field on
-    ``AnalysisRequest`` (AT) are picked up automatically. Existing
+    The new ``hazard_categories`` field on ``SampleType`` (DX) and
+    the new ``HazardCategories`` field on ``AnalysisRequest`` (AT)
+    are picked up automatically by the schema machinery. Existing
     objects default to an empty list, which inherits from the
     SampleType. The legacy ``Hazardous`` boolean is left untouched.
+
+    The ``getHazardCategories`` metadata column is added to the
+    sample catalog and existing samples are reindexed so listings
+    can render hazard pictograms without waking up each sample.
     """
+    from senaite.core.api.catalog import add_column
+    from senaite.core.catalog import SAMPLE_CATALOG
+
     logger.info("Adding GHS hazard categories ...")
     setup = api.get_setup_tool()
     setup.runImportStepFromProfile(
         "profile-senaite.core:default", "viewlets")
+    catalog = api.get_tool(SAMPLE_CATALOG)
+    add_column(catalog, "getHazardCategories")
+    brains = catalog({"portal_type": "AnalysisRequest"})
+    total = len(brains)
+    logger.info("Reindexing hazard metadata on %d sample(s) ...", total)
+    for i, brain in enumerate(brains):
+        if i and i % 500 == 0:
+            logger.info("Reindexed %d/%d ...", i, total)
+            transaction.savepoint(optimistic=True)
+        sample = api.get_object(brain)
+        sample.reindexObject(
+            idxs=["getHazardous", "getHazardCategories"])
     logger.info("Adding GHS hazard categories [DONE]")
 
 
