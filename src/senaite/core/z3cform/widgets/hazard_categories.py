@@ -18,7 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from senaite.core.api.hazard_categories import get_pictogram_url
+from senaite.core import api
 from senaite.core.z3cform.interfaces import IHazardCategoriesWidget
 from z3c.form.browser import checkbox
 from z3c.form.interfaces import IFieldWidget
@@ -34,7 +34,7 @@ class HazardCategoriesWidget(checkbox.CheckBoxWidget):
     klass = u"hazard-categories-widget"
 
     def pictogram_url(self, value):
-        return get_pictogram_url(value)
+        return api.get_pictogram_url(value)
 
 
 @implementer(IFieldWidget)

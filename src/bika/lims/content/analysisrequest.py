@@ -1434,7 +1434,7 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         required=0,
         default=[],
-        vocabulary="senaite.core.vocabularies.hazard_categories",
+        vocabulary="getHazardCategoriesVocabulary",
         read_permission=View,
         widget=MultiSelectionWidget(
             label=_(u"label_analysisrequest_hazard_categories",
@@ -2151,6 +2151,23 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         if sample_type:
             return list(sample_type.getHazardCategories() or [])
         return []
+
+    @security.public
+    def getHazardCategoriesVocabulary(self):
+        """Return AT DisplayList for the HazardCategories field.
+
+        Bound by the ``vocabulary="..."`` argument on the field;
+        rebuilt per access so registry-based label overrides take
+        effect immediately.
+        """
+        from Products.Archetypes.atapi import DisplayList
+        from senaite.core.vocabularies.hazard_categories import (
+            GHS_CATEGORIES, format_title, get_overridden_labels)
+        overrides = get_overridden_labels()
+        return DisplayList([
+            (cat["code"], format_title(cat, overrides))
+            for cat in GHS_CATEGORIES
+        ])
 
     @security.public
     def getSamplingWorkflowEnabled(self):

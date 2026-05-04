@@ -21,7 +21,7 @@
 from plone.app.layout.viewlets.common import GlobalSectionsViewlet as Base
 from plone.memoize.instance import memoize
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.core.api.hazard_categories import get_pictograms_for_sample
+from senaite.core import api
 from zope.component import getMultiAdapter
 
 
@@ -46,7 +46,7 @@ class SampleTitleViewlet(Base):
         return self.context.getHazardous()
 
     def hazard_pictograms(self):
-        return get_pictograms_for_sample(self.context)
+        return api.get_pictograms_for_sample(self.context)
 
     def exclude_invoice(self):
         return self.context.getInvoiceExclude()
