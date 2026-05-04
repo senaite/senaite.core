@@ -33,6 +33,12 @@ class INumberWidget(IWidget):
     """
 
 
+class IHazardCategoriesWidget(IWidget):
+    """Multi-checkbox widget that decorates each option with the matching
+    GHS pictogram.
+    """
+
+
 class IDataGridWidget(IDataGridField):
     """Datagrid widget (table)
     """

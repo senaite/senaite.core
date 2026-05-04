@@ -1,0 +1,19 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
+    i18n_domain="z3c.form">
+
+  <class class=".hazard_categories.HazardCategoriesWidget">
+    <require
+        permission="zope.Public"
+        interface="senaite.core.z3cform.interfaces.IHazardCategoriesWidget" />
+  </class>
+
+  <z3c:widgetTemplate
+      mode="input"
+      widget="senaite.core.z3cform.interfaces.IHazardCategoriesWidget"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      template="hazard_categories_input.pt"
+      />
+
+</configure>

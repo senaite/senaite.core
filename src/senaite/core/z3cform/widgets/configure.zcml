@@ -16,6 +16,7 @@
 
   <include file="address.zcml" />
   <include file="datetimewidget.zcml" />
+  <include file="hazard_categories.zcml" />
   <include file="number.zcml" />
   <include file="phone.zcml" />
 
