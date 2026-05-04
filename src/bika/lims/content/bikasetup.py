@@ -1936,38 +1936,6 @@ class BikaSetup(folder.ATFolder):
         if setup:
             setup.setWorksheetLayout(value)
 
-    def getDashboardByDefault(self):
-        """Get the value from the senaite setup
-        """
-        setup = api.get_senaite_setup()
-        # setup is `None` during initial site content structure installation
-        if setup:
-            return setup.getDashboardByDefault()
-
-    def setDashboardByDefault(self, value):
-        """Set the value in the senaite setup
-        """
-        setup = api.get_senaite_setup()
-        # setup is `None` during initial site content structure installation
-        if setup:
-            setup.setDashboardByDefault(value)
-
-    def getLandingPage(self):
-        """Get the value from the senaite setup
-        """
-        setup = api.get_senaite_setup()
-        # setup is `None` during initial site content structure installation
-        if setup:
-            return setup.getLandingPage()
-
-    def setLandingPage(self, value):
-        """Set the value in the senaite setup
-        """
-        setup = api.get_senaite_setup()
-        # setup is `None` during initial site content structure installation
-        if setup:
-            setup.setLandingPage(value)
-
     def getShowPartitions(self):
         """Get the value from the senaite setup
         """

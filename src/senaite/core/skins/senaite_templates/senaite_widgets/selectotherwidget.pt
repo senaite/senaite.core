@@ -8,6 +8,7 @@
 
   <!-- VIEW MACRO -->
   <metal:view_macro define-macro="view">
+    <span tal:content="python:field.widget.get_value_text(context, field)"></span>
   </metal:view_macro>
 
   <!-- EDIT MACRO -->

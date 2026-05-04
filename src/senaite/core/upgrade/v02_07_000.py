@@ -28,6 +28,7 @@ from bika.lims.api import safe_unicode as u
 from bika.lims.api import snapshot as snap_api
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.interfaces import IAuditable
+from bika.lims.interfaces import IDetachedPartition
 from bika.lims.interfaces import IInvalidated
 from bika.lims.utils import tmpID
 from persistent.list import PersistentList
@@ -108,6 +109,45 @@ def upgrade(tool):
 
 
 @upgradestep(product, version)
+def seed_detached_partition_backrefs(tool):
+    """Seed annotation backrefs for already-detached partitions.
+
+    The `DetachedFrom` field gained a `relationship` attribute so the
+    UIDReferenceField now maintains backrefs on `setDetachedFrom`. Any
+    detached partition created before this change has the forward UID
+    pointer but no backref. Re-set the field to trigger backref
+    maintenance on the link.
+    """
+    query = {
+        "portal_type": "AnalysisRequest",
+        "object_provides": IDetachedPartition.__identifier__,
+    }
+    brains = api.search(query, SAMPLE_CATALOG)
+    total = len(brains)
+    logger.info(
+        "Seeding DetachedFrom backrefs for {} detached partitions".format(
+            total))
+
+    seeded = 0
+    for num, brain in enumerate(brains, start=1):
+        sample = api.get_object(brain)
+        field = sample.getField("DetachedFrom")
+        if field is None:
+            continue
+        target = field.get(sample)
+        if target is None:
+            continue
+        # Re-setting via the field link API ensures the backref
+        # annotation gets created on the target.
+        field.link_reference(target, sample)
+        seeded += 1
+        if num % 100 == 0:
+            logger.info("  ... seeded {}/{}".format(num, total))
+
+    logger.info("Seeded DetachedFrom backrefs for {} samples".format(seeded))
+
+
+@upgradestep(product, version)
 def import_rolemap(tool):
     """Import rolemap step from profiles
     """
@@ -115,6 +155,36 @@ def import_rolemap(tool):
     setup = portal.portal_setup
 
     setup.runImportStepFromProfile(profile, "rolemap")
+
+
+@upgradestep(product, version)
+def remove_dashboard_registry_visibility(tool):
+    """Remove legacy registry-based dashboard panel visibility
+
+    The dashboard previously used a custom registry record
+    'senaite.core.dashboard_panels_visibility' to store per-role
+    visibility settings for each dashboard section. This was a
+    hardcoded permission mapping that duplicated what Plone's
+    standard role system already provides.
+
+    The dashboard now uses a simple role check via DASHBOARD_ROLES
+    instead of the registry. This step removes the stale registry
+    record and re-imports the rolemap.
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+
+    # Import rolemap
+    setup.runImportStepFromProfile(profile, "rolemap")
+
+    # Remove stale registry record
+    from plone.registry.interfaces import IRegistry
+    from zope.component import getUtility
+    registry = getUtility(IRegistry)
+    key = "senaite.core.dashboard_panels_visibility"
+    if key in registry.records:
+        del registry.records[key]
+        logger.info("Removed registry record '%s'" % key)
 
 
 @upgradestep(product, version)

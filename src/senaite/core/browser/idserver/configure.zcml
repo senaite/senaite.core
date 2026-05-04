@@ -20,4 +20,16 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <browser:resource
+      name="senaite.core.idserver.css"
+      file="static/css/idserver.css"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <browser:resource
+      name="senaite.core.idserver.js"
+      file="static/js/idserver.js"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
 </configure>

@@ -71,9 +71,18 @@ class BaseLayer(PloneSandboxLayer):
         transaction.commit()
 
 
-class DataLayer(BaseLayer):
+BASE_LAYER_FIXTURE = BaseLayer()
+BASE_TESTING = FunctionalTesting(
+    bases=(BASE_LAYER_FIXTURE,), name="SENAITE:BaseTesting")
+
+
+class DataLayer(PloneSandboxLayer):
     """Layer including Demo Data
+
+    Reuses BASE_LAYER_FIXTURE to avoid rebuilding the Plone site
+    and re-applying the profile. Only loads demo data on top.
     """
+    defaultBases = (BASE_LAYER_FIXTURE,)
 
     def setup_data_load(self, portal, request):
         """Provision site with demo data
@@ -90,7 +99,8 @@ class DataLayer(BaseLayer):
                 archive_bits=tarball.read(),
                 encoding="UTF-8",
                 should_purge=True)
-            setup_tool._doRunImportStep("senaite.core.import", context)
+            setup_tool._doRunImportStep(
+                "senaite.core.import", context)
 
         transaction.commit()
 
@@ -98,13 +108,8 @@ class DataLayer(BaseLayer):
 
     def setUpPloneSite(self, portal):
         super(DataLayer, self).setUpPloneSite(portal)
-        # Install Demo Data
         self.setup_data_load(portal, portal.REQUEST)
 
-
-BASE_LAYER_FIXTURE = BaseLayer()
-BASE_TESTING = FunctionalTesting(
-    bases=(BASE_LAYER_FIXTURE,), name="SENAITE:BaseTesting")
 
 DATA_LAYER_FIXTURE = DataLayer()
 DATA_TESTING = FunctionalTesting(

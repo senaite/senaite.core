@@ -4,6 +4,16 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2888 Improve ID Server admin views
+- #2889 Remove orphan temp objects when renameAfterCreation fails
+- #2887 Set default Seq Type to 'generated' for partition/retest/secondary
+- #2886 Fix partition ID collision after detach
+- #2883 Add ViewNavigation permission for sidebar access control
+- #2885 Handle missing split_length values during setup row normalization
+- #2882 Refactor dashboard with permission-based access and async loading
+- #2880 Fix ConnectionStateError for DataGrid fields in test layers
+- #2879 Fix department and methods not displayed in services' csv export
+- #2878 Fix value of AT's SelectOtherWidget is not rendered in view mode
 - #2874 Fix save button visibility of sample header
 - #2875 Fix AttributeError in add_sample when rejection workflow is enabled
 - #2872 Use AT accessor/mutator in GenericSetup field adapter

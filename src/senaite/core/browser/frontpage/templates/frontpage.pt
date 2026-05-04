@@ -3,82 +3,15 @@
       i18n:domain="senaite.core">
 
   <metal:content-title fill-slot="content-title">
-    <a href=""
-       style="float:right;"
-       tal:condition="python: not view.is_anonymous_user() and view.is_dashboard_enabled()"
-       i18n:translate=""
-       tal:attributes="href string:${portal_url}?redirect_to=dashboard">
-      Switch to dashboard
-    </a>
-
-    <h1 class="documentFirstHeading">
-      <!-- <img tal:attributes="src view/icon"/> -->
-      <span i18n:translate="">Welcome to</span>
-      <img height="50" tal:attributes="src string:${portal_url}/++plone++senaite.core.static/images/senaite-site-logo.png"/>
+    <h1 class="documentFirstHeading" i18n:translate="">
+      SENAITE LIMS
     </h1>
-
   </metal:content-title>
 
   <metal:content-description fill-slot="content-description">
-    <div class="documentDescription" i18n:translate="">
-    </div>
   </metal:content-description>
 
   <metal:content-core fill-slot="content-core">
-
-    <div class="row">
-      <div class="col-sm-12">
-        <h2>
-          SENAITE LIMS
-        </h2>
-        <p>SENAITE is an Open Source Laboratory Information Management System (LIMS)
-          for enterprise environments, especially focused to behave with high speed,
-          excellent performance and good stability.
-        </p>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-sm-12">
-        <h2>What does SENAITE mean?</h2>
-        <p>
-          <a href="http://senaite.com" rel="nofollow">SENAITE</a> is a beautiful trigonal, oil-green to greenish
-          black <a href="https://www.mindat.org/min-3617.html" rel="nofollow">crystal</a>, with almost the hardness
-          of a diamond. Although the crystal is described with a complex formula, it still
-          has clear and straight shapes. Therefore, it reflects nicely the complexity of
-          the LIMS, while providing a modern, intuitive and friendly <a href="https://en.wikipedia.org/wiki/User_interface_design" rel="nofollow">UI</a>/
-          <a href="https://en.wikipedia.org/wiki/User_experience" rel="nofollow">UX</a>.
-        </p>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-sm-12">
-        <h2>Features</h2>
-      </div>
-      <div class="col-md-4">
-        <ul>
-          <li>Centralized System</li>
-          <li>Reliable Architecture</li>
-          <li>Industrial Strength Security</li>
-        </ul>
-      </div>
-      <div class="col-md-4">
-        <ul>
-          <li>Equipment Integration</li>
-          <li>Audit and Traceability</li>
-          <li>Integrated JSON API</li>
-        </ul>
-      </div>
-      <div class="col-md-4">
-        <ul>
-          <li>Powered by Python</li>
-          <li>Built on Plone CMS</li>
-          <li>Fully Open Source</li>
-        </ul>
-      </div>
-    </div>
-
   </metal:content-core>
 
 </html>
