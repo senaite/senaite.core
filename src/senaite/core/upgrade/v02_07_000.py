@@ -128,7 +128,7 @@ def add_hazard_categories(tool):
     from senaite.core.catalog import SAMPLE_CATALOG
 
     logger.info("Adding GHS hazard categories ...")
-    setup = api.get_setup_tool()
+    setup = api.get_tool("portal_setup")
     setup.runImportStepFromProfile(
         "profile-senaite.core:default", "viewlets")
     catalog = api.get_tool(SAMPLE_CATALOG)
