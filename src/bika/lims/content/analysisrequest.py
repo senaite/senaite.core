@@ -2110,11 +2110,10 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
     @security.public
     def getHazardCategories(self):
-        """Return the GHS hazard categories from the SampleType.
+        """Get the GHS hazard categories from the SampleType
 
-        Sample-level override is intentionally not supported in this
-        first iteration. The boolean ``Hazardous`` flag is independent
-        and not consulted here.
+        :returns: GHS category codes assigned to the SampleType
+        :rtype: list
         """
         sample_type = self.getSampleType()
         if sample_type:
