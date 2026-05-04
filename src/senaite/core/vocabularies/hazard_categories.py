@@ -106,10 +106,10 @@ def get_category(code):
 
 
 def format_title(category):
-    """Return ``"GHSxx - Name (common)"``."""
+    """Return ``"GHSxx - Name (common)"`` as unicode."""
     code = category["code"]
-    name = api.translate(category["name"])
-    common = api.translate(category["common"])
+    name = api.safe_unicode(api.translate(category["name"]))
+    common = api.safe_unicode(api.translate(category["common"]))
     if common:
         return u"{} - {} ({})".format(code, name, common)
     return u"{} - {}".format(code, name)
