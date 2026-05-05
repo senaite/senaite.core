@@ -47,6 +47,53 @@
   height: 28px;
 }
 
+/* AT MultiSelectionWidget (ReferenceDefinition, ReferenceSample):
+   <div id="HazardCategories"> wraps each option as
+   <div class="ArchetypesMultiSelectionValue"><input value="GHSxx"><label>.
+   Decorate the adjacent label with the matching pictogram. */
+#HazardCategories .ArchetypesMultiSelectionValue input[value^="GHS"] + label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+#HazardCategories .ArchetypesMultiSelectionValue input[value^="GHS"] + label::before {
+  content: "";
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  flex-shrink: 0;
+}
+#HazardCategories input[value="GHS01"] + label::before {
+  background-image: url("../images/ghs/GHS01.svg");
+}
+#HazardCategories input[value="GHS02"] + label::before {
+  background-image: url("../images/ghs/GHS02.svg");
+}
+#HazardCategories input[value="GHS03"] + label::before {
+  background-image: url("../images/ghs/GHS03.svg");
+}
+#HazardCategories input[value="GHS04"] + label::before {
+  background-image: url("../images/ghs/GHS04.svg");
+}
+#HazardCategories input[value="GHS05"] + label::before {
+  background-image: url("../images/ghs/GHS05.svg");
+}
+#HazardCategories input[value="GHS06"] + label::before {
+  background-image: url("../images/ghs/GHS06.svg");
+}
+#HazardCategories input[value="GHS07"] + label::before {
+  background-image: url("../images/ghs/GHS07.svg");
+}
+#HazardCategories input[value="GHS08"] + label::before {
+  background-image: url("../images/ghs/GHS08.svg");
+}
+#HazardCategories input[value="GHS09"] + label::before {
+  background-image: url("../images/ghs/GHS09.svg");
+}
+
 /* Read-only / display contexts: stack pictograms with tooltips. */
 .hazard-categories-display {
   display: inline-flex;
