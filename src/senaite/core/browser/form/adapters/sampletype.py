@@ -19,6 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 from senaite.core.browser.form.adapters import EditFormAdapterBase
+from senaite.core.browser.form.helpers import get_form_value
+from senaite.core.browser.form.helpers import has_form_field
 from senaite.core.browser.form.helpers import is_checked
 from senaite.core.interfaces import ISampleType
 from senaite.core.vocabularies.stickers import get_sticker_templates
@@ -45,8 +47,8 @@ class EditForm(EditFormAdapterBase):
         # toggle survives a re-render after validation errors. Falls
         # back to the persisted context value on the initial render.
         form = data.get("form") or {}
-        if HAZARDOUS_FIELD in form:
-            hazardous = is_checked(form.get(HAZARDOUS_FIELD))
+        if has_form_field(form, HAZARDOUS_FIELD):
+            hazardous = is_checked(get_form_value(form, HAZARDOUS_FIELD))
         elif ISampleType.providedBy(self.context):
             hazardous = bool(self.context.getHazardous())
         else:

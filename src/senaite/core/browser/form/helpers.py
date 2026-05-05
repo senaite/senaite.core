@@ -23,6 +23,9 @@
 CHECKED_VALUES = ("true", "1", "selected", "on")
 
 
+_MISSING = object()
+
+
 def is_checked(value):
     """Check if a form value represents a checked boolean
 
@@ -38,3 +41,36 @@ def is_checked(value):
     if isinstance(value, (list, tuple)):
         return any(is_checked(item) for item in value)
     return str(value).lower() in CHECKED_VALUES
+
+
+def get_form_value(form, name, default=None):
+    """Look up a form value, ignoring ZPublisher type-marker suffixes
+
+    The raw form payload from editform.js carries the input names as
+    rendered, so DX boolean fields appear as ``name:list`` and AT
+    booleans as ``name:boolean``. This helper accepts the bare field
+    name and finds the matching entry regardless of suffix.
+
+    :param form: Form payload submitted by the client
+    :param name: Field name without ZPublisher type marker
+    :param default: Value to return when no matching key exists
+    :returns: The submitted value, or ``default`` when absent
+    """
+    if name in form:
+        return form[name]
+    prefix = name + ":"
+    for key, value in form.items():
+        if key.startswith(prefix):
+            return value
+    return default
+
+
+def has_form_field(form, name):
+    """Check if a field was submitted, ignoring ZPublisher suffixes
+
+    :param form: Form payload submitted by the client
+    :param name: Field name without ZPublisher type marker
+    :returns: True when a matching key exists in the form
+    :rtype: bool
+    """
+    return get_form_value(form, name, _MISSING) is not _MISSING

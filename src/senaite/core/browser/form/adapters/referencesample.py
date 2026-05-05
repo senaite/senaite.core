@@ -21,6 +21,8 @@
 from bika.lims import _
 from bika.lims import api
 from senaite.core.browser.form.adapters import EditFormAdapterBase
+from senaite.core.browser.form.helpers import get_form_value
+from senaite.core.browser.form.helpers import has_form_field
 from senaite.core.browser.form.helpers import is_checked
 
 HAZARDOUS_FIELD = "Hazardous"
@@ -50,8 +52,8 @@ class EditForm(EditFormAdapterBase):
         # Read live form state so the toggle survives a re-render
         # after validation errors. Falls back to the persisted value.
         form = data.get("form") or {}
-        if HAZARDOUS_FIELD in form:
-            hazardous = is_checked(form.get(HAZARDOUS_FIELD))
+        if has_form_field(form, HAZARDOUS_FIELD):
+            hazardous = is_checked(get_form_value(form, HAZARDOUS_FIELD))
         else:
             hazardous = bool(self.context.getHazardous())
         self._toggle_hazard_categories(hazardous)
