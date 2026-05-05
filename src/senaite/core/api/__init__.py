@@ -142,19 +142,35 @@ def get_pictograms_for_codes(codes, hazardous=True):
     return pictograms
 
 
-def get_attr(obj, name, default=None):
-    """Return ``name`` from a content object or catalog brain.
+def get_attr(obj, name, default=None, catalog=None):
+    """Return an attribute from an object, brain or via UID lookup.
 
-    Calls ``name`` when it is a method, otherwise returns the bare
-    attribute. Uses ``Products.CMFPlone.utils.safe_callable`` so a
-    transient ConflictError in the callable check is not swallowed.
+    When ``catalog`` is omitted, ``obj`` is read directly: a method
+    is called, a bare attribute is returned as-is. When ``catalog``
+    is given, ``obj`` is treated as a UID and the object is looked
+    up in that catalog first; the attribute is then read from the
+    matching brain.
 
-    :param obj: Content object or catalog brain
+    Uses ``Products.CMFPlone.utils.safe_callable`` so a transient
+    ConflictError in the callable check is not swallowed.
+
+    :param obj: Content object, catalog brain, or UID (when
+                ``catalog`` is given)
     :param name: Attribute or method name
-    :param default: Value to return when the attribute is missing
-                    or the call raises ``TypeError``
+    :param default: Value returned when the attribute is missing,
+                    the catalog lookup yields no brain, or the
+                    call raises ``TypeError``
+    :param catalog: Catalog id, tool, or ``None`` to disable the
+                    UID lookup
     :returns: Attribute value (or call result) or ``default``
     """
+    if catalog is not None:
+        if not obj:
+            return default
+        brains = _bika_api.get_tool(catalog)(UID=obj)
+        if not brains:
+            return default
+        obj = brains[0]
     value = getattr(obj, name, default)
     if safe_callable(value):
         try:
@@ -162,28 +178,6 @@ def get_attr(obj, name, default=None):
         except TypeError:
             return default
     return value
-
-
-def get_brain_attr(uid, name, catalog, default=None):
-    """Return a metadata attribute from a catalog brain by UID.
-
-    Looks the object up by UID in the given catalog and reads the
-    metadata attribute without waking the object up. Returns
-    ``default`` when no brain matches.
-
-    :param uid: UID of the object to look up
-    :param name: Brain metadata attribute name
-    :param catalog: Catalog id, tool or brain-aware catalog
-    :param default: Returned when no brain is found
-    :returns: Brain metadata value (with method-call resolution)
-    :rtype: any
-    """
-    if not uid:
-        return default
-    brains = _bika_api.get_tool(catalog)(UID=uid)
-    if not brains:
-        return default
-    return get_attr(brains[0], name, default)
 
 
 def get_pictograms_for_sample(sample):
@@ -208,8 +202,8 @@ def get_pictograms_for_sample(sample):
         return []
     codes = get_attr(sample, "getCustomHazardCategories") or []
     if not codes:
-        codes = get_brain_attr(
+        codes = get_attr(
             get_attr(sample, "getSampleTypeUID"),
             "getHazardCategories",
-            SETUP_CATALOG) or []
+            catalog=SETUP_CATALOG) or []
     return get_pictograms_for_codes(list(codes), hazardous=hazardous)

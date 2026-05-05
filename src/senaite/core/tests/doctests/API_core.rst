@@ -183,25 +183,20 @@ propagating the error:
     >>> api.get_attr(Picky(), "method", default="fallback")
     'fallback'
 
+Passing ``catalog`` switches to UID-lookup mode: ``obj`` is treated
+as a UID, looked up in that catalog, and the attribute is read
+from the matching brain. An empty UID short-circuits to
+``default``:
 
-Brain attribute lookup by UID
-.............................
-
-``api.get_brain_attr`` looks an object up by UID in a catalog and
-reads a metadata attribute from its brain without waking the
-object up.
-
-An empty UID short-circuits to ``default``:
-
-    >>> api.get_brain_attr("", "Title", "portal_catalog") is None
+    >>> api.get_attr("", "Title", catalog="portal_catalog") is None
     True
 
-    >>> api.get_brain_attr(None, "Title", "portal_catalog",
-    ...                    default="missing")
+    >>> api.get_attr(None, "Title", catalog="portal_catalog",
+    ...              default="missing")
     'missing'
 
 A bogus UID matches no brain and falls back to ``default``:
 
-    >>> api.get_brain_attr("does-not-exist", "Title",
-    ...                    "portal_catalog", default="missing")
+    >>> api.get_attr("does-not-exist", "Title",
+    ...              catalog="portal_catalog", default="missing")
     'missing'
