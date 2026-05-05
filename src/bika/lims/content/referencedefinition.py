@@ -26,6 +26,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IReferenceDefinition
+from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
@@ -34,6 +35,8 @@ from Products.Archetypes.public import Schema
 from Products.Archetypes.public import registerType
 from senaite.core.browser.widgets.hazardcategorieswidget import (
     HazardCategoriesWidget)
+from senaite.core.vocabularies.hazard_categories import GHS_CATEGORIES
+from senaite.core.vocabularies.hazard_categories import format_title
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -131,9 +134,6 @@ class ReferenceDefinition(BaseContent):
         :returns: GHS hazard categories vocabulary
         :rtype: Products.Archetypes.atapi.DisplayList
         """
-        from Products.Archetypes.atapi import DisplayList
-        from senaite.core.vocabularies.hazard_categories import (
-            GHS_CATEGORIES, format_title)
         return DisplayList([
             (cat["code"], format_title(cat))
             for cat in GHS_CATEGORIES

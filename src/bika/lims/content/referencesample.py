@@ -33,6 +33,7 @@ from DateTime import DateTime
 from Products.Archetypes.atapi import registerType
 from Products.Archetypes.BaseFolder import BaseFolder
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.Field import BooleanField
 from Products.Archetypes.Field import ComputedField
 from Products.Archetypes.Field import DateTimeField
@@ -41,6 +42,8 @@ from Products.Archetypes.Field import StringField
 from Products.Archetypes.Field import TextField
 from senaite.core.browser.widgets.hazardcategorieswidget import (
     HazardCategoriesWidget)
+from senaite.core.vocabularies.hazard_categories import GHS_CATEGORIES
+from senaite.core.vocabularies.hazard_categories import format_title
 from Products.Archetypes.Schema import Schema
 from Products.Archetypes.Widget import BooleanWidget
 from Products.Archetypes.Widget import ComputedWidget
@@ -346,9 +349,6 @@ class ReferenceSample(BaseFolder):
         :returns: GHS hazard categories vocabulary
         :rtype: Products.Archetypes.atapi.DisplayList
         """
-        from Products.Archetypes.atapi import DisplayList
-        from senaite.core.vocabularies.hazard_categories import (
-            GHS_CATEGORIES, format_title)
         return DisplayList([
             (cat["code"], format_title(cat))
             for cat in GHS_CATEGORIES
