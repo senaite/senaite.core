@@ -142,32 +142,6 @@ def get_pictograms_for_codes(codes, hazardous=True):
     return pictograms
 
 
-def get_pictograms_for_sample(sample):
-    """Get pictogram view-models for a sample
-
-    Accepts both a wakened sample object and a catalog brain. The
-    sample's hazard categories are resolved without waking the sample
-    type up:
-
-    1. ``getCustomHazardCategories`` (per-sample override, optional)
-       is consulted first when present.
-    2. Otherwise the SampleType is looked up by its UID in the setup
-       catalog and ``getHazardCategories`` is read from its brain
-       metadata.
-
-    :param sample: Sample (AnalysisRequest) or catalog brain
-    :returns: List of pictogram view-model dicts
-    :rtype: list[dict]
-    """
-    hazardous = bool(get_attr(sample, "getHazardous"))
-    if not hazardous:
-        return []
-    codes = _get_custom_hazard_categories(sample)
-    if not codes:
-        codes = _get_sample_type_hazard_categories(sample)
-    return get_pictograms_for_codes(codes, hazardous=hazardous)
-
-
 def get_attr(obj, name, default=None):
     """Return ``name`` from a content object or catalog brain.
 
@@ -190,30 +164,52 @@ def get_attr(obj, name, default=None):
     return value
 
 
-def _get_custom_hazard_categories(sample):
-    """Per-sample hazard category override (currently always empty).
+def get_brain_attr(uid, name, catalog, default=None):
+    """Return a metadata attribute from a catalog brain by UID.
 
-    Reserved hook for a future ``getCustomHazardCategories`` field
-    on the sample. Resolved via ``getattr`` so callers and listings
-    can be wired up today and a backing field added later without
-    changes here.
+    Looks the object up by UID in the given catalog and reads the
+    metadata attribute without waking the object up. Returns
+    ``default`` when no brain matches.
+
+    :param uid: UID of the object to look up
+    :param name: Brain metadata attribute name
+    :param catalog: Catalog id, tool or brain-aware catalog
+    :param default: Returned when no brain is found
+    :returns: Brain metadata value (with method-call resolution)
+    :rtype: any
     """
-    return get_attr(sample, "getCustomHazardCategories") or []
-
-
-def _get_sample_type_hazard_categories(sample):
-    """Read hazard categories from the SampleType brain metadata.
-
-    Looks the SampleType up by UID in the setup catalog so we never
-    wake the sample type just to render a listing. Returns an empty
-    list when the sample has no sample type yet or the brain cannot
-    be located.
-    """
-    uid = get_attr(sample, "getSampleTypeUID")
     if not uid:
-        return []
-    catalog = _bika_api.get_tool(SETUP_CATALOG)
-    brains = catalog(UID=uid)
+        return default
+    brains = _bika_api.get_tool(catalog)(UID=uid)
     if not brains:
+        return default
+    return get_attr(brains[0], name, default)
+
+
+def get_pictograms_for_sample(sample):
+    """Get pictogram view-models for a sample
+
+    Accepts both a wakened sample object and a catalog brain. The
+    sample's hazard categories are resolved without waking the
+    sample type up:
+
+    1. ``getCustomHazardCategories`` (per-sample override, optional)
+       is consulted first when present.
+    2. Otherwise the SampleType is looked up by its UID in the setup
+       catalog and ``getHazardCategories`` is read from its brain
+       metadata.
+
+    :param sample: Sample (AnalysisRequest) or catalog brain
+    :returns: List of pictogram view-model dicts
+    :rtype: list[dict]
+    """
+    hazardous = bool(get_attr(sample, "getHazardous"))
+    if not hazardous:
         return []
-    return list(getattr(brains[0], "getHazardCategories", None) or [])
+    codes = get_attr(sample, "getCustomHazardCategories") or []
+    if not codes:
+        codes = get_brain_attr(
+            get_attr(sample, "getSampleTypeUID"),
+            "getHazardCategories",
+            SETUP_CATALOG) or []
+    return get_pictograms_for_codes(list(codes), hazardous=hazardous)
