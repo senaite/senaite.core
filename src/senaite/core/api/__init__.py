@@ -143,31 +143,36 @@ def get_pictograms_for_codes(codes, hazardous=True):
 
 
 def get_attr(obj, name, default=None, catalog=None):
-    """Return an attribute from an object, brain or via UID lookup.
+    """Return an attribute from an object, brain or UID.
 
-    When ``catalog`` is omitted, ``obj`` is read directly: a method
-    is called, a bare attribute is returned as-is. When ``catalog``
-    is given, ``obj`` is treated as a UID and the object is looked
-    up in that catalog first; the attribute is then read from the
-    matching brain.
+    Accepts any of the three forms ``bika.lims.api.get_uid`` handles:
+    a content object, a catalog brain or a UID string. When
+    ``catalog`` is given the input is normalized to a brain via a
+    UID lookup in that catalog before reading the attribute, which
+    avoids waking the object up. Without ``catalog``, the input is
+    read directly: a method is called, a bare attribute is returned
+    as-is.
 
     Uses ``Products.CMFPlone.utils.safe_callable`` so a transient
     ConflictError in the callable check is not swallowed.
 
-    :param obj: Content object, catalog brain, or UID (when
-                ``catalog`` is given)
+    :param obj: Content object, catalog brain or UID
     :param name: Attribute or method name
-    :param default: Value returned when the attribute is missing,
-                    the catalog lookup yields no brain, or the
-                    call raises ``TypeError``
-    :param catalog: Catalog id, tool, or ``None`` to disable the
-                    UID lookup
+    :param default: Value returned when ``obj`` is empty, the
+                    attribute is missing, the catalog lookup yields
+                    no brain, or the call raises ``TypeError``
+    :param catalog: Catalog id or tool. When given, ``obj`` is
+                    normalized to a brain via UID lookup before
+                    reading the attribute.
     :returns: Attribute value (or call result) or ``default``
     """
+    if not (_bika_api.is_object(obj) or _bika_api.is_uid(obj)):
+        return default
     if catalog is not None:
-        if not obj:
+        uid = _bika_api.get_uid(obj)
+        if not uid:
             return default
-        brains = _bika_api.get_tool(catalog)(UID=obj)
+        brains = _bika_api.search({"UID": uid}, catalog=catalog)
         if not brains:
             return default
         obj = brains[0]

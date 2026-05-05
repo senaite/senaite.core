@@ -183,17 +183,36 @@ propagating the error:
     >>> api.get_attr(Picky(), "method", default="fallback")
     'fallback'
 
-Passing ``catalog`` switches to UID-lookup mode: ``obj`` is treated
-as a UID, looked up in that catalog, and the attribute is read
-from the matching brain. An empty UID short-circuits to
-``default``:
+An empty input short-circuits to ``default``:
 
-    >>> api.get_attr("", "Title", catalog="portal_catalog") is None
+    >>> api.get_attr(None, "anything") is None
     True
 
-    >>> api.get_attr(None, "Title", catalog="portal_catalog",
-    ...              default="missing")
+    >>> api.get_attr("", "anything", default="missing")
     'missing'
+
+Passing ``catalog`` normalizes the input to a brain via UID
+lookup, so the same call accepts a content object, a catalog
+brain or a UID string. Look up the bika setup folder three ways
+and read its ``Title`` from the brain metadata:
+
+    >>> from bika.lims import api as bika_api
+    >>> setup = self.portal.bika_setup
+    >>> uid = bika_api.get_uid(setup)
+    >>> brain = self.portal.portal_catalog(UID=uid)[0]
+    >>> expected = setup.Title()
+
+    >>> api.get_attr(setup, "Title",
+    ...              catalog="portal_catalog") == expected
+    True
+
+    >>> api.get_attr(brain, "Title",
+    ...              catalog="portal_catalog") == expected
+    True
+
+    >>> api.get_attr(uid, "Title",
+    ...              catalog="portal_catalog") == expected
+    True
 
 A bogus UID matches no brain and falls back to ``default``:
 
