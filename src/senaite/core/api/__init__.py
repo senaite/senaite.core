@@ -28,6 +28,7 @@ will gradually replace.
 
 from bika.lims import api as _bika_api
 from bika.lims import senaiteMessageFactory as _
+from Products.CMFPlone.utils import safe_callable
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.i18n import translate
 from senaite.core.vocabularies.hazard_categories import format_title
@@ -169,9 +170,13 @@ def get_pictograms_for_sample(sample):
 
 def _get_attr(sample, name):
     """Return ``name`` from a brain or wakened sample, calling it
-    when it is a method."""
+    when it is a method.
+
+    Uses ``Products.CMFPlone.utils.safe_callable`` so a transient
+    ConflictError in the callable check is not swallowed.
+    """
     value = getattr(sample, name, None)
-    if callable(value):
+    if safe_callable(value):
         try:
             return value()
         except TypeError:
