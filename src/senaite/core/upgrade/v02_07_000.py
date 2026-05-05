@@ -38,6 +38,8 @@ from plone.namedfile.file import NamedBlobFile
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.api import dtime
+from senaite.core.api.catalog import add_column
+from senaite.core.api.catalog import add_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
@@ -122,11 +124,6 @@ def add_hazard_categories(tool):
     sample catalog and existing samples are reindexed so listings
     can render hazard pictograms without waking up each sample.
     """
-    from senaite.core.api.catalog import add_column
-    from senaite.core.api.catalog import add_index
-    from senaite.core.api.catalog import reindex_index
-    from senaite.core.catalog import SAMPLE_CATALOG
-
     logger.info("Adding GHS hazard categories ...")
     catalog = api.get_tool(SAMPLE_CATALOG)
     add_column(catalog, "getHazardCategories")
