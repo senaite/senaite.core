@@ -50,11 +50,22 @@
 /* AT MultiSelectionWidget (ReferenceDefinition, ReferenceSample):
    <div id="HazardCategories"> wraps each option as
    <div class="ArchetypesMultiSelectionValue"><input value="GHSxx"><label>.
-   Decorate the adjacent label with the matching pictogram. */
+   Align checkbox, pictogram and label text on a single baseline,
+   then decorate the adjacent label with the matching pictogram. */
+#HazardCategories .ArchetypesMultiSelectionValue {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+}
+#HazardCategories .ArchetypesMultiSelectionValue input[type="checkbox"] {
+  margin: 0;
+}
 #HazardCategories .ArchetypesMultiSelectionValue input[value^="GHS"] + label {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  margin: 0;
 }
 #HazardCategories .ArchetypesMultiSelectionValue input[value^="GHS"] + label::before {
   content: "";
