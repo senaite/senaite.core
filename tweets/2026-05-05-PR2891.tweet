@@ -1,0 +1,3 @@
+Sidebar navigation now respects the active locale. Built-in folder titles like Clients, Methods, Worksheets, Batches and Samples are translated through the senaite.core i18n catalog before they reach the React tree, so a German user sees Kunden, Methoden, Arbeitsblätter and friends.
+
+#2891
