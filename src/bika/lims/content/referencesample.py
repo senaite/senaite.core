@@ -39,7 +39,8 @@ from Products.Archetypes.Field import DateTimeField
 from Products.Archetypes.Field import LinesField
 from Products.Archetypes.Field import StringField
 from Products.Archetypes.Field import TextField
-from Products.Archetypes.public import MultiSelectionWidget
+from senaite.core.browser.widgets.hazardcategorieswidget import (
+    HazardCategoriesWidget)
 from Products.Archetypes.Schema import Schema
 from Products.Archetypes.Widget import BooleanWidget
 from Products.Archetypes.Widget import ComputedWidget
@@ -108,7 +109,7 @@ schema = BikaSchema.copy() + Schema((
         schemata="Description",
         default=[],
         vocabulary="getHazardCategoriesVocabulary",
-        widget=MultiSelectionWidget(
+        widget=HazardCategoriesWidget(
             label=_(u"label_referencesample_hazard_categories",
                     default=u"Hazard categories"),
             description=_(

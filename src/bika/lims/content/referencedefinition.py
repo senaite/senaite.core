@@ -30,9 +30,10 @@ from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import LinesField
-from Products.Archetypes.public import MultiSelectionWidget
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import registerType
+from senaite.core.browser.widgets.hazardcategorieswidget import (
+    HazardCategoriesWidget)
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -96,7 +97,7 @@ schema = BikaSchema.copy() + Schema((
         schemata="Description",
         default=[],
         vocabulary="getHazardCategoriesVocabulary",
-        widget=MultiSelectionWidget(
+        widget=HazardCategoriesWidget(
             label=_("label_referencedefinition_hazard_categories",
                     default=u"Hazard categories"),
             description=_(
