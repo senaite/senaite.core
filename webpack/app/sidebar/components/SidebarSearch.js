@@ -32,7 +32,7 @@ export const SidebarSearch = ({onSearch, onFocus, onBlur}) => {
       <input
         type="text"
         id="sidebar-search"
-        placeholder="Search..."
+        placeholder={window._t ? window._t("Search...") : "Search..."}
         value={query}
         onInput={handleInput}
         onFocus={handleFocus}
