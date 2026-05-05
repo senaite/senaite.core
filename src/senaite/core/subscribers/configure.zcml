@@ -57,11 +57,4 @@
          zope.lifecycleevent.interfaces.IObjectModifiedEvent"
     handler=".senaite_setup.on_senaite_setup_modified"/>
 
-  <!-- SampleType *modified* event handler.
-       Reindexes hazard metadata on dependent samples. -->
-  <subscriber
-    for="senaite.core.interfaces.ISampleType
-         zope.lifecycleevent.interfaces.IObjectModifiedEvent"
-    handler=".sampletype.on_sampletype_modified"/>
-
 </configure>

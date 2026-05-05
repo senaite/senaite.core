@@ -26,8 +26,9 @@ mirroring the long-standing ``bika.lims.api`` module that this package
 will gradually replace.
 """
 
+from bika.lims import api as _bika_api
 from bika.lims import senaiteMessageFactory as _
-from Products.ZCatalog.interfaces import ICatalogBrain
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.i18n import translate
 from senaite.core.vocabularies.hazard_categories import format_title
 from senaite.core.vocabularies.hazard_categories import get_category
@@ -143,18 +144,65 @@ def get_pictograms_for_codes(codes, hazardous=True):
 def get_pictograms_for_sample(sample):
     """Get pictogram view-models for a sample
 
-    Accepts both a wakened sample object and a catalog brain. When
-    a brain is given, it is woken up because ``getHazardCategories``
-    is not callable on a brain. For listings that already iterate
-    over brains and want to skip the wake-up, prefer
-    :func:`get_pictograms_for_codes` with the brain metadata.
+    Accepts both a wakened sample object and a catalog brain. The
+    sample's hazard categories are resolved without waking the sample
+    type up:
+
+    1. ``getCustomHazardCategories`` (per-sample override, optional)
+       is consulted first when present.
+    2. Otherwise the SampleType is looked up by its UID in the setup
+       catalog and ``getHazardCategories`` is read from its brain
+       metadata.
 
     :param sample: Sample (AnalysisRequest) or catalog brain
     :returns: List of pictogram view-model dicts
     :rtype: list[dict]
     """
-    if ICatalogBrain.providedBy(sample):
-        sample = sample.getObject()
-    return get_pictograms_for_codes(
-        sample.getHazardCategories(),
-        hazardous=sample.getHazardous())
+    hazardous = bool(_get_attr(sample, "getHazardous"))
+    if not hazardous:
+        return []
+    codes = _get_custom_hazard_categories(sample)
+    if not codes:
+        codes = _get_sample_type_hazard_categories(sample)
+    return get_pictograms_for_codes(codes, hazardous=hazardous)
+
+
+def _get_attr(sample, name):
+    """Return ``name`` from a brain or wakened sample, calling it
+    when it is a method."""
+    value = getattr(sample, name, None)
+    if callable(value):
+        try:
+            return value()
+        except TypeError:
+            return None
+    return value
+
+
+def _get_custom_hazard_categories(sample):
+    """Per-sample hazard category override (currently always empty).
+
+    Reserved hook for a future ``getCustomHazardCategories`` field
+    on the sample. Resolved via ``getattr`` so callers and listings
+    can be wired up today and a backing field added later without
+    changes here.
+    """
+    return _get_attr(sample, "getCustomHazardCategories") or []
+
+
+def _get_sample_type_hazard_categories(sample):
+    """Read hazard categories from the SampleType brain metadata.
+
+    Looks the SampleType up by UID in the setup catalog so we never
+    wake the sample type just to render a listing. Returns an empty
+    list when the sample has no sample type yet or the brain cannot
+    be located.
+    """
+    uid = _get_attr(sample, "getSampleTypeUID")
+    if not uid:
+        return []
+    catalog = _bika_api.get_tool(SETUP_CATALOG)
+    brains = catalog(UID=uid)
+    if not brains:
+        return []
+    return list(getattr(brains[0], "getHazardCategories", None) or [])

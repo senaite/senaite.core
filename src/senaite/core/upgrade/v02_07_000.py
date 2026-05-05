@@ -117,29 +117,28 @@ def add_hazard_categories(tool):
     The new ``hazard_categories`` field on ``SampleType`` (DX) and
     the new ``HazardCategories`` field on ``AnalysisRequest`` (AT)
     are picked up automatically by the schema machinery. Existing
-    objects default to an empty list, which inherits from the
-    SampleType. The legacy ``Hazardous`` boolean is left untouched.
+    objects default to an empty list. The legacy ``Hazardous``
+    boolean is left untouched.
 
-    The ``getHazardCategories`` metadata column is added to the
-    sample catalog and existing samples are reindexed so listings
-    can render hazard pictograms without waking up each sample.
+    Hazard pictograms are rendered in listings by reading the
+    ``getHazardCategories`` metadata column from the SampleType
+    brain in the setup catalog (looked up by UID via the new
+    ``getSampleTypeUID`` FieldIndex on the sample catalog). This
+    avoids touching every sample on each SampleType edit.
     """
     logger.info("Adding GHS hazard categories ...")
-    catalog = api.get_tool(SAMPLE_CATALOG)
-    add_column(catalog, "getHazardCategories")
     if add_index(SAMPLE_CATALOG, "getSampleTypeUID", "FieldIndex"):
         reindex_index(SAMPLE_CATALOG, "getSampleTypeUID")
-    brains = catalog({"portal_type": "AnalysisRequest"})
-    total = len(brains)
-    logger.info("Reindexing hazard metadata on %d sample(s) ...", total)
-    for i, brain in enumerate(brains):
-        if i and i % 500 == 0:
-            logger.info("Reindexed %d/%d ...", i, total)
-            transaction.savepoint(optimistic=True)
-        sample = api.get_object(brain)
-        sample.reindexObject(
-            idxs=["getHazardous", "getHazardCategories"])
-        sample._p_deactivate()
+    setup_catalog = api.get_tool(SETUP_CATALOG)
+    add_column(setup_catalog, "getHazardCategories")
+    sample_types = setup_catalog({"portal_type": "SampleType"})
+    logger.info(
+        "Reindexing %d SampleType(s) for hazard metadata ...",
+        len(sample_types))
+    for brain in sample_types:
+        # Full reindex (no idxs) so the new metadata column is
+        # populated alongside the indexes.
+        api.get_object(brain).reindexObject()
     logger.info("Adding GHS hazard categories [DONE]")
 
 

@@ -2109,14 +2109,34 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
     @security.public
     def getHazardCategories(self):
-        """Get the GHS hazard categories from the SampleType
+        """Get the GHS hazard categories for this sample
 
-        :returns: GHS category codes assigned to the SampleType
+        Returns the per-sample override from
+        :meth:`getCustomHazardCategories` when present, otherwise
+        falls back to the codes assigned to the SampleType.
+
+        :returns: GHS category codes
         :rtype: list
         """
+        custom = list(self.getCustomHazardCategories() or [])
+        if custom:
+            return custom
         sample_type = self.getSampleType()
         if sample_type:
             return list(sample_type.getHazardCategories() or [])
+        return []
+
+    @security.public
+    def getCustomHazardCategories(self):
+        """Per-sample override for the GHS hazard categories.
+
+        Reserved hook for a future field that lets a user override
+        the codes inherited from the SampleType. Returns an empty
+        list until the override field is wired up.
+
+        :returns: GHS category codes specific to this sample
+        :rtype: list
+        """
         return []
 
     @security.public
