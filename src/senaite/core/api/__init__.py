@@ -159,7 +159,7 @@ def get_pictograms_for_sample(sample):
     :returns: List of pictogram view-model dicts
     :rtype: list[dict]
     """
-    hazardous = bool(_get_attr(sample, "getHazardous"))
+    hazardous = bool(get_attr(sample, "getHazardous"))
     if not hazardous:
         return []
     codes = _get_custom_hazard_categories(sample)
@@ -168,19 +168,25 @@ def get_pictograms_for_sample(sample):
     return get_pictograms_for_codes(codes, hazardous=hazardous)
 
 
-def _get_attr(sample, name):
-    """Return ``name`` from a brain or wakened sample, calling it
-    when it is a method.
+def get_attr(obj, name, default=None):
+    """Return ``name`` from a content object or catalog brain.
 
-    Uses ``Products.CMFPlone.utils.safe_callable`` so a transient
-    ConflictError in the callable check is not swallowed.
+    Calls ``name`` when it is a method, otherwise returns the bare
+    attribute. Uses ``Products.CMFPlone.utils.safe_callable`` so a
+    transient ConflictError in the callable check is not swallowed.
+
+    :param obj: Content object or catalog brain
+    :param name: Attribute or method name
+    :param default: Value to return when the attribute is missing
+                    or the call raises ``TypeError``
+    :returns: Attribute value (or call result) or ``default``
     """
-    value = getattr(sample, name, None)
+    value = getattr(obj, name, default)
     if safe_callable(value):
         try:
             return value()
         except TypeError:
-            return None
+            return default
     return value
 
 
@@ -192,7 +198,7 @@ def _get_custom_hazard_categories(sample):
     can be wired up today and a backing field added later without
     changes here.
     """
-    return _get_attr(sample, "getCustomHazardCategories") or []
+    return get_attr(sample, "getCustomHazardCategories") or []
 
 
 def _get_sample_type_hazard_categories(sample):
@@ -203,7 +209,7 @@ def _get_sample_type_hazard_categories(sample):
     list when the sample has no sample type yet or the brain cannot
     be located.
     """
-    uid = _get_attr(sample, "getSampleTypeUID")
+    uid = get_attr(sample, "getSampleTypeUID")
     if not uid:
         return []
     catalog = _bika_api.get_tool(SETUP_CATALOG)

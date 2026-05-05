@@ -134,3 +134,51 @@ Unknown codes are silently skipped, known codes are kept in order:
     ...     ["GHS01", "GHSXX", "GHS06"], hazardous=True)
     >>> [p["code"] for p in result]
     ['GHS01', 'GHS06']
+
+
+Generic attribute getter
+........................
+
+``api.get_attr`` returns an attribute from a content object or a
+catalog brain, calling it when it is a method.
+
+A small object stand-in is enough to illustrate the behaviour:
+
+    >>> class Thing(object):
+    ...     plain = 42
+    ...     def method(self):
+    ...         return "called"
+
+    >>> obj = Thing()
+
+A bare attribute is returned as-is:
+
+    >>> api.get_attr(obj, "plain")
+    42
+
+A method-valued attribute is invoked and the call result is
+returned:
+
+    >>> api.get_attr(obj, "method")
+    'called'
+
+Missing attributes return ``None`` by default:
+
+    >>> api.get_attr(obj, "nope") is None
+    True
+
+A custom default can be supplied:
+
+    >>> api.get_attr(obj, "nope", default="fallback")
+    'fallback'
+
+When the attribute exists but the call raises ``TypeError`` (e.g.
+expects extra arguments), ``default`` is returned instead of
+propagating the error:
+
+    >>> class Picky(object):
+    ...     def method(self, required):
+    ...         return required
+
+    >>> api.get_attr(Picky(), "method", default="fallback")
+    'fallback'
