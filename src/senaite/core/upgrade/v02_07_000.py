@@ -139,6 +139,7 @@ def add_hazard_categories(tool):
         sample = api.get_object(brain)
         sample.reindexObject(
             idxs=["getHazardous", "getHazardCategories"])
+        sample._p_deactivate()
     logger.info("Adding GHS hazard categories [DONE]")
 
 
