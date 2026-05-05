@@ -33,6 +33,7 @@ from bika.lims.utils import get_image
 from bika.lims.utils import get_link_for
 from bika.lims.utils import get_progress_bar_html
 from bika.lims.utils import getUsers
+from bika.lims.utils import render_html_attributes
 from DateTime import DateTime
 from plone.memoize import view
 from senaite.core.browser.listing.base import ListingView
@@ -603,13 +604,12 @@ class SamplesView(ListingView):
         for picto in senaite_api.get_pictograms_for_codes(
                 getattr(obj, "getHazardCategories", None),
                 hazardous=bool(obj.getHazardous)):
-            after_icons += (
-                u"<img src='{url}' alt='{alt}' title='{title}' "
-                u"class='hazard-pictogram-mini' />"
-            ).format(
-                url=picto["url"],
+            attrs = render_html_attributes(
+                src=picto["url"],
                 alt=picto["alt"],
-                title=picto["title"]).encode("utf-8")
+                title=picto["title"],
+                **{"class": "hazard-pictogram-mini"})
+            after_icons += u"<img {} />".format(attrs).encode("utf-8")
 
         if obj.getInternalUse:
             after_icons += get_image("locked.png", title=t(_("Internal use")))
