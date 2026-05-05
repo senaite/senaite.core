@@ -1423,7 +1423,6 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
-
 ))
 
 
