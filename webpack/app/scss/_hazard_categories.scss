@@ -2,6 +2,12 @@
  *
  * Pictograms are emitted as real <img> elements by the widget
  * template; this stylesheet only handles spacing and sizing.
+ *
+ * The url(...) paths are relative to the bundled output at
+ * src/senaite/core/browser/static/bundles/senaite.core.css and
+ * resolve to src/senaite/core/browser/static/images/ghs/. If the
+ * css-loader complains during build, set its `url` option to
+ * false for senaite.core.scss.
  */
 
 .hazard-categories-widget .option {
