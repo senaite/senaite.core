@@ -166,9 +166,11 @@ def get_attr(obj, name, default=None, catalog=None):
                     reading the attribute.
     :returns: Attribute value (or call result) or ``default``
     """
-    if not (_bika_api.is_object(obj) or _bika_api.is_uid(obj)):
+    if obj is None:
         return default
     if catalog is not None:
+        if not (_bika_api.is_object(obj) or _bika_api.is_uid(obj)):
+            return default
         uid = _bika_api.get_uid(obj)
         if not uid:
             return default
