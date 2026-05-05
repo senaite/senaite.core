@@ -11561,3 +11561,11 @@ msgstr "{} (veraltet)"
 #: bika/lims/controlpanel/bika_instruments.py:173
 msgid "{} weeks and {} day(s)"
 msgstr "{} Woche(n) und {} Tag(e)"
+
+# senaite.core: Sidebar search input placeholder
+msgid "Search..."
+msgstr "Suchen..."
+
+# senaite.core: Sidebar loading state
+msgid "Loading navigation..."
+msgstr "Navigation wird geladen..."
