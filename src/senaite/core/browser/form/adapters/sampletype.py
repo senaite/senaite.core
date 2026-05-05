@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from senaite.core.browser.form.adapters import EditFormAdapterBase
+from senaite.core.browser.form.helpers import is_checked
 from senaite.core.interfaces import ISampleType
 from senaite.core.vocabularies.stickers import get_sticker_templates
 
@@ -26,15 +27,6 @@ _DGF_WIDGET_PREFIX = "form.widgets.admitted_sticker_templates.0.widgets."
 
 HAZARDOUS_FIELD = "form.widgets.hazardous"
 HAZARD_CATEGORIES_FIELD = "form.widgets.hazard_categories"
-
-
-def _is_truthy(value):
-    """Return True if the form value represents a checked boolean."""
-    if isinstance(value, bool):
-        return value
-    if isinstance(value, (list, tuple)):
-        return any(_is_truthy(v) for v in value)
-    return str(value).lower() in ("true", "1", "selected", "on")
 
 
 class EditForm(EditFormAdapterBase):
@@ -61,7 +53,7 @@ class EditForm(EditFormAdapterBase):
 
         # toggle hazard categories visibility with the Hazardous flag
         if name == HAZARDOUS_FIELD:
-            self._toggle_hazard_categories(_is_truthy(value))
+            self._toggle_hazard_categories(is_checked(value))
             return self.data
 
         # filter default small/large sticker

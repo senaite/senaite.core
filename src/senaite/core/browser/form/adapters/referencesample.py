@@ -21,18 +21,10 @@
 from bika.lims import _
 from bika.lims import api
 from senaite.core.browser.form.adapters import EditFormAdapterBase
+from senaite.core.browser.form.helpers import is_checked
 
 HAZARDOUS_FIELD = "Hazardous"
 HAZARD_CATEGORIES_FIELD = "HazardCategories"
-
-
-def _is_truthy(value):
-    """Return True if the form value represents a checked boolean."""
-    if isinstance(value, bool):
-        return value
-    if isinstance(value, (list, tuple)):
-        return any(_is_truthy(v) for v in value)
-    return str(value).lower() in ("true", "1", "selected", "on")
 
 
 class EditForm(EditFormAdapterBase):
@@ -64,7 +56,7 @@ class EditForm(EditFormAdapterBase):
 
         # toggle hazard categories visibility with the Hazardous flag
         if name == HAZARDOUS_FIELD:
-            self._toggle_hazard_categories(_is_truthy(value))
+            self._toggle_hazard_categories(is_checked(value))
             return self.data
 
         # Populate dependencies of the reference definition
