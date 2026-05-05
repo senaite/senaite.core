@@ -42,6 +42,7 @@ from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces import ISubmitted
 from bika.lims.utils import check_permission
 from bika.lims.utils import format_supsub
+from bika.lims.utils import formatTextResult
 from senaite.core.utils import format_supsub_unicode
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import get_fas_ico
@@ -1240,6 +1241,8 @@ class AnalysesView(ListingView):
     def get_formatted_interim(self, interim):
         """Returns the formatted value of the interim
         """
+        result_type = interim.get("result_type", "")
+
         # get the 'raw' value stored for this interim
         raw_value = interim.get("value")
 
@@ -1256,6 +1259,9 @@ class AnalysesView(ListingView):
         if choices:
             # values are predefined options for selection
             values = [choices.get(v) for v in values]
+        elif result_type in ["string", "text"]:
+            # If string-like result, return without any formatting
+            values = [formatTextResult(value, html=True) for value in values]
         else:
             # values are captured directly by the user
             values = [formatDecimalMark(value, self.dmk) for value in values]
