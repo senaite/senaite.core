@@ -47,7 +47,14 @@ class EditForm(EditFormAdapterBase):
                     "analyses.",
                 )
             )
-        self._toggle_hazard_categories(bool(self.context.getHazardous()))
+        # Read live form state so the toggle survives a re-render
+        # after validation errors. Falls back to the persisted value.
+        form = data.get("form") or {}
+        if HAZARDOUS_FIELD in form:
+            hazardous = is_checked(form.get(HAZARDOUS_FIELD))
+        else:
+            hazardous = bool(self.context.getHazardous())
+        self._toggle_hazard_categories(hazardous)
         return self.data
 
     def modified(self, data):

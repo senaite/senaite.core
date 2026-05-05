@@ -41,9 +41,16 @@ class EditForm(EditFormAdapterBase):
             self.add_hide_field(HAZARD_CATEGORIES_FIELD)
 
     def initialized(self, data):
-        hazardous = False
-        if ISampleType.providedBy(self.context):
+        # Read the currently-submitted form state when present so the
+        # toggle survives a re-render after validation errors. Falls
+        # back to the persisted context value on the initial render.
+        form = data.get("form") or {}
+        if HAZARDOUS_FIELD in form:
+            hazardous = is_checked(form.get(HAZARDOUS_FIELD))
+        elif ISampleType.providedBy(self.context):
             hazardous = bool(self.context.getHazardous())
+        else:
+            hazardous = False
         self._toggle_hazard_categories(hazardous)
         return self.data
 

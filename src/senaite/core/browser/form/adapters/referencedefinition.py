@@ -35,7 +35,12 @@ class EditForm(EditFormAdapterBase):
             self.add_hide_field(HAZARD_CATEGORIES_FIELD)
 
     def initialized(self, data):
-        self._toggle_hazard_categories(bool(self.context.getHazardous()))
+        form = data.get("form") or {}
+        if HAZARDOUS_FIELD in form:
+            hazardous = is_checked(form.get(HAZARDOUS_FIELD))
+        else:
+            hazardous = bool(self.context.getHazardous())
+        self._toggle_hazard_categories(hazardous)
         return self.data
 
     def modified(self, data):
