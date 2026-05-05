@@ -27,6 +27,7 @@ will gradually replace.
 """
 
 from bika.lims import senaiteMessageFactory as _
+from Products.ZCatalog.interfaces import ICatalogBrain
 from senaite.core.i18n import translate
 from senaite.core.vocabularies.hazard_categories import format_title
 from senaite.core.vocabularies.hazard_categories import get_category
@@ -142,14 +143,18 @@ def get_pictograms_for_codes(codes, hazardous=True):
 def get_pictograms_for_sample(sample):
     """Get pictogram view-models for a sample
 
-    Wakes the sample up. For listings that already iterate over
-    catalog brains, prefer :func:`get_pictograms_for_codes` with the
-    brain metadata.
+    Accepts both a wakened sample object and a catalog brain. When
+    a brain is given, it is woken up because ``getHazardCategories``
+    is not callable on a brain. For listings that already iterate
+    over brains and want to skip the wake-up, prefer
+    :func:`get_pictograms_for_codes` with the brain metadata.
 
-    :param sample: Sample (AnalysisRequest) to read from
+    :param sample: Sample (AnalysisRequest) or catalog brain
     :returns: List of pictogram view-model dicts
     :rtype: list[dict]
     """
+    if ICatalogBrain.providedBy(sample):
+        sample = sample.getObject()
     return get_pictograms_for_codes(
         sample.getHazardCategories(),
         hazardous=sample.getHazardous())
