@@ -25,6 +25,7 @@ from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
+from bika.lims.interfaces import IReferenceDefinition
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
@@ -114,7 +115,7 @@ schema["description"].widget.visible = True
 
 
 class ReferenceDefinition(BaseContent):
-    implements(IDeactivable)
+    implements(IReferenceDefinition, IDeactivable)
     security = ClassSecurityInfo()
     schema = schema
     _at_rename_after_creation = True
