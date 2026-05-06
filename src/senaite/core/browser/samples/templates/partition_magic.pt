@@ -127,8 +127,13 @@
                                tal:attributes="data-target string:#${partition}-body">
                               <i tal:attributes="id string:${partition}-toggle-icon"
                                  class="fas fa-caret-right"></i>
-                              <span i18n:translate="">Partition</span>
-                              <strong tal:content="repeat/part_index/number"/>
+                              <span tal:condition="python: partition.startswith('part')">
+                               <span i18n:translate="">Partition</span>
+                               <strong tal:content="repeat/part_index/number"/>
+                              </span>
+                              <span tal:condition="python: partition.startswith('part') == False">
+                               <span i18n:translate="" tal:content="partition">Partition</span>
+                              </span>
                             </a>
                           </h3>
                           <!-- Remember the primary uid of this partition -->
