@@ -131,7 +131,7 @@
                                <span i18n:translate="">Partition</span>
                                <strong tal:content="repeat/part_index/number"/>
                               </span>
-                              <span tal:condition="python: partition.startswith('part') == False">
+                              <span tal:condition="python: not partition.startswith('part')">
                                <span i18n:translate="" tal:content="partition">Partition</span>
                               </span>
                             </a>
