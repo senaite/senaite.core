@@ -11661,3 +11661,11 @@ msgstr "Gefahrenkategorien"
 #: bika/lims/content/referencesample.py
 msgid "description_referencesample_hazard_categories"
 msgstr "GHS-Gefahrenkategorien für diese Referenzprobe. Leer lassen, um die Werte der Referenzdefinition zu übernehmen."
+
+# senaite.core: Sidebar search input placeholder
+msgid "Search..."
+msgstr "Suchen..."
+
+# senaite.core: Sidebar loading state
+msgid "Loading navigation..."
+msgstr "Navigation wird geladen..."

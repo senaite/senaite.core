@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2890 Add GHS hazard categories to SampleType and Sample
+- #2894 Fix DL get flushed on submit
+- #2891 Translate sidebar navigation titles in JSON endpoint
 - #2881 Add text support for interim fields
 - #2888 Improve ID Server admin views
 - #2889 Remove orphan temp objects when renameAfterCreation fails
