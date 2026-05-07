@@ -145,3 +145,47 @@ The source remains in its previous state after the transition
 
     >>> api.get_workflow_status_of(source)
     'sample_due'
+
+
+Duplicates honour a custom ID Server schema
+...........................................
+
+Duplicates do not use a dedicated ID template; they share the
+`AnalysisRequest` ID format and counter. So when an integrator
+customises the `AnalysisRequest` template through the ID Server
+admin, duplicates render with the same shape as plain samples.
+
+Override the `AnalysisRequest` template:
+
+    >>> senaite_setup = api.get_senaite_setup()
+    >>> formatting = list(senaite_setup.getIDFormatting() or [])
+    >>> for record in formatting:
+    ...     if record.get("portal_type") == "AnalysisRequest":
+    ...         record["form"] = "{sampleType}-{year}-{seq:03d}"
+    >>> senaite_setup.setIDFormatting(formatting)
+
+A new source sample now gets the customised ID:
+
+    >>> custom_source = create_analysisrequest(client, request, values,
+    ...                                        [service.UID()])
+    >>> year = DateTime().strftime("%y")
+    >>> api.get_id(custom_source) == "water-{}-001".format(year)
+    True
+
+Duplicates of that source pick up the same template:
+
+    >>> custom_dup = create_duplicate_of(custom_source)
+    >>> api.get_id(custom_dup) == "water-{}-002".format(year)
+    True
+
+    >>> IAnalysisRequestDuplicate.providedBy(custom_dup)
+    True
+
+    >>> custom_dup.getDuplicatedFrom() == custom_source
+    True
+
+Subsequent duplicates continue along the same counter:
+
+    >>> custom_dup2 = create_duplicate_of(custom_source)
+    >>> api.get_id(custom_dup2) == "water-{}-003".format(year)
+    True
