@@ -154,6 +154,21 @@ values and its snapshot:
     >>> rich_source.setClientOrderNumber("ORD-12345")
     >>> rich_source.setClientReference("REF-XYZ")
     >>> rich_source.setEnvironmentalConditions("ambient, dry")
+    >>> rich_source.setComposite(True)
+
+Reference fields too. CCContact is a multi-valued UIDReferenceField
+— a different code path inside `copy_field_values`:
+
+    >>> contact2 = api.create(client, "Contact",
+    ...     Firstname="Jane", Surname="Roe")
+    >>> rich_source.setCCContact([contact2])
+
+Profiles is a multi-valued UID reference of a different type:
+
+    >>> profile = api.create(setup.analysisprofiles, "AnalysisProfile",
+    ...     title="Quick")
+    >>> profile.setServices([service.UID()])
+    >>> rich_source.setProfiles([profile])
 
 The duplicate inherits each value via `copy_field_values`:
 
@@ -166,9 +181,18 @@ The duplicate inherits each value via `copy_field_values`:
     'REF-XYZ'
     >>> rich_dup.getEnvironmentalConditions()
     'ambient, dry'
+    >>> rich_dup.getComposite()
+    True
+
+UID references resolve correctly (back to the same target objects):
+
+    >>> [c.getId() for c in rich_dup.getCCContact()]
+    ['contact-2']
+    >>> [p.getId() for p in rich_dup.getProfiles()]
+    ['analysisprofile-1']
 
 The snapshot reflects exactly the same values. This is the
-guarantee the `pause_snapshots` + post-copy `take_snapshot`
+guarantee the `skip_snapshots` + post-copy `take_snapshot`
 approach buys us — `copy_field_values` writes through field
 setters and would not, on its own, cause an audit entry:
 
@@ -181,6 +205,17 @@ setters and would not, on its own, cause an audit entry:
     'REF-XYZ'
     >>> rich_snap["EnvironmentalConditions"]
     'ambient, dry'
+    >>> bool(rich_snap.get("Composite"))
+    True
+
+UID-typed fields land in the snapshot too. Format depends on
+SuperModel.to_dict() (UID string vs. dict summary), so we just
+check that the source's target UID appears in the serialised value:
+
+    >>> api.get_uid(contact2) in repr(rich_snap.get("CCContact"))
+    True
+    >>> api.get_uid(profile) in repr(rich_snap.get("Profiles"))
+    True
 
 Still exactly one snapshot, action 'create':
 
