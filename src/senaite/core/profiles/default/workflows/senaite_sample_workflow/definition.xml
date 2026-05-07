@@ -1607,15 +1607,13 @@
   </transition>
 
   <!-- Transition: Duplicate
-       Creates a sibling sample directly (no add form). The
-       transition does not change the source's state. The action
-       has no category so it does not auto-render in the listing's
-       bulk-actions menu — the listing exposes it through a custom
-       entry next to Copy-to-new (see `samples/view.py`).
+       Creates a sibling sample directly (no add form), with an ID
+       derived from the source via the AnalysisRequestDuplicate ID
+       template. The transition does not change the source's state.
   -->
   <transition transition_id="duplicate" title="Duplicate" new_state="" trigger="USER"
               before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="" icon="">Duplicate</action>
+    <action url="" category="listing" icon="">Duplicate</action>
     <guard>
       <guard-expression>python:here.guard_handler("duplicate")</guard-expression>
       <guard-permission>senaite.core: Transition: Duplicate Sample</guard-permission>
