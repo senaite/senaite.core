@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 import itertools
-import json
 from collections import OrderedDict
 from string import Template
 
@@ -87,7 +86,8 @@ DUPLICATE_SKIP_FIELDS = [
 
 
 def create_analysisrequest(client, request, values, analyses=None,
-                           results_ranges=None, prices=None):
+                           results_ranges=None, prices=None,
+                           pause_snapshots=False):
     """Creates a new AnalysisRequest (a Sample) object
     :param client: The container where the Sample will be created
     :param request: The current Http Request object
@@ -98,6 +98,11 @@ def create_analysisrequest(client, request, values, analyses=None,
         from the Specification object defined in values["Specification"]
     :param prices: Mapping of AnalysisService UID -> price. If not set, prices
         are read from the associated analysis service.
+    :param pause_snapshots: When True, suppress auditlog snapshot creation
+        for the new sample. The object is left marked
+        IDoNotSupportSnapshots so the caller can fill in additional
+        fields and then take a single complete snapshot. The caller is
+        responsible for resuming snapshots and persisting one.
     """
     # Don't pollute the dict param passed in
     values = dict(values.items())
@@ -122,6 +127,11 @@ def create_analysisrequest(client, request, values, analyses=None,
     ar = _createObjectByType("AnalysisRequest", client, tmpID())
     # mark the sample as temporary to avoid indexing
     api.mark_temporary(ar)
+    # Optionally suppress auditlog snapshot creation. The caller
+    # (e.g. create_duplicate_of) takes a single complete snapshot
+    # after filling in additional fields.
+    if pause_snapshots:
+        snap_api.pause_snapshots_for(ar)
     # NOTE: We call here `_processForm` (with underscore) to manually unmark
     #       the creation flag and trigger the `ObjectInitializedEvent`, which
     #       is used for snapshot creation.
@@ -554,12 +564,17 @@ def create_duplicate_of(sample, request=None):
     if source.getSamplingDate():
         values["SamplingDate"] = source.getSamplingDate()
 
+    # Suppress the auditlog snapshot during creation: with the
+    # minimal values dict above, the snapshot taken by _processForm
+    # would miss the fields we still need to copy. We take a single
+    # complete snapshot below, after copy_field_values.
     duplicate = create_analysisrequest(
         client,
         request=request,
         values=values,
         analyses=valid_analyses,
         results_ranges=source.getResultsRange() or [],
+        pause_snapshots=True,
     )
 
     # Copy the remaining source field values directly via the
@@ -575,19 +590,10 @@ def create_duplicate_of(sample, request=None):
     copy_field_values(
         source, duplicate, ignore_fieldnames=extended_skip)
 
-    # Refresh the auditlog 'create' snapshot. The snapshot captured
-    # by `_processForm` only saw the minimal values dict we passed;
-    # without this refresh, the fields filled in by
-    # `copy_field_values` above would silently miss the audit
-    # trail. Replacing the existing 'create' entry (rather than
-    # appending an 'edit') keeps the log honest: a duplicate is one
-    # logical create event, not a create+immediate-edit.
-    if snap_api.supports_snapshots(duplicate) \
-            and snap_api.has_snapshots(duplicate):
-        storage = snap_api.get_storage(duplicate)
-        fresh = snap_api.take_snapshot(
-            duplicate, store=False, action="create")
-        storage[0] = json.dumps(fresh)
+    # Resume snapshots and record a single 'create' entry that
+    # reflects the duplicate's full state.
+    snap_api.resume_snapshots_for(duplicate)
+    snap_api.take_snapshot(duplicate, action="create")
 
     # Run the after-create sample hooks with `source` so partition
     # copying uses the same registry-toggled behaviour as the
