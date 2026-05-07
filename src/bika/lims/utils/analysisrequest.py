@@ -19,11 +19,13 @@
 # Some rights reserved, see README and LICENSE.
 
 import itertools
+import json
 from collections import OrderedDict
 from string import Template
 
 import six
 from bika.lims import api
+from bika.lims.api import snapshot as snap_api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api.mail import compose_email
@@ -572,6 +574,20 @@ def create_duplicate_of(sample, request=None):
     ]
     copy_field_values(
         source, duplicate, ignore_fieldnames=extended_skip)
+
+    # Refresh the auditlog 'create' snapshot. The snapshot captured
+    # by `_processForm` only saw the minimal values dict we passed;
+    # without this refresh, the fields filled in by
+    # `copy_field_values` above would silently miss the audit
+    # trail. Replacing the existing 'create' entry (rather than
+    # appending an 'edit') keeps the log honest: a duplicate is one
+    # logical create event, not a create+immediate-edit.
+    if snap_api.supports_snapshots(duplicate) \
+            and snap_api.has_snapshots(duplicate):
+        storage = snap_api.get_storage(duplicate)
+        fresh = snap_api.take_snapshot(
+            duplicate, store=False, action="create")
+        storage[0] = json.dumps(fresh)
 
     # Run the after-create sample hooks with `source` so partition
     # copying uses the same registry-toggled behaviour as the
