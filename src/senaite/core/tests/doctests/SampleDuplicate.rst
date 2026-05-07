@@ -155,6 +155,12 @@ Duplicates do not use a dedicated ID template; they share the
 customises the `AnalysisRequest` template through the ID Server
 admin, duplicates render with the same shape as plain samples.
 
+Use a fresh SampleType so the persistent counter for the new
+template's storage key starts at 1:
+
+    >>> soil_type = api.create(sampletypes, "SampleType",
+    ...     Prefix="soil", MinimumVolume="100 ml")
+
 Override the `AnalysisRequest` template:
 
     >>> senaite_setup = api.get_senaite_setup()
@@ -164,18 +170,19 @@ Override the `AnalysisRequest` template:
     ...         record["form"] = "{sampleType}-{year}-{seq:03d}"
     >>> senaite_setup.setIDFormatting(formatting)
 
-A new source sample now gets the customised ID:
+A new source sample of the fresh type gets the customised ID:
 
-    >>> custom_source = create_analysisrequest(client, request, values,
-    ...                                        [service.UID()])
+    >>> soil_values = dict(values, SampleType=soil_type.UID())
+    >>> custom_source = create_analysisrequest(client, request,
+    ...     soil_values, [service.UID()])
     >>> year = DateTime().strftime("%y")
-    >>> api.get_id(custom_source) == "water-{}-001".format(year)
+    >>> api.get_id(custom_source) == "soil-{}-001".format(year)
     True
 
 Duplicates of that source pick up the same template:
 
     >>> custom_dup = create_duplicate_of(custom_source)
-    >>> api.get_id(custom_dup) == "water-{}-002".format(year)
+    >>> api.get_id(custom_dup) == "soil-{}-002".format(year)
     True
 
     >>> IAnalysisRequestDuplicate.providedBy(custom_dup)
@@ -187,7 +194,7 @@ Duplicates of that source pick up the same template:
 Subsequent duplicates continue along the same counter:
 
     >>> custom_dup2 = create_duplicate_of(custom_source)
-    >>> api.get_id(custom_dup2) == "water-{}-003".format(year)
+    >>> api.get_id(custom_dup2) == "soil-{}-003".format(year)
     True
 
 
@@ -199,7 +206,9 @@ portal type — same way it handles `AnalysisRequestPartition`,
 `AnalysisRequestRetest` and `AnalysisRequestSecondary`. By default
 no row exists for it in `id_formatting`, so duplicates fall through
 to the regular `AnalysisRequest` template (and counter). To opt
-into a dedicated template, just add a row in the ID Server admin:
+into a dedicated template, just add a row in the ID Server admin.
+
+Add the row:
 
     >>> formatting = list(senaite_setup.getIDFormatting() or [])
     >>> formatting.append({
@@ -214,26 +223,36 @@ into a dedicated template, just add a row in the ID Server admin:
     ... })
     >>> senaite_setup.setIDFormatting(formatting)
 
+Create a fresh source so the per-source duplicate counter starts
+at 1 (the previous custom_source already has two duplicates from
+the section above):
+
+    >>> air_type = api.create(sampletypes, "SampleType",
+    ...     Prefix="air", MinimumVolume="100 ml")
+    >>> air_values = dict(values, SampleType=air_type.UID())
+    >>> opt_in_source = create_analysisrequest(client, request,
+    ...     air_values, [service.UID()])
+    >>> opt_in_source_id = api.get_id(opt_in_source)
+
 A new duplicate now renders with the dedicated template,
 incorporating the source's ID and a per-source counter:
 
-    >>> opt_in_source_id = api.get_id(custom_source)
-    >>> opt_in_dup = create_duplicate_of(custom_source)
+    >>> opt_in_dup = create_duplicate_of(opt_in_source)
     >>> api.get_id(opt_in_dup) == "{}-D01".format(opt_in_source_id)
     True
 
 A second opt-in duplicate increments the per-source counter:
 
-    >>> opt_in_dup2 = create_duplicate_of(custom_source)
+    >>> opt_in_dup2 = create_duplicate_of(opt_in_source)
     >>> api.get_id(opt_in_dup2) == "{}-D02".format(opt_in_source_id)
     True
 
 Plain sample creation still uses the regular AR template — the
 duplicate template is only consulted when the marker is provided:
 
-    >>> plain_after_optin = create_analysisrequest(
-    ...     client, request, values, [service.UID()])
-    >>> api.get_id(plain_after_optin).startswith("water-{}-".format(year))
+    >>> plain_after_optin = create_analysisrequest(client, request,
+    ...     air_values, [service.UID()])
+    >>> api.get_id(plain_after_optin).startswith("air-{}-".format(year))
     True
     >>> api.get_id(plain_after_optin).endswith("-D01")
     False
