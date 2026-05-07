@@ -533,12 +533,18 @@ def create_duplicate_of(sample, request=None):
     # Mark the duplicate so the ID server picks the right template
     alsoProvides(duplicate, IAnalysisRequestDuplicate)
 
-    # Re-instantiate analyses from the source's services with the
-    # source's results ranges. `to_service_uids` resolves both
-    # services and IRoutineAnalysis objects and silently drops
-    # unresolvable items.
-    service_uids = to_service_uids(
-        services=source.getAnalyses(full_objects=True), values={})
+    # Re-instantiate analyses from the source's services. Skip
+    # analyses in terminal/invalid states (retracted, rejected,
+    # cancelled) and any retest descendants — the duplicate should
+    # start with the same set of *valid* analyses the source has,
+    # with empty results.
+    skip_states = ("retracted", "rejected", "cancelled")
+    valid_analyses = [
+        a for a in source.getAnalyses(full_objects=True)
+        if api.get_review_status(a) not in skip_states
+        and not a.isRetest()
+    ]
+    service_uids = to_service_uids(services=valid_analyses, values={})
     results_ranges = source.getResultsRange() or []
     duplicate.setAnalyses(service_uids, specs=results_ranges)
 
