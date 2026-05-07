@@ -480,19 +480,16 @@ def create_duplicate_of(sample, request=None):
     process_form, which expects form-shaped strings.
 
     The duplicate is marked with `IAnalysisRequestDuplicate` and
-    its `DuplicatedFrom` field references the source. The ID
-    itself is generated from the regular `AnalysisRequest` ID
-    template — duplicates share the standard sample counter and
-    are indistinguishable from plain samples by ID alone.
+    its `DuplicatedFrom` field references the source.
 
-    Note: an integrator can introduce a dedicated ID template for
-    duplicates by adding an `IIdServerTypeID` adapter (or by
-    extending `get_type_id` in `senaite.core.idserver`) that
-    returns a custom portal-type string when
-    `IAnalysisRequestDuplicate` is provided, then registering a
-    matching row in the ID Server admin (e.g.
-    `{parent_ar_id}-D{duplicate_count:02d}`). The marker is
-    intentionally preserved here so this opt-in remains cheap.
+    By default the duplicate uses the regular `AnalysisRequest` ID
+    template, sharing the standard sample counter — duplicates are
+    indistinguishable from plain samples by ID alone. The ID Server
+    natively recognises a dedicated `AnalysisRequestDuplicate`
+    portal type (mirroring partition / secondary / retest); adding
+    a matching row to the ID Server admin opts the installation
+    into a custom template such as
+    `{parent_ar_id}-D{duplicate_count:02d}`. No adapter required.
 
     Sample-structure copying (partitions) is delegated to the
     existing `IAfterCreateSampleHook` subscribers, which honour

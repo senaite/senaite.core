@@ -194,56 +194,16 @@ Subsequent duplicates continue along the same counter:
 Opt-in: dedicated ID template for duplicates
 ............................................
 
-The `IAnalysisRequestDuplicate` marker is preserved on every
-duplicate so an integrator can opt into a dedicated ID template
-without touching senaite.core. The mechanism is two small adapters
-plus a matching row in the ID Server admin:
-
-- An `IIdServerTypeID` adapter that returns a custom portal-type
-  string (here `AnalysisRequestDuplicate`) when the marker is
-  provided.
-- An `IIdServerVariables` adapter that exposes `parent_ar_id` so
-  the template can reference the source's ID.
-
-Register both adapters:
-
-    >>> from senaite.core.interfaces import IIdServerTypeID
-    >>> from senaite.core.interfaces import IIdServerVariables
-    >>> from zope.component import getGlobalSiteManager
-    >>> from zope.interface import implementer
-
-    >>> @implementer(IIdServerTypeID)
-    ... class DuplicateTypeIDAdapter(object):
-    ...     def __init__(self, context):
-    ...         self.context = context
-    ...     def get_type_id(self, **kw):
-    ...         if IAnalysisRequestDuplicate.providedBy(self.context):
-    ...             return "AnalysisRequestDuplicate"
-    ...         return None
-
-    >>> @implementer(IIdServerVariables)
-    ... class DuplicateVariablesAdapter(object):
-    ...     def __init__(self, context):
-    ...         self.context = context
-    ...     def get_variables(self, **kw):
-    ...         source = self.context.getDuplicatedFrom()
-    ...         if source is None:
-    ...             return {}
-    ...         return {"parent_ar_id": api.get_id(source)}
-
-    >>> gsm = getGlobalSiteManager()
-    >>> gsm.registerAdapter(DuplicateTypeIDAdapter,
-    ...                     (IAnalysisRequestDuplicate,),
-    ...                     IIdServerTypeID)
-    >>> gsm.registerAdapter(DuplicateVariablesAdapter,
-    ...                     (IAnalysisRequestDuplicate,),
-    ...                     IIdServerVariables)
-
-Add a matching row for `AnalysisRequestDuplicate`:
+The ID Server natively recognises the `AnalysisRequestDuplicate`
+portal type — same way it handles `AnalysisRequestPartition`,
+`AnalysisRequestRetest` and `AnalysisRequestSecondary`. By default
+no row exists for it in `id_formatting`, so duplicates fall through
+to the regular `AnalysisRequest` template (and counter). To opt
+into a dedicated template, just add a row in the ID Server admin:
 
     >>> formatting = list(senaite_setup.getIDFormatting() or [])
     >>> formatting.append({
-    ...     "form": "{parent_ar_id}-D{seq:02d}",
+    ...     "form": "{parent_ar_id}-D{duplicate_count:02d}",
     ...     "portal_type": "AnalysisRequestDuplicate",
     ...     "prefix": "analysisrequestduplicate",
     ...     "sequence_type": "generated",
@@ -254,21 +214,22 @@ Add a matching row for `AnalysisRequestDuplicate`:
     ... })
     >>> senaite_setup.setIDFormatting(formatting)
 
-A new duplicate now renders with the dedicated template:
+A new duplicate now renders with the dedicated template,
+incorporating the source's ID and a per-source counter:
 
     >>> opt_in_source_id = api.get_id(custom_source)
     >>> opt_in_dup = create_duplicate_of(custom_source)
     >>> api.get_id(opt_in_dup) == "{}-D01".format(opt_in_source_id)
     True
 
-A second opt-in duplicate increments the dedicated counter:
+A second opt-in duplicate increments the per-source counter:
 
     >>> opt_in_dup2 = create_duplicate_of(custom_source)
     >>> api.get_id(opt_in_dup2) == "{}-D02".format(opt_in_source_id)
     True
 
 Plain sample creation still uses the regular AR template — the
-`IIdServerTypeID` adapter only fires for the duplicate marker:
+duplicate template is only consulted when the marker is provided:
 
     >>> plain_after_optin = create_analysisrequest(
     ...     client, request, values, [service.UID()])
@@ -276,13 +237,3 @@ Plain sample creation still uses the regular AR template — the
     True
     >>> api.get_id(plain_after_optin).endswith("-D01")
     False
-
-Cleanup — unregister the adapters so they do not leak into other
-doctests in the same suite:
-
-    >>> _ = gsm.unregisterAdapter(DuplicateTypeIDAdapter,
-    ...                           (IAnalysisRequestDuplicate,),
-    ...                           IIdServerTypeID)
-    >>> _ = gsm.unregisterAdapter(DuplicateVariablesAdapter,
-    ...                           (IAnalysisRequestDuplicate,),
-    ...                           IIdServerVariables)

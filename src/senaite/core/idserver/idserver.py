@@ -29,6 +29,7 @@ from bika.lims import logger
 from bika.lims.browser.fields.uidreferencefield import \
     get_backreferences as get_backuidreferences
 from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IAnalysisRequestDuplicate
 from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IAnalysisRequestRetest
 from bika.lims.interfaces import IAnalysisRequestSecondary
@@ -49,15 +50,18 @@ PORTAL_TYPE_SAMPLE = "AnalysisRequest"
 PORTAL_TYPE_SAMPLE_RETEST = "AnalysisRequestRetest"
 PORTAL_TYPE_SAMPLE_PARTITION = "AnalysisRequestPartition"
 PORTAL_TYPE_SAMPLE_SECONDARY = "AnalysisRequestSecondary"
+PORTAL_TYPE_SAMPLE_DUPLICATE = "AnalysisRequestDuplicate"
 
 SAMPLE_TYPES = [
     PORTAL_TYPE_SAMPLE,
     PORTAL_TYPE_SAMPLE_RETEST,
     PORTAL_TYPE_SAMPLE_PARTITION,
     PORTAL_TYPE_SAMPLE_SECONDARY,
+    PORTAL_TYPE_SAMPLE_DUPLICATE,
 ]
 
 PARTITION_DETACHED_RELATIONSHIP = "AnalysisRequestDetachedFrom"
+DUPLICATED_FROM_RELATIONSHIP = "AnalysisRequestDuplicatedFrom"
 
 
 def get_objects_in_sequence(brain_or_object, ctype, cref):
@@ -109,8 +113,29 @@ def get_type_id(context, **kw):
         return PORTAL_TYPE_SAMPLE_RETEST
     elif IAnalysisRequestSecondary.providedBy(context):
         return PORTAL_TYPE_SAMPLE_SECONDARY
+    elif IAnalysisRequestDuplicate.providedBy(context):
+        # Use the dedicated AnalysisRequestDuplicate template only
+        # if the integrator has configured one. Otherwise fall
+        # through to the regular AnalysisRequest path so duplicates
+        # share the standard Sample ID format and counter.
+        if has_id_template_for(PORTAL_TYPE_SAMPLE_DUPLICATE):
+            return PORTAL_TYPE_SAMPLE_DUPLICATE
 
     return api.get_portal_type(context)
+
+
+def has_id_template_for(portal_type):
+    """Return True if `id_formatting` has a row matching the given
+    portal_type. Used to decide whether to honour a marker-based
+    type-id override (e.g. for `IAnalysisRequestDuplicate`) or to
+    fall back to the underlying portal type's template.
+    """
+    config_map = api.get_senaite_setup().getIDFormatting() or []
+    portal_type = (portal_type or "").lower()
+    for config in config_map:
+        if (config.get("portal_type") or "").lower() == portal_type:
+            return True
+    return False
 
 
 def get_suffix(id, regex="-[A-Z]{1}[0-9]{1,2}$"):
@@ -193,6 +218,27 @@ def get_secondary_count(context, default=0):
         return default
 
     return len(primary.getRawSecondaryAnalysisRequests())
+
+
+def get_duplicate_count(context, default=0):
+    """Returns the next ordinal for a sample created via the
+    'duplicate' transition.
+
+    Counts existing duplicates of the same source via the
+    `AnalysisRequestDuplicatedFrom` backref and returns count + 1
+    (the new duplicate is not yet indexed when its ID is rendered,
+    so we add one — same convention as partition/secondary).
+    """
+    if not is_ar(context):
+        return default
+
+    source = context.getDuplicatedFrom()
+    if not source:
+        return default
+
+    backrefs = get_backreferences(
+        source, relationship=DUPLICATED_FROM_RELATIONSHIP)
+    return len(backrefs) + 1
 
 
 def is_ar(context):
@@ -305,6 +351,20 @@ def get_variables(context, **kw):
                 "parent_base_id": parent_base_id,
                 "secondary_count": secondary_count,
             })
+
+        # Duplicate
+        elif IAnalysisRequestDuplicate.providedBy(context):
+            source = context.getDuplicatedFrom()
+            if source is not None:
+                source_id = api.get_id(source)
+                parent_base_id = strip_suffix(source_id)
+                duplicate_count = get_duplicate_count(context)
+                variables.update({
+                    "parent_analysisrequest": source,
+                    "parent_ar_id": source_id,
+                    "parent_base_id": parent_base_id,
+                    "duplicate_count": duplicate_count,
+                })
 
     elif IResultsReport.providedBy(context):
         variables.update({

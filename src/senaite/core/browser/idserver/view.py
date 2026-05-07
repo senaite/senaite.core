@@ -181,6 +181,7 @@ class IDServerView(BrowserView):
             "year": get_current_year(),
             "yymmdd": get_yymmdd(),
             # All known counter-like variables share the same next value
+            "duplicate_count": next_value,
             "partition_count": next_value,
             "retest_count": next_value,
             "secondary_count": next_value,
