@@ -41,7 +41,6 @@ from senaite.core.i18n import translate as t
 from senaite.core.interfaces import ISamples
 from senaite.core.interfaces import ISamplesView
 from senaite.core.permissions import AddAnalysisRequest
-from senaite.core.permissions import TransitionDuplicateSample
 from senaite.core.permissions import TransitionSampleSample
 from senaite.core.permissions.worksheet import can_add_worksheet
 from zope.interface import implementer
@@ -712,10 +711,6 @@ class SamplesView(ListingView):
         if copy_to_new:
             custom_transitions.append(copy_to_new)
 
-        duplicate = self.get_duplicate_transition()
-        if duplicate:
-            custom_transitions.append(duplicate)
-
         # Allow to create a worksheet for the selected samples
         if self.can_create_worksheet():
             custom_transitions.append({
@@ -748,35 +743,6 @@ class SamplesView(ListingView):
                 "id": "copy_to_new",
                 "title": _("Copy to new"),
                 "url": "{}/workflow_action?action=copy_to_new".format(base_url)
-            }
-
-        return None
-
-    def get_duplicate_transition(self):
-        """Returns the duplicate custom transition if the current user has
-        enough privileges. Returns None otherwise.
-
-        Mirrors `get_copy_to_new_transition` so the entry renders right
-        next to Copy-to-new in the listing's actions menu. The action
-        URL routes through `workflow_action_duplicate`, which fires the
-        WF transition that ultimately runs `after_duplicate`.
-        """
-        base_url = None
-        mtool = api.get_tool("portal_membership")
-        if mtool.checkPermission(TransitionDuplicateSample, self.context):
-            base_url = self.url
-        else:
-            client = api.get_current_client()
-            if client and mtool.checkPermission(
-                    TransitionDuplicateSample, client):
-                base_url = api.get_url(client)
-
-        if base_url:
-            return {
-                "id": "duplicate",
-                "title": _("Duplicate"),
-                "url": "{}/workflow_action?action=duplicate".format(
-                    base_url),
             }
 
         return None
