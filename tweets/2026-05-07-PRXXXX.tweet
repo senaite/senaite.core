@@ -1,4 +1,0 @@
-SENAITE samples can now be duplicated in one click — a new
-workflow transition creates a sibling with an inherited ID
-(e.g. WATER-0001-D01), no detour through the add form.
-https://github.com/senaite/senaite.core/pull/XXXX
