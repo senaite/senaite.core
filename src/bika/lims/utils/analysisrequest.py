@@ -474,35 +474,35 @@ def create_duplicate_of(sample, request=None):
     """Creates a sibling Sample by duplicating the given source.
 
     Builds the duplicate by copying the source's field values
-    directly (same approach as ``create_retest``) instead of going
-    through ``_processForm``: native field values (tuples/lists for
+    directly (same approach as `create_retest`) instead of going
+    through `_processForm`: native field values (tuples/lists for
     multi-valued fields) would otherwise trip Archetypes' widget
     process_form, which expects form-shaped strings.
 
-    The duplicate is marked with ``IAnalysisRequestDuplicate`` and
-    its ``DuplicatedFrom`` field references the source. The ID
-    itself is generated from the regular ``AnalysisRequest`` ID
+    The duplicate is marked with `IAnalysisRequestDuplicate` and
+    its `DuplicatedFrom` field references the source. The ID
+    itself is generated from the regular `AnalysisRequest` ID
     template — duplicates share the standard sample counter and
     are indistinguishable from plain samples by ID alone.
 
     Note: an integrator can introduce a dedicated ID template for
-    duplicates by adding an ``IIdServerTypeID`` adapter (or by
-    extending ``get_type_id`` in ``senaite.core.idserver``) that
+    duplicates by adding an `IIdServerTypeID` adapter (or by
+    extending `get_type_id` in `senaite.core.idserver`) that
     returns a custom portal-type string when
-    ``IAnalysisRequestDuplicate`` is provided, then registering a
+    `IAnalysisRequestDuplicate` is provided, then registering a
     matching row in the ID Server admin (e.g.
-    ``{parent_ar_id}-D{duplicate_count:02d}``). The marker is
+    `{parent_ar_id}-D{duplicate_count:02d}`). The marker is
     intentionally preserved here so this opt-in remains cheap.
 
     Sample-structure copying (partitions) is delegated to the
-    existing ``IAfterCreateSampleHook`` subscribers, which honour
-    the ``sample_add_form_copy_partitions`` registry flag — same
+    existing `IAfterCreateSampleHook` subscribers, which honour
+    the `sample_add_form_copy_partitions` registry flag — same
     behaviour as Copy-to-new.
 
     :param sample: The source Sample (AnalysisRequest)
     :type sample: IAnalysisRequest
     :param request: The current HTTP request. Defaults to
-        ``api.get_request()`` when not provided.
+        `api.get_request()` when not provided.
     :returns: The newly created duplicate Sample
     :rtype: IAnalysisRequest
     """
@@ -534,7 +534,7 @@ def create_duplicate_of(sample, request=None):
     alsoProvides(duplicate, IAnalysisRequestDuplicate)
 
     # Re-instantiate analyses from the source's services with the
-    # source's results ranges. ``to_service_uids`` resolves both
+    # source's results ranges. `to_service_uids` resolves both
     # services and IRoutineAnalysis objects and silently drops
     # unresolvable items.
     service_uids = to_service_uids(
