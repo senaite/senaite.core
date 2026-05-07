@@ -145,6 +145,12 @@ def create_analysisrequest(client, request, values, analyses=None,
     rejection_reasons = resolve_rejection_reasons(values)
     ar.setRejectionReasons(rejection_reasons)
 
+    # Handle duplicated Analysis Request: mark before
+    # renameAfterCreation so the ID server has the chance to pick
+    # the AnalysisRequestDuplicate template (when configured).
+    if ar.getDuplicatedFrom():
+        alsoProvides(ar, IAnalysisRequestDuplicate)
+
     # Handle secondary Analysis Request
     primary = ar.getPrimaryAnalysisRequest()
     if primary:
@@ -473,23 +479,26 @@ def create_retest(ar):
 def create_duplicate_of(sample, request=None):
     """Creates a sibling Sample by duplicating the given source.
 
-    Builds the duplicate by copying the source's field values
-    directly (same approach as `create_retest`) instead of going
-    through `_processForm`: native field values (tuples/lists for
-    multi-valued fields) would otherwise trip Archetypes' widget
-    process_form, which expects form-shaped strings.
+    Delegates the heavy lifting to `create_analysisrequest`. Only
+    the scalar fields the ID server needs (Client, Contact,
+    SampleType, DateSampled, SamplingDate) plus the lineage pointer
+    `DuplicatedFrom` are passed through `_processForm` — these are
+    UID strings or DateTimes that AT widgets handle cleanly. The
+    remaining schema fields (multi-valued fields like CCEmails
+    would otherwise trip `widget.process_form`) are copied
+    afterwards via `copy_field_values`, which sets native values
+    directly through the field setters.
 
-    The duplicate is marked with `IAnalysisRequestDuplicate` and
-    its `DuplicatedFrom` field references the source.
+    `create_analysisrequest` itself applies the
+    `IAnalysisRequestDuplicate` marker when it sees `DuplicatedFrom`
+    in the values dict, so the ID server can pick the dedicated
+    `AnalysisRequestDuplicate` template if one is configured (or
+    fall through to the regular Sample ID format otherwise).
 
-    By default the duplicate uses the regular `AnalysisRequest` ID
-    template, sharing the standard sample counter — duplicates are
-    indistinguishable from plain samples by ID alone. The ID Server
-    natively recognises a dedicated `AnalysisRequestDuplicate`
-    portal type (mirroring partition / secondary / retest); adding
-    a matching row to the ID Server admin opts the installation
-    into a custom template such as
-    `{parent_ar_id}-D{duplicate_count:02d}`. No adapter required.
+    Analyses are filtered to skip terminal/invalid states
+    (retracted, rejected, cancelled) and retest descendants — the
+    duplicate inherits only the source's *valid* analyses, with
+    empty results.
 
     Sample-structure copying (partitions) is delegated to the
     existing `IAfterCreateSampleHook` subscribers, which honour
@@ -515,67 +524,54 @@ def create_duplicate_of(sample, request=None):
 
     client = source.getClient()
 
-    # Create the duplicate as a temporary AR
-    duplicate = _createObjectByType("AnalysisRequest", client, tmpID())
-    api.mark_temporary(duplicate)
-
-    # Copy schema fields directly from source. Skip lineage pointers,
-    # results, attachments and other non-portable fields.
-    copy_field_values(
-        source, duplicate, ignore_fieldnames=DUPLICATE_SKIP_FIELDS)
-
-    # Lineage pointer back to the source
-    duplicate.setDuplicatedFrom(api.get_uid(source))
-
-    # Mark the duplicate so the ID server picks the right template
-    alsoProvides(duplicate, IAnalysisRequestDuplicate)
-
-    # Re-instantiate analyses from the source's services. Skip
-    # analyses in terminal/invalid states (retracted, rejected,
-    # cancelled) and any retest descendants — the duplicate should
-    # start with the same set of *valid* analyses the source has,
-    # with empty results.
+    # Filter out invalid analyses on the source — duplicates only
+    # inherit the *valid* analysis set, with empty results.
     skip_states = ("retracted", "rejected", "cancelled")
     valid_analyses = [
         a for a in source.getAnalyses(full_objects=True)
         if api.get_review_status(a) not in skip_states
         and not a.isRetest()
     ]
-    service_uids = to_service_uids(services=valid_analyses, values={})
-    results_ranges = source.getResultsRange() or []
-    duplicate.setAnalyses(service_uids, specs=results_ranges)
 
-    # Mirror create_analysisrequest's tail-end logic for newly
-    # created top-level samples (the duplicate is always a sibling,
-    # not a partition or secondary).
-    apply_hidden_services(duplicate)
-    apply_custom_units(duplicate)
+    # Minimal values dict — only the ID-relevant scalars and the
+    # lineage pointer. Multi-valued / object-typed source fields
+    # are copied afterwards via copy_field_values to avoid the AT
+    # widget process_form mismatch on native tuple/list values.
+    contact = source.getContact()
+    sample_type = source.getSampleType()
+    values = {
+        "Client": api.get_uid(client),
+        "DuplicatedFrom": api.get_uid(source),
+    }
+    if contact is not None:
+        values["Contact"] = api.get_uid(contact)
+    if sample_type is not None:
+        values["SampleType"] = api.get_uid(sample_type)
+    if source.getDateSampled():
+        values["DateSampled"] = source.getDateSampled()
+    if source.getSamplingDate():
+        values["SamplingDate"] = source.getSamplingDate()
 
-    if not IReceived.providedBy(duplicate):
-        setup = api.get_senaite_setup()
-        auto_receive = setup.getAutoreceiveSamples()
-        if duplicate.getSamplingRequired():
-            changeWorkflowState(
-                duplicate, SAMPLE_WORKFLOW, "to_be_sampled",
-                action="to_be_sampled")
-        elif auto_receive and can_receive(duplicate) \
-                and check_guard(duplicate, "receive"):
-            receive_sample(duplicate)
-        else:
-            key = "trigger_events_on_sample_creation"
-            trigger_events = get_registry_record(key)
-            action = "no_sampling_workflow"
-            tr = get_transition(SAMPLE_WORKFLOW, action)
-            changeWorkflowState(
-                duplicate, SAMPLE_WORKFLOW, tr.new_state_id,
-                trigger_events=trigger_events,
-                action=action)
+    duplicate = create_analysisrequest(
+        client,
+        request=request,
+        values=values,
+        analyses=valid_analyses,
+        results_ranges=source.getResultsRange() or [],
+    )
 
-    renameAfterCreation(duplicate)
-    duplicate.unmarkCreationFlag()
-    api.unmark_temporary(duplicate)
-    api.catalog_object(duplicate)
-    event.notify(ObjectInitializedEvent(duplicate))
+    # Copy the remaining source field values directly via the
+    # field-level setters (bypasses widget process_form, so multi-
+    # valued fields with native tuple values pass through).
+    extended_skip = list(DUPLICATE_SKIP_FIELDS) + [
+        "Client",
+        "Contact",
+        "SampleType",
+        "DateSampled",
+        "SamplingDate",
+    ]
+    copy_field_values(
+        source, duplicate, ignore_fieldnames=extended_skip)
 
     # Run the after-create sample hooks with `source` so partition
     # copying uses the same registry-toggled behaviour as the
@@ -585,6 +581,7 @@ def create_duplicate_of(sample, request=None):
             hooks, key=lambda h: api.to_float(getattr(h, "sort", 10))):
         hook.update(duplicate, source=source)
 
+    duplicate.reindexObject()
     return duplicate
 
 
