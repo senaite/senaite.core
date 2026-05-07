@@ -134,8 +134,8 @@ the rest of the schema. Verify exactly one entry with action
     >>> len(snapshots)
     1
 
-    >>> snapshots[0]["__metadata__"]["action"]
-    'create'
+    >>> print(snapshots[0]["__metadata__"]["action"])
+    create
 
 The fields that ride the `copy_field_values` path — i.e. fields
 NOT in the values dict passed to `create_analysisrequest` — are
@@ -173,14 +173,14 @@ Profiles is a multi-valued UID reference of a different type:
 The duplicate inherits each value via `copy_field_values`:
 
     >>> rich_dup = create_duplicate_of(rich_source)
-    >>> rich_dup.getCCEmails()
-    'alice@example.com,bob@example.com'
-    >>> rich_dup.getClientOrderNumber()
-    'ORD-12345'
-    >>> rich_dup.getClientReference()
-    'REF-XYZ'
-    >>> rich_dup.getEnvironmentalConditions()
-    'ambient, dry'
+    >>> print(rich_dup.getCCEmails())
+    alice@example.com, bob@example.com
+    >>> print(rich_dup.getClientOrderNumber())
+    ORD-12345
+    >>> print(rich_dup.getClientReference())
+    REF-XYZ
+    >>> print(rich_dup.getEnvironmentalConditions())
+    ambient, dry
     >>> rich_dup.getComposite()
     True
 
@@ -197,14 +197,14 @@ approach buys us — `copy_field_values` writes through field
 setters and would not, on its own, cause an audit entry:
 
     >>> rich_snap = snap_api.get_snapshots(rich_dup)[0]
-    >>> rich_snap["CCEmails"]
-    'alice@example.com,bob@example.com'
-    >>> rich_snap["ClientOrderNumber"]
-    'ORD-12345'
-    >>> rich_snap["ClientReference"]
-    'REF-XYZ'
-    >>> rich_snap["EnvironmentalConditions"]
-    'ambient, dry'
+    >>> print(rich_snap["CCEmails"])
+    alice@example.com, bob@example.com
+    >>> print(rich_snap["ClientOrderNumber"])
+    ORD-12345
+    >>> print(rich_snap["ClientReference"])
+    REF-XYZ
+    >>> print(rich_snap["EnvironmentalConditions"])
+    ambient, dry
     >>> bool(rich_snap.get("Composite"))
     True
 
@@ -221,8 +221,8 @@ Still exactly one snapshot, action 'create':
 
     >>> len(snap_api.get_snapshots(rich_dup))
     1
-    >>> snap_api.get_snapshots(rich_dup)[0]["__metadata__"]["action"]
-    'create'
+    >>> print(snap_api.get_snapshots(rich_dup)[0]["__metadata__"]["action"])
+    create
 
 
 Counter advances on subsequent duplicates

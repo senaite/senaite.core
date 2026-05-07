@@ -225,9 +225,10 @@ def get_duplicate_count(context, default=0):
     'duplicate' transition.
 
     Counts existing duplicates of the same source via the
-    `AnalysisRequestDuplicatedFrom` backref and returns count + 1
-    (the new duplicate is not yet indexed when its ID is rendered,
-    so we add one — same convention as partition/secondary).
+    `AnalysisRequestDuplicatedFrom` backref. The new duplicate
+    has already registered its UIDReference back to the source
+    by the time the ID is rendered, so it is included in the
+    returned count.
     """
     if not is_ar(context):
         return default
@@ -238,7 +239,7 @@ def get_duplicate_count(context, default=0):
 
     backrefs = get_backreferences(
         source, relationship=DUPLICATED_FROM_RELATIONSHIP)
-    return len(backrefs) + 1
+    return len(backrefs)
 
 
 def is_ar(context):
