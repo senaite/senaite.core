@@ -115,6 +115,37 @@ The duplicate has the same analysis services but no results:
     ['']
 
 
+Auditlog snapshot reflects the full duplicate state
+...................................................
+
+A duplicate is one logical create event. The factory suppresses
+the partial snapshot that `_processForm` would otherwise write
+(the values dict only carries the ID-relevant scalars), then takes
+a single complete snapshot after `copy_field_values` has filled in
+the rest. Verify exactly one entry with action 'create':
+
+    >>> from bika.lims.api import snapshot as snap_api
+    >>> snap_api.has_snapshots(dup)
+    True
+
+    >>> snapshots = snap_api.get_snapshots(dup)
+    >>> len(snapshots)
+    1
+
+    >>> snapshots[0]["__metadata__"]["action"]
+    'create'
+
+The snapshot reflects the duplicate's full schema state, not just
+the minimal values dict the factory passed through `_processForm`.
+The inherited `SampleType` and `Contact` are present:
+
+    >>> snapshots[0]["SampleType"] == api.get_uid(sampletype)
+    True
+
+    >>> snapshots[0]["Contact"] == api.get_uid(contact)
+    True
+
+
 Counter advances on subsequent duplicates
 .........................................
 
@@ -145,6 +176,28 @@ The source remains in its previous state after the transition
 
     >>> api.get_workflow_status_of(source)
     'sample_due'
+
+
+Multi-valued fields land in the auditlog snapshot
+.................................................
+
+A standalone check using a fresh source: set a multi-valued field
+(`CCEmails`, the exact widget that previously tripped
+`_processForm`) and verify the duplicate's snapshot contains it.
+
+    >>> juice_type = api.create(sampletypes, "SampleType",
+    ...     Prefix="juice", MinimumVolume="100 ml")
+    >>> juice_values = dict(values, SampleType=juice_type.UID())
+    >>> juice_source = create_analysisrequest(client, request,
+    ...     juice_values, [service.UID()])
+    >>> juice_source.setCCEmails("alice@example.com,bob@example.com")
+
+    >>> juice_dup = create_duplicate_of(juice_source)
+    >>> juice_snap = snap_api.get_snapshots(juice_dup)[0]
+    >>> "alice@example.com" in juice_snap.get("CCEmails", "")
+    True
+    >>> "bob@example.com" in juice_snap.get("CCEmails", "")
+    True
 
 
 Duplicates honour a custom ID Server schema
