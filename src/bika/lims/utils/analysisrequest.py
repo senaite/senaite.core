@@ -30,6 +30,7 @@ from bika.lims.api.mail import compose_email
 from bika.lims.api.mail import is_valid_email_address
 from bika.lims.api.mail import send_email
 from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IAnalysisRequestDuplicate
 from bika.lims.interfaces import IAnalysisRequestRetest
 from bika.lims.interfaces import IAnalysisRequestSecondary
 from bika.lims.interfaces import IAnalysisService
@@ -47,12 +48,40 @@ from senaite.core.api.workflow import check_guard
 from senaite.core.api.workflow import get_transition
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.idserver import renameAfterCreation
+from senaite.core.interfaces import IAfterCreateSampleHook
 from senaite.core.permissions.sample import can_receive
 from senaite.core.registry import get_registry_record
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope import event
+from zope.component import subscribers
 from zope.interface import alsoProvides
+
+
+DUPLICATE_SKIP_FIELDS = [
+    # Recreated from services explicitly via create_analysisrequest
+    "Analyses",
+    # Attachments are not carried over
+    "Attachment",
+    "_ARAttachment",
+    # Lineage / state pointers — must not leak to the duplicate
+    "DatePublished",
+    "DetachedFrom",
+    "DuplicatedFrom",
+    "Invalidated",
+    "ParentAnalysisRequest",
+    "PrimaryAnalysisRequest",
+    "RejectionReasons",
+    "Remarks",
+    "ResultsInterpretation",
+    "ResultsInterpretationDepts",
+    "Sample",
+    # Form bookkeeping
+    "NumSamples",
+    "creation_date",
+    "id",
+    "modification_date",
+]
 
 
 def create_analysisrequest(client, request, values, analyses=None,
@@ -439,6 +468,111 @@ def create_retest(ar):
     retest.aq_parent.reindexObject()
 
     return retest
+
+
+def create_duplicate_of(sample, request=None):
+    """Creates a sibling Sample by duplicating the given source.
+
+    Builds the duplicate by copying the source's field values
+    directly (same approach as ``create_retest``) instead of going
+    through ``_processForm``: native field values (tuples/lists for
+    multi-valued fields) would otherwise trip Archetypes' widget
+    process_form, which expects form-shaped strings.
+
+    The duplicate is marked with ``IAnalysisRequestDuplicate`` so
+    the ID server picks the ``AnalysisRequestDuplicate`` template,
+    yielding IDs of the form ``{parent_ar_id}-D{duplicate_count:02d}``
+    by default.
+
+    Sample-structure copying (partitions) is delegated to the
+    existing ``IAfterCreateSampleHook`` subscribers, which honour
+    the ``sample_add_form_copy_partitions`` registry flag — same
+    behaviour as Copy-to-new.
+
+    :param sample: The source Sample (AnalysisRequest)
+    :type sample: IAnalysisRequest
+    :param request: The current HTTP request. Defaults to
+        ``api.get_request()`` when not provided.
+    :returns: The newly created duplicate Sample
+    :rtype: IAnalysisRequest
+    """
+    if not sample:
+        raise ValueError("Source Sample cannot be None")
+    source = api.get_object(sample)
+    if not IAnalysisRequest.providedBy(source):
+        raise ValueError(
+            "Type not supported: {}".format(repr(type(source))))
+
+    if request is None:
+        request = api.get_request()
+
+    client = source.getClient()
+
+    # Create the duplicate as a temporary AR
+    duplicate = _createObjectByType("AnalysisRequest", client, tmpID())
+    api.mark_temporary(duplicate)
+
+    # Copy schema fields directly from source. Skip lineage pointers,
+    # results, attachments and other non-portable fields.
+    copy_field_values(
+        source, duplicate, ignore_fieldnames=DUPLICATE_SKIP_FIELDS)
+
+    # Lineage pointer back to the source
+    duplicate.setDuplicatedFrom(api.get_uid(source))
+
+    # Mark the duplicate so the ID server picks the right template
+    alsoProvides(duplicate, IAnalysisRequestDuplicate)
+
+    # Re-instantiate analyses from the source's services with the
+    # source's results ranges. ``to_service_uids`` resolves both
+    # services and IRoutineAnalysis objects and silently drops
+    # unresolvable items.
+    service_uids = to_service_uids(
+        services=source.getAnalyses(full_objects=True), values={})
+    results_ranges = source.getResultsRange() or []
+    duplicate.setAnalyses(service_uids, specs=results_ranges)
+
+    # Mirror create_analysisrequest's tail-end logic for newly
+    # created top-level samples (the duplicate is always a sibling,
+    # not a partition or secondary).
+    apply_hidden_services(duplicate)
+    apply_custom_units(duplicate)
+
+    if not IReceived.providedBy(duplicate):
+        setup = api.get_senaite_setup()
+        auto_receive = setup.getAutoreceiveSamples()
+        if duplicate.getSamplingRequired():
+            changeWorkflowState(
+                duplicate, SAMPLE_WORKFLOW, "to_be_sampled",
+                action="to_be_sampled")
+        elif auto_receive and can_receive(duplicate) \
+                and check_guard(duplicate, "receive"):
+            receive_sample(duplicate)
+        else:
+            key = "trigger_events_on_sample_creation"
+            trigger_events = get_registry_record(key)
+            action = "no_sampling_workflow"
+            tr = get_transition(SAMPLE_WORKFLOW, action)
+            changeWorkflowState(
+                duplicate, SAMPLE_WORKFLOW, tr.new_state_id,
+                trigger_events=trigger_events,
+                action=action)
+
+    renameAfterCreation(duplicate)
+    duplicate.unmarkCreationFlag()
+    api.unmark_temporary(duplicate)
+    api.catalog_object(duplicate)
+    event.notify(ObjectInitializedEvent(duplicate))
+
+    # Run the after-create sample hooks with `source` so partition
+    # copying uses the same registry-toggled behaviour as the
+    # add form does.
+    hooks = subscribers((duplicate, request), IAfterCreateSampleHook)
+    for hook in sorted(
+            hooks, key=lambda h: api.to_float(getattr(h, "sort", 10))):
+        hook.update(duplicate, source=source)
+
+    return duplicate
 
 
 def create_partition(analysis_request, request, analyses, sample_type=None,

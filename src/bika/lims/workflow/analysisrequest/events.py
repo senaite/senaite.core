@@ -27,6 +27,7 @@ from bika.lims.interfaces import IInvalidated
 from bika.lims.interfaces import IReceived
 from bika.lims.interfaces import IVerified
 from bika.lims.utils import changeWorkflowState
+from bika.lims.utils.analysisrequest import create_duplicate_of
 from bika.lims.utils.analysisrequest import create_retest
 from bika.lims.workflow import doActionFor as do_action_for
 from bika.lims.workflow.analysisrequest import do_action_to_analyses
@@ -87,6 +88,15 @@ def after_invalidate(obj):
     create_retest(obj)
     # Flag this sample as IInvalidated
     alsoProvides(obj, IInvalidated)
+
+
+def after_duplicate(analysis_request):
+    """Method triggered after a 'duplicate' transition. Creates a
+    sibling Sample by copying the source's schema fields and
+    re-instantiating its analyses from services. The source's
+    workflow state is unchanged.
+    """
+    create_duplicate_of(analysis_request)
 
 
 def after_submit(analysis_request):

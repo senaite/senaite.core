@@ -158,6 +158,22 @@ def import_rolemap(tool):
 
 
 @upgradestep(product, version)
+def setup_duplicate_transition(tool):
+    """Register the new 'duplicate' workflow transition + permission.
+
+    Re-imports rolemap (new TransitionDuplicateSample permission)
+    and workflow (new transition + exit transitions on existing
+    states). Duplicates use the regular AnalysisRequest ID format,
+    so no ID-server template needs to be installed.
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+
+    setup.runImportStepFromProfile(profile, "rolemap")
+    setup.runImportStepFromProfile(profile, "workflow")
+
+
+@upgradestep(product, version)
 def remove_dashboard_registry_visibility(tool):
     """Remove legacy registry-based dashboard panel visibility
 

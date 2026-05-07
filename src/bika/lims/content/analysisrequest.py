@@ -1267,6 +1267,35 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
+    # The source Sample this Sample was duplicated from via the
+    # 'duplicate' workflow transition.
+    UIDReferenceField(
+        "DuplicatedFrom",
+        allowed_types=("AnalysisRequest",),
+        relationship="AnalysisRequestDuplicatedFrom",
+        mode="rw",
+        read_permission=View,
+        write_permission=ModifyPortalContent,
+        widget=ReferenceWidget(
+            label=_(
+                "label_sample_duplicated_from",
+                default="Duplicated from sample"),
+            description=_(
+                "description_sample_duplicated_from",
+                default="Reference to the source sample this sample "
+                        "was duplicated from"),
+            render_own_label=True,
+            readonly=True,
+            visible=False,
+            catalog_name=SAMPLE_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
+    ),
+
     # The Primary Sample the current sample was detached from
     UIDReferenceField(
         "DetachedFrom",

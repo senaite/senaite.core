@@ -263,3 +263,15 @@ def guard_multi_results(sample):
     """Checks if the multi results action is allowed
     """
     return True
+
+
+def guard_duplicate(sample):
+    """Checks if the 'duplicate' action is allowed.
+
+    Duplication is permitted in every state where Copy-to-new is
+    today exposed by the listings — the transition itself is wired
+    to the same set of states via the workflow definition. The
+    guard therefore only needs to short-circuit on objects that are
+    not real samples.
+    """
+    return True

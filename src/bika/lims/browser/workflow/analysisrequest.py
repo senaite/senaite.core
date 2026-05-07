@@ -20,6 +20,7 @@
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.workflow import RequestContextAware
 from bika.lims.browser.workflow import WorkflowActionGenericAdapter
 from bika.lims.content.analysisspec import ResultsRangeDict
@@ -404,3 +405,30 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
             specs_value = self.request.form.get(key, [{}])[0].get(uid, None)
             specs[key] = specs_value or specs.get(key)
         return specs
+
+
+class WorkflowActionDuplicateAdapter(WorkflowActionGenericAdapter):
+    """Adapter in charge of the Sample 'duplicate' action.
+
+    Triggers the workflow transition (which fires `after_duplicate`
+    and creates the sibling) and reports the new IDs in a status
+    message. Unlike Copy-to-new, this adapter does not redirect to
+    `ar_add` — duplication happens directly.
+    """
+
+    def __call__(self, action, objects):
+        sources = filter(IAnalysisRequest.providedBy, objects)
+        transitioned = self.do_action(action, sources)
+        if not transitioned:
+            return self.redirect(
+                message=_("No duplicate created"), level="warning")
+
+        duplicate_uids = []
+        for source in transitioned:
+            duplicate_uids.extend(
+                get_backreferences(
+                    source, relationship="AnalysisRequestDuplicatedFrom"))
+        duplicates = filter(None, map(api.get_object_by_uid, duplicate_uids))
+        ids = ", ".join(map(api.get_id, duplicates))
+        message = _("Duplicated samples: {}").format(ids)
+        return self.success(transitioned, message=message)

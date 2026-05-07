@@ -1394,6 +1394,14 @@ msgstr "Den Wert der ersten Probe in die anderen Proben kopieren"
 msgid "Copy to new"
 msgstr "Kopie erzeugen"
 
+#: bika/lims/browser/workflow/analysisrequest.py
+msgid "Duplicated samples: {}"
+msgstr "Duplizierte Proben: {}"
+
+#: bika/lims/browser/workflow/analysisrequest.py
+msgid "No duplicate created"
+msgstr "Kein Duplikat erstellt"
+
 #: senaite/core/browser/idserver/view.py:68
 msgid "Could not convert '{}' to an integer"
 msgstr "Wert '{}' nicht in Ganzzahl konvertierbar"
@@ -7514,6 +7522,11 @@ msgstr "Das Datum, an dem die Probe entnommen wurde"
 msgid "description_sample_detached_from"
 msgstr "Verweis auf abgetrennte Probe"
 
+#. Default: "Reference to the source sample this sample was duplicated from"
+#: bika/lims/content/analysisrequest.py
+msgid "description_sample_duplicated_from"
+msgstr "Verweis auf die Quellprobe, von der diese Probe dupliziert wurde"
+
 #. Default: "Generated invoice for this sample"
 #: bika/lims/content/analysisrequest.py:1049
 msgid "description_sample_invoice"
@@ -8900,6 +8913,11 @@ msgstr "Probenahmedatum"
 #: bika/lims/content/analysisrequest.py:1278
 msgid "label_sample_detached_from"
 msgstr "Von der Probe getrennt"
+
+#. Default: "Duplicated from sample"
+#: bika/lims/content/analysisrequest.py
+msgid "label_sample_duplicated_from"
+msgstr "Dupliziert von Probe"
 
 #. Default: "Invoice"
 #: bika/lims/content/analysisrequest.py:1046

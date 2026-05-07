@@ -340,6 +340,11 @@
       <role name="Sampler"/>
       <role name="Verifier"/>
     </permission>
+    <permission name="senaite.core: Transition: Duplicate Sample" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
     <!-- /SAMPLE -->
 
     <!-- WORKSHEET -->

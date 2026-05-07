@@ -59,6 +59,7 @@ from .sample.permissions import TransitionCancelAnalysisRequest
 from .sample.permissions import TransitionCreatePartitions
 from .sample.permissions import TransitionDetachSamplePartition
 from .sample.permissions import TransitionDispatchSample
+from .sample.permissions import TransitionDuplicateSample
 from .sample.permissions import TransitionInvalidate
 from .sample.permissions import TransitionMultiResults
 from .sample.permissions import TransitionPreserveSample
