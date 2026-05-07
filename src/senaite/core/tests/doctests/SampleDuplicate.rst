@@ -115,14 +115,16 @@ The duplicate has the same analysis services but no results:
     ['']
 
 
-Auditlog snapshot reflects the full duplicate state
-...................................................
+Auditlog snapshot reflects the copied fields
+............................................
 
 A duplicate is one logical create event. The factory suppresses
 the partial snapshot that `_processForm` would otherwise write
-(the values dict only carries the ID-relevant scalars), then takes
-a single complete snapshot after `copy_field_values` has filled in
-the rest. Verify exactly one entry with action 'create':
+(the values dict only carries the ID-relevant scalars
+Client/Contact/SampleType/Date(Sampled|SamplingDate)) and takes a
+single complete snapshot after `copy_field_values` has populated
+the rest of the schema. Verify exactly one entry with action
+'create':
 
     >>> from bika.lims.api import snapshot as snap_api
     >>> snap_api.has_snapshots(dup)
@@ -135,15 +137,57 @@ the rest. Verify exactly one entry with action 'create':
     >>> snapshots[0]["__metadata__"]["action"]
     'create'
 
-The snapshot reflects the duplicate's full schema state, not just
-the minimal values dict the factory passed through `_processForm`.
-The inherited `SampleType` and `Contact` are present:
+The fields that ride the `copy_field_values` path — i.e. fields
+NOT in the values dict passed to `create_analysisrequest` — are
+the interesting ones, since they're the ones that previously would
+have been silently absent from the audit trail. Set a handful on a
+fresh source, duplicate, and assert both the duplicate's field
+values and its snapshot:
 
-    >>> snapshots[0]["SampleType"] == api.get_uid(sampletype)
-    True
+    >>> rich_type = api.create(sampletypes, "SampleType",
+    ...     Prefix="rich", MinimumVolume="100 ml")
+    >>> rich_values = dict(values, SampleType=rich_type.UID())
+    >>> rich_source = create_analysisrequest(client, request,
+    ...     rich_values, [service.UID()])
 
-    >>> snapshots[0]["Contact"] == api.get_uid(contact)
-    True
+    >>> rich_source.setCCEmails("alice@example.com,bob@example.com")
+    >>> rich_source.setClientOrderNumber("ORD-12345")
+    >>> rich_source.setClientReference("REF-XYZ")
+    >>> rich_source.setEnvironmentalConditions("ambient, dry")
+
+The duplicate inherits each value via `copy_field_values`:
+
+    >>> rich_dup = create_duplicate_of(rich_source)
+    >>> rich_dup.getCCEmails()
+    'alice@example.com,bob@example.com'
+    >>> rich_dup.getClientOrderNumber()
+    'ORD-12345'
+    >>> rich_dup.getClientReference()
+    'REF-XYZ'
+    >>> rich_dup.getEnvironmentalConditions()
+    'ambient, dry'
+
+The snapshot reflects exactly the same values. This is the
+guarantee the `pause_snapshots` + post-copy `take_snapshot`
+approach buys us — `copy_field_values` writes through field
+setters and would not, on its own, cause an audit entry:
+
+    >>> rich_snap = snap_api.get_snapshots(rich_dup)[0]
+    >>> rich_snap["CCEmails"]
+    'alice@example.com,bob@example.com'
+    >>> rich_snap["ClientOrderNumber"]
+    'ORD-12345'
+    >>> rich_snap["ClientReference"]
+    'REF-XYZ'
+    >>> rich_snap["EnvironmentalConditions"]
+    'ambient, dry'
+
+Still exactly one snapshot, action 'create':
+
+    >>> len(snap_api.get_snapshots(rich_dup))
+    1
+    >>> snap_api.get_snapshots(rich_dup)[0]["__metadata__"]["action"]
+    'create'
 
 
 Counter advances on subsequent duplicates
@@ -176,28 +220,6 @@ The source remains in its previous state after the transition
 
     >>> api.get_workflow_status_of(source)
     'sample_due'
-
-
-Multi-valued fields land in the auditlog snapshot
-.................................................
-
-A standalone check using a fresh source: set a multi-valued field
-(`CCEmails`, the exact widget that previously tripped
-`_processForm`) and verify the duplicate's snapshot contains it.
-
-    >>> juice_type = api.create(sampletypes, "SampleType",
-    ...     Prefix="juice", MinimumVolume="100 ml")
-    >>> juice_values = dict(values, SampleType=juice_type.UID())
-    >>> juice_source = create_analysisrequest(client, request,
-    ...     juice_values, [service.UID()])
-    >>> juice_source.setCCEmails("alice@example.com,bob@example.com")
-
-    >>> juice_dup = create_duplicate_of(juice_source)
-    >>> juice_snap = snap_api.get_snapshots(juice_dup)[0]
-    >>> "alice@example.com" in juice_snap.get("CCEmails", "")
-    True
-    >>> "bob@example.com" in juice_snap.get("CCEmails", "")
-    True
 
 
 Duplicates honour a custom ID Server schema
