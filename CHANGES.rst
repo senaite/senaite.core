@@ -4,7 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
-- #2895 Add 'duplicate' workflow transition for samples
+- #2895 Add 'duplicate_sample' workflow transition for samples
 - #2894 Fix DL get flushed on submit
 - #2891 Translate sidebar navigation titles in JSON endpoint
 - #2881 Add text support for interim fields

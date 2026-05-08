@@ -37,12 +37,12 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
-  <!-- Analysis Requests: "duplicate"
+  <!-- Analysis Requests: "duplicate_sample"
   Single-click sibling creation. Runs the WF transition, which
-  fires `after_duplicate` to create the sibling and report it via
-  status message. -->
+  fires `after_duplicate_sample` to create the sibling and report
+  it via status message. -->
   <adapter
-    name="workflow_action_duplicate"
+    name="workflow_action_duplicate_sample"
     for="*
          zope.publisher.interfaces.browser.IBrowserRequest"
     factory=".analysisrequest.WorkflowActionDuplicateAdapter"

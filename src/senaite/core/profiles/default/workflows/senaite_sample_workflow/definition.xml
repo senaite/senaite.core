@@ -101,7 +101,7 @@
     <exit-transition transition_id="to_be_sampled"/>
     <exit-transition transition_id="no_sampling_workflow"/>
     <exit-transition transition_id="multi_results"/>
-    <exit-transition transition_id="duplicate"/>
+    <exit-transition transition_id="duplicate_sample"/>
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -197,7 +197,7 @@
     <exit-transition transition_id="cancel"/>
     <exit-transition transition_id="sample"/>
     <exit-transition transition_id="reject"/>
-    <exit-transition transition_id="duplicate"/>
+    <exit-transition transition_id="duplicate_sample"/>
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -308,7 +308,7 @@
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="schedule_sampling"/>
     <exit-transition transition_id="reject"/>
-    <exit-transition transition_id="duplicate"/>
+    <exit-transition transition_id="duplicate_sample"/>
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -419,7 +419,7 @@
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="multi_results"/>
-    <exit-transition transition_id="duplicate"/>
+    <exit-transition transition_id="duplicate_sample"/>
     <!-- TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -516,7 +516,7 @@
     <exit-transition transition_id="create_partitions" />
     <exit-transition transition_id="dispatch" />
     <exit-transition transition_id="multi_results"/>
-    <exit-transition transition_id="duplicate"/>
+    <exit-transition transition_id="duplicate_sample"/>
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -610,7 +610,7 @@
     <exit-transition transition_id="create_partitions" />
     <exit-transition transition_id="dispatch" />
     <exit-transition transition_id="multi_results"/>
-    <exit-transition transition_id="duplicate"/>
+    <exit-transition transition_id="duplicate_sample"/>
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False">
@@ -710,7 +710,7 @@
     <exit-transition transition_id="detach" />
     <exit-transition transition_id="dispatch" />
     <exit-transition transition_id="multi_results"/>
-    <exit-transition transition_id="duplicate"/>
+    <exit-transition transition_id="duplicate_sample"/>
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False">
@@ -801,7 +801,7 @@
     <exit-transition transition_id="create_partitions" />
     <exit-transition transition_id="dispatch" />
     <exit-transition transition_id="multi_results"/>
-    <exit-transition transition_id="duplicate"/>
+    <exit-transition transition_id="duplicate_sample"/>
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False">
@@ -905,7 +905,7 @@
     <exit-transition transition_id="create_partitions" />
     <exit-transition transition_id="dispatch" />
     <exit-transition transition_id="multi_results"/>
-    <exit-transition transition_id="duplicate"/>
+    <exit-transition transition_id="duplicate_sample"/>
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False"/>
@@ -1611,11 +1611,11 @@
        derived from the source via the AnalysisRequestDuplicate ID
        template. The transition does not change the source's state.
   -->
-  <transition transition_id="duplicate" title="Duplicate" new_state="" trigger="USER"
+  <transition transition_id="duplicate_sample" title="Duplicate" new_state="" trigger="USER"
               before_script="" after_script="" i18n:attributes="title">
     <action url="" category="listing" icon="">Duplicate</action>
     <guard>
-      <guard-expression>python:here.guard_handler("duplicate")</guard-expression>
+      <guard-expression>python:here.guard_handler("duplicate_sample")</guard-expression>
       <guard-permission>senaite.core: Transition: Duplicate Sample</guard-permission>
     </guard>
   </transition>

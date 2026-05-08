@@ -265,8 +265,8 @@ def guard_multi_results(sample):
     return True
 
 
-def guard_duplicate(sample):
-    """Checks if the 'duplicate' action is allowed.
+def guard_duplicate_sample(sample):
+    """Checks if the 'duplicate_sample' action is allowed.
 
     Duplication is permitted in every state where Copy-to-new is
     today exposed by the listings — the transition itself is wired

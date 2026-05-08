@@ -408,12 +408,13 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
 
 
 class WorkflowActionDuplicateAdapter(WorkflowActionGenericAdapter):
-    """Adapter in charge of the Sample 'duplicate' action.
+    """Adapter in charge of the Sample 'duplicate_sample' action.
 
-    Triggers the workflow transition (which fires `after_duplicate`
-    and creates the sibling) and reports the new IDs in a status
-    message. Unlike Copy-to-new, this adapter does not redirect to
-    `ar_add` — duplication happens directly.
+    Triggers the workflow transition (which fires
+    `after_duplicate_sample` and creates the sibling) and reports
+    the new IDs in a status message. Unlike Copy-to-new, this
+    adapter does not redirect to `ar_add` — duplication happens
+    directly.
     """
 
     def __call__(self, action, objects):

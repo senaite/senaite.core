@@ -90,8 +90,8 @@ def after_invalidate(obj):
     alsoProvides(obj, IInvalidated)
 
 
-def after_duplicate(analysis_request):
-    """Method triggered after a 'duplicate' transition. Creates a
+def after_duplicate_sample(analysis_request):
+    """Method triggered after a 'duplicate_sample' transition. Creates a
     sibling Sample by copying the source's schema fields and
     re-instantiating its analyses from services. The source's
     workflow state is unchanged.

@@ -1,7 +1,7 @@
 Sample duplicate
 ----------------
 
-The `duplicate` workflow transition creates a sibling Sample
+The `duplicate_sample` workflow transition creates a sibling Sample
 directly (no add form). The duplicate uses the regular Sample ID
 format (i.e. shares the same counter as plain samples), but is
 identifiable as a duplicate via the `IAnalysisRequestDuplicate`
@@ -242,10 +242,10 @@ Each duplicate gets the next ID from the regular sample counter:
 Duplicate via the workflow transition
 .....................................
 
-The same outcome is achievable via the `duplicate` transition,
-which fires the `after_duplicate` event:
+The same outcome is achievable via the `duplicate_sample`
+transition, which fires the `after_duplicate_sample` event:
 
-    >>> succeeded, message = do_action_for(source, "duplicate")
+    >>> succeeded, message = do_action_for(source, "duplicate_sample")
     >>> succeeded
     True
 
