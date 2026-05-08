@@ -158,8 +158,8 @@ def import_rolemap(tool):
 
 
 @upgradestep(product, version)
-def setup_duplicate_transition(tool):
-    """Register the new 'duplicate' workflow transition + permission.
+def setup_duplicate_sample_transition(tool):
+    """Register the new 'duplicate_sample' workflow transition.
 
     Re-imports rolemap (new TransitionDuplicateSample permission)
     and workflow (new transition + exit transitions on existing
