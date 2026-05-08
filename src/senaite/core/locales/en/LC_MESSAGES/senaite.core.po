@@ -7574,6 +7574,11 @@ msgstr ""
 msgid "description_senaitesetup_allow_manual_result_capture_date"
 msgstr ""
 
+#. Default: "If enabled, users with sufficient privileges can create a sibling sample directly from an existing one via the 'Duplicate' action in the samples listing. Enabled by default."
+#: senaite/core/content/senaitesetup.py
+msgid "description_senaitesetup_allow_sample_duplicate"
+msgstr ""
+
 #. Default: "When enabled, users can submit results for analyses not assigned to them or for unassigned analyses. When disabled, users can only submit results for analyses assigned to themselves. This setting does not apply to users with role Lab Manager."
 #: senaite/core/content/senaitesetup.py:436
 msgid "description_senaitesetup_allow_to_submit_not_assigned"
@@ -10740,6 +10745,11 @@ msgstr ""
 #. Default: "Allow to set the result capture date"
 #: senaite/core/content/senaitesetup.py:340
 msgid "title_senaitesetup_allow_manual_result_capture_date"
+msgstr ""
+
+#. Default: "Allow sample duplication"
+#: senaite/core/content/senaitesetup.py
+msgid "title_senaitesetup_allow_sample_duplicate"
 msgstr ""
 
 #. Default: "Allow submission of results for unassigned analyses"

@@ -7746,6 +7746,11 @@ msgstr "Wählen Sie die Probenmatrix für diese Probenart aus"
 msgid "description_senaitesetup_allow_manual_result_capture_date"
 msgstr "Wenn diese Option aktiviert ist, kann das Ergebniserfassungsdatum für Analysen manuell eingegeben werden"
 
+#. Default: "If enabled, users with sufficient privileges can create a sibling sample directly from an existing one via the 'Duplicate' action in the samples listing. Enabled by default."
+#: senaite/core/content/senaitesetup.py
+msgid "description_senaitesetup_allow_sample_duplicate"
+msgstr "Wenn aktiviert, können Benutzer mit ausreichenden Rechten über die Aktion 'Duplizieren' in der Probenliste direkt eine Schwesterprobe aus einer bestehenden Probe erzeugen. Standardmäßig aktiviert."
+
 #. to them or for unassigned analyses. When disabled, users can only submit
 #. results for analyses assigned to themselves. This setting does not apply to
 #. users with role Lab Manager."
@@ -11055,6 +11060,11 @@ msgstr "Name"
 #: senaite/core/content/senaitesetup.py:340
 msgid "title_senaitesetup_allow_manual_result_capture_date"
 msgstr "Manuelle Eingabe des Ergebniserfassungsdatums erlauben"
+
+#. Default: "Allow sample duplication"
+#: senaite/core/content/senaitesetup.py
+msgid "title_senaitesetup_allow_sample_duplicate"
+msgstr "Probenduplizierung erlauben"
 
 #. Default: "Allow submission of results for unassigned analyses"
 #: senaite/core/content/senaitesetup.py:432

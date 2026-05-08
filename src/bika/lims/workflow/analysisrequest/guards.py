@@ -268,10 +268,11 @@ def guard_multi_results(sample):
 def guard_duplicate_sample(sample):
     """Checks if the 'duplicate_sample' action is allowed.
 
-    Duplication is permitted in every state where Copy-to-new is
-    today exposed by the listings — the transition itself is wired
-    to the same set of states via the workflow definition. The
-    guard therefore only needs to short-circuit on objects that are
-    not real samples.
+    Returns False when sample duplication is globally disabled in
+    the SENAITE setup. When enabled, duplication is permitted in
+    every state where Copy-to-new is exposed by the listings — the
+    transition itself is wired to the same set of states via the
+    workflow definition.
     """
-    return True
+    setup = api.get_senaite_setup()
+    return bool(setup.getAllowSampleDuplicate())
