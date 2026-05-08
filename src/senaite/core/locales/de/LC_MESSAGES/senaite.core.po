@@ -7748,7 +7748,7 @@ msgstr "Wenn diese Option aktiviert ist, kann das Ergebniserfassungsdatum für A
 
 #. Default: "If enabled, users with sufficient privileges can create a sibling sample directly from an existing one via the 'Duplicate' action in the samples listing. Enabled by default."
 #: senaite/core/content/senaitesetup.py
-msgid "description_senaitesetup_allow_sample_duplicate"
+msgid "description_senaitesetup_sample_duplicate_enabled"
 msgstr "Wenn aktiviert, können Benutzer mit ausreichenden Rechten über die Aktion 'Duplizieren' in der Probenliste direkt eine Schwesterprobe aus einer bestehenden Probe erzeugen. Standardmäßig aktiviert."
 
 #. to them or for unassigned analyses. When disabled, users can only submit
@@ -11063,7 +11063,7 @@ msgstr "Manuelle Eingabe des Ergebniserfassungsdatums erlauben"
 
 #. Default: "Allow sample duplication"
 #: senaite/core/content/senaitesetup.py
-msgid "title_senaitesetup_allow_sample_duplicate"
+msgid "title_senaitesetup_sample_duplicate_enabled"
 msgstr "Probenduplizierung erlauben"
 
 #. Default: "Allow submission of results for unassigned analyses"

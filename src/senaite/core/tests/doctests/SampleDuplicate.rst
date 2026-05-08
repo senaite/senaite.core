@@ -260,15 +260,15 @@ The source remains in its previous state after the transition
 Global toggle disables the transition
 .....................................
 
-The setup carries an ``allow_sample_duplicate`` flag. When
+The setup carries a ``sample_duplicate_enabled`` flag. When
 disabled, the `duplicate_sample` guard returns False and the
 transition is no longer offered:
 
     >>> senaite_setup = api.get_senaite_setup()
-    >>> senaite_setup.getAllowSampleDuplicate()
+    >>> senaite_setup.getSampleDuplicateEnabled()
     True
 
-    >>> senaite_setup.setAllowSampleDuplicate(False)
+    >>> senaite_setup.setSampleDuplicateEnabled(False)
     >>> tids = [t["id"] for t in api.get_transitions_for(source)]
     >>> "duplicate_sample" in tids
     False
@@ -279,7 +279,7 @@ transition is no longer offered:
 
 Re-enable for the remaining tests:
 
-    >>> senaite_setup.setAllowSampleDuplicate(True)
+    >>> senaite_setup.setSampleDuplicateEnabled(True)
     >>> "duplicate_sample" in [t["id"] for t in api.get_transitions_for(source)]
     True
 

@@ -960,13 +960,13 @@ class ISetupSchema(model.Schema):
     )
 
     # Sampling
-    allow_sample_duplicate = schema.Bool(
+    sample_duplicate_enabled = schema.Bool(
         title=_(
-            u"title_senaitesetup_allow_sample_duplicate",
+            u"title_senaitesetup_sample_duplicate_enabled",
             default=u"Allow sample duplication"
         ),
         description=_(
-            u"description_senaitesetup_allow_sample_duplicate",
+            u"description_senaitesetup_sample_duplicate_enabled",
             default=u"If enabled, users with sufficient privileges can "
                     u"create a sibling sample directly from an existing "
                     u"one via the 'Duplicate' action in the samples "
@@ -1336,7 +1336,7 @@ class ISetupSchema(model.Schema):
         "sampling",
         label=_(u"Sampling"),
         fields=[
-            "allow_sample_duplicate",
+            "sample_duplicate_enabled",
             "printing_workflow_enabled",
             "sampling_workflow_enabled",
             "schedule_sampling_enabled",
@@ -2189,17 +2189,17 @@ class Setup(Container):
         return mutator(self, value)
 
     @security.protected(permissions.View)
-    def getAllowSampleDuplicate(self):
+    def getSampleDuplicateEnabled(self):
         """Get allow sample duplicate setting
         """
-        accessor = self.accessor("allow_sample_duplicate")
+        accessor = self.accessor("sample_duplicate_enabled")
         return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
-    def setAllowSampleDuplicate(self, value):
+    def setSampleDuplicateEnabled(self, value):
         """Set allow sample duplicate setting
         """
-        mutator = self.mutator("allow_sample_duplicate")
+        mutator = self.mutator("sample_duplicate_enabled")
         return mutator(self, value)
 
     @security.protected(permissions.View)

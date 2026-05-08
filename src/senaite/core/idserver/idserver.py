@@ -222,7 +222,7 @@ def get_secondary_count(context, default=0):
 
 def get_duplicate_count(context, default=0):
     """Returns the next ordinal for a sample created via the
-    'duplicate' transition.
+    'duplicate_sample' transition.
 
     Counts existing duplicates of the same source via the
     `AnalysisRequestDuplicatedFrom` backref. The new duplicate

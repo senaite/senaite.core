@@ -418,18 +418,27 @@ class WorkflowActionDuplicateAdapter(WorkflowActionGenericAdapter):
     """
 
     def __call__(self, action, objects):
-        sources = filter(IAnalysisRequest.providedBy, objects)
+        sources = list(filter(IAnalysisRequest.providedBy, objects))
+
+        # Snapshot existing duplicate UIDs per source so we can
+        # report only the duplicates created by *this* invocation.
+        relation = "AnalysisRequestDuplicatedFrom"
+        before = {
+            api.get_uid(source): set(
+                get_backreferences(source, relationship=relation))
+            for source in sources
+        }
+
         transitioned = self.do_action(action, sources)
         if not transitioned:
             return self.redirect(
                 message=_("No duplicate created"), level="warning")
 
-        duplicate_uids = []
+        new_uids = []
         for source in transitioned:
-            duplicate_uids.extend(
-                get_backreferences(
-                    source, relationship="AnalysisRequestDuplicatedFrom"))
-        duplicates = filter(None, map(api.get_object_by_uid, duplicate_uids))
+            after = set(get_backreferences(source, relationship=relation))
+            new_uids.extend(after - before.get(api.get_uid(source), set()))
+        duplicates = filter(None, map(api.get_object_by_uid, new_uids))
         ids = ", ".join(map(api.get_id, duplicates))
         message = _("Duplicated samples: {}").format(ids)
         return self.success(transitioned, message=message)

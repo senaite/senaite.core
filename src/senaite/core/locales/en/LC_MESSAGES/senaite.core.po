@@ -7576,7 +7576,7 @@ msgstr ""
 
 #. Default: "If enabled, users with sufficient privileges can create a sibling sample directly from an existing one via the 'Duplicate' action in the samples listing. Enabled by default."
 #: senaite/core/content/senaitesetup.py
-msgid "description_senaitesetup_allow_sample_duplicate"
+msgid "description_senaitesetup_sample_duplicate_enabled"
 msgstr ""
 
 #. Default: "When enabled, users can submit results for analyses not assigned to them or for unassigned analyses. When disabled, users can only submit results for analyses assigned to themselves. This setting does not apply to users with role Lab Manager."
@@ -10749,7 +10749,7 @@ msgstr ""
 
 #. Default: "Allow sample duplication"
 #: senaite/core/content/senaitesetup.py
-msgid "title_senaitesetup_allow_sample_duplicate"
+msgid "title_senaitesetup_sample_duplicate_enabled"
 msgstr ""
 
 #. Default: "Allow submission of results for unassigned analyses"

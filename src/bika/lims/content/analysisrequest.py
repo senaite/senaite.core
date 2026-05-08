@@ -1268,7 +1268,7 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     # The source Sample this Sample was duplicated from via the
-    # 'duplicate' workflow transition.
+    # 'duplicate_sample' workflow transition.
     UIDReferenceField(
         "DuplicatedFrom",
         allowed_types=("AnalysisRequest",),

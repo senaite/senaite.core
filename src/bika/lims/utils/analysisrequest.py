@@ -510,10 +510,11 @@ def create_duplicate_of(sample, request=None):
     directly through the field setters.
 
     `create_analysisrequest` itself applies the
-    `IAnalysisRequestDuplicate` marker when it sees `DuplicatedFrom`
-    in the values dict, so the ID server can pick the dedicated
-    `AnalysisRequestDuplicate` template if one is configured (or
-    fall through to the regular Sample ID format otherwise).
+    `IAnalysisRequestDuplicate` marker after `_processForm` when
+    `getDuplicatedFrom()` is set on the new sample, so the ID
+    server can pick the dedicated `AnalysisRequestDuplicate`
+    template if one is configured (or fall through to the regular
+    Sample ID format otherwise).
 
     Analyses are filtered to skip terminal/invalid states
     (retracted, rejected, cancelled) and retest descendants — the

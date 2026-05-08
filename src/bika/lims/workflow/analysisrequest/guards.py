@@ -275,4 +275,4 @@ def guard_duplicate_sample(sample):
     workflow definition.
     """
     setup = api.get_senaite_setup()
-    return bool(setup.getAllowSampleDuplicate())
+    return bool(setup.getSampleDuplicateEnabled())
