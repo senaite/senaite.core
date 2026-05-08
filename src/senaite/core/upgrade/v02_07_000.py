@@ -110,7 +110,6 @@ def upgrade(tool):
     return True
 
 
-@upgradestep(product, version)
 def drop_client_ordering_annotations(tool):
     """Remove the legacy IOrdering annotations from every Client.
 
