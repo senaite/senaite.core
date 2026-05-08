@@ -59,25 +59,41 @@ from zope.component import subscribers
 from zope.interface import alsoProvides
 
 
+# Default field-name skip list for `create_duplicate_of`. The
+# duplicate is a fresh sample that *re-runs* the testing flow on
+# the same source material — it is not a verbatim copy of the
+# source's results/state. Fields below are deliberately not
+# carried over via `copy_field_values`. Callers can override by
+# passing `skip_fields=...` to `create_duplicate_of`.
 DUPLICATE_SKIP_FIELDS = [
-    # Recreated from services explicitly via create_analysisrequest
+    # Analyses are recreated empty from services in
+    # create_analysisrequest — copying them would carry over
+    # results/state from the source.
     "Analyses",
-    # Attachments are not carried over
+    # Attachments belong to the source's testing run; the
+    # duplicate starts clean.
     "Attachment",
     "_ARAttachment",
-    # Lineage / state pointers — must not leak to the duplicate
+    # Lineage / workflow-state pointers must not leak: a
+    # duplicate is a sibling, not a partition or a retest of the
+    # source.
     "DatePublished",
     "DetachedFrom",
     "DuplicatedFrom",
     "Invalidated",
     "ParentAnalysisRequest",
     "PrimaryAnalysisRequest",
+    "Sample",
+    # Source-run bookkeeping. Rejection reasons describe why the
+    # source was rejected; the duplicate has not been rejected.
+    # Remarks and results interpretation reference the source's
+    # results, which the duplicate does not yet have.
     "RejectionReasons",
     "Remarks",
     "ResultsInterpretation",
     "ResultsInterpretationDepts",
-    "Sample",
-    # Form bookkeeping
+    # AR-add-form bookkeeping with no semantic value on a
+    # duplicate.
     "NumSamples",
     "creation_date",
     "id",
@@ -496,7 +512,7 @@ def create_retest(ar):
     return retest
 
 
-def create_duplicate_of(sample, request=None):
+def create_duplicate_of(sample, request=None, skip_fields=None):
     """Creates a sibling Sample by duplicating the given source.
 
     Delegates the heavy lifting to `create_analysisrequest`. Only
@@ -530,6 +546,12 @@ def create_duplicate_of(sample, request=None):
     :type sample: IAnalysisRequest
     :param request: The current HTTP request. Defaults to
         `api.get_request()` when not provided.
+    :param skip_fields: Iterable of schema field names to exclude
+        from `copy_field_values`. Defaults to
+        `DUPLICATE_SKIP_FIELDS` when None. The ID-relevant scalars
+        passed via the values dict (Client/Contact/SampleType/
+        DateSampled/SamplingDate) are always added on top, since
+        copy_field_values would otherwise overwrite them.
     :returns: The newly created duplicate Sample
     :rtype: IAnalysisRequest
     """
@@ -591,7 +613,9 @@ def create_duplicate_of(sample, request=None):
     # field population is visible at this call site.
     snap_api.pause_snapshots_for(duplicate)
     try:
-        extended_skip = list(DUPLICATE_SKIP_FIELDS) + [
+        base_skip = DUPLICATE_SKIP_FIELDS if skip_fields is None \
+            else skip_fields
+        extended_skip = list(base_skip) + [
             "Client",
             "Contact",
             "SampleType",

@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IInternalUse
 from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
@@ -268,11 +269,14 @@ def guard_multi_results(sample):
 def guard_duplicate_sample(sample):
     """Checks if the 'duplicate_sample' action is allowed.
 
-    Returns False when sample duplication is globally disabled in
-    the SENAITE setup. When enabled, duplication is permitted in
-    every state where Copy-to-new is exposed by the listings — the
-    transition itself is wired to the same set of states via the
-    workflow definition.
+    Returns False when the context is not an AnalysisRequest or
+    when sample duplication is globally disabled in the SENAITE
+    setup. When enabled, duplication is permitted in every state
+    where Copy-to-new is exposed by the listings — the transition
+    itself is wired to the same set of states via the workflow
+    definition.
     """
+    if not IAnalysisRequest.providedBy(sample):
+        return False
     setup = api.get_senaite_setup()
     return bool(setup.getSampleDuplicateEnabled())

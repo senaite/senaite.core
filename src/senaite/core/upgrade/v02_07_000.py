@@ -161,15 +161,15 @@ def import_rolemap(tool):
 def setup_duplicate_sample_transition(tool):
     """Register the new 'duplicate_sample' workflow transition.
 
-    Re-imports rolemap (new TransitionDuplicateSample permission)
-    and workflow (new transition + exit transitions on existing
-    states). Duplicates use the regular AnalysisRequest ID format,
-    so no ID-server template needs to be installed.
+    Re-imports the workflow (new transition guarded by the
+    existing AddAnalysisRequest permission, plus exit-transitions
+    on existing states). Duplicates use the regular
+    AnalysisRequest ID format, so no ID-server template needs to
+    be installed.
     """
     portal = tool.aq_inner.aq_parent
     setup = portal.portal_setup
 
-    setup.runImportStepFromProfile(profile, "rolemap")
     setup.runImportStepFromProfile(profile, "workflow")
 
 

@@ -562,8 +562,17 @@ class ISimpleImage(Interface):
 
 
 class IAfterCreateSampleHook(Interface):
-    """Subscription adapter after the sample was created
+    """Subscription adapter run by sample-creation paths after a
+    new Sample is created (e.g. via the AR add form or the
+    'duplicate_sample' transition).
+
+    Implementations may declare an integer attribute ``sort`` on
+    the instance to influence dispatch order — lower values run
+    first. Hooks that do not set ``sort`` are treated as 10
+    (the default). Use this to pin pre/post-processing hooks
+    relative to the partition-copy default at sort=10.
     """
+
     def update(sample, source=None):
         """Update the sample after it was created
 

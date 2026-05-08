@@ -34,7 +34,6 @@
   <permission>senaite.core: Transition: Restore Sample</permission>
   <permission>senaite.core: Transition: Create Partitions</permission>
   <permission>senaite.core: Transition: Multi Results</permission>
-  <permission>senaite.core: Transition: Duplicate Sample</permission>
 
   <permission>senaite.core: Add Analysis</permission>
   <permission>senaite.core: Edit Field Results</permission>
@@ -1616,7 +1615,7 @@
     <action url="" category="listing" icon="">Duplicate</action>
     <guard>
       <guard-expression>python:here.guard_handler("duplicate_sample")</guard-expression>
-      <guard-permission>senaite.core: Transition: Duplicate Sample</guard-permission>
+      <guard-permission>senaite.core: Add AnalysisRequest</guard-permission>
     </guard>
   </transition>
 

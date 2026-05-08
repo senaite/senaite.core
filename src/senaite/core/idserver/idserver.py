@@ -54,11 +54,31 @@ PORTAL_TYPE_SAMPLE_DUPLICATE = "AnalysisRequestDuplicate"
 
 SAMPLE_TYPES = [
     PORTAL_TYPE_SAMPLE,
-    PORTAL_TYPE_SAMPLE_RETEST,
-    PORTAL_TYPE_SAMPLE_PARTITION,
-    PORTAL_TYPE_SAMPLE_SECONDARY,
     PORTAL_TYPE_SAMPLE_DUPLICATE,
+    PORTAL_TYPE_SAMPLE_PARTITION,
+    PORTAL_TYPE_SAMPLE_RETEST,
+    PORTAL_TYPE_SAMPLE_SECONDARY,
 ]
+
+# Marker -> portal_type policy used by `get_type_id` to override
+# the real portal type of an AnalysisRequest based on a marker
+# interface. Each entry is a 3-tuple:
+#
+#     (marker, type_id, opt_in)
+#
+# When `opt_in` is True, the type_id is only honoured if a row
+# for it exists in the ID Server's `id_formatting`; otherwise
+# the lookup falls through to the next entry (and ultimately to
+# the real portal type). This lets duplicates share the regular
+# AnalysisRequest ID format by default while still allowing
+# integrators to opt into a dedicated template by adding a row
+# in the ID Server admin.
+SAMPLE_MARKER_TYPE_POLICY = (
+    (IAnalysisRequestPartition, PORTAL_TYPE_SAMPLE_PARTITION, False),
+    (IAnalysisRequestRetest, PORTAL_TYPE_SAMPLE_RETEST, False),
+    (IAnalysisRequestSecondary, PORTAL_TYPE_SAMPLE_SECONDARY, False),
+    (IAnalysisRequestDuplicate, PORTAL_TYPE_SAMPLE_DUPLICATE, True),
+)
 
 PARTITION_DETACHED_RELATIONSHIP = "AnalysisRequestDetachedFrom"
 DUPLICATED_FROM_RELATIONSHIP = "AnalysisRequestDuplicatedFrom"
@@ -106,22 +126,27 @@ def get_type_id(context, **kw):
         if type_id:
             return type_id
 
-    # Override by provided marker interface
-    if IAnalysisRequestPartition.providedBy(context):
-        return PORTAL_TYPE_SAMPLE_PARTITION
-    elif IAnalysisRequestRetest.providedBy(context):
-        return PORTAL_TYPE_SAMPLE_RETEST
-    elif IAnalysisRequestSecondary.providedBy(context):
-        return PORTAL_TYPE_SAMPLE_SECONDARY
-    elif IAnalysisRequestDuplicate.providedBy(context):
-        # Use the dedicated AnalysisRequestDuplicate template only
-        # if the integrator has configured one. Otherwise fall
-        # through to the regular AnalysisRequest path so duplicates
-        # share the standard Sample ID format and counter.
-        if has_id_template_for(PORTAL_TYPE_SAMPLE_DUPLICATE):
-            return PORTAL_TYPE_SAMPLE_DUPLICATE
+    # Override by provided marker interface using the policy table
+    type_id = resolve_marker_type_id(context)
+    if type_id:
+        return type_id
 
     return api.get_portal_type(context)
+
+
+def resolve_marker_type_id(context):
+    """Resolve the ID-server type id for `context` from
+    `SAMPLE_MARKER_TYPE_POLICY`. Returns the type_id of the first
+    matching marker, skipping opt-in entries that lack an
+    `id_formatting` row. Returns None when no marker matches.
+    """
+    for marker, type_id, opt_in in SAMPLE_MARKER_TYPE_POLICY:
+        if not marker.providedBy(context):
+            continue
+        if opt_in and not has_id_template_for(type_id):
+            continue
+        return type_id
+    return None
 
 
 def has_id_template_for(portal_type):
@@ -225,10 +250,13 @@ def get_duplicate_count(context, default=0):
     'duplicate_sample' transition.
 
     Counts existing duplicates of the same source via the
-    `AnalysisRequestDuplicatedFrom` backref. The new duplicate
-    has already registered its UIDReference back to the source
-    by the time the ID is rendered, so it is included in the
-    returned count.
+    `AnalysisRequestDuplicatedFrom` backref. The UIDReference
+    field machinery is annotation-backed and synchronous, so by
+    the time `renameAfterCreation` runs the new duplicate has
+    already registered its backref against the source — it is
+    therefore included in the returned count without a +1
+    offset. If the relationship machinery ever moves to a
+    deferred index, this assumption needs revisiting.
     """
     if not is_ar(context):
         return default
