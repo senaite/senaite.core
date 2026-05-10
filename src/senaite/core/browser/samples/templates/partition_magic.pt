@@ -116,7 +116,8 @@
                   <!-- Partitions -->
                   <tr tal:repeat="part_index python:range(number_of_partitions);">
                     <tal:partition define="default_part_name python:'part-%s' % str(part_index + 1);
-                                           partition python:part_index<len(partitions) and partitions[part_index] or default_part_name">
+                                           partition python:part_index<len(partitions) and partitions[part_index] or default_part_name;
+                                           partition_id python:partition.replace(' ', '-')">
 
                       <td style="background-color: #fff;">
                         <!-- Partition number -->
@@ -124,11 +125,16 @@
                           <h3 class="text-muted">
                             <a class="text-decoration-none" style="cursor:pointer;"
                                data-toggle="collapse"
-                               tal:attributes="data-target string:#${partition}-body">
-                              <i tal:attributes="id string:${partition}-toggle-icon"
+                               tal:attributes="data-target string:#${partition_id}-body">
+                              <i tal:attributes="id string:${partition_id}-toggle-icon"
                                  class="fas fa-caret-right"></i>
-                              <span i18n:translate="">Partition</span>
-                              <strong tal:content="repeat/part_index/number"/>
+                              <span tal:condition="python: partition.startswith('part')">
+                               <span i18n:translate="">Partition</span>
+                               <strong tal:content="repeat/part_index/number"/>
+                              </span>
+                              <span tal:condition="python: not partition.startswith('part')">
+                               <span i18n:translate="" tal:content="partition">Partition</span>
+                              </span>
                             </a>
                           </h3>
                           <!-- Remember the primary uid of this partition -->
@@ -137,8 +143,8 @@
 
                         <!-- Partition Body -->
                         <div class="partition-body collapse"
-                             tal:attributes="id string:${partition}-body;
-                                             data-partition partition">
+                             tal:attributes="id string:${partition_id}-body;
+                                             data-partition partition_id">
                           <!-- Internal Use -->
                           <div class="col-sm-2">
                             <div class="form-group">
@@ -159,7 +165,7 @@
                               <select name="partitions.sampletype_uid:records" class="form-control">
                                 <tal:options repeat="sampletype view/get_sampletype_data"
                                              define="ar_sampletype_uid ar/sampletype/uid;
-                                                     part_sampletype_uid python:sample_types.get(partition, ar_sampletype_uid);">
+                                                     part_sampletype_uid python:sample_types.get(partition) or ar_sampletype_uid;">
                                   <option tal:attributes="value sampletype/uid;
                                                           selected python:sampletype.get('uid') == part_sampletype_uid"
                                           tal:content="sampletype/title">
