@@ -29,7 +29,7 @@ from zope.interface import implementer_only
 
 @implementer_only(IHazardCategoriesWidget)
 class HazardCategoriesWidget(checkbox.CheckBoxWidget):
-    """Multi-checkbox widget showing GHS pictograms next to each option."""
+    """Multi-checkbox widget showing hazard pictograms next to each option."""
 
     klass = u"hazard-categories-widget"
 

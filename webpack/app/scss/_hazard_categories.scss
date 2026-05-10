@@ -1,7 +1,9 @@
-/* Layout for the GHS hazard categories widget.
+/* Layout for the hazard categories widget.
  *
  * Pictograms are emitted as real <img> elements by the widget
  * template; this stylesheet only handles spacing and sizing.
+ * `object-fit: contain` preserves the SVG aspect ratio so non-square
+ * ISO 7010 triangles are not squashed into the square pictogram box.
  *
  * url() paths are absolute Plone resource URLs and are skipped by
  * css-loader (see the `url.filter` option in webpack.config.js).
@@ -27,6 +29,7 @@
 .hazard-categories-widget .hazard-pictogram {
   width: 28px;
   height: 28px;
+  object-fit: contain;
   flex-shrink: 0;
 }
 
@@ -35,6 +38,7 @@
   display: inline-block;
   width: 18px;
   height: 18px;
+  object-fit: contain;
   vertical-align: middle;
 }
 
@@ -48,6 +52,7 @@
 .sample-title .hazard-pictogram {
   width: 28px;
   height: 28px;
+  object-fit: contain;
 }
 
 /* AT MultiSelectionWidget (ReferenceDefinition, ReferenceSample):
@@ -64,13 +69,13 @@
 #HazardCategories .ArchetypesMultiSelectionValue input[type="checkbox"] {
   margin: 0;
 }
-#HazardCategories .ArchetypesMultiSelectionValue input[value^="GHS"] + label {
+#HazardCategories .ArchetypesMultiSelectionValue input[type="checkbox"] + label {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   margin: 0;
 }
-#HazardCategories .ArchetypesMultiSelectionValue input[value^="GHS"] + label::before {
+#HazardCategories .ArchetypesMultiSelectionValue input[type="checkbox"] + label::before {
   content: "";
   display: inline-block;
   width: 28px;
@@ -106,6 +111,24 @@
 }
 #HazardCategories input[value="GHS09"] + label::before {
   background-image: url("/++plone++senaite.core.static/images/ghs/GHS09.svg");
+}
+#HazardCategories input[value="BIO01"] + label::before {
+  background-image: url("/++plone++senaite.core.static/images/iso/W009.svg");
+}
+#HazardCategories input[value="RAD01"] + label::before {
+  background-image: url("/++plone++senaite.core.static/images/iso/W003.svg");
+}
+#HazardCategories input[value="NIR01"] + label::before {
+  background-image: url("/++plone++senaite.core.static/images/iso/W005.svg");
+}
+#HazardCategories input[value="ELEC01"] + label::before {
+  background-image: url("/++plone++senaite.core.static/images/iso/W012.svg");
+}
+#HazardCategories input[value="COLD01"] + label::before {
+  background-image: url("/++plone++senaite.core.static/images/iso/W010.svg");
+}
+#HazardCategories input[value="HOT01"] + label::before {
+  background-image: url("/++plone++senaite.core.static/images/iso/W079.svg");
 }
 
 /* Read-only / display contexts: stack pictograms with tooltips. */

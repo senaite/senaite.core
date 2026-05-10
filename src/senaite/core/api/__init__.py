@@ -36,7 +36,7 @@ from senaite.core.vocabularies.hazard_categories import get_category
 from zope.component.hooks import getSite
 
 GHS_PICTOGRAM_PATH = (
-    "/++plone++senaite.core.static/images/ghs/{pictogram}")
+    "/++plone++senaite.core.static/images/{pictogram}")
 WARNING_PICTOGRAM_PATH = (
     "/++plone++senaite.core.static/images/iso/W001.svg")
 WARNING_LABEL = _(u"hazard_warning_label", default=u"Hazardous")
@@ -60,9 +60,9 @@ def get_portal_url():
 
 
 def get_pictogram_url(code):
-    """Get the absolute URL of the GHS pictogram for a category code
+    """Get the absolute URL of the hazard pictogram for a category code
 
-    :param code: GHS category code (e.g. ``"GHS01"``)
+    :param code: Hazard category code (e.g. ``"GHS01"`` or ``"BIO01"``)
     :type code: str
     :returns: Absolute URL of the pictogram SVG, or empty string when
               the code is unknown
@@ -79,7 +79,7 @@ def get_warning_pictogram_url():
     """Get the absolute URL of the ISO 7010 W001 'General warning' SVG
 
     Used as the fallback pictogram when a sample is marked hazardous
-    but no specific GHS category has been assigned.
+    but no specific hazard category has been assigned.
 
     :returns: Absolute URL of the W001 SVG
     :rtype: str
@@ -88,9 +88,9 @@ def get_warning_pictogram_url():
 
 
 def get_pictogram(code):
-    """Get a view-model dict for a single GHS category
+    """Get a view-model dict for a single hazard category
 
-    :param code: GHS category code (e.g. ``"GHS01"``)
+    :param code: Hazard category code (e.g. ``"GHS01"`` or ``"BIO01"``)
     :type code: str
     :returns: ``{"code": code, "url": ..., "alt": ..., "title": ...}``
               or ``None`` when the code is unknown.
@@ -108,7 +108,7 @@ def get_pictogram(code):
 
 
 def get_pictograms_for_codes(codes, hazardous=True):
-    """Get pictogram view-models for a list of GHS category codes
+    """Get pictogram view-models for a list of hazard category codes
 
     Empty list when ``hazardous`` is false. When ``hazardous`` is true
     but ``codes`` is empty, returns a single ISO 7010 W001 'General
@@ -116,7 +116,7 @@ def get_pictograms_for_codes(codes, hazardous=True):
     codes (e.g. from a catalog brain) and want to avoid waking the
     sample up.
 
-    :param codes: GHS category codes
+    :param codes: Hazard category codes
     :type codes: list, tuple, or None
     :param hazardous: Whether the sample is marked hazardous
     :type hazardous: bool
@@ -191,26 +191,29 @@ def get_pictograms_for_sample(sample):
     """Get pictogram view-models for a sample
 
     Accepts both a wakened sample object and a catalog brain. The
-    sample's hazard categories are resolved without waking the
-    sample type up:
+    sample's hazardous flag and categories are resolved by looking
+    up the SampleType brain in the setup catalog (via the
+    ``getSampleTypeUID`` index on the sample), so SampleType edits
+    show up in listings without waking samples or reindexing them:
 
     1. ``getCustomHazardCategories`` (per-sample override, optional)
        is consulted first when present.
-    2. Otherwise the SampleType is looked up by its UID in the setup
-       catalog and ``getHazardCategories`` is read from its brain
-       metadata.
+    2. Otherwise both ``getHazardous`` and ``getHazardCategories``
+       are read from the SampleType brain metadata.
 
     :param sample: Sample (AnalysisRequest) or catalog brain
     :returns: List of pictogram view-model dicts
     :rtype: list[dict]
     """
-    hazardous = bool(get_attr(sample, "getHazardous"))
+    sample_type_uid = get_attr(sample, "getSampleTypeUID")
+    hazardous = bool(get_attr(
+        sample_type_uid, "getHazardous", catalog=SETUP_CATALOG))
     if not hazardous:
         return []
     codes = get_attr(sample, "getCustomHazardCategories") or []
     if not codes:
         codes = get_attr(
-            get_attr(sample, "getSampleTypeUID"),
+            sample_type_uid,
             "getHazardCategories",
             catalog=SETUP_CATALOG) or []
     return get_pictograms_for_codes(list(codes), hazardous=hazardous)

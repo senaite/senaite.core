@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   height="525"
+   width="600"
+   version="1.1"
+   id="svg10"
+   sodipodi:docname="ISO_7010_W010.svg"
+   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)">
+  <defs
+     id="defs14" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
+     id="namedview12"
+     showgrid="false"
+     inkscape:zoom="1.416633"
+     inkscape:cx="300"
+     inkscape:cy="262.5"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg10" />
+  <metadata
+     id="metadata2">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <path
+     d="M597.6,499.6,313.8,8c-2.9-5-8.2-8-13.9-8s-11,3.1-13.9,8l-283.8,491.6c-2.9,5-2.9,11.1,0,16,2.9,5,8.2,8,13.9,8h567.6c5.7,0,11-3.1,13.9-8,2.9-5,2.9-11.1,0-16z"
+     id="path4" />
+  <polygon
+     points="43.875,491.5,299.88,48.2,555.88,491.5"
+     fill="#f6bd16"
+     transform="matrix(1,0,0,0.99591458,0.125,2.0332437)"
+     id="polygon6"
+     style="fill:#f9a800;fill-opacity:1" />
+  <path
+     style="enable-background:accumulate;color:#000000;"
+     fill="#000000"
+     d="m290.17,225,0,39.562-21.156-21.125-14.156,14.125,35.312,35.312,0,27.5c-2.4841,0.96745-4.8066,2.2617-6.875,3.875l-24.812-14.344-12.938-48.219-19.312,5.1875,7.7188,28.875-34.25-19.781-10,17.344,34.25,19.781-28.844,7.7188,5.1562,19.312,48.188-12.906,24.688,14.25c-0.21967,1.3934-0.34375,2.8261-0.34375,4.2812,0,1.2936,0.1069,2.5669,0.28125,3.8125l-24.625,14.188-48.188-12.906-5.1562,19.312,28.844,7.75-34.25,19.781,10,17.312,34.25-19.781-7.7188,28.875,19.312,5.2188,12.938-48.25,24.438-14.125c2.1646,1.7511,4.6123,3.1602,7.25,4.1875v26l-35.312,35.312,14.156,14.125,21.156-21.125v39.562h20v-39.562l21.125,21.125,14.156-14.125-35.281-35.281v-26.125c2.5279-1.0136,4.8814-2.3794,6.9688-4.0625l24.375,14.094,12.938,48.25,19.312-5.2188-7.7188-28.875,34.25,19.781,10-17.312-34.25-19.781,28.844-7.75-5.1562-19.312-48.188,12.906-24.531-14.156c0.17717-1.2553,0.28125-2.5396,0.28125-3.8438,0-1.4657-0.12094-2.9095-0.34375-4.3125l24.594-14.219,48.188,12.906,5.1562-19.312-28.844-7.7188,34.25-19.781-10-17.344-34.25,19.781,7.7188-28.875-19.312-5.1875-12.938,48.219-24.781,14.312c-1.9846-1.54-4.1952-2.8008-6.5625-3.75v-27.625l35.281-35.281-14.156-14.125-21.125,21.125v-39.562h-20z"
+     id="path8" />
+</svg>

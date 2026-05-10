@@ -11318,6 +11318,54 @@ msgstr ""
 msgid "hazard_GHS09_common"
 msgstr ""
 
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_BIO01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_BIO01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_RAD01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_RAD01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_NIR01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_NIR01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_ELEC01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_ELEC01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_COLD01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_COLD01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_HOT01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_HOT01_common"
+msgstr ""
+
 #: senaite/core/api/__init__.py
 msgid "hazard_warning_label"
 msgstr ""

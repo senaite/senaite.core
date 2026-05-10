@@ -25,75 +25,120 @@ from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
 
-# GHS hazard categories defined by UN/ECE.
-# See https://unece.org/transport/dangerous-goods/ghs-pictograms.
+# Hazard / handling categories.
+#
+# The first 9 entries are the GHS pictograms defined by UN/ECE
+# (see https://unece.org/transport/dangerous-goods/ghs-pictograms).
+# The remaining entries cover hazard / handling cases that GHS does not
+# address (biohazard, radioactive, cold-chain). Custom codes are used
+# for the non-GHS entries to avoid clashing with GHS or ISO 7010
+# warning-sign codes.
 #
 # Each entry holds:
-#   - code: the canonical GHS identifier (used as token and stored value)
+#   - code: canonical identifier (used as token and stored value)
 #   - name: the official category name (translatable)
 #   - common: a familiar synonym shown alongside the formal name
-#   - pictogram: filename of the SVG under
-#                ``senaite.core/browser/static/images/ghs/``
+#   - pictogram: path of the SVG relative to
+#                ``senaite.core/browser/static/images/``
 GHS_CATEGORIES = (
     {
         "code": "GHS01",
         "name": _(u"hazard_GHS01_name", default=u"Explosive"),
         "common": _(u"hazard_GHS01_common", default=u"explosive"),
-        "pictogram": "GHS01.svg",
+        "pictogram": "ghs/GHS01.svg",
     },
     {
         "code": "GHS02",
         "name": _(u"hazard_GHS02_name", default=u"Flammable"),
         "common": _(u"hazard_GHS02_common", default=u"flammable"),
-        "pictogram": "GHS02.svg",
+        "pictogram": "ghs/GHS02.svg",
     },
     {
         "code": "GHS03",
         "name": _(u"hazard_GHS03_name", default=u"Oxidizing"),
         "common": _(u"hazard_GHS03_common", default=u"oxidizing"),
-        "pictogram": "GHS03.svg",
+        "pictogram": "ghs/GHS03.svg",
     },
     {
         "code": "GHS04",
         "name": _(u"hazard_GHS04_name", default=u"Compressed gas"),
         "common": _(u"hazard_GHS04_common", default=u"pressurised gas"),
-        "pictogram": "GHS04.svg",
+        "pictogram": "ghs/GHS04.svg",
     },
     {
         "code": "GHS05",
         "name": _(u"hazard_GHS05_name", default=u"Corrosive"),
         "common": _(u"hazard_GHS05_common", default=u"acid / caustic"),
-        "pictogram": "GHS05.svg",
+        "pictogram": "ghs/GHS05.svg",
     },
     {
         "code": "GHS06",
         "name": _(u"hazard_GHS06_name", default=u"Acute toxicity"),
         "common": _(u"hazard_GHS06_common", default=u"poisonous"),
-        "pictogram": "GHS06.svg",
+        "pictogram": "ghs/GHS06.svg",
     },
     {
         "code": "GHS07",
         "name": _(u"hazard_GHS07_name", default=u"Health hazard"),
         "common": _(u"hazard_GHS07_common", default=u"harmful / irritant"),
-        "pictogram": "GHS07.svg",
+        "pictogram": "ghs/GHS07.svg",
     },
     {
         "code": "GHS08",
         "name": _(u"hazard_GHS08_name", default=u"Serious health hazard"),
         "common": _(u"hazard_GHS08_common",
                     default=u"carcinogenic / mutagenic"),
-        "pictogram": "GHS08.svg",
+        "pictogram": "ghs/GHS08.svg",
     },
     {
         "code": "GHS09",
         "name": _(u"hazard_GHS09_name", default=u"Environmental hazard"),
         "common": _(u"hazard_GHS09_common", default=u"environmentally hazardous"),
-        "pictogram": "GHS09.svg",
+        "pictogram": "ghs/GHS09.svg",
+    },
+    {
+        "code": "BIO01",
+        "name": _(u"hazard_BIO01_name", default=u"Biohazard"),
+        "common": _(u"hazard_BIO01_common",
+                    default=u"infectious / biological"),
+        "pictogram": "iso/W009.svg",
+    },
+    {
+        "code": "RAD01",
+        "name": _(u"hazard_RAD01_name", default=u"Radioactive"),
+        "common": _(u"hazard_RAD01_common", default=u"ionising radiation"),
+        "pictogram": "iso/W003.svg",
+    },
+    {
+        "code": "NIR01",
+        "name": _(u"hazard_NIR01_name", default=u"Non-ionising radiation"),
+        "common": _(u"hazard_NIR01_common",
+                    default=u"UV / laser / RF"),
+        "pictogram": "iso/W005.svg",
+    },
+    {
+        "code": "ELEC01",
+        "name": _(u"hazard_ELEC01_name", default=u"Electricity"),
+        "common": _(u"hazard_ELEC01_common", default=u"electric shock"),
+        "pictogram": "iso/W012.svg",
+    },
+    {
+        "code": "COLD01",
+        "name": _(u"hazard_COLD01_name", default=u"Low temperature"),
+        "common": _(u"hazard_COLD01_common",
+                    default=u"freezing / cold storage"),
+        "pictogram": "iso/W010.svg",
+    },
+    {
+        "code": "HOT01",
+        "name": _(u"hazard_HOT01_name", default=u"Hot content"),
+        "common": _(u"hazard_HOT01_common", default=u"heated material"),
+        "pictogram": "iso/W079.svg",
     },
 )
 
 def get_categories():
-    """Return the GHS category list (as defined in code)."""
+    """Return the hazard category list (as defined in code)."""
     return GHS_CATEGORIES
 
 
@@ -106,7 +151,7 @@ def get_category(code):
 
 
 def format_title(category):
-    """Return ``"GHSxx - Name (common)"`` as unicode."""
+    """Return ``"<code> - Name (common)"`` as unicode."""
     code = category["code"]
     name = api.safe_unicode(api.translate(category["name"]))
     common = api.safe_unicode(api.translate(category["common"]))
@@ -117,10 +162,12 @@ def format_title(category):
 
 @implementer(IVocabularyFactory)
 class HazardCategoriesVocabulary(object):
-    """Vocabulary of GHS hazard categories.
+    """Vocabulary of hazard / handling categories.
 
-    Tokens and stored values are the GHS codes (``GHS01`` ... ``GHS09``),
-    so changes to translations do not affect persistence.
+    Tokens and stored values are short codes — the 9 GHS codes plus
+    additional codes for ISO 7010 pictograms (``BIO01``, ``RAD01``,
+    ``NIR01``, ``ELEC01``, ``COLD01``) — so changes to translations
+    do not affect persistence.
     """
 
     def __call__(self, context):

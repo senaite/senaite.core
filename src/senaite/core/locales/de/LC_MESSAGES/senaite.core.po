@@ -11642,6 +11642,54 @@ msgstr "Umweltgefährdend"
 msgid "hazard_GHS09_common"
 msgstr "umweltgefährdend"
 
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_BIO01_name"
+msgstr "Biogefährdung"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_BIO01_common"
+msgstr "infektiös / biologisch"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_RAD01_name"
+msgstr "Radioaktiv"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_RAD01_common"
+msgstr "ionisierende Strahlung"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_NIR01_name"
+msgstr "Nichtionisierende Strahlung"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_NIR01_common"
+msgstr "UV / Laser / Hochfrequenz"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_ELEC01_name"
+msgstr "Elektrizität"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_ELEC01_common"
+msgstr "elektrischer Schlag"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_COLD01_name"
+msgstr "Niedrige Temperatur"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_COLD01_common"
+msgstr "Frost / Kühllagerung"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_HOT01_name"
+msgstr "Heißer Inhalt"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_HOT01_common"
+msgstr "erhitztes Material"
+
 #: senaite/core/api/__init__.py
 msgid "hazard_warning_label"
 msgstr "Gefährlich"

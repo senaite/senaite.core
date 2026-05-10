@@ -112,7 +112,7 @@ def upgrade(tool):
 
 @upgradestep(product, version)
 def add_hazard_categories(tool):
-    """Register the GHS hazard categories field and metadata column.
+    """Register the hazard categories field and metadata column.
 
     The new ``hazard_categories`` field on ``SampleType`` (DX) and
     the new ``HazardCategories`` field on ``AnalysisRequest`` (AT)
@@ -120,17 +120,24 @@ def add_hazard_categories(tool):
     objects default to an empty list. The legacy ``Hazardous``
     boolean is left untouched.
 
+    The vocabulary covers the 9 GHS pictograms plus 6 ISO 7010
+    pictograms (biohazard, radioactive, non-ionising radiation,
+    electricity, low temperature, hot content) for hazards that
+    GHS does not address.
+
     Hazard pictograms are rendered in listings by reading the
-    ``getHazardCategories`` metadata column from the SampleType
-    brain in the setup catalog (looked up by UID via the new
-    ``getSampleTypeUID`` FieldIndex on the sample catalog). This
-    avoids touching every sample on each SampleType edit.
+    ``getHazardous`` and ``getHazardCategories`` metadata columns
+    from the SampleType brain in the setup catalog (looked up by
+    UID via the new ``getSampleTypeUID`` FieldIndex on the sample
+    catalog). This avoids touching every sample on each SampleType
+    edit.
     """
-    logger.info("Adding GHS hazard categories ...")
+    logger.info("Adding hazard categories ...")
     if add_index(SAMPLE_CATALOG, "getSampleTypeUID", "FieldIndex"):
         reindex_index(SAMPLE_CATALOG, "getSampleTypeUID")
     setup_catalog = api.get_tool(SETUP_CATALOG)
     add_column(setup_catalog, "getHazardCategories")
+    add_column(setup_catalog, "getHazardous")
     sample_types = setup_catalog({"portal_type": "SampleType"})
     logger.info(
         "Reindexing %d SampleType(s) for hazard metadata ...",
@@ -139,7 +146,7 @@ def add_hazard_categories(tool):
         # Full reindex (no idxs) so the new metadata column is
         # populated alongside the indexes.
         api.get_object(brain).reindexObject()
-    logger.info("Adding GHS hazard categories [DONE]")
+    logger.info("Adding hazard categories [DONE]")
 
 
 @upgradestep(product, version)

@@ -4,7 +4,9 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
-- #2890 Add GHS hazard categories to SampleType and Sample
+- #2890 Add hazard categories to SampleType and Sample (GHS plus
+  ISO 7010 biohazard, radioactive, non-ionising radiation, electricity,
+  low temperature, hot content)
 - #2894 Fix DL get flushed on submit
 - #2891 Translate sidebar navigation titles in JSON endpoint
 - #2881 Add text support for interim fields

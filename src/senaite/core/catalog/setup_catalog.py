@@ -60,6 +60,7 @@ COLUMNS = BASE_COLUMNS + [
     "getCategoryUID",
     "getClientUID",
     "getHazardCategories",
+    "getHazardous",
     "getKeyword",
     "getPrefix",  # used in reference widget columns
     "getProfileKey",  # used in reference widget columns
