@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2893 Name Sample Partitions as per Sample Template
+- #2894 Fix DL get flushed on submit
 - #2891 Translate sidebar navigation titles in JSON endpoint
 - #2881 Add text support for interim fields
 - #2888 Improve ID Server admin views
