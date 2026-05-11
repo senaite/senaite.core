@@ -40,13 +40,21 @@ from senaite.core import logger
 from senaite.core.api import dtime
 from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
+from senaite.core.api.catalog import get_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
+from senaite.core.catalog.attachments_catalog import \
+    CATALOG_ID as ATTACHMENTS_CATALOG
+from senaite.core.catalog.auditlog_catalog import \
+    CATALOG_ID as AUDITLOG_CATALOG
+from senaite.core.catalog.autoimportlog_catalog import \
+    CATALOG_ID as AUTOIMPORTLOG_CATALOG
 from senaite.core.catalog.client_catalog import CATALOG_ID as CLIENT_CATALOG
 from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
 from senaite.core.config import PROJECTNAME as product
@@ -1743,29 +1751,54 @@ def reindex_labcontact_searchable_text(tool):
 def cleanup_sample_catalog(tool):
     """Clean up senaite_catalog_sample indexes and metadata columns
 
-    - Fix title FieldIndex: set indexed_attrs to "Title" so the index
-      stores the object's Title() value rather than a lowercase "title"
-      attribute that does not exist on AnalysisRequest objects.
-    - Remove obsolete FieldIndexes getProvince and getDistrict. Client
-      geography belongs on the client catalog and is not meaningful as a
-      sample catalog index; reindexing is also not triggered when client
-      address fields change.
-    - Remove stale metadata columns: getProvince, getDistrict,
-      getClientURL, getTemplateURL, getContactUID, getPhysicalPath.
-      URLs are fragile (hostname-dependent) and better resolved at render
-      time. getContactUID and getPhysicalPath are not used in any sample
-      listing column.
+    - Fix title FieldIndex: set indexed_attrs to "Title" on every catalog
+      that inherits from base_catalog so the index stores the object's
+      Title() value rather than a lowercase "title" attribute that does
+      not exist on AnalysisRequest (and is empty / inconsistent on
+      other AT types).
+    - Remove obsolete FieldIndexes getProvince and getDistrict from the
+      sample catalog. Client geography belongs on the client catalog and
+      is not meaningful as a sample catalog index; reindexing is also
+      not triggered when client address fields change.
+    - Remove stale metadata columns from the sample catalog: getProvince,
+      getDistrict, getClientURL, getTemplateURL, getPhysicalPath. URLs
+      are fragile (hostname-dependent) and better resolved at render
+      time via memoized UID lookups. getPhysicalPath is unused.
     """
     logger.info("Cleaning up sample catalog indexes and columns ...")
-    catalog = api.get_tool(SAMPLE_CATALOG)
 
-    # Fix title index: update indexed_attrs to "Title"
-    title_index = catalog.Indexes.get("title")
-    if title_index is not None:
-        if hasattr(title_index, "indexed_attrs"):
-            title_index.indexed_attrs = ["Title"]
-            logger.info("Updated title index indexed_attrs to 'Title'")
-        reindex_index(SAMPLE_CATALOG, "title")
+    # Fix the title FieldIndex on every catalog that inherits the base
+    # indexes definition. The base_catalog change to ("title", "Title",
+    # "FieldIndex") only applies to fresh installs; existing catalogs
+    # need indexed_attrs updated and a reindex.
+    base_catalogs = [
+        ATTACHMENTS_CATALOG,
+        AUDITLOG_CATALOG,
+        AUTOIMPORTLOG_CATALOG,
+        CLIENT_CATALOG,
+        CONTACT_CATALOG,
+        REPORT_CATALOG,
+        SAMPLE_CATALOG,
+        SENAITE_CATALOG,
+        SETUP_CATALOG,
+        WORKSHEET_CATALOG,
+    ]
+    for catalog_id in base_catalogs:
+        cat = api.get_tool(catalog_id)
+        title_index = get_index(cat, "title")
+        if title_index is None:
+            continue
+        if not hasattr(title_index, "indexed_attrs"):
+            continue
+        if title_index.indexed_attrs == ["Title"]:
+            continue
+        title_index.indexed_attrs = ["Title"]
+        logger.info(
+            "Updated title index indexed_attrs to 'Title' on %s",
+            catalog_id)
+        reindex_index(catalog_id, "title")
+
+    catalog = api.get_tool(SAMPLE_CATALOG)
 
     # Remove obsolete indexes
     for idx in ["getDistrict", "getProvince"]:
@@ -1775,7 +1808,6 @@ def cleanup_sample_catalog(tool):
     # Remove obsolete metadata columns
     obsolete_columns = [
         "getClientURL",
-        "getContactUID",
         "getDistrict",
         "getPhysicalPath",
         "getProvince",

@@ -102,7 +102,7 @@ def getAnalysesKeywords(instance):
                 keywords.add(keyword)
 
     collect_keywords(instance)
-    for partition in instance.getDescendants():
+    for partition in instance.getDescendants(all_descendants=True):
         collect_keywords(partition)
 
     return list(keywords)

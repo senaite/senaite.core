@@ -479,39 +479,38 @@ class SamplesView(ListingView):
             self.contentFilter.pop("isRootAncestor", None)
 
     def folderitem(self, obj, item, index):
+        # Read everything from brain metadata; only wake the sample
+        # when a value is not available on the brain (sampling workflow
+        # branch below).
         item = super(SamplesView, self).folderitem(obj, item, index)
         if not item:
             return None
 
-        sample = api.get_object(obj)
-
-        item["Creator"] = self.user_fullname(sample.Creator())
+        item["Creator"] = self.user_fullname(obj.Creator)
 
         # Priority
-        priority_sort_key = sample.getPrioritySortkey()
+        priority_sort_key = obj.getPrioritySortkey
         if not priority_sort_key:
             # Default priority is Medium = 3.
             # The format of PrioritySortKey is <priority>.<created>
-            priority_sort_key = "3.%s" % sample.created().ISO8601()
+            priority_sort_key = "3.%s" % obj.created.ISO8601()
         priority = priority_sort_key.split(".")[0]
         priority_text = PRIORITIES.getValue(priority)
         priority_div = """<div class="priority-ico priority-%s">
                           <span class="notext">%s</span><div>
                        """
         item["replace"]["Priority"] = priority_div % (priority, priority_text)
-        item["replace"]["getProfilesTitle"] = sample.getProfilesTitleStr()
+        item["replace"]["getProfilesTitle"] = obj.getProfilesTitleStr
 
-        # Client link
-        client = self.get_object_by_uid(sample.getClientUID())
+        # Client link via memoized UID lookup (no sample wakeup).
+        client = self.get_object_by_uid(obj.getClientUID)
         if client:
             item["replace"]["Client"] = get_link_for(client)
             item["replace"]["ClientID"] = get_link_for(
-                client, display_value=sample.getClientID()
-            )
+                client, display_value=obj.getClientID)
 
-        # Analyses count — returns [verified, total, not_submitted,
-        # to_be_verified]
-        analysesnum = sample.getAnalysesNum()
+        # Analyses count — [verified, total, not_submitted, to_be_verified]
+        analysesnum = obj.getAnalysesNum
         if analysesnum:
             numbers = {
                 "verified": analysesnum[0],
@@ -530,32 +529,32 @@ class SamplesView(ListingView):
             item["getAnalysesNum"] = ""
 
         # Progress
-        progress_perc = sample.getProgress()
+        progress_perc = obj.getProgress
         item["Progress"] = progress_perc
         item["replace"]["Progress"] = get_progress_bar_html(progress_perc)
 
-        # Batch
-        batch_id = sample.getBatchID()
-        item["BatchID"] = batch_id
-        if batch_id:
-            batch = sample.getBatch()
+        # Batch link via memoized UID lookup (no sample wakeup).
+        item["BatchID"] = obj.getBatchID
+        if obj.getBatchID:
+            batch = self.get_object_by_uid(obj.getBatchUID)
             if batch:
                 item["replace"]["BatchID"] = get_link_for(
-                    batch, display_value=batch_id
-                )
+                    batch, display_value=obj.getBatchID)
 
         # Dates
-        item["SamplingDate"] = self.str_date(sample.getSamplingDate())
-        item["getDateSampled"] = self.str_date(sample.getDateSampled())
-        item["getDateReceived"] = self.str_date(sample.getDateReceived())
-        item["getDueDate"] = self.str_date(sample.getDueDate())
-        item["getDatePublished"] = self.str_date(sample.getDatePublished())
-        item["getDateVerified"] = self.str_date(sample.getDateVerified())
+        item["SamplingDate"] = self.str_date(obj.getSamplingDate)
+        item["getDateSampled"] = self.str_date(obj.getDateSampled)
+        item["getDateReceived"] = self.str_date(obj.getDateReceived)
+        item["getDueDate"] = self.str_date(obj.getDueDate)
+        item["getDatePublished"] = self.str_date(obj.getDatePublished)
+        item["getDateVerified"] = self.str_date(obj.getDateVerified)
 
         # Printed
         if self.is_printing_workflow_enabled:
             item["Printed"] = ""
-            printed = sample.getPrinted()
+            # Printed state is not in the catalog metadata, so the
+            # sample has to be woken up here.
+            printed = api.get_object(obj).getPrinted()
             print_icon = ""
             if printed == "0":
                 print_icon = get_fas_ico("circle-xmark",
@@ -572,8 +571,8 @@ class SamplesView(ListingView):
                     css_class="text-warning")
             item["after"]["Printed"] = print_icon
 
-        item["SamplingDeviation"] = sample.getSamplingDeviationTitle()
-        item["getStorageLocation"] = sample.getStorageLocationTitle()
+        item["SamplingDeviation"] = obj.getSamplingDeviationTitle
+        item["getStorageLocation"] = obj.getStorageLocationTitle
 
         # Status icons
         after_icons = ""
@@ -584,49 +583,51 @@ class SamplesView(ListingView):
             after_icons += get_image("delete.png",
                                      title=t(_("Results have been withdrawn")))
 
-        due_date = sample.getDueDate()
-        if due_date and due_date < (sample.getDatePublished() or DateTime()):
+        due_date = obj.getDueDate
+        if due_date and due_date < (obj.getDatePublished or DateTime()):
             due_date_str = self.ulocalized_time(due_date)
             img_title = "{}: {}".format(t(_("Late Analyses")), due_date_str)
             after_icons += get_image("late.png", title=img_title)
 
-        sampling_date = sample.getSamplingDate()
-        if sampling_date and sampling_date > DateTime():
+        if obj.getSamplingDate and obj.getSamplingDate > DateTime():
             after_icons += get_image("calendar.png",
                                      title=t(_("Future dated sample")))
-        if sample.getInvoiceExclude():
+        if obj.getInvoiceExclude:
             after_icons += get_image("invoice_exclude.png",
                                      title=t(_("Exclude from invoice")))
-        if sample.getHazardous():
+        if obj.getHazardous:
             after_icons += get_image("hazardous.png",
                                      title=t(_("Hazardous")))
-        if sample.getInternalUse():
+        if obj.getInternalUse:
             after_icons += get_image("locked.png", title=t(_("Internal use")))
         if after_icons:
             item["after"]["getId"] = after_icons
 
-        item["Created"] = self.ulocalized_time(sample.created(), long_format=1)
+        item["Created"] = self.ulocalized_time(obj.created, long_format=1)
 
-        # Client contact
-        contact = self.get_object_by_uid(sample.getContactUID())
+        # Client contact via memoized UID lookup (no sample wakeup).
+        contact = self.get_object_by_uid(obj.getContactUID)
         if contact:
             item["ClientContact"] = contact.getFullname()
             item["replace"]["ClientContact"] = get_link_for(contact)
         else:
             item["ClientContact"] = ""
 
-        # Sampling workflow — inline edits for Sampler and Date Sampled
-        if sample.getSamplingWorkflowEnabled():
-            sampler = sample.getSampler()
+        # Sampling workflow — inline edits for Sampler and Date Sampled.
+        # The to_be_sampled branch needs the full sample for the
+        # permission check and getUsers; wake only there.
+        if obj.getSamplingWorkflowEnabled:
+            sampler = obj.getSampler
             if sampler:
                 item["getSampler"] = sampler
                 item["replace"]["getSampler"] = self.user_fullname(sampler)
 
             if item["review_state"] == "to_be_sampled":
+                sample = api.get_object(obj)
                 if check_permission(TransitionSampleSample, sample):
                     item["required"] = ["getSampler", "getDateSampled"]
                     item["allow_edit"] = ["getSampler", "getDateSampled"]
-                    date = sample.getDateSampled() or DateTime()
+                    date = obj.getDateSampled or DateTime()
                     item["getDateSampled"] = \
                         self.to_datetime_input_value(date)
                     sampler_roles = ["Sampler", "LabManager", ""]
@@ -647,8 +648,8 @@ class SamplesView(ListingView):
 
         # Parent and children partitions
         if self.show_partitions:
-            item["parent"] = sample.getRawParentAnalysisRequest()
-            item["children"] = sample.getDescendantsUIDs() or []
+            item["parent"] = obj.getRawParentAnalysisRequest
+            item["children"] = obj.getDescendantsUIDs or []
 
         return item
 

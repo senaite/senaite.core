@@ -70,6 +70,7 @@ COLUMNS = BASE_COLUMNS + [
     "getClientSampleID",
     "getClientTitle",
     "getClientUID",
+    "getContactUID",
     "getDatePublished",
     "getDateReceived",
     "getDateSampled",
