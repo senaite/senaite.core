@@ -11568,7 +11568,7 @@ msgstr "Gefahrenkategorien"
 
 #: senaite/core/content/sampletype.py
 msgid "description_sampletype_hazard_categories"
-msgstr "GHS-Gefahrenkategorien, die für Proben dieses Probentyps gelten. Werden in Berichten und Listen als Piktogramme angezeigt."
+msgstr "Gefahrenkategorien, die für Proben dieses Probentyps gelten. Werden in Berichten und Listen als Piktogramme angezeigt."
 
 #: senaite/core/vocabularies/hazard_categories.py
 msgid "hazard_GHS01_name"
@@ -11690,6 +11690,38 @@ msgstr "Heißer Inhalt"
 msgid "hazard_HOT01_common"
 msgstr "erhitztes Material"
 
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_MAG01_name"
+msgstr "Magnetfeld"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_MAG01_common"
+msgstr "NMR / MRT"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_HSURF01_name"
+msgstr "Heiße Oberfläche"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_HSURF01_common"
+msgstr "berührungsheiß"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_ASPH01_name"
+msgstr "Erstickungsgefahr"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_ASPH01_common"
+msgstr "Tiefkühlmittel / Inertgas"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_STEAM01_name"
+msgstr "Heißer Dampf"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_STEAM01_common"
+msgstr "Autoklav / Sterilisation"
+
 #: senaite/core/api/__init__.py
 msgid "hazard_warning_label"
 msgstr "Gefährlich"
@@ -11700,7 +11732,7 @@ msgstr "Gefahrenkategorien"
 
 #: bika/lims/content/referencedefinition.py
 msgid "description_referencedefinition_hazard_categories"
-msgstr "GHS-Gefahrenkategorien, die für Proben dieser Referenzdefinition gelten."
+msgstr "Gefahrenkategorien, die für Proben dieser Referenzdefinition gelten."
 
 #: bika/lims/content/referencesample.py
 msgid "label_referencesample_hazard_categories"
@@ -11708,7 +11740,7 @@ msgstr "Gefahrenkategorien"
 
 #: bika/lims/content/referencesample.py
 msgid "description_referencesample_hazard_categories"
-msgstr "GHS-Gefahrenkategorien für diese Referenzprobe. Leer lassen, um die Werte der Referenzdefinition zu übernehmen."
+msgstr "Gefahrenkategorien für diese Referenzprobe. Leer lassen, um die Werte der Referenzdefinition zu übernehmen."
 
 # senaite.core: Sidebar search input placeholder
 msgid "Search..."

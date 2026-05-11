@@ -42,14 +42,14 @@
   vertical-align: middle;
 }
 
-/* Sample title pictograms next to the sample id. */
-.sample-title .hazard-pictograms {
+/* Title pictograms next to the sample / reference sample id. */
+.hazard-pictograms {
   display: inline-flex;
   vertical-align: middle;
   gap: 4px;
   margin-left: 6px;
 }
-.sample-title .hazard-pictogram {
+.hazard-pictograms .hazard-pictogram {
   width: 28px;
   height: 28px;
   object-fit: contain;
@@ -129,6 +129,18 @@
 }
 #HazardCategories input[value="HOT01"] + label::before {
   background-image: url("/++plone++senaite.core.static/images/iso/W079.svg");
+}
+#HazardCategories input[value="MAG01"] + label::before {
+  background-image: url("/++plone++senaite.core.static/images/iso/W006.svg");
+}
+#HazardCategories input[value="HSURF01"] + label::before {
+  background-image: url("/++plone++senaite.core.static/images/iso/W017.svg");
+}
+#HazardCategories input[value="ASPH01"] + label::before {
+  background-image: url("/++plone++senaite.core.static/images/iso/W041.svg");
+}
+#HazardCategories input[value="STEAM01"] + label::before {
+  background-image: url("/++plone++senaite.core.static/images/iso/W080.svg");
 }
 
 /* Read-only / display contexts: stack pictograms with tooltips. */

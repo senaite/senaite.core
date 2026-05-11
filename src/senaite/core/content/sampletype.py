@@ -178,7 +178,7 @@ class ISampleTypeSchema(model.Schema):
         title=_(u"title_sampletype_hazard_categories",
                 default=u"Hazard categories"),
         description=_(u"description_sampletype_hazard_categories",
-                      default=u"GHS hazard categories that apply to "
+                      default=u"Hazard categories that apply to "
                               u"samples of this type. Used to display "
                               u"the appropriate pictograms in reports "
                               u"and lists."),

@@ -6,8 +6,9 @@
     </i>
     <!-- Title -->
     <span class="documentFirstHeading" tal:content="context/id"></span>
-    <!-- Hazard pictograms: one per GHS category, or the ISO 7010
-         W001 generic warning when only the boolean is set. -->
+    <!-- Hazard pictograms: one per hazard category (GHS or ISO
+         7010), or the ISO 7010 W001 generic warning when only
+         the boolean is set. -->
     <span class="hazard-pictograms"
           tal:condition="python:view.is_hazardous()">
       <img tal:repeat="picto python:view.hazard_pictograms()"

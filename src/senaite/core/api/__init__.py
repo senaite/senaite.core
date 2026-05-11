@@ -35,7 +35,7 @@ from senaite.core.vocabularies.hazard_categories import format_title
 from senaite.core.vocabularies.hazard_categories import get_category
 from zope.component.hooks import getSite
 
-GHS_PICTOGRAM_PATH = (
+PICTOGRAM_PATH = (
     "/++plone++senaite.core.static/images/{pictogram}")
 WARNING_PICTOGRAM_PATH = (
     "/++plone++senaite.core.static/images/iso/W001.svg")
@@ -62,6 +62,8 @@ def get_portal_url():
 def get_pictogram_url(code):
     """Get the absolute URL of the hazard pictogram for a category code
 
+    Resolves both GHS and ISO 7010 hazard category codes.
+
     :param code: Hazard category code (e.g. ``"GHS01"`` or ``"BIO01"``)
     :type code: str
     :returns: Absolute URL of the pictogram SVG, or empty string when
@@ -71,7 +73,7 @@ def get_pictogram_url(code):
     category = get_category(code)
     if not category:
         return u""
-    return get_portal_url() + GHS_PICTOGRAM_PATH.format(
+    return get_portal_url() + PICTOGRAM_PATH.format(
         pictogram=category["pictogram"])
 
 
@@ -188,7 +190,7 @@ def get_attr(obj, name, default=None, catalog=None):
 
 
 def get_pictograms_for_sample(sample):
-    """Get pictogram view-models for a sample
+    """Get hazard pictogram view-models for a sample
 
     Accepts both a wakened sample object and a catalog brain. The
     sample's hazardous flag and categories are resolved by looking
@@ -206,6 +208,8 @@ def get_pictograms_for_sample(sample):
     :rtype: list[dict]
     """
     sample_type_uid = get_attr(sample, "getSampleTypeUID")
+    if not sample_type_uid:
+        return []
     hazardous = bool(get_attr(
         sample_type_uid, "getHazardous", catalog=SETUP_CATALOG))
     if not hazardous:
@@ -216,4 +220,24 @@ def get_pictograms_for_sample(sample):
             sample_type_uid,
             "getHazardCategories",
             catalog=SETUP_CATALOG) or []
+    return get_pictograms_for_codes(list(codes), hazardous=hazardous)
+
+
+def get_pictograms_for_reference(obj):
+    """Get hazard pictogram view-models for a reference object
+
+    Works for any object that carries ``getHazardous`` and
+    ``getHazardCategories`` accessors (or matching brain metadata
+    columns): ``ReferenceDefinition`` and ``ReferenceSample``.
+    ``get_attr`` reads the metadata column on a brain and calls
+    the accessor on an object.
+
+    :param obj: ReferenceSample, ReferenceDefinition or brain
+    :returns: List of pictogram view-model dicts
+    :rtype: list[dict]
+    """
+    hazardous = bool(get_attr(obj, "getHazardous"))
+    if not hazardous:
+        return []
+    codes = get_attr(obj, "getHazardCategories") or []
     return get_pictograms_for_codes(list(codes), hazardous=hazardous)

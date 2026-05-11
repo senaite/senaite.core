@@ -25,11 +25,11 @@ from senaite.core import api
 
 
 class HazardCategoriesWidget(MultiSelectionWidget):
-    """AT widget for the GHS HazardCategories field
+    """AT widget for the HazardCategories field
 
     Edit mode reuses the standard MultiSelectionWidget checkbox
-    layout. View mode renders the selected categories as inline GHS
-    pictograms with tooltips.
+    layout. View mode renders the selected categories as inline
+    hazard pictograms (GHS + ISO 7010) with tooltips.
     """
     security = ClassSecurityInfo()
     _properties = MultiSelectionWidget._properties.copy()
@@ -41,7 +41,7 @@ class HazardCategoriesWidget(MultiSelectionWidget):
     def get_pictograms(self, codes):
         """Return view-model pictogram dicts for the selected codes
 
-        :param codes: GHS category codes selected on the field
+        :param codes: Hazard category codes selected on the field
         :returns: List of pictogram dicts; empty when no code matches
         :rtype: list[dict]
         """
@@ -51,4 +51,4 @@ class HazardCategoriesWidget(MultiSelectionWidget):
 registerWidget(
     HazardCategoriesWidget,
     title="HazardCategoriesWidget",
-    description="Multi-select widget for GHS hazard categories")
+    description="Multi-select widget for hazard categories")

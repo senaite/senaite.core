@@ -36,7 +36,7 @@ class INumberWidget(IWidget):
 
 class IHazardCategoriesWidget(ISequenceWidget):
     """Multi-checkbox widget that decorates each option with the matching
-    GHS pictogram.
+    hazard pictogram (GHS or ISO 7010).
     """
 
 

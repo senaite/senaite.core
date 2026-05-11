@@ -28,6 +28,8 @@ from bika.lims.interfaces import IReferenceDefinitions
 from senaite.core.permissions import AddReferenceDefinition
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
+from bika.lims.utils import render_html_attributes
+from senaite.core import api as senaite_api
 from senaite.core.i18n import translate as t
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
@@ -122,9 +124,13 @@ class ReferenceDefinitionsView(ControlPanelListingView):
         if obj.getBlank():
             after_icons += get_image(
                 "blank.png", title=t(_("Blank")))
-        if obj.getHazardous():
-            after_icons += get_image(
-                "hazardous.png", title=t(_("Hazardous")))
+        for picto in senaite_api.get_pictograms_for_reference(obj):
+            attrs = render_html_attributes(
+                src=picto["url"],
+                alt=picto["alt"],
+                title=picto["title"],
+                **{"class": "hazard-pictogram-mini"})
+            after_icons += u"<img {} />".format(attrs).encode("utf-8")
         if after_icons:
             item["after"]["Title"] = after_icons
 

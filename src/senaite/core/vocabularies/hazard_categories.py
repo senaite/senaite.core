@@ -29,10 +29,11 @@ from zope.schema.vocabulary import SimpleVocabulary
 #
 # The first 9 entries are the GHS pictograms defined by UN/ECE
 # (see https://unece.org/transport/dangerous-goods/ghs-pictograms).
-# The remaining entries cover hazard / handling cases that GHS does not
-# address (biohazard, radioactive, cold-chain). Custom codes are used
-# for the non-GHS entries to avoid clashing with GHS or ISO 7010
-# warning-sign codes.
+# The remaining entries are ISO 7010 warning signs covering hazard /
+# handling cases that GHS does not address (biohazard, radioactive,
+# non-ionising radiation, electricity, low temperature, hot content).
+# Custom codes are used for the ISO 7010 entries so that the stored
+# token stays decoupled from the ISO sign filename.
 #
 # Each entry holds:
 #   - code: canonical identifier (used as token and stored value)
@@ -40,7 +41,7 @@ from zope.schema.vocabulary import SimpleVocabulary
 #   - common: a familiar synonym shown alongside the formal name
 #   - pictogram: path of the SVG relative to
 #                ``senaite.core/browser/static/images/``
-GHS_CATEGORIES = (
+HAZARD_CATEGORIES = (
     {
         "code": "GHS01",
         "name": _(u"hazard_GHS01_name", default=u"Explosive"),
@@ -96,6 +97,7 @@ GHS_CATEGORIES = (
         "common": _(u"hazard_GHS09_common", default=u"environmentally hazardous"),
         "pictogram": "ghs/GHS09.svg",
     },
+    # Biological
     {
         "code": "BIO01",
         "name": _(u"hazard_BIO01_name", default=u"Biohazard"),
@@ -103,6 +105,7 @@ GHS_CATEGORIES = (
                     default=u"infectious / biological"),
         "pictogram": "iso/W009.svg",
     },
+    # Radiation / fields
     {
         "code": "RAD01",
         "name": _(u"hazard_RAD01_name", default=u"Radioactive"),
@@ -117,10 +120,37 @@ GHS_CATEGORIES = (
         "pictogram": "iso/W005.svg",
     },
     {
+        "code": "MAG01",
+        "name": _(u"hazard_MAG01_name", default=u"Magnetic field"),
+        "common": _(u"hazard_MAG01_common", default=u"NMR / MRI"),
+        "pictogram": "iso/W006.svg",
+    },
+    # Electrical
+    {
         "code": "ELEC01",
         "name": _(u"hazard_ELEC01_name", default=u"Electricity"),
         "common": _(u"hazard_ELEC01_common", default=u"electric shock"),
         "pictogram": "iso/W012.svg",
+    },
+    # Thermal (hot to cold)
+    {
+        "code": "HSURF01",
+        "name": _(u"hazard_HSURF01_name", default=u"Hot surface"),
+        "common": _(u"hazard_HSURF01_common", default=u"hot to touch"),
+        "pictogram": "iso/W017.svg",
+    },
+    {
+        "code": "HOT01",
+        "name": _(u"hazard_HOT01_name", default=u"Hot content"),
+        "common": _(u"hazard_HOT01_common", default=u"heated material"),
+        "pictogram": "iso/W079.svg",
+    },
+    {
+        "code": "STEAM01",
+        "name": _(u"hazard_STEAM01_name", default=u"Hot steam"),
+        "common": _(u"hazard_STEAM01_common",
+                    default=u"autoclave / sterilisation"),
+        "pictogram": "iso/W080.svg",
     },
     {
         "code": "COLD01",
@@ -129,22 +159,25 @@ GHS_CATEGORIES = (
                     default=u"freezing / cold storage"),
         "pictogram": "iso/W010.svg",
     },
+    # Atmospheric
     {
-        "code": "HOT01",
-        "name": _(u"hazard_HOT01_name", default=u"Hot content"),
-        "common": _(u"hazard_HOT01_common", default=u"heated material"),
-        "pictogram": "iso/W079.svg",
+        "code": "ASPH01",
+        "name": _(u"hazard_ASPH01_name",
+                  default=u"Asphyxiating atmosphere"),
+        "common": _(u"hazard_ASPH01_common",
+                    default=u"cryogenic / inert gas"),
+        "pictogram": "iso/W041.svg",
     },
 )
 
 def get_categories():
     """Return the hazard category list (as defined in code)."""
-    return GHS_CATEGORIES
+    return HAZARD_CATEGORIES
 
 
 def get_category(code):
     """Return the category dict for ``code`` or ``None``."""
-    for category in GHS_CATEGORIES:
+    for category in HAZARD_CATEGORIES:
         if category["code"] == code:
             return category
     return None
@@ -165,9 +198,10 @@ class HazardCategoriesVocabulary(object):
     """Vocabulary of hazard / handling categories.
 
     Tokens and stored values are short codes — the 9 GHS codes plus
-    additional codes for ISO 7010 pictograms (``BIO01``, ``RAD01``,
-    ``NIR01``, ``ELEC01``, ``COLD01``) — so changes to translations
-    do not affect persistence.
+    custom codes for the ISO 7010 pictograms (``BIO01``, ``RAD01``,
+    ``NIR01``, ``ELEC01``, ``COLD01``, ``HOT01``, ``MAG01``,
+    ``HSURF01``, ``ASPH01``, ``STEAM01``) — so changes to
+    translations do not affect persistence.
     """
 
     def __call__(self, context):
@@ -177,7 +211,7 @@ class HazardCategoriesVocabulary(object):
                 token=category["code"],
                 title=format_title(category),
             )
-            for category in GHS_CATEGORIES
+            for category in HAZARD_CATEGORIES
         ]
         return SimpleVocabulary(terms)
 

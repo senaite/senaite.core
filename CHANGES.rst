@@ -4,9 +4,10 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
-- #2890 Add hazard categories to SampleType and Sample (GHS plus
-  ISO 7010 biohazard, radioactive, non-ionising radiation, electricity,
-  low temperature, hot content)
+- #2890 Add hazard categories to SampleType, Sample, ReferenceDefinition
+  and ReferenceSample (GHS plus ISO 7010 biohazard, radioactive,
+  non-ionising radiation, electricity, low temperature, hot content,
+  magnetic field, hot surface, asphyxiating atmosphere, hot steam)
 - #2896 Fix uncatalog_object to leave no stale uids in uid_catalog
 - #2897 Use UnorderedOrdering for Clients to avoid ZODB conflicts
 - #2894 Fix DL get flushed on submit

@@ -11366,6 +11366,38 @@ msgstr ""
 msgid "hazard_HOT01_common"
 msgstr ""
 
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_MAG01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_MAG01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_HSURF01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_HSURF01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_ASPH01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_ASPH01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_STEAM01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_STEAM01_common"
+msgstr ""
+
 #: senaite/core/api/__init__.py
 msgid "hazard_warning_label"
 msgstr ""

@@ -25,11 +25,13 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
+from senaite.core import api as senaite_api
 from senaite.core.browser.listing.base import ListingView
 from bika.lims.browser.chart.analyses import EvolutionChart
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import get_link_for
+from bika.lims.utils import render_html_attributes
 from plone.app.layout.globals.interfaces import IViewView
 from plone.memoize import view
 from Products.ATContentTypes.utils import DT2dt
@@ -63,6 +65,9 @@ class ViewView(BrowserView):
         self.categories = self.results.keys()
         self.categories.sort()
         return self.template()
+
+    def hazard_pictograms(self):
+        return senaite_api.get_pictograms_for_reference(self.context)
 
 
 class ReferenceAnalysesViewView(BrowserView):
@@ -457,9 +462,13 @@ class ReferenceSamplesView(ListingView):
         if obj.getBlank():
             after_icons += get_image(
                 "blank.png", title=t(_("Blank")))
-        if obj.getHazardous():
-            after_icons += get_image(
-                "hazardous.png", title=t(_("Hazardous")))
+        for picto in senaite_api.get_pictograms_for_reference(obj):
+            attrs = render_html_attributes(
+                src=picto["url"],
+                alt=picto["alt"],
+                title=picto["title"],
+                **{"class": "hazard-pictogram-mini"})
+            after_icons += u"<img {} />".format(attrs).encode("utf-8")
         if after_icons:
             item["after"]["ID"] = after_icons
 

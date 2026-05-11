@@ -37,8 +37,8 @@ Get the absolute URL of the portal:
     True
 
 
-GHS pictogram URL for a known code
-..................................
+Hazard pictogram URL for a known code
+.....................................
 
     >>> api.get_pictogram_url("GHS01").endswith(
     ...     "/++plone++senaite.core.static/images/ghs/GHS01.svg")
@@ -49,8 +49,8 @@ GHS pictogram URL for a known code
     True
 
 
-GHS pictogram URL for an unknown code
-.....................................
+Hazard pictogram URL for an unknown code
+........................................
 
 Returns an empty string instead of raising:
 
@@ -67,16 +67,16 @@ Returns an empty string instead of raising:
 ISO 7010 W001 fallback pictogram URL
 ....................................
 
-Used as the generic warning when a sample is hazardous but no GHS
-category has been assigned.
+Used as the generic warning when a sample is hazardous but no
+hazard category has been assigned.
 
     >>> api.get_warning_pictogram_url().endswith(
     ...     "/++plone++senaite.core.static/images/iso/W001.svg")
     True
 
 
-View-model dict for a single GHS category
-.........................................
+View-model dict for a single hazard category
+............................................
 
     >>> picto = api.get_pictogram("GHS06")
     >>> picto["code"]

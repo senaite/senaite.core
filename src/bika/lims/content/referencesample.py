@@ -42,7 +42,7 @@ from Products.Archetypes.Field import StringField
 from Products.Archetypes.Field import TextField
 from senaite.core.browser.widgets.hazardcategorieswidget import (
     HazardCategoriesWidget)
-from senaite.core.vocabularies.hazard_categories import GHS_CATEGORIES
+from senaite.core.vocabularies.hazard_categories import HAZARD_CATEGORIES
 from senaite.core.vocabularies.hazard_categories import format_title
 from Products.Archetypes.Schema import Schema
 from Products.Archetypes.Widget import BooleanWidget
@@ -117,7 +117,7 @@ schema = BikaSchema.copy() + Schema((
                     default=u"Hazard categories"),
             description=_(
                 u"description_referencesample_hazard_categories",
-                default=u"GHS hazard categories for this reference "
+                default=u"Hazard categories for this reference "
                         u"sample. Leave empty to inherit from the "
                         u"reference definition."),
             format="checkbox",
@@ -329,7 +329,7 @@ class ReferenceSample(BaseFolder):
         self.reindexObject()
 
     def getHazardCategories(self):
-        """Get the effective GHS hazard categories
+        """Get the effective hazard categories
 
         :returns: Sample-level overrides if set, otherwise the values
                   inherited from the reference definition
@@ -346,12 +346,12 @@ class ReferenceSample(BaseFolder):
     def getHazardCategoriesVocabulary(self):
         """Return AT DisplayList for the HazardCategories field.
 
-        :returns: GHS hazard categories vocabulary
+        :returns: Hazard categories vocabulary (GHS + ISO 7010)
         :rtype: Products.Archetypes.atapi.DisplayList
         """
         return DisplayList([
             (cat["code"], format_title(cat))
-            for cat in GHS_CATEGORIES
+            for cat in HAZARD_CATEGORIES
         ])
 
 

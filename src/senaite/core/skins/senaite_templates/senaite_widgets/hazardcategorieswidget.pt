@@ -12,7 +12,8 @@
                         pictograms python:widget.get_pictograms(codes);">
         <tal:none condition="not:pictograms">&mdash;</tal:none>
         <span class="hazard-pictogram"
-              tal:repeat="picto pictograms">
+              tal:repeat="picto pictograms"
+              tal:attributes="title python:picto['title']">
           <img tal:attributes="src python:picto['url'];
                                alt python:picto['alt'];
                                title python:picto['title']" />

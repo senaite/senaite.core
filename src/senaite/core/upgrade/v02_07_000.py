@@ -40,6 +40,7 @@ from senaite.core import logger
 from senaite.core.api import dtime
 from senaite.core.api.catalog import add_column
 from senaite.core.api.catalog import add_index
+from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
@@ -173,27 +174,33 @@ def drop_client_ordering_annotations(tool):
 def add_hazard_categories(tool):
     """Register the hazard categories field and metadata column.
 
-    The new ``hazard_categories`` field on ``SampleType`` (DX) and
-    the new ``HazardCategories`` field on ``AnalysisRequest`` (AT)
-    are picked up automatically by the schema machinery. Existing
+    The new ``hazard_categories`` field on ``SampleType`` (DX),
+    the ``HazardCategories`` field on ``AnalysisRequest``,
+    ``ReferenceDefinition`` and ``ReferenceSample`` (AT) are
+    picked up automatically by the schema machinery. Existing
     objects default to an empty list. The legacy ``Hazardous``
     boolean is left untouched.
 
-    The vocabulary covers the 9 GHS pictograms plus 6 ISO 7010
+    The vocabulary covers the 9 GHS pictograms plus 10 ISO 7010
     pictograms (biohazard, radioactive, non-ionising radiation,
-    electricity, low temperature, hot content) for hazards that
-    GHS does not address.
+    electricity, low temperature, hot content, magnetic field,
+    hot surface, asphyxiating atmosphere, hot steam) for hazards
+    that GHS does not address.
 
     Hazard pictograms are rendered in listings by reading the
     ``getHazardous`` and ``getHazardCategories`` metadata columns
     from the SampleType brain in the setup catalog (looked up by
     UID via the new ``getSampleTypeUID`` FieldIndex on the sample
     catalog). This avoids touching every sample on each SampleType
-    edit.
+    edit. The legacy ``getHazardous`` metadata column on the
+    sample catalog is removed since the flag is now resolved
+    exclusively via the SampleType brain.
     """
     logger.info("Adding hazard categories ...")
     if add_index(SAMPLE_CATALOG, "getSampleTypeUID", "FieldIndex"):
         reindex_index(SAMPLE_CATALOG, "getSampleTypeUID")
+    sample_catalog = api.get_tool(SAMPLE_CATALOG)
+    del_column(sample_catalog, "getHazardous")
     setup_catalog = api.get_tool(SETUP_CATALOG)
     add_column(setup_catalog, "getHazardCategories")
     add_column(setup_catalog, "getHazardous")

@@ -35,7 +35,7 @@ from Products.Archetypes.public import Schema
 from Products.Archetypes.public import registerType
 from senaite.core.browser.widgets.hazardcategorieswidget import (
     HazardCategoriesWidget)
-from senaite.core.vocabularies.hazard_categories import GHS_CATEGORIES
+from senaite.core.vocabularies.hazard_categories import HAZARD_CATEGORIES
 from senaite.core.vocabularies.hazard_categories import format_title
 from zope.interface import implements
 
@@ -105,7 +105,7 @@ schema = BikaSchema.copy() + Schema((
                     default=u"Hazard categories"),
             description=_(
                 "description_referencedefinition_hazard_categories",
-                default=u"GHS hazard categories that apply to samples "
+                default=u"Hazard categories that apply to samples "
                         u"of this reference definition."),
             format="checkbox",
         ),
@@ -131,12 +131,12 @@ class ReferenceDefinition(BaseContent):
     def getHazardCategoriesVocabulary(self):
         """Return AT DisplayList for the HazardCategories field.
 
-        :returns: GHS hazard categories vocabulary
+        :returns: Hazard categories vocabulary (GHS + ISO 7010)
         :rtype: Products.Archetypes.atapi.DisplayList
         """
         return DisplayList([
             (cat["code"], format_title(cat))
-            for cat in GHS_CATEGORIES
+            for cat in HAZARD_CATEGORIES
         ])
 
 
