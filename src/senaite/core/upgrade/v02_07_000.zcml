@@ -7,8 +7,8 @@
       title="SENAITE.CORE 2.7.0: Add new sample catalog indexes"
       description="Add getSampleTypeUID and getSamplePointUID FieldIndexes
         and getAnalysesKeywords KeywordIndex to the sample catalog"
-      source="2726"
-      destination="2727"
+      source="2728"
+      destination="2729"
       handler=".v02_07_000.add_sample_catalog_indexes"
       profile="senaite.core:default"/>
 
@@ -18,8 +18,8 @@
         indexes, and remove obsolete metadata columns (getClientURL,
         getTemplateURL, getContactUID, getPhysicalPath, getProvince,
         getDistrict) from the sample catalog"
-      source="2725"
-      destination="2726"
+      source="2727"
+      destination="2728"
       handler=".v02_07_000.cleanup_sample_catalog"
       profile="senaite.core:default"/>
 
