@@ -549,12 +549,12 @@ class SamplesView(ListingView):
         item["getDatePublished"] = self.str_date(obj.getDatePublished)
         item["getDateVerified"] = self.str_date(obj.getDateVerified)
 
-        # Printed
+        # Printed — getPrinted is a brain metadata column. The sample
+        # is reindexed with idxs=["getPrinted"] in the workflow action
+        # that records a print, which also refreshes metadata.
         if self.is_printing_workflow_enabled:
             item["Printed"] = ""
-            # Printed state is not in the catalog metadata, so the
-            # sample has to be woken up here.
-            printed = api.get_object(obj).getPrinted()
+            printed = obj.getPrinted
             print_icon = ""
             if printed == "0":
                 print_icon = get_fas_ico("circle-xmark",
