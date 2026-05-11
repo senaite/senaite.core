@@ -31,6 +31,7 @@ CATALOG_TITLE = "Senaite Sample Catalog"
 INDEXES = BASE_INDEXES + [
     # id, indexed attribute, type
     ("assigned_state", "", "FieldIndex"),
+    ("getAnalysesKeywords", "", "KeywordIndex"),
     ("getBatchUID", "", "FieldIndex"),
     ("getClientID", "", "FieldIndex"),
     ("getClientSampleID", "", "FieldIndex"),
@@ -44,11 +45,10 @@ INDEXES = BASE_INDEXES + [
     ("getPrinted", "", "FieldIndex"),
     ("getPrioritySortkey", "", "FieldIndex"),
     ("getReceivedBy", "", "FieldIndex"),
-    ("getSampler", "", "FieldIndex"),
-    ("getSamplingDate", "", "DateIndex"),
-    ("getAnalysesKeywords", "", "KeywordIndex"),
     ("getSamplePointUID", "", "FieldIndex"),
     ("getSampleTypeUID", "", "FieldIndex"),
+    ("getSampler", "", "FieldIndex"),
+    ("getSamplingDate", "", "DateIndex"),
     ("isRootAncestor", "", "BooleanIndex"),
     ("is_received", "", "BooleanIndex"),
     # https://zope.readthedocs.io/en/latest/zopebook/SearchingZCatalog.html
