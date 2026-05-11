@@ -47,6 +47,7 @@ from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
+from senaite.core.catalog.client_catalog import CATALOG_ID as CLIENT_CATALOG
 from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
@@ -68,6 +69,7 @@ from senaite.core.upgrade.utils import permanently_allow_type_for
 from senaite.core.upgrade.utils import remove_at_portal_types
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.v02_06_000 import get_setup_folder
+from zope.annotation.interfaces import IAnnotations
 from zope.component import getMultiAdapter
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
@@ -108,6 +110,63 @@ def upgrade(tool):
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def drop_client_ordering_annotations(tool):
+    """Remove the legacy IOrdering annotations from every Client.
+
+    Clients now use `plone.folder.unordered.UnorderedOrdering` as
+    their `IOrdering` adapter, so the previous default-ordering
+    annotations are no longer maintained:
+
+      - `plone.folder.ordered.order` — a `PersistentList` of every
+        child id, mutated on every `_setObject` via
+        `DefaultOrdering.notifyAdded`. On a Client with thousands of
+        children this list grows to many tens of thousands of entries
+        and, because `PersistentList` has no `_p_resolveConflict()`,
+        every concurrent registration on the same Client collided on
+        it and the conflict propagated all the way to the
+        publisher's retry loop.
+
+      - `plone.folder.ordered.pos` — companion `OIBTree` mapping
+        child id -> position. No longer read by anything once the
+        adapter is unordered.
+
+    Removing both annotations after the adapter switch frees the
+    storage they occupy and removes a stale hot-mutation bucket from
+    the ZODB cache. The adapter override is what stops new writes
+    from touching them; this step is hygiene.
+    """
+    ORDER_KEY = "plone.folder.ordered.order"
+    POS_KEY = "plone.folder.ordered.pos"
+
+    query = {"portal_type": "Client"}
+    brains = api.search(query, CLIENT_CATALOG)
+    total = len(brains)
+    logger.info(
+        "Dropping IOrdering annotations from {} clients".format(total))
+
+    cleaned = 0
+    for num, brain in enumerate(brains, start=1):
+        client = api.get_object(brain)
+        ann = IAnnotations(client)
+        had_order = ORDER_KEY in ann
+        had_pos = POS_KEY in ann
+        if not (had_order or had_pos):
+            continue
+        ann.pop(ORDER_KEY, None)
+        ann.pop(POS_KEY, None)
+        client._p_changed = True
+        cleaned += 1
+        if num % 100 == 0:
+            logger.info(
+                "  ... processed {}/{} clients ({} cleaned)".format(
+                    num, total, cleaned))
+            transaction.savepoint()
+
+    logger.info(
+        "Dropped IOrdering annotations from {}/{} clients".format(
+            cleaned, total))
 
 
 @upgradestep(product, version)

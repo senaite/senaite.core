@@ -7,6 +7,8 @@ Changelog
 - #2890 Add hazard categories to SampleType and Sample (GHS plus
   ISO 7010 biohazard, radioactive, non-ionising radiation, electricity,
   low temperature, hot content)
+- #2896 Fix uncatalog_object to leave no stale uids in uid_catalog
+- #2897 Use UnorderedOrdering for Clients to avoid ZODB conflicts
 - #2894 Fix DL get flushed on submit
 - #2891 Translate sidebar navigation titles in JSON endpoint
 - #2881 Add text support for interim fields
