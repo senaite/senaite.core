@@ -5,6 +5,15 @@ Changelog
 ------------------
 
 - #2873 Catalog/cleanup sample catalog indexes
+- #2896 Fix uncatalog_object to leave no stale uids in uid_catalog
+- #2897 Use UnorderedOrdering for Clients to avoid ZODB conflicts
+- #2894 Fix DL get flushed on submit
+- #2891 Translate sidebar navigation titles in JSON endpoint
+- #2881 Add text support for interim fields
+- #2888 Improve ID Server admin views
+- #2889 Remove orphan temp objects when renameAfterCreation fails
+- #2887 Set default Seq Type to 'generated' for partition/retest/secondary
+- #2886 Fix partition ID collision after detach
 - #2883 Add ViewNavigation permission for sidebar access control
 - #2885 Handle missing split_length values during setup row normalization
 - #2882 Refactor dashboard with permission-based access and async loading

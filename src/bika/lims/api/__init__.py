@@ -56,6 +56,7 @@ from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.BaseObject import BaseObject
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.Archetypes.public import StringField
+from Products.Archetypes.utils import getRelURL
 from Products.Archetypes.utils import mapply
 from Products.CMFCore.interfaces import IFolderish
 from Products.CMFCore.interfaces import ISiteRoot
@@ -472,18 +473,28 @@ def uncatalog_object(obj, recursive=False):
     :param recursive: recursively uncatalog all child objects
     :type obj: ATContentType/DexterityContentType
     """
-    # un-catalog from registered catalogs
-    obj.unindexObject()
-    # explicitly un-catalog from uid_catalog
-    uid_catalog = get_tool("uid_catalog")
-    # the uids of uid_catalog are relative paths to portal root
-    # see Products.Archetypes.UIDCatalog.UIDResolver.catalog_object
-    url = "/".join(obj.getPhysicalPath()[2:])
-    uid_catalog.uncatalog_object(url)
+    # explicitly uncatalog from uid_catalog
+    uid_catalog = get_tool(UID_CATALOG)
+
+    # make sure that both AT/DX paths are uncatalogued
+    rel_url = getRelURL(uid_catalog, obj.getPhysicalPath())
+    abs_url = "/".join(obj.getPhysicalPath())
+
+    # Try to uncatalog with both path variations
+    # Only uncatalog if the path exists in the catalog
+    for path in [rel_url, abs_url]:
+        if path in uid_catalog._catalog.uids:
+            try:
+                uid_catalog.uncatalog_object(path)
+            except Exception:
+                pass
 
     if recursive:
         for child in obj.objectValues():
             uncatalog_object(child, recursive=recursive)
+
+    # uncatalog from registered catalogs
+    obj.unindexObject()
 
 
 def catalog_object(obj, recursive=False):
@@ -494,13 +505,20 @@ def catalog_object(obj, recursive=False):
     :type obj: ATContentType/DexterityContentType
     """
     if is_at_content(obj):
-        # explicitly re-catalog AT types at uid_catalog (DX types are
-        # automatically reindexed in UID catalog on reindexObject)
-        uc = get_tool("uid_catalog")
         # the uids of uid_catalog are relative paths to portal root
         # see Products.Archetypes.UIDCatalog.UIDResolver.catalog_object
-        url = "/".join(obj.getPhysicalPath()[2:])
-        uc.catalog_object(obj, url)
+        uc = get_tool(UID_CATALOG)
+        rel_url = getRelURL(uc, obj.getPhysicalPath())
+        uc.catalog_object(obj, rel_url)
+
+    elif is_dexterity_content(obj):
+        # we catalog the object here below the absolute path, as it is done in
+        # `plone.app.referencablebehavior.uidcatalog``
+        uc = get_tool(UID_CATALOG)
+        abs_url = "/".join(obj.getPhysicalPath())
+        uc.catalog_object(obj, abs_url)
+
+    # reindex in registered catalogs
     obj.reindexObject()
 
     if recursive:

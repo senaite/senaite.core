@@ -1271,6 +1271,7 @@ schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
         "DetachedFrom",
         allowed_types=("AnalysisRequest",),
+        relationship="AnalysisRequestDetachedFrom",
         mode="rw",
         read_permission=View,
         write_permission=ModifyPortalContent,

@@ -30,6 +30,7 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
 from senaite.core.catalog import get_catalogs_by_type
+from senaite.core.i18n import translate
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
 from zope.component import getMultiAdapter
 
@@ -467,8 +468,9 @@ class SidebarNavigationAPI(BrowserView):
 
         item = {
             "id": node.get("id", ""),
-            "title": node.get("Title", ""),
-            "description": node.get("Description", ""),
+            "title": translate(node.get("Title", ""), to_utf8=False),
+            "description": translate(
+                node.get("Description", ""), to_utf8=False),
             "url": item_url,
             "icon": icon,
             "review_state": node.get("review_state", ""),
