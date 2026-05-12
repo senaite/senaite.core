@@ -76,6 +76,12 @@ AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
 SKIP_FIELD_ON_COPY = ["Sample", "PrimaryAnalysisRequest", "Remarks",
                       "NumSamples", "_ARAttachment"]
 NO_COPY_FIELDS = ["_ARAttachment"]
+# Maximum number of attempts for a single sample creation before giving
+# up within one pass of the per-sample commit strategy. Combined with
+# the exponential backoff in `_create_one_with_retry`, the worst-case
+# wait per pass is bounded (~6 s). A second pass runs at the end of the
+# batch, so the effective budget per record is twice this value.
+MAX_CREATE_ATTEMPTS = 8
 ALLOW_MULTI_PASTE_WIDGET_TYPES = [
     # disable paste functionality for date fields, see:
     # https://github.com/senaite/senaite.core/pull/2658#discussion_r1946229751
@@ -2246,14 +2252,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 return safe_unicode(value)
         return u"-"
 
-    # Maximum number of attempts for a single sample creation before
-    # giving up within one pass. Combined with the exponential backoff
-    # below, the worst-case wait per pass is bounded (~6 s) and the
-    # worker thread is not parked for excessive periods under
-    # contention. A second pass runs at the end of the batch, so the
-    # effective budget per record is twice this value.
-    MAX_CREATE_ATTEMPTS = 8
-
     def _create_one_with_retry(self, client, record, attachments, source,
                                user, path_info):
         """Create a single sample, committing in its own transaction.
@@ -2262,7 +2260,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         jitter. Returns the created sample on success, or None if all
         attempts were exhausted.
         """
-        for attempt in range(self.MAX_CREATE_ATTEMPTS):
+        for attempt in range(MAX_CREATE_ATTEMPTS):
             transaction.begin()
             T = transaction.get()
             T.setUser(user.getId())
@@ -2282,7 +2280,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 logger.warning(
                     "ConflictError creating sample "
                     "(attempt %d/%d) on %s oid=%r: %s",
-                    attempt + 1, self.MAX_CREATE_ATTEMPTS,
+                    attempt + 1, MAX_CREATE_ATTEMPTS,
                     getattr(exc, "class_name", "?"),
                     getattr(exc, "oid", None), exc)
                 # Exponential backoff with jitter; capped at 2 s

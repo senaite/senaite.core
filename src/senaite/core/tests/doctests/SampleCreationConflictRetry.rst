@@ -43,7 +43,8 @@ context to bind to:
     >>> request = self.request
     >>> setRoles(portal, TEST_USER_ID, ['LabManager'])
     >>> view = ajaxAnalysisRequestAddView(portal, request)
-    >>> view.MAX_CREATE_ATTEMPTS = 3
+    >>> original_max_attempts = add2.MAX_CREATE_ATTEMPTS
+    >>> add2.MAX_CREATE_ATTEMPTS = 3
 
 Stub out the `transaction` module binding on the `add2` module so the
 retry helper does not commit or abort the layer's transaction. The
@@ -149,7 +150,7 @@ after `MAX_CREATE_ATTEMPTS` and return `None`:
     ...     user=user, path_info="/test")
     >>> result is None
     True
-    >>> attempts["n"] == view.MAX_CREATE_ATTEMPTS
+    >>> attempts["n"] == add2.MAX_CREATE_ATTEMPTS
     True
 
 Failed-record reporting
@@ -185,4 +186,5 @@ later tests run in a pristine environment:
 
     >>> add2.transaction = original_txn_module
     >>> add2.time = original_time_module
+    >>> add2.MAX_CREATE_ATTEMPTS = original_max_attempts
     >>> _ = set_registry_record("sample_add_form_commit_per_sample", False)
