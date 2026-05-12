@@ -18,12 +18,14 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 import copy
+import hashlib
 import json
 import time
 from collections import OrderedDict
 from datetime import datetime
 from datetime import timedelta
 from random import uniform
+from threading import Lock
 
 import six
 import transaction
@@ -82,6 +84,23 @@ NO_COPY_FIELDS = ["_ARAttachment"]
 # wait per pass is bounded (~6 s). A second pass runs at the end of the
 # batch, so the effective budget per record is twice this value.
 MAX_CREATE_ATTEMPTS = 8
+# In-flight cache used to make `create_samples` idempotent across
+# Zope publisher-level retries. Zope discards the HTTPRequest on a
+# TransientError retry but reuses the same WSGI environ on the same
+# worker thread, so a content-based fingerprint of the submission
+# matches across attempts. Cache hits return the already-committed
+# samples by UID instead of creating duplicates.
+#
+# Each entry is one submission key -> ([list of UIDs], monotonic ts).
+# The cap is a purely defensive bound: in normal operation entries
+# age out via TTL (10 minutes) and each entry is alive only while a
+# submission is in flight, so steady-state size is the number of
+# concurrent submissions on this worker (typically 1-5). Memory at
+# the cap is roughly entries * UIDs * UID_size = a few MB worst case.
+INFLIGHT_CACHE_SIZE = 32
+INFLIGHT_CACHE_TTL = 600
+_inflight = OrderedDict()
+_inflight_lock = Lock()
 ALLOW_MULTI_PASTE_WIDGET_TYPES = [
     # disable paste functionality for date fields, see:
     # https://github.com/senaite/senaite.core/pull/2658#discussion_r1946229751
@@ -99,6 +118,53 @@ def cache_key(method, self, obj):
     if obj is None:
         raise DontCache
     return api.get_cache_key(obj)
+
+
+def _submission_fingerprint(request):
+    """Content-based fingerprint of the submission body. Stable across
+    Zope publisher-level retries on the same worker because Zope
+    rebuilds the request from the same WSGI environ (and body bytes)
+    on each attempt.
+    """
+    method = request.get("REQUEST_METHOD", "") or ""
+    path = request.get("PATH_INFO", "") or ""
+    body = request.get("BODY", "") or ""
+    raw = "{}\n{}\n{}".format(method, path, body)
+    if isinstance(raw, unicode):
+        raw = raw.encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def _inflight_get(key):
+    """Return the cached UID list for the given submission key, or
+    None if the entry is absent or expired. Touches LRU order on hit.
+    """
+    now = time.time()
+    with _inflight_lock:
+        entry = _inflight.get(key)
+        if entry is None:
+            return None
+        uids, ts = entry
+        if now - ts > INFLIGHT_CACHE_TTL:
+            _inflight.pop(key, None)
+            return None
+        # bump LRU position by reinserting
+        _inflight.pop(key)
+        _inflight[key] = entry
+        return uids
+
+
+def _inflight_set(key, uids):
+    """Register the (mutable) UID list as the in-flight value for the
+    given submission key. The caller keeps a reference to the same
+    list and appends to it as samples commit; a concurrent retry on
+    the same worker sees those updates.
+    """
+    with _inflight_lock:
+        _inflight.pop(key, None)
+        _inflight[key] = (uids, time.time())
+        while len(_inflight) > INFLIGHT_CACHE_SIZE:
+            _inflight.popitem(last=False)
 
 
 class AnalysisRequestAddView(BrowserView):
@@ -2158,7 +2224,27 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         are logged with their identifying fields and surfaced back to
         the user via a portal message so the operator knows exactly
         which rows need to be re-entered.
+
+        The path is idempotent across Zope publisher-level retries: if
+        the publisher commits the response transaction with a
+        ConflictError and re-publishes the request, we recognise the
+        submission by its body fingerprint and return the
+        already-committed samples instead of creating duplicates.
         """
+        fingerprint = _submission_fingerprint(self.request)
+        existing_uids = _inflight_get(fingerprint)
+        if existing_uids:
+            logger.info(
+                "Resuming ar_add submission after publisher retry; "
+                "%d sample(s) already committed", len(existing_uids))
+            return [api.get_object_by_uid(uid) for uid in existing_uids]
+
+        # Reference the list inside the cache so each successful
+        # per-sample commit immediately updates the entry visible to a
+        # retry on the same worker thread.
+        committed_uids = []
+        _inflight_set(fingerprint, committed_uids)
+
         samples = []
         # Records that failed the first attempt; retried in pass 2
         pending = []
@@ -2183,6 +2269,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     pending.append((column, record, client))
                 else:
                     samples.append(sample)
+                    committed_uids.append(api.get_uid(sample))
 
         # Second pass: by now the original burst has subsided, so a
         # longer pre-delay and an independent retry budget usually
@@ -2201,6 +2288,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     failed.append((column, record))
                 else:
                     samples.append(sample)
+                    committed_uids.append(api.get_uid(sample))
 
         if failed:
             self._report_failed_records(failed)
