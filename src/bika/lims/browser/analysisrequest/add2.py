@@ -2228,7 +2228,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             sp.rollback()
             raise
 
->>>>>>> 2.x
     def get_num_samples(self, record):
         """Return the number of samples to create for the given record
         """
