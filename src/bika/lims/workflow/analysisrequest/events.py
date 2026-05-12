@@ -23,6 +23,7 @@ from bika.lims.api.snapshot import pause_snapshots_for
 from bika.lims.api.snapshot import resume_snapshots_for
 from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IDetachedPartition
+from bika.lims.interfaces import IInvalidated
 from bika.lims.interfaces import IReceived
 from bika.lims.interfaces import IVerified
 from bika.lims.utils import changeWorkflowState
@@ -52,7 +53,7 @@ def after_no_sampling_workflow(analysis_request):
     """Function triggered after "no_sampling_workflow transition for the
     Analysis Request passed in is performed
     """
-    setup = api.get_setup()
+    setup = api.get_senaite_setup()
     if setup.getAutoreceiveSamples():
         # Auto-receive samples is enabled. Note transition to "received" state
         # will only take place if the current user has enough privileges (this
@@ -84,6 +85,8 @@ def after_invalidate(obj):
     Request passed in is performed. Creates a retest
     """
     create_retest(obj)
+    # Flag this sample as IInvalidated
+    alsoProvides(obj, IInvalidated)
 
 
 def after_submit(analysis_request):

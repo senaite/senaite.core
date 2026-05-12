@@ -32,32 +32,15 @@
         </div>
       </script>
 
-      <!-- Add dependent services popup -->
-      <script id="dependency-add-template" type="text/x-handlebars-template">
-        <div title="Service dependencies" i18n:attributes="title">
-          {{#with service}}
-          <p i18n:translate="">{{title}} requires the following services to be selected:</p>
-          {{/with}}
-          <div class="dialog-dependencies dialog-listing">
-            {{#each dependencies}}
-            <div class="dialog-dependency">
-              <span>{{title}}</span>
-            </div>
-            {{/each}}
-          </div>
-          <p i18n:translate="">Do you want to apply these services now?</p>
-        </div>
-      </script>
-
-      <!-- Dependant services popup -->
-      <script id="service-dependant-template" type="text/x-handlebars-template">
+      <!-- Dependent services popup -->
+      <script id="service-dependent-template" type="text/x-handlebars-template">
         <div title="Service locked" i18n:attributes="title">
           {{#with service}}
           <p i18n:translate="">{{title}} cannot be deselected, because it is included in:</p>
           {{/with}}
-          <div class="dialog-dependants dialog-listing">
+          <div class="dialog-dependents dialog-listing">
             {{#if profiles}}
-              <dl class="service-profile-dependants">
+              <dl class="service-profile-dependents">
                 <dt i18n:translate="">Analysis Profiles</dt>
                 {{#each profiles}}
                 <dd>{{title}}</dd>
@@ -65,7 +48,7 @@
               </dl>
             {{/if}}
             {{#if templates}}
-              <dl class="service-template-dependants">
+              <dl class="service-template-dependents">
                 <dt i18n:translate="">AR Templates</dt>
                 {{#each templates}}
                 <dd>{{title}}</dd>
@@ -73,7 +56,7 @@
               </dl>
             {{/if}}
           </div>
-          <p i18n:translate="">Please deselect these dependants first.</p>
+          <p i18n:translate="">Please deselect these dependents first.</p>
         </div>
       </script>
 
@@ -166,7 +149,7 @@
           {{#if dependendants}}
           <tr>
             <td class="service-info-key"
-                i18n:translate="">Dependants</td>
+                i18n:translate="">Dependents</td>
             <td class="service-info-value">
               <ul class="service-dependency">
                 {{#each dependendants}}
@@ -267,6 +250,9 @@
                      name="ServiceConditions-{{../arnum}}.required:records"
                      value="{{required}}"/>
               <input type="hidden"
+                     name="ServiceConditions-{{../arnum}}.report:records"
+                     value="{{report}}"/>
+              <input type="hidden"
                      name="ServiceConditions-{{../arnum}}.choices:records"
                      value="{{choices}}"/>
               <input type="hidden"
@@ -365,6 +351,19 @@
                name="came_from" tal:attributes="value view/came_from"/>
         <input type="hidden" id="ar_count" name="ar_count"
                tal:attributes="value view/ar_count"/>
+
+        <!-- Hidden fields for source UIDs (for partition copying) -->
+        <tal:source_uids tal:repeat="arnum python:range(view.ar_count)"
+                         tal:define="copy_from python:view.get_copy_from()">
+          <tal:source_uid tal:define="source_uid_key python:'_source_uid-{}'.format(arnum);
+                                      source_obj python:copy_from.get(arnum);
+                                      source_uid python:source_obj.UID() if source_obj else None">
+            <input type="hidden"
+                   tal:condition="source_uid"
+                   tal:attributes="name source_uid_key;
+                                   value source_uid"/>
+          </tal:source_uid>
+        </tal:source_uids>
 
         <ul class="nav nav-tabs float-right" id="sample-tabs" style="margin-bottom:-1px;">
           <tal:columns tal:repeat="arnum python:range(view.ar_count)">

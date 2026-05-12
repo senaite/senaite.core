@@ -29,7 +29,7 @@
         <span metal:fill-slot="widget_body">
           <input
                type="text"
-               class="blurrable firstToFocus"
+               class="blurrable firstToFocus numeric"
                name=""
                value=""
                size="30"

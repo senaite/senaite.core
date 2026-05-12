@@ -28,6 +28,14 @@
       replacement=".portal_catalog_processor.reindex"
       />
 
+  <!-- Patch `Products.CMFCore.indexing.QueueTM.before_commit` -->
+  <monkey:patch
+      description="Patch QueueTM.before_commit to add re-entrancy guard"
+      class="Products.CMFCore.indexing.QueueTM"
+      original="before_commit"
+      replacement=".queue_tm.before_commit"
+      />
+
   <!-- Patch `Products.CMFCore.WorkflowTool.WorkflowTool._reindexWorkflowVariables` -->
   <monkey:patch
     description="Patch `Products.CMFCore.WorkflowTool.WorkflowTool._reindexWorkflowVariables`"

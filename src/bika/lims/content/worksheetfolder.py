@@ -32,6 +32,7 @@ schema = folder.ATFolderSchema.copy()
 schema['id'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
 schema['title'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
 
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/2805
 class WorksheetFolder(folder.ATFolder):
     implements(IWorksheetFolder)
     displayContentsTab = False

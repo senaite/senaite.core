@@ -168,8 +168,8 @@
                   </a>
                 </td>
               </tr>
-              <tr tal:define="version_id python:getattr(calc, 'version_id', None)"
-                  tal:condition="python: version_id is not None" >
+              <tr tal:define="version_id python:view.get_calculation_version()"
+                  tal:condition="python: version_id is not None">
                 <td>
                   <span i18n:translate="">Version</span>
                 </td>
@@ -183,7 +183,7 @@
                   <span i18n:translate="">Formula</span>
                 </td>
                 <td>
-                  <code tal:content="calc/getFormula"></code>
+                  <code tal:content="python:view.get_calculation_formula()"></code>
                 </td>
               </tr>
             </table>

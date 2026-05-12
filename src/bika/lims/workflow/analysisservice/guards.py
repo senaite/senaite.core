@@ -47,8 +47,8 @@ def guard_deactivate(analysis_service):
     """Returns whether the transition deactivate can be performed for the
     analysis service passed in
     """
-    for dependant in analysis_service.getServiceDependants():
-        status = api.get_workflow_status_of(dependant)
+    for dependent in analysis_service.getServiceDependents():
+        status = api.get_workflow_status_of(dependent)
         if status == "active":
             return False
 

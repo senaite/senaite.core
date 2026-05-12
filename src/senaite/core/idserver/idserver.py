@@ -32,7 +32,7 @@ from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IAnalysisRequestRetest
 from bika.lims.interfaces import IAnalysisRequestSecondary
-from bika.lims.interfaces import IARReport
+from senaite.core.interfaces import IResultsReport
 from DateTime import DateTime
 from Products.ATContentTypes.utils import DT2dt
 from senaite.core.idserver.alphanumber import Alphanumber
@@ -45,12 +45,19 @@ from zope.component import getAdapters
 from zope.component import getUtility
 from zope.component import queryAdapter
 
-AR_TYPES = [
-    "AnalysisRequest",
-    "AnalysisRequestRetest",
-    "AnalysisRequestPartition",
-    "AnalysisRequestSecondary",
+PORTAL_TYPE_SAMPLE = "AnalysisRequest"
+PORTAL_TYPE_SAMPLE_RETEST = "AnalysisRequestRetest"
+PORTAL_TYPE_SAMPLE_PARTITION = "AnalysisRequestPartition"
+PORTAL_TYPE_SAMPLE_SECONDARY = "AnalysisRequestSecondary"
+
+SAMPLE_TYPES = [
+    PORTAL_TYPE_SAMPLE,
+    PORTAL_TYPE_SAMPLE_RETEST,
+    PORTAL_TYPE_SAMPLE_PARTITION,
+    PORTAL_TYPE_SAMPLE_SECONDARY,
 ]
+
+PARTITION_DETACHED_RELATIONSHIP = "AnalysisRequestDetachedFrom"
 
 
 def get_objects_in_sequence(brain_or_object, ctype, cref):
@@ -97,11 +104,11 @@ def get_type_id(context, **kw):
 
     # Override by provided marker interface
     if IAnalysisRequestPartition.providedBy(context):
-        return "AnalysisRequestPartition"
+        return PORTAL_TYPE_SAMPLE_PARTITION
     elif IAnalysisRequestRetest.providedBy(context):
-        return "AnalysisRequestRetest"
+        return PORTAL_TYPE_SAMPLE_RETEST
     elif IAnalysisRequestSecondary.providedBy(context):
-        return "AnalysisRequestSecondary"
+        return PORTAL_TYPE_SAMPLE_SECONDARY
 
     return api.get_portal_type(context)
 
@@ -147,6 +154,13 @@ def get_retest_count(context, default=0):
 
 def get_partition_count(context, default=0):
     """Returns the number of partitions of this AR
+
+    Counts both active descendants (samples with `ParentAnalysisRequest`
+    pointing to the parent) and detached partitions (samples whose
+    `ParentAnalysisRequest` was unset by the detach transition but
+    whose `DetachedFrom` still references the parent). Both sources
+    are annotation-backed backrefs, so the lookup is O(1) and works
+    regardless of ID format, custom adapters, or container layout.
     """
     if not is_ar(context):
         return default
@@ -156,11 +170,15 @@ def get_partition_count(context, default=0):
     if not parent:
         return default
 
+    active = len(parent.getDescendants())
+    detached = len(get_backreferences(
+        parent, relationship=PARTITION_DETACHED_RELATIONSHIP))
+
     # XXX: we need to count one up because the new partition only shows up in
     #      parent.getDescendants() *after* it has been renamed, because
     #      temporary objects don't get indexed!
     #      https://github.com/senaite/senaite.core/pull/2632
-    return len(parent.getDescendants()) + 1
+    return active + detached + 1
 
 
 def get_secondary_count(context, default=0):
@@ -187,7 +205,7 @@ def get_config(context, **kw):
     """Fetch the config dict from the Bika Setup for the given portal_type
     """
     # get the ID formatting config
-    config_map = api.get_bika_setup().getIDFormatting()
+    config_map = api.get_senaite_setup().getIDFormatting()
 
     # allow portal_type override
     portal_type = get_type_id(context, **kw)
@@ -288,7 +306,7 @@ def get_variables(context, **kw):
                 "secondary_count": secondary_count,
             })
 
-    elif IARReport.providedBy(context):
+    elif IResultsReport.providedBy(context):
         variables.update({
             "clientId": parent.getClientID(),
         })
@@ -362,10 +380,12 @@ def get_current_year():
     """
     return DateTime().strftime("%Y")[2:]
 
+
 def get_yymmdd():
     """Returns the current date in yymmdd format
     """
     return datetime.now().strftime("%y%m%d")
+
 
 def make_storage_key(portal_type, prefix=None):
     """Make a storage (dict-) key for the number generator
@@ -546,8 +566,25 @@ def renameAfterCreation(obj):
     if not new_id:
         new_id = generateUniqueId(obj)
 
-    # rename the object to the new id
+    # rename the object to the new id; on failure remove the orphan
+    # temp-ID object so it does not pollute the container as a hidden
+    # entry (the savepoint above has already persisted it).
     parent = api.get_parent(obj)
-    parent.manage_renameObject(obj.id, new_id)
+    try:
+        parent.manage_renameObject(obj.id, new_id)
+    except Exception:
+        logger.exception(
+            "renameAfterCreation failed for %s -> %s", obj.id, new_id)
+        # Only remove the orphan if it is still a temporary object,
+        # so we never delete a real, already-renamed object by
+        # mistake.
+        if api.is_temporary(obj):
+            try:
+                parent._delObject(obj.id)
+                logger.info("Removed orphan temp object %s", obj.id)
+            except Exception:
+                logger.exception(
+                    "Could not remove orphan temp object %s", obj.id)
+        raise
 
     return new_id

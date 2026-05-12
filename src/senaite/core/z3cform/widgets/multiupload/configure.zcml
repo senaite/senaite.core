@@ -1,0 +1,42 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+  <!-- required for z3c:widgetTemplate -->
+  <include package="z3c.form" file="meta.zcml" />
+
+  <!-- Data converter -->
+  <adapter factory=".widget.MultiUploadDataConverter" />
+
+  <!-- Multi-upload input widget template -->
+  <z3c:widgetTemplate
+      mode="input"
+      widget=".widget.MultiUploadWidget"
+      template="input.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer" />
+
+  <!-- Multi-upload display widget template -->
+  <z3c:widgetTemplate
+      mode="display"
+      widget=".widget.MultiUploadWidget"
+      template="display.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer" />
+
+  <!-- Multi-upload hidden widget template -->
+  <z3c:widgetTemplate
+      mode="hidden"
+      widget=".widget.MultiUploadWidget"
+      template="hidden.pt"
+      layer="senaite.core.interfaces.ISenaiteFormLayer" />
+
+  <!-- Upload handler for AJAX requests -->
+  <browser:page
+      name="multiupload_handler"
+      for="*"
+      class=".handler.MultiUploadHandler"
+      permission="zope2.View"
+      />
+
+</configure>

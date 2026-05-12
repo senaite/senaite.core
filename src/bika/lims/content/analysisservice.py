@@ -210,6 +210,7 @@ Conditions = RecordsField(
         "choices",
         "default",
         "required",
+        "report",
     ),
     required_subfields=(
         "title",
@@ -222,6 +223,7 @@ Conditions = RecordsField(
         "choices": _("Choices"),
         "default": _("Default value"),
         "required": _("Required"),
+        "report": _("Report"),
     },
     subfield_descriptions={
         "choices": _("Please use the following format for select options: "
@@ -234,6 +236,7 @@ Conditions = RecordsField(
         "default": "string",
         "choices": "string",
         "required": "boolean",
+        "report": "boolean",
     },
     subfield_sizes={
         "title": 20,
@@ -425,27 +428,27 @@ class AnalysisService(AbstractBaseAnalysis):
         """
         return map(api.get_uid, self.getServiceDependencies())
 
-    def getServiceDependants(self):
+    def getServiceDependents(self):
         """Return services depending on us
         """
         catalog = api.get_tool(SETUP_CATALOG)
         active_calcs = catalog(portal_type="Calculation", is_active=True)
         calculations = map(api.get_object, active_calcs)
-        dependants = []
+        dependents = []
         for calc in calculations:
-            calc_dependants = calc.getDependentServices()
-            if self in calc_dependants:
-                calc_dependencies = calc.getCalculationDependants()
-                dependants = dependants + calc_dependencies
-        dependants = list(set(dependants))
-        if self in dependants:
-            dependants.remove(self)
-        return dependants
+            calc_dependents = calc.getDependentServices()
+            if self in calc_dependents:
+                calc_dependencies = calc.getCalculationDependents()
+                dependents = dependents + calc_dependencies
+        dependents = list(set(dependents))
+        if self in dependents:
+            dependents.remove(self)
+        return dependents
 
-    def getServiceDependantsUIDs(self):
+    def getServiceDependentsUIDs(self):
         """Return service UIDs depending on us
         """
-        return map(api.get_uid, self.getServiceDependants())
+        return map(api.get_uid, self.getServiceDependents())
 
     def query_available_methods(self):
         """Return all available methods

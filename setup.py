@@ -52,7 +52,6 @@ setup(
     zip_safe=False,
     install_requires=[
         "collective.monkeypatcher",
-        "magnitude",
         "plone.api",
         "plone.app.dexterity",
         "plone.app.iterate",
@@ -81,9 +80,6 @@ setup(
         "cssselect2<0.3.0",
         # beautifulsoup4 4.9.0 requires "soupsieve<2.0"
         "soupsieve<2.0.0",
-        # TODO: better integrate just the JS files w/o this package
-        "plone.app.jquerytools",
-        # "collective.js.jqueryui",
         # SENAITE
         "senaite.lims",
         # openpyxl >= 3.0.0 does not support Python 2.x anymore
@@ -95,6 +91,8 @@ setup(
         "pycountry==18.12.8",
         # et-xmlfile >= 2.0.0 does not support Python 2.x anymore
         "et-xmlfile<2.0.0",
+        # magnitude > 1.0.1 does ot support Python 2.x anymore
+        "magnitude==1.0.1",
     ],
     extras_require={
         "test": [

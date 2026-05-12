@@ -1,0 +1,70 @@
+/**
+ * Multi-Upload Widget Styles - Bootstrap 4 Compatible
+ */
+
+.multiuploadwidget {
+  margin-bottom: 1rem;
+}
+
+/* Dropzone area - Bootstrap 4 card-like styling */
+.multi-upload-dropzone {
+  border: 2px dashed #dee2e6 !important;
+  border-radius: 0.25rem;
+  padding: 2rem;
+  background: #f8f9fa;
+  min-height: 150px;
+  cursor: pointer;
+  transition: border-color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+
+.multi-upload-dropzone:hover,
+.multi-upload-dropzone.drag-active {
+  border-color: #007bff !important;
+  background: #e7f3ff;
+}
+
+.multi-upload-dropzone .dropzone-content {
+  pointer-events: none;
+}
+
+.multi-upload-dropzone .upload-icon {
+  color: #6c757d;
+}
+
+/* File list */
+.multi-upload-file-list {
+  margin-top: 1rem;
+}
+
+.multi-upload-file-item {
+  background: #fff;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.multi-upload-file-item:hover {
+  background: #f9f9f9;
+}
+
+.multi-upload-file-item .file-icon {
+  font-size: 1.5rem;
+}
+
+.multi-upload-file-item .file-name {
+  font-size: 0.875rem;
+  color: #212529;
+  word-break: break-word;
+}
+
+.multi-upload-file-item .file-size {
+  font-size: 0.75rem;
+}
+
+.multi-upload-file-item .badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.multi-upload-file-item .btn-sm {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}

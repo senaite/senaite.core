@@ -8,4 +8,5 @@ recursive-exclude src/senaite/app/listing *
 recursive-exclude src/senaite/app/spotlight *
 recursive-exclude src/senaite/app/supermodel *
 recursive-exclude src *.pyc
+recursive-exclude tweets *
 recursive-exclude webpack *

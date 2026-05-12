@@ -137,8 +137,9 @@ def reindex_content_structure(portal):
         if recurse and hasattr(aq_base(obj), "objectValues"):
             map(reindex, obj.objectValues())
 
-    setup = api.get_setup()
-    setupitems = setup.objectValues()
+    # Get bika_setup for subfolder reindexing (analysisservices, etc.)
+    bika_setup = portal.get("bika_setup")
+    setupitems = bika_setup.objectValues() if bika_setup else []
     rootitems = portal.objectValues()
 
     for obj in itertools.chain(setupitems, rootitems):

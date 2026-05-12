@@ -7,6 +7,7 @@ import "intl-tel-input/build/css/intlTelInput.css";
 import QuerySelectWidgetController from "./queryselect/widget.js";
 import AddressWidgetController from "./addresswidget/widget.js";
 import SelectOtherWidgetController from "./selectother/widget.js";
+import MultiUploadWidgetController from "./multiupload/widget.js";
 
 // Helper to render React components safely using createRoot
 const safeRender = (Component, el, props = {}) => {
@@ -62,7 +63,6 @@ export const render_tinymce_widget = (el) => {
 
 // Phone Widget
 export const render_phone_widget = (el) => {
-  let id = el.dataset.intlTelInputId;
   let initial_country = el.dataset.initial_country;
   let preferred_countries = JSON.parse(el.dataset.preferred_countries);
   let error_codes = [
@@ -78,16 +78,22 @@ export const render_phone_widget = (el) => {
     preferredCountries: preferred_countries,
     // avoid that the dropdown is cropped in records widget
     dropdownContainer: document.body,
-    // https://github.com/jackocnr/intl-tel-input#utilities-script
-    utilsScript: "++plone++senaite.core.static/modules/intl-tel-input/js/utils.js"
+    // https://github.com/jackocnr/intl-tel-input?tab=readme-ov-file#getting-started-using-a-bundler-eg-webpack
+    loadUtils: () => import("intl-tel-input/utils"),
   });
-  // add event handler only once
-  if (id === undefined) {
+
+  // prevent duplicate listener by checking a flag
+  if (!el.dataset.intlTelInputAttached) {
     el.addEventListener("blur", () => {
-      // validation
+      console.debug("Input value:", el.value);
+      console.debug("Selected country:", iti.getSelectedCountryData());
+      console.debug("Is valid:", iti.isValidNumber());
+      console.debug("Formatted number:", iti.getNumber());
+
       let valid = iti.isValidNumber();
       let number = iti.getNumber();
       let field = el.closest(".field");
+
       if (valid) {
         field.classList.remove("error");
         field.title = "";
@@ -97,11 +103,17 @@ export const render_phone_widget = (el) => {
         let error_msg = error_codes[error_code];
         field.title = error_msg;
       }
-      // always set the number (even if validation failed!)
+
+      // store formatted number in hidden field
       let name = el.dataset.name;
       let hidden = document.querySelector(`input[name="${name}"]`);
-      hidden.value = number;
+      if (hidden) {
+        hidden.value = number;
+      }
     });
+
+    // mark as attached
+    el.dataset.intlTelInputAttached = "true";
   }
 
   return iti;
@@ -111,6 +123,14 @@ export const render_phone_widget = (el) => {
 export const render_selectother_widget = (el) => {
   const ref = safeRender(SelectOtherWidgetController, el, {
     root_class: "selectotherfield",
+  });
+  return ref;
+};
+
+// Multi-Upload Widget
+export const render_multiupload_widget = (el) => {
+  const ref = safeRender(MultiUploadWidgetController, el, {
+    root_class: "multiuploadfield",
   });
   return ref;
 };

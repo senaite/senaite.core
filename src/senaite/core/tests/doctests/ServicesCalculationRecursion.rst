@@ -44,14 +44,14 @@ that is referred in the Calculation's formula:
     >>> Ca = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Calcium", Keyword="Ca", Price="20", Category=category.UID())
     >>> Mg = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Magnesium", Keyword="Mg", Price="20", Category=category.UID())
 
-    >>> calc = api.create(bikasetup.bika_calculations, "Calculation", title="Total Hardness")
+    >>> calc = api.create(setup.calculations, "Calculation", title="Total Hardness")
     >>> calc.setFormula("[Ca] + [Mg]")
     >>> calc.getFormula()
     '[Ca] + [Mg]'
 
     >>> Ca.setCalculation(calc)
     >>> Ca.getCalculation()
-    <Calculation at /plone/bika_setup/bika_calculations/calculation-1>
+    <Calculation at /plone/setup/calculations/calculation-1>
 
     >>> deps = Ca.getServiceDependencies()
     >>> sorted(map(lambda d: d.getKeyword(), deps))
@@ -68,14 +68,14 @@ that is referred in the Calculation's formula:
 The other case is when the initial Service is referred indirectly, through a
 calculation a dependency is bound to:
 
-    >>> calc_mg = api.create(bikasetup.bika_calculations, "Calculation", title="Test")
+    >>> calc_mg = api.create(setup.calculations, "Calculation", title="Test")
     >>> calc_mg.setFormula("[Ca] + [Ca]")
     >>> calc_mg.getFormula()
     '[Ca] + [Ca]'
 
     >>> Mg.setCalculation(calc_mg)
     >>> Mg.getCalculation()
-    <Calculation at /plone/bika_setup/bika_calculations/calculation-2>
+    <Calculation at /plone/setup/calculations/calculation-2>
 
     >>> deps = Mg.getServiceDependencies()
     >>> sorted(map(lambda d: d.getKeyword(), deps))

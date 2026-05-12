@@ -52,6 +52,10 @@ Functional Helpers:
     ...         if ISubmitted.providedBy(analysis):
     ...             do_action_for(analysis, "retract")
 
+    >>> def reject_analyses(sample):
+    ...     for analysis in sample.getAnalyses(full_objects=True):
+    ...         do_action_for(analysis, "reject")
+
 Variables:
 
     >>> portal = self.portal
@@ -169,8 +173,25 @@ Removing an analyis Sample retains the assigned analyses:
     >>> ar1.getProfiles()
     []
 
-   >>> set(ar1.getAnalyses(full_objects=True)) == set(analyses)
-   True
+    >>> set(ar1.getAnalyses(full_objects=True)) == set(analyses)
+    True
+
+Let's receive the sample and reject all analyses:
+
+    >>> receive_sample(ar1)
+    >>> reject_analyses(ar1)
+
+    >>> map(api.get_review_status, ar1.getAnalyses())
+    ['rejected', 'rejected', 'rejected']
+
+Now we assign the same profile again:
+
+    >>> ar1.setProfiles(profile1)
+
+The rejected samples should not be re-assigned:
+
+    >>> map(api.get_review_status, ar1.getAnalyses())
+    ['rejected', 'rejected', 'rejected']
 
 
 Assigning Profiles in "to_be_verified" status

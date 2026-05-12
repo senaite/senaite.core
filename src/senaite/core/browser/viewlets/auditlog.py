@@ -37,7 +37,7 @@ class AuditlogDisabledViewlet(ViewletBase):
 
     @property
     def setup(self):
-        return api.get_setup()
+        return api.get_senaite_setup()
 
     def get_setup_url(self):
         """Return the absolute URL of the setup

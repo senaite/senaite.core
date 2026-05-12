@@ -404,5 +404,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (window.widgets.datagrid === undefined) {
     console.log("DataGrid::DOMContentLoaded");
     window.widgets.datagrid = new DataGrid();
+    //trigger custom event to let dependent components know that datagrid ready for work
+    window.widgets.datagrid.trigger_custom_event("datagrid:loaded")
   }
 });

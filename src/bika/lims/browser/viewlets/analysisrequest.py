@@ -27,12 +27,6 @@ from bika.lims.api.analysis import is_result_range_compliant
 from bika.lims.api.security import check_permission
 
 
-class InvalidAnalysisRequestViewlet(ViewletBase):
-    """ Current Analysis Request is invalid and display the link to the retest
-    """
-    template = ViewPageTemplateFile("templates/invalid_ar_viewlet.pt")
-
-
 class RetestAnalysisRequestViewlet(ViewletBase):
     """ Current Analysis Request is a retest. Display the link to the invalid
     """
@@ -52,7 +46,7 @@ class PrimaryAnalysisRequestViewlet(ViewletBase):
         # If current user is a client contact, rely on Setup's ShowPartitions
         client = api.get_current_client()
         if client:
-            if not api.get_setup().getShowPartitions():
+            if not api.get_senaite_setup().getShowPartitions():
                 return partitions
 
         partitions = self.context.getDescendants()

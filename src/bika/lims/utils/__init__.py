@@ -22,6 +22,7 @@ import mimetypes
 import os
 import re
 import tempfile
+import cgi
 from email import Encoders
 from email.MIMEBase import MIMEBase
 from time import time
@@ -33,6 +34,7 @@ from AccessControl import getSecurityManager
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from bika.lims import api
+from bika.lims.api import safe_unicode as u
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IClient
@@ -205,6 +207,20 @@ def formatDecimalMark(value, decimalmark='.'):
         return decimalmark.join(rawval.split('.'))
     except Exception:
         return rawval
+
+
+def formatTextResult(value, html=True):
+    """Format a string-like result value for display.
+
+    If html is True, the value is escaped and newline characters are
+    represented as ``<br/>``.
+    """
+    if not html:
+        return value
+
+    result = value if api.is_string(value) else str(value)
+    result = cgi.escape(result)
+    return result.replace("\n", "<br/>")
 
 
 # encode_header function copied from roundup's rfc2822 package.
@@ -661,12 +677,12 @@ def get_link(href, value=None, csrf=True, **kwargs):
     """
     if not href:
         return ""
-    anchor_value = value and value or href
+    anchor_value = value and u(value) or href
     attr = render_html_attributes(**kwargs)
     # Add a CSRF token
     if csrf and href.startswith("http"):
         href = addTokenToUrl(href)
-    return '<a href="{}" {}>{}</a>'.format(href, attr, anchor_value)
+    return u'<a href="{}" {}>{}</a>'.format(href, attr, anchor_value)
 
 
 def get_link_for(obj, **kwargs):

@@ -23,8 +23,10 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets.decimal import DecimalWidget
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
+from senaite.core.api import dtime
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.config import SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
@@ -47,11 +49,11 @@ from Products.Archetypes.Schema import Schema
 from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.utils import IntDisplayList
 from Products.Archetypes.Widget import BooleanWidget
-from Products.Archetypes.Widget import DecimalWidget
 from Products.Archetypes.Widget import IntegerWidget
 from Products.Archetypes.Widget import SelectionWidget
 from Products.Archetypes.Widget import StringWidget
 from Products.CMFCore.permissions import View
+from senaite.core.utils import format_supsub_unicode
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.catalog import SETUP_CATALOG
 from zope.interface import implements
@@ -115,8 +117,25 @@ Unit = StringField(
     )
 )
 
-# A selection of units that are able to update Unit. 
-UnitChoices = RecordsField(
+
+# A selection of units that are able to update Unit.
+class UnitChoicesField(RecordsField):
+    """Custom RecordsField that converts super/subscript
+    HTML tags to Unicode characters for display.
+    """
+
+    def getViewFor(self, instance, idx, subfield,
+                   joinWith=", "):
+        """Return Unicode-formatted value for display
+        """
+        raw = self.getRaw(instance)[idx].get(
+            subfield, "")
+        if type(raw) in (type(()), type([])):
+            raw = joinWith.join(raw)
+        return format_supsub_unicode(raw).strip()
+
+
+UnitChoices = UnitChoicesField(
     "UnitChoices",
     schemata="Description",
     type="UnitChoices",
@@ -1186,7 +1205,15 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         return: a dictionary with the keys "days", "hours" and "minutes"
         """
         tat = self.Schema().getField("MaxTimeAllowed").get(self)
-        return tat or self.bika_setup.getDefaultTurnaroundTime()
+        if tat:
+            return tat
+
+        value = self.bika_setup.getDefaultTurnaroundTime()
+        if isinstance(value, dict):
+            return value
+
+        # Convert timedelta to dict for AT format:
+        return dtime.timedelta_to_dict(value, default={})
 
     @security.public
     def getMaxHoldingTime(self):
@@ -1201,6 +1228,21 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         if api.to_minutes(**max_hold_time) <= 0:
             return {}
         return max_hold_time
+
+    def getResultOptionTextByValue(self, value, default=""):
+        """Returns the ResultText for a given ResultValue from the ResultOptions
+
+        :param value: The ResultValue of the option to be retrieved
+        :type value: str
+        :return: Result text
+        """
+        if value is None:
+            return default
+        options = self.getResultOptions() or []
+        for option in options:
+            if api.to_float(option.get("ResultValue")) == api.to_float(value):
+                return option.get("ResultText", default)
+        return default
 
     # TODO Remove. ResultOptionsType field was replaced by ResulType field
     def getResultOptionsType(self):

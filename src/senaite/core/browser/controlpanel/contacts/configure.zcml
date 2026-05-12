@@ -1,0 +1,25 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+  <!-- Contacts listing view -->
+  <browser:page
+      for="senaite.core.interfaces.IContacts"
+      name="view"
+      class=".view.ContactsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Contacts filter viewlet for global/all contacts toggle -->
+  <browser:viewlet
+      for="senaite.core.interfaces.IContacts"
+      name="senaite.core.contacts.filter"
+      manager="senaite.core.browser.viewlets.interfaces.IListingTableTitle"
+      class=".viewlet.ContactsFilterViewlet"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+</configure>

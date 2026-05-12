@@ -210,16 +210,9 @@ module.exports = {
           return { "legacy.js": min.code };
         }
       }, {
-        // legacy.css
-        src: [
-          "../src/senaite/core/browser/static/css/senaite.core.graphics.css",
-        ],
-        dest: code => ({
-          "legacy.css":new CleanCSS({}).minify(code).styles,
-        })
-      }, {
         // thirdparty.js
         src: [
+          "../src/senaite/core/browser/static/thirdparty/plone/jquery.tools.js",
           "../src/senaite/core/browser/static/thirdparty/plone/overlayhelpers.js",
           "../src/senaite/core/browser/static/thirdparty/jquery-barcode-2.2.0.min.js",
           "../src/senaite/core/browser/static/thirdparty/jquery-qrcode-0.17.0.min.js",
@@ -233,6 +226,7 @@ module.exports = {
         // legacy.css
         src: [
           "../src/senaite/core/browser/static/css/senaite.core.graphics.css",
+          "../src/senaite/core/browser/static/thirdparty/plone/overlays.css",
         ],
         dest: code => ({
           "legacy.css":new CleanCSS({}).minify(code).styles,
@@ -262,6 +256,7 @@ module.exports = {
         { from: "../node_modules/bootstrap-select/dist", to: path.resolve(staticPath, "modules/bootstrap-select") },
         { from: "../node_modules/bootstrap/dist", to: path.resolve(staticPath, "modules/bootstrap") },
         { from: "../node_modules/d3/dist", to: path.resolve(staticPath, "modules/d3") },
+        { from: "../node_modules/@fortawesome/fontawesome-free/webfonts", to: path.resolve(staticPath, "webfonts") },
         { from: "../node_modules/handlebars/dist", to: path.resolve(staticPath, "modules/handlebars") },
         { from: "../node_modules/intl-tel-input/build", to: path.resolve(staticPath, "modules/intl-tel-input") },
         { from: "../node_modules/jquery-form/dist", to: path.resolve(staticPath, "modules/jquery-form") },

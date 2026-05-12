@@ -14,15 +14,16 @@ Test Setup
 Needed Imports::
 
     >>> from bika.lims import api
-    >>> from bika.lims.api.analysisservice import get_calculation_dependencies_for
-    >>> from bika.lims.api.analysisservice import get_calculation_dependants_for
+    >>> from senaite.core.api.analysisservice import get_calculation_dependencies_for
+    >>> from senaite.core.api.analysisservice import get_calculation_dependants_for
 
 Variables::
 
     >>> portal = self.portal
     >>> request = self.request
     >>> setup = portal.bika_setup
-    >>> calculations = setup.bika_calculations
+    >>> senaite_setup = portal.setup
+    >>> calculations = senaite_setup.calculations
     >>> analysisservices = setup.bika_analysisservices
 
 Test user::

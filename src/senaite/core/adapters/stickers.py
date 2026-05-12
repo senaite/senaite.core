@@ -92,5 +92,5 @@ class GetSampleStickers(object):
     def get_setup_default_sticker(self):
         """Returns the default sticker from setup
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getAutoStickerTemplate()

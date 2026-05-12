@@ -24,7 +24,7 @@ import six
 
 from bika.lims import _
 from bika.lims import api
-from senaite.app.listing.view import ListingView
+from senaite.core.browser.listing.base import ListingView
 
 
 class DynamicAnalysisSpecView(ListingView):

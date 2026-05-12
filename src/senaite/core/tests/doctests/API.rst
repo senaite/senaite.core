@@ -94,6 +94,50 @@ Created objects are properly indexed::
     >>> brains[0].getKeyword
     'DUM'
 
+The core's ``IAfterAPICreatedObjectEvent`` is fired after a DX content is
+created via ``api.create()``. This event is useful for subscribers that need to
+act on the object after it has been fully initialized (UID assigned, fields
+set, snapshot taken)::
+
+    >>> from senaite.core.events.lifecycle import IAfterAPICreatedObjectEvent
+    >>> from zope.component import getGlobalSiteManager
+
+Register a dummy event handler that records events::
+
+    >>> initialized_events = []
+    >>> def on_initialized(obj, event):
+    ...     initialized_events.append((obj, event))
+    >>> gsm = getGlobalSiteManager()
+    >>> gsm.registerHandler(on_initialized, (None, IAfterAPICreatedObjectEvent))
+
+Create a DX content type via ``api.create()``::
+
+    >>> sampletype = api.create(
+    ...     portal.setup.sampletypes, "SampleType",
+    ...     title="Test SampleType", Prefix="TST")
+
+The event handler was called with the created object::
+
+    >>> len(initialized_events) > 0
+    True
+    >>> obj, event = initialized_events[-1]
+    >>> obj == sampletype
+    True
+    >>> IAfterAPICreatedObjectEvent.providedBy(event)
+    True
+
+The object is fully initialized when the event fires (has UID, is indexed)::
+
+    >>> api.get_uid(obj) is not None
+    True
+    >>> obj.Title()
+    'Test SampleType'
+
+Cleanup the event handler::
+
+    >>> gsm.unregisterHandler(on_initialized, (None, IAfterAPICreatedObjectEvent))
+    True
+
 
 Editing Content
 ...............
@@ -413,6 +457,29 @@ Catalog brains are also supported::
 
     >>> api.get_fields(brain).get("ClientID")
     <Field ClientID(string:rw)>
+
+You can also pass a Dexterity portal type name to get the fields for that type
+without needing an instance. This includes all fields from the main schema and
+behaviors::
+
+    >>> from collections import OrderedDict
+    >>> fields = api.get_fields("Contact")
+    >>> isinstance(fields, OrderedDict)
+    True
+
+The fields include all schema fields and behavior fields::
+
+    >>> "title" in fields
+    True
+
+    >>> "description" in fields
+    True
+
+    >>> "email_address" in fields
+    True
+
+Note: For Archetypes types, you must pass an object or brain instance, not a
+portal type string.
 
 
 Getting the ID of a Content
@@ -1090,38 +1157,21 @@ for the passed in object::
 
 
 
-Checking if an Object is Versionable
-....................................
-
-NOTE: Versioning is outdated!
-      This code will be removed as soon as we drop the `HistoryAwareReferenceField`
-      reference between Calculation and Analysis.
-
-Instruments are not versionable::
-
-    >>> api.is_versionable(instrument1)
-    False
-
-Calculations are versionable::
-
-    >>> calculations = bika_setup.bika_calculations
-    >>> calc = api.create(calculations, "Calculation", title="Calculation 1")
-
-    >>> api.is_versionable(calc)
-    True
-
-
 Getting the Version of an Object
 ................................
 
 This function returns the version as an integer::
 
+    >>> calc = api.create(portal.setup.calculations, "Calculation", title="Test Calculation")
+
     >>> api.get_version(calc)
     0
 
-Calling `processForm` bumps the version::
+Calling the modified event will create a new version::
 
-    >>> calc.processForm()
+    >>> from zope.lifecycleevent import modified
+
+    >>> modified(calc)
     >>> api.get_version(calc)
     1
 
@@ -1293,7 +1343,7 @@ But fails if we specify only `Contact` type:
 
 
 Getting the fullname of the user and/or contact
-..............................................
+...............................................
 
 Getting the fullname of the contact::
 
@@ -1387,6 +1437,78 @@ Unset the user again
 
     >>> contact1.unlinkUser(client_user)
     True
+
+
+Checking if an object is a Client Contact
+.........................................
+
+Let's create a first a client contact and lab contact for the test
+
+    >>> client_contact = api.create(client, "Contact", Firstname="Fred", Lastname="Flintstone")
+    >>> lab_contact = api.create(labcontacts, "LabContact", Firstname="Barney", Lastname="Rubble")
+
+First, we check if the object is a contact:
+
+    >>> api.is_contact(client_contact)
+    True
+
+It should also be a client contact:
+
+    >>> api.is_client_contact(client_contact)
+    True
+
+A lab contact should not be a identified as client contact:
+
+    >>> api.is_client_contact(lab_contact)
+    False
+
+
+Checking if an object is a global Contact
+.........................................
+
+Let's create a first a global contact for the test
+
+    >>> contacts = senaite_setup.contacts
+    >>> global_contact = api.create(contacts, "Contact", Firstname="Betty", Lastname="Rubble")
+
+First, we check if the object is a contact:
+
+    >>> api.is_contact(global_contact)
+    True
+
+It should also be a global contact:
+
+    >>> api.is_global_contact(global_contact)
+    True
+
+A client contact should not be identified as a global contact:
+
+    >>> api.is_global_contact(client_contact)
+    False
+
+A lab contact should not be a identified as global contact:
+
+    >>> api.is_global_contact(lab_contact)
+    False
+
+
+Checking if an object is a Lab Contact
+......................................
+
+First, we check if the object is a contact:
+
+    >>> api.is_contact(lab_contact)
+    True
+
+It should also be a lab contact:
+
+    >>> api.is_lab_contact(lab_contact)
+    True
+
+A client contact should not be a identified as lab contact:
+
+    >>> api.is_lab_contact(client_contact)
+    False
 
 
 Creating a Cache Key
@@ -1974,6 +2096,34 @@ Empty strings are returned unchanged:
     >>> api.text_to_html(text, wrap="div")
     ''
 
+Converting a value to unicode
+.............................
+
+This function converts a value to unicode:
+
+    >>> api.safe_unicode("ä")
+    u'\xe4'
+
+    >>> api.safe_unicode("1337")
+    u'1337'
+
+    >>> api.safe_unicode(u"1337")
+    u'1337'
+
+    >>> api.safe_unicode(1337)
+    u'1337'
+
+    >>> api.safe_unicode(1337L)
+    u'1337'
+
+    >>> api.safe_unicode([1,2,3])
+    u'[1, 2, 3]'
+
+None values just return the default:
+
+    >>> api.safe_unicode(None)
+    u''
+
 
 Converting a string to UTF8
 ...........................
@@ -2329,6 +2479,46 @@ Even from `uid_catalog`:
     >>> any(uc(UID=uid))
     False
 
+The `uid_catalog` keys AT and DX content with different path conventions:
+AT content is keyed by the path **relative** to the portal root, while
+DX content is keyed by the **absolute** path. The function takes care of
+both variants so that no stale path is left behind.
+
+The AT relative path key for the client is gone after un-cataloging:
+
+    >>> at_rel_path = "/".join(client.getPhysicalPath()[2:])
+    >>> at_rel_path in uc._catalog.uids
+    False
+
+The same function works for Dexterity content. Create a fresh DX object
+to verify:
+
+    >>> dx_obj = api.create(
+    ...     portal.setup.sampletypes, "SampleType",
+    ...     title="Catalog Test SampleType", Prefix="CTS")
+    >>> dx_uid = api.get_uid(dx_obj)
+    >>> dx_catalogs = api.get_catalogs_for(dx_obj)
+    >>> all(cat(UID=dx_uid) for cat in dx_catalogs)
+    True
+    >>> any(uc(UID=dx_uid))
+    True
+
+Un-cataloging removes it from the registered catalogs and from
+`uid_catalog`:
+
+    >>> api.uncatalog_object(dx_obj)
+    >>> any(cat(UID=dx_uid) for cat in dx_catalogs)
+    False
+    >>> any(uc(UID=dx_uid))
+    False
+
+The DX absolute path key in `uid_catalog` is also gone:
+
+    >>> dx_abs_path = "/".join(dx_obj.getPhysicalPath())
+    >>> dx_abs_path in uc._catalog.uids
+    False
+
+
 Catalog an object
 .................
 
@@ -2345,6 +2535,50 @@ Even in `uid_catalog`:
 
     >>> uc = api.get_tool("uid_catalog")
     >>> len(uc(UID=uid)) == 1
+    True
+
+The AT content is keyed in `uid_catalog` by its relative path:
+
+    >>> at_rel_path in uc._catalog.uids
+    True
+
+It works for Dexterity content too, which is keyed in `uid_catalog`
+by its absolute path:
+
+    >>> api.catalog_object(dx_obj)
+    >>> all(cat(UID=dx_uid) for cat in dx_catalogs)
+    True
+    >>> len(uc(UID=dx_uid)) == 1
+    True
+    >>> dx_abs_path in uc._catalog.uids
+    True
+
+
+Recursive (un)cataloging
+........................
+
+Both functions accept a `recursive` argument to walk children. The
+`client` already holds children created in earlier sections of this
+test, so we can reuse them:
+
+    >>> child_uids = [api.get_uid(c) for c in client.objectValues()]
+    >>> child_uids and all(any(uc(UID=cuid)) for cuid in child_uids)
+    True
+
+Un-cataloging the parent recursively also un-catalogs the children:
+
+    >>> api.uncatalog_object(client, recursive=True)
+    >>> any(uc(UID=uid))
+    False
+    >>> any(any(uc(UID=cuid)) for cuid in child_uids)
+    False
+
+Re-cataloging the parent recursively brings the children back:
+
+    >>> api.catalog_object(client, recursive=True)
+    >>> any(uc(UID=uid))
+    True
+    >>> all(any(uc(UID=cuid)) for cuid in child_uids)
     True
 
 
@@ -2400,7 +2634,7 @@ Move the contact to the destination client:
     >>> dest.hasObject(id)
     False
     >>> contact
-    <Contact at /plone/clients/client-5/contact-2>
+    <Contact at /plone/clients/client-5/contact-4>
     >>> contact = api.move_object(contact, dest, check_constraints=False)
     >>> api.get_parent(contact) == dest
     True
@@ -2409,7 +2643,7 @@ Move the contact to the destination client:
     >>> orig.hasObject(id)
     False
     >>> contact
-    <Contact at /plone/clients/client-6/contact-2>
+    <Contact at /plone/clients/client-6/contact-4>
 
 It does nothing if destination is the same as the origin:
 
@@ -2422,7 +2656,7 @@ Trying to move the object into itself is not possible:
     >>> api.move_object(contact, contact)
     Traceback (most recent call last):
     [...]
-    ValueError: Cannot move object into itself: <Contact at contact-2>
+    ValueError: Cannot move object into itself: <Contact at contact-4>
 
 Trying to move an object to another folder without permissions is not possible:
 
@@ -2441,7 +2675,7 @@ Unless we grant enough permissions to remove the object from origin:
     >>> dest.hasObject(id)
     False
     >>> contact
-    <Contact at /plone/clients/client-5/contact-2>
+    <Contact at /plone/clients/client-5/contact-4>
 
 Still, destination container must allow the object's type:
 
@@ -2522,9 +2756,71 @@ It also takes invariants into consideration:
     >>> api.validate(category)
     {}
 
-It is also possible to validate standard DX content types:
+    >>> category.sort_key = None
+    >>> api.validate(category)
+    {}
+
+And handles missing values for native string fields gracefully:
+
+    >>> suppliers = self.portal.setup.suppliers
+    >>> data = {
+    ...     "title": "My supplier",
+    ... }
+    >>> supplier = api.create(suppliers, "Supplier", **data)
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.phone = ""
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.phone = None
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.email = "my@email.com"
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.email = "wrong"
+    >>> api.validate(supplier)
+    {'email': u'wrong'}
+
+    >>> supplier.email = "wrong@email"
+    >>> api.validate(supplier)
+    {'email': u'wrong@email'}
+
+    >>> supplier.email = ""
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.email = None
+    >>> api.validate(supplier)
+    {}
+
+Empties and unicode types are supported:
+
+    >>> supplier.phone = u""
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.phone=u"612345678"
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.email = u""
+    >>> api.validate(supplier)
+    {}
+
+    >>> supplier.email=u"my@email.com"
+    >>> api.validate(supplier)
+    {}
+
+It is also possible to validate standard AT content types:
 
     >>> client = self.portal.clients["client-1"]
+    >>> api.validate(client)
+    {'ClientID': u'Client ID is required, please correct.'}
 
 A standard Plone folder:
 
@@ -2547,7 +2843,7 @@ the system:
 
     >>> portal_types = api.get_portal_types()
     >>> sorted(portal_types)
-    ['ARReport', 'ARTemplate', 'ARTemplates', ..., 'WorksheetTemplates']
+    ['ARReport', 'ARTemplate', 'ARTemplates', ..., 'Worksheets']
 
 
 Check if an id is valid

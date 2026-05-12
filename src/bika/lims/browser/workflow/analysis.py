@@ -100,7 +100,9 @@ class WorkflowActionSubmitAdapter(WorkflowActionGenericAdapter):
             analysis.setUncertainty(uncertainty)
 
             # Save detection limit
-            dlimit = self.get_form_value("DetectionLimitOperand", uid, "")
+            default = analysis.getDetectionLimitOperand()
+            dlimit = self.get_form_value("DetectionLimitOperand", uid,
+                                         default=default)
             analysis.setDetectionLimitOperand(dlimit)
 
             # Interim fields

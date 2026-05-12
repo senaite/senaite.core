@@ -18,9 +18,14 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from contextlib import contextmanager
+
 import six
 from AccessControl import getSecurityManager
 from AccessControl.Permission import Permission
+from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import setSecurityManager
+from AccessControl.SpecialUsers import system as system_user
 from bika.lims import api
 from bika.lims.api.user import get_user
 from bika.lims.api.user import get_user_id
@@ -355,3 +360,47 @@ def manage_permission_for(brain_or_object, permission, roles, acquire=0):
 
     # Raise an error if the permission is invalid
     raise ValueError("The permission {} is invalid.".format(permission))
+
+
+@contextmanager
+def as_privileged_user():
+    """Context manager to execute code with system (privileged) user permissions
+
+    This allows operations that require elevated privileges (e.g., deleting
+    objects) even when the current user doesn't have the required permissions.
+
+    The security manager is always restored after the operation, even if an
+    exception occurs within the context.
+
+    Example usage:
+        >>> from bika.lims import api
+        >>> from AccessControl import getSecurityManager
+        >>>
+        >>> # Get current user before entering privileged context
+        >>> current_user = api.get_current_user()
+        >>> current_user.getId()  # doctest: +ELLIPSIS
+        '...'
+        >>>
+        >>> # Enter privileged context
+        >>> with api.security.as_privileged_user():
+        ...     sm = getSecurityManager()
+        ...     user = sm.getUser()
+        ...     user.getUserName()
+        'System Processes'
+        >>>
+        >>> # Security manager is restored after context exit
+        >>> restored_user = api.get_current_user()
+        >>> restored_user.getId() == current_user.getId()
+        True
+
+    :yields: None
+    """
+    # Save current security manager
+    old_sm = getSecurityManager()
+    try:
+        # Switch to system user with unrestricted access
+        newSecurityManager(None, system_user)
+        yield
+    finally:
+        # Always restore the original security manager
+        setSecurityManager(old_sm)

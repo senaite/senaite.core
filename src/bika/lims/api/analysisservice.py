@@ -28,15 +28,15 @@ from bika.lims.catalog import SETUP_CATALOG
 RX_SERVICE_KEYWORD = r"[^A-Za-z\w\d\-_]"
 
 
-def get_calculation_dependants_for(service):
+def get_calculation_dependents_for(service):
     """Collect all services which depend on this service
 
     :param service: Analysis Service Object/ZCatalog Brain
     :returns: List of services that depend on this service
     """
 
-    def calc_dependants_gen(service, collector=None):
-        """Generator for recursive resolution of dependant sevices.
+    def calc_dependents_gen(service, collector=None):
+        """Generator for recursive resolution of dependent sevices.
         """
 
         # The UID of the service
@@ -50,7 +50,7 @@ def get_calculation_dependants_for(service):
         if service_uid in collector:
             raise StopIteration
 
-        # Get the dependant calculations of the service
+        # Get the dependent calculations of the service
         # (calculations that use the service in their formula).
         calc_uids = get_backreferences(
             service, relationship="CalculationDependentServices")
@@ -61,7 +61,7 @@ def get_calculation_dependants_for(service):
 
             # Get the Analysis Services which have this calculation assigned
             dep_service_uids = get_backreferences(
-                calc, relationship='AnalysisServiceCalculation')
+                calc, relationship="AnalysisServiceCalculation")
 
             for dep_service_uid in dep_service_uids:
                 dep_service = api.get_object_by_uid(dep_service_uid)
@@ -72,22 +72,22 @@ def get_calculation_dependants_for(service):
                 # yield the dependent service
                 yield dep_service
 
-                # check the dependants of the dependant services
-                for ddep_service in calc_dependants_gen(
+                # check the dependents of the dependent services
+                for ddep_service in calc_dependents_gen(
                         dep_service, collector=collector):
                     yield ddep_service
 
-    dependants = {}
+    dependents = {}
     service = api.get_object(service)
 
-    for dep_service in calc_dependants_gen(service):
+    for dep_service in calc_dependents_gen(service):
         # Skip the initial (requested) service
         if dep_service == service:
             continue
         uid = api.get_uid(dep_service)
-        dependants[uid] = dep_service
+        dependents[uid] = dep_service
 
-    return dependants
+    return dependents
 
 
 def get_calculation_dependencies_for(service):
@@ -152,12 +152,12 @@ def get_service_dependencies_for(service):
     """Calculate the dependencies for the given service.
     """
 
-    dependants = get_calculation_dependants_for(service)
+    dependents = get_calculation_dependents_for(service)
     dependencies = get_calculation_dependencies_for(service)
 
     return {
         "dependencies": dependencies.values(),
-        "dependants": dependants.values(),
+        "dependents": dependents.values(),
     }
 
 

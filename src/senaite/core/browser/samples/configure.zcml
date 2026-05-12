@@ -44,6 +44,21 @@
       permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore" />
 
+  <!-- Invalidation of samples
+
+       NOTE:
+
+       We use the permission `zope2.View` to allow client shared roles to access
+       the view from the global samples listing, which is above the client context
+       where the roles are applied!
+  -->
+  <browser:page
+      for="*"
+      name="invalidate_samples"
+      class=".invalidate_samples.InvalidateSamplesView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"/>
+
   <!-- Multi Results View
 
        NOTE:

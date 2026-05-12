@@ -205,3 +205,19 @@ class EditForm(EditFormAdapterBase):
         else:
             self.add_show_field("ResultOptions")
             self.add_show_field("ResultOptionsSorting")
+
+        # do not display the fields related with the manual entry of detection
+        # limits unless the result type is numeric. Otherwise users could
+        # select a detection limit from the dropdown during result entry while
+        # also entering a string-based result. Because the system would
+        # interpret the result as non-numeric, the detection limit would be
+        # treated as not applicable and, consequently, not displayed in the
+        # final result
+        if result_type == "numeric":
+            self.add_show_field("DetectionLimitSelector")
+            self.add_show_field("AllowManualDetectionLimit")
+        else:
+            self.add_hide_field("DetectionLimitSelector")
+            self.add_hide_field("AllowManualDetectionLimit")
+            self.add_update_field("DetectionLimitSelector", False)
+            self.add_update_field("AllowManualDetectionLimit", False)

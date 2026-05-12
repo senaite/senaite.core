@@ -27,7 +27,16 @@
             <table class="table table-sm small">
               <colgroup>
                 <col style="width:20%"/>
+                <col style="width:60%"/>
+                <col style="width:20%"/>
               </colgroup>
+              <thead>
+                <tr>
+                  <th i18n:translate="set_analysis_conditions_colname_condition">Condition</th>
+                  <th i18n:translate="set_analysis_conditions_colname_value">Value</th>
+                  <th i18n:translate="set_analysis_conditions_colname_report">Show in report</th>
+                </tr>
+              </thead>
               <tal:condition repeat="condition conditions">
                 <tr tal:define="required python:condition.get('required') == 'on';
                                 is_checkbox python:condition.get('type') == 'checkbox';
@@ -94,6 +103,12 @@
                          tal:attributes="href attachment/download_url"/>
                     </div>
 
+                  </td>
+                  <td>
+                    <!-- Toggle to display/hide in results report -->
+                    <input type="checkbox"
+                           name="conditions.report:records"
+                           tal:attributes="checked python:condition.get('report', 'off') == 'on' or None"/>
                   </td>
                 </tr>
               </tal:condition>

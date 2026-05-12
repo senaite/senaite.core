@@ -90,6 +90,16 @@ class SelectOtherWidget(StringWidget):
             return func(context)
         return None
 
+    def get_value_text(self, context, field):
+        """Returns the field value's text
+        """
+        value = field.get(context) or ""
+        choices = self.get_choices(context, field)
+        text = dict(choices).get(value)
+        if text:
+            return text
+        return value
+
     def get_choices(self, context, field):
         """Returns the predefined options for this field
         """

@@ -144,57 +144,59 @@ class Address extends React.Component {
 
   render() {
     return (
-      <div>
-          <AddressField
-            id={this.get_input_id("country")}
-            name={this.get_input_name("country")}
-            label={this.props.labels.country}
-            value={this.state.country}
-            locations={this.props.countries}
-            onChange={this.on_country_change} />
+      <div className="address-container">
+        <AddressField
+          id={this.get_input_id("country")}
+          name={this.get_input_name("country")}
+          label={this.props.labels.country}
+          value={this.state.country}
+          locations={this.props.countries}
+          onChange={this.on_country_change} />
 
-          <AddressField
-            id={this.get_input_id("subdivision1")}
-            name={this.get_input_name("subdivision1")}
-            label={this.get_label("subdivision1")}
-            value={this.state.subdivision1}
-            locations={this.get_subdivisions1()}
-            onChange={this.on_subdivision1_change} />
+        <AddressField
+          id={this.get_input_id("subdivision1")}
+          name={this.get_input_name("subdivision1")}
+          label={this.get_label("subdivision1")}
+          value={this.state.subdivision1}
+          locations={this.get_subdivisions1()}
+          onChange={this.on_subdivision1_change} />
 
-          <AddressField
-            id={this.get_input_id("subdivision2")}
-            name={this.get_input_name("subdivision2")}
-            label={this.get_label("subdivision2")}
-            value={this.state.subdivision2}
-            locations={this.get_subdivisions2()}
-            onChange={this.on_subdivision2_change} />
+        <AddressField
+          id={this.get_input_id("subdivision2")}
+          name={this.get_input_name("subdivision2")}
+          label={this.get_label("subdivision2")}
+          value={this.state.subdivision2}
+          locations={this.get_subdivisions2()}
+          onChange={this.on_subdivision2_change} />
 
-          <AddressField
-            id={this.get_input_id("city")}
-            name={this.get_input_name("city")}
-            label={this.props.labels.city}
-            value={this.state.city}
-            onChange={this.on_city_change} />
+        <AddressField
+          id={this.get_input_id("city")}
+          name={this.get_input_name("city")}
+          label={this.props.labels.city}
+          value={this.state.city}
+          onChange={this.on_city_change} />
 
-          <AddressField
-            id={this.get_input_id("zip")}
-            name={this.get_input_name("zip")}
-            label={this.props.labels.zip}
-            value={this.state.zip}
-            onChange={this.on_zip_change} />
+        <AddressField
+          id={this.get_input_id("zip")}
+          name={this.get_input_name("zip")}
+          label={this.props.labels.zip}
+          value={this.state.zip}
+          onChange={this.on_zip_change} />
 
-          <AddressField
-            id={this.get_input_id("address")}
-            name={this.get_input_name("address")}
-            label={this.props.labels.address}
-            value={this.state.address}
-            onChange={this.on_address_change} />
+        <AddressField
+          type="textarea"
+          cols="30"
+          rows="2"
+          id={this.get_input_id("address")}
+          name={this.get_input_name("address")}
+          label={this.props.labels.address}
+          value={this.state.address}
+          onChange={this.on_address_change} />
 
-          <input type="hidden"
-            id={this.get_input_id("type")}
-            name={this.get_input_name("type")}
-            value={this.state.address_type} />
-
+        <input type="hidden"
+          id={this.get_input_id("type")}
+          name={this.get_input_name("type")}
+          value={this.state.address_type} />
       </div>
     );
   }

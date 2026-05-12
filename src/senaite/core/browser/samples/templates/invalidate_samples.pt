@@ -1,0 +1,168 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+
+  <head>
+    <metal:block fill-slot="senaite_legacy_resources"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+    </metal:block>
+  </head>
+
+  <body>
+
+    <!-- Title -->
+    <metal:title fill-slot="content-title">
+      <h2 i18n:translate="" class="d-inline align-middle">
+        Sample Invalidation
+      </h2>
+    </metal:title>
+
+    <!-- Description -->
+    <metal:description fill-slot="content-description">
+      Use this form to invalidate one or more samples. Invalidating a sample
+      will mark it as no longer valid and may impact associated records or
+      reports. Please ensure that all required fields are completed and
+      double-check the details before proceeding. If you do not wish to
+      invalidate the sample(s), click 'Cancel' to return to the previous page.
+    </metal:description>
+
+    <!-- Content -->
+    <metal:core fill-slot="content-core">
+
+      <div class="d-flex mb-3">
+        <a href="#" class="btn btn-outline-secondary"
+           tal:attributes="href python:context.absolute_url()"
+           i18n:translate="">
+            &larr; Go back</a>
+      </div>
+
+      <div id="invalidate-samples-view"
+           tal:define="reason_required view/is_reason_required">
+
+        <form class="form senaite-form"
+              id="invalidate_samples_form"
+              name="invalidate_samples_form"
+              method="POST">
+
+          <!-- Hidden Fields -->
+          <input type="hidden" name="submitted" value="1"/>
+          <input tal:replace="structure context/@@authenticator/authenticator"/>
+
+          <tal:samples repeat="sample view/get_samples_data">
+
+            <!-- Remember the initial UIDs coming in -->
+            <input type="hidden" name="uids:list"
+                   tal:attributes="value sample/uid"/>
+
+            <div class="card mb-3"
+                 tal:define="num repeat/sample/number">
+
+              <div class="card-header">
+                <!-- Client -->
+                <div class="d-flex">
+                  <div tal:content="sample/client_title"></div>
+                </div>
+                <!-- Sample ID -->
+                <div class="d-inline-flex">
+                  <a href="#"
+                     class="font-weight-bold text-decoration-none"
+                     target="_blank"
+                     tal:content="sample/title"
+                     tal:attributes="href sample/url">
+                  </a>
+                </div>
+                <!-- Sample Type -->
+                <div class="d-inline-flex">
+                  <div tal:content="sample/sample_type"></div>
+                </div>
+              </div>
+
+              <div class="card-body">
+
+                <input type="hidden" name="samples.uid:records"
+                       tal:attributes="value sample/uid"/>
+
+                <!-- Invalidation reason -->
+                <div class="form-group has-validation">
+                  <label class="font-weight-bold formQuestion mb-2">
+                    <span i18n:translate="">Invalidation reason</span>
+                    <span class="fieldRequired"
+                          tal:condition="reason_required"
+                          i18n:attributes="title title_required;"
+                          title="Required">&nbsp;</span>
+                    <span class="formHelp discreet help-block-small"
+                          i18n:translate="">
+                    Please provide a comment explaining the reason for
+                    invalidating the sample. If the email notification option
+                    is selected, the sample contact will be informed, and this
+                    comment will be included in the email content.
+                    </span>
+                  </label>
+
+                  <tal:required condition="reason_required">
+                    <textarea rows="5" class="form-control"
+                              name="samples.reason:records"
+                              tal:attributes="id string:reason-${num}"
+                              required></textarea>
+                      <div class="invalid-feedback" i18n:translate="">
+                        Please provide the reason for invalidating the sample.
+                      </div>
+                  </tal:required>
+
+                  <tal:non_required condition="not:reason_required">
+                    <textarea rows="5" class="form-control"
+                              name="samples.reason:records"
+                              tal:attributes="id string:reason-${num}"></textarea>
+                  </tal:non_required>
+
+                </div>
+
+                <!-- Send email notification -->
+                <div class="form-group field"
+                  tal:define="recipients sample/recipients">
+                  <input type="checkbox" checked
+                         name="samples.notify:records"
+                         id="input-email-notification"
+                         tal:condition="recipients"/>
+                  <label class="font-weight-bold" for="input-email-notification" i18n:translate="">
+                    Email notification
+                  </label>
+                  <div class="text-secondary form-text small"
+                       i18n:translate="" tal:condition="recipients">
+                    Send an email notification to
+                    <span i18n:name="recipients"
+                          tal:replace="python: ', '.join(recipients)"></span>
+                  </div>
+                  <div class="text-secondary form-text small"
+                       tal:condition="not:recipients"
+                       i18n:translate="">
+                    No email recipients available for this sample
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </tal:samples>
+
+          <!-- Form Controls -->
+          <div>
+            <!-- Continue -->
+            <input class="btn btn-danger btn-sm"
+                   type="submit"
+                   name="button_invalidate"
+                   i18n:attributes="value"
+                   value="Invalidate"/>
+            <!-- Cancel -->
+            <input class="btn btn-secondary btn-sm"
+                   type="submit"
+                   name="button_cancel"
+                   i18n:attributes="value"
+                   value="Cancel"/>
+          </div>
+        </form>
+      </div>
+    </metal:core>
+  </body>
+</html>

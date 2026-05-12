@@ -4,8 +4,10 @@
   */
   var EmailController;
 
-  // DOCUMENT READY ENTRY POINT
-  document.addEventListener("DOMContentLoaded", function() {
+  // WINDOW LOAD ENTRY POINT
+  // Use 'load' instead of 'DOMContentLoaded' to ensure all scripts
+  // (including thirdparty.js with prepOverlay) are fully executed
+  window.addEventListener("load", function() {
     var controller;
     console.debug("*** Loading Email Controller");
     controller = new EmailController();

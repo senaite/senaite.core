@@ -47,13 +47,13 @@ class RejectSamplesView(BrowserView):
     def is_notification_enabled(self):
         """Returns whether the notification on sample rejection is enabled
         """
-        return api.get_setup().getNotifyOnSampleRejection()
+        return api.get_senaite_setup().getNotifyOnSampleRejection()
 
     @property
     def is_rejection_workflow_enabled(self):
         """Return whether the rejection workflow is enabled
         """
-        return api.get_setup().isRejectionWorkflowEnabled()
+        return api.get_senaite_setup().isRejectionWorkflowEnabled()
 
     def __call__(self):
         form = self.request.form
@@ -148,7 +148,8 @@ class RejectSamplesView(BrowserView):
     def get_rejection_reasons(self):
         """Returns the list of available rejection reasons
         """
-        return api.get_setup().getRejectionReasonsItems()
+        setup = api.get_senaite_setup()
+        return setup.getRejectionReasons()
 
     def get_samples_data(self):
         """Returns a list of Samples data (dictionary)

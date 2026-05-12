@@ -2,4 +2,14 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser">
 
+  <!-- Custom edit view for SENAITE Setup to remove 'Edit' from title -->
+  <browser:page
+      for="senaite.core.interfaces.ISetup"
+      name="edit"
+      class=".edit.SetupEditView"
+      template="../dexterity/templates/edit.pt"
+      permission="cmf.ModifyPortalContent"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
 </configure>

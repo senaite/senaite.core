@@ -871,6 +871,11 @@ class IReceived(Interface):
     """
 
 
+class IInvalidated(Interface):
+    """Marker interface for invalidated objects
+    """
+
+
 class IRejected(Interface):
     """Marker interface for rejected objects
     """

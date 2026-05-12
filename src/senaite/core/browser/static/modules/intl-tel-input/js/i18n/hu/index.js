@@ -1,0 +1,18 @@
+const interfaceTranslations = {
+  selectedCountryAriaLabel: "Kiválasztott ország",
+  noCountrySelected: "Nincs ország kiválasztva",
+  countryListAriaLabel: "Országok listája",
+  searchPlaceholder: "Keresés",
+  clearSearchAriaLabel: "Keresés törlése",
+  searchEmptyState: "Nincs találat",
+  searchSummaryAria(count) {
+    if (count === 0) {
+      return "Nincs találat";
+    }
+    if (count === 1) {
+      return "1 találat";
+    }
+    return `${count} találat`;
+  }
+};
+export default interfaceTranslations;

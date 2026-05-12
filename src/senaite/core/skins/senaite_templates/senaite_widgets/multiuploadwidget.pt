@@ -1,0 +1,84 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+  <body>
+
+    <!-- VIEW MACRO -->
+    <metal:view_macro define-macro="view">
+      <div metal:define-slot="inside"
+           tal:define="value python:accessor();
+                       refs python:widget.get_value(context, field, value)">
+        <ul class="list-unstyled d-table-row">
+          <li tal:repeat="ref refs" class="d-inline-block">
+            <tal:ref tal:define="rendered python:widget.render_reference(context, field, ref)">
+              <div tal:condition="python:rendered"
+                   class="p-1 mb-1 mr-1 bg-light border rounded">
+                <span tal:replace="structure rendered"/>
+              </div>
+              <div tal:condition="python:not rendered" class="text-danger">
+                <span tal:attributes="title string:broken reference ${ref}"
+                      tal:content="ref"></span>
+              </div>
+            </tal:ref>
+          </li>
+        </ul>
+      </div>
+    </metal:view_macro>
+
+    <!-- EDIT MACRO -->
+    <metal:edit_macro define-macro="edit">
+      <tal:values define="value python:field.getEditAccessor(here)() or [];
+                          session_value python:here.session_restore_value(fieldName, value);
+                          cached_value python:request.get(fieldName, session_value);
+                          value python:cached_value or value;
+                          required field/required|nothing;
+                          required python: required and 'required' or None;
+                          error_id python:errors.get(fieldName);
+                          i18n_domain field/widget/i18n_domain|context/i18n_domain|string:plone;">
+
+        <tal:ifLabel tal:condition="not: widget/render_own_label | nothing">
+          <label class="formQuestion"
+                 tal:attributes="for python:fieldName">
+            <span tal:replace="python:widget.Label(here)"
+                  i18n:translate="" />
+            <span class="required"
+                  tal:condition="field/required"
+                  title="Required"
+                  i18n:attributes="title title_required;">&nbsp;</span>
+            <span class="formHelp"
+                  tal:define="description python:widget.Description(here)"
+                  tal:content="structure description"
+                  tal:attributes="id string:${fieldName}_help"
+                  i18n:translate="">
+              Help
+            </span>
+          </label>
+        </tal:ifLabel>
+
+        <!-- Multi-Upload Widget Container -->
+        <div tal:define="widget_attrs python:field.widget.get_input_widget_attributes(context, field, value);
+                         existing_files python:field.widget.get_existing_files_data(context, field, value);"
+             tal:attributes="id python:fieldName;
+                             class python: test(error_id, 'field error ' + 'Archetypes' + widget.getName(), 'field ' + 'Archetypes' + widget.getName()) + ' ' + widget.klass;
+                             data-required python:required and '1' or '0';
+                             data-existing_files python:existing_files;
+                             python:widget_attrs;">
+          <!-- ReactJS multiupload widget will be rendered here -->
+
+        <!-- Hidden input field to store the current UIDs (for display only) -->
+        <input type="hidden"
+               tal:attributes="name python:fieldName;
+                               value python:'\r\n'.join(field.widget.get_value(context, field, value))" />
+        </div>
+
+        <div class="fieldErrorBox" tal:condition="required"></div>
+        <div class="fieldErrorBox" tal:content="error_id" i18n:translate=""></div>
+
+      </tal:values>
+    </metal:edit_macro>
+
+  </body>
+</html>

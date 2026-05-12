@@ -64,6 +64,7 @@
       for="plone.dexterity.interfaces.IDexterityContent"
       name="edit"
       class=".views.SenaiteDefaultEditView"
+      template="templates/edit.pt"
       permission="cmf.ModifyPortalContent"
       layer="senaite.core.interfaces.ISenaiteCore"
       />

@@ -25,7 +25,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
-from bika.lims.browser.bika_listing import BikaListingView
+from senaite.core.browser.listing.base import ListingView
 from bika.lims.browser.chart.analyses import EvolutionChart
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
@@ -179,7 +179,7 @@ class ReferenceAnalysesView(AnalysesView):
         return item
 
 
-class ReferenceResultsView(BikaListingView):
+class ReferenceResultsView(ListingView):
     """Listing of all reference results
     """
 
@@ -306,7 +306,7 @@ class ReferenceResultsView(BikaListingView):
         return item
 
 
-class ReferenceSamplesView(BikaListingView):
+class ReferenceSamplesView(ListingView):
     """Main reference samples folder view
     """
 

@@ -3,7 +3,9 @@ import I18N from "./components/i18n.js";
 import {i18n, _t, _p} from "./i18n-wrapper.js"
 import EditForm from "./components/editform.js"
 import Site from "./components/site.js"
-import Sidebar from "./components/sidebar.js"
+import CalculationEditForm from "./components/calculationeditform.js"
+import {initSidebar} from "./sidebar"
+import FormTabbing from "./components/formtabbing.js"
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -20,10 +22,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize Site
   window.site = new Site();
 
-  // Initialize Sidebar
-  window.sidebar = new Sidebar({
-    "el": "sidebar",
-  });
+  // Initialize SENAITE core namespace
+  window.senaite = window.senaite || {};
+  window.senaite.core = window.senaite.core || {};
+
+  // Initialize React Sidebar
+  window.senaite.core.sidebar = initSidebar();
+
+  // BBB: Keep legacy reference for backwards compatibility
+  window.sidebar = window.senaite.core.sidebar;
 
   // Ajax Edit Form Handler
   var form = new EditForm({
@@ -42,11 +49,23 @@ document.addEventListener("DOMContentLoaded", () => {
     ]
   })
 
+  document.body.addEventListener("datagrid:loaded", (event) => {
+    // Init custom CalculationEditForm
+    var calculationEditForm = new CalculationEditForm()
+  });
+
   // Init Tooltips
   $(function () {
     $("[data-toggle='tooltip']").tooltip();
     $("select.selectpicker").selectpicker();
   });
+
+  // Initialize Form Tabbing if tabs are found
+  const tabs = document.querySelectorAll(".nav-tabs a[data-toggle='tab']");
+  if (tabs.length > 0) {
+    const formTabbing = new FormTabbing();
+    formTabbing.init();
+  }
 
   // Reload the whole view if the status of the view's context has changed
   // due to the transition submission of some items from the listing
@@ -72,7 +91,25 @@ document.addEventListener("DOMContentLoaded", () => {
     // reload the entire page if workflow state of the view context changed
     if (old_workflow_state != new_workflow_state) {
       location.reload();
+      return;
     }
+
+    // reload for specific transition and items
+    let transition = event.detail.transition;
+    let items = event.detail.folderitems;
+    let uids = event.detail.uids;
+    // filter items that weren't transitioned
+    items = items.filter((item) => uids.includes(item.uid));
+    // iterate over transitioned items and reload if flagged to do so
+    for (let item of items) {
+      let reload = item.hasOwnProperty("reload") ? item.reload : [];
+      if (reload.includes(transition)) {
+        // this item was transitioned and flagged with "reload"
+        location.reload();
+        return;
+      }
+    }
+
   });
 
 

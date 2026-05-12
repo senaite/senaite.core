@@ -1,0 +1,59 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="z3c.form">
+
+    <!-- Remarks Widget -->
+    <adapter
+        factory=".widget.RemarksWidgetFactory"
+        for="senaite.core.schema.interfaces.IRemarksField
+             senaite.core.interfaces.ISenaiteFormLayer"
+    />
+
+    <!-- Remarks data converter between field and widget -->
+    <adapter factory=".widget.RemarksDataConverter" />
+
+    <!-- POST for extraction of remarks -->
+    <browser:page
+        for="*"
+        name="add_remark"
+        class=".widget.AjaxAddRemark"
+        permission="zope.Public"
+        layer="senaite.core.interfaces.ISenaiteFormLayer"
+    />
+
+    <!-- POST for fetch of remarks -->
+    <browser:page
+        for="*"
+        name="fetch_remarks"
+        class=".widget.AjaxFetchRemarks"
+        permission="zope.Public"
+        layer="senaite.core.interfaces.ISenaiteFormLayer"
+    />
+
+    <!-- Remarks input widget template -->
+    <z3c:widgetTemplate
+        mode="input"
+        widget=".widget.RemarksWidget"
+        template="display-input.pt"
+        layer="senaite.core.interfaces.ISenaiteFormLayer"
+    />
+
+    <!-- Remarks display widget template -->
+    <z3c:widgetTemplate
+        mode="display"
+        widget=".widget.RemarksWidget"
+        template="display-input.pt"
+        layer="senaite.core.interfaces.ISenaiteFormLayer"
+    />
+
+    <!-- Remarks hidden widget template -->
+    <z3c:widgetTemplate
+        mode="hidden"
+        widget=".widget.RemarksWidget"
+        template="hidden.pt"
+        layer="senaite.core.interfaces.ISenaiteFormLayer"
+    />
+
+</configure>

@@ -31,6 +31,7 @@ from Acquisition import aq_parent
 from bika.lims import api
 from bika.lims.interfaces import IAuditable
 from Persistence import PersistentMapping
+from plone.dexterity.fti import DexterityFTI
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import get_installer
 from Products.ZCatalog.ProgressHandler import ZLogHandler
@@ -394,3 +395,34 @@ def uncatalog_brain(brain):
     logger.warn(80*"*")
     catalog.uncatalog_object(path)
     return True
+
+
+def remove_at_portal_types(tool, types_to_remove=[]):
+    """Remove obsolete AT portal type information
+    """
+
+    if not types_to_remove:
+        logger.warn("no AT types to remove from portal_types tool ...")
+        return
+
+    logger.info("Remove AT types from portal_types tool ...")
+    pt = api.get_tool("portal_types")
+    for type_name in types_to_remove:
+        fti = pt.getTypeInfo(type_name)
+        # keep DX FTIs
+        if isinstance(fti, DexterityFTI):
+            logger.info("Type '{}' is already a DX FTI".format(fti))
+            continue
+        elif not fti:
+            # Removed already
+            continue
+        pt.manage_delObjects(fti.getId())
+
+    # remove from AT's factory tool as well. This is necessary for the AT's
+    # factory_tool to not shortcut `createObject?type_name=` on object creation
+    ft = api.get_tool("portal_factory")
+    at_types = ft.getFactoryTypes().keys()
+    at_types = filter(lambda name: name not in types_to_remove, at_types)
+    ft.manage_setPortalFactoryTypes(listOfTypeIds=at_types)
+
+    logger.info("Remove AT types from portal_types tool ... [DONE]")

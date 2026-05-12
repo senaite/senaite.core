@@ -34,7 +34,7 @@ Variables::
     >>> portal = self.portal
     >>> request = self.request
     >>> bika_setup = portal.bika_setup
-    >>> bika_calculations = bika_setup.bika_calculations
+    >>> calculations = portal.setup.calculations
     >>> bika_analysisservices = bika_setup.bika_analysisservices
 
 
@@ -51,7 +51,7 @@ so here we will assume the role of Lab Manager.
 Calculation
 ...........
 
-Calculations are created in the `bika_setup/bika_calculations` folder. They
+Calculations are created in the `setup/calculations` folder. They
 offer a `Formula` field, where keywords from Analyses can be used to calculate a
 result.
 
@@ -71,7 +71,7 @@ Each `AnalysisService` contains a `Keyword` field, which can be referenced in a 
 
 Create one `Calculation`::
 
-    >>> calc = api.create(bika_calculations, "Calculation", title="Total Hardness")
+    >>> calc = api.create(calculations, "Calculation", title="Total Hardness")
 
 
 The `Formula` field references the Keywords from Analysis Services::
@@ -92,7 +92,7 @@ The `Calculation` depends now on the two Analysis Services::
 It is also possible to find out if an `AnalysisService` depends on the calculation::
 
     >>> as1.setCalculation(calc)
-    >>> calc.getCalculationDependants()
+    >>> calc.getCalculationDependents()
     [<AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>]
 
 Or to find out which services have selected a particular calculation as their

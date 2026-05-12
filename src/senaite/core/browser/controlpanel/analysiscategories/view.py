@@ -26,10 +26,10 @@ from bika.lims.utils import get_link_for
 from senaite.core.i18n import translate
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.permissions import AddAnalysisCategory
-from senaite.app.listing import ListingView
+from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 
 
-class AnalysisCategoriesView(ListingView):
+class AnalysisCategoriesView(ControlPanelListingView):
 
     def __init__(self, context, request):
         super(AnalysisCategoriesView, self).__init__(context, request)

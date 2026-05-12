@@ -43,7 +43,6 @@
     <element value="AttachmentType"/>
     <element value="Batch"/>
     <element value="BikaSetup"/>
-    <element value="Calculation"/>
     <element value="Client"/>
     <element value="Container"/>
     <element value="ContainerType"/>
@@ -67,7 +66,6 @@
     <element value="SamplePoint"/>
     <element value="SampleType"/>
     <element value="BatchLabel"/>
-    <element value="Worksheet"/>
     <element value="ATBooleanCriterion"/>
     <element value="ATDateCriteria"/>
     <element value="ATDateRangeCriterion"/>

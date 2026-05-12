@@ -46,5 +46,5 @@ class LoginForm(BaseLoginForm):
 
     @property
     def lab_name(self):
-        lab = api.get_setup().laboratory
+        lab = api.get_senaite_setup().laboratory
         return api.get_title(lab)

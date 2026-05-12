@@ -72,8 +72,7 @@ Create some basic objects for the test:
     >>> Mg = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Magnesium", Keyword="Mg", Price="20", Category=category.UID())
     >>> Ca = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Calcium", Keyword="Ca", Price="20", Category=category.UID())
     >>> THCaCO3 = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Calcium", Keyword="THCaCO3", Price="20", Category=category.UID())
-    >>> calc = api.create(bikasetup.bika_calculations, "Calculation", title="Total Hardness")
-    >>> calc.setFormula("[Ca] + [Mg]")
+    >>> calc = api.create(setup.calculations, "Calculation", title="Total Hardness", Formula="[Ca] + [Mg]")
     >>> THCaCO3.setCalculation(calc)
 
 
@@ -356,7 +355,7 @@ partition, nothing will happen:
     [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>, <Analysis at /plone/clients/client-1/W-0001-P01/Fe>, <Analysis at /plone/clients/client-1/W-0001-P01/Au>]
 
 
-Test calculation when dependant service assigned to a partition subsample:
+Test calculation when dependent service assigned to a partition subsample:
 ..........................................................................
 
 Create a Sample and receive:
@@ -376,7 +375,7 @@ Set result values to analysis (Ca, Mg)
     >>> ca_analysis.setResult(10)
     >>> mg_analysis.setResult(10)
 
-Calculate dependant result and make sure it's correct:
+Calculate dependent result and make sure it's correct:
     >>> th_analysis = filter(lambda an: an.getKeyword()=="THCaCO3", analyses)[0]
     >>> th_analysis.calculateResult()
     True

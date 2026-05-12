@@ -336,3 +336,82 @@ But the Analyst and LabClerk not anymore:
 
     >>> get_permissions_for_role("LabClerk", cu)
     []
+
+
+Run as privileged user
+......................
+
+The `as_privileged_user` context manager allows executing code with system
+(privileged) user permissions, even when the current user doesn't have the
+required permissions.
+
+This is useful for operations that need elevated privileges temporarily, such
+as deleting objects in containers where the user normally doesn't have delete
+permission.
+
+First, let's verify the current user is not the system user:
+
+    >>> from AccessControl import getSecurityManager
+    >>> current_user = api.get_current_user()
+    >>> current_user_id = current_user.getId()
+    >>> sm = getSecurityManager()
+    >>> current_username = sm.getUser().getUserName()
+    >>> current_username != 'System Processes'
+    True
+
+Now let's enter the privileged context and verify we're running as the system user:
+
+    >>> with api.security.as_privileged_user():
+    ...     privileged_sm = getSecurityManager()
+    ...     privileged_user = privileged_sm.getUser()
+    ...     privileged_user.getUserName()
+    'System Processes'
+
+After exiting the context, the security manager is automatically restored:
+
+    >>> restored_user = api.get_current_user()
+    >>> restored_user.getId() == current_user_id
+    True
+    >>> restored_sm = getSecurityManager()
+    >>> restored_sm.getUser().getUserName() == current_username
+    True
+
+The security manager is restored even if an exception occurs within the context:
+
+    >>> try:
+    ...     with api.security.as_privileged_user():
+    ...         raise ValueError("Test exception")
+    ... except ValueError:
+    ...     pass
+    >>> exception_restored_user = api.get_current_user()
+    >>> exception_restored_user.getId() == current_user_id
+    True
+
+A practical example: deleting an object without delete permission.
+
+Create a test file object in the client container:
+
+    >>> from plone.namedfile.file import NamedBlobFile
+    >>> from plone.dexterity.utils import createContentInContainer
+    >>> test_file = createContentInContainer(
+    ...     client,
+    ...     "SimpleFile",
+    ...     title=u"Test File for Deletion",
+    ...     file=NamedBlobFile(data=b"test content", filename=u"test.txt"))
+    >>> test_file_uid = api.get_uid(test_file)
+
+Verify the file exists:
+
+    >>> api.get_object(test_file_uid)
+    <SimpleFile at ...>
+
+The current user doesn't have delete permission on the client container.
+Without the privileged context, deletion would fail. With it, deletion succeeds:
+
+    >>> with api.security.as_privileged_user():
+    ...     api.delete(test_file)
+
+Verify the file was deleted:
+
+    >>> api.get_object(test_file_uid, default=None) is None
+    True

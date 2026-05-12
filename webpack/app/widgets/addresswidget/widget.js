@@ -133,26 +133,30 @@ class AddressWidgetController extends React.Component {
       }
 
       html_items.push(
-        <div class="mb-2 pt-2">
-          {section_title}
-          <Address
-            id={this.state.id}
-            name={this.state.name}
-            index={index}
-            address_type={item.type}
-            country={item.country}
-            subdivision1={item.subdivision1}
-            subdivision2={item.subdivision2}
-            city={item.city}
-            zip={item.zip}
-            address={item.address}
-            labels={this.state.labels}
-            countries={this.state.countries}
-            subdivisions1={this.state.subdivisions1}
-            subdivisions2={this.state.subdivisions2}
-            on_country_change={this.on_country_change}
-            on_subdivision1_change={this.on_subdivision1_change}
-          />
+        <div key={index} className="border rounded pt-1 pr-5 pb-1 pl-1 mb-2">
+          <div className="address-section-title pb-2 small text-secondary">
+            {section_title}
+          </div>
+          <div className="address">
+            <Address
+              id={this.state.id}
+              name={this.state.name}
+              index={index}
+              address_type={item.type}
+              country={item.country}
+              subdivision1={item.subdivision1}
+              subdivision2={item.subdivision2}
+              city={item.city}
+              zip={item.zip}
+              address={item.address}
+              labels={this.state.labels}
+              countries={this.state.countries}
+              subdivisions1={this.state.subdivisions1}
+              subdivisions2={this.state.subdivisions2}
+              on_country_change={this.on_country_change}
+              on_subdivision1_change={this.on_subdivision1_change}
+            />
+          </div>
         </div>
       );
     }

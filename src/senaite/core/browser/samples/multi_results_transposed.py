@@ -23,12 +23,12 @@ from collections import OrderedDict
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
-from bika.lims.browser.worksheet.views import AnalysesTransposedView
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.utils import get_link
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
 from senaite.core.i18n import translate as t
+from senaite.core.browser.worksheets.worksheet import AnalysesTransposedView
 from six.moves.urllib.parse import parse_qs
 
 

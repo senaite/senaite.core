@@ -29,7 +29,6 @@ from persistent.dict import PersistentDict
 from plone.dexterity.interfaces import IDexterityContent
 from Products.Archetypes.interfaces import IBaseObject
 from Products.Archetypes.interfaces import IField
-from Products.Archetypes.utils import getRelURL
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.interfaces import IFieldMigrator
 from senaite.core.migration.utils import copyPermMap
@@ -98,15 +97,7 @@ class ContentMigrator(object):
     def uncatalog_object(self, obj):
         """Uncatalog the object for all catalogs
         """
-        # explicitly uncatalog from uid_catalog
-        uid_catalog = api.get_tool(UID_CATALOG)
-        # make sure that both AT/DX paths are uncatalogued
-        rel_url = getRelURL(uid_catalog, obj.getPhysicalPath())
-        abs_url = "/".join(obj.getPhysicalPath())
-        uid_catalog.uncatalog_object(rel_url)
-        uid_catalog.uncatalog_object(abs_url)
-        # uncatalog from registered catalogs
-        obj.unindexObject()
+        api.uncatalog_object(obj)
 
     def catalog_object(self, obj):
         """Catalog the object in all registered catalogs

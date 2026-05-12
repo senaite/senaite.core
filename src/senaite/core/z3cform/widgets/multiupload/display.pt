@@ -1,0 +1,32 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+
+  <div tal:define="existing_files view/get_existing_files_data;
+                   klass view/klass;
+                   mode_klass string:${klass}-display;
+                   klass string:${klass} ${mode_klass}"
+       tal:attributes="class klass">
+
+    <ul tal:condition="existing_files">
+      <li tal:repeat="file existing_files">
+        <a tal:attributes="href file/url"
+           tal:content="file/name"
+           target="_blank">
+          File name
+        </a>
+        <span tal:condition="file/size"
+              tal:content="python: '{:.2f} KB'.format(file['size'] / 1024.0)">
+          File size
+        </span>
+      </li>
+    </ul>
+
+    <span tal:condition="not:existing_files"
+          i18n:translate="">
+      No files
+    </span>
+
+  </div>
+
+</html>

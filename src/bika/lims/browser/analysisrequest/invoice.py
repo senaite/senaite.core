@@ -82,7 +82,7 @@ class InvoiceView(BrowserView):
         """Get the currency Symbol
         """
         locale = locales.getLocale("en")
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         currency = setup.getCurrency()
         return locale.numbers.currencies[currency].symbol
 
@@ -90,7 +90,7 @@ class InvoiceView(BrowserView):
     def get_decimal_mark(self):
         """Returns the decimal mark
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getDecimalMark()
 
     def format_price(self, price):

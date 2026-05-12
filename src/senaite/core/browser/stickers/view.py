@@ -139,7 +139,7 @@ class StickerView(BrowserView):
             parent = api.get_parent(self.context)
             url = api.get_url(parent)
         # redirect to direct results entry
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         if setup.getImmediateResultsEntry():
             url = "{}/multi_results?uids={}".format(
                 url, ",".join(self.get_uids()))
@@ -252,6 +252,9 @@ class StickerView(BrowserView):
         self.current_item = item
         templates_dir = "templates/stickers"
         embedt = self.get_selected_template()
+        if not embedt:
+            return "<div class='text-center py-5'>{}</div>".format(
+                _("Please select a sticker template"))
         if embedt.find(":") >= 0:
             prefix, embedt = embedt.split(":")
             templates_dir = self._getStickersTemplatesDirectory(prefix)
@@ -326,7 +329,7 @@ class StickerView(BrowserView):
         in the request
         :rtype: int
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         default_num = setup.getDefaultNumberOfCopies()
         request_num = self.request.form.get("copies_count")
         return to_int(request_num, default_num)
@@ -353,10 +356,16 @@ class StickerView(BrowserView):
             return default_template
 
         # rely on the default setup template
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         size = self.request.get("size", "")
         if size == "small":
             return setup.getSmallStickerTemplate()
         elif size == "large":
             return setup.getLargeStickerTemplate()
-        return setup.getAutoStickerTemplate()
+        auto_sticker_tpl = setup.getAutoStickerTemplate()
+        if not auto_sticker_tpl:
+            # Handle an edge case when the LIMS setup has not been saved yet
+            templates = get_sticker_templates(
+                filter_by_type=self.filter_by_type)
+            return templates[0].get("id", "") if templates else ""
+        return auto_sticker_tpl
