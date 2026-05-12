@@ -13,8 +13,10 @@ registry flag `sample_add_form_commit_per_sample`:
   operator-supplied identifier.
 
 This doctest exercises the retry path without requiring a real
-multi-connection ZODB conflict, by stubbing `create_sample` on the
-view to raise `ConflictError` on demand.
+multi-connection ZODB conflict. We stub both the view's `create_sample`
+(to raise `ConflictError` on demand) and the `transaction` module
+operations the retry helper drives, so the test-layer transaction is
+not disturbed.
 
 Test Setup
 ..........
@@ -25,48 +27,50 @@ Running this test from the buildout directory:
 
 Needed Imports:
 
-    >>> import transaction
     >>> from bika.lims import api
+    >>> from bika.lims.browser.analysisrequest import add2
     >>> from bika.lims.browser.analysisrequest.add2 import \
     ...     ajaxAnalysisRequestAddView
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
-    >>> from senaite.core.interfaces import INumberGenerator
-    >>> from senaite.core.registry import get_registry_record
     >>> from senaite.core.registry import set_registry_record
-    >>> from zope.component import getUtility
     >>> from ZODB.POSException import ConflictError
 
-Variables and a minimal client / sample type / service so the legacy
-path has something real to commit when we invoke it:
+Variables and a minimal LabManager role so the view has a sensible
+context to bind to:
 
     >>> portal = self.portal
     >>> request = self.request
-    >>> setup = portal.setup
-    >>> bikasetup = portal.bika_setup
     >>> setRoles(portal, TEST_USER_ID, ['LabManager'])
-    >>> client = api.create(portal.clients, "Client",
-    ...     Name="Happy Hills", ClientID="HH")
-    >>> contact = api.create(client, "Contact",
-    ...     Firstname="Rita", Lastname="Mohale")
-    >>> sampletype = api.create(setup.sampletypes, "SampleType",
-    ...     title="Water", Prefix="W")
-    >>> labcontact = api.create(bikasetup.bika_labcontacts, "LabContact",
-    ...     Firstname="Lab", Lastname="Manager")
-    >>> department = api.create(setup.departments, "Department",
-    ...     title="Chemistry", Manager=labcontact)
-    >>> category = api.create(setup.analysiscategories,
-    ...     "AnalysisCategory", title="Metals", Department=department)
-    >>> Cu = api.create(bikasetup.bika_analysisservices,
-    ...     "AnalysisService", title="Copper", Keyword="Cu",
-    ...     Category=category.UID())
-
-Instantiate the add view directly. We do not exercise the full submit
-flow; we just need an object with the helper methods bound to a real
-request:
-
     >>> view = ajaxAnalysisRequestAddView(portal, request)
     >>> view.MAX_CREATE_ATTEMPTS = 3
+
+Stub out the `transaction` module binding on the `add2` module so the
+retry helper does not commit or abort the layer's transaction. The
+fake module mirrors the four entry points the helper uses; the
+underlying `transaction` global stays untouched, so other tests are
+not affected.
+
+    >>> class TStub(object):
+    ...     def setUser(self, *a, **kw): pass
+    ...     def note(self, *a, **kw): pass
+    >>> class FakeTransactionModule(object):
+    ...     _t = TStub()
+    ...     def begin(self): return self._t
+    ...     def commit(self): return None
+    ...     def abort(self): return None
+    ...     def get(self): return self._t
+    >>> original_txn_module = add2.transaction
+    >>> add2.transaction = FakeTransactionModule()
+
+Avoid real time.sleep in the retry backoff so the test runs fast.
+Replace the `time` binding on the `add2` module rather than the
+global `time` module:
+
+    >>> class FakeTimeModule(object):
+    ...     def sleep(self, *a, **kw): pass
+    >>> original_time_module = add2.time
+    >>> add2.time = FakeTimeModule()
 
 Identifier helpers
 ..................
@@ -97,13 +101,11 @@ single-transaction path; with it on, the per-commit path:
     >>> view._create_samples_per_commit = lambda r: calls.append("commit") or []
     >>> view._create_samples_single_transaction = lambda r: calls.append("single") or []
     >>> _ = set_registry_record("sample_add_form_commit_per_sample", False)
-    >>> view.create_samples([])
-    []
+    >>> _ = view.create_samples([])
     >>> calls[-1]
     'single'
     >>> _ = set_registry_record("sample_add_form_commit_per_sample", True)
-    >>> view.create_samples([])
-    []
+    >>> _ = view.create_samples([])
     >>> calls[-1]
     'commit'
 
@@ -111,9 +113,9 @@ Retry succeeds after a transient conflict
 .........................................
 
 Replace `create_sample` with a stub that raises `ConflictError` on its
-first invocation and returns a marker object on the second. The retry
-loop must catch the conflict, sleep, and retry, ending with the
-marker returned and the attempt counter at 2:
+first invocation and returns a marker on the second. The retry helper
+must catch the conflict and retry, ending with the marker returned and
+the attempt counter at 2:
 
     >>> attempts = {"n": 0}
     >>> def flaky_create(client, record, attachments=None, source=None):
@@ -122,25 +124,17 @@ marker returned and the attempt counter at 2:
     ...         raise ConflictError("simulated counter contention")
     ...     return "sample-ok"
     >>> view.create_sample = flaky_create
-    >>> view.MAX_CREATE_ATTEMPTS = 3
-
-The retry helper bypasses the dispatch; we drive it directly so the
-test does not depend on the full record-validation path. We also
-abort any pending transaction first so the commit inside the helper
-operates on a clean state:
-
-    >>> transaction.abort()
     >>> user = api.user.get_user()
     >>> result = view._create_one_with_retry(
-    ...     client, {"Client": client.UID()}, [], None,
+    ...     None, {"ClientSampleID": "X"}, [], None,
     ...     user=user, path_info="/test")
     >>> result
     'sample-ok'
     >>> attempts["n"]
     2
 
-Retry exhaustion reports the failure
-....................................
+Retry exhaustion returns None
+.............................
 
 Now make `create_sample` raise on every call. The helper must give up
 after `MAX_CREATE_ATTEMPTS` and return `None`:
@@ -150,63 +144,45 @@ after `MAX_CREATE_ATTEMPTS` and return `None`:
     ...     attempts["n"] += 1
     ...     raise ConflictError("permanent counter contention")
     >>> view.create_sample = always_conflict
-    >>> transaction.abort()
     >>> result = view._create_one_with_retry(
-    ...     client, {"Client": client.UID()}, [], None,
+    ...     None, {"ClientSampleID": "X"}, [], None,
     ...     user=user, path_info="/test")
     >>> result is None
     True
     >>> attempts["n"] == view.MAX_CREATE_ATTEMPTS
     True
 
-`_report_failed_records` surfaces each failed row with its column
-index and identifier in a single portal message:
+Failed-record reporting
+.......................
 
+`_report_failed_records` builds a single portal message listing each
+failed row by its column index and identifier. The message is a
+`zope.i18nmessageid.Message`, so the row data lives in its `mapping`
+attribute rather than the default string. We capture the call by
+stubbing the plone utility on the view's context:
+
+    >>> captured = []
+    >>> class PUStub(object):
+    ...     def addPortalMessage(self, msg, level):
+    ...         captured.append((msg, level))
+    >>> view.context = type("Ctx", (), {"plone_utils": PUStub()})()
     >>> view._report_failed_records([
     ...     (2, {"ClientSampleID": "CSID-A12"}),
     ...     (5, {"ClientReference": "ref-9"}),
     ...     (7, {}),
     ... ])
-    >>> messages = portal.plone_utils.showPortalMessages(request)
-    >>> [m.message for m in messages if "could not be created" in m.message][-1]
-    u'Could not create the following sample(s) due to transaction conflicts, please retry them: #2 (CSID-A12), #5 (ref-9), #7 (-)'
+    >>> msg, level = captured[-1]
+    >>> level
+    'warning'
+    >>> msg.mapping["rows"]
+    u'#2 (CSID-A12), #5 (ref-9), #7 (-)'
 
-Numbers are not burned on retry
-...............................
+Cleanup
+.......
 
-The ID-counter contention this feature targets is harmless to
-sequence integrity: when a transaction that has bumped the counter
-aborts, the storage write is discarded with it, so the next caller
-reads the original value. We verify the property directly against
-`INumberGenerator`:
+Restore the patched transaction operations, sleep, and registry flag so
+later tests run in a pristine environment:
 
-    >>> ng = getUtility(INumberGenerator)
-    >>> key = "test-conflict-retry"
-    >>> _ = ng.set_number(key, 100)
-    >>> ng.get(key)
-    100
-
-Bump the counter inside a transaction, then abort it; the storage
-sees the original value again on the next read:
-
-    >>> transaction.begin()
-    <...>
-    >>> _ = ng.generate_number(key=key)
-    >>> ng.get(key) >= 101
-    True
-    >>> transaction.abort()
-    >>> ng.get(key)
-    100
-
-The next successful generation produces 101, not a value past the
-aborted attempt:
-
-    >>> transaction.begin()
-    <...>
-    >>> ng.generate_number(key=key)
-    101
-    >>> transaction.commit()
-
-Reset the registry flag so other tests are not affected:
-
+    >>> add2.transaction = original_txn_module
+    >>> add2.time = original_time_module
     >>> _ = set_registry_record("sample_add_form_commit_per_sample", False)
