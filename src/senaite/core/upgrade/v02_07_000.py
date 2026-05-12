@@ -292,18 +292,6 @@ def import_registry(tool):
     setup.runImportStepFromProfile(profile, "plone.app.registry")
 
 
-@upgradestep(product, version)
-def import_registry_commit_per_sample(tool):
-    """Re-import the registry profile so the new
-    `sample_add_form_commit_per_sample` record is created on existing
-    instances. Without it the Samples control panel raises a KeyError
-    on the missing record.
-    """
-    portal = tool.aq_inner.aq_parent
-    setup = portal.portal_setup
-    setup.runImportStepFromProfile(profile, "plone.app.registry")
-
-
 def mark_invalidated_samples(tool):
     """Mark invalidated samples with IInvalidated interface
     """

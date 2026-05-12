@@ -10,7 +10,7 @@
                    fails to render with a KeyError."
       source="2727"
       destination="2728"
-      handler=".v02_07_000.import_registry_commit_per_sample"
+      handler=".v02_07_000.import_registry"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
