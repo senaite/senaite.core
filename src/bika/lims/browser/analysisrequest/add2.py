@@ -2104,10 +2104,45 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
     def create_samples(self, records):
         """Creates samples for the given records.
 
-        Each sample is created in its own ZODB transaction and committed
-        individually. This collapses the conflict window of an N-sample
-        submit to a single rename per sample, and reduces the chance that
-        ID-counter contention aborts the whole batch.
+        Dispatches between two strategies based on the registry flag
+        `sample_add_form_commit_per_sample`:
+
+        - When enabled (recommended for instances with many concurrent
+          users), each sample is created in its own ZODB transaction
+          with a per-sample retry-on-conflict and a second-pass retry
+          for the leftovers. Partial success is possible: already
+          committed samples remain durable even if later ones fail.
+        - When disabled (legacy behaviour, the default), the whole
+          batch is created in a single transaction using savepoints
+          for per-sample rollback on error.
+        """
+        if get_registry_record("sample_add_form_commit_per_sample"):
+            return self._create_samples_per_commit(records)
+        return self._create_samples_single_transaction(records)
+
+    def _create_samples_single_transaction(self, records):
+        """Legacy path: create the whole batch in a single transaction.
+        Each sample is wrapped in a savepoint so a per-sample failure
+        rolls back only that sample, not the rest of the batch.
+        """
+        samples = []
+        for record in records:
+            client = self.get_object_by_uid(record.get("Client"))
+            if not client:
+                raise ValueError("No client found")
+            attachments = record.pop("attachments", [])
+            source_uid = record.pop("_source_uid", None)
+            source = api.get_object(source_uid) if source_uid else None
+            num_samples = self.get_num_samples(record)
+            for _idx in range(num_samples):
+                sample = self.create_sample(
+                    client, record,
+                    attachments=attachments, source=source)
+                samples.append(sample)
+        return samples
+
+    def _create_samples_per_commit(self, records):
+        """Per-sample commit path with retry-on-conflict.
 
         On ConflictError the per-sample transaction is aborted and
         retried with exponential backoff plus jitter. Records that fail
