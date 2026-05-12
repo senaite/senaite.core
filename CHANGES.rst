@@ -4,7 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
-- #XXXX Suppress profile-remove dialog during bulk ar_add hydration
+- #2899 Suppress profile-remove dialog during bulk ar_add hydration
 - #2896 Fix uncatalog_object to leave no stale uids in uid_catalog
 - #2897 Use UnorderedOrdering for Clients to avoid ZODB conflicts
 - #2894 Fix DL get flushed on submit
