@@ -2102,17 +2102,25 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         return self.handle_redirect(ARs.values(), message)
 
     def create_samples(self, records):
-        """Creates samples for the given records
+        """Creates samples for the given records.
+
+        Each sample is created in its own ZODB transaction and committed
+        individually. This collapses the conflict window of an N-sample
+        submit to a single rename per sample, and reduces the chance that
+        ID-counter contention aborts the whole batch.
+
+        On ConflictError the per-sample transaction is aborted and
+        retried with exponential backoff plus jitter. Samples that
+        ultimately fail are logged and reported back to the user via a
+        warning portal message; successfully created samples remain
+        durable.
         """
         samples = []
-
-        user = api.user.get_user()
-        request = api.get_request()
-        path_info = request.get("PATH_INFO", "")
         failed = 0
+        user = api.user.get_user()
+        path_info = self.request.get("PATH_INFO", "")
 
-        for num, record in enumerate(records):
-
+        for record in records:
             client_uid = record.get("Client")
             client = self.get_object_by_uid(client_uid)
             if not client:
@@ -2121,73 +2129,67 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Pop the attachments
             attachments = record.pop("attachments", [])
 
-            # Pop the source UID
+            # Pop the source UID and fetch the source object (used by
+            # IAfterCreateSampleHook for partitions, secondary, copy-to-new)
             source_uid = record.pop("_source_uid", None)
-
-            # Fetch the source object
-            source = None
-            if source_uid:
-                source = api.get_object(source_uid)
+            source = api.get_object(source_uid) if source_uid else None
 
             # Create as many samples as required
             num_samples = self.get_num_samples(record)
             for idx in range(num_samples):
-                attempt = 0
-                sample = None
-
-                # try to create the sample in a conflict-safe way
-                while attempt < 100:
-                    attempt += 1
-                    T = transaction.get()
-                    T.setUser(user.getId())
-                    sample = self.create_sample(client, attachments, record)
-                    path = "{}/create_samples/{}".format(
-                        path_info, sample.getId())
-                    T.note(path)
-                    try:
-                        transaction.commit()
-                        break
-                    except ConflictError:
-                        sample = None
-                        T.log.error(
-                            "👻 Transaction Conflict Error while creating "
-                            "sample after attempt {}".format(attempt))
-                        transaction.abort()
-                        time.sleep(uniform(0, 1))
-
-                if sample:
-                    samples.append(sample)
-                else:
+                sample = self._create_one_with_retry(
+                    client, record, attachments, source,
+                    user=user, path_info=path_info)
+                if sample is None:
                     failed += 1
-        if failed > 0:
-            logger.error("Failed to create {} samples after 100 attempts"
-                         .format(failed))
+                else:
+                    samples.append(sample)
 
-                sample = crar(client, self.request, record)
-
-                # Create the attachments
-                for attachment_record in attachments:
-                    self.create_attachment(sample, attachment_record)
-
-                transaction.savepoint(optimistic=True)
-                samples.append(sample)
-
-                sample = self.create_sample(
-                    client, record, attachments=attachments, source=source)
-                samples.append(sample)
+        if failed:
+            logger.error(
+                "Failed to create %d sample(s) after retries", failed)
+            message = _(
+                "${n} sample(s) could not be created due to conflicts, "
+                "please retry.", mapping={"n": failed})
+            self.context.plone_utils.addPortalMessage(message, "warning")
 
         return samples
 
-    def create_sample(self, client, attachments, record):
-        """Create a single sample from the given record
+    # Maximum number of attempts for a single sample creation before
+    # giving up. Combined with the exponential backoff below the worst
+    # case wait is bounded (~6 s) and the worker thread is not parked
+    # for excessive periods under contention.
+    MAX_CREATE_ATTEMPTS = 8
+
+    def _create_one_with_retry(self, client, record, attachments, source,
+                               user, path_info):
+        """Create a single sample, committing in its own transaction.
+
+        Retries on ZODB ConflictError with exponential backoff plus
+        jitter. Returns the created sample on success, or None if all
+        attempts were exhausted.
         """
-        sample = crar(client, self.request, record)
-
-        # Create the attachments
-        for attachment_record in attachments:
-            self.create_attachment(sample, attachment_record)
-
-        return sample
+        for attempt in range(self.MAX_CREATE_ATTEMPTS):
+            transaction.begin()
+            T = transaction.get()
+            T.setUser(user.getId())
+            T.note("{}/create_samples".format(path_info))
+            try:
+                sample = self.create_sample(
+                    client, record,
+                    attachments=attachments, source=source)
+                transaction.commit()
+                return sample
+            except ConflictError:
+                transaction.abort()
+                logger.warning(
+                    "ConflictError creating sample "
+                    "(attempt %d/%d)",
+                    attempt + 1, self.MAX_CREATE_ATTEMPTS)
+                # Exponential backoff with jitter; capped at 2 s
+                delay = min(2.0, 0.05 * (2 ** attempt))
+                time.sleep(delay * uniform(0.5, 1.5))
+        return None
 
     def create_sample(self, client, record, attachments=None, source=None):
         """Creates a single sample with proper transaction handling
