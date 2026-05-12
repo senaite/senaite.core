@@ -2110,55 +2110,113 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         ID-counter contention aborts the whole batch.
 
         On ConflictError the per-sample transaction is aborted and
-        retried with exponential backoff plus jitter. Samples that
-        ultimately fail are logged and reported back to the user via a
-        warning portal message; successfully created samples remain
-        durable.
+        retried with exponential backoff plus jitter. Records that fail
+        in the first pass are kept aside and retried in a second pass
+        after the rest of the batch has been committed, since contention
+        usually subsides once the burst is over. Records that still fail
+        are logged with their identifying fields and surfaced back to
+        the user via a portal message so the operator knows exactly
+        which rows need to be re-entered.
         """
         samples = []
-        failed = 0
+        # Records that failed the first attempt; retried in pass 2
+        pending = []
+        # (column_index, record) pairs that ultimately failed
+        failed = []
         user = api.user.get_user()
         path_info = self.request.get("PATH_INFO", "")
 
-        for record in records:
-            client_uid = record.get("Client")
-            client = self.get_object_by_uid(client_uid)
+        # First pass: normal retry budget, batch order
+        for column, record in enumerate(records, start=1):
+            self._normalize_record(record)
+            client = self.get_object_by_uid(record["Client"])
             if not client:
                 raise ValueError("No client found")
-
-            # Pop the attachments
-            attachments = record.pop("attachments", [])
-
-            # Pop the source UID and fetch the source object (used by
-            # IAfterCreateSampleHook for partitions, secondary, copy-to-new)
-            source_uid = record.pop("_source_uid", None)
-            source = api.get_object(source_uid) if source_uid else None
-
-            # Create as many samples as required
             num_samples = self.get_num_samples(record)
-            for idx in range(num_samples):
+            for _idx in range(num_samples):
                 sample = self._create_one_with_retry(
-                    client, record, attachments, source,
+                    client, record, record["_attachments"],
+                    record["_source"],
                     user=user, path_info=path_info)
                 if sample is None:
-                    failed += 1
+                    pending.append((column, record, client))
+                else:
+                    samples.append(sample)
+
+        # Second pass: by now the original burst has subsided, so a
+        # longer pre-delay and an independent retry budget usually
+        # rescues anything that lost the race the first time.
+        if pending:
+            logger.info(
+                "Retrying %d sample(s) in a second pass after the "
+                "initial batch settled", len(pending))
+            time.sleep(uniform(0.5, 1.5))
+            for column, record, client in pending:
+                sample = self._create_one_with_retry(
+                    client, record, record["_attachments"],
+                    record["_source"],
+                    user=user, path_info=path_info)
+                if sample is None:
+                    failed.append((column, record))
                 else:
                     samples.append(sample)
 
         if failed:
-            logger.error(
-                "Failed to create %d sample(s) after retries", failed)
-            message = _(
-                "${n} sample(s) could not be created due to conflicts, "
-                "please retry.", mapping={"n": failed})
-            self.context.plone_utils.addPortalMessage(message, "warning")
+            self._report_failed_records(failed)
 
         return samples
 
+    def _normalize_record(self, record):
+        """Pop attachments and resolve the source object once per
+        record so the retry passes can reuse them without re-popping
+        keys from the same dict.
+        """
+        if "_attachments" not in record:
+            record["_attachments"] = record.pop("attachments", [])
+        if "_source" not in record:
+            source_uid = record.pop("_source_uid", None)
+            record["_source"] = (
+                api.get_object(source_uid) if source_uid else None)
+
+    def _report_failed_records(self, failed):
+        """Log the failed records with their full data and surface a
+        user-readable message listing each row by its column index and
+        any operator-supplied identifiers (ClientSampleID,
+        ClientReference) so the user knows exactly which inputs to
+        re-submit.
+        """
+        descriptions = []
+        for column, record in failed:
+            ident = self._record_identifier(record)
+            descriptions.append(
+                u"#{col} ({ident})".format(col=column, ident=ident))
+            # Full record to the log so support can recover from logs
+            logger.error(
+                "Sample creation failed for column %d: %r",
+                column, record)
+        message = _(
+            "Could not create the following sample(s) due to "
+            "transaction conflicts, please retry them: ${rows}",
+            mapping={"rows": safe_unicode(u", ".join(descriptions))})
+        self.context.plone_utils.addPortalMessage(message, "warning")
+
+    def _record_identifier(self, record):
+        """Best-effort human-readable identifier for a failed record.
+        Falls back to '-' when the operator did not supply any of the
+        usual identifying fields.
+        """
+        for key in ("ClientSampleID", "ClientReference"):
+            value = record.get(key)
+            if value:
+                return safe_unicode(value)
+        return u"-"
+
     # Maximum number of attempts for a single sample creation before
-    # giving up. Combined with the exponential backoff below the worst
-    # case wait is bounded (~6 s) and the worker thread is not parked
-    # for excessive periods under contention.
+    # giving up within one pass. Combined with the exponential backoff
+    # below, the worst-case wait per pass is bounded (~6 s) and the
+    # worker thread is not parked for excessive periods under
+    # contention. A second pass runs at the end of the batch, so the
+    # effective budget per record is twice this value.
     MAX_CREATE_ATTEMPTS = 8
 
     def _create_one_with_retry(self, client, record, attachments, source,
@@ -2180,12 +2238,18 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     attachments=attachments, source=source)
                 transaction.commit()
                 return sample
-            except ConflictError:
+            except ConflictError as exc:
                 transaction.abort()
+                # ConflictError carries the contended oid and class
+                # name; logging both makes it possible to tell counter
+                # contention apart from container / catalog contention
+                # in production.
                 logger.warning(
                     "ConflictError creating sample "
-                    "(attempt %d/%d)",
-                    attempt + 1, self.MAX_CREATE_ATTEMPTS)
+                    "(attempt %d/%d) on %s oid=%r: %s",
+                    attempt + 1, self.MAX_CREATE_ATTEMPTS,
+                    getattr(exc, "class_name", "?"),
+                    getattr(exc, "oid", None), exc)
                 # Exponential backoff with jitter; capped at 2 s
                 delay = min(2.0, 0.05 * (2 ** attempt))
                 time.sleep(delay * uniform(0.5, 1.5))
