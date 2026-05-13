@@ -3,6 +3,17 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Import registry for per-sample commit flag"
+      description="Re-import the registry profile so the new
+                   `sample_add_form_commit_per_sample` record is created on
+                   existing instances; without it the Samples control panel
+                   fails to render with a KeyError."
+      source="2727"
+      destination="2728"
+      handler=".v02_07_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Drop ordering annotations from Clients"
       description="Remove the plone.folder.ordered.order PersistentList and
                    plone.folder.ordered.pos OIBTree annotations from every

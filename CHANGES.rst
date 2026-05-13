@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2741 Commit each created sample individually to reduce ZODB conflicts
 - #2896 Fix uncatalog_object to leave no stale uids in uid_catalog
 - #2897 Use UnorderedOrdering for Clients to avoid ZODB conflicts
 - #2894 Fix DL get flushed on submit
