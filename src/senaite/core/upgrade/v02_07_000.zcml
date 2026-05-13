@@ -5,9 +5,47 @@
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Migrate Laboratory to Dexterity"
       description="Ensure Laboratory is using Dexterity schema and clean up AT remnants"
+      source="2727"
+      destination="2728"
+      handler=".v02_07_000.migrate_laboratory_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Drop ordering annotations from Clients"
+      description="Remove the plone.folder.ordered.order PersistentList and
+                   plone.folder.ordered.pos OIBTree annotations from every
+                   Client. Clients now use UnorderedOrdering as their
+                   IOrdering adapter, so these annotations are no longer
+                   maintained and become a stale ZODB conflict spot if left
+                   in place."
+      source="2726"
+      destination="2727"
+      handler=".v02_07_000.drop_client_ordering_annotations"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Seed DetachedFrom backrefs"
+      description="Seed annotation backrefs for detached partitions so that
+                   the partition counter accounts for them"
+      source="2725"
+      destination="2726"
+      handler=".v02_07_000.seed_detached_partition_backrefs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add ViewDashboard and ViewNavigation permissions"
+      description="Import rolemap for new ViewDashboard and ViewNavigation permissions"
       source="2724"
       destination="2725"
-      handler=".v02_07_000.migrate_laboratory_to_dx"
+      handler=".v02_07_000.import_rolemap"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove dashboard registry visibility"
+      description="Remove legacy registry-based dashboard panel visibility in favor of role-based access"
+      source="2723"
+      destination="2724"
+      handler=".v02_07_000.remove_dashboard_registry_visibility"
       profile="senaite.core:default"/>
 
    <genericsetup:upgradeStep
@@ -191,14 +229,6 @@
       source="2700"
       destination="2701"
       handler=".v02_07_000.import_rolemap"
-      profile="senaite.core:default"/>
-
-  <genericsetup:upgradeStep
-      title="SENAITE.CORE 2.7.0: Remove dashboard registry visibility"
-      description="Remove legacy registry-based dashboard panel visibility in favor of role-based access"
-      source="2723"
-      destination="2724"
-      handler=".v02_07_000.remove_dashboard_registry_visibility"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

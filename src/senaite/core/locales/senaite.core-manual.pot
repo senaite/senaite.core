@@ -87,3 +87,11 @@ msgstr ""
 # senaite.app.listing: Disable auto fetch transitions
 msgid "Disable auto fetch transitions"
 msgstr ""
+
+# senaite.core: Sidebar search input placeholder
+msgid "Search..."
+msgstr ""
+
+# senaite.core: Sidebar loading state
+msgid "Loading navigation..."
+msgstr ""

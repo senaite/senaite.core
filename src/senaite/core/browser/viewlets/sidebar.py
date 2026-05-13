@@ -22,12 +22,15 @@ import json
 import Missing
 
 from bika.lims import api
+from bika.lims.api.security import check_permission
+from senaite.core.permissions import ViewNavigation
 from plone.app.viewletmanager.manager import OrderedViewletManager
 from plone.memoize.instance import memoize
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
 from senaite.core.catalog import get_catalogs_by_type
+from senaite.core.i18n import translate
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
 from zope.component import getMultiAdapter
 
@@ -52,8 +55,10 @@ class SidebarViewletManager(OrderedViewletManager):
 
     def available(self):
         """Check if sidebar should be shown"""
-        is_anonymous = self.portal_state.anonymous()
-        return not is_anonymous
+        if self.portal_state.anonymous():
+            return False
+        portal = self.portal_state.portal()
+        return check_permission(ViewNavigation, portal)
 
     @property
     @memoize
@@ -463,8 +468,9 @@ class SidebarNavigationAPI(BrowserView):
 
         item = {
             "id": node.get("id", ""),
-            "title": node.get("Title", ""),
-            "description": node.get("Description", ""),
+            "title": translate(node.get("Title", ""), to_utf8=False),
+            "description": translate(
+                node.get("Description", ""), to_utf8=False),
             "url": item_url,
             "icon": icon,
             "review_state": node.get("review_state", ""),

@@ -22,6 +22,7 @@ import mimetypes
 import os
 import re
 import tempfile
+import cgi
 from email import Encoders
 from email.MIMEBase import MIMEBase
 from time import time
@@ -206,6 +207,20 @@ def formatDecimalMark(value, decimalmark='.'):
         return decimalmark.join(rawval.split('.'))
     except Exception:
         return rawval
+
+
+def formatTextResult(value, html=True):
+    """Format a string-like result value for display.
+
+    If html is True, the value is escaped and newline characters are
+    represented as ``<br/>``.
+    """
+    if not html:
+        return value
+
+    result = value if api.is_string(value) else str(value)
+    result = cgi.escape(result)
+    return result.replace("\n", "<br/>")
 
 
 # encode_header function copied from roundup's rfc2822 package.

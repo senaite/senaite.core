@@ -1,0 +1,27 @@
+.numbergenerator-th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.numbergenerator-th .sort-indicator {
+    margin-left: 0.25em;
+    opacity: 0.4;
+}
+
+.numbergenerator-th[data-sort-dir="asc"] .sort-indicator::after {
+    content: "\25B2";
+    opacity: 1;
+}
+
+.numbergenerator-th[data-sort-dir="desc"] .sort-indicator::after {
+    content: "\25BC";
+    opacity: 1;
+}
+
+.numbergenerator-row.pending-delete {
+    background-color: #fde7e7;
+}
+
+.numbergenerator-row.pending-delete .numbergenerator-counter {
+    border-color: #c0392b;
+}

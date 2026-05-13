@@ -95,8 +95,12 @@ class ILaboratorySchema(IOrganizationSchema):
     )
     directives.widget("lab_url", size=60)
     lab_url = schema.TextLine(
-        title=_("Lab URL"),
-        description=_("The Laboratory's web address"),
+        title=_(
+            u"title_laboratory_lab_url",
+            default=u"Lab URL"),
+        description=_(
+            u"description_laboratory_lab_url",
+            default=u"The Laboratory's web address"),
         required=False,
     )
 
@@ -247,7 +251,7 @@ class Laboratory(Organization):
 
     @security.protected(permissions.ModifyPortalContent)
     def setLabURL(self, value):
-        mutator = self.mutator("remarks")
+        mutator = self.mutator("lab_url")
         mutator(self, safe_unicode(value))
 
     LabURL = property(getLabURL, setLabURL)
