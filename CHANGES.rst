@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2895 Add 'duplicate_sample' workflow transition for samples (with global toggle in setup)
+- #2896 Fix uncatalog_object to leave no stale uids in uid_catalog
+- #2897 Use UnorderedOrdering for Clients to avoid ZODB conflicts
 - #2894 Fix DL get flushed on submit
 - #2891 Translate sidebar navigation titles in JSON endpoint
 - #2881 Add text support for interim fields
