@@ -563,42 +563,22 @@ def migrate_analysisspecs_to_dx(tool):
     tool.runImportStepFromProfile(profile, "typeinfo")
     tool.runImportStepFromProfile(profile, "workflow")
 
-    setup = api.get_senaite_setup()
-
-    origin = api.get_setup().get("bika_analysisspecs")
-    if origin:
-        destination = get_setup_folder("analysisspecs")
-        uncatalog_object(origin)
-        objects = list(origin.objectValues())
-        for num, src in enumerate(objects, start=1):
-            migrate_analysisspec_to_dx(src, destination)
-            if num % 100 == 0:
-                transaction.savepoint()
-        copy_snapshots(origin, destination)
-        if len(origin) == 0:
-            delete_object(origin)
-        else:
-            logger.warn("Cannot remove {}. Is not empty".format(origin))
-    else:
-        logger.info("bika_analysisspecs not found, skipping lab specs")
-
-    # migrate client-level specs (each client folder)
     query = {"portal_type": "AnalysisSpec"}
     brains = api.search(query, SETUP_CATALOG)
     total = len(brains)
     logger.info("Found {} AnalysisSpec objects to migrate".format(total))
 
     for num, brain in enumerate(brains, start=1):
+        analysisspec = api.get_object(brain)
         if num % 100 == 0:
             logger.info("Progress: {}/{} specs migrated".format(num, total))
             transaction.savepoint()
-        src = api.get_object(brain)
-        if not api.is_at_content(src):
+        if not api.is_at_content(analysisspec):
             logger.info("[{}/{}] Already migrated: {}".format(
-                num, total, api.get_path(src)))
+                num, total, api.get_path(analysisspec)))
             continue
-        # client-level specs live inside the client folder — migrate in place
-        migrate_analysisspec_to_dx(src)
+
+        migrate_analysisspec_to_dx(analysisspec)
 
     logger.info("Convert Analysis Specifications to Dexterity [DONE]")
 
@@ -634,11 +614,7 @@ def migrate_analysisspec_to_dx(src, destination=None):
     # NOTE: always convert string values to unicode for dexterity fields!
     target.title = api.safe_unicode(src.Title() or "")
     target.description = api.safe_unicode(src.Description() or "")
-
-    # sample_type: AT stores a UID via getRawSampleType()
-    raw_st = src.getRawSampleType()
-    if raw_st:
-        target.sample_type = raw_st if isinstance(raw_st, list) else [raw_st]
+    target.setSampleType(src.getSampleType())
 
     # dynamic_analysis_spec: AT stores a UID via getRawDynamicAnalysisSpec()
     raw_dyn = src.getRawDynamicAnalysisSpec() \
