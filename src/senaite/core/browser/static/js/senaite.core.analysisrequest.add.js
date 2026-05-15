@@ -428,6 +428,11 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     this.deselected_uids = {};
     // flag that indicates that form already has been submitted once
     this.form_submission_flag = false;
+    // number of recalculate_records ajax calls currently in flight
+    // used to suppress queryselect deselect events that fire during
+    // bulk form (re)hydration, e.g. when copy-to-new loads many rows
+    // at once
+    this.recalculate_in_flight = 0;
     // Remove the '.blurrable' class to avoid inline field validation
     $(".blurrable").removeClass("blurrable");
     // manually flush service search terms
@@ -486,12 +491,20 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
   }
 
   recalculate_records() {
+    var me;
+    me = this;
+    me.recalculate_in_flight += 1;
     return this.ajax_post_form("recalculate_records").done(function(records) {
       console.debug("Recalculate Records=", records);
       // remember a services snapshot
       this.records_snapshot = records;
       // trigger event for whom it might concern
       return $(this).trigger("data:updated", records);
+    }).always(function() {
+      me.recalculate_in_flight -= 1;
+      if (me.recalculate_in_flight < 0) {
+        return me.recalculate_in_flight = 0;
+      }
     });
   }
 
@@ -1808,6 +1821,17 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
   on_analysis_profile_removed(event) {
     var $el, arnum, context, dialog, el, me, profile_metadata, profile_services, profile_uid, record;
     console.debug("°°° on_analysis_profile_removed °°°");
+    // During bulk form hydration (e.g. copy-to-new with many rows) the
+    // queryselect widget can emit a transient deselect for the
+    // Profiles field while it re-syncs its options against the
+    // snapshot. The user hasn't actually removed the profile, so we
+    // must not pop up the "remove services?" dialog. Recognise that
+    // state by the presence of an in-flight recalculate_records ajax
+    // call, which is what drives the bulk re-render on copy-to-new.
+    if (this.recalculate_in_flight > 0) {
+      console.debug("Suppressing profile-remove dialog during bulk form hydration");
+      return;
+    }
     me = this;
     el = event.currentTarget;
     $el = $(el);

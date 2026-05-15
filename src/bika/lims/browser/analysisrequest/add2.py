@@ -18,10 +18,14 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 import copy
+import hashlib
 import json
+import time
 from collections import OrderedDict
 from datetime import datetime
 from datetime import timedelta
+from random import uniform
+from threading import Lock
 
 import six
 import transaction
@@ -59,6 +63,7 @@ from senaite.core.interfaces import IAfterCreateSampleHook
 from senaite.core.p3compat import cmp
 from senaite.core.permissions import TransitionMultiResults
 from senaite.core.registry import get_registry_record
+from ZODB.POSException import ConflictError
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getAdapters
 from zope.component import queryAdapter
@@ -73,6 +78,29 @@ AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
 SKIP_FIELD_ON_COPY = ["Sample", "PrimaryAnalysisRequest", "Remarks",
                       "NumSamples", "_ARAttachment"]
 NO_COPY_FIELDS = ["_ARAttachment"]
+# Maximum number of attempts for a single sample creation before giving
+# up within one pass of the per-sample commit strategy. Combined with
+# the exponential backoff in `_create_one_with_retry`, the worst-case
+# wait per pass is bounded (~6 s). A second pass runs at the end of the
+# batch, so the effective budget per record is twice this value.
+MAX_CREATE_ATTEMPTS = 8
+# In-flight cache used to make `create_samples` idempotent across
+# Zope publisher-level retries. Zope discards the HTTPRequest on a
+# TransientError retry but reuses the same WSGI environ on the same
+# worker thread, so a content-based fingerprint of the submission
+# matches across attempts. Cache hits return the already-committed
+# samples by UID instead of creating duplicates.
+#
+# Each entry is one submission key -> ([list of UIDs], monotonic ts).
+# The cap is a purely defensive bound: in normal operation entries
+# age out via TTL (10 minutes) and each entry is alive only while a
+# submission is in flight, so steady-state size is the number of
+# concurrent submissions on this worker (typically 1-5). Memory at
+# the cap is roughly entries * UIDs * UID_size = a few MB worst case.
+INFLIGHT_CACHE_SIZE = 32
+INFLIGHT_CACHE_TTL = 600
+_inflight = OrderedDict()
+_inflight_lock = Lock()
 ALLOW_MULTI_PASTE_WIDGET_TYPES = [
     # disable paste functionality for date fields, see:
     # https://github.com/senaite/senaite.core/pull/2658#discussion_r1946229751
@@ -90,6 +118,53 @@ def cache_key(method, self, obj):
     if obj is None:
         raise DontCache
     return api.get_cache_key(obj)
+
+
+def _submission_fingerprint(request):
+    """Content-based fingerprint of the submission body. Stable across
+    Zope publisher-level retries on the same worker because Zope
+    rebuilds the request from the same WSGI environ (and body bytes)
+    on each attempt.
+    """
+    method = request.get("REQUEST_METHOD", "") or ""
+    path = request.get("PATH_INFO", "") or ""
+    body = request.get("BODY", "") or ""
+    raw = "{}\n{}\n{}".format(method, path, body)
+    if isinstance(raw, unicode):
+        raw = raw.encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def _inflight_get(key):
+    """Return the cached UID list for the given submission key, or
+    None if the entry is absent or expired. Touches LRU order on hit.
+    """
+    now = time.time()
+    with _inflight_lock:
+        entry = _inflight.get(key)
+        if entry is None:
+            return None
+        uids, ts = entry
+        if now - ts > INFLIGHT_CACHE_TTL:
+            _inflight.pop(key, None)
+            return None
+        # bump LRU position by reinserting
+        _inflight.pop(key)
+        _inflight[key] = entry
+        return uids
+
+
+def _inflight_set(key, uids):
+    """Register the (mutable) UID list as the in-flight value for the
+    given submission key. The caller keeps a reference to the same
+    list and appends to it as samples commit; a concurrent retry on
+    the same worker sees those updates.
+    """
+    with _inflight_lock:
+        _inflight.pop(key, None)
+        _inflight[key] = (uids, time.time())
+        while len(_inflight) > INFLIGHT_CACHE_SIZE:
+            _inflight.popitem(last=False)
 
 
 class AnalysisRequestAddView(BrowserView):
@@ -2099,34 +2174,207 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         return self.handle_redirect(ARs.values(), message)
 
     def create_samples(self, records):
-        """Creates samples for the given records
+        """Creates samples for the given records.
+
+        Dispatches between two strategies based on the registry flag
+        `sample_add_form_commit_per_sample`:
+
+        - When enabled (recommended for instances with many concurrent
+          users), each sample is created in its own ZODB transaction
+          with a per-sample retry-on-conflict and a second-pass retry
+          for the leftovers. Partial success is possible: already
+          committed samples remain durable even if later ones fail.
+        - When disabled (legacy behaviour, the default), the whole
+          batch is created in a single transaction using savepoints
+          for per-sample rollback on error.
+        """
+        if get_registry_record("sample_add_form_commit_per_sample"):
+            return self._create_samples_per_commit(records)
+        return self._create_samples_single_transaction(records)
+
+    def _create_samples_single_transaction(self, records):
+        """Legacy path: create the whole batch in a single transaction.
+        Each sample is wrapped in a savepoint so a per-sample failure
+        rolls back only that sample, not the rest of the batch.
         """
         samples = []
         for record in records:
-            client_uid = record.get("Client")
-            client = self.get_object_by_uid(client_uid)
+            client = self.get_object_by_uid(record.get("Client"))
             if not client:
                 raise ValueError("No client found")
-
-            # Pop the attachments
             attachments = record.pop("attachments", [])
-
-            # Pop the source UID
             source_uid = record.pop("_source_uid", None)
-
-            # Fetch the source object
-            source = None
-            if source_uid:
-                source = api.get_object(source_uid)
-
-            # Create as many samples as required
+            source = api.get_object(source_uid) if source_uid else None
             num_samples = self.get_num_samples(record)
-            for idx in range(num_samples):
+            for _idx in range(num_samples):
                 sample = self.create_sample(
-                    client, record, attachments=attachments, source=source)
+                    client, record,
+                    attachments=attachments, source=source)
                 samples.append(sample)
+        return samples
+
+    def _create_samples_per_commit(self, records):
+        """Per-sample commit path with retry-on-conflict.
+
+        On ConflictError the per-sample transaction is aborted and
+        retried with exponential backoff plus jitter. Records that fail
+        in the first pass are kept aside and retried in a second pass
+        after the rest of the batch has been committed, since contention
+        usually subsides once the burst is over. Records that still fail
+        are logged with their identifying fields and surfaced back to
+        the user via a portal message so the operator knows exactly
+        which rows need to be re-entered.
+
+        The path is idempotent across Zope publisher-level retries: if
+        the publisher commits the response transaction with a
+        ConflictError and re-publishes the request, we recognise the
+        submission by its body fingerprint and return the
+        already-committed samples instead of creating duplicates.
+        """
+        fingerprint = _submission_fingerprint(self.request)
+        existing_uids = _inflight_get(fingerprint)
+        if existing_uids:
+            logger.info(
+                "Resuming ar_add submission after publisher retry; "
+                "%d sample(s) already committed", len(existing_uids))
+            return [api.get_object_by_uid(uid) for uid in existing_uids]
+
+        # Reference the list inside the cache so each successful
+        # per-sample commit immediately updates the entry visible to a
+        # retry on the same worker thread.
+        committed_uids = []
+        _inflight_set(fingerprint, committed_uids)
+
+        samples = []
+        # Records that failed the first attempt; retried in pass 2
+        pending = []
+        # (column_index, record) pairs that ultimately failed
+        failed = []
+        user = api.user.get_user()
+        path_info = self.request.get("PATH_INFO", "")
+
+        # First pass: normal retry budget, batch order
+        for column, record in enumerate(records, start=1):
+            self._normalize_record(record)
+            client = self.get_object_by_uid(record["Client"])
+            if not client:
+                raise ValueError("No client found")
+            num_samples = self.get_num_samples(record)
+            for _idx in range(num_samples):
+                sample = self._create_one_with_retry(
+                    client, record, record["_attachments"],
+                    record["_source"],
+                    user=user, path_info=path_info)
+                if sample is None:
+                    pending.append((column, record, client))
+                else:
+                    samples.append(sample)
+                    committed_uids.append(api.get_uid(sample))
+
+        # Second pass: by now the original burst has subsided, so a
+        # longer pre-delay and an independent retry budget usually
+        # rescues anything that lost the race the first time.
+        if pending:
+            logger.info(
+                "Retrying %d sample(s) in a second pass after the "
+                "initial batch settled", len(pending))
+            time.sleep(uniform(0.5, 1.5))
+            for column, record, client in pending:
+                sample = self._create_one_with_retry(
+                    client, record, record["_attachments"],
+                    record["_source"],
+                    user=user, path_info=path_info)
+                if sample is None:
+                    failed.append((column, record))
+                else:
+                    samples.append(sample)
+                    committed_uids.append(api.get_uid(sample))
+
+        if failed:
+            self._report_failed_records(failed)
 
         return samples
+
+    def _normalize_record(self, record):
+        """Pop attachments and resolve the source object once per
+        record so the retry passes can reuse them without re-popping
+        keys from the same dict.
+        """
+        if "_attachments" not in record:
+            record["_attachments"] = record.pop("attachments", [])
+        if "_source" not in record:
+            source_uid = record.pop("_source_uid", None)
+            record["_source"] = (
+                api.get_object(source_uid) if source_uid else None)
+
+    def _report_failed_records(self, failed):
+        """Log the failed records with their full data and surface a
+        user-readable message listing each row by its column index and
+        any operator-supplied identifiers (ClientSampleID,
+        ClientReference) so the user knows exactly which inputs to
+        re-submit.
+        """
+        descriptions = []
+        for column, record in failed:
+            ident = self._record_identifier(record)
+            descriptions.append(
+                u"#{col} ({ident})".format(col=column, ident=ident))
+            # Full record to the log so support can recover from logs
+            logger.error(
+                "Sample creation failed for column %d: %r",
+                column, record)
+        message = _(
+            "Could not create the following sample(s) due to "
+            "transaction conflicts, please retry them: ${rows}",
+            mapping={"rows": safe_unicode(u", ".join(descriptions))})
+        self.context.plone_utils.addPortalMessage(message, "warning")
+
+    def _record_identifier(self, record):
+        """Best-effort human-readable identifier for a failed record.
+        Falls back to '-' when the operator did not supply any of the
+        usual identifying fields.
+        """
+        for key in ("ClientSampleID", "ClientReference"):
+            value = record.get(key)
+            if value:
+                return safe_unicode(value)
+        return u"-"
+
+    def _create_one_with_retry(self, client, record, attachments, source,
+                               user, path_info):
+        """Create a single sample, committing in its own transaction.
+
+        Retries on ZODB ConflictError with exponential backoff plus
+        jitter. Returns the created sample on success, or None if all
+        attempts were exhausted.
+        """
+        for attempt in range(MAX_CREATE_ATTEMPTS):
+            transaction.begin()
+            T = transaction.get()
+            T.setUser(user.getId())
+            T.note("{}/create_samples".format(path_info))
+            try:
+                sample = self.create_sample(
+                    client, record,
+                    attachments=attachments, source=source)
+                transaction.commit()
+                return sample
+            except ConflictError as exc:
+                transaction.abort()
+                # ConflictError carries the contended oid and class
+                # name; logging both makes it possible to tell counter
+                # contention apart from container / catalog contention
+                # in production.
+                logger.warning(
+                    "ConflictError creating sample "
+                    "(attempt %d/%d) on %s oid=%r: %s",
+                    attempt + 1, MAX_CREATE_ATTEMPTS,
+                    getattr(exc, "class_name", "?"),
+                    getattr(exc, "oid", None), exc)
+                # Exponential backoff with jitter; capped at 2 s
+                delay = min(2.0, 0.05 * (2 ** attempt))
+                time.sleep(delay * uniform(0.5, 1.5))
+        return None
 
     def create_sample(self, client, record, attachments=None, source=None):
         """Creates a single sample with proper transaction handling
