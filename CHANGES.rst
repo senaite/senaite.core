@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2900 Fix circular import between senaite.core.catalog and bika.lims
 - #2899 Suppress profile-remove dialog during bulk ar_add hydration
 - #2741 Commit each created sample individually to reduce ZODB conflicts
 - #2896 Fix uncatalog_object to leave no stale uids in uid_catalog
