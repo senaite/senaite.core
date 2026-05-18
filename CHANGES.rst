@@ -4,10 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
-- Fix `blob_to_named_file` to also convert non-blob AT
-  `ImageField`/`FileField` values (`OFS.Image.Image`/`File`)
-  so the Laboratory DX migration produces a usable
-  `NamedBlobImage` instead of leaving the legacy object in place
+- #2902 Fix blob_to_named_file to handle non-blob AT image/file values
 - #2810 Migrate Laboratory to DX
 - #2901 Add generic unicode title indexer for the `title` FieldIndex
 - #2873 Catalog/cleanup sample catalog indexes
