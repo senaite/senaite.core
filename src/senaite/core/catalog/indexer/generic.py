@@ -39,17 +39,18 @@ def is_active(instance):
 
 @indexer(IContentish)
 def Title(instance):
-    """Normalize Title() to UTF-8 bytes for the `title` FieldIndex.
+    """Normalize Title() to unicode for the `title` FieldIndex.
 
     Some content types (e.g. Organisation) return UTF-8 bytes from
     Title() while others return unicode. Mixing both in the same
     FieldIndex OOBTree triggers UnicodeDecodeError on key comparison
     under Python 2 as soon as a non-ASCII byte string meets a
-    unicode key. Coerce to UTF-8 bytes here so the index holds a
-    single, consistent key type and the catalog metadata column for
-    `Title` keeps returning bytes as before.
+    unicode key. Coerce to unicode here so the index and metadata
+    column both hold a single, consistent key type. Callers that
+    need a UTF-8 byte string can use `api.get_title`, which mirrors
+    the return type of the `Title()` content method.
     """
-    return api.to_utf8(instance.Title(), default="")
+    return api.safe_unicode(instance.Title())
 
 
 @indexer(IContentish)
