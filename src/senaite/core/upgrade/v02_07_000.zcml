@@ -7,8 +7,8 @@
       description="Register the duplicate_sample workflow transition.
                    The transition reuses the AddAnalysisRequest
                    permission, so no new permission is introduced."
-      source="2730"
-      destination="2731"
+      source="2731"
+      destination="2732"
       handler=".v02_07_000.setup_duplicate_sample_transition"
       profile="senaite.core:default"/>
 
