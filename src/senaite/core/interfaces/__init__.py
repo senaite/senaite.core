@@ -603,3 +603,7 @@ class IMultiUploadFileRemover(Interface):
 
         :param uids: Set or list of UIDs to remove
         """
+
+class ILaboratory(Interface):
+    """Marker interface for lab info
+    """
