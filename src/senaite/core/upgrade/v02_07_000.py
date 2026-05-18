@@ -20,9 +20,9 @@
 
 
 import json
-import transaction
 from datetime import timedelta
 
+import transaction
 from bika.lims import api
 from bika.lims.api import safe_unicode as u
 from bika.lims.api import snapshot as snap_api
@@ -38,6 +38,8 @@ from plone.namedfile.file import NamedBlobFile
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.api import dtime
+from senaite.core.api.catalog import add_column
+from senaite.core.api.catalog import add_index
 from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import get_index
@@ -49,6 +51,7 @@ from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
+from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
 from senaite.core.catalog.attachments_catalog import \
     CATALOG_ID as ATTACHMENTS_CATALOG
 from senaite.core.catalog.auditlog_catalog import \
@@ -56,7 +59,6 @@ from senaite.core.catalog.auditlog_catalog import \
 from senaite.core.catalog.autoimportlog_catalog import \
     CATALOG_ID as AUTOIMPORTLOG_CATALOG
 from senaite.core.catalog.client_catalog import CATALOG_ID as CLIENT_CATALOG
-from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
