@@ -38,17 +38,21 @@ def is_active(instance):
 
 
 @indexer(IContentish)
-def Title(instance):
-    """Normalize Title() to unicode for the `title` FieldIndex.
+def title(instance):
+    """Populate the `title` FieldIndex with the unicode Title().
 
-    Some content types (e.g. Organisation) return UTF-8 bytes from
-    Title() while others return unicode. Mixing both in the same
-    FieldIndex OOBTree triggers UnicodeDecodeError on key comparison
-    under Python 2 as soon as a non-ASCII byte string meets a
-    unicode key. Coerce to unicode here so the index and metadata
-    column both hold a single, consistent key type. Callers that
-    need a UTF-8 byte string can use `api.get_title`, which mirrors
-    the return type of the `Title()` content method.
+    The `title` FieldIndex defined in base_catalog has no `attr` set,
+    so the catalog wrapper reads `obj.title` and delegates here for
+    every IContentish object. Returning `api.safe_unicode(Title())`
+    gives the index a single, consistent unicode key type across all
+    content types so non-ASCII titles can be queried as unicode:
+
+        catalog(title=u"Café")
+
+    The `Title` metadata column is independent of this indexer and
+    keeps whatever the content's `Title()` method returns (bytes for
+    most SENAITE AT types, unicode for DX content), so existing
+    consumers of `brain.Title` are unaffected.
     """
     return api.safe_unicode(instance.Title())
 
