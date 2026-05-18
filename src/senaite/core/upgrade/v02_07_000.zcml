@@ -11,8 +11,8 @@
                    asphyxiating atmosphere / hot steam) and the
                    hazard_categories field on SampleType, Sample,
                    ReferenceDefinition and ReferenceSample"
-      source="2730"
-      destination="2731"
+      source="2731"
+      destination="2732"
       handler=".v02_07_000.add_hazard_categories"
       profile="senaite.core:default"/>
 
