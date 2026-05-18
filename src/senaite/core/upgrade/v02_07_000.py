@@ -38,13 +38,23 @@ from plone.namedfile.file import NamedBlobFile
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.api import dtime
+from senaite.core.api.catalog import del_column
+from senaite.core.api.catalog import del_index
+from senaite.core.api.catalog import get_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
+from senaite.core.catalog.attachments_catalog import \
+    CATALOG_ID as ATTACHMENTS_CATALOG
+from senaite.core.catalog.auditlog_catalog import \
+    CATALOG_ID as AUDITLOG_CATALOG
+from senaite.core.catalog.autoimportlog_catalog import \
+    CATALOG_ID as AUTOIMPORTLOG_CATALOG
 from senaite.core.catalog.client_catalog import CATALOG_ID as CLIENT_CATALOG
 from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
 from senaite.core.config import PROJECTNAME as product
@@ -1864,3 +1874,98 @@ def reindex_labcontact_searchable_text(tool):
         logger.info(
             "Reindexing %s in contact catalog [DONE]" % index
         )
+
+
+@upgradestep(product, version)
+def cleanup_sample_catalog(tool):
+    """Clean up senaite_catalog_sample indexes and metadata columns
+
+    - Reindex the title FieldIndex on every catalog that inherits from
+      base_catalog so it picks up the new generic `title` indexer that
+      returns a unicode Title for any IContentish object. Previously
+      only Organisation contributed entries via its type-specific
+      indexer, so the index was effectively empty for everything else.
+    - Remove obsolete FieldIndexes getProvince and getDistrict from the
+      sample catalog. Client geography belongs on the client catalog and
+      is not meaningful as a sample catalog index; reindexing is also
+      not triggered when client address fields change.
+    - Remove stale metadata columns from the sample catalog: getProvince,
+      getDistrict, getClientURL, getTemplateURL, getPhysicalPath. URLs
+      are fragile (hostname-dependent) and better resolved at render
+      time via memoized UID lookups. getPhysicalPath is unused.
+    """
+    logger.info("Cleaning up sample catalog indexes and columns ...")
+
+    # Reindex the title FieldIndex on every catalog that inherits the
+    # base indexes definition so the new generic `title` indexer
+    # populates entries for every content type.
+    base_catalogs = [
+        ATTACHMENTS_CATALOG,
+        AUDITLOG_CATALOG,
+        AUTOIMPORTLOG_CATALOG,
+        CLIENT_CATALOG,
+        CONTACT_CATALOG,
+        REPORT_CATALOG,
+        SAMPLE_CATALOG,
+        SENAITE_CATALOG,
+        SETUP_CATALOG,
+        WORKSHEET_CATALOG,
+    ]
+    for catalog_id in base_catalogs:
+        if get_index(api.get_tool(catalog_id), "title") is None:
+            continue
+        logger.info("Reindexing title index on %s", catalog_id)
+        reindex_index(catalog_id, "title")
+
+    catalog = api.get_tool(SAMPLE_CATALOG)
+
+    # Remove obsolete indexes
+    for idx in ["getDistrict", "getProvince"]:
+        if del_index(catalog, idx):
+            logger.info("Removed index '%s' from sample catalog" % idx)
+
+    # Remove obsolete metadata columns
+    obsolete_columns = [
+        "getClientURL",
+        "getDistrict",
+        "getPhysicalPath",
+        "getProvince",
+        "getTemplateURL",
+    ]
+    for col in obsolete_columns:
+        if del_column(catalog, col):
+            logger.info(
+                "Removed column '%s' from sample catalog" % col
+            )
+
+    logger.info("Cleaning up sample catalog indexes and columns [DONE]")
+
+
+@upgradestep(product, version)
+def add_sample_catalog_indexes(tool):
+    """Add new indexes to senaite_catalog_sample
+
+    - getSampleTypeUID: FieldIndex for filtering samples by type UID.
+    - getSamplePointUID: FieldIndex for filtering samples by sample point UID.
+    - getAnalysesKeywords: KeywordIndex storing the keyword of every analysis
+      contained in the sample and its partitions. Enables queries such as
+      ``catalog(getAnalysesKeywords="glucose")`` to retrieve all samples that
+      include a specific analysis.
+    """
+    logger.info("Adding new indexes to sample catalog ...")
+    catalog = api.get_tool(SAMPLE_CATALOG)
+
+    new_indexes = [
+        ("getSampleTypeUID", "", "FieldIndex"),
+        ("getSamplePointUID", "", "FieldIndex"),
+        ("getAnalysesKeywords", "", "KeywordIndex"),
+    ]
+    for idx_id, idx_attr, idx_type in new_indexes:
+        if add_catalog_index(catalog, idx_id, idx_attr, idx_type):
+            logger.info("Reindexing '%s' in sample catalog ..." % idx_id)
+            reindex_index(SAMPLE_CATALOG, idx_id)
+            logger.info(
+                "Reindexing '%s' in sample catalog [DONE]" % idx_id
+            )
+
+    logger.info("Adding new indexes to sample catalog [DONE]")

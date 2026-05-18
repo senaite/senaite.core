@@ -6,6 +6,7 @@
   <adapter name="is_active" factory=".generic.is_active"/>
   <adapter name="listing_searchable_text" factory=".generic.listing_searchable_text"/>
   <adapter name="sortable_title" factory=".generic.sortable_title"/>
+  <adapter name="title" factory=".generic.title"/>
 
   <!-- Client Indexer -->
   <adapter name="client_searchable_text" factory=".client.client_searchable_text"/>
@@ -54,6 +55,7 @@
 
   <!-- Sample Indexer -->
   <adapter name="assigned_state" factory=".sample.assigned_state"/>
+  <adapter name="getAnalysesKeywords" factory=".sample.getAnalysesKeywords"/>
   <adapter name="is_received" factory=".sample.is_received"/>
   <adapter name="listing_searchable_text" factory=".sample.listing_searchable_text"/>
 
