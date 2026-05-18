@@ -38,6 +38,26 @@ def is_active(instance):
 
 
 @indexer(IContentish)
+def title(instance):
+    """Populate the `title` FieldIndex with the unicode Title().
+
+    The `title` FieldIndex defined in base_catalog has no `attr` set,
+    so the catalog wrapper reads `obj.title` and delegates here for
+    every IContentish object. Returning `api.safe_unicode(Title())`
+    gives the index a single, consistent unicode key type across all
+    content types so non-ASCII titles can be queried as unicode:
+
+        catalog(title=u"Café")
+
+    The `Title` metadata column is independent of this indexer and
+    keeps whatever the content's `Title()` method returns (bytes for
+    most SENAITE AT types, unicode for DX content), so existing
+    consumers of `brain.Title` are unaffected.
+    """
+    return api.safe_unicode(instance.Title())
+
+
+@indexer(IContentish)
 def sortable_title(instance):
     """Uses the default Plone sortable_text index lower-case
     """

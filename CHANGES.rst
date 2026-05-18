@@ -5,6 +5,9 @@ Changelog
 ------------------
 
 - #2895 Add 'duplicate_sample' workflow transition for samples (with global toggle in setup)
+- #2901 Add generic unicode title indexer for the `title` FieldIndex
+- #2873 Catalog/cleanup sample catalog indexes
+- #2900 Fix circular import between senaite.core.catalog and bika.lims
 - #2899 Suppress profile-remove dialog during bulk ar_add hydration
 - #2741 Commit each created sample individually to reduce ZODB conflicts
 - #2896 Fix uncatalog_object to leave no stale uids in uid_catalog
