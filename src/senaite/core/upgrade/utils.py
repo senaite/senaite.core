@@ -36,6 +36,8 @@ from plone.dexterity.fti import DexterityFTI
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import get_installer
 from Products.ZCatalog.ProgressHandler import ZLogHandler
+from OFS.Image import File as OFSFile
+from OFS.Image import Image as OFSImage
 from plone.app.blob.field import BlobWrapper
 from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.file import NamedBlobImage
@@ -433,15 +435,38 @@ def remove_at_portal_types(tool, types_to_remove=[]):
 
 
 def blob_to_named_file(blob, default_filename=u"file"):
-    """Convert an AT BlobWrapper to a Dexterity NamedBlobFile/Image
+    """Convert an AT file/image value to a Dexterity NamedBlobFile/Image.
+
+    Accepts:
+    * A ``plone.app.blob.field.BlobWrapper`` (blob-aware AT fields).
+    * An ``OFS.Image.Image`` / ``OFS.Image.File`` (the value stored
+      by plain Archetypes ``ImageField`` / ``FileField``).
+
+    Anything else falsy returns ``None``. Anything else truthy is
+    returned unchanged, so legacy callers that already pass
+    ``NamedBlobFile``/``NamedBlobImage`` instances keep working.
     """
     if not blob:
         return None
-    if not isinstance(blob, BlobWrapper):
+
+    if isinstance(blob, BlobWrapper):
+        filename = u(blob.getFilename() or default_filename)
+        content_type = blob.getContentType() or ""
+        data = blob.data
+    elif isinstance(blob, (OFSImage, OFSFile)):
+        # ``filename`` attribute is set on upload but may be empty;
+        # fall back to the persistent id, then the default.
+        filename = u(getattr(blob, "filename", None)
+                     or blob.getId()
+                     or default_filename)
+        content_type = blob.getContentType() or ""
+        data = bytes(blob.data) if blob.data is not None else b""
+    else:
+        # Unknown shape (e.g. already a NamedBlobFile from a partial
+        # earlier migration); leave it for the field setter to deal
+        # with.
         return blob
-    filename = u(blob.getFilename() or default_filename)
-    content_type = blob.getContentType() or ""
-    data = blob.data
+
     if content_type.startswith("image/"):
         return NamedBlobImage(
             data=data,
