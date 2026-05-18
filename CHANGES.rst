@@ -8,6 +8,11 @@ Changelog
   and ReferenceSample (GHS plus ISO 7010 biohazard, radioactive,
   non-ionising radiation, electricity, low temperature, hot content,
   magnetic field, hot surface, asphyxiating atmosphere, hot steam)
+- #2901 Add generic unicode title indexer for the `title` FieldIndex
+- #2873 Catalog/cleanup sample catalog indexes
+- #2900 Fix circular import between senaite.core.catalog and bika.lims
+- #2899 Suppress profile-remove dialog during bulk ar_add hydration
+- #2741 Commit each created sample individually to reduce ZODB conflicts
 - #2896 Fix uncatalog_object to leave no stale uids in uid_catalog
 - #2897 Use UnorderedOrdering for Clients to avoid ZODB conflicts
 - #2894 Fix DL get flushed on submit
