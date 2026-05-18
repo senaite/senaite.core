@@ -60,6 +60,7 @@ from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
+from senaite.core.schema.addressfield import BILLING_ADDRESS
 from senaite.core.schema.addressfield import NAIVE_ADDRESS
 from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
 from senaite.core.schema.addressfield import POSTAL_ADDRESS
@@ -71,6 +72,7 @@ from senaite.core.setuphandlers import add_dexterity_items
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade.utils import blob_to_named_file
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import permanently_allow_type_for
@@ -88,6 +90,7 @@ profile = "profile-{0}:default".format(product)
 REMOVE_AT_TYPES = [
     "ARReport",
     "Contact",
+    "Laboratory",
     "Calculation",
     "Calculations",
     "Multifile",
@@ -989,6 +992,134 @@ def migrate_multifile_to_dx(src, destination=None):
     migrator.copy_id(src, target)
 
     logger.info("Migrated Multifile from %s -> %s" % (src, target))
+
+
+def migrate_laboratory_to_dx(tool):
+    """Migrates Laboratory to DX
+    """
+    logger.info("Convert Laboratory to Dexterity ...")
+
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+    portal_type = "Laboratory"
+    query = {
+        "portal_type": portal_type,
+    }
+    brains = api.search(query, SETUP_CATALOG)
+
+    if not brains:
+        logger.warning("No Laboratory object found, skipping migration")
+        return
+
+    src = api.get_object(brains[0])
+
+    # Check if already migrated
+    if not api.is_at_content(src):
+        logger.info(
+            "Laboratory already migrated: {}".format(api.get_path(src)))
+        return
+    destination = api.get_senaite_setup()
+    target_id = tmpID()
+
+    target = destination.get(target_id)
+    if not target:
+        # Don't use the api to skip the auto-id generation
+        target = createContent(portal_type, id=target_id)
+        destination._setObject(target_id, target)
+        target = destination._getOb(target_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = u(src.getName() or "")
+    target.description = u(src.Description() or "")
+
+    # Laboratory-specific fields
+    target.lab_url = u(src.getLabURL() or "")
+    target.supervisor = src.getRawSupervisor() or ""
+    target.confidence = src.getConfidence() or None
+    target.laboratory_accredited = bool(src.getLaboratoryAccredited())
+    target.accreditation_body = u(src.getAccreditationBody() or "")
+    target.accreditation_body_url = u(src.getAccreditationBodyURL() or "")
+    target.accreditation = u(src.getAccreditation() or "")
+    target.accreditation_reference = u(src.getAccreditationReference() or "")
+    target.accreditation_body_logo = blob_to_named_file(
+        src.getAccreditationBodyLogo(), default_filename=u"logo.png")
+    target.accreditation_page_header = u(src.getAccreditationPageHeader() or "")
+
+    # Organization fields (inherited from Organisation)
+    target.tax_number = u(src.getTaxNumber() or "")
+    target.phone = u(src.getPhone() or "")
+    target.fax = u(src.getFax() or "")
+    target.email = u(src.getEmailAddress() or "")
+    target.account_type = u(src.getAccountType() or "")
+    target.account_name = u(src.getAccountName() or "")
+    target.account_number = u(src.getAccountNumber() or "")
+    target.bank_name = u(src.getBankName() or "")
+    target.bank_branch = u(src.getBankBranch() or "")
+
+    # Copy addresses using the to_dx_address helper
+    postal_address = src.getPostalAddress() or {}
+    if postal_address:
+        target.setPostalAddress(
+            to_dx_address(postal_address, POSTAL_ADDRESS)
+        )
+
+    physical_address = src.getPhysicalAddress() or {}
+    if physical_address:
+        target.setPhysicalAddress(
+            to_dx_address(physical_address, PHYSICAL_ADDRESS)
+        )
+
+    billing_address = src.getBillingAddress() or {}
+    if billing_address:
+        target.setBillingAddress(
+            to_dx_address(billing_address, BILLING_ADDRESS)
+        )
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter(
+        (src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID
+    migrator.copy_uid(src, target)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # Ensure Laboratory is allowed in its container before rename
+    permanently_allow_type_for(api.get_portal_type(destination), portal_type)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    target.reindexObject()
+
+    logger.info("Migrated Laboratory from %s -> %s" % (src, target))
+    logger.info("Convert Laboratory to Dexterity [DONE]")
 
 
 def to_dx_address(value, address_type=NAIVE_ADDRESS):

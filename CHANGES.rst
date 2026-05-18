@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2895 Add 'duplicate_sample' workflow transition for samples (with global toggle in setup)
+- #2810 Migrate Laboratory to DX
 - #2901 Add generic unicode title indexer for the `title` FieldIndex
 - #2873 Catalog/cleanup sample catalog indexes
 - #2900 Fix circular import between senaite.core.catalog and bika.lims

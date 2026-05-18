@@ -13,6 +13,14 @@
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate Laboratory to Dexterity"
+      description="Ensure Laboratory is using Dexterity schema and clean up AT remnants"
+      source="2730"
+      destination="2731"
+      handler=".v02_07_000.migrate_laboratory_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Add new sample catalog indexes"
       description="Add getSampleTypeUID and getSamplePointUID FieldIndexes
                    and getAnalysesKeywords KeywordIndex to the sample
@@ -107,7 +115,6 @@
       handler=".v02_07_000.migrate_analysis_columns_to_setup"
       profile="senaite.core:default"/>
 
-  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Migrate Worksheet objects to Dexterity"
       description="Convert Worksheet content type from Archetypes to Dexterity"
       source="2719"
