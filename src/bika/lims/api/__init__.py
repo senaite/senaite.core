@@ -859,8 +859,10 @@ def get_title(brain_or_object):
     :rtype: string
     """
     if is_brain(brain_or_object) and base_hasattr(brain_or_object, "Title"):
-        return brain_or_object.Title
-    return get_object(brain_or_object).Title()
+        title = brain_or_object.Title
+    else:
+        title = get_object(brain_or_object).Title()
+    return to_utf8(title, default="")
 
 
 def get_description(brain_or_object):

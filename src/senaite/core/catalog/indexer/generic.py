@@ -24,7 +24,6 @@ from Products.CMFCore.interfaces import IContentish
 from Products.CMFPlone.CatalogTool import \
     sortable_title as plone_sortable_title
 from Products.CMFPlone.utils import safe_callable
-from Products.CMFPlone.utils import safe_unicode
 from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog.utils import get_searchable_text_tokens
 from senaite.core.interfaces import ISenaiteCatalog
@@ -40,19 +39,17 @@ def is_active(instance):
 
 @indexer(IContentish)
 def Title(instance):
-    """Normalize Title() to unicode for the `title` FieldIndex.
+    """Normalize Title() to UTF-8 bytes for the `title` FieldIndex.
 
     Some content types (e.g. Organisation) return UTF-8 bytes from
-    Title(), while others return unicode. Mixing both in the same
+    Title() while others return unicode. Mixing both in the same
     FieldIndex OOBTree triggers UnicodeDecodeError on key comparison
     under Python 2 as soon as a non-ASCII byte string meets a
-    unicode key. Coerce to unicode here so the index holds a
-    single, consistent key type.
+    unicode key. Coerce to UTF-8 bytes here so the index holds a
+    single, consistent key type and the catalog metadata column for
+    `Title` keeps returning bytes as before.
     """
-    title = instance.Title()
-    if safe_callable(title):
-        title = title()
-    return safe_unicode(title or u"")
+    return api.to_utf8(instance.Title(), default="")
 
 
 @indexer(IContentish)
