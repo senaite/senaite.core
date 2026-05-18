@@ -2,6 +2,19 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add hazard categories"
+      description="Register the hazard category vocabulary (GHS plus
+                   ISO 7010 biohazard / radioactive / non-ionising
+                   radiation / electricity / low temperature / hot
+                   content / magnetic field / hot surface /
+                   asphyxiating atmosphere / hot steam) and the
+                   hazard_categories field on SampleType, Sample,
+                   ReferenceDefinition and ReferenceSample"
+      source="2730"
+      destination="2731"
+      handler=".v02_07_000.add_hazard_categories"
+      profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Add new sample catalog indexes"
@@ -34,20 +47,6 @@
       source="2727"
       destination="2728"
       handler=".v02_07_000.import_registry"
-      profile="senaite.core:default"/>
-
-  <genericsetup:upgradeStep
-      title="SENAITE.CORE 2.7.0: Add hazard categories"
-      description="Register the hazard category vocabulary (GHS plus
-                   ISO 7010 biohazard / radioactive / non-ionising
-                   radiation / electricity / low temperature / hot
-                   content / magnetic field / hot surface /
-                   asphyxiating atmosphere / hot steam) and the
-                   hazard_categories field on SampleType, Sample,
-                   ReferenceDefinition and ReferenceSample"
-      source="2727"
-      destination="2728"
-      handler=".v02_07_000.add_hazard_categories"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
