@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2901 Normalize Title to unicode in catalog title FieldIndex
 - #2873 Catalog/cleanup sample catalog indexes
 - #2900 Fix circular import between senaite.core.catalog and bika.lims
 - #2899 Suppress profile-remove dialog during bulk ar_add hydration
