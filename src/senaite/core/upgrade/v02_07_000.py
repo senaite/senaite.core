@@ -1100,6 +1100,8 @@ def migrate_laboratory_to_dx(tool):
     # change the ID *after* the original object was removed
     migrator.copy_id(src, target)
 
+    target.reindexObject()
+
     logger.info("Migrated Laboratory from %s -> %s" % (src, target))
     logger.info("Convert Laboratory to Dexterity [DONE]")
 
