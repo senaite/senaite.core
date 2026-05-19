@@ -1119,18 +1119,18 @@ def repair_laboratory_migration(tool):
     Two issues need patching on already-migrated instances:
 
     1. Before #2902, the migration passed AT ImageField values straight
-       through ``blob_to_named_file`` when they were not BlobWrapper
-       instances. The raw ``OFS.Image.Image`` objects were assigned to
-       the new ``NamedBlobImage`` field, which is neither None nor
-       INamed; ``plone.formwidget.namedfile`` then crashes rendering
+       through `blob_to_named_file` when they were not BlobWrapper
+       instances. The raw `OFS.Image.Image` objects were assigned to
+       the new `NamedBlobImage` field, which is neither None nor
+       INamed; `plone.formwidget.namedfile` then crashes rendering
        the laboratory view or edit form.
 
     2. The new Laboratory FTI was missing the
-       ``IMultiCatalogBehavior`` behavior, so the catalog multiplex
+       `IMultiCatalogBehavior` behavior, so the catalog multiplex
        processor refused to index it in any non-portal catalog. The
        result is that the laboratory is absent from
-       ``senaite_catalog_setup`` and any code that resolves it through
-       catalog (e.g. ``SuperModel`` lookups in impress) gets nothing.
+       `senaite_catalog_setup` and any code that resolves it through
+       catalog (e.g. `SuperModel` lookups in impress) gets nothing.
     """
     logger.info("Repair laboratory migration ...")
 
