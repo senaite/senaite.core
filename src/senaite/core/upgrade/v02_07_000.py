@@ -36,7 +36,6 @@ from plone.app.blob.field import BlobWrapper
 from plone.dexterity.utils import createContent
 from plone.namedfile.file import NamedBlobFile
 from Products.CMFEditions.interfaces import IVersioned
-from Products.ZCatalog.ProgressHandler import ZLogHandler
 from senaite.core import logger
 from senaite.core.api import dtime
 from senaite.core.api.catalog import del_column
@@ -68,7 +67,9 @@ from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import blob_to_named_file
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
+from senaite.core.upgrade.utils import iter_senaite_catalogs
 from senaite.core.upgrade.utils import permanently_allow_type_for
+from senaite.core.upgrade.utils import rebuild_index
 from senaite.core.upgrade.utils import remove_at_portal_types
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.v02_06_000 import get_setup_folder
@@ -1899,44 +1900,6 @@ def rebuild_title_indexes(tool):
                 catalog.id, num, total))
         rebuild_index(catalog, "title")
     logger.info("Rebuild title indexes [DONE]")
-
-
-def iter_senaite_catalogs():
-    """Yield every catalog tool in the portal that is a SENAITE catalog
-    """
-    portal = api.get_portal()
-    for obj in portal.objectValues():
-        if ISenaiteCatalogObject.providedBy(obj):
-            yield obj
-
-
-def rebuild_index(catalog, index_name):
-    """Clear an index BTree, then reindex every cataloged object on it
-
-    Streams progress to the log via a `ZLogHandler` so long-running
-    reindexes give feedback every 100 objects instead of going silent
-    until the whole catalog is done.
-    """
-    if catalog is None:
-        return
-    if index_name not in catalog.indexes():
-        logger.info(
-            "Skipping %s on %s (index not found)" % (
-                index_name, catalog.id))
-        return
-    index = catalog._catalog.getIndex(index_name)
-    if index is None:
-        return
-    total = len(catalog)
-    logger.info(
-        "Clearing %s index on %s (%s objects to reindex) ..." % (
-            index_name, catalog.id, total))
-    index.clear()
-    pghandler = ZLogHandler(steps=100)
-    catalog.reindexIndex(index_name, None, pghandler=pghandler)
-    logger.info(
-        "Rebuilt %s index on %s (%s objects)" % (
-            index_name, catalog.id, total))
 
 
 @upgradestep(product, version)
