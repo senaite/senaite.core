@@ -4,13 +4,15 @@
 
 
   <genericsetup:upgradeStep
-      title="SENAITE.CORE 2.7.0: Repair laboratory image fields"
-      description="Re-wrap raw OFS.Image values that the previous
-                   Laboratory-to-DX migration assigned to NamedBlobImage
-                   fields so the file widget can render them again."
+      title="SENAITE.CORE 2.7.0: Repair laboratory migration"
+      description="Re-import typeinfo so the Laboratory FTI picks up the
+                   IMultiCatalogBehavior (without it the laboratory is
+                   never indexed in senaite_catalog_setup), re-wrap raw
+                   OFS.Image values left on the NamedBlobImage fields by
+                   the original migration, and reindex the live object."
       source="2731"
       destination="2732"
-      handler=".v02_07_000.repair_laboratory_image_fields"
+      handler=".v02_07_000.repair_laboratory_migration"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
