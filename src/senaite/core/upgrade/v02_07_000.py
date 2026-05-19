@@ -40,21 +40,13 @@ from senaite.core import logger
 from senaite.core.api import dtime
 from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
-from senaite.core.api.catalog import get_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
-from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
-from senaite.core.catalog.attachments_catalog import \
-    CATALOG_ID as ATTACHMENTS_CATALOG
-from senaite.core.catalog.auditlog_catalog import \
-    CATALOG_ID as AUDITLOG_CATALOG
-from senaite.core.catalog.autoimportlog_catalog import \
-    CATALOG_ID as AUTOIMPORTLOG_CATALOG
 from senaite.core.catalog.client_catalog import CATALOG_ID as CLIENT_CATALOG
 from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
 from senaite.core.config import PROJECTNAME as product
@@ -1931,11 +1923,13 @@ def rebuild_index(catalog, index_name):
 def cleanup_sample_catalog(tool):
     """Clean up senaite_catalog_sample indexes and metadata columns
 
-    - Reindex the title FieldIndex on every catalog that inherits from
-      base_catalog so it picks up the new generic `title` indexer that
-      returns a unicode Title for any IContentish object. Previously
-      only Organisation contributed entries via its type-specific
-      indexer, so the index was effectively empty for everything else.
+    - Clear and rebuild the title FieldIndex on every SENAITE catalog
+      so the (post-#2901) generic `title` indexer repopulates the
+      BTree with unicode keys for every content type. Clearing first
+      avoids the `UnicodeDecodeError` that
+      `manage_reindexIndex`-without-clear leaves behind when stale
+      byte-string keys for non-ASCII titles meet new unicode keys
+      during BTree comparison.
     - Remove obsolete FieldIndexes getProvince and getDistrict from the
       sample catalog. Client geography belongs on the client catalog and
       is not meaningful as a sample catalog index; reindexing is also
@@ -1947,26 +1941,11 @@ def cleanup_sample_catalog(tool):
     """
     logger.info("Cleaning up sample catalog indexes and columns ...")
 
-    # Reindex the title FieldIndex on every catalog that inherits the
-    # base indexes definition so the new generic `title` indexer
-    # populates entries for every content type.
-    base_catalogs = [
-        ATTACHMENTS_CATALOG,
-        AUDITLOG_CATALOG,
-        AUTOIMPORTLOG_CATALOG,
-        CLIENT_CATALOG,
-        CONTACT_CATALOG,
-        REPORT_CATALOG,
-        SAMPLE_CATALOG,
-        SENAITE_CATALOG,
-        SETUP_CATALOG,
-        WORKSHEET_CATALOG,
-    ]
-    for catalog_id in base_catalogs:
-        if get_index(api.get_tool(catalog_id), "title") is None:
-            continue
-        logger.info("Reindexing title index on %s", catalog_id)
-        reindex_index(catalog_id, "title")
+    # Clear and rebuild the title FieldIndex on every SENAITE catalog
+    # so the generic `title` indexer repopulates entries for every
+    # content type with a consistent unicode key type.
+    for catalog in iter_senaite_catalogs():
+        rebuild_index(catalog, "title")
 
     catalog = api.get_tool(SAMPLE_CATALOG)
 
