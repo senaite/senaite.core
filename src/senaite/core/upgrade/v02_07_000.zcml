@@ -4,6 +4,18 @@
 
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Rebuild title indexes"
+      description="Clear and rebuild the title FieldIndex on every SENAITE
+                   catalog so stale byte-string keys from before #2901
+                   are replaced with unicode keys. Without this, any
+                   insert of a non-ASCII unicode title raises
+                   UnicodeDecodeError on BTree key comparison."
+      source="2731"
+      destination="2732"
+      handler=".v02_07_000.rebuild_title_indexes"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Migrate Laboratory to Dexterity"
       description="Ensure Laboratory is using Dexterity schema and clean up AT remnants"
       source="2730"

@@ -1879,6 +1879,55 @@ def reindex_labcontact_searchable_text(tool):
 
 
 @upgradestep(product, version)
+def rebuild_title_indexes(tool):
+    """Clear and rebuild the title FieldIndex on every SENAITE catalog
+
+    #2901 reindexed the title index across all base catalogs so a new
+    generic indexer could populate them with unicode keys. The reindex
+    rewrites entries per docid but does not clear the BTree first, so
+    pre-existing byte-string keys for non-ASCII titles remain. Any
+    subsequent insert of a unicode key (e.g. when creating or editing
+    a DX object whose title contains non-ASCII characters) then raises
+    `UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3` on
+    BTree key comparison.
+
+    Clearing the index before reindexing wipes all stale byte-string
+    keys and lets the (post-#2901) indexer repopulate the BTree with
+    a single unicode key type. Catalogs are discovered dynamically by
+    walking the portal and filtering on `ISenaiteCatalogObject`, so
+    custom catalogs registered by downstream add-ons are also covered.
+    """
+    logger.info("Rebuild title indexes ...")
+    for catalog in iter_senaite_catalogs():
+        rebuild_index(catalog, "title")
+    logger.info("Rebuild title indexes [DONE]")
+
+
+def iter_senaite_catalogs():
+    """Yield every catalog tool in the portal that is a SENAITE catalog
+    """
+    portal = api.get_portal()
+    for obj in portal.objectValues():
+        if ISenaiteCatalogObject.providedBy(obj):
+            yield obj
+
+
+def rebuild_index(catalog, index_name):
+    """Clear an index BTree, then reindex every cataloged object on it
+    """
+    if catalog is None:
+        return
+    if index_name not in catalog.indexes():
+        return
+    index = catalog._catalog.getIndex(index_name)
+    if index is None:
+        return
+    index.clear()
+    catalog.manage_reindexIndex(ids=(index_name,))
+    logger.info("Rebuilt %s index on %s" % (index_name, catalog.id))
+
+
+@upgradestep(product, version)
 def cleanup_sample_catalog(tool):
     """Clean up senaite_catalog_sample indexes and metadata columns
 
