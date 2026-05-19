@@ -35,6 +35,7 @@ from persistent.list import PersistentList
 from plone.app.blob.field import BlobWrapper
 from plone.dexterity.utils import createContent
 from plone.namedfile.file import NamedBlobFile
+from plone.namedfile.interfaces import INamed
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.api import dtime
@@ -1104,6 +1105,49 @@ def migrate_laboratory_to_dx(tool):
 
     logger.info("Migrated Laboratory from %s -> %s" % (src, target))
     logger.info("Convert Laboratory to Dexterity [DONE]")
+
+
+LABORATORY_IMAGE_FIELDS = (
+    ("accreditation_body_logo", u"logo.png"),
+)
+
+
+@upgradestep(product, version)
+def repair_laboratory_image_fields(tool):
+    """Re-wrap legacy OFS.Image values left on Laboratory image fields
+
+    Before #2902 the Laboratory-to-DX migration passed AT ImageField
+    values straight through ``blob_to_named_file`` when they were not
+    BlobWrapper instances. The raw ``OFS.Image.Image`` objects were
+    assigned to the new ``NamedBlobImage`` field, which is neither
+    None nor INamed; ``plone.formwidget.namedfile`` then crashes
+    rendering the laboratory view or edit form.
+    """
+    logger.info("Repair laboratory image fields ...")
+    setup = api.get_senaite_setup()
+    laboratory = setup.get("laboratory") if setup else None
+    if laboratory is None:
+        logger.info("No laboratory found, skipping repair")
+        return
+    for fieldname, default_filename in LABORATORY_IMAGE_FIELDS:
+        repair_laboratory_image_field(
+            laboratory, fieldname, default_filename)
+    logger.info("Repair laboratory image fields [DONE]")
+
+
+def repair_laboratory_image_field(laboratory, fieldname, default_filename):
+    """Re-wrap a single image field if it holds a non-INamed legacy value
+    """
+    value = getattr(laboratory, fieldname, None)
+    if value is None:
+        return
+    if INamed.providedBy(value):
+        return
+    named = blob_to_named_file(value, default_filename=default_filename)
+    setattr(laboratory, fieldname, named)
+    logger.info("Repaired %s.%s (%s -> %s)" % (
+        laboratory, fieldname, type(value).__name__,
+        type(named).__name__ if named is not None else None))
 
 
 def to_dx_address(value, address_type=NAIVE_ADDRESS):

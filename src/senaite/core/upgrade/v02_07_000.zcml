@@ -4,6 +4,16 @@
 
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Repair laboratory image fields"
+      description="Re-wrap raw OFS.Image values that the previous
+                   Laboratory-to-DX migration assigned to NamedBlobImage
+                   fields so the file widget can render them again."
+      source="2731"
+      destination="2732"
+      handler=".v02_07_000.repair_laboratory_image_fields"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Migrate Laboratory to Dexterity"
       description="Ensure Laboratory is using Dexterity schema and clean up AT remnants"
       source="2730"
