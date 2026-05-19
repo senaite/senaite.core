@@ -398,12 +398,24 @@ def iter_senaite_catalogs():
             yield obj
 
 
-def rebuild_index(catalog, index_name):
-    """Clear an index BTree, then reindex every cataloged object on it
+def rebuild_index(catalog, index_name, clear=True):
+    """Reindex every cataloged object on an index, optionally clearing first
+
+    When `clear` is True (default) the index BTree is wiped before
+    reindexing so stale keys from previous indexers are dropped --
+    needed e.g. when an indexer changes its return type and existing
+    keys would otherwise collide with the new ones (byte vs unicode).
+    Set `clear=False` to keep existing keys and only refresh entries
+    per docid via `reindexIndex`.
 
     Streams progress to the log via a `ZLogHandler` so long-running
     reindexes give feedback every 100 objects instead of going silent
     until the whole catalog is done.
+
+    :param catalog: ZCatalog tool
+    :param index_name: Index id
+    :param clear: Clear the index BTree before reindexing
+    :type clear: bool
     """
     if catalog is None:
         return
@@ -416,10 +428,15 @@ def rebuild_index(catalog, index_name):
     if index is None:
         return
     total = len(catalog)
-    logger.info(
-        "Clearing %s index on %s (%s objects to reindex) ..." % (
-            index_name, catalog.id, total))
-    index.clear()
+    if clear:
+        logger.info(
+            "Clearing %s index on %s (%s objects to reindex) ..." % (
+                index_name, catalog.id, total))
+        index.clear()
+    else:
+        logger.info(
+            "Reindexing %s on %s (%s objects) ..." % (
+                index_name, catalog.id, total))
     pghandler = ZLogHandler(steps=100)
     catalog.reindexIndex(index_name, None, pghandler=pghandler)
     logger.info(
