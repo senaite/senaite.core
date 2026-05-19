@@ -1923,13 +1923,6 @@ def rebuild_index(catalog, index_name):
 def cleanup_sample_catalog(tool):
     """Clean up senaite_catalog_sample indexes and metadata columns
 
-    - Clear and rebuild the title FieldIndex on every SENAITE catalog
-      so the (post-#2901) generic `title` indexer repopulates the
-      BTree with unicode keys for every content type. Clearing first
-      avoids the `UnicodeDecodeError` that
-      `manage_reindexIndex`-without-clear leaves behind when stale
-      byte-string keys for non-ASCII titles meet new unicode keys
-      during BTree comparison.
     - Remove obsolete FieldIndexes getProvince and getDistrict from the
       sample catalog. Client geography belongs on the client catalog and
       is not meaningful as a sample catalog index; reindexing is also
@@ -1938,14 +1931,14 @@ def cleanup_sample_catalog(tool):
       getDistrict, getClientURL, getTemplateURL, getPhysicalPath. URLs
       are fragile (hostname-dependent) and better resolved at render
       time via memoized UID lookups. getPhysicalPath is unused.
+
+    The title FieldIndex used to be reindexed here as part of the
+    #2901 follow-up. That step has moved to `rebuild_title_indexes`
+    (a later upgrade step), which clears the BTree before reindexing
+    to avoid the byte/unicode key mix that
+    `manage_reindexIndex`-without-clear leaves behind.
     """
     logger.info("Cleaning up sample catalog indexes and columns ...")
-
-    # Clear and rebuild the title FieldIndex on every SENAITE catalog
-    # so the generic `title` indexer repopulates entries for every
-    # content type with a consistent unicode key type.
-    for catalog in iter_senaite_catalogs():
-        rebuild_index(catalog, "title")
 
     catalog = api.get_tool(SAMPLE_CATALOG)
 
