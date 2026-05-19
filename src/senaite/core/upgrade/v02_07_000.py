@@ -36,6 +36,7 @@ from plone.app.blob.field import BlobWrapper
 from plone.dexterity.utils import createContent
 from plone.namedfile.file import NamedBlobFile
 from Products.CMFEditions.interfaces import IVersioned
+from Products.ZCatalog.ProgressHandler import ZLogHandler
 from senaite.core import logger
 from senaite.core.api import dtime
 from senaite.core.api.catalog import del_column
@@ -1890,7 +1891,12 @@ def rebuild_title_indexes(tool):
     custom catalogs registered by downstream add-ons are also covered.
     """
     logger.info("Rebuild title indexes ...")
-    for catalog in iter_senaite_catalogs():
+    catalogs = list(iter_senaite_catalogs())
+    total = len(catalogs)
+    for num, catalog in enumerate(catalogs, start=1):
+        logger.info(
+            "Rebuilding title index on %s (%s/%s) ..." % (
+                catalog.id, num, total))
         rebuild_index(catalog, "title")
     logger.info("Rebuild title indexes [DONE]")
 
@@ -1906,17 +1912,31 @@ def iter_senaite_catalogs():
 
 def rebuild_index(catalog, index_name):
     """Clear an index BTree, then reindex every cataloged object on it
+
+    Streams progress to the log via a `ZLogHandler` so long-running
+    reindexes give feedback every 100 objects instead of going silent
+    until the whole catalog is done.
     """
     if catalog is None:
         return
     if index_name not in catalog.indexes():
+        logger.info(
+            "Skipping %s on %s (index not found)" % (
+                index_name, catalog.id))
         return
     index = catalog._catalog.getIndex(index_name)
     if index is None:
         return
+    total = len(catalog)
+    logger.info(
+        "Clearing %s index on %s (%s objects to reindex) ..." % (
+            index_name, catalog.id, total))
     index.clear()
-    catalog.manage_reindexIndex(ids=(index_name,))
-    logger.info("Rebuilt %s index on %s" % (index_name, catalog.id))
+    pghandler = ZLogHandler(steps=100)
+    catalog.reindexIndex(index_name, None, pghandler=pghandler)
+    logger.info(
+        "Rebuilt %s index on %s (%s objects)" % (
+            index_name, catalog.id, total))
 
 
 @upgradestep(product, version)
