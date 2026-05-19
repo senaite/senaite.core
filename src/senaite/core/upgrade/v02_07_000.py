@@ -1931,12 +1931,6 @@ def cleanup_sample_catalog(tool):
       getDistrict, getClientURL, getTemplateURL, getPhysicalPath. URLs
       are fragile (hostname-dependent) and better resolved at render
       time via memoized UID lookups. getPhysicalPath is unused.
-
-    The title FieldIndex used to be reindexed here as part of the
-    #2901 follow-up. That step has moved to `rebuild_title_indexes`
-    (a later upgrade step), which clears the BTree before reindexing
-    to avoid the byte/unicode key mix that
-    `manage_reindexIndex`-without-clear leaves behind.
     """
     logger.info("Cleaning up sample catalog indexes and columns ...")
 
