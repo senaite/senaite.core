@@ -21,6 +21,7 @@
 from plone.app.textfield import RichTextValue
 from Products.Archetypes.config import TOOL_NAME
 from Products.CMFCore.utils import getToolByName
+from senaite.core.browser.fields.parsing import parse_record_literal
 
 from bika.lims import api
 from bika.lims.utils import to_utf8
@@ -237,7 +238,7 @@ def set_fields_from_request(obj, request):
         elif fieldtype in ['senaite.core.browser.fields.records.RecordsField',
                            'senaite.core.browser.fields.record.RecordField']:
             try:
-                value = eval(value)
+                value = parse_record_literal(value)
             except Exception:
                 logger.warning(
                     "JSONAPI: " + fieldname + ": Invalid "

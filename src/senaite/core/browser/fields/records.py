@@ -26,6 +26,7 @@ from bika.lims import api
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.Registry import registerPropertyType
 from Products.PythonScripts.standard import html_quote
+from senaite.core.browser.fields.parsing import parse_record_literal
 from senaite.core.browser.fields.record import RecordField
 from senaite.core.browser.widgets.recordswidget import RecordsWidget
 
@@ -137,7 +138,10 @@ class RecordsField(RecordField):
                 value = [value]
             elif type(value) == str:
                 try:
-                    value = eval(value.replace('}\n', '},'))
+                    value = parse_record_literal(
+                        value,
+                        normalize_records=True,
+                    )
                 except Exception:
                     pass
         return [RecordField._to_dict(self, entry) for entry in value]
