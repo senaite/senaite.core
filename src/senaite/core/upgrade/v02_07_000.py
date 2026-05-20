@@ -35,6 +35,7 @@ from persistent.list import PersistentList
 from plone.app.blob.field import BlobWrapper
 from plone.dexterity.utils import createContent
 from plone.namedfile.file import NamedBlobFile
+from plone.namedfile.interfaces import INamed
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.api import dtime
@@ -1098,6 +1099,70 @@ def migrate_laboratory_to_dx(tool):
 
     logger.info("Migrated Laboratory from %s -> %s" % (src, target))
     logger.info("Convert Laboratory to Dexterity [DONE]")
+
+
+LABORATORY_IMAGE_FIELDS = (
+    ("accreditation_body_logo", u"logo.png"),
+)
+
+
+@upgradestep(product, version)
+def repair_laboratory_migration(tool):
+    """Repair the Laboratory-to-DX migration
+
+    Two issues need patching on already-migrated instances:
+
+    1. Before #2902, the migration passed AT ImageField values straight
+       through `blob_to_named_file` when they were not BlobWrapper
+       instances. The raw `OFS.Image.Image` objects were assigned to
+       the new `NamedBlobImage` field, which is neither None nor
+       INamed; `plone.formwidget.namedfile` then crashes rendering
+       the laboratory view or edit form.
+
+    2. The new Laboratory FTI was missing the
+       `IMultiCatalogBehavior` behavior, so the catalog multiplex
+       processor refused to index it in any non-portal catalog. The
+       result is that the laboratory is absent from
+       `senaite_catalog_setup` and any code that resolves it through
+       catalog (e.g. `SuperModel` lookups in impress) gets nothing.
+    """
+    logger.info("Repair laboratory migration ...")
+
+    # Re-import typeinfo so the FTI picks up IMultiCatalogBehavior
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+    setup = api.get_senaite_setup()
+    laboratory = setup.get("laboratory") if setup else None
+    if laboratory is None:
+        logger.info("No laboratory found, skipping repair")
+        return
+
+    # Re-wrap legacy OFS.Image values on the named-file fields
+    for fieldname, default_filename in LABORATORY_IMAGE_FIELDS:
+        repair_laboratory_image_field(
+            laboratory, fieldname, default_filename)
+
+    # Reindex so the multiplex processor now lands the laboratory in
+    # senaite_catalog_setup (and the other catalogs mapped to it)
+    laboratory.reindexObject()
+    logger.info("Reindexed %s" % laboratory)
+
+    logger.info("Repair laboratory migration [DONE]")
+
+
+def repair_laboratory_image_field(laboratory, fieldname, default_filename):
+    """Re-wrap a single image field if it holds a non-INamed legacy value
+    """
+    value = getattr(laboratory, fieldname, None)
+    if value is None:
+        return
+    if INamed.providedBy(value):
+        return
+    named = blob_to_named_file(value, default_filename=default_filename)
+    setattr(laboratory, fieldname, named)
+    logger.info("Repaired %s.%s (%s -> %s)" % (
+        laboratory, fieldname, type(value).__name__,
+        type(named).__name__ if named is not None else None))
 
 
 def to_dx_address(value, address_type=NAIVE_ADDRESS):
