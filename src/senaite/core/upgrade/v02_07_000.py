@@ -41,21 +41,13 @@ from senaite.core import logger
 from senaite.core.api import dtime
 from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
-from senaite.core.api.catalog import get_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
-from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
-from senaite.core.catalog.attachments_catalog import \
-    CATALOG_ID as ATTACHMENTS_CATALOG
-from senaite.core.catalog.auditlog_catalog import \
-    CATALOG_ID as AUDITLOG_CATALOG
-from senaite.core.catalog.autoimportlog_catalog import \
-    CATALOG_ID as AUTOIMPORTLOG_CATALOG
 from senaite.core.catalog.client_catalog import CATALOG_ID as CLIENT_CATALOG
 from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
 from senaite.core.config import PROJECTNAME as product
@@ -76,7 +68,9 @@ from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import blob_to_named_file
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
+from senaite.core.upgrade.utils import iter_senaite_catalogs
 from senaite.core.upgrade.utils import permanently_allow_type_for
+from senaite.core.upgrade.utils import rebuild_index
 from senaite.core.upgrade.utils import remove_at_portal_types
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.v02_06_000 import get_setup_folder
@@ -1944,14 +1938,39 @@ def reindex_labcontact_searchable_text(tool):
 
 
 @upgradestep(product, version)
+def rebuild_title_indexes(tool):
+    """Clear and rebuild the title FieldIndex on every SENAITE catalog
+
+    #2901 reindexed the title index across all base catalogs so a new
+    generic indexer could populate them with unicode keys. The reindex
+    rewrites entries per docid but does not clear the BTree first, so
+    pre-existing byte-string keys for non-ASCII titles remain. Any
+    subsequent insert of a unicode key (e.g. when creating or editing
+    a DX object whose title contains non-ASCII characters) then raises
+    `UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3` on
+    BTree key comparison.
+
+    Clearing the index before reindexing wipes all stale byte-string
+    keys and lets the (post-#2901) indexer repopulate the BTree with
+    a single unicode key type. Catalogs are discovered dynamically by
+    walking the portal and filtering on `ISenaiteCatalogObject`, so
+    custom catalogs registered by downstream add-ons are also covered.
+    """
+    logger.info("Rebuild title indexes ...")
+    catalogs = list(iter_senaite_catalogs())
+    total = len(catalogs)
+    for num, catalog in enumerate(catalogs, start=1):
+        logger.info(
+            "Rebuilding title index on %s (%s/%s) ..." % (
+                catalog.id, num, total))
+        rebuild_index(catalog, "title")
+    logger.info("Rebuild title indexes [DONE]")
+
+
+@upgradestep(product, version)
 def cleanup_sample_catalog(tool):
     """Clean up senaite_catalog_sample indexes and metadata columns
 
-    - Reindex the title FieldIndex on every catalog that inherits from
-      base_catalog so it picks up the new generic `title` indexer that
-      returns a unicode Title for any IContentish object. Previously
-      only Organisation contributed entries via its type-specific
-      indexer, so the index was effectively empty for everything else.
     - Remove obsolete FieldIndexes getProvince and getDistrict from the
       sample catalog. Client geography belongs on the client catalog and
       is not meaningful as a sample catalog index; reindexing is also
@@ -1962,27 +1981,6 @@ def cleanup_sample_catalog(tool):
       time via memoized UID lookups. getPhysicalPath is unused.
     """
     logger.info("Cleaning up sample catalog indexes and columns ...")
-
-    # Reindex the title FieldIndex on every catalog that inherits the
-    # base indexes definition so the new generic `title` indexer
-    # populates entries for every content type.
-    base_catalogs = [
-        ATTACHMENTS_CATALOG,
-        AUDITLOG_CATALOG,
-        AUTOIMPORTLOG_CATALOG,
-        CLIENT_CATALOG,
-        CONTACT_CATALOG,
-        REPORT_CATALOG,
-        SAMPLE_CATALOG,
-        SENAITE_CATALOG,
-        SETUP_CATALOG,
-        WORKSHEET_CATALOG,
-    ]
-    for catalog_id in base_catalogs:
-        if get_index(api.get_tool(catalog_id), "title") is None:
-            continue
-        logger.info("Reindexing title index on %s", catalog_id)
-        reindex_index(catalog_id, "title")
 
     catalog = api.get_tool(SAMPLE_CATALOG)
 

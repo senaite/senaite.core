@@ -43,6 +43,7 @@ from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.file import NamedBlobImage
 from senaite.core import logger
 from senaite.core.api.catalog import add_zc_text_index
+from senaite.core.interfaces.catalog import ISenaiteCatalogObject
 from zope.interface import alsoProvides
 from zope.lifecycleevent import modified
 
@@ -386,6 +387,61 @@ def delete_object(obj):
     uncatalog_object(obj)
     parent = aq_parent(obj)
     parent._delObject(obj.getId(), suppress_events=True)
+
+
+def iter_senaite_catalogs():
+    """Yield every catalog tool in the portal that is a SENAITE catalog
+    """
+    portal = api.get_portal()
+    for obj in portal.objectValues():
+        if ISenaiteCatalogObject.providedBy(obj):
+            yield obj
+
+
+def rebuild_index(catalog, index_name, clear=True):
+    """Reindex every cataloged object on an index, optionally clearing first
+
+    When `clear` is True (default) the index BTree is wiped before
+    reindexing so stale keys from previous indexers are dropped --
+    needed e.g. when an indexer changes its return type and existing
+    keys would otherwise collide with the new ones (byte vs unicode).
+    Set `clear=False` to keep existing keys and only refresh entries
+    per docid via `reindexIndex`.
+
+    Streams progress to the log via a `ZLogHandler` so long-running
+    reindexes give feedback every 100 objects instead of going silent
+    until the whole catalog is done.
+
+    :param catalog: ZCatalog tool
+    :param index_name: Index id
+    :param clear: Clear the index BTree before reindexing
+    :type clear: bool
+    """
+    if catalog is None:
+        return
+    if index_name not in catalog.indexes():
+        logger.info(
+            "Skipping %s on %s (index not found)" % (
+                index_name, catalog.id))
+        return
+    index = catalog._catalog.getIndex(index_name)
+    if index is None:
+        return
+    total = len(catalog)
+    if clear:
+        logger.info(
+            "Clearing %s index on %s (%s objects to reindex) ..." % (
+                index_name, catalog.id, total))
+        index.clear()
+    else:
+        logger.info(
+            "Reindexing %s on %s (%s objects) ..." % (
+                index_name, catalog.id, total))
+    pghandler = ZLogHandler(steps=100)
+    catalog.reindexIndex(index_name, None, pghandler=pghandler)
+    logger.info(
+        "Rebuilt %s index on %s (%s objects)" % (
+            index_name, catalog.id, total))
 
 
 def uncatalog_brain(brain):

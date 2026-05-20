@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2905 Rebuild title FieldIndex on every SENAITE catalog
 - #2904 Add IMultiCatalogBehavior to Laboratory FTI and repair existing migrations
 - #2902 Fix blob_to_named_file to handle non-blob AT image/file values
 - #2810 Migrate Laboratory to DX
