@@ -21,6 +21,7 @@
 """Hazard pictogram helpers (GHS + ISO 7010)."""
 
 from bika.lims import senaiteMessageFactory as _
+from bika.lims.utils import render_html_attributes
 from senaite.core.api import get_attr
 from senaite.core.api import get_portal_url
 from senaite.core.catalog import SETUP_CATALOG
@@ -32,7 +33,10 @@ PICTOGRAM_PATH = (
     "/++plone++senaite.core.static/images/{pictogram}")
 WARNING_PICTOGRAM_PATH = (
     "/++plone++senaite.core.static/images/iso/W001.svg")
+# Lazy i18n Message; do not treat as a plain string.
 WARNING_LABEL = _(u"hazard_warning_label", default=u"Hazardous")
+
+DEFAULT_PICTOGRAM_CLASS = "hazard-pictogram-mini"
 
 
 def get_pictogram_url(code):
@@ -68,6 +72,9 @@ def get_warning_pictogram_url():
 def get_pictogram(code):
     """Get a view-model dict for a single hazard category
 
+    The `alt` text uses the translated title so screen readers
+    announce the hazard meaning instead of the opaque code.
+
     :param code: Hazard category code (e.g. `"GHS01"` or `"BIO01"`)
     :type code: str
     :returns: `{"code": code, "url": ..., "alt": ..., "title": ...}`
@@ -77,11 +84,12 @@ def get_pictogram(code):
     category = get_category(code)
     if not category:
         return None
+    title = format_title(category)
     return {
         "code": code,
         "url": get_pictogram_url(code),
-        "alt": code,
-        "title": format_title(category),
+        "alt": title,
+        "title": title,
     }
 
 
@@ -90,9 +98,8 @@ def get_pictograms_for_codes(codes, hazardous=True):
 
     Empty list when `hazardous` is false. When `hazardous` is true
     but `codes` is empty, returns a single ISO 7010 W001 'General
-    warning' fallback. Suitable for callers that already have the
-    codes (e.g. from a catalog brain) and want to avoid waking the
-    sample up.
+    warning' fallback (with an empty-string `code` so consumers can
+    rely on `code` being a string in all entries).
 
     :param codes: Hazard category codes
     :type codes: list, tuple, or None
@@ -107,7 +114,7 @@ def get_pictograms_for_codes(codes, hazardous=True):
     if not codes:
         warning = translate(WARNING_LABEL, to_utf8=False)
         return [{
-            "code": None,
+            "code": "",
             "url": get_warning_pictogram_url(),
             "alt": warning,
             "title": warning,
@@ -120,50 +127,55 @@ def get_pictograms_for_codes(codes, hazardous=True):
     return pictograms
 
 
-def get_pictograms_for_sample(sample):
+def get_pictograms_for_sample(sample, sample_type_cache=None):
     """Get hazard pictogram view-models for a sample
 
     Accepts both a wakened sample object and a catalog brain. The
-    sample's hazardous flag and categories are resolved by looking
-    up the SampleType brain in the setup catalog (via the
-    `getSampleTypeUID` index on the sample), so SampleType edits
-    show up in listings without waking samples or reindexing them:
+    sample's hazardous flag and categories are resolved from the
+    SampleType brain in the setup catalog (looked up by UID via the
+    `getSampleTypeUID` FieldIndex), so SampleType edits show up in
+    listings without waking samples or reindexing them.
 
-    1. `getCustomHazardCategories` (per-sample override, optional)
-       is consulted first when present.
-    2. Otherwise both `getHazardous` and `getHazardCategories`
-       are read from the SampleType brain metadata.
+    Pass a fresh `sample_type_cache` dict per request when calling
+    this in a listing context. It maps SampleType UID to the
+    resolved `(hazardous, codes)` tuple and avoids one setup-catalog
+    hit per row when many samples share the same SampleType.
 
     :param sample: Sample (AnalysisRequest) or catalog brain
+    :param sample_type_cache: Optional mutable mapping used to cache
+                              SampleType brain lookups by UID
     :returns: List of pictogram view-model dicts
     :rtype: list[dict]
     """
     sample_type_uid = get_attr(sample, "getSampleTypeUID")
     if not sample_type_uid:
         return []
-    hazardous = bool(get_attr(
-        sample_type_uid, "getHazardous", catalog=SETUP_CATALOG))
-    if not hazardous:
-        return []
-    codes = get_attr(sample, "getCustomHazardCategories") or []
-    if not codes:
+    cache = sample_type_cache if sample_type_cache is not None else {}
+    if sample_type_uid in cache:
+        hazardous, codes = cache[sample_type_uid]
+    else:
+        hazardous = bool(get_attr(
+            sample_type_uid, "getHazardous", catalog=SETUP_CATALOG))
         codes = get_attr(
             sample_type_uid,
             "getHazardCategories",
             catalog=SETUP_CATALOG) or []
-    return get_pictograms_for_codes(list(codes), hazardous=hazardous)
+        cache[sample_type_uid] = (hazardous, list(codes))
+        codes = cache[sample_type_uid][1]
+    return get_pictograms_for_codes(codes, hazardous=hazardous)
 
 
 def get_pictograms_for_reference(obj):
     """Get hazard pictogram view-models for a reference object
 
-    Works for any object that carries `getHazardous` and
-    `getHazardCategories` accessors (or matching brain metadata
-    columns): `ReferenceDefinition` and `ReferenceSample`.
-    `get_attr` reads the metadata column on a brain and calls
-    the accessor on an object.
+    Works for any object (or brain) that carries `getHazardous` and
+    `getHazardCategories` accessors / metadata columns:
+    `ReferenceDefinition`, `ReferenceSample` and `SampleType`.
+    `get_attr` reads the metadata column on a brain and calls the
+    accessor on an object.
 
-    :param obj: ReferenceSample, ReferenceDefinition or brain
+    :param obj: ReferenceSample, ReferenceDefinition, SampleType or
+                a brain for any of the above
     :returns: List of pictogram view-model dicts
     :rtype: list[dict]
     """
@@ -171,4 +183,25 @@ def get_pictograms_for_reference(obj):
     if not hazardous:
         return []
     codes = get_attr(obj, "getHazardCategories") or []
-    return get_pictograms_for_codes(list(codes), hazardous=hazardous)
+    return get_pictograms_for_codes(codes, hazardous=hazardous)
+
+
+def render_pictogram_img(picto, css_class=DEFAULT_PICTOGRAM_CLASS):
+    """Render a pictogram view-model dict as an HTML `<img>` tag
+
+    Centralizes the markup so the four listing call sites stay
+    consistent on attributes, escaping and CSS class.
+
+    :param picto: View-model dict from one of the `get_pictograms_*`
+                  helpers
+    :param css_class: CSS class for the rendered `<img>` element
+    :returns: HTML `<img>` tag as a utf-8 encoded byte string,
+              suitable for direct insertion into a listing column
+    :rtype: bytes
+    """
+    attrs = render_html_attributes(
+        src=picto["url"],
+        alt=picto["alt"],
+        title=picto["title"],
+        **{"class": css_class})
+    return u"<img {} />".format(attrs).encode("utf-8")

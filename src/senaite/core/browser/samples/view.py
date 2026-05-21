@@ -33,7 +33,6 @@ from bika.lims.utils import get_image
 from bika.lims.utils import get_link_for
 from bika.lims.utils import get_progress_bar_html
 from bika.lims.utils import getUsers
-from bika.lims.utils import render_html_attributes
 from DateTime import DateTime
 from plone.memoize import view
 from senaite.core.browser.listing.base import ListingView
@@ -462,6 +461,9 @@ class SamplesView(ListingView):
         self.workflow = api.get_tool("portal_workflow")
         self.member = self.mtool.getAuthenticatedMember()
         self.roles = self.member.getRoles()
+        # Per-request cache for SampleType brain lookups; shared
+        # across all folderitem calls within a single render.
+        self._hazard_cache = {}
 
         # Remove unnecessary filters
         self.purge_review_states()
@@ -598,13 +600,9 @@ class SamplesView(ListingView):
             after_icons += get_image("invoice_exclude.png",
                                      title=t(_("Exclude from invoice")))
 
-        for picto in hazard_api.get_pictograms_for_sample(obj):
-            attrs = render_html_attributes(
-                src=picto["url"],
-                alt=picto["alt"],
-                title=picto["title"],
-                **{"class": "hazard-pictogram-mini"})
-            after_icons += u"<img {} />".format(attrs).encode("utf-8")
+        for picto in hazard_api.get_pictograms_for_sample(
+                obj, sample_type_cache=self._hazard_cache):
+            after_icons += hazard_api.render_pictogram_img(picto)
 
         if obj.getInternalUse:
             after_icons += get_image("locked.png", title=t(_("Internal use")))

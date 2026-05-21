@@ -31,7 +31,6 @@ from bika.lims.browser.chart.analyses import EvolutionChart
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import get_link_for
-from bika.lims.utils import render_html_attributes
 from plone.app.layout.globals.interfaces import IViewView
 from plone.memoize import view
 from Products.ATContentTypes.utils import DT2dt
@@ -463,12 +462,7 @@ class ReferenceSamplesView(ListingView):
             after_icons += get_image(
                 "blank.png", title=t(_("Blank")))
         for picto in hazard_api.get_pictograms_for_reference(obj):
-            attrs = render_html_attributes(
-                src=picto["url"],
-                alt=picto["alt"],
-                title=picto["title"],
-                **{"class": "hazard-pictogram-mini"})
-            after_icons += u"<img {} />".format(attrs).encode("utf-8")
+            after_icons += hazard_api.render_pictogram_img(picto)
         if after_icons:
             item["after"]["ID"] = after_icons
 

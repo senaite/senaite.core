@@ -83,13 +83,16 @@ View-model dict for a single hazard category
     >>> picto["code"]
     'GHS06'
 
-    >>> picto["alt"]
-    'GHS06'
-
     >>> picto["url"].endswith("/images/ghs/GHS06.svg")
     True
 
+The ``alt`` and ``title`` carry the translated label so screen
+readers announce the hazard meaning instead of the opaque code:
+
     >>> picto["title"].startswith("GHS06")
+    True
+
+    >>> picto["alt"] == picto["title"]
     True
 
 Unknown codes return ``None`` instead of a placeholder dict:
@@ -114,8 +117,8 @@ fallback is returned:
     >>> len(result)
     1
 
-    >>> result[0]["code"] is None
-    True
+    >>> result[0]["code"]
+    ''
 
     >>> result[0]["url"].endswith("/images/iso/W001.svg")
     True
@@ -126,8 +129,8 @@ A ``None`` code list is treated as empty:
     >>> len(result)
     1
 
-    >>> result[0]["code"] is None
-    True
+    >>> result[0]["code"]
+    ''
 
 Unknown codes are silently skipped, known codes are kept in order:
 

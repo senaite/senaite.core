@@ -28,7 +28,6 @@ from bika.lims.interfaces import IReferenceDefinitions
 from senaite.core.permissions import AddReferenceDefinition
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
-from bika.lims.utils import render_html_attributes
 from senaite.core.api import hazard as hazard_api
 from senaite.core.i18n import translate as t
 from plone.app.folder.folder import ATFolder
@@ -125,12 +124,7 @@ class ReferenceDefinitionsView(ControlPanelListingView):
             after_icons += get_image(
                 "blank.png", title=t(_("Blank")))
         for picto in hazard_api.get_pictograms_for_reference(obj):
-            attrs = render_html_attributes(
-                src=picto["url"],
-                alt=picto["alt"],
-                title=picto["title"],
-                **{"class": "hazard-pictogram-mini"})
-            after_icons += u"<img {} />".format(attrs).encode("utf-8")
+            after_icons += hazard_api.render_pictogram_img(picto)
         if after_icons:
             item["after"]["Title"] = after_icons
 
