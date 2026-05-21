@@ -7,6 +7,7 @@
   <include package=".datagrid" />
   <include package=".duration" />
   <include package=".gpscoordinates" />
+  <include package=".hazard_categories" />
   <include package=".listing" />
   <include package=".multiupload" />
   <include package=".queryselect" />
@@ -16,7 +17,6 @@
 
   <include file="address.zcml" />
   <include file="datetimewidget.zcml" />
-  <include file="hazard_categories.zcml" />
   <include file="number.zcml" />
   <include file="phone.zcml" />
 

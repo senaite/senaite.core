@@ -3,31 +3,34 @@
     xmlns:z3c="http://namespaces.zope.org/z3c"
     i18n_domain="z3c.form">
 
-  <class class=".hazard_categories.HazardCategoriesWidget">
+  <class class=".widget.HazardCategoriesWidget">
     <require
         permission="zope.Public"
         interface="senaite.core.z3cform.interfaces.IHazardCategoriesWidget" />
   </class>
 
+  <!-- INPUT template -->
   <z3c:widgetTemplate
       mode="input"
       widget="senaite.core.z3cform.interfaces.IHazardCategoriesWidget"
       layer="senaite.core.interfaces.ISenaiteFormLayer"
-      template="hazard_categories_input.pt"
+      template="input.pt"
       />
 
+  <!-- DISPLAY template -->
   <z3c:widgetTemplate
       mode="display"
       widget="senaite.core.z3cform.interfaces.IHazardCategoriesWidget"
       layer="senaite.core.interfaces.ISenaiteFormLayer"
-      template="hazard_categories_display.pt"
+      template="display.pt"
       />
 
+  <!-- HIDDEN template -->
   <z3c:widgetTemplate
       mode="hidden"
       widget="senaite.core.z3cform.interfaces.IHazardCategoriesWidget"
       layer="senaite.core.interfaces.ISenaiteFormLayer"
-      template="hazard_categories_input.pt"
+      template="input.pt"
       />
 
 </configure>
