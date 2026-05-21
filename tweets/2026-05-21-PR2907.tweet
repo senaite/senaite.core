@@ -1,0 +1,2 @@
+Plugged a subtle leak in AT→DX migrations: deleting the old AT object suppressed the IObjectRemovedEvent that five.intid listens on, leaving a dangling intid keyref that pinned the dead oid in storage forever. Now cleaned up explicitly.
+https://github.com/senaite/senaite.core/pull/2907
