@@ -45,7 +45,6 @@ INDEXES = BASE_INDEXES + [
     ("getPrinted", "", "FieldIndex"),
     ("getPrioritySortkey", "", "FieldIndex"),
     ("getReceivedBy", "", "FieldIndex"),
-    ("getSampleTypeUID", "", "FieldIndex"),
     ("getSamplePointUID", "", "FieldIndex"),
     ("getSampleTypeUID", "", "FieldIndex"),
     ("getSampler", "", "FieldIndex"),
