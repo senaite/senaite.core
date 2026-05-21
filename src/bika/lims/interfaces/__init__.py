@@ -541,6 +541,11 @@ class IReferenceDefinitions(Interface):
     """
 
 
+class IReferenceDefinition(Interface):
+    """Marker interface for a Reference Definition
+    """
+
+
 class IWorksheetTemplates(Interface):
     """Marker interface for Worksheet Templates
     """

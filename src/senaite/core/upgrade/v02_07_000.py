@@ -20,9 +20,9 @@
 
 
 import json
-import transaction
 from datetime import timedelta
 
+import transaction
 from bika.lims import api
 from bika.lims.api import safe_unicode as u
 from bika.lims.api import snapshot as snap_api
@@ -39,6 +39,7 @@ from plone.namedfile.interfaces import INamed
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.api import dtime
+from senaite.core.api.catalog import add_column
 from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
@@ -48,8 +49,8 @@ from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
-from senaite.core.catalog.client_catalog import CATALOG_ID as CLIENT_CATALOG
 from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
+from senaite.core.catalog.client_catalog import CATALOG_ID as CLIENT_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
@@ -173,6 +174,51 @@ def drop_client_ordering_annotations(tool):
     logger.info(
         "Dropped IOrdering annotations from {}/{} clients".format(
             cleaned, total))
+
+
+@upgradestep(product, version)
+def add_hazard_categories(tool):
+    """Register the hazard categories field and metadata column.
+
+    The new ``hazard_categories`` field on ``SampleType`` (DX)
+    and the ``HazardCategories`` field on ``ReferenceDefinition``
+    and ``ReferenceSample`` (AT) are picked up automatically by
+    the schema machinery. Existing objects default to an empty
+    list. The legacy ``Hazardous`` boolean is left untouched.
+    Samples (``AnalysisRequest``) inherit their effective
+    categories from the SampleType — no per-sample field.
+
+    The vocabulary covers the 9 GHS pictograms plus 10 ISO 7010
+    pictograms (biohazard, radioactive, non-ionising radiation,
+    electricity, low temperature, hot content, magnetic field,
+    hot surface, asphyxiating atmosphere, hot steam) for hazards
+    that GHS does not address.
+
+    Hazard pictograms are rendered in listings by reading the
+    ``getHazardous`` and ``getHazardCategories`` metadata columns
+    from the SampleType brain in the setup catalog (looked up by
+    UID via the ``getSampleTypeUID`` FieldIndex on the sample
+    catalog, already registered by the catalog setup step). This
+    avoids touching every sample on each SampleType edit. The
+    legacy ``getHazardous`` metadata column on the sample catalog
+    is removed since the flag is now resolved exclusively via the
+    SampleType brain.
+    """
+    logger.info("Adding hazard categories ...")
+    sample_catalog = api.get_tool(SAMPLE_CATALOG)
+    del_column(sample_catalog, "getHazardous")
+    setup_catalog = api.get_tool(SETUP_CATALOG)
+    add_column(setup_catalog, "getHazardCategories")
+    add_column(setup_catalog, "getHazardous")
+    sample_types = setup_catalog({"portal_type": "SampleType"})
+    logger.info(
+        "Refreshing metadata for %d SampleType(s) ...", len(sample_types))
+    for brain in sample_types:
+        obj = api.get_object(brain)
+        # Metadata-only refresh: don't recompute every index.
+        setup_catalog.catalog_object(
+            obj, api.get_path(obj), idxs=[], update_metadata=1)
+    logger.info("Adding hazard categories [DONE]")
 
 
 @upgradestep(product, version)
