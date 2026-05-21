@@ -125,6 +125,11 @@ def _submission_fingerprint(request):
     Zope publisher-level retries on the same worker because Zope
     rebuilds the request from the same WSGI environ (and body bytes)
     on each attempt.
+
+    Two distinct submissions whose body is byte-identical produce the
+    same fingerprint, so the fingerprint is only safe to use for the
+    cache *lookup* when the request is actually a publisher retry —
+    see `_is_publisher_retry`.
     """
     method = request.get("REQUEST_METHOD", "") or ""
     path = request.get("PATH_INFO", "") or ""
@@ -133,6 +138,17 @@ def _submission_fingerprint(request):
     if isinstance(raw, unicode):
         raw = raw.encode("utf-8")
     return hashlib.sha256(raw).hexdigest()
+
+
+def _is_publisher_retry(request):
+    """True iff the publisher already re-published this request after
+    a previous attempt raised TransientError. Zope increments
+    `retry_count` on every retry and propagates it to the rebuilt
+    request, so a value > 0 unambiguously means we are inside a
+    retry. On a fresh first attempt the attribute is 0 (or missing on
+    non-HTTP requests).
+    """
+    return getattr(request, "retry_count", 0) > 0
 
 
 def _inflight_get(key):
@@ -2230,18 +2246,33 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         ConflictError and re-publishes the request, we recognise the
         submission by its body fingerprint and return the
         already-committed samples instead of creating duplicates.
+
+        The cache is only consulted when the request is itself a
+        publisher retry (`retry_count > 0`). On a fresh first attempt
+        we always create the samples, because two independent
+        submissions with identical bodies (same client, same defaults,
+        no operator-supplied identifier) hash to the same fingerprint
+        and a cache lookup would silently return the previously
+        created samples instead of creating a new one — manifesting
+        as a "successfully created" UI banner for a sample that was
+        never written (see #2741 follow-up).
         """
         fingerprint = _submission_fingerprint(self.request)
-        existing_uids = _inflight_get(fingerprint)
-        if existing_uids:
-            logger.info(
-                "Resuming ar_add submission after publisher retry; "
-                "%d sample(s) already committed", len(existing_uids))
-            return [api.get_object_by_uid(uid) for uid in existing_uids]
+        if _is_publisher_retry(self.request):
+            existing_uids = _inflight_get(fingerprint)
+            if existing_uids:
+                logger.info(
+                    "Resuming ar_add submission after publisher retry "
+                    "(attempt=%d); %d sample(s) already committed",
+                    self.request.retry_count, len(existing_uids))
+                return [api.get_object_by_uid(uid)
+                        for uid in existing_uids]
 
         # Reference the list inside the cache so each successful
         # per-sample commit immediately updates the entry visible to a
-        # retry on the same worker thread.
+        # retry on the same worker thread. Set unconditionally so a
+        # publisher retry of *this* request (retry_count >= 1) finds
+        # the in-flight UIDs and resumes mid-batch.
         committed_uids = []
         _inflight_set(fingerprint, committed_uids)
 

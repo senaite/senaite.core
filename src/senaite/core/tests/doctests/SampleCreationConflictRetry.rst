@@ -178,12 +178,45 @@ stubbing the plone utility on the view's context:
     >>> msg.mapping["rows"]
     u'#2 (CSID-A12), #5 (ref-9), #7 (-)'
 
+In-flight cache is gated on publisher retries
+.............................................
+
+The in-flight cache short-circuits sample creation when the same
+fingerprint has already been registered. It must only do so when the
+current request is a publisher-level retry of the originating
+submission. On a fresh first attempt two independent submissions with
+identical bodies (same client, same defaults, no operator-supplied
+identifier) hash to the same fingerprint, and treating that as a hit
+would return the previously created samples instead of creating a
+new one — surfacing to the operator as a "successfully created"
+banner for a sample that was never written.
+
+`_is_publisher_retry` consults Zope's `retry_count` attribute, which
+is 0 on the first attempt and incremented on every re-publish:
+
+    >>> add2._is_publisher_retry(request)
+    False
+    >>> request.retry_count = 1
+    >>> add2._is_publisher_retry(request)
+    True
+    >>> request.retry_count = 0
+
+A request that has no `retry_count` attribute at all (non-HTTP
+requests, test layers, ...) is treated as a fresh first attempt:
+
+    >>> class BareRequest(object):
+    ...     pass
+    >>> add2._is_publisher_retry(BareRequest())
+    False
+
 Cleanup
 .......
 
-Restore the patched transaction operations, sleep, and registry flag so
-later tests run in a pristine environment:
+Restore the patched transaction operations, sleep, registry flag,
+and in-flight cache so later tests run in a pristine environment:
 
+    >>> request.retry_count = 0
+    >>> add2._inflight.clear()
     >>> add2.transaction = original_txn_module
     >>> add2.time = original_time_module
     >>> add2.MAX_CREATE_ATTEMPTS = original_max_attempts
