@@ -16,6 +16,7 @@ Test Setup
 Imports
 
     >>> from senaite.core import api
+    >>> from senaite.core.api import hazard as hazard_api
 
 
 Portal helpers
@@ -40,11 +41,11 @@ Get the absolute URL of the portal:
 Hazard pictogram URL for a known code
 .....................................
 
-    >>> api.get_pictogram_url("GHS01").endswith(
+    >>> hazard_api.get_pictogram_url("GHS01").endswith(
     ...     "/++plone++senaite.core.static/images/ghs/GHS01.svg")
     True
 
-    >>> api.get_pictogram_url("GHS06").endswith(
+    >>> hazard_api.get_pictogram_url("GHS06").endswith(
     ...     "/++plone++senaite.core.static/images/ghs/GHS06.svg")
     True
 
@@ -54,13 +55,13 @@ Hazard pictogram URL for an unknown code
 
 Returns an empty string instead of raising:
 
-    >>> api.get_pictogram_url("GHSXX")
+    >>> hazard_api.get_pictogram_url("GHSXX")
     u''
 
-    >>> api.get_pictogram_url("")
+    >>> hazard_api.get_pictogram_url("")
     u''
 
-    >>> api.get_pictogram_url(None)
+    >>> hazard_api.get_pictogram_url(None)
     u''
 
 
@@ -70,7 +71,7 @@ ISO 7010 W001 fallback pictogram URL
 Used as the generic warning when a sample is hazardous but no
 hazard category has been assigned.
 
-    >>> api.get_warning_pictogram_url().endswith(
+    >>> hazard_api.get_warning_pictogram_url().endswith(
     ...     "/++plone++senaite.core.static/images/iso/W001.svg")
     True
 
@@ -78,7 +79,7 @@ hazard category has been assigned.
 View-model dict for a single hazard category
 ............................................
 
-    >>> picto = api.get_pictogram("GHS06")
+    >>> picto = hazard_api.get_pictogram("GHS06")
     >>> picto["code"]
     'GHS06'
 
@@ -93,7 +94,7 @@ View-model dict for a single hazard category
 
 Unknown codes return ``None`` instead of a placeholder dict:
 
-    >>> api.get_pictogram("GHSXX") is None
+    >>> hazard_api.get_pictogram("GHSXX") is None
     True
 
 
@@ -103,13 +104,13 @@ Pictograms for a list of codes
 When ``hazardous`` is false, no pictogram is returned regardless of
 the codes:
 
-    >>> api.get_pictograms_for_codes(["GHS01"], hazardous=False)
+    >>> hazard_api.get_pictograms_for_codes(["GHS01"], hazardous=False)
     []
 
 When the sample is hazardous but the code list is empty, the W001
 fallback is returned:
 
-    >>> result = api.get_pictograms_for_codes([], hazardous=True)
+    >>> result = hazard_api.get_pictograms_for_codes([], hazardous=True)
     >>> len(result)
     1
 
@@ -121,7 +122,7 @@ fallback is returned:
 
 A ``None`` code list is treated as empty:
 
-    >>> result = api.get_pictograms_for_codes(None, hazardous=True)
+    >>> result = hazard_api.get_pictograms_for_codes(None, hazardous=True)
     >>> len(result)
     1
 
@@ -130,7 +131,7 @@ A ``None`` code list is treated as empty:
 
 Unknown codes are silently skipped, known codes are kept in order:
 
-    >>> result = api.get_pictograms_for_codes(
+    >>> result = hazard_api.get_pictograms_for_codes(
     ...     ["GHS01", "GHSXX", "GHS06"], hazardous=True)
     >>> [p["code"] for p in result]
     ['GHS01', 'GHS06']

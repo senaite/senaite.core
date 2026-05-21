@@ -23,7 +23,7 @@ from string import Template
 
 from bika.lims import _
 from bika.lims import api
-from senaite.core import api as senaite_api
+from senaite.core.api import hazard as hazard_api
 from bika.lims.api.security import check_permission
 from bika.lims.config import PRIORITIES
 from bika.lims.interfaces import IBatch
@@ -598,7 +598,7 @@ class SamplesView(ListingView):
             after_icons += get_image("invoice_exclude.png",
                                      title=t(_("Exclude from invoice")))
 
-        for picto in senaite_api.get_pictograms_for_sample(obj):
+        for picto in hazard_api.get_pictograms_for_sample(obj):
             attrs = render_html_attributes(
                 src=picto["url"],
                 alt=picto["alt"],

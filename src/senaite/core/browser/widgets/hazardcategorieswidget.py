@@ -21,7 +21,7 @@
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import MultiSelectionWidget
 from Products.Archetypes.Registry import registerWidget
-from senaite.core import api
+from senaite.core.api import hazard as hazard_api
 
 
 class HazardCategoriesWidget(MultiSelectionWidget):
@@ -45,7 +45,7 @@ class HazardCategoriesWidget(MultiSelectionWidget):
         :returns: List of pictogram dicts; empty when no code matches
         :rtype: list[dict]
         """
-        return api.get_pictograms_for_codes(codes, hazardous=True)
+        return hazard_api.get_pictograms_for_codes(codes, hazardous=True)
 
 
 registerWidget(
