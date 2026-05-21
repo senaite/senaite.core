@@ -180,12 +180,13 @@ def drop_client_ordering_annotations(tool):
 def add_hazard_categories(tool):
     """Register the hazard categories field and metadata column.
 
-    The new ``hazard_categories`` field on ``SampleType`` (DX),
-    the ``HazardCategories`` field on ``AnalysisRequest``,
-    ``ReferenceDefinition`` and ``ReferenceSample`` (AT) are
-    picked up automatically by the schema machinery. Existing
-    objects default to an empty list. The legacy ``Hazardous``
-    boolean is left untouched.
+    The new ``hazard_categories`` field on ``SampleType`` (DX)
+    and the ``HazardCategories`` field on ``ReferenceDefinition``
+    and ``ReferenceSample`` (AT) are picked up automatically by
+    the schema machinery. Existing objects default to an empty
+    list. The legacy ``Hazardous`` boolean is left untouched.
+    Samples (``AnalysisRequest``) inherit their effective
+    categories from the SampleType — no per-sample field.
 
     The vocabulary covers the 9 GHS pictograms plus 10 ISO 7010
     pictograms (biohazard, radioactive, non-ionising radiation,

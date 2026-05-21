@@ -170,11 +170,6 @@ HAZARD_CATEGORIES = (
     },
 )
 
-def get_categories():
-    """Return the hazard category list (as defined in code)."""
-    return HAZARD_CATEGORIES
-
-
 def get_category(code):
     """Return the category dict for ``code`` or ``None``."""
     for category in HAZARD_CATEGORIES:
@@ -184,13 +179,13 @@ def get_category(code):
 
 
 def format_title(category):
-    """Return ``"<code> - Name (common)"`` as unicode."""
+    """Return ``"<code>: Name (common)"`` as unicode."""
     code = category["code"]
     name = api.safe_unicode(api.translate(category["name"]))
     common = api.safe_unicode(api.translate(category["common"]))
     if common:
-        return u"{} - {} ({})".format(code, name, common)
-    return u"{} - {}".format(code, name)
+        return u"{}: {} ({})".format(code, name, common)
+    return u"{}: {}".format(code, name)
 
 
 @implementer(IVocabularyFactory)
