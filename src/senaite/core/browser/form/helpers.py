@@ -20,8 +20,10 @@
 
 """Helpers for SENAITE edit-form adapters."""
 
-CHECKED_VALUES = ("true", "1", "selected", "on")
-
+# Tokens that boolean widgets emit for the "checked" state. Keep this
+# list narrow: anything else means an unexpected payload and should be
+# treated as unchecked.
+CHECKED_VALUES = frozenset(("true", "1", "selected", "on", "yes"))
 
 _MISSING = object()
 
@@ -40,7 +42,9 @@ def is_checked(value):
         return value
     if isinstance(value, (list, tuple)):
         return any(is_checked(item) for item in value)
-    return str(value).lower() in CHECKED_VALUES
+    if value is None:
+        return False
+    return str(value).strip().lower() in CHECKED_VALUES
 
 
 def get_form_value(form, name, default=None):
@@ -51,6 +55,9 @@ def get_form_value(form, name, default=None):
     booleans as ``name:boolean``. This helper accepts the bare field
     name and finds the matching entry regardless of suffix.
 
+    Lookup order is deterministic: bare name first, then suffixed
+    keys in sorted order so ties are broken consistently.
+
     :param form: Form payload submitted by the client
     :param name: Field name without ZPublisher type marker
     :param default: Value to return when no matching key exists
@@ -59,9 +66,9 @@ def get_form_value(form, name, default=None):
     if name in form:
         return form[name]
     prefix = name + ":"
-    for key, value in form.items():
+    for key in sorted(form):
         if key.startswith(prefix):
-            return value
+            return form[key]
     return default
 
 
