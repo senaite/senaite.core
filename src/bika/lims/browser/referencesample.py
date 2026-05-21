@@ -25,6 +25,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
+from senaite.core.api import hazard as hazard_api
 from senaite.core.browser.listing.base import ListingView
 from bika.lims.browser.chart.analyses import EvolutionChart
 from bika.lims.utils import get_image
@@ -63,6 +64,9 @@ class ViewView(BrowserView):
         self.categories = self.results.keys()
         self.categories.sort()
         return self.template()
+
+    def hazard_pictograms(self):
+        return hazard_api.get_pictograms_for_reference(self.context)
 
 
 class ReferenceAnalysesViewView(BrowserView):
@@ -457,9 +461,8 @@ class ReferenceSamplesView(ListingView):
         if obj.getBlank():
             after_icons += get_image(
                 "blank.png", title=t(_("Blank")))
-        if obj.getHazardous():
-            after_icons += get_image(
-                "hazardous.png", title=t(_("Hazardous")))
+        for picto in hazard_api.get_pictograms_for_reference(obj):
+            after_icons += hazard_api.render_pictogram_img(picto)
         if after_icons:
             item["after"]["ID"] = after_icons
 
