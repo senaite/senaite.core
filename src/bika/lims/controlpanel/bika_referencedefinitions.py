@@ -28,6 +28,7 @@ from bika.lims.interfaces import IReferenceDefinitions
 from senaite.core.permissions import AddReferenceDefinition
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
+from senaite.core.api import hazard as hazard_api
 from senaite.core.i18n import translate as t
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
@@ -122,9 +123,8 @@ class ReferenceDefinitionsView(ControlPanelListingView):
         if obj.getBlank():
             after_icons += get_image(
                 "blank.png", title=t(_("Blank")))
-        if obj.getHazardous():
-            after_icons += get_image(
-                "hazardous.png", title=t(_("Hazardous")))
+        for picto in hazard_api.get_pictograms_for_reference(obj):
+            after_icons += hazard_api.render_pictogram_img(picto)
         if after_icons:
             item["after"]["Title"] = after_icons
 

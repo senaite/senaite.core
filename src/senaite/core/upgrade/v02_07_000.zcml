@@ -3,6 +3,96 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add hazard categories"
+      description="Register the hazard category vocabulary (GHS plus
+                   ISO 7010 biohazard / radioactive / non-ionising
+                   radiation / electricity / low temperature / hot
+                   content / magnetic field / hot surface /
+                   asphyxiating atmosphere / hot steam) and the
+                   hazard_categories field on SampleType, Sample,
+                   ReferenceDefinition and ReferenceSample"
+      source="2733"
+      destination="2734"
+      handler=".v02_07_000.add_hazard_categories"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Rebuild title indexes"
+      description="Clear and rebuild the title FieldIndex on every SENAITE
+                   catalog so stale byte-string keys from before #2901
+                   are replaced with unicode keys. Without this, any
+                   insert of a non-ASCII unicode title raises
+                   UnicodeDecodeError on BTree key comparison."
+      source="2732"
+      destination="2733"
+      handler=".v02_07_000.rebuild_title_indexes"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Repair laboratory migration"
+      description="Re-import typeinfo so the Laboratory FTI picks up the
+                   IMultiCatalogBehavior (without it the laboratory is
+                   never indexed in senaite_catalog_setup), re-wrap raw
+                   OFS.Image values left on the NamedBlobImage fields by
+                   the original migration, and reindex the live object."
+      source="2731"
+      destination="2732"
+      handler=".v02_07_000.repair_laboratory_migration"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate Laboratory to Dexterity"
+      description="Ensure Laboratory is using Dexterity schema and clean up AT remnants"
+      source="2730"
+      destination="2731"
+      handler=".v02_07_000.migrate_laboratory_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add new sample catalog indexes"
+      description="Add getSampleTypeUID and getSamplePointUID FieldIndexes
+                   and getAnalysesKeywords KeywordIndex to the sample
+                   catalog"
+      source="2729"
+      destination="2730"
+      handler=".v02_07_000.add_sample_catalog_indexes"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Clean up sample catalog indexes and columns"
+      description="Remove Province/District indexes and obsolete metadata
+                   columns (getClientURL, getTemplateURL, getPhysicalPath,
+                   getProvince, getDistrict) from the sample catalog."
+      source="2728"
+      destination="2729"
+      handler=".v02_07_000.cleanup_sample_catalog"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Import registry for per-sample commit flag"
+      description="Re-import the registry profile so the new
+                   `sample_add_form_commit_per_sample` record is created on
+                   existing instances; without it the Samples control panel
+                   fails to render with a KeyError."
+      source="2727"
+      destination="2728"
+      handler=".v02_07_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Drop ordering annotations from Clients"
+      description="Remove the plone.folder.ordered.order PersistentList and
+                   plone.folder.ordered.pos OIBTree annotations from every
+                   Client. Clients now use UnorderedOrdering as their
+                   IOrdering adapter, so these annotations are no longer
+                   maintained and become a stale ZODB conflict spot if left
+                   in place."
+      source="2726"
+      destination="2727"
+      handler=".v02_07_000.drop_client_ordering_annotations"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Seed DetachedFrom backrefs"
       description="Seed annotation backrefs for detached partitions so that
                    the partition counter accounts for them"
@@ -51,7 +141,6 @@
       handler=".v02_07_000.migrate_analysis_columns_to_setup"
       profile="senaite.core:default"/>
 
-  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Migrate Worksheet objects to Dexterity"
       description="Convert Worksheet content type from Archetypes to Dexterity"
       source="2719"

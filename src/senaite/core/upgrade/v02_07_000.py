@@ -20,9 +20,9 @@
 
 
 import json
-import transaction
 from datetime import timedelta
 
+import transaction
 from bika.lims import api
 from bika.lims.api import safe_unicode as u
 from bika.lims.api import snapshot as snap_api
@@ -35,9 +35,13 @@ from persistent.list import PersistentList
 from plone.app.blob.field import BlobWrapper
 from plone.dexterity.utils import createContent
 from plone.namedfile.file import NamedBlobFile
+from plone.namedfile.interfaces import INamed
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.api import dtime
+from senaite.core.api.catalog import add_column
+from senaite.core.api.catalog import del_column
+from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
@@ -46,9 +50,11 @@ from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
+from senaite.core.catalog.client_catalog import CATALOG_ID as CLIENT_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
+from senaite.core.schema.addressfield import BILLING_ADDRESS
 from senaite.core.schema.addressfield import NAIVE_ADDRESS
 from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
 from senaite.core.schema.addressfield import POSTAL_ADDRESS
@@ -60,12 +66,16 @@ from senaite.core.setuphandlers import add_dexterity_items
 from senaite.core.setuphandlers import setup_core_catalogs
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade.utils import blob_to_named_file
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
+from senaite.core.upgrade.utils import iter_senaite_catalogs
 from senaite.core.upgrade.utils import permanently_allow_type_for
+from senaite.core.upgrade.utils import rebuild_index
 from senaite.core.upgrade.utils import remove_at_portal_types
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.v02_06_000 import get_setup_folder
+from zope.annotation.interfaces import IAnnotations
 from zope.component import getMultiAdapter
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
@@ -76,6 +86,7 @@ profile = "profile-{0}:default".format(product)
 REMOVE_AT_TYPES = [
     "ARReport",
     "Contact",
+    "Laboratory",
     "Calculation",
     "Calculations",
     "Multifile",
@@ -106,6 +117,108 @@ def upgrade(tool):
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def drop_client_ordering_annotations(tool):
+    """Remove the legacy IOrdering annotations from every Client.
+
+    Clients now use `plone.folder.unordered.UnorderedOrdering` as
+    their `IOrdering` adapter, so the previous default-ordering
+    annotations are no longer maintained:
+
+      - `plone.folder.ordered.order` — a `PersistentList` of every
+        child id, mutated on every `_setObject` via
+        `DefaultOrdering.notifyAdded`. On a Client with thousands of
+        children this list grows to many tens of thousands of entries
+        and, because `PersistentList` has no `_p_resolveConflict()`,
+        every concurrent registration on the same Client collided on
+        it and the conflict propagated all the way to the
+        publisher's retry loop.
+
+      - `plone.folder.ordered.pos` — companion `OIBTree` mapping
+        child id -> position. No longer read by anything once the
+        adapter is unordered.
+
+    Removing both annotations after the adapter switch frees the
+    storage they occupy and removes a stale hot-mutation bucket from
+    the ZODB cache. The adapter override is what stops new writes
+    from touching them; this step is hygiene.
+    """
+    ORDER_KEY = "plone.folder.ordered.order"
+    POS_KEY = "plone.folder.ordered.pos"
+
+    query = {"portal_type": "Client"}
+    brains = api.search(query, CLIENT_CATALOG)
+    total = len(brains)
+    logger.info(
+        "Dropping IOrdering annotations from {} clients".format(total))
+
+    cleaned = 0
+    for num, brain in enumerate(brains, start=1):
+        client = api.get_object(brain)
+        ann = IAnnotations(client)
+        had_order = ORDER_KEY in ann
+        had_pos = POS_KEY in ann
+        if not (had_order or had_pos):
+            continue
+        ann.pop(ORDER_KEY, None)
+        ann.pop(POS_KEY, None)
+        client._p_changed = True
+        cleaned += 1
+        if num % 100 == 0:
+            logger.info(
+                "  ... processed {}/{} clients ({} cleaned)".format(
+                    num, total, cleaned))
+            transaction.savepoint()
+
+    logger.info(
+        "Dropped IOrdering annotations from {}/{} clients".format(
+            cleaned, total))
+
+
+@upgradestep(product, version)
+def add_hazard_categories(tool):
+    """Register the hazard categories field and metadata column.
+
+    The new ``hazard_categories`` field on ``SampleType`` (DX)
+    and the ``HazardCategories`` field on ``ReferenceDefinition``
+    and ``ReferenceSample`` (AT) are picked up automatically by
+    the schema machinery. Existing objects default to an empty
+    list. The legacy ``Hazardous`` boolean is left untouched.
+    Samples (``AnalysisRequest``) inherit their effective
+    categories from the SampleType — no per-sample field.
+
+    The vocabulary covers the 9 GHS pictograms plus 10 ISO 7010
+    pictograms (biohazard, radioactive, non-ionising radiation,
+    electricity, low temperature, hot content, magnetic field,
+    hot surface, asphyxiating atmosphere, hot steam) for hazards
+    that GHS does not address.
+
+    Hazard pictograms are rendered in listings by reading the
+    ``getHazardous`` and ``getHazardCategories`` metadata columns
+    from the SampleType brain in the setup catalog (looked up by
+    UID via the ``getSampleTypeUID`` FieldIndex on the sample
+    catalog, already registered by the catalog setup step). This
+    avoids touching every sample on each SampleType edit. The
+    legacy ``getHazardous`` metadata column on the sample catalog
+    is removed since the flag is now resolved exclusively via the
+    SampleType brain.
+    """
+    logger.info("Adding hazard categories ...")
+    sample_catalog = api.get_tool(SAMPLE_CATALOG)
+    del_column(sample_catalog, "getHazardous")
+    setup_catalog = api.get_tool(SETUP_CATALOG)
+    add_column(setup_catalog, "getHazardCategories")
+    add_column(setup_catalog, "getHazardous")
+    sample_types = setup_catalog({"portal_type": "SampleType"})
+    logger.info(
+        "Refreshing metadata for %d SampleType(s) ...", len(sample_types))
+    for brain in sample_types:
+        obj = api.get_object(brain)
+        # Metadata-only refresh: don't recompute every index.
+        setup_catalog.catalog_object(
+            obj, api.get_path(obj), idxs=[], update_metadata=1)
+    logger.info("Adding hazard categories [DONE]")
 
 
 @upgradestep(product, version)
@@ -906,6 +1019,198 @@ def migrate_multifile_to_dx(src, destination=None):
     logger.info("Migrated Multifile from %s -> %s" % (src, target))
 
 
+def migrate_laboratory_to_dx(tool):
+    """Migrates Laboratory to DX
+    """
+    logger.info("Convert Laboratory to Dexterity ...")
+
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+    portal_type = "Laboratory"
+    query = {
+        "portal_type": portal_type,
+    }
+    brains = api.search(query, SETUP_CATALOG)
+
+    if not brains:
+        logger.warning("No Laboratory object found, skipping migration")
+        return
+
+    src = api.get_object(brains[0])
+
+    # Check if already migrated
+    if not api.is_at_content(src):
+        logger.info(
+            "Laboratory already migrated: {}".format(api.get_path(src)))
+        return
+    destination = api.get_senaite_setup()
+    target_id = tmpID()
+
+    target = destination.get(target_id)
+    if not target:
+        # Don't use the api to skip the auto-id generation
+        target = createContent(portal_type, id=target_id)
+        destination._setObject(target_id, target)
+        target = destination._getOb(target_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = u(src.getName() or "")
+    target.description = u(src.Description() or "")
+
+    # Laboratory-specific fields
+    target.lab_url = u(src.getLabURL() or "")
+    target.supervisor = src.getRawSupervisor() or ""
+    target.confidence = src.getConfidence() or None
+    target.laboratory_accredited = bool(src.getLaboratoryAccredited())
+    target.accreditation_body = u(src.getAccreditationBody() or "")
+    target.accreditation_body_url = u(src.getAccreditationBodyURL() or "")
+    target.accreditation = u(src.getAccreditation() or "")
+    target.accreditation_reference = u(src.getAccreditationReference() or "")
+    target.accreditation_body_logo = blob_to_named_file(
+        src.getAccreditationBodyLogo(), default_filename=u"logo.png")
+    target.accreditation_page_header = u(src.getAccreditationPageHeader() or "")
+
+    # Organization fields (inherited from Organisation)
+    target.tax_number = u(src.getTaxNumber() or "")
+    target.phone = u(src.getPhone() or "")
+    target.fax = u(src.getFax() or "")
+    target.email = u(src.getEmailAddress() or "")
+    target.account_type = u(src.getAccountType() or "")
+    target.account_name = u(src.getAccountName() or "")
+    target.account_number = u(src.getAccountNumber() or "")
+    target.bank_name = u(src.getBankName() or "")
+    target.bank_branch = u(src.getBankBranch() or "")
+
+    # Copy addresses using the to_dx_address helper
+    postal_address = src.getPostalAddress() or {}
+    if postal_address:
+        target.setPostalAddress(
+            to_dx_address(postal_address, POSTAL_ADDRESS)
+        )
+
+    physical_address = src.getPhysicalAddress() or {}
+    if physical_address:
+        target.setPhysicalAddress(
+            to_dx_address(physical_address, PHYSICAL_ADDRESS)
+        )
+
+    billing_address = src.getBillingAddress() or {}
+    if billing_address:
+        target.setBillingAddress(
+            to_dx_address(billing_address, BILLING_ADDRESS)
+        )
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter(
+        (src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID
+    migrator.copy_uid(src, target)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # Ensure Laboratory is allowed in its container before rename
+    permanently_allow_type_for(api.get_portal_type(destination), portal_type)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    target.reindexObject()
+
+    logger.info("Migrated Laboratory from %s -> %s" % (src, target))
+    logger.info("Convert Laboratory to Dexterity [DONE]")
+
+
+LABORATORY_IMAGE_FIELDS = (
+    ("accreditation_body_logo", u"logo.png"),
+)
+
+
+@upgradestep(product, version)
+def repair_laboratory_migration(tool):
+    """Repair the Laboratory-to-DX migration
+
+    Two issues need patching on already-migrated instances:
+
+    1. Before #2902, the migration passed AT ImageField values straight
+       through `blob_to_named_file` when they were not BlobWrapper
+       instances. The raw `OFS.Image.Image` objects were assigned to
+       the new `NamedBlobImage` field, which is neither None nor
+       INamed; `plone.formwidget.namedfile` then crashes rendering
+       the laboratory view or edit form.
+
+    2. The new Laboratory FTI was missing the
+       `IMultiCatalogBehavior` behavior, so the catalog multiplex
+       processor refused to index it in any non-portal catalog. The
+       result is that the laboratory is absent from
+       `senaite_catalog_setup` and any code that resolves it through
+       catalog (e.g. `SuperModel` lookups in impress) gets nothing.
+    """
+    logger.info("Repair laboratory migration ...")
+
+    # Re-import typeinfo so the FTI picks up IMultiCatalogBehavior
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+    setup = api.get_senaite_setup()
+    laboratory = setup.get("laboratory") if setup else None
+    if laboratory is None:
+        logger.info("No laboratory found, skipping repair")
+        return
+
+    # Re-wrap legacy OFS.Image values on the named-file fields
+    for fieldname, default_filename in LABORATORY_IMAGE_FIELDS:
+        repair_laboratory_image_field(
+            laboratory, fieldname, default_filename)
+
+    # Reindex so the multiplex processor now lands the laboratory in
+    # senaite_catalog_setup (and the other catalogs mapped to it)
+    laboratory.reindexObject()
+    logger.info("Reindexed %s" % laboratory)
+
+    logger.info("Repair laboratory migration [DONE]")
+
+
+def repair_laboratory_image_field(laboratory, fieldname, default_filename):
+    """Re-wrap a single image field if it holds a non-INamed legacy value
+    """
+    value = getattr(laboratory, fieldname, None)
+    if value is None:
+        return
+    if INamed.providedBy(value):
+        return
+    named = blob_to_named_file(value, default_filename=default_filename)
+    setattr(laboratory, fieldname, named)
+    logger.info("Repaired %s.%s (%s -> %s)" % (
+        laboratory, fieldname, type(value).__name__,
+        type(named).__name__ if named is not None else None))
+
+
 def to_dx_address(value, address_type=NAIVE_ADDRESS):
     return {
         "type": u(value.get("address_type") or address_type),
@@ -1676,3 +1981,102 @@ def reindex_labcontact_searchable_text(tool):
         logger.info(
             "Reindexing %s in contact catalog [DONE]" % index
         )
+
+
+@upgradestep(product, version)
+def rebuild_title_indexes(tool):
+    """Clear and rebuild the title FieldIndex on every SENAITE catalog
+
+    #2901 reindexed the title index across all base catalogs so a new
+    generic indexer could populate them with unicode keys. The reindex
+    rewrites entries per docid but does not clear the BTree first, so
+    pre-existing byte-string keys for non-ASCII titles remain. Any
+    subsequent insert of a unicode key (e.g. when creating or editing
+    a DX object whose title contains non-ASCII characters) then raises
+    `UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3` on
+    BTree key comparison.
+
+    Clearing the index before reindexing wipes all stale byte-string
+    keys and lets the (post-#2901) indexer repopulate the BTree with
+    a single unicode key type. Catalogs are discovered dynamically by
+    walking the portal and filtering on `ISenaiteCatalogObject`, so
+    custom catalogs registered by downstream add-ons are also covered.
+    """
+    logger.info("Rebuild title indexes ...")
+    catalogs = list(iter_senaite_catalogs())
+    total = len(catalogs)
+    for num, catalog in enumerate(catalogs, start=1):
+        logger.info(
+            "Rebuilding title index on %s (%s/%s) ..." % (
+                catalog.id, num, total))
+        rebuild_index(catalog, "title")
+    logger.info("Rebuild title indexes [DONE]")
+
+
+@upgradestep(product, version)
+def cleanup_sample_catalog(tool):
+    """Clean up senaite_catalog_sample indexes and metadata columns
+
+    - Remove obsolete FieldIndexes getProvince and getDistrict from the
+      sample catalog. Client geography belongs on the client catalog and
+      is not meaningful as a sample catalog index; reindexing is also
+      not triggered when client address fields change.
+    - Remove stale metadata columns from the sample catalog: getProvince,
+      getDistrict, getClientURL, getTemplateURL, getPhysicalPath. URLs
+      are fragile (hostname-dependent) and better resolved at render
+      time via memoized UID lookups. getPhysicalPath is unused.
+    """
+    logger.info("Cleaning up sample catalog indexes and columns ...")
+
+    catalog = api.get_tool(SAMPLE_CATALOG)
+
+    # Remove obsolete indexes
+    for idx in ["getDistrict", "getProvince"]:
+        if del_index(catalog, idx):
+            logger.info("Removed index '%s' from sample catalog" % idx)
+
+    # Remove obsolete metadata columns
+    obsolete_columns = [
+        "getClientURL",
+        "getDistrict",
+        "getPhysicalPath",
+        "getProvince",
+        "getTemplateURL",
+    ]
+    for col in obsolete_columns:
+        if del_column(catalog, col):
+            logger.info(
+                "Removed column '%s' from sample catalog" % col
+            )
+
+    logger.info("Cleaning up sample catalog indexes and columns [DONE]")
+
+
+@upgradestep(product, version)
+def add_sample_catalog_indexes(tool):
+    """Add new indexes to senaite_catalog_sample
+
+    - getSampleTypeUID: FieldIndex for filtering samples by type UID.
+    - getSamplePointUID: FieldIndex for filtering samples by sample point UID.
+    - getAnalysesKeywords: KeywordIndex storing the keyword of every analysis
+      contained in the sample and its partitions. Enables queries such as
+      ``catalog(getAnalysesKeywords="glucose")`` to retrieve all samples that
+      include a specific analysis.
+    """
+    logger.info("Adding new indexes to sample catalog ...")
+    catalog = api.get_tool(SAMPLE_CATALOG)
+
+    new_indexes = [
+        ("getSampleTypeUID", "", "FieldIndex"),
+        ("getSamplePointUID", "", "FieldIndex"),
+        ("getAnalysesKeywords", "", "KeywordIndex"),
+    ]
+    for idx_id, idx_attr, idx_type in new_indexes:
+        if add_catalog_index(catalog, idx_id, idx_attr, idx_type):
+            logger.info("Reindexing '%s' in sample catalog ..." % idx_id)
+            reindex_index(SAMPLE_CATALOG, idx_id)
+            logger.info(
+                "Reindexing '%s' in sample catalog [DONE]" % idx_id
+            )
+
+    logger.info("Adding new indexes to sample catalog [DONE]")

@@ -25,11 +25,18 @@ from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
+from bika.lims.interfaces import IReferenceDefinition
+from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
+from Products.Archetypes.public import LinesField
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import registerType
+from senaite.core.browser.widgets.hazardcategorieswidget import (
+    HazardCategoriesWidget)
+from senaite.core.vocabularies.hazard_categories import HAZARD_CATEGORIES
+from senaite.core.vocabularies.hazard_categories import format_title
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -87,6 +94,22 @@ schema = BikaSchema.copy() + Schema((
             ),
         ),
     ),
+
+    LinesField(
+        "HazardCategories",
+        schemata="Description",
+        default=[],
+        vocabulary="getHazardCategoriesVocabulary",
+        widget=HazardCategoriesWidget(
+            label=_("label_referencedefinition_hazard_categories",
+                    default=u"Hazard categories"),
+            description=_(
+                "description_referencedefinition_hazard_categories",
+                default=u"Hazard categories that apply to samples "
+                        u"of this reference definition."),
+            format="checkbox",
+        ),
+    ),
 ))
 
 schema["title"].schemata = "Description"
@@ -96,7 +119,7 @@ schema["description"].widget.visible = True
 
 
 class ReferenceDefinition(BaseContent):
-    implements(IDeactivable)
+    implements(IReferenceDefinition, IDeactivable)
     security = ClassSecurityInfo()
     schema = schema
     _at_rename_after_creation = True
@@ -104,6 +127,17 @@ class ReferenceDefinition(BaseContent):
     def _renameAfterCreation(self, check_auto_id=False):
         from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
+
+    def getHazardCategoriesVocabulary(self):
+        """Return AT DisplayList for the HazardCategories field.
+
+        :returns: Hazard categories vocabulary (GHS + ISO 7010)
+        :rtype: Products.Archetypes.atapi.DisplayList
+        """
+        return DisplayList([
+            (cat["code"], format_title(cat))
+            for cat in HAZARD_CATEGORIES
+        ])
 
 
 registerType(ReferenceDefinition, PROJECTNAME)

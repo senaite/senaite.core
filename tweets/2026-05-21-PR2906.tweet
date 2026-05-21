@@ -1,0 +1,2 @@
+Fixed a sneaky bug in the new sample add form: rapid identical submissions were silently swallowed by the publisher-retry idempotency cache. Now the cache only kicks in when Zope is actually retrying, not on every fresh submission.
+https://github.com/senaite/senaite.core/pull/2906

@@ -4,7 +4,23 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
-#2898 Add AllowManualEntry for select result options
+- #2898 Add AllowManualEntry for select result options
+- #2908 Drop intid registrations created for portal_factory transients
+- #2907 Unregister intid on migration-time object deletion
+- #2909 Restore getPrintAddress on the DX Organization content type
+- #2890 Add hazard categories to SampleType, Sample, ReferenceDefinition and ReferenceSample (GHS + ISO 7010)
+- #2906 Only consult ar_add idempotency cache on a publisher retry
+- #2905 Rebuild title FieldIndex on every SENAITE catalog
+- #2904 Add IMultiCatalogBehavior to Laboratory FTI and repair existing migrations
+- #2902 Fix blob_to_named_file to handle non-blob AT image/file values
+- #2810 Migrate Laboratory to DX
+- #2901 Add generic unicode title indexer for the `title` FieldIndex
+- #2873 Catalog/cleanup sample catalog indexes
+- #2900 Fix circular import between senaite.core.catalog and bika.lims
+- #2899 Suppress profile-remove dialog during bulk ar_add hydration
+- #2741 Commit each created sample individually to reduce ZODB conflicts
+- #2896 Fix uncatalog_object to leave no stale uids in uid_catalog
+- #2897 Use UnorderedOrdering for Clients to avoid ZODB conflicts
 - #2894 Fix DL get flushed on submit
 - #2891 Translate sidebar navigation titles in JSON endpoint
 - #2881 Add text support for interim fields
