@@ -40,7 +40,6 @@ from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.api import dtime
 from senaite.core.api.catalog import add_column
-from senaite.core.api.catalog import add_index
 from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
@@ -197,15 +196,14 @@ def add_hazard_categories(tool):
     Hazard pictograms are rendered in listings by reading the
     ``getHazardous`` and ``getHazardCategories`` metadata columns
     from the SampleType brain in the setup catalog (looked up by
-    UID via the new ``getSampleTypeUID`` FieldIndex on the sample
-    catalog). This avoids touching every sample on each SampleType
-    edit. The legacy ``getHazardous`` metadata column on the
-    sample catalog is removed since the flag is now resolved
-    exclusively via the SampleType brain.
+    UID via the ``getSampleTypeUID`` FieldIndex on the sample
+    catalog, already registered by the catalog setup step). This
+    avoids touching every sample on each SampleType edit. The
+    legacy ``getHazardous`` metadata column on the sample catalog
+    is removed since the flag is now resolved exclusively via the
+    SampleType brain.
     """
     logger.info("Adding hazard categories ...")
-    if add_index(SAMPLE_CATALOG, "getSampleTypeUID", "FieldIndex"):
-        reindex_index(SAMPLE_CATALOG, "getSampleTypeUID")
     sample_catalog = api.get_tool(SAMPLE_CATALOG)
     del_column(sample_catalog, "getHazardous")
     setup_catalog = api.get_tool(SETUP_CATALOG)
@@ -213,12 +211,12 @@ def add_hazard_categories(tool):
     add_column(setup_catalog, "getHazardous")
     sample_types = setup_catalog({"portal_type": "SampleType"})
     logger.info(
-        "Reindexing %d SampleType(s) for hazard metadata ...",
-        len(sample_types))
+        "Refreshing metadata for %d SampleType(s) ...", len(sample_types))
     for brain in sample_types:
-        # Full reindex (no idxs) so the new metadata column is
-        # populated alongside the indexes.
-        api.get_object(brain).reindexObject()
+        obj = api.get_object(brain)
+        # Metadata-only refresh: don't recompute every index.
+        setup_catalog.catalog_object(
+            obj, api.get_path(obj), idxs=[], update_metadata=1)
     logger.info("Adding hazard categories [DONE]")
 
 
