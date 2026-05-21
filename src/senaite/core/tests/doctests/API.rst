@@ -2582,6 +2582,48 @@ Re-cataloging the parent recursively brings the children back:
     True
 
 
+Unregister the intid of an object
+.................................
+
+This function removes ``obj``'s registration from every ``IIntIds`` utility in
+the site. It exists because the standard removal path (`five.intid`'s
+``IObjectRemovedEvent`` subscriber) is bypassed when an object is deleted with
+``suppress_events=True`` — a common pattern in migrations. Without an explicit
+unregister, the intid keyref would survive the deletion and pin the dead oid in
+storage.
+
+Look up the global intid utility:
+
+    >>> from zope.component import queryUtility
+    >>> from zope.intid.interfaces import IIntIds
+    >>> intids = queryUtility(IIntIds)
+
+Newly created objects are registered by ``five.intid`` on
+``IObjectAddedEvent``:
+
+    >>> intid_client = api.create(
+    ...     portal.clients, "Client", title="IntId Client")
+    >>> intids.queryId(intid_client) is not None
+    True
+
+``unregister_intid`` drops the registration from the utility:
+
+    >>> api.unregister_intid(intid_client)
+    >>> intids.queryId(intid_client) is None
+    True
+
+Calling it again on an already-unregistered object is a safe no-op
+(``KeyError`` from the underlying utility is swallowed):
+
+    >>> api.unregister_intid(intid_client)
+    >>> intids.queryId(intid_client) is None
+    True
+
+Clean up:
+
+    >>> api.delete(intid_client, check_permissions=False)
+
+
 Delete an object
 ................
 
@@ -2612,6 +2654,43 @@ Unless we explicitly tell the system to bypass security check:
     False
 
 
+Deletion and intid bookkeeping
+..............................
+
+``api.delete`` keeps the ``IIntIds`` utility in sync regardless of whether
+removal events are fired. By default, deletion fires ``IObjectRemovedEvent``
+and the ``five.intid`` subscriber drops the object's intid registration:
+
+    >>> from zope.component import queryUtility
+    >>> from zope.intid.interfaces import IIntIds
+    >>> intids = queryUtility(IIntIds)
+
+    >>> events_client = api.copy_object(
+    ...     client, title="Client to delete (events)")
+    >>> intids.queryId(events_client) is not None
+    True
+
+    >>> api.delete(events_client, check_permissions=False)
+    >>> intids.queryId(events_client) is None
+    True
+
+When ``suppress_events=True`` is passed — the path used by migrations and
+upgrade steps — ``IObjectRemovedEvent`` is *not* fired, so the ``five.intid``
+subscriber never runs. To avoid orphan intid entries pinning the dead oid in
+storage, ``api.delete`` invokes ``unregister_intid`` itself before calling
+``_delObject``:
+
+    >>> silent_client = api.copy_object(
+    ...     client, title="Client to delete (no events)")
+    >>> intids.queryId(silent_client) is not None
+    True
+
+    >>> api.delete(
+    ...     silent_client, check_permissions=False, suppress_events=True)
+    >>> intids.queryId(silent_client) is None
+    True
+
+
 Move an object
 ..............
 
@@ -2634,7 +2713,7 @@ Move the contact to the destination client:
     >>> dest.hasObject(id)
     False
     >>> contact
-    <Contact at /plone/clients/client-5/contact-4>
+    <Contact at /plone/clients/client-8/contact-4>
     >>> contact = api.move_object(contact, dest, check_constraints=False)
     >>> api.get_parent(contact) == dest
     True
@@ -2643,7 +2722,7 @@ Move the contact to the destination client:
     >>> orig.hasObject(id)
     False
     >>> contact
-    <Contact at /plone/clients/client-6/contact-4>
+    <Contact at /plone/clients/client-9/contact-4>
 
 It does nothing if destination is the same as the origin:
 
@@ -2675,7 +2754,7 @@ Unless we grant enough permissions to remove the object from origin:
     >>> dest.hasObject(id)
     False
     >>> contact
-    <Contact at /plone/clients/client-5/contact-4>
+    <Contact at /plone/clients/client-8/contact-4>
 
 Still, destination container must allow the object's type:
 
