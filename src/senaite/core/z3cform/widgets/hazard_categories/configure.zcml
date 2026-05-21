@@ -30,7 +30,7 @@
       mode="hidden"
       widget="senaite.core.z3cform.interfaces.IHazardCategoriesWidget"
       layer="senaite.core.interfaces.ISenaiteFormLayer"
-      template="input.pt"
+      template="hidden.pt"
       />
 
 </configure>
