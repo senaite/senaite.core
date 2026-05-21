@@ -178,12 +178,72 @@ stubbing the plone utility on the view's context:
     >>> msg.mapping["rows"]
     u'#2 (CSID-A12), #5 (ref-9), #7 (-)'
 
+In-flight cache is gated on publisher retries
+.............................................
+
+The in-flight cache short-circuits sample creation when the same
+fingerprint has already been registered. It must only do so when the
+current request is a publisher-level retry of the originating
+submission. On a fresh first attempt two independent submissions with
+identical bodies (same client, same defaults, no operator-supplied
+identifier) hash to the same fingerprint, and treating that as a hit
+would return the previously created samples instead of creating a
+new one — surfacing to the operator as a "successfully created"
+banner for a sample that was never written.
+
+`_is_publisher_retry` consults Zope's `retry_count` attribute, which
+is 0 on the first attempt and incremented on every re-publish:
+
+    >>> add2._is_publisher_retry(request)
+    False
+    >>> request.retry_count = 1
+    >>> add2._is_publisher_retry(request)
+    True
+    >>> request.retry_count = 0
+
+A request that has no `retry_count` attribute at all (non-HTTP
+requests, test layers, ...) is treated as a fresh first attempt:
+
+    >>> class BareRequest(object):
+    ...     pass
+    >>> add2._is_publisher_retry(BareRequest())
+    False
+
+Fingerprint is scoped to the worker thread
+..........................................
+
+`_submission_fingerprint` mixes the current worker thread id into
+the hash. Zope publisher retries re-publish on the same worker, so
+the retry sees the same fingerprint as the original attempt and
+recovers the in-flight UIDs as expected. Two concurrent submissions
+with byte-identical bodies on *different* workers (e.g. an operator
+hitting Submit across several browser tabs in quick succession)
+produce different fingerprints and therefore cannot overwrite each
+other's in-flight cache entries.
+
+The fingerprint must start with the current thread's identifier:
+
+    >>> import threading
+    >>> fp = add2._submission_fingerprint(request)
+    >>> tid = str(threading.current_thread().ident)
+    >>> fp.startswith(tid + ":")
+    True
+
+A second call on the same thread with the same body returns the
+same fingerprint (publisher retries are idempotent on the same
+worker):
+
+    >>> add2._submission_fingerprint(request) == fp
+    True
+
 Cleanup
 .......
 
-Restore the patched transaction operations, sleep, and registry flag so
-later tests run in a pristine environment:
+Restore the patched transaction operations, sleep, registry flag,
+and in-flight cache so later tests run in a pristine environment:
 
+    >>> request.retry_count = 0
+    >>> add2._inflight.clear()
     >>> add2.transaction = original_txn_module
     >>> add2.time = original_time_module
     >>> add2.MAX_CREATE_ATTEMPTS = original_max_attempts
