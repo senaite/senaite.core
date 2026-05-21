@@ -20,6 +20,7 @@
 
 from collective.z3cform.datagridfield.interfaces import IDataGridField
 from z3c.form.interfaces import IObjectWidget
+from z3c.form.interfaces import ISequenceWidget
 from z3c.form.interfaces import IWidget
 
 
@@ -30,6 +31,12 @@ class IUIDReferenceWidget(IWidget):
 
 class INumberWidget(IWidget):
     """Input type "number" widget
+    """
+
+
+class IHazardCategoriesWidget(ISequenceWidget):
+    """Multi-checkbox widget that decorates each option with the matching
+    hazard pictogram (GHS or ISO 7010).
     """
 
 
