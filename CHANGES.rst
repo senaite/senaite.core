@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2907 Unregister intid on migration-time object deletion
 - #2909 Restore getPrintAddress on the DX Organization content type
 - #2890 Add hazard categories to SampleType, Sample, ReferenceDefinition and ReferenceSample (GHS + ISO 7010)
 - #2906 Only consult ar_add idempotency cache on a publisher retry

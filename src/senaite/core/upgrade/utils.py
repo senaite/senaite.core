@@ -43,6 +43,8 @@ from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.file import NamedBlobImage
 from senaite.core import logger
 from senaite.core.api.catalog import add_zc_text_index
+from zope.component import getAllUtilitiesRegisteredFor
+from zope.intid.interfaces import IIntIds
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
 from zope.interface import alsoProvides
 from zope.lifecycleevent import modified
@@ -381,10 +383,35 @@ def catalog_object(obj):
     obj.reindexObject()
 
 
+def unregister_intid(obj):
+    """Unregister `obj` from every `IIntIds` utility in the site.
+
+    `_delObject(..., suppress_events=True)` is the standard
+    migration path and it deliberately suppresses
+    `IObjectRemovedEvent`, which is what `five.intid`'s subscriber
+    listens on to drop the deleted object's `KeyReferenceToPersistent`
+    from `intids.refs` / `intids.ids`. Without an explicit call here
+    the intid entry survives, pinning the dead object's oid in the
+    FileStorage so a subsequent pack cannot reclaim it.
+
+    Mirrors the manual uid_catalog cleanup that `uncatalog_object`
+    already does for the same reason.
+    """
+    for intids in getAllUtilitiesRegisteredFor(IIntIds):
+        try:
+            intids.unregister(obj)
+        except KeyError:
+            # Object was never registered with this utility; nothing
+            # to drop. Matches `intids.unregister`'s own behaviour
+            # when it cannot find the keyref.
+            pass
+
+
 def delete_object(obj):
     """delete the object w/o firing events
     """
     uncatalog_object(obj)
+    unregister_intid(obj)
     parent = aq_parent(obj)
     parent._delObject(obj.getId(), suppress_events=True)
 
