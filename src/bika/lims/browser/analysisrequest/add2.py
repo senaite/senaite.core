@@ -25,6 +25,7 @@ from collections import OrderedDict
 from datetime import datetime
 from datetime import timedelta
 from random import uniform
+from threading import current_thread
 from threading import Lock
 
 import six
@@ -121,15 +122,24 @@ def cache_key(method, self, obj):
 
 
 def _submission_fingerprint(request):
-    """Content-based fingerprint of the submission body. Stable across
-    Zope publisher-level retries on the same worker because Zope
-    rebuilds the request from the same WSGI environ (and body bytes)
-    on each attempt.
+    """Content-based fingerprint of the submission body, scoped to
+    the worker thread. Stable across Zope publisher-level retries
+    of the same request (Zope re-publishes on the same worker
+    thread, reusing the same WSGI environ and body bytes), but
+    distinct between concurrent same-body submissions on different
+    workers — which is what we want when an operator hammers
+    "Submit" across several browser tabs whose form bodies happen
+    to be byte-identical.
 
-    Two distinct submissions whose body is byte-identical produce the
-    same fingerprint, so the fingerprint is only safe to use for the
-    cache *lookup* when the request is actually a publisher retry —
-    see `_is_publisher_retry`.
+    Two distinct submissions whose body is byte-identical and which
+    happen to land on the same worker still produce the same
+    fingerprint, but waitress only handles one request at a time
+    per worker so two requests on the same thread are serialised by
+    construction and cannot race on the in-flight cache entry.
+
+    The fingerprint is only safe to use for the cache *lookup* when
+    the request is actually a publisher retry — see
+    `_is_publisher_retry`.
     """
     method = request.get("REQUEST_METHOD", "") or ""
     path = request.get("PATH_INFO", "") or ""
@@ -137,7 +147,8 @@ def _submission_fingerprint(request):
     raw = "{}\n{}\n{}".format(method, path, body)
     if isinstance(raw, unicode):
         raw = raw.encode("utf-8")
-    return hashlib.sha256(raw).hexdigest()
+    body_hash = hashlib.sha256(raw).hexdigest()
+    return "{}:{}".format(current_thread().ident, body_hash)
 
 
 def _is_publisher_retry(request):

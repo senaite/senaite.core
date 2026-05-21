@@ -209,6 +209,33 @@ requests, test layers, ...) is treated as a fresh first attempt:
     >>> add2._is_publisher_retry(BareRequest())
     False
 
+Fingerprint is scoped to the worker thread
+..........................................
+
+`_submission_fingerprint` mixes the current worker thread id into
+the hash. Zope publisher retries re-publish on the same worker, so
+the retry sees the same fingerprint as the original attempt and
+recovers the in-flight UIDs as expected. Two concurrent submissions
+with byte-identical bodies on *different* workers (e.g. an operator
+hitting Submit across several browser tabs in quick succession)
+produce different fingerprints and therefore cannot overwrite each
+other's in-flight cache entries.
+
+The fingerprint must start with the current thread's identifier:
+
+    >>> import threading
+    >>> fp = add2._submission_fingerprint(request)
+    >>> tid = str(threading.current_thread().ident)
+    >>> fp.startswith(tid + ":")
+    True
+
+A second call on the same thread with the same body returns the
+same fingerprint (publisher retries are idempotent on the same
+worker):
+
+    >>> add2._submission_fingerprint(request) == fp
+    True
+
 Cleanup
 .......
 
