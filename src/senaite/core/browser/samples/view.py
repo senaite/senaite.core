@@ -93,6 +93,9 @@ class SamplesView(ListingView):
             "sort_order": "descending",
             "isRootAncestor": True,  # only root ancestors
         }
+        # Per-request cache for SampleType brain lookups; shared
+        # across all folderitem calls within a single render.
+        self._hazard_cache = {}
 
         self.title = self.context.translate(_("Samples"))
         self.description = ""
@@ -461,9 +464,6 @@ class SamplesView(ListingView):
         self.workflow = api.get_tool("portal_workflow")
         self.member = self.mtool.getAuthenticatedMember()
         self.roles = self.member.getRoles()
-        # Per-request cache for SampleType brain lookups; shared
-        # across all folderitem calls within a single render.
-        self._hazard_cache = {}
 
         # Remove unnecessary filters
         self.purge_review_states()
