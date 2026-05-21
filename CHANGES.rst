@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2909 Restore getPrintAddress on the DX Organization content type
 - #2906 Only consult ar_add idempotency cache on a publisher retry
 - #2905 Rebuild title FieldIndex on every SENAITE catalog
 - #2904 Add IMultiCatalogBehavior to Laboratory FTI and repair existing migrations
