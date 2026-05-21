@@ -37,6 +37,8 @@ from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.duration.widget import DurationWidgetFactory
+from senaite.core.z3cform.widgets.hazard_categories import (
+    HazardCategoriesFieldWidget)
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from zope import schema
 from zope.interface import Interface
@@ -168,6 +170,25 @@ class ISampleTypeSchema(model.Schema):
                               u"be treated as hazardous"),
         default=False,
         required=False)
+
+    directives.widget(
+        "hazard_categories",
+        HazardCategoriesFieldWidget)
+    hazard_categories = schema.List(
+        title=_(u"title_sampletype_hazard_categories",
+                default=u"Hazard categories"),
+        description=_(u"description_sampletype_hazard_categories",
+                      default=u"Hazard categories that apply to "
+                              u"samples of this type. Used to display "
+                              u"the appropriate pictograms in reports "
+                              u"and lists."),
+        value_type=schema.Choice(
+            vocabulary="senaite.core.vocabularies.hazard_categories",
+        ),
+        required=False,
+        missing_value=[],
+        default=[],
+    )
 
     directives.widget(
         "sample_matrix",
@@ -305,6 +326,19 @@ class SampleType(Container):
 
     # BBB: AT schema field property
     Hazardous = property(getHazardous, setHazardous)
+
+    @security.protected(permissions.View)
+    def getHazardCategories(self):
+        accessor = self.accessor("hazard_categories")
+        return list(accessor(self) or [])
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setHazardCategories(self, value):
+        mutator = self.mutator("hazard_categories")
+        mutator(self, list(value or []))
+
+    # BBB: AT schema field property
+    HazardCategories = property(getHazardCategories, setHazardCategories)
 
     @security.protected(permissions.View)
     def getRawSampleMatrix(self):

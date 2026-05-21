@@ -1,0 +1,13 @@
+<span class="hazard-categories-display"
+      tal:define="items view/items;
+                  selected python:[item for item in items if item['checked']]"
+      tal:omit-tag="not:selected">
+  <tal:none condition="not:selected">&mdash;</tal:none>
+  <span class="hazard-pictogram"
+        tal:repeat="item selected"
+        tal:attributes="title item/label">
+    <img tal:attributes="src python:view.pictogram_url(item['value']);
+                         alt item/value;
+                         title item/label" />
+  </span>
+</span>
