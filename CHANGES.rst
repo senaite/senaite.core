@@ -3,7 +3,7 @@ Changelog
 
 2.7.0 (unreleased)
 ------------------
-
+- #2903 Refactor record parsing to use ast.literal_eval to prevent code execution
 - #2902 Fix blob_to_named_file to handle non-blob AT image/file values
 - #2810 Migrate Laboratory to DX
 - #2901 Add generic unicode title indexer for the `title` FieldIndex
