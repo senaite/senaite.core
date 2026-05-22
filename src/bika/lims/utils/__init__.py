@@ -757,12 +757,19 @@ def get_progress_bar_html(percentage):
 
 def render_html_attributes(**kwargs):
     """Returns a string representation of attributes for html entities
+
+    Values are coerced to unicode so callers can safely pass through
+    translated strings (e.g. hazard pictogram titles) without hitting
+    an implicit ASCII codec.
+
     :param kwargs: attributes and values
-    :return: a well-formed string representation of attributes"""
-    attr = list()
-    if kwargs:
-        attr = ['{}="{}"'.format(key, val) for key, val in kwargs.items()]
-    return " ".join(attr).replace("css_class", "class")
+    :return: a well-formed unicode string representation of attributes
+    """
+    if not kwargs:
+        return u""
+    attr = [u'{}="{}"'.format(key, safe_unicode(val))
+            for key, val in kwargs.items()]
+    return u" ".join(attr).replace(u"css_class", u"class")
 
 
 def get_registry_value(key, default=None):
