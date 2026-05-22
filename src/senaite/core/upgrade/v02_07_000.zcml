@@ -3,6 +3,16 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add 'duplicate_sample' workflow transition"
+      description="Register the duplicate_sample workflow transition.
+                   The transition reuses the AddAnalysisRequest
+                   permission, so no new permission is introduced."
+      source="2734"
+      destination="2735"
+      handler=".v02_07_000.setup_duplicate_sample_transition"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Add hazard categories"
       description="Register the hazard category vocabulary (GHS plus
                    ISO 7010 biohazard / radioactive / non-ionising

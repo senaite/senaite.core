@@ -20,6 +20,7 @@
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.workflow import RequestContextAware
 from bika.lims.browser.workflow import WorkflowActionGenericAdapter
 from bika.lims.content.analysisspec import ResultsRangeDict
@@ -404,3 +405,40 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
             specs_value = self.request.form.get(key, [{}])[0].get(uid, None)
             specs[key] = specs_value or specs.get(key)
         return specs
+
+
+class WorkflowActionDuplicateAdapter(WorkflowActionGenericAdapter):
+    """Adapter in charge of the Sample 'duplicate_sample' action.
+
+    Triggers the workflow transition (which fires
+    `after_duplicate_sample` and creates the sibling) and reports
+    the new IDs in a status message. Unlike Copy-to-new, this
+    adapter does not redirect to `ar_add` — duplication happens
+    directly.
+    """
+
+    def __call__(self, action, objects):
+        sources = list(filter(IAnalysisRequest.providedBy, objects))
+
+        # Snapshot existing duplicate UIDs per source so we can
+        # report only the duplicates created by *this* invocation.
+        relation = "AnalysisRequestDuplicatedFrom"
+        before = {
+            api.get_uid(source): set(
+                get_backreferences(source, relationship=relation))
+            for source in sources
+        }
+
+        transitioned = self.do_action(action, sources)
+        if not transitioned:
+            return self.redirect(
+                message=_("No duplicate created"), level="warning")
+
+        new_uids = []
+        for source in transitioned:
+            after = set(get_backreferences(source, relationship=relation))
+            new_uids.extend(after - before.get(api.get_uid(source), set()))
+        duplicates = filter(None, map(api.get_object_by_uid, new_uids))
+        ids = ", ".join(map(api.get_id, duplicates))
+        message = _("Duplicated samples: {}").format(ids)
+        return self.success(transitioned, message=message)

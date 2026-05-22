@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2895 Add 'duplicate_sample' workflow transition for samples (with global toggle in setup)
 - #2910 Centralize intid cleanup in api.delete
 - #2913 Fix UnicodeEncodeError in render_html_attributes for non-ASCII attribute values
 - #2912 Fix missing <genericsetup:upgradeStep> tag for Worksheet Dexterity migration
