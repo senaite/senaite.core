@@ -77,7 +77,6 @@ from senaite.core.interfaces import ITemporaryObject
 from z3c.form.validator import Data as ValidatorData
 from zope import globalrequest
 from zope.annotation.interfaces import IAttributeAnnotatable
-from zope.component import getAllUtilitiesRegisteredFor
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.container.contained import notifyContainerModified
@@ -88,7 +87,6 @@ from zope.interface import Invalid
 from zope.interface import alsoProvides
 from zope.interface import directlyProvides
 from zope.interface import noLongerProvides
-from zope.intid.interfaces import IIntIds
 from zope.lifecycleevent import ObjectMovedEvent
 from zope.publisher.browser import TestRequest
 from zope.schema import getFieldsInOrder
@@ -526,23 +524,6 @@ def catalog_object(obj, recursive=False):
             catalog_object(child, recursive=recursive)
 
 
-def unregister_intid(obj):
-    """Unregister the object from all IIntIds utilities
-
-    Useful when deleting an object without firing IObjectRemovedEvent,
-    so its intid keyref does not survive as an orphan in storage.
-
-    :param obj: object to unregister
-    :type obj: ATContentType/DexterityContentType
-    """
-    for intids in getAllUtilitiesRegisteredFor(IIntIds):
-        try:
-            intids.unregister(obj)
-        except KeyError:
-            # not registered with this utility
-            pass
-
-
 def delete(obj, check_permissions=True, suppress_events=False):
     """Deletes the given object
 
@@ -561,7 +542,8 @@ def delete(obj, check_permissions=True, suppress_events=False):
         # five.intid's removal subscriber listens on IObjectRemovedEvent,
         # which is suppressed here — drop the keyref manually to avoid an
         # orphan entry pinning the dead oid in storage.
-        unregister_intid(obj)
+        from senaite.core.api import delete_intid  # noqa
+        delete_intid(obj)
 
     # delete the object
     parent = aq_parent(obj)
