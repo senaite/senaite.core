@@ -7,9 +7,47 @@
       description="Register the duplicate_sample workflow transition.
                    The transition reuses the AddAnalysisRequest
                    permission, so no new permission is introduced."
+      source="2734"
+      destination="2735"
+      handler=".v02_07_000.setup_duplicate_sample_transition"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add hazard categories"
+      description="Register the hazard category vocabulary (GHS plus
+                   ISO 7010 biohazard / radioactive / non-ionising
+                   radiation / electricity / low temperature / hot
+                   content / magnetic field / hot surface /
+                   asphyxiating atmosphere / hot steam) and the
+                   hazard_categories field on SampleType, Sample,
+                   ReferenceDefinition and ReferenceSample"
+      source="2733"
+      destination="2734"
+      handler=".v02_07_000.add_hazard_categories"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Rebuild title indexes"
+      description="Clear and rebuild the title FieldIndex on every SENAITE
+                   catalog so stale byte-string keys from before #2901
+                   are replaced with unicode keys. Without this, any
+                   insert of a non-ASCII unicode title raises
+                   UnicodeDecodeError on BTree key comparison."
+      source="2732"
+      destination="2733"
+      handler=".v02_07_000.rebuild_title_indexes"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Repair laboratory migration"
+      description="Re-import typeinfo so the Laboratory FTI picks up the
+                   IMultiCatalogBehavior (without it the laboratory is
+                   never indexed in senaite_catalog_setup), re-wrap raw
+                   OFS.Image values left on the NamedBlobImage fields by
+                   the original migration, and reindex the live object."
       source="2731"
       destination="2732"
-      handler=".v02_07_000.setup_duplicate_sample_transition"
+      handler=".v02_07_000.repair_laboratory_migration"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
@@ -32,11 +70,9 @@
 
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Clean up sample catalog indexes and columns"
-      description="Fix title index indexed_attrs across all base catalogs,
-                   remove Province/District indexes, and remove obsolete
-                   metadata columns (getClientURL, getTemplateURL,
-                   getPhysicalPath, getProvince, getDistrict) from the
-                   sample catalog"
+      description="Remove Province/District indexes and obsolete metadata
+                   columns (getClientURL, getTemplateURL, getPhysicalPath,
+                   getProvince, getDistrict) from the sample catalog."
       source="2728"
       destination="2729"
       handler=".v02_07_000.cleanup_sample_catalog"

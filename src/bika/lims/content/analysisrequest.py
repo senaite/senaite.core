@@ -2137,6 +2137,18 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         return False
 
     @security.public
+    def getHazardCategories(self):
+        """Get the hazard categories inherited from the SampleType
+
+        :returns: Hazard category codes (GHS + ISO 7010)
+        :rtype: list
+        """
+        sample_type = self.getSampleType()
+        if sample_type:
+            return list(sample_type.getHazardCategories() or [])
+        return []
+
+    @security.public
     def getSamplingWorkflowEnabled(self):
         """Returns True if the sample of this Analysis Request has to be
         collected by the laboratory personnel

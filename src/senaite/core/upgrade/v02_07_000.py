@@ -20,9 +20,9 @@
 
 
 import json
-import transaction
 from datetime import timedelta
 
+import transaction
 from bika.lims import api
 from bika.lims.api import safe_unicode as u
 from bika.lims.api import snapshot as snap_api
@@ -35,28 +35,22 @@ from persistent.list import PersistentList
 from plone.app.blob.field import BlobWrapper
 from plone.dexterity.utils import createContent
 from plone.namedfile.file import NamedBlobFile
+from plone.namedfile.interfaces import INamed
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.api import dtime
+from senaite.core.api.catalog import add_column
 from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
-from senaite.core.api.catalog import get_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
-from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
-from senaite.core.catalog.attachments_catalog import \
-    CATALOG_ID as ATTACHMENTS_CATALOG
-from senaite.core.catalog.auditlog_catalog import \
-    CATALOG_ID as AUDITLOG_CATALOG
-from senaite.core.catalog.autoimportlog_catalog import \
-    CATALOG_ID as AUTOIMPORTLOG_CATALOG
-from senaite.core.catalog.client_catalog import CATALOG_ID as CLIENT_CATALOG
 from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
+from senaite.core.catalog.client_catalog import CATALOG_ID as CLIENT_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
@@ -75,7 +69,9 @@ from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import blob_to_named_file
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
+from senaite.core.upgrade.utils import iter_senaite_catalogs
 from senaite.core.upgrade.utils import permanently_allow_type_for
+from senaite.core.upgrade.utils import rebuild_index
 from senaite.core.upgrade.utils import remove_at_portal_types
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.v02_06_000 import get_setup_folder
@@ -178,6 +174,51 @@ def drop_client_ordering_annotations(tool):
     logger.info(
         "Dropped IOrdering annotations from {}/{} clients".format(
             cleaned, total))
+
+
+@upgradestep(product, version)
+def add_hazard_categories(tool):
+    """Register the hazard categories field and metadata column.
+
+    The new ``hazard_categories`` field on ``SampleType`` (DX)
+    and the ``HazardCategories`` field on ``ReferenceDefinition``
+    and ``ReferenceSample`` (AT) are picked up automatically by
+    the schema machinery. Existing objects default to an empty
+    list. The legacy ``Hazardous`` boolean is left untouched.
+    Samples (``AnalysisRequest``) inherit their effective
+    categories from the SampleType — no per-sample field.
+
+    The vocabulary covers the 9 GHS pictograms plus 10 ISO 7010
+    pictograms (biohazard, radioactive, non-ionising radiation,
+    electricity, low temperature, hot content, magnetic field,
+    hot surface, asphyxiating atmosphere, hot steam) for hazards
+    that GHS does not address.
+
+    Hazard pictograms are rendered in listings by reading the
+    ``getHazardous`` and ``getHazardCategories`` metadata columns
+    from the SampleType brain in the setup catalog (looked up by
+    UID via the ``getSampleTypeUID`` FieldIndex on the sample
+    catalog, already registered by the catalog setup step). This
+    avoids touching every sample on each SampleType edit. The
+    legacy ``getHazardous`` metadata column on the sample catalog
+    is removed since the flag is now resolved exclusively via the
+    SampleType brain.
+    """
+    logger.info("Adding hazard categories ...")
+    sample_catalog = api.get_tool(SAMPLE_CATALOG)
+    del_column(sample_catalog, "getHazardous")
+    setup_catalog = api.get_tool(SETUP_CATALOG)
+    add_column(setup_catalog, "getHazardCategories")
+    add_column(setup_catalog, "getHazardous")
+    sample_types = setup_catalog({"portal_type": "SampleType"})
+    logger.info(
+        "Refreshing metadata for %d SampleType(s) ...", len(sample_types))
+    for brain in sample_types:
+        obj = api.get_object(brain)
+        # Metadata-only refresh: don't recompute every index.
+        setup_catalog.catalog_object(
+            obj, api.get_path(obj), idxs=[], update_metadata=1)
+    logger.info("Adding hazard categories [DONE]")
 
 
 @upgradestep(product, version)
@@ -1122,6 +1163,70 @@ def migrate_laboratory_to_dx(tool):
     logger.info("Convert Laboratory to Dexterity [DONE]")
 
 
+LABORATORY_IMAGE_FIELDS = (
+    ("accreditation_body_logo", u"logo.png"),
+)
+
+
+@upgradestep(product, version)
+def repair_laboratory_migration(tool):
+    """Repair the Laboratory-to-DX migration
+
+    Two issues need patching on already-migrated instances:
+
+    1. Before #2902, the migration passed AT ImageField values straight
+       through `blob_to_named_file` when they were not BlobWrapper
+       instances. The raw `OFS.Image.Image` objects were assigned to
+       the new `NamedBlobImage` field, which is neither None nor
+       INamed; `plone.formwidget.namedfile` then crashes rendering
+       the laboratory view or edit form.
+
+    2. The new Laboratory FTI was missing the
+       `IMultiCatalogBehavior` behavior, so the catalog multiplex
+       processor refused to index it in any non-portal catalog. The
+       result is that the laboratory is absent from
+       `senaite_catalog_setup` and any code that resolves it through
+       catalog (e.g. `SuperModel` lookups in impress) gets nothing.
+    """
+    logger.info("Repair laboratory migration ...")
+
+    # Re-import typeinfo so the FTI picks up IMultiCatalogBehavior
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+    setup = api.get_senaite_setup()
+    laboratory = setup.get("laboratory") if setup else None
+    if laboratory is None:
+        logger.info("No laboratory found, skipping repair")
+        return
+
+    # Re-wrap legacy OFS.Image values on the named-file fields
+    for fieldname, default_filename in LABORATORY_IMAGE_FIELDS:
+        repair_laboratory_image_field(
+            laboratory, fieldname, default_filename)
+
+    # Reindex so the multiplex processor now lands the laboratory in
+    # senaite_catalog_setup (and the other catalogs mapped to it)
+    laboratory.reindexObject()
+    logger.info("Reindexed %s" % laboratory)
+
+    logger.info("Repair laboratory migration [DONE]")
+
+
+def repair_laboratory_image_field(laboratory, fieldname, default_filename):
+    """Re-wrap a single image field if it holds a non-INamed legacy value
+    """
+    value = getattr(laboratory, fieldname, None)
+    if value is None:
+        return
+    if INamed.providedBy(value):
+        return
+    named = blob_to_named_file(value, default_filename=default_filename)
+    setattr(laboratory, fieldname, named)
+    logger.info("Repaired %s.%s (%s -> %s)" % (
+        laboratory, fieldname, type(value).__name__,
+        type(named).__name__ if named is not None else None))
+
+
 def to_dx_address(value, address_type=NAIVE_ADDRESS):
     return {
         "type": u(value.get("address_type") or address_type),
@@ -1895,14 +2000,39 @@ def reindex_labcontact_searchable_text(tool):
 
 
 @upgradestep(product, version)
+def rebuild_title_indexes(tool):
+    """Clear and rebuild the title FieldIndex on every SENAITE catalog
+
+    #2901 reindexed the title index across all base catalogs so a new
+    generic indexer could populate them with unicode keys. The reindex
+    rewrites entries per docid but does not clear the BTree first, so
+    pre-existing byte-string keys for non-ASCII titles remain. Any
+    subsequent insert of a unicode key (e.g. when creating or editing
+    a DX object whose title contains non-ASCII characters) then raises
+    `UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3` on
+    BTree key comparison.
+
+    Clearing the index before reindexing wipes all stale byte-string
+    keys and lets the (post-#2901) indexer repopulate the BTree with
+    a single unicode key type. Catalogs are discovered dynamically by
+    walking the portal and filtering on `ISenaiteCatalogObject`, so
+    custom catalogs registered by downstream add-ons are also covered.
+    """
+    logger.info("Rebuild title indexes ...")
+    catalogs = list(iter_senaite_catalogs())
+    total = len(catalogs)
+    for num, catalog in enumerate(catalogs, start=1):
+        logger.info(
+            "Rebuilding title index on %s (%s/%s) ..." % (
+                catalog.id, num, total))
+        rebuild_index(catalog, "title")
+    logger.info("Rebuild title indexes [DONE]")
+
+
+@upgradestep(product, version)
 def cleanup_sample_catalog(tool):
     """Clean up senaite_catalog_sample indexes and metadata columns
 
-    - Reindex the title FieldIndex on every catalog that inherits from
-      base_catalog so it picks up the new generic `title` indexer that
-      returns a unicode Title for any IContentish object. Previously
-      only Organisation contributed entries via its type-specific
-      indexer, so the index was effectively empty for everything else.
     - Remove obsolete FieldIndexes getProvince and getDistrict from the
       sample catalog. Client geography belongs on the client catalog and
       is not meaningful as a sample catalog index; reindexing is also
@@ -1913,27 +2043,6 @@ def cleanup_sample_catalog(tool):
       time via memoized UID lookups. getPhysicalPath is unused.
     """
     logger.info("Cleaning up sample catalog indexes and columns ...")
-
-    # Reindex the title FieldIndex on every catalog that inherits the
-    # base indexes definition so the new generic `title` indexer
-    # populates entries for every content type.
-    base_catalogs = [
-        ATTACHMENTS_CATALOG,
-        AUDITLOG_CATALOG,
-        AUTOIMPORTLOG_CATALOG,
-        CLIENT_CATALOG,
-        CONTACT_CATALOG,
-        REPORT_CATALOG,
-        SAMPLE_CATALOG,
-        SENAITE_CATALOG,
-        SETUP_CATALOG,
-        WORKSHEET_CATALOG,
-    ]
-    for catalog_id in base_catalogs:
-        if get_index(api.get_tool(catalog_id), "title") is None:
-            continue
-        logger.info("Reindexing title index on %s", catalog_id)
-        reindex_index(catalog_id, "title")
 
     catalog = api.get_tool(SAMPLE_CATALOG)
 

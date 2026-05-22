@@ -5,6 +5,14 @@ Changelog
 ------------------
 
 - #2895 Add 'duplicate_sample' workflow transition for samples (with global toggle in setup)
+- #2908 Drop intid registrations created for portal_factory transients
+- #2907 Unregister intid on migration-time object deletion
+- #2909 Restore getPrintAddress on the DX Organization content type
+- #2890 Add hazard categories to SampleType, Sample, ReferenceDefinition and ReferenceSample (GHS + ISO 7010)
+- #2906 Only consult ar_add idempotency cache on a publisher retry
+- #2905 Rebuild title FieldIndex on every SENAITE catalog
+- #2904 Add IMultiCatalogBehavior to Laboratory FTI and repair existing migrations
+- #2902 Fix blob_to_named_file to handle non-blob AT image/file values
 - #2810 Migrate Laboratory to DX
 - #2901 Add generic unicode title indexer for the `title` FieldIndex
 - #2873 Catalog/cleanup sample catalog indexes

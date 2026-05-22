@@ -95,6 +95,12 @@
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".referencesample.EditForm"/>
 
+  <!-- Edit Form: Reference Definition -->
+  <adapter
+      for="bika.lims.interfaces.IReferenceDefinition
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".referencedefinition.EditForm"/>
+
   <!-- Edit Form: Senaite Setup -->
   <adapter
       for="senaite.core.interfaces.ISetup
