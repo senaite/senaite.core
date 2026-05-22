@@ -199,6 +199,15 @@ To exercise the write helpers on a disposable object, create a new client.
     ...     client.getPhysicalPath()
     True
 
+Calling ``add_intid`` on an object that already has an IntId is a no-op — it
+returns the existing IntId without allocating a new one:
+
+    >>> api.add_intid(client) == client_intid
+    True
+
+    >>> api.get_intid(client) == client_intid
+    True
+
 Drop the registration with ``delete_intid`` and confirm the same default-marker
 behaviour applies to ``get_intid``:
 
