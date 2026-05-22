@@ -105,6 +105,7 @@ def add_intid(obj):
         try:
             intids.register(obj)
         except KeyError:
+            # already registered with this utility
             pass
 
     # return the newly created IntId
