@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2910 Centralize intid cleanup in api.delete
+- #2913 Fix UnicodeEncodeError in render_html_attributes for non-ASCII attribute values
+- #2912 Fix missing <genericsetup:upgradeStep> tag for Worksheet Dexterity migration
 - #2908 Drop intid registrations created for portal_factory transients
 - #2907 Unregister intid on migration-time object deletion
 - #2909 Restore getPrintAddress on the DX Organization content type
