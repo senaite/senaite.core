@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2912 Fix missing <genericsetup:upgradeStep> tag for Worksheet Dexterity migration
 - #2908 Drop intid registrations created for portal_factory transients
 - #2907 Unregister intid on migration-time object deletion
 - #2909 Restore getPrintAddress on the DX Organization content type
