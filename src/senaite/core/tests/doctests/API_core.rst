@@ -123,3 +123,132 @@ A bogus UID matches no brain and falls back to ``default``:
     >>> api.get_attr("does-not-exist", "Title",
     ...              catalog="portal_catalog", default="missing")
     'missing'
+
+
+IntId helpers
+.............
+
+The site's ``IIntIds`` utility maps every persistent content object to a
+stable integer id used by relation storage and other cross-reference machinery.
+``senaite.core.api`` wraps the bare utility with four thin helpers.
+
+The setup folder and the clients folder are both persistent containers that
+``five.intid`` registered with the ``IIntIds`` utility on site creation:
+
+    >>> setup = self.portal.setup
+    >>> clients = self.portal.clients
+
+``get_intid`` returns the IntId of an object:
+
+    >>> setup_intid = api.get_intid(setup)
+    >>> isinstance(setup_intid, int)
+    True
+
+    >>> clients_intid = api.get_intid(clients)
+    >>> isinstance(clients_intid, int)
+    True
+
+    >>> setup_intid != clients_intid
+    True
+
+``get_object_by_intid`` is the inverse — given an IntId, return the object it
+points to:
+
+    >>> api.get_object_by_intid(setup_intid).getPhysicalPath() == \
+    ...     setup.getPhysicalPath()
+    True
+
+    >>> api.get_object_by_intid(clients_intid).getPhysicalPath() == \
+    ...     clients.getPhysicalPath()
+    True
+
+Looking up an unknown IntId raises by default…
+
+    >>> try:
+    ...     api.get_object_by_intid(-1)
+    ... except KeyError:
+    ...     print("missing")
+    missing
+
+…unless a ``default`` is supplied, in which case it is returned:
+
+    >>> api.get_object_by_intid(-1, default=None) is None
+    True
+
+    >>> api.get_object_by_intid(-1, default="absent")
+    'absent'
+
+To exercise the write helpers on a disposable object, create a new client.
+``api.create`` requires elevated permissions:
+
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import setRoles
+    >>> setRoles(self.portal, TEST_USER_ID, ['Manager',])
+
+    >>> from bika.lims import api as bika_api
+    >>> client = bika_api.create(clients, "Client", title="IntId Client")
+
+``five.intid``'s add-subscriber registered the new client automatically, so
+``get_intid`` already returns a value:
+
+    >>> client_intid = api.get_intid(client)
+    >>> isinstance(client_intid, int)
+    True
+
+    >>> api.get_object_by_intid(client_intid).getPhysicalPath() == \
+    ...     client.getPhysicalPath()
+    True
+
+Drop the registration with ``delete_intid`` and confirm the same default-marker
+behaviour applies to ``get_intid``:
+
+    >>> api.delete_intid(client)
+
+    >>> try:
+    ...     api.get_intid(client)
+    ... except KeyError:
+    ...     print("missing")
+    missing
+
+    >>> api.get_intid(client, default=None) is None
+    True
+
+The setup and clients folders are unaffected — ``delete_intid`` only touches
+the object it is called with:
+
+    >>> api.get_intid(setup) == setup_intid
+    True
+
+    >>> api.get_intid(clients) == clients_intid
+    True
+
+Calling ``delete_intid`` again on an already-unregistered object is a safe
+no-op (the underlying ``KeyError`` is swallowed):
+
+    >>> api.delete_intid(client)
+
+``add_intid`` registers the object with every ``IIntIds`` utility and returns
+the (possibly new) IntId:
+
+    >>> new_intid = api.add_intid(client)
+    >>> isinstance(new_intid, int)
+    True
+
+The registration is reachable from both sides again:
+
+    >>> api.get_intid(client) == new_intid
+    True
+
+    >>> api.get_object_by_intid(new_intid).getPhysicalPath() == \
+    ...     client.getPhysicalPath()
+    True
+
+Re-registering an already-registered object is idempotent — the returned IntId
+does not change:
+
+    >>> api.add_intid(client) == new_intid
+    True
+
+Clean up:
+
+    >>> bika_api.delete(client, check_permissions=False)
