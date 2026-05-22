@@ -4,7 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
-- #PR Skip DublinCore creators/contributors when duplicating a sample
+- #2914 Skip DublinCore creators/contributors when duplicating a sample
 - #2903 Refactor record parsing to use ast.literal_eval to prevent code execution
 - #2895 Add 'duplicate_sample' workflow transition for samples (with global toggle in setup)
 - #2910 Centralize intid cleanup in api.delete
