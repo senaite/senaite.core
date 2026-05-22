@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2910 Centralize intid cleanup in api.delete
 - #2913 Fix UnicodeEncodeError in render_html_attributes for non-ASCII attribute values
 - #2912 Fix missing <genericsetup:upgradeStep> tag for Worksheet Dexterity migration
 - #2908 Drop intid registrations created for portal_factory transients

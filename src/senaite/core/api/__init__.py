@@ -33,7 +33,14 @@ import inspect
 
 from bika.lims import api as _bika_api
 from Products.CMFPlone.utils import safe_callable
+from zope.component import getAllUtilitiesRegisteredFor
+from zope.component import getUtility
 from zope.component.hooks import getSite
+from zope.intid.interfaces import IIntIds
+from zope.intid.interfaces import IntIdMissingError
+from zope.intid.interfaces import ObjectMissingError
+
+_marker = object()
 
 
 def get_portal():
@@ -51,6 +58,75 @@ def get_portal_url():
     :rtype: str
     """
     return get_portal().absolute_url()
+
+
+def get_object_by_intid(intid, default=_marker):
+    """Returns the object by its IntId
+
+    :param intid: the IntId of the object
+    :type intid: int
+    :returns: the object whose IntId matches with the intid provided
+    :rtype: ATContentType/DexterityContentType
+    """
+    intids = getUtility(IIntIds)
+    try:
+        return intids.getObject(intid)
+    except ObjectMissingError:
+        if default is _marker:
+            raise
+        return default
+
+
+def get_intid(obj, default=_marker):
+    """Returns the IntId of the given object
+
+    :param obj: object to get the IntId from
+    :type obj: ATContentType/DexterityContentType
+    :returns: The IntId of the given object
+    :rtype: int
+    """
+    intids = getUtility(IIntIds)
+    try:
+        return intids.getId(obj)
+    except IntIdMissingError:
+        if default is _marker:
+            raise
+        return default
+
+
+def add_intid(obj):
+    """Registers the object to all IIntIds utilities
+
+    :param obj: object to register to all IIntIds utilities
+    :type obj: ATContentType/DexterityContentType
+    :returns: The IntId of the object
+    """
+    for intids in getAllUtilitiesRegisteredFor(IIntIds):
+        try:
+            intids.register(obj)
+        except KeyError:
+            # already registered with this utility
+            pass
+
+    # return the newly created IntId
+    return get_intid(obj)
+
+
+def delete_intid(obj):
+    """Unregister the object from all IIntIds utilities
+
+    Useful when deleting an object without firing IObjectRemovedEvent,
+    so its intid keyref does not survive as an orphan in storage.
+
+    :param obj: object to unregister
+    :type obj: ATContentType/DexterityContentType
+    """
+    for intids in getAllUtilitiesRegisteredFor(IIntIds):
+        try:
+            intids.unregister(obj)
+        except KeyError:
+            # not registered with this utility
+            pass
 
 
 def _accepts_no_args(callable_obj):
