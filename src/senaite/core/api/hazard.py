@@ -204,4 +204,4 @@ def render_pictogram_img(picto, css_class=DEFAULT_PICTOGRAM_CLASS):
         alt=picto["alt"],
         title=picto["title"],
         **{"class": css_class})
-    return u"<img {} />".format(attrs).encode("utf-8")
+    return b"<img " + attrs + b" />"
