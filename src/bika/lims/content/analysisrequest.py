@@ -1267,6 +1267,35 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
+    # The source Sample this Sample was duplicated from via the
+    # 'duplicate_sample' workflow transition.
+    UIDReferenceField(
+        "DuplicatedFrom",
+        allowed_types=("AnalysisRequest",),
+        relationship="AnalysisRequestDuplicatedFrom",
+        mode="rw",
+        read_permission=View,
+        write_permission=ModifyPortalContent,
+        widget=ReferenceWidget(
+            label=_(
+                "label_sample_duplicated_from",
+                default="Duplicated from sample"),
+            description=_(
+                "description_sample_duplicated_from",
+                default="Reference to the source sample this sample "
+                        "was duplicated from"),
+            render_own_label=True,
+            readonly=True,
+            visible=False,
+            catalog_name=SAMPLE_CATALOG,
+            query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending"
+            },
+        )
+    ),
+
     # The Primary Sample the current sample was detached from
     UIDReferenceField(
         "DetachedFrom",
@@ -2106,6 +2135,18 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         if sample_type:
             return sample_type.getHazardous()
         return False
+
+    @security.public
+    def getHazardCategories(self):
+        """Get the hazard categories inherited from the SampleType
+
+        :returns: Hazard category codes (GHS + ISO 7010)
+        :rtype: list
+        """
+        sample_type = self.getSampleType()
+        if sample_type:
+            return list(sample_type.getHazardCategories() or [])
+        return []
 
     @security.public
     def getSamplingWorkflowEnabled(self):

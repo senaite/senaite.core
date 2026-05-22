@@ -164,6 +164,13 @@ class IAnalysisRequestSecondary(Interface):
     """
 
 
+class IAnalysisRequestDuplicate(Interface):
+    """Marker interface for Analysis Requests created via the
+    'duplicate_sample' transition (a direct sibling copy, no add
+    form)
+    """
+
+
 class IAnalysisRequestAddView(Interface):
     """AR Add view
     """
@@ -538,6 +545,11 @@ class IPreservations(Interface):
 
 class IReferenceDefinitions(Interface):
     """Marker interface for Reference Definitions
+    """
+
+
+class IReferenceDefinition(Interface):
+    """Marker interface for a Reference Definition
     """
 
 

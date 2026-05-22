@@ -77,7 +77,6 @@ from senaite.core.interfaces import ITemporaryObject
 from z3c.form.validator import Data as ValidatorData
 from zope import globalrequest
 from zope.annotation.interfaces import IAttributeAnnotatable
-from zope.component import createObject
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.container.contained import notifyContainerModified
@@ -88,7 +87,6 @@ from zope.interface import Invalid
 from zope.interface import alsoProvides
 from zope.interface import directlyProvides
 from zope.interface import noLongerProvides
-from zope.lifecycleevent import ObjectCreatedEvent
 from zope.lifecycleevent import ObjectMovedEvent
 from zope.publisher.browser import TestRequest
 from zope.schema import getFieldsInOrder
@@ -540,8 +538,15 @@ def delete(obj, check_permissions=True, suppress_events=False):
 
     # un-catalog the object from all catalogs (uid_catalog included)
     uncatalog_object(obj)
+    if suppress_events:
+        # five.intid's removal subscriber listens on IObjectRemovedEvent,
+        # which is suppressed here — drop the keyref manually to avoid an
+        # orphan entry pinning the dead oid in storage.
+        from senaite.core.api import delete_intid  # noqa
+        delete_intid(obj)
+
     # delete the object
-    parent = get_parent(obj)
+    parent = aq_parent(obj)
     parent._delObject(obj.getId(), suppress_events=suppress_events)
 
 

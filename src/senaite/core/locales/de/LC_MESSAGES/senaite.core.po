@@ -1394,6 +1394,14 @@ msgstr "Den Wert der ersten Probe in die anderen Proben kopieren"
 msgid "Copy to new"
 msgstr "Kopie erzeugen"
 
+#: bika/lims/browser/workflow/analysisrequest.py
+msgid "Duplicated samples: {}"
+msgstr "Duplizierte Proben: {}"
+
+#: bika/lims/browser/workflow/analysisrequest.py
+msgid "No duplicate created"
+msgstr "Kein Duplikat erstellt"
+
 #: senaite/core/browser/idserver/view.py:68
 msgid "Could not convert '{}' to an integer"
 msgstr "Wert '{}' nicht in Ganzzahl konvertierbar"
@@ -7514,6 +7522,11 @@ msgstr "Das Datum, an dem die Probe entnommen wurde"
 msgid "description_sample_detached_from"
 msgstr "Verweis auf abgetrennte Probe"
 
+#. Default: "Reference to the source sample this sample was duplicated from"
+#: bika/lims/content/analysisrequest.py
+msgid "description_sample_duplicated_from"
+msgstr "Verweis auf die Quellprobe, von der diese Probe dupliziert wurde"
+
 #. Default: "Generated invoice for this sample"
 #: bika/lims/content/analysisrequest.py:1049
 msgid "description_sample_invoice"
@@ -7732,6 +7745,11 @@ msgstr "Wählen Sie die Probenmatrix für diese Probenart aus"
 #, fuzzy
 msgid "description_senaitesetup_allow_manual_result_capture_date"
 msgstr "Wenn diese Option aktiviert ist, kann das Ergebniserfassungsdatum für Analysen manuell eingegeben werden"
+
+#. Default: "If enabled, users with sufficient privileges can create a sibling sample directly from an existing one via the 'Duplicate' action in the samples listing. Enabled by default."
+#: senaite/core/content/senaitesetup.py
+msgid "description_senaitesetup_sample_duplicate_enabled"
+msgstr "Wenn aktiviert, können Benutzer mit ausreichenden Rechten über die Aktion 'Duplizieren' in der Probenliste direkt eine Schwesterprobe aus einer bestehenden Probe erzeugen. Standardmäßig aktiviert."
 
 #. to them or for unassigned analyses. When disabled, users can only submit
 #. results for analyses assigned to themselves. This setting does not apply to
@@ -8900,6 +8918,11 @@ msgstr "Probenahmedatum"
 #: bika/lims/content/analysisrequest.py:1278
 msgid "label_sample_detached_from"
 msgstr "Von der Probe getrennt"
+
+#. Default: "Duplicated from sample"
+#: bika/lims/content/analysisrequest.py
+msgid "label_sample_duplicated_from"
+msgstr "Dupliziert von Probe"
 
 #. Default: "Invoice"
 #: bika/lims/content/analysisrequest.py:1046
@@ -11038,6 +11061,11 @@ msgstr "Name"
 msgid "title_senaitesetup_allow_manual_result_capture_date"
 msgstr "Manuelle Eingabe des Ergebniserfassungsdatums erlauben"
 
+#. Default: "Allow sample duplication"
+#: senaite/core/content/senaitesetup.py
+msgid "title_senaitesetup_sample_duplicate_enabled"
+msgstr "Probenduplizierung erlauben"
+
 #. Default: "Allow submission of results for unassigned analyses"
 #: senaite/core/content/senaitesetup.py:432
 msgid "title_senaitesetup_allow_to_submit_not_assigned"
@@ -11561,6 +11589,186 @@ msgstr "{} (veraltet)"
 #: bika/lims/controlpanel/bika_instruments.py:173
 msgid "{} weeks and {} day(s)"
 msgstr "{} Woche(n) und {} Tag(e)"
+
+#: senaite/core/content/sampletype.py
+msgid "title_sampletype_hazard_categories"
+msgstr "Gefahrenkategorien"
+
+#: senaite/core/content/sampletype.py
+msgid "description_sampletype_hazard_categories"
+msgstr "Gefahrenkategorien, die für Proben dieses Probentyps gelten. Werden in Berichten und Listen als Piktogramme angezeigt."
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS01_name"
+msgstr "Explosiv"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS01_common"
+msgstr "Explosivstoff"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS02_name"
+msgstr "Entzündbar"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS02_common"
+msgstr "leicht entzündbar"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS03_name"
+msgstr "Brandfördernd"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS03_common"
+msgstr "oxidierend"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS04_name"
+msgstr "Gase unter Druck"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS04_common"
+msgstr "Druckgas"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS05_name"
+msgstr "Ätzend"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS05_common"
+msgstr "Säure / Lauge"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS06_name"
+msgstr "Akute Toxizität"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS06_common"
+msgstr "giftig"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS07_name"
+msgstr "Gesundheitsgefahr"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS07_common"
+msgstr "gesundheitsschädlich / reizend"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS08_name"
+msgstr "Schwere Gesundheitsgefahr"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS08_common"
+msgstr "krebserregend / mutagen"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS09_name"
+msgstr "Umweltgefährdend"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS09_common"
+msgstr "umweltgefährdend"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_BIO01_name"
+msgstr "Biogefährdung"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_BIO01_common"
+msgstr "infektiös / biologisch"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_RAD01_name"
+msgstr "Radioaktiv"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_RAD01_common"
+msgstr "ionisierende Strahlung"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_NIR01_name"
+msgstr "Nichtionisierende Strahlung"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_NIR01_common"
+msgstr "UV / Laser / Hochfrequenz"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_ELEC01_name"
+msgstr "Elektrizität"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_ELEC01_common"
+msgstr "elektrischer Schlag"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_COLD01_name"
+msgstr "Niedrige Temperatur"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_COLD01_common"
+msgstr "Frost / Kühllagerung"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_HOT01_name"
+msgstr "Heißer Inhalt"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_HOT01_common"
+msgstr "erhitztes Material"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_MAG01_name"
+msgstr "Magnetfeld"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_MAG01_common"
+msgstr "NMR / MRT"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_HSURF01_name"
+msgstr "Heiße Oberfläche"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_HSURF01_common"
+msgstr "berührungsheiß"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_ASPH01_name"
+msgstr "Erstickungsgefahr"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_ASPH01_common"
+msgstr "Tiefkühlmittel / Inertgas"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_STEAM01_name"
+msgstr "Heißer Dampf"
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_STEAM01_common"
+msgstr "Autoklav / Sterilisation"
+
+#: senaite/core/api/__init__.py
+msgid "hazard_warning_label"
+msgstr "Gefährlich"
+
+#: bika/lims/content/referencedefinition.py
+msgid "label_referencedefinition_hazard_categories"
+msgstr "Gefahrenkategorien"
+
+#: bika/lims/content/referencedefinition.py
+msgid "description_referencedefinition_hazard_categories"
+msgstr "Gefahrenkategorien, die für Proben dieser Referenzdefinition gelten."
+
+#: bika/lims/content/referencesample.py
+msgid "label_referencesample_hazard_categories"
+msgstr "Gefahrenkategorien"
+
+#: bika/lims/content/referencesample.py
+msgid "description_referencesample_hazard_categories"
+msgstr "Gefahrenkategorien für diese Referenzprobe. Leer lassen, um die Werte der Referenzdefinition zu übernehmen."
 
 # senaite.core: Sidebar search input placeholder
 msgid "Search..."

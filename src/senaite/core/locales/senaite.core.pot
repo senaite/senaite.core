@@ -11237,3 +11237,183 @@ msgstr ""
 #: bika/lims/controlpanel/bika_instruments.py:173
 msgid "{} weeks and {} day(s)"
 msgstr ""
+
+#: senaite/core/content/sampletype.py
+msgid "title_sampletype_hazard_categories"
+msgstr ""
+
+#: senaite/core/content/sampletype.py
+msgid "description_sampletype_hazard_categories"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS02_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS02_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS03_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS03_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS04_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS04_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS05_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS05_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS06_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS06_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS07_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS07_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS08_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS08_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS09_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_GHS09_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_BIO01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_BIO01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_RAD01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_RAD01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_NIR01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_NIR01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_ELEC01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_ELEC01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_COLD01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_COLD01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_HOT01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_HOT01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_MAG01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_MAG01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_HSURF01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_HSURF01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_ASPH01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_ASPH01_common"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_STEAM01_name"
+msgstr ""
+
+#: senaite/core/vocabularies/hazard_categories.py
+msgid "hazard_STEAM01_common"
+msgstr ""
+
+#: senaite/core/api/__init__.py
+msgid "hazard_warning_label"
+msgstr ""
+
+#: bika/lims/content/referencedefinition.py
+msgid "label_referencedefinition_hazard_categories"
+msgstr ""
+
+#: bika/lims/content/referencedefinition.py
+msgid "description_referencedefinition_hazard_categories"
+msgstr ""
+
+#: bika/lims/content/referencesample.py
+msgid "label_referencesample_hazard_categories"
+msgstr ""
+
+#: bika/lims/content/referencesample.py
+msgid "description_referencesample_hazard_categories"
+msgstr ""

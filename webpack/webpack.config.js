@@ -84,7 +84,15 @@ module.exports = {
           {
             // https://webpack.js.org/loaders/css-loader/
             loader: "css-loader",
-            options: { sourceMap: isDev },
+            options: {
+              sourceMap: isDev,
+              // Skip URLs that point at Plone-served resources;
+              // they should pass through verbatim and be resolved
+              // by the browser at runtime.
+              url: {
+                filter: (url) => !url.startsWith("/"),
+              },
+            },
           },
           {
             // https://webpack.js.org/loaders/sass-loader/

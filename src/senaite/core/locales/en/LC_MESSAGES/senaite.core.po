@@ -1381,6 +1381,14 @@ msgstr ""
 msgid "Copy to new"
 msgstr ""
 
+#: bika/lims/browser/workflow/analysisrequest.py
+msgid "Duplicated samples: {}"
+msgstr "Duplicated samples: {}"
+
+#: bika/lims/browser/workflow/analysisrequest.py
+msgid "No duplicate created"
+msgstr "No duplicate created"
+
 #: senaite/core/browser/idserver/view.py:68
 msgid "Could not convert '{}' to an integer"
 msgstr ""
@@ -7376,6 +7384,11 @@ msgstr ""
 msgid "description_sample_detached_from"
 msgstr ""
 
+#. Default: "Reference to the source sample this sample was duplicated from"
+#: bika/lims/content/analysisrequest.py
+msgid "description_sample_duplicated_from"
+msgstr "Reference to the source sample this sample was duplicated from"
+
 #. Default: "Generated invoice for this sample"
 #: bika/lims/content/analysisrequest.py:1049
 msgid "description_sample_invoice"
@@ -7559,6 +7572,11 @@ msgstr ""
 #. Default: "If this option is activated, the result capture date can be entered manually for analyses"
 #: senaite/core/content/senaitesetup.py:342
 msgid "description_senaitesetup_allow_manual_result_capture_date"
+msgstr ""
+
+#. Default: "If enabled, users with sufficient privileges can create a sibling sample directly from an existing one via the 'Duplicate' action in the samples listing. Enabled by default."
+#: senaite/core/content/senaitesetup.py
+msgid "description_senaitesetup_sample_duplicate_enabled"
 msgstr ""
 
 #. Default: "When enabled, users can submit results for analyses not assigned to them or for unassigned analyses. When disabled, users can only submit results for analyses assigned to themselves. This setting does not apply to users with role Lab Manager."
@@ -8588,6 +8606,11 @@ msgstr ""
 #: bika/lims/content/analysisrequest.py:1278
 msgid "label_sample_detached_from"
 msgstr ""
+
+#. Default: "Duplicated from sample"
+#: bika/lims/content/analysisrequest.py
+msgid "label_sample_duplicated_from"
+msgstr "Duplicated from sample"
 
 #. Default: "Invoice"
 #: bika/lims/content/analysisrequest.py:1046
@@ -10722,6 +10745,11 @@ msgstr ""
 #. Default: "Allow to set the result capture date"
 #: senaite/core/content/senaitesetup.py:340
 msgid "title_senaitesetup_allow_manual_result_capture_date"
+msgstr ""
+
+#. Default: "Allow sample duplication"
+#: senaite/core/content/senaitesetup.py
+msgid "title_senaitesetup_sample_duplicate_enabled"
 msgstr ""
 
 #. Default: "Allow submission of results for unassigned analyses"
