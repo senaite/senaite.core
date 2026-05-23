@@ -98,6 +98,13 @@ DUPLICATE_SKIP_FIELDS = [
     "creation_date",
     "id",
     "modification_date",
+    # DublinCore bookkeeping: the duplicate's Creator /
+    # contributors must reflect the user performing the
+    # duplicate action, not the source's. AT initialization
+    # populates these with the current user already; copying
+    # from source would overwrite that.
+    "creators",
+    "contributors",
 ]
 
 
