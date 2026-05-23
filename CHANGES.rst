@@ -4,7 +4,8 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
-- #PR Fix msgid collision on `description_calculation_imports` in Calculation content type
+- #2916 Fix msgid collision on `description_calculation_imports` in Calculation content type
+- #2915 Rename 'Duplicate' sample transition to 'Duplicate Sample' to avoid translation collision with the worksheet duplicate-analysis label
 - #2914 Skip DublinCore creators/contributors when duplicating a sample
 - #2903 Refactor record parsing to use ast.literal_eval to prevent code execution
 - #2895 Add 'duplicate_sample' workflow transition for samples (with global toggle in setup)
