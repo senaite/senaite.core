@@ -511,7 +511,7 @@ class SamplesView(ListingView):
         if client:
             item["replace"]["Client"] = get_link_for(client)
             item["replace"]["ClientID"] = get_link_for(
-                client, display_value=obj.getClientID)
+                client, value=obj.getClientID)
 
         # Analyses count — [verified, total, not_submitted, to_be_verified]
         analysesnum = obj.getAnalysesNum
@@ -543,7 +543,7 @@ class SamplesView(ListingView):
             batch = self.get_object_by_uid(obj.getBatchUID)
             if batch:
                 item["replace"]["BatchID"] = get_link_for(
-                    batch, display_value=obj.getBatchID)
+                    batch, value=obj.getBatchID)
 
         # Dates
         item["SamplingDate"] = self.str_date(obj.getSamplingDate)
