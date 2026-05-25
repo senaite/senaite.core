@@ -691,7 +691,9 @@ def get_link_for(obj, **kwargs):
     if not obj:
         return ""
     href = api.get_url(obj)
-    value = api.get_title(obj)
+    value = kwargs.pop("value", None)
+    if not value:
+        value = api.get_title(obj)
     return get_link(href=href, value=value, **kwargs)
 
 
