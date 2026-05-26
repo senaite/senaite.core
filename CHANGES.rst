@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2919 Enforce the AccessJSONAPI permission on state-changing JSON API routes
 - #2918 Fix Lab Information setup data import after Laboratory migration to Dexterity
 - #2917 Fix `ClientID` is not displayed in samples listing, but client name
 - #2916 Fix msgid collision on `description_calculation_imports` in Calculation content type
