@@ -18,15 +18,17 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.jsonapi import set_fields_from_request
-from Products.CMFCore.utils import getToolByName
-from plone.jsonapi.core import router
-from plone.jsonapi.core.interfaces import IRouteProvider
-from zExceptions import BadRequest
-from zope import interface
 import json
+
 import six
 import transaction
+from bika.lims.jsonapi import check_jsonapi_permission
+from bika.lims.jsonapi import set_fields_from_request
+from plone.jsonapi.core import router
+from plone.jsonapi.core.interfaces import IRouteProvider
+from Products.CMFCore.utils import getToolByName
+from zExceptions import BadRequest
+from zope import interface
 
 
 class Update(object):
@@ -146,6 +148,9 @@ class Update(object):
             ret['error'] = True
             return ret
 
+        # normal permissions still apply for this user
+        check_jsonapi_permission(obj)
+
         try:
             fields = set_fields_from_request(obj, request)
             if not fields:
@@ -225,6 +230,8 @@ class Update(object):
             if obj_path.startswith(site_path):
                 obj_path = obj_path[len(site_path):]
             obj = context.restrictedTraverse(str(site_path + obj_path))
+            # normal permissions still apply for this user
+            check_jsonapi_permission(obj)
             this_ret = {
                 "url": router.url_for("update_many", force_external=True),
                 "success": False,
