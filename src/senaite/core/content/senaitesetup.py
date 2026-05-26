@@ -2532,16 +2532,3 @@ class Setup(Container):
         """Return true if the rejection workflow is enabled
         """
         return self.getEnableRejectionWorkflow()
-
-    @property
-    def laboratory(self):
-        """Get the laboratory object via acquisition
-        The laboratory is stored in bika_setup which is in the portal root
-        """
-        bika_setup = api.get_bika_setup()
-        if bika_setup:
-            return bika_setup.laboratory
-        # when we finally migrated it...
-        elif "laboratory" in self.objectIds():
-            return self["laboratry"]
-        return None

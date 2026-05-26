@@ -3,6 +3,17 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Consolidate duplicate Laboratory objects"
+      description="Keep a single Laboratory at setup/laboratory, migrate it
+                   to Dexterity if needed and remove the empty duplicate
+                   (e.g. laboratory-1) left behind by the half-finished
+                   Laboratory-to-DX migration."
+      source="2736"
+      destination="2737"
+      handler=".v02_07_000.consolidate_laboratory"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Rename 'Duplicate' transition title to 'Duplicate Sample'"
       description="Re-import the workflow so the new transition title
                    replaces the previous bare 'Duplicate' label, which
