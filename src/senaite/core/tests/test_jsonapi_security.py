@@ -18,6 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import base64
 import json
 
 import transaction
@@ -28,6 +29,7 @@ from plone.app.testing import FunctionalTesting
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import TEST_USER_PASSWORD
 from plone.app.testing import login
 from plone.app.testing import logout
 from plone.app.testing import setRoles
@@ -96,6 +98,20 @@ class TestJSONAPISecurity(BaseTestCase):
             ("getusers", "roles:list=Manager"),
         ]
 
+    def get_authenticated_browser(self, username=TEST_USER_NAME,
+                                  password=TEST_USER_PASSWORD):
+        """Return a browser authenticated via HTTP Basic Auth
+
+        Basic Auth is used on purpose: it avoids rendering the Plone
+        login form (and any z3c.form widgets), keeping the test focused
+        on the API permission check.
+        """
+        browser = self.getBrowser(loggedIn=False)
+        credentials = base64.b64encode(
+            "%s:%s" % (username, password))
+        browser.addHeader("Authorization", "Basic %s" % credentials)
+        return browser
+
     def open_api(self, browser, route, query):
         """Open the given API route with the passed-in query string
         """
@@ -127,7 +143,7 @@ class TestJSONAPISecurity(BaseTestCase):
         setRoles(self.portal, TEST_USER_ID, ["Member"])
         transaction.commit()
         for route, query in self.get_gated_routes():
-            browser = self.getBrowser(loggedIn=True)
+            browser = self.get_authenticated_browser()
             self.assert_blocked(browser, route, query)
 
     def test_getusers_gate_is_the_blocker_for_member(self):
@@ -139,7 +155,7 @@ class TestJSONAPISecurity(BaseTestCase):
         """
         setRoles(self.portal, TEST_USER_ID, ["Member"])
         transaction.commit()
-        browser = self.getBrowser(loggedIn=True)
+        browser = self.get_authenticated_browser()
         self.open_api(browser, "getusers", "roles:list=Manager")
         self.assertIn('"success": false', browser.contents)
         self.assertIn("Access JSON API", browser.contents)
@@ -152,7 +168,7 @@ class TestJSONAPISecurity(BaseTestCase):
         """
         setRoles(self.portal, TEST_USER_ID, ["Manager"])
         transaction.commit()
-        browser = self.getBrowser(loggedIn=True)
+        browser = self.get_authenticated_browser()
         self.open_api(browser, "getusers", "roles:list=Manager")
         self.assertIn('"success": true', browser.contents)
 
