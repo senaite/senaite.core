@@ -73,6 +73,22 @@ class IDynamicAnalysisSpecSchema(model.Schema):
         except (IndexError, AttributeError):
             raise Invalid(
                 _("First sheet does not contain a valid column definition"))
+        # Strip trailing empty header cells (Excel pads the used range with
+        # blank cells when otherwise-empty columns carry any formatting).
+        while header and (header[-1] is None or
+                          (api.is_string(header[-1])
+                           and not header[-1].strip())):
+            header.pop()
+        # Every remaining header must be a usable column name, since the
+        # dynamic results-range adapter looks up sample attributes through
+        # getattr(obj, column) -- a non-string column raises TypeError at
+        # sample creation time.
+        for idx, col in enumerate(header):
+            if not api.is_string(col) or not col.strip():
+                raise Invalid(_(
+                    "Column {} of the header row has no name. "
+                    "Please remove empty columns from the spreadsheet "
+                    "and upload it again.".format(idx + 1)))
         for col in REQUIRED_COLUMNS:
             if col not in header:
                 raise Invalid(_("Column '{}' is missing".format(col)))
