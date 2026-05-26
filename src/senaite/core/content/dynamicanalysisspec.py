@@ -112,6 +112,13 @@ class DynamicAnalysisSpec(Container):
             if num > 0:
                 break
             header = [cell.value for cell in row]
+        # Excel often pads the used range with trailing empty cells; drop them
+        # so downstream getattr(obj, column) calls don't blow up on a None
+        # column name. Empty cells in the middle of the header are left as-is
+        # because removing them would shift the column/value alignment used
+        # by get_specs (zip(keys, row_cells)).
+        while header and not (api.is_string(header[-1]) and header[-1].strip()):
+            header.pop()
         return header
 
     def get_specs(self):

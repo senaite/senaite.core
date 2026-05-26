@@ -123,6 +123,28 @@ We can also get the specs by Keyword:
     [[u'Mg', u'Method A', u'5', u'6'], [u'Mg', u'Method B', u'7', u'8']]
 
 
+Excel files in the wild often pad the used range with trailing empty cells
+(formatting on otherwise blank columns is enough to extend ``max_col``).
+Those padded cells come back as ``None`` headers; ``get_header`` must drop
+them, since downstream consumers use header values as Python attribute names
+via ``getattr(obj, column)`` -- which raises ``TypeError`` on a non-string:
+
+    >>> def to_excel_with_padding(data, padding=4):
+    ...     workbook = Workbook()
+    ...     first_sheet = workbook.get_active_sheet()
+    ...     reader = csv.reader(StringIO(data))
+    ...     for i, row in enumerate(reader):
+    ...         if i == 0:
+    ...             row = row + [None] * padding
+    ...         first_sheet.append(row)
+    ...     return NamedBlobFile(save_virtual_workbook(workbook))
+
+    >>> ds_padded = api.create(setup.dynamicanalysisspecs, "DynamicAnalysisSpec")
+    >>> ds_padded.specs_file = to_excel_with_padding(data)
+    >>> ds_padded.get_header()
+    [u'Keyword', u'Method', u'min', u'max']
+
+
 Hooking in a Dynamic Analysis Specification
 ...........................................
 
