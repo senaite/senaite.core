@@ -147,15 +147,14 @@ Laboratory
 ..........
 
 The Laboratory object holds all needed information about the lab itself.
-It lives inside the `bika_setup` folder.
+It lives inside the `setup` folder.
 
 Test Workflow
 ~~~~~~~~~~~~~
 
-A `laboratory` lives in the root of a bika installation, or more precisely, the
-portal object::
+A `laboratory` lives inside the `setup` folder::
 
-    >>> laboratory = portal.bika_setup.laboratory
+    >>> laboratory = portal.setup.laboratory
 
 The `laboratory` folder follows the `senaite_laboratory_workflow` and is
 initially in the `active` state::
