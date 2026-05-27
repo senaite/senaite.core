@@ -18,6 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims.jsonapi import check_jsonapi_permission
 from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
 from Products.CMFCore.utils import getToolByName
@@ -67,12 +68,15 @@ class getUsers(object):
         >>> browser.contents
         'No roles specified'
         """
+        # normal permissions still apply for this user
+        check_jsonapi_permission(context)
+
         roles = request.get('roles','')
 
         if len(roles) == 0:
             raise BadRequest("No roles specified")
-        
-        mtool = getToolByName(context, 'portal_membership') 
+
+        mtool = getToolByName(context, 'portal_membership')
         users = []
         for user in mtool.searchForMembers(roles=roles):
             uid = user.getId()
