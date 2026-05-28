@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2924 Fix login traceback that blocks running upgrade step 2731
 - #2923 Fix CopyError when migrating AT laboratory to DX
 - #2921 Fix duplicate Laboratory object by making setup/laboratory the single canonical Laboratory
 - #2922 Initialize unset Dexterity schema fields in api.create so ObjectAddedEvent subscribers don't read through acquisition
