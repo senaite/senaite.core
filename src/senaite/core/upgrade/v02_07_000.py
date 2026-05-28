@@ -1075,9 +1075,10 @@ def migrate_at_laboratory_to_dx(src, destination):
     Laboratory object.
     """
     portal_type = "Laboratory"
+    src_id = api.get_id(src)
     target_id = tmpID()
 
-    target = destination.get(target_id)
+    target = destination.get(src_id)
     if not target:
         # Don't use the api to skip the auto-id generation
         target = createContent(portal_type, id=target_id)
