@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2927 Sort analysis categories on the analysis specification listing by SortKey
 - #2920 Fix TypeError in DynamicAnalysisSpec when xlsx has trailing empty headers
 - #2924 Fix login traceback that blocks running upgrade step 2731
 - #2923 Fix CopyError when migrating AT laboratory to DX
