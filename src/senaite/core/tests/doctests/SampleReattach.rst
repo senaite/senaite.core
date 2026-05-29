@@ -166,8 +166,15 @@ Both partitions must coexist with unique IDs:
     True
     >>> partition.getParentAnalysisRequest() == primary
     True
+
+The reattached partition coexists with the partitions that were
+created in the meantime — both `fresh` (from the previous step) and
+`sibling`:
+
     >>> descendant_ids = sorted(d.getId() for d in primary.getDescendants())
-    >>> descendant_ids == sorted([partition_id, sibling.getId()])
+    >>> expected = sorted(
+    ...     [partition_id, fresh.getId(), sibling.getId()])
+    >>> descendant_ids == expected
     True
 
 The partition's original ID survives the round-trip — `reattach`
