@@ -19,16 +19,14 @@
 # Some rights reserved, see README and LICENSE.
 
 import transaction
-from AccessControl import Unauthorized
-from AccessControl import getSecurityManager
-from senaite.core.idserver import renameAfterCreation
+from bika.lims.jsonapi import check_jsonapi_permission
 from bika.lims.jsonapi import set_fields_from_request
 from bika.lims.utils import tmpID
 from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFPlone.utils import _createObjectByType
-from senaite.core.permissions import AccessJSONAPI
+from senaite.core.idserver import renameAfterCreation
 from zExceptions import BadRequest
 from zope import event
 from zope import interface
@@ -176,10 +174,7 @@ class Create(object):
         site_path = request['PATH_INFO'].replace("/@@API/create", "")
         parent = context.restrictedTraverse(str(site_path + obj_path))
         # normal permissions still apply for this user
-        if not getSecurityManager().checkPermission(AccessJSONAPI, parent):
-            msg = "You don't have the '{0}' permission on {1}".format(
-                AccessJSONAPI, parent.absolute_url())
-            raise Unauthorized(msg)
+        check_jsonapi_permission(parent)
 
         obj_id = request.get("obj_id", "")
         _renameAfterCreation = False

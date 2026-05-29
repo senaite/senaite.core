@@ -1062,10 +1062,23 @@ def migrate_laboratory_to_dx(tool):
         logger.info(
             "Laboratory already migrated: {}".format(api.get_path(src)))
         return
+
     destination = api.get_senaite_setup()
+    migrate_at_laboratory_to_dx(src, destination)
+
+    logger.info("Convert Laboratory to Dexterity [DONE]")
+
+
+def migrate_at_laboratory_to_dx(src, destination):
+    """Create a DX Laboratory in `destination` from the AT `src`, copy all
+    data over, remove the AT source and adopt its id. Returns the new DX
+    Laboratory object.
+    """
+    portal_type = "Laboratory"
+    src_id = api.get_id(src)
     target_id = tmpID()
 
-    target = destination.get(target_id)
+    target = destination.get(src_id)
     if not target:
         # Don't use the api to skip the auto-id generation
         target = createContent(portal_type, id=target_id)
@@ -1160,7 +1173,92 @@ def migrate_laboratory_to_dx(tool):
     target.reindexObject()
 
     logger.info("Migrated Laboratory from %s -> %s" % (src, target))
-    logger.info("Convert Laboratory to Dexterity [DONE]")
+    return target
+
+
+def get_laboratory_objects(containers):
+    """Return all Laboratory objects contained in the given containers
+    """
+    laboratories = []
+    for container in containers:
+        if container is None:
+            continue
+        for object_id in list(container.objectIds()):
+            obj = container._getOb(object_id, None)
+            if obj is None:
+                continue
+            if api.get_portal_type(obj) == "Laboratory":
+                laboratories.append(obj)
+    return laboratories
+
+
+def pick_primary_laboratory(setup, bika_setup):
+    """Pick the Laboratory that holds the live data
+
+    The former `SenaiteSetup.laboratory` property returned
+    `bika_setup.laboratory`, so any data entered through the UI lives
+    there. Fall back to the setup folder otherwise.
+    """
+    candidates = []
+    if bika_setup is not None and "laboratory" in bika_setup.objectIds():
+        candidates.append(bika_setup._getOb("laboratory"))
+    if "laboratory" in setup.objectIds():
+        candidates.append(setup._getOb("laboratory"))
+    if "laboratory-1" in setup.objectIds():
+        candidates.append(setup._getOb("laboratory-1"))
+    # any other Laboratory as last resort
+    candidates.extend(get_laboratory_objects([setup, bika_setup]))
+    return candidates[0] if candidates else None
+
+
+def consolidate_laboratory(tool):
+    """Consolidate duplicate Laboratory objects into a single
+    `setup/laboratory`
+
+    The Laboratory was only half-moved into the DX `setup` folder: the
+    bika.lims structure profile still created `bika_setup/laboratory`
+    and `add_dexterity_setup_items` produced an empty `setup/laboratory-1`
+    (the `laboratory` id was blocked by the former
+    `SenaiteSetup.laboratory` property). This keeps the single
+    data-bearing Laboratory, migrates it to DX inside `setup` if needed,
+    removes the duplicates and ensures the canonical id `laboratory`.
+    """
+    logger.info("Consolidate Laboratory ...")
+
+    setup = api.get_senaite_setup()
+    bika_setup = api.get_bika_setup()
+
+    primary = pick_primary_laboratory(setup, bika_setup)
+    if primary is None:
+        logger.warning("No Laboratory object found, nothing to consolidate")
+        return
+
+    primary_uid = api.get_uid(primary)
+
+    # Remove every other Laboratory so the `laboratory` id becomes free
+    for lab in get_laboratory_objects([setup, bika_setup]):
+        if api.get_uid(lab) == primary_uid:
+            continue
+        logger.info("Removing duplicate Laboratory: %s" % api.get_path(lab))
+        api.delete(lab, check_permissions=False)
+
+    # Ensure the type is allowed in the setup folder
+    permanently_allow_type_for(api.get_portal_type(setup), "Laboratory")
+
+    # Ensure the primary is a DX object living in the setup folder
+    if api.is_at_content(primary):
+        primary = migrate_at_laboratory_to_dx(primary, setup)
+    elif api.get_path(api.get_parent(primary)) != api.get_path(setup):
+        primary = api.move_object(primary, setup, check_constraints=False)
+
+    # Ensure the canonical id is `laboratory`
+    if api.get_id(primary) != "laboratory":
+        parent = api.get_parent(primary)
+        parent.manage_renameObject(api.get_id(primary), "laboratory")
+        primary = parent._getOb("laboratory")
+
+    primary.reindexObject()
+    logger.info("Consolidate Laboratory [DONE]: %s" % api.get_path(primary))
 
 
 LABORATORY_IMAGE_FIELDS = (
