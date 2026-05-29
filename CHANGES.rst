@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2925 Add 'reattach' workflow transition to re-link detached partitions to their primary
+- #2920 Fix TypeError in DynamicAnalysisSpec when xlsx has trailing empty headers
 - #2924 Fix login traceback that blocks running upgrade step 2731
 - #2923 Fix CopyError when migrating AT laboratory to DX
 - #2921 Fix duplicate Laboratory object by making setup/laboratory the single canonical Laboratory
