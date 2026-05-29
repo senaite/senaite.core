@@ -1,0 +1,5 @@
+SENAITE partitions can now be reattached to their primary sample.
+A new workflow transition restores the link to the original
+parent — symmetrical with detach and guarded by a same-state
+check, so re-merging never breaks the parent's workflow.
+https://github.com/senaite/senaite.core/pull/2925
