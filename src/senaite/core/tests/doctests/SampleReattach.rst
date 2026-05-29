@@ -148,6 +148,35 @@ allowed:
     False
 
 
+Reattach coexists with siblings created in the meantime
+.......................................................
+
+Building on the previous step, the partition is detached again,
+a fresh partition is created on the primary (which picks up the
+next counter value), and the detached one is then reattached.
+Both partitions must coexist with unique IDs:
+
+    >>> _ = do_action_for(partition, "detach")
+    >>> partition_id = partition.getId()
+    >>> sibling = create_partition(primary, request, primary.getAnalyses())
+    >>> sibling.getId() != partition_id
+    True
+    >>> success, message = do_action_for(partition, "reattach")
+    >>> success
+    True
+    >>> partition.getParentAnalysisRequest() == primary
+    True
+    >>> descendant_ids = sorted(d.getId() for d in primary.getDescendants())
+    >>> descendant_ids == sorted([partition_id, sibling.getId()])
+    True
+
+The partition's original ID survives the round-trip — `reattach`
+only restores the parent link, it does not rename:
+
+    >>> partition.getId() == partition_id
+    True
+
+
 Guard rejects when parent and detached sample drift apart
 .........................................................
 
