@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2926 Strip surrounding whitespace from analysis unit choices so configuration typos don't break the round-trip
 - #2924 Fix login traceback that blocks running upgrade step 2731
 - #2923 Fix CopyError when migrating AT laboratory to DX
 - #2921 Fix duplicate Laboratory object by making setup/laboratory the single canonical Laboratory
