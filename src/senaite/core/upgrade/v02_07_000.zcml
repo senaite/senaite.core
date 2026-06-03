@@ -3,6 +3,17 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add 'reattach' workflow transition"
+      description="Register the reattach workflow transition that
+                   re-links a detached partition back to its primary.
+                   The transition reuses the existing
+                   'Detach Sample Partition' permission."
+      source="2737"
+      destination="2738"
+      handler=".v02_07_000.setup_reattach_transition"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Consolidate duplicate Laboratory objects"
       description="Keep a single Laboratory at setup/laboratory, migrate it
                    to Dexterity if needed and remove the empty duplicate

@@ -227,6 +227,33 @@ def after_detach(analysis_request):
     map(lambda an: an.reindexObject(), analyses)
 
 
+def after_reattach(analysis_request):
+    """Function triggered after "reattach" transition is performed.
+
+    Inverse of after_detach: restores the partition link to the original
+    primary sample, clears the DetachedFrom backref and swaps the
+    IDetachedPartition marker back to IAnalysisRequestPartition.
+    """
+    parent = analysis_request.getDetachedFrom()
+
+    # Restore the partition link to the primary
+    analysis_request.setParentAnalysisRequest(parent)
+    analysis_request.setDetachedFrom(None)
+
+    # Swap markers: no longer a detached primary, back to being a partition
+    noLongerProvides(analysis_request, IDetachedPartition)
+    alsoProvides(analysis_request, IAnalysisRequestPartition)
+
+    # Reindex both the parent and the reattached partition
+    analysis_request.reindexObject()
+    parent.reindexObject()
+
+    # The parent's aranalysesfield aggregates analyses via catalog search,
+    # so reindex the partition's analyses to make them visible to the parent
+    analyses = analysis_request.getAnalyses(full_objects=True)
+    map(lambda an: an.reindexObject(), analyses)
+
+
 def after_dispatch(sample):
     """Event triggered after "dispatch" transition takes place for a given sample
     """
