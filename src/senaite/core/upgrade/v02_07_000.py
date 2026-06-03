@@ -271,6 +271,21 @@ def import_rolemap(tool):
 
 
 @upgradestep(product, version)
+def setup_reattach_transition(tool):
+    """Register the new 'reattach' workflow transition.
+
+    Re-imports the sample workflow so existing instances pick up
+    the 'reattach' transition (guarded by the existing
+    "Detach Sample Partition" permission) and the matching
+    exit-transitions on the live sample states.
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+
+    setup.runImportStepFromProfile(profile, "workflow")
+
+
+@upgradestep(product, version)
 def setup_duplicate_sample_transition(tool):
     """Register the new 'duplicate_sample' workflow transition.
 

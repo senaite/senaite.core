@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2925 Add 'reattach' workflow transition to re-link detached partitions to their primary
 - #2926 Strip surrounding whitespace from analysis unit choices so configuration typos don't break the round-trip
 - #2927 Sort analysis categories on the analysis specification listing by SortKey
 - #2920 Fix TypeError in DynamicAnalysisSpec when xlsx has trailing empty headers

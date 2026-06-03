@@ -20,6 +20,7 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IDetachedPartition
 from bika.lims.interfaces import IInternalUse
 from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
@@ -241,6 +242,26 @@ def guard_detach(analysis_request):
     """
     # Detach transition can only be done to partitions
     return analysis_request.isPartition()
+
+
+def guard_reattach(analysis_request):
+    """Returns whether 'reattach' transition can be performed or not.
+
+    Only allowed on samples previously detached via the 'detach' transition,
+    when the original parent is still reachable and both share the same
+    review state. The same-state check keeps the partition consistent with
+    the parent's state machine after re-attaching.
+    """
+    if not IDetachedPartition.providedBy(analysis_request):
+        return False
+
+    parent = analysis_request.getDetachedFrom()
+    if not parent:
+        return False
+
+    parent_state = api.get_workflow_status_of(parent)
+    sample_state = api.get_workflow_status_of(analysis_request)
+    return parent_state == sample_state
 
 
 def guard_dispatch(sample):

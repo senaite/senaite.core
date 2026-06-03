@@ -414,6 +414,7 @@
     <!-- TRANSITIONS -->
     <exit-transition transition_id="cancel"/>
     <exit-transition transition_id="detach" />
+    <exit-transition transition_id="reattach" />
     <exit-transition transition_id="receive"/>
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="reject" />
@@ -509,6 +510,7 @@
     <!-- TRANSITIONS -->
     <exit-transition transition_id="cancel"/>
     <exit-transition transition_id="detach"/>
+    <exit-transition transition_id="reattach"/>
     <exit-transition transition_id="prepublish"/>
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="reject" />
@@ -606,6 +608,7 @@
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="rollback_to_receive" />
     <exit-transition transition_id="detach" />
+    <exit-transition transition_id="reattach" />
     <exit-transition transition_id="create_partitions" />
     <exit-transition transition_id="dispatch" />
     <exit-transition transition_id="multi_results"/>
@@ -707,6 +710,7 @@
     <exit-transition transition_id="preserve"/>
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="detach" />
+    <exit-transition transition_id="reattach" />
     <exit-transition transition_id="dispatch" />
     <exit-transition transition_id="multi_results"/>
     <exit-transition transition_id="duplicate_sample"/>
@@ -797,6 +801,7 @@
     <exit-transition transition_id="invalidate" />
     <exit-transition transition_id="rollback_to_receive" />
     <exit-transition transition_id="detach" />
+    <exit-transition transition_id="reattach" />
     <exit-transition transition_id="create_partitions" />
     <exit-transition transition_id="dispatch" />
     <exit-transition transition_id="multi_results"/>
@@ -1562,6 +1567,26 @@
     <action url="" category="workflow" icon="">Detach</action>
     <guard>
       <guard-expression>python:here.guard_handler("detach")</guard-expression>
+      <guard-permission>senaite.core: Transition: Detach Sample Partition</guard-permission>
+    </guard>
+  </transition>
+
+  <!-- Transition: Reattach
+       Inverse of "detach": restores the partition link from a detached
+       sample back to its original primary. The guard limits this to
+       samples that still carry IDetachedPartition, whose original primary
+       is still reachable, and whose review state matches the primary's
+       state — so re-merging cannot break the parent's state machine.
+
+       Like "detach", this transition has no new_state and therefore does
+       not change the current state of the object.
+  -->
+  <transition transition_id="reattach" title="Reattach" new_state=""
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Reattach</action>
+    <guard>
+      <guard-expression>python:here.guard_handler("reattach")</guard-expression>
       <guard-permission>senaite.core: Transition: Detach Sample Partition</guard-permission>
     </guard>
   </transition>
