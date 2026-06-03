@@ -75,6 +75,7 @@ from senaite.core.upgrade.utils import rebuild_index
 from senaite.core.upgrade.utils import remove_at_portal_types
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.v02_06_000 import get_setup_folder
+from senaite.core.upgrade.v02_06_000 import migrate_to_dx
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getMultiAdapter
 from zope.interface import alsoProvides
@@ -2194,3 +2195,63 @@ def add_sample_catalog_indexes(tool):
             )
 
     logger.info("Adding new indexes to sample catalog [DONE]")
+
+
+# Portal types to remove during the AnalysisService DX migration
+REMOVE_AT_TYPES_ANALYSISSERVICE = [
+    "AnalysisService",
+    "AnalysisServices",
+]
+
+
+def migrate_analysisservices_to_dx(tool):
+    """Converts existing analysis services to Dexterity
+
+    NOTE: this is the scaffolded entry point landed with the original
+    PR #2769 and is *not yet* a complete migration. The schema_mapping
+    below covers only `title`, `description` and `short_title`. The
+    full AnalysisService schema (~40 fields, plus the surrounding
+    references on Analyses, Specs, Profiles, Templates, Calculations
+    and aranalysesfield) is migrated in subsequent commits driven by
+    the migration plan at docs/dx-analysisservice-migration.md.
+    """
+    logger.info("Convert Analysis Services to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool, REMOVE_AT_TYPES_ANALYSISSERVICE)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    origin = api.get_setup().get("bika_analysisservices")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container
+    destination = get_setup_folder("analysisservices")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # Mapping from schema field name to a tuple of
+    # (accessor, target field name, default value)
+    schema_mapping = {
+        "title": ("Title", "title", ""),
+        "description": ("Description", "description", ""),
+        "short_title": ("getShortTitle", "short_title", ""),
+    }
+
+    migrate_to_dx("AnalysisService", origin, destination, schema_mapping)
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert Analysis Services to Dexterity [DONE]")

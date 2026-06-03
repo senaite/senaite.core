@@ -69,6 +69,8 @@ profile = "profile-{0}:default".format(product)
 REMOVE_AT_TYPES = [
     "AnalysisProfile",
     "AnalysisProfiles",
+    "AnalysisService",
+    "AnalysisServices",
     "Department",
     "Departments",
     "SampleCondition",

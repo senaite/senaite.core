@@ -3,6 +3,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate AnalysisServices to DX"
+      description="Migrate AnalysisServices to Dexterity"
+      source="2737"
+      destination="2738"
+      handler=".v02_07_000.migrate_analysisservices_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Consolidate duplicate Laboratory objects"
       description="Keep a single Laboratory at setup/laboratory, migrate it
                    to Dexterity if needed and remove the empty duplicate
