@@ -24,12 +24,14 @@ from string import Template
 
 import six
 from bika.lims import api
+from bika.lims.api import snapshot as snap_api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api.mail import compose_email
 from bika.lims.api.mail import is_valid_email_address
 from bika.lims.api.mail import send_email
 from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IAnalysisRequestDuplicate
 from bika.lims.interfaces import IAnalysisRequestRetest
 from bika.lims.interfaces import IAnalysisRequestSecondary
 from bika.lims.interfaces import IAnalysisService
@@ -44,17 +46,71 @@ from DateTime import DateTime
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFPlone.utils import _createObjectByType
 from senaite.core.api.workflow import check_guard
+from senaite.core.api.workflow import get_transition
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.idserver import renameAfterCreation
+from senaite.core.interfaces import IAfterCreateSampleHook
 from senaite.core.permissions.sample import can_receive
+from senaite.core.registry import get_registry_record
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope import event
+from zope.component import subscribers
 from zope.interface import alsoProvides
 
 
+# Default field-name skip list for `create_duplicate_of`. The
+# duplicate is a fresh sample that *re-runs* the testing flow on
+# the same source material — it is not a verbatim copy of the
+# source's results/state. Fields below are deliberately not
+# carried over via `copy_field_values`. Callers can override by
+# passing `skip_fields=...` to `create_duplicate_of`.
+DUPLICATE_SKIP_FIELDS = [
+    # Analyses are recreated empty from services in
+    # create_analysisrequest — copying them would carry over
+    # results/state from the source.
+    "Analyses",
+    # Attachments belong to the source's testing run; the
+    # duplicate starts clean.
+    "Attachment",
+    "_ARAttachment",
+    # Lineage / workflow-state pointers must not leak: a
+    # duplicate is a sibling, not a partition or a retest of the
+    # source.
+    "DatePublished",
+    "DetachedFrom",
+    "DuplicatedFrom",
+    "Invalidated",
+    "ParentAnalysisRequest",
+    "PrimaryAnalysisRequest",
+    "Sample",
+    # Source-run bookkeeping. Rejection reasons describe why the
+    # source was rejected; the duplicate has not been rejected.
+    # Remarks and results interpretation reference the source's
+    # results, which the duplicate does not yet have.
+    "RejectionReasons",
+    "Remarks",
+    "ResultsInterpretation",
+    "ResultsInterpretationDepts",
+    # AR-add-form bookkeeping with no semantic value on a
+    # duplicate.
+    "NumSamples",
+    "creation_date",
+    "id",
+    "modification_date",
+    # DublinCore bookkeeping: the duplicate's Creator /
+    # contributors must reflect the user performing the
+    # duplicate action, not the source's. AT initialization
+    # populates these with the current user already; copying
+    # from source would overwrite that.
+    "creators",
+    "contributors",
+]
+
+
 def create_analysisrequest(client, request, values, analyses=None,
-                           results_ranges=None, prices=None):
+                           results_ranges=None, prices=None,
+                           skip_snapshots=False):
     """Creates a new AnalysisRequest (a Sample) object
     :param client: The container where the Sample will be created
     :param request: The current Http Request object
@@ -65,6 +121,12 @@ def create_analysisrequest(client, request, values, analyses=None,
         from the Specification object defined in values["Specification"]
     :param prices: Mapping of AnalysisService UID -> price. If not set, prices
         are read from the associated analysis service.
+    :param skip_snapshots: When True, no auditlog snapshot is taken during
+        the creation run. Snapshots are paused before `_processForm` and
+        resumed before this function returns, so the new sample is in a
+        normal "snapshots enabled" state on return. The caller is
+        responsible for taking the create snapshot at a moment of its
+        choosing (e.g. after filling in additional fields).
     """
     # Don't pollute the dict param passed in
     values = dict(values.items())
@@ -89,6 +151,13 @@ def create_analysisrequest(client, request, values, analyses=None,
     ar = _createObjectByType("AnalysisRequest", client, tmpID())
     # mark the sample as temporary to avoid indexing
     api.mark_temporary(ar)
+    # Optionally suppress auditlog snapshot creation. We pause
+    # before `_processForm` (which fires ObjectInitializedEvent and
+    # would otherwise persist a partial snapshot) and resume below
+    # so the sample returns in a normal "snapshots enabled" state.
+    # The caller is responsible for taking the create snapshot.
+    if skip_snapshots:
+        snap_api.pause_snapshots_for(ar)
     # NOTE: We call here `_processForm` (with underscore) to manually unmark
     #       the creation flag and trigger the `ObjectInitializedEvent`, which
     #       is used for snapshot creation.
@@ -106,9 +175,19 @@ def create_analysisrequest(client, request, values, analyses=None,
     # https://github.com/senaite/senaite.core/issues/1326
     apply_hidden_services(ar)
 
+    # Apply custom units from profiles to the analyses
+    # https://github.com/senaite/senaite.core/pull/2844
+    apply_custom_units(ar)
+
     # Handle rejection reasons
     rejection_reasons = resolve_rejection_reasons(values)
     ar.setRejectionReasons(rejection_reasons)
+
+    # Handle duplicated Analysis Request: mark before
+    # renameAfterCreation so the ID server has the chance to pick
+    # the AnalysisRequestDuplicate template (when configured).
+    if ar.getDuplicatedFrom():
+        alsoProvides(ar, IAnalysisRequestDuplicate)
 
     # Handle secondary Analysis Request
     primary = ar.getPrimaryAnalysisRequest()
@@ -130,10 +209,11 @@ def create_analysisrequest(client, request, values, analyses=None,
     if parent_sample:
         # Always set partition to received
         date_received = parent_sample.getDateReceived()
-        receive_sample(ar, date_received=date_received)
+        if date_received:
+            receive_sample(ar, date_received=date_received)
 
     if not IReceived.providedBy(ar):
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         auto_receive = setup.getAutoreceiveSamples()
         if ar.getSamplingRequired():
             # sample has not been collected yet
@@ -147,9 +227,18 @@ def create_analysisrequest(client, request, values, analyses=None,
             receive_sample(ar)
 
         else:
-            # sample_due is the default initial status of the sample
-            changeWorkflowState(ar, SAMPLE_WORKFLOW, "sample_due",
-                                action="no_sampling_workflow")
+            # find out if is necessary to trigger events. It is always more
+            # performant if no events are triggered, but some instances might
+            # need them to work properly
+            key = "trigger_events_on_sample_creation"
+            trigger_events = get_registry_record(key)
+
+            # transition to the default initial status of the sample
+            action = "no_sampling_workflow"
+            tr = get_transition(SAMPLE_WORKFLOW, action)
+            changeWorkflowState(ar, SAMPLE_WORKFLOW, tr.new_state_id,
+                                trigger_events=trigger_events,
+                                action=action)
 
     renameAfterCreation(ar)
     # AT only
@@ -164,6 +253,11 @@ def create_analysisrequest(client, request, values, analyses=None,
     # If rejection reasons have been set, reject the sample automatically
     if rejection_reasons:
         do_rejection(ar)
+
+    # Resume snapshots so the sample is returned in the normal
+    # "snapshots enabled" state. See `skip_snapshots` arg above.
+    if skip_snapshots:
+        snap_api.resume_snapshots_for(ar)
 
     return ar
 
@@ -201,6 +295,37 @@ def receive_sample(sample, check_permission=False, date_received=None):
                             action="initialize", trigger_events=True)
 
     return True
+
+
+def apply_custom_units(sample):
+    """Apply custom units to the sample analyses
+
+    :param sample: the sample that contains the analyses
+    """
+    # mapping of service UID -> custom unit
+    mapping = {}
+    for profile in sample.getProfiles():
+        for setting in profile.getAnalysisServicesSettings():
+            unit = setting.get("unit")
+            if not unit:
+                continue
+            mapping[setting.get("uid")] = unit
+
+    if not mapping:
+        return
+
+    # Use objectValues for temporary samples (during creation)
+    if api.is_temporary(sample):
+        analyses = sample.objectValues(spec="Analysis")
+    else:
+        analyses = sample.getAnalyses(full_objects=True)
+
+    for analysis in analyses:
+        uid = analysis.getRawAnalysisService()
+        unit = mapping.get(uid)
+        if unit:
+            analysis.setUnit(unit)
+            analysis.reindexObject(idxs=["getUnit"])
 
 
 def apply_hidden_services(sample):
@@ -394,6 +519,137 @@ def create_retest(ar):
     return retest
 
 
+def create_duplicate_of(sample, request=None, skip_fields=None):
+    """Creates a sibling Sample by duplicating the given source.
+
+    Delegates the heavy lifting to `create_analysisrequest`. Only
+    the scalar fields the ID server needs (Client, Contact,
+    SampleType, DateSampled, SamplingDate) plus the lineage pointer
+    `DuplicatedFrom` are passed through `_processForm` — these are
+    UID strings or DateTimes that AT widgets handle cleanly. The
+    remaining schema fields (multi-valued fields like CCEmails
+    would otherwise trip `widget.process_form`) are copied
+    afterwards via `copy_field_values`, which sets native values
+    directly through the field setters.
+
+    `create_analysisrequest` itself applies the
+    `IAnalysisRequestDuplicate` marker after `_processForm` when
+    `getDuplicatedFrom()` is set on the new sample, so the ID
+    server can pick the dedicated `AnalysisRequestDuplicate`
+    template if one is configured (or fall through to the regular
+    Sample ID format otherwise).
+
+    Analyses are filtered to skip terminal/invalid states
+    (retracted, rejected, cancelled) and retest descendants — the
+    duplicate inherits only the source's *valid* analyses, with
+    empty results.
+
+    Sample-structure copying (partitions) is delegated to the
+    existing `IAfterCreateSampleHook` subscribers, which honour
+    the `sample_add_form_copy_partitions` registry flag — same
+    behaviour as Copy-to-new.
+
+    :param sample: The source Sample (AnalysisRequest)
+    :type sample: IAnalysisRequest
+    :param request: The current HTTP request. Defaults to
+        `api.get_request()` when not provided.
+    :param skip_fields: Iterable of schema field names to exclude
+        from `copy_field_values`. Defaults to
+        `DUPLICATE_SKIP_FIELDS` when None. The ID-relevant scalars
+        passed via the values dict (Client/Contact/SampleType/
+        DateSampled/SamplingDate) are always added on top, since
+        copy_field_values would otherwise overwrite them.
+    :returns: The newly created duplicate Sample
+    :rtype: IAnalysisRequest
+    """
+    if not sample:
+        raise ValueError("Source Sample cannot be None")
+    source = api.get_object(sample)
+    if not IAnalysisRequest.providedBy(source):
+        raise ValueError(
+            "Type not supported: {}".format(repr(type(source))))
+
+    if request is None:
+        request = api.get_request()
+
+    client = source.getClient()
+
+    # Filter out invalid analyses on the source — duplicates only
+    # inherit the *valid* analysis set, with empty results.
+    skip_states = ("retracted", "rejected", "cancelled")
+    valid_analyses = [
+        a for a in source.getAnalyses(full_objects=True)
+        if api.get_review_status(a) not in skip_states
+        and not a.isRetest()
+    ]
+
+    # Minimal values dict — only the ID-relevant scalars and the
+    # lineage pointer. Multi-valued / object-typed source fields
+    # are copied afterwards via copy_field_values to avoid the AT
+    # widget process_form mismatch on native tuple/list values.
+    contact = source.getContact()
+    sample_type = source.getSampleType()
+    values = {
+        "Client": api.get_uid(client),
+        "DuplicatedFrom": api.get_uid(source),
+    }
+    if contact is not None:
+        values["Contact"] = api.get_uid(contact)
+    if sample_type is not None:
+        values["SampleType"] = api.get_uid(sample_type)
+    if source.getDateSampled():
+        values["DateSampled"] = source.getDateSampled()
+    if source.getSamplingDate():
+        values["SamplingDate"] = source.getSamplingDate()
+
+    # Suppress the auditlog snapshot during the creation run: the
+    # minimal values dict above would otherwise persist a partial
+    # snapshot. We take the full create snapshot ourselves below.
+    duplicate = create_analysisrequest(
+        client,
+        request=request,
+        values=values,
+        analyses=valid_analyses,
+        results_ranges=source.getResultsRange() or [],
+        skip_snapshots=True,
+    )
+
+    # Pause snapshots again while we fill in the remaining source
+    # field values via direct AT field setters. This brackets the
+    # copy explicitly so the suppression of audit entries during
+    # field population is visible at this call site.
+    snap_api.pause_snapshots_for(duplicate)
+    try:
+        base_skip = DUPLICATE_SKIP_FIELDS if skip_fields is None \
+            else skip_fields
+        extended_skip = list(base_skip) + [
+            "Client",
+            "Contact",
+            "SampleType",
+            "DateSampled",
+            "SamplingDate",
+        ]
+        copy_field_values(
+            source, duplicate, ignore_fieldnames=extended_skip)
+    finally:
+        snap_api.resume_snapshots_for(duplicate)
+
+    # Take the single 'create' snapshot reflecting the duplicate's
+    # full schema state.
+    snap_api.take_snapshot(duplicate, action="create")
+
+    # Run the after-create sample hooks with `source` so partition
+    # copying uses the same registry-toggled behaviour as the
+    # add form does.
+    hooks = subscribers((duplicate, request), IAfterCreateSampleHook)
+    for hook in sorted(
+            hooks, key=lambda h: api.to_float(getattr(h, "sort", 10))):
+        hook.update(duplicate, source=source)
+
+    duplicate.reindexObject()
+    return duplicate
+
+
 def create_partition(analysis_request, request, analyses, sample_type=None,
                      container=None, preservation=None, skip_fields=None,
                      internal_use=True):
@@ -548,7 +804,7 @@ def do_rejection(sample, notify=None):
 
     # Do we need to send a notification email?
     if notify is None:
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         notify = setup.getNotifyOnSampleRejection()
 
     if notify:
@@ -584,7 +840,6 @@ def get_rejection_email_recipients(sample):
     return list(emails)
 
 
-
 def get_rejection_mail(sample, rejection_pdf=None):
     """Generates an email to sample contacts with rejection reasons
     """
@@ -593,15 +848,15 @@ def get_rejection_mail(sample, rejection_pdf=None):
     reasons = reasons and reasons[0] or {}
     reasons = reasons.get("selected", []) + [reasons.get("other")]
     reasons = filter(None, reasons)
-    reasons = "<br/>- ".join(reasons)
+    reasons = u"<br/>- ".join(map(api.safe_unicode, reasons))
 
     # Render the email body
-    setup = api.get_setup()
+    setup = api.get_senaite_setup()
     lab_address = setup.laboratory.getPrintAddress()
     email_body = Template(setup.getEmailBodySampleRejection())
     email_body = email_body.safe_substitute({
-        "lab_address": "<br/>".join(lab_address),
-        "reasons": reasons and "<br/>-{}".format(reasons) or "",
+        "lab_address": u"<br/>".join(lab_address),
+        "reasons": reasons and u"<br/>-{}".format(reasons) or u"",
         "sample_id": api.get_id(sample),
         "sample_link": get_link(api.get_url(sample), api.get_id(sample))
     })
@@ -621,7 +876,7 @@ def get_rejection_mail(sample, rejection_pdf=None):
         logger.warn("No valid recipients for {}".format(api.get_id(sample)))
         return None
 
-    lab = api.get_setup().laboratory
+    lab = api.get_senaite_setup().laboratory
     attachments = rejection_pdf and [rejection_pdf] or []
 
     return compose_email(

@@ -1,0 +1,23 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+  <!-- Client Attachments View -->
+  <browser:page
+      for="bika.lims.interfaces.IClient"
+      name="attachments"
+      class=".view.ClientAttachmentsView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"/>
+
+  <!-- Workflow Action: Delete Attachments -->
+  <adapter
+      name="workflow_action_delete"
+      for="*
+           senaite.core.interfaces.ISenaiteCore"
+      factory=".workflow.WorkflowActionDeleteAdapter"
+      provides="bika.lims.interfaces.IWorkflowActionAdapter"
+      permission="zope.Public" />
+
+</configure>

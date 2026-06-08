@@ -21,7 +21,6 @@
 import json
 
 import six
-from Acquisition import aq_parent
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.interfaces import IAuditable
@@ -29,7 +28,6 @@ from persistent.dict import PersistentDict
 from plone.dexterity.interfaces import IDexterityContent
 from Products.Archetypes.interfaces import IBaseObject
 from Products.Archetypes.interfaces import IField
-from Products.Archetypes.utils import getRelURL
 from senaite.core.interfaces import IContentMigrator
 from senaite.core.interfaces import IFieldMigrator
 from senaite.core.migration.utils import copyPermMap
@@ -98,27 +96,12 @@ class ContentMigrator(object):
     def uncatalog_object(self, obj):
         """Uncatalog the object for all catalogs
         """
-        # explicitly uncatalog from uid_catalog
-        uid_catalog = api.get_tool(UID_CATALOG)
-        # make sure that both AT/DX paths are uncatalogued
-        rel_url = getRelURL(uid_catalog, obj.getPhysicalPath())
-        abs_url = "/".join(obj.getPhysicalPath())
-        uid_catalog.uncatalog_object(rel_url)
-        uid_catalog.uncatalog_object(abs_url)
-        # uncatalog from registered catalogs
-        obj.unindexObject()
+        api.uncatalog_object(obj)
 
     def catalog_object(self, obj):
         """Catalog the object in all registered catalogs
         """
-        # explicitly catalog in uid_catalog
-        uid_catalog = api.get_tool(UID_CATALOG)
-        # we catalog the object here below the absolute path, as it is done in
-        # `plone.app.referencablebehavior.uidcatalog``
-        abs_url = "/".join(obj.getPhysicalPath())
-        uid_catalog.catalog_object(obj, abs_url)
-        # reindex in registered catalogs
-        obj.reindexObject()
+        api.catalog_object(obj)
 
     def copy_id(self, src, target):
         """Set id on object
@@ -184,9 +167,7 @@ class ContentMigrator(object):
     def delete_object(self, obj):
         """delete the object w/o firing events
         """
-        self.uncatalog_object(obj)
-        parent = aq_parent(obj)
-        parent._delObject(obj.getId(), suppress_events=True)
+        api.delete(obj, check_permissions=False, suppress_events=True)
 
     def copy_fields(self, src, target, mapping):
         """Copy fields

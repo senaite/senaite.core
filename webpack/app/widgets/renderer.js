@@ -7,6 +7,7 @@ import "intl-tel-input/build/css/intlTelInput.css";
 import QuerySelectWidgetController from "./queryselect/widget.js";
 import AddressWidgetController from "./addresswidget/widget.js";
 import SelectOtherWidgetController from "./selectother/widget.js";
+import MultiUploadWidgetController from "./multiupload/widget.js";
 
 // Helper to render React components safely using createRoot
 const safeRender = (Component, el, props = {}) => {
@@ -122,6 +123,14 @@ export const render_phone_widget = (el) => {
 export const render_selectother_widget = (el) => {
   const ref = safeRender(SelectOtherWidgetController, el, {
     root_class: "selectotherfield",
+  });
+  return ref;
+};
+
+// Multi-Upload Widget
+export const render_multiupload_widget = (el) => {
+  const ref = safeRender(MultiUploadWidgetController, el, {
+    root_class: "multiuploadfield",
   });
   return ref;
 };

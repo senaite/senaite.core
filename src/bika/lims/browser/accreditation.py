@@ -42,7 +42,7 @@ class AccreditationView(AnalysisServicesView):
         self.icon = self.portal_url + \
                     "/++resource++bika.lims.images/accredited_big.png"
 
-        lab = context.bika_setup.laboratory
+        lab = context.setup.laboratory
         accredited = lab.getLaboratoryAccredited()
         self.mapping = {
             'lab_is_accredited':

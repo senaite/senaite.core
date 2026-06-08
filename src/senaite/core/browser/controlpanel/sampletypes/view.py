@@ -23,13 +23,14 @@ import collections
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import get_link_for
-from senaite.app.listing import ListingView
+from senaite.core.api import hazard as hazard_api
+from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.i18n import translate
 from senaite.core.permissions import AddSampleType
 
 
-class SampleTypesView(ListingView):
+class SampleTypesView(ControlPanelListingView):
 
     def __init__(self, context, request):
         super(SampleTypesView, self).__init__(context, request)
@@ -150,6 +151,14 @@ class SampleTypesView(ListingView):
             the template
         :index: current index of the item
         """
+        # Hazard pictograms (read from the SampleType brain to avoid
+        # waking up the object for the listing).
+        pictograms = b""
+        for picto in hazard_api.get_pictograms_for_reference(obj):
+            pictograms += hazard_api.render_pictogram_img(picto)
+        if pictograms:
+            item["after"]["Title"] = pictograms
+
         obj = api.get_object(obj)
         item["replace"]["Title"] = get_link_for(obj)
         item["Description"] = obj.Description()

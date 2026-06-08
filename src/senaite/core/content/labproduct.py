@@ -40,7 +40,7 @@ from zope.interface import implementer
 def default_vat_factory():
     """Returns the default VAT value if any
     """
-    setup_vat = api.get_setup().getVAT() or "0.00"
+    setup_vat = api.get_senaite_setup().getVAT() or "0.00"
     return api.safe_unicode(setup_vat)
 
 

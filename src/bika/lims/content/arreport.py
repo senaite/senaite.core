@@ -172,9 +172,11 @@ schema["title"].required = False
 
 
 class ARReport(BaseFolder, ClientAwareMixin):
-    """An AnalysisRequest report, containing the report itself in pdf and html
-       format. It includes information about the date when was published, from
-       whom, the report recipients (and their emails) and the publication mode
+    """An AnalysisRequest report (Archetypes version for migration purposes)
+
+    This class is kept for backward compatibility and to support migration
+    from Archetypes to Dexterity. New code should use the Dexterity version
+    from senaite.core.content.resultsreport.ResultsReport
     """
     implements(IARReport)
 

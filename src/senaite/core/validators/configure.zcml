@@ -1,0 +1,8 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="senaite.core">
+
+  <adapter factory=".formula.FormulaValidator" name="formula_validator" />
+  <adapter factory=".interimfields.InterimFieldsValidator" name="interim_fields_validator" />
+
+</configure>

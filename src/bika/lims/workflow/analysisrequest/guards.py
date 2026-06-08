@@ -19,6 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IDetachedPartition
 from bika.lims.interfaces import IInternalUse
 from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
@@ -242,6 +244,26 @@ def guard_detach(analysis_request):
     return analysis_request.isPartition()
 
 
+def guard_reattach(analysis_request):
+    """Returns whether 'reattach' transition can be performed or not.
+
+    Only allowed on samples previously detached via the 'detach' transition,
+    when the original parent is still reachable and both share the same
+    review state. The same-state check keeps the partition consistent with
+    the parent's state machine after re-attaching.
+    """
+    if not IDetachedPartition.providedBy(analysis_request):
+        return False
+
+    parent = analysis_request.getDetachedFrom()
+    if not parent:
+        return False
+
+    parent_state = api.get_workflow_status_of(parent)
+    sample_state = api.get_workflow_status_of(analysis_request)
+    return parent_state == sample_state
+
+
 def guard_dispatch(sample):
     """Checks if the dispatch transition is allowed
 
@@ -263,3 +285,19 @@ def guard_multi_results(sample):
     """Checks if the multi results action is allowed
     """
     return True
+
+
+def guard_duplicate_sample(sample):
+    """Checks if the 'duplicate_sample' action is allowed.
+
+    Returns False when the context is not an AnalysisRequest or
+    when sample duplication is globally disabled in the SENAITE
+    setup. When enabled, duplication is permitted in every state
+    where Copy-to-new is exposed by the listings — the transition
+    itself is wired to the same set of states via the workflow
+    definition.
+    """
+    if not IAnalysisRequest.providedBy(sample):
+        return False
+    setup = api.get_senaite_setup()
+    return bool(setup.getSampleDuplicateEnabled())

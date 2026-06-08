@@ -1,0 +1,62 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:metal="http://xml.zope.org/namespaces/metal"
+     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+     tal:omit-tag="">
+
+    <div tal:define="uid context/UID|nothing;
+                     fieldName view/field/__name__ | nothing;"
+         tal:attributes="data-uid uid;
+                         data-fieldname fieldName;"
+         class="remarks-widget">
+
+        <link rel="stylesheet" href="" type="text/css" media="screen"
+              tal:attributes="href string:${view/portal_url}/++resource++senaite.core.z3cform.static/remarkswidget.css"/>
+        <script type="text/javascript" src=""
+                tal:attributes="src string:${view/portal_url}/++resource++senaite.core.z3cform.static/remarkswidget.js"></script>
+
+        <div tal:define="remarks view/value"
+             tal:attributes="id string:parent-fieldname-$fieldName-$uid"
+             class="my-4">
+
+            <div class="remarks-history">
+                <tal:record repeat="record remarks">
+                    <div tal:attributes="id record/id;
+                                         class python:'record my-4 ' + ('d-none extra-remark' if repeat['record'].index >= 1 else '')"
+                         class="record my-4">
+                        <div tal:condition="record/user_id"
+                             class="record-header small text-muted border-bottom mb-1 pb-1 d-flex flex-wrap">
+                            <span class="record-user font-weight-bold pr-2" tal:content="record/user_id"/>
+                            <span class="record-username pr-2" tal:content="record/user_name | nothing"/>
+                            <span class="record-date pr-2" tal:content="python:view.localized_time(record['created']) or ''"/>
+                        </div>
+                        <div class="record-content" tal:content="structure python:view.html_content(record['content'])"></div>
+                    </div>
+                </tal:record>
+                <div tal:condition="python:len(remarks) > 1" class="mt-3">
+                    <button type="button"
+                          class="toggleRemarks btn btn-link btn-sm p-0">
+                    <span class="show-more-text" i18n:translate="">Show more</span>
+                    <span class="show-less-text d-none" i18n:translate="">Show less</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div tal:condition="view/can_add_remark" class="my-4">
+
+          <textarea class="form-control"
+                    tal:attributes="name fieldName; id fieldName;"></textarea>
+          <div tal:condition="python: 'portal_factory' not in context.absolute_url()">
+            <input class="saveRemarks allowMultiSubmit btn btn-primary btn-sm mt-2 mb-4"
+                   id="save-remarks"
+                   type="submit"
+                   value="Add remarks"
+                   disabled="disabled"
+                   i18n:attributes="value"
+                   i18n:domain="senaite.core"/>
+          </div>
+        </div>
+    </div>
+
+</div>

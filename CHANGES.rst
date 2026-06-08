@@ -3,6 +3,127 @@ Changelog
 
 2.7.0 (unreleased)
 ------------------
+
+- #2928 Fix ASTM consumer boundary bugs (sender shape, instrument cascade, sample fallback)
+- #2925 Add 'reattach' workflow transition to re-link detached partitions to their primary
+- #2926 Strip surrounding whitespace from analysis unit choices so configuration typos don't break the round-trip
+- #2927 Sort analysis categories on the analysis specification listing by SortKey
+- #2920 Fix TypeError in DynamicAnalysisSpec when xlsx has trailing empty headers
+- #2924 Fix login traceback that blocks running upgrade step 2731
+- #2923 Fix CopyError when migrating AT laboratory to DX
+- #2921 Fix duplicate Laboratory object by making setup/laboratory the single canonical Laboratory
+- #2922 Initialize unset Dexterity schema fields in api.create so ObjectAddedEvent subscribers don't read through acquisition
+- #2919 Enforce the AccessJSONAPI permission on state-changing JSON API routes
+- #2918 Fix Lab Information setup data import after Laboratory migration to Dexterity
+- #2917 Fix `ClientID` is not displayed in samples listing, but client name
+- #2916 Fix msgid collision on `description_calculation_imports` in Calculation content type
+- #2915 Rename 'Duplicate' sample transition to 'Duplicate Sample' to avoid translation collision with the worksheet duplicate-analysis label
+- #2914 Skip DublinCore creators/contributors when duplicating a sample
+- #2903 Refactor record parsing to use ast.literal_eval to prevent code execution
+- #2895 Add 'duplicate_sample' workflow transition for samples (with global toggle in setup)
+- #2910 Centralize intid cleanup in api.delete
+- #2913 Fix UnicodeEncodeError in render_html_attributes for non-ASCII attribute values
+- #2912 Fix missing <genericsetup:upgradeStep> tag for Worksheet Dexterity migration
+- #2908 Drop intid registrations created for portal_factory transients
+- #2907 Unregister intid on migration-time object deletion
+- #2909 Restore getPrintAddress on the DX Organization content type
+- #2890 Add hazard categories to SampleType, Sample, ReferenceDefinition and ReferenceSample (GHS + ISO 7010)
+- #2906 Only consult ar_add idempotency cache on a publisher retry
+- #2905 Rebuild title FieldIndex on every SENAITE catalog
+- #2904 Add IMultiCatalogBehavior to Laboratory FTI and repair existing migrations
+- #2902 Fix blob_to_named_file to handle non-blob AT image/file values
+- #2810 Migrate Laboratory to DX
+- #2901 Add generic unicode title indexer for the `title` FieldIndex
+- #2873 Catalog/cleanup sample catalog indexes
+- #2900 Fix circular import between senaite.core.catalog and bika.lims
+- #2899 Suppress profile-remove dialog during bulk ar_add hydration
+- #2741 Commit each created sample individually to reduce ZODB conflicts
+- #2896 Fix uncatalog_object to leave no stale uids in uid_catalog
+- #2897 Use UnorderedOrdering for Clients to avoid ZODB conflicts
+- #2894 Fix DL get flushed on submit
+- #2891 Translate sidebar navigation titles in JSON endpoint
+- #2881 Add text support for interim fields
+- #2888 Improve ID Server admin views
+- #2889 Remove orphan temp objects when renameAfterCreation fails
+- #2887 Set default Seq Type to 'generated' for partition/retest/secondary
+- #2886 Fix partition ID collision after detach
+- #2883 Add ViewNavigation permission for sidebar access control
+- #2885 Handle missing split_length values during setup row normalization
+- #2882 Refactor dashboard with permission-based access and async loading
+- #2880 Fix ConnectionStateError for DataGrid fields in test layers
+- #2879 Fix department and methods not displayed in services' csv export
+- #2878 Fix value of AT's SelectOtherWidget is not rendered in view mode
+- #2874 Fix save button visibility of sample header
+- #2875 Fix AttributeError in add_sample when rejection workflow is enabled
+- #2872 Use AT accessor/mutator in GenericSetup field adapter
+- #2870 Do a full commit every 1000 migrated worksheets
+- #2869 Add adapter lookup for client searchable text index
+- #2868 Fix auto CC contacts set in the client for new samples
+- #2867 Remove stale AT reference objects
+- #2866 Add transaction savepoints to large upgradesteps
+- #2865 Skip problematic worksheets in upgrade step 2711
+- #2862 Updated Webpack Dependencies
+- #2864 Fix upgrade step AT type removal calls
+- #2861 Allow to override results in auto-import
+- #2860 Remove default selected languages
+- #2859 Added a core's specific AfterAPICreatedObjectEvent for DX
+- #2600 Migrate Calculations to DX
+- #2855 Open edit modal for listing items
+- #2858 Fix sticker selection fields are rendered as text
+- #2857 Fix WrongType Error when downloading Reports
+- #2856 Fix catalog indexer for lab-/supplier contacts
+- #2854 Allow to set sample CC contacts in client
+- #2853 Fix hidden Client field is missing in sample add form
+- #2852 Allow to set primary sample contact in client
+- #2849 Fix migrate Worksheet step for retry running. Refactoring create worksheet
+- #2850 Edit popup for sample analyses
+- #2848 Patch transaction commit hook for catalog queue to avoid double indexing
+- #2844 Allow unit selection in profiles
+- #2846 Fix Unit super-/subscript rendering
+- #2847 Remove nonexisting getSamplePointTitle column index
+- #2776 Refactor: rename SiteView.setCookie to set_cookie in dashboard.pt
+- #2805 Migrate Worksheets to DX
+- #2775 Auto-add CCContact when hidden on Sample Add form
+- #2828 RemarksField type for Dexterity content types
+- #2841 Fix detection limit misconfiguration in analysis service edit view
+- #2840 Fix setting readonly form fields
+- #2831 Migrate ARReport to Dexterity
+- #2838 Fix 'add_permission' error when upgrading from 2711 to 2718
+- #2835 New Sidebar Navigation
+- #2834 Handle tat as timedelta or dict during AT to DX migration
+- #2832 Fix sample type prefix validation
+- #2837 Disable Cancel Button in Sample Registration Form after Save
+- #2833 Ensure string values for ID formatting
+- #2827 Link demo user to contact during import
+- #2836 Rollback temporary samples on error during creation
+- #2830 Fix TinyMCE hidden Cursor
+- #2829 Fix TypeError in bika_setup rejection widget
+- #2821 Migrate all fields from bika_setup to senaite setup
+- #2825 Updated webpack dependencies
+- #2826 Fix inconsistent Profile filtering on multi-sample creation
+- #2819 Fix multiuploads for cluster setups
+- #2817 Fix QR code render for multi-page stickers
+- #2818 Fix UnicodeDecodeError if analysis unit contains unicode characters
+- #2812 Migrate MultiFile to Dexterity
+- #2815 Remove dependency to plone.app.jquerytools
+- #2816 Fix custom actions and behaviors are missing
+- #2801 Global Contacts
+- #2795 Migrate Client Contacts to Dexterity
+- #2811 Fix typo in recalculation message ("Result recalucated" → "Result recalculated")
+- #2809 Prioritize after create sample susbcriber hooks
+- #2808 Sticky form tabbing
+- #2807 Fix traceback when emailing results report and email 'From' not set
+- #2806 Allow to create sample partitions on copy
+- #2804 Allow to skip analyses from partitions on copy
+- #2803 Allow to skip analyses in WF states on copy
+- #2802 Fix KeyError in DX address widget country lookup
+- #2800 Fix WrongContainedType on object creation/update via jsonapi
+- #2799 Fix Reference Sample import supplier data
+- #2797 Fix sticker rendering error when no configured template was found
+- #2793 Fix APIError: Expected string type, got '<type 'NoneType'>'
+- #2792 Add setting to trigger transition events on sample creation
+- #2791 Add TextLineField that strips the value and properly handle encodings
+- #2790 Fix "Show more" button does not appear for the 2nd and 3rd sample remarks
 - #2785 Fix Formatted specification interval rendering is not shown for analyses and reference analyses
 - #2776 Fix Imported Worksheet Templates not editable after Load Setup Data
 - #2781 Fix formatted specification interval for result options
@@ -104,7 +225,7 @@ Changelog
 - #2660 Add logging if external calculation module import failed
 - #2654 Show Batch title or ID in Sample reference field
 - #2657 Methods from analyses are not updated on instrument change in worksheet
-- #2656 Fix AnalysisProfile keyword validator fail with non-ascii value 
+- #2656 Fix AnalysisProfile keyword validator fail with non-ascii value
 - #2646 Add SelectOtherField and SelectOtherWidget
 - #2649 Fix event subscribers are not triggered on analysis initialization
 - #2650 Fix AttributeError on analysis update with interim values via jsonapi
@@ -481,7 +602,7 @@ Changelog
 - #2131 Allow to edit the analysis service sort keys in the services listing
 - #2133 Filter Contact and CCContact by Client on first click
 - #2134 Render unit after result and interim fields
-- #2132 Add a default date for batch creation 
+- #2132 Add a default date for batch creation
 - #2129 Fix Traceback when invalidating a Sample with Remarks
 - #2128 Fix referenceresults widget view mode
 - #2127 Fix instrument expiry date display in listing view
@@ -556,14 +677,14 @@ Changelog
 - #2004 Added behavior to allow sharing objects across clients users
 - #2001 Fix Traceback when rendering UIDReferenceWidget with limited privileges
 - #1999 Allow multi-choice/multiselect interim fields in calculations
-- #1998 Fix analisys hidden status erases when submit through worksheet 
+- #1998 Fix analisys hidden status erases when submit through worksheet
 - #1997 Fix conditions not set when adding analyses via "Manage Analyses" view
 - #1995 Dynamic assingment of "Owner" role for Client Contacts
 - #1994 Support for dynamic assignment of Local Roles for context and principal
 - #1992 Fix Generic Setup XML export/import adapters for Dexterity fields
 - #1993 Avoid line wrapping in login form for small screens
 - #1990 Fix items not filtered by Worksheet Template's method in Add analyses
-- #1991 Update default worksheet layout 
+- #1991 Update default worksheet layout
 - #1887 Fix instruments not filtered by method in Worksheet Template edit view
 - #1977 Add custom worksheet layout feature
 - #1988 Multivalue support for interim fields

@@ -29,7 +29,6 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims import logger
-from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields import ResultRangeField
 from bika.lims.browser.fields import UIDReferenceField
@@ -41,6 +40,7 @@ from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.utils import formatDecimalMark
+from bika.lims.utils import formatTextResult
 from bika.lims.utils.analysis import format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
 from bika.lims.workflow import getTransitionActor
@@ -48,15 +48,16 @@ from bika.lims.workflow import getTransitionDate
 from DateTime import DateTime
 from Products.Archetypes.Field import IntegerField
 from Products.Archetypes.Field import StringField
-from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.Schema import Schema
 from Products.CMFCore.permissions import View
 from senaite.core.api import dtime
 from senaite.core.browser.fields.datetime import DateTimeField
+from senaite.core.content.calculation import getGlobals
 from senaite.core.i18n import translate as t
 from senaite.core.i18n import get_dt_format
 from senaite.core.permissions import FieldEditAnalysisResult
 from senaite.core.permissions import ViewResults
+from senaite.core.schema.uidreferencefield import get_backrefs
 from six import string_types
 
 # A link directly to the AnalysisService object used to create the analysis
@@ -128,15 +129,43 @@ NumberOfRequiredVerifications = IntegerField(
     default=1
 )
 
-# Routine Analyses and Reference Analysis have a versioned link to
-# the calculation at creation time.
-Calculation = HistoryAwareReferenceField(
-    'Calculation',
+# UID of the Calculation linked at analysis creation time.
+# Plain string — no backreference machinery, no version annotation.
+# Used only for display and navigation back to the Calculation object.
+CalculationUID = StringField(
+    "CalculationUID",
     read_permission=View,
     write_permission=FieldEditAnalysisResult,
-    allowed_types=('Calculation',),
-    relationship='AnalysisCalculation',
-    referenceClass=HoldingReference
+    default="",
+)
+
+# Formula snapshotted from the Calculation at linking time.
+# Stored in minified form (no newlines) and used directly by
+# calculateResult, independent of any later changes to the Calculation.
+CalculationFormula = StringField(
+    "CalculationFormula",
+    read_permission=View,
+    write_permission=FieldEditAnalysisResult,
+    default="",
+)
+
+# Python imports snapshotted from the Calculation at linking time,
+# stored as a JSON-encoded list of {"module": ..., "function": ...} dicts.
+# Keeping this snapshot ensures that changes to a Calculation's imports do
+# not break existing Analyses that were created with the old imports.
+CalculationImports = StringField(
+    "CalculationImports",
+    read_permission=View,
+    write_permission=FieldEditAnalysisResult,
+    default="",
+)
+
+# Snapshot version (auditlog index) of the Calculation at linking time.
+# Stored for audit display only; not used for formula evaluation.
+CalculationVersion = IntegerField(
+    "CalculationVersion",
+    read_permission=View,
+    default=0,
 )
 
 # InterimFields are defined in Calculations, Services, and Analyses.
@@ -174,16 +203,117 @@ schema = schema.copy() + Schema((
     ResultCaptureDate,
     RetestOf,
     Uncertainty,
-    Calculation,
+    CalculationUID,
+    CalculationFormula,
+    CalculationImports,
+    CalculationVersion,
     InterimFields,
     ResultsRange,
 ))
+
+
+def _normalize_interim(interim):
+    """Normalize an interim dict for storage in an AT analysis field.
+
+    DX Calculation interims use ``apply_wide`` while the AT
+    ``InterimFieldsField`` expects ``wide``.  Renames the key so
+    that the value is not silently discarded.
+    """
+    row = dict(interim)
+    if "apply_wide" in row and "wide" not in row:
+        row["wide"] = row.pop("apply_wide")
+    return row
 
 
 class AbstractAnalysis(AbstractBaseAnalysis):
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    @security.public
+    def getCalculationImports(self):
+        """Return the snapshotted Python imports as a list of dicts.
+
+        The raw field stores a JSON-encoded string so that the list of
+        import records survives AT serialization unchanged.
+        """
+        raw = self.getField("CalculationImports").get(self) or ""
+        if not raw:
+            return []
+        return json.loads(raw)
+
+    @security.public
+    def setCalculationImports(self, value):
+        """Store the Python imports list as a JSON-encoded string.
+        """
+        self.getField("CalculationImports").set(
+            self, json.dumps(value or []))
+
+    @security.public
+    def getCalculation(self):
+        """Return the linked Calculation object, or None.
+
+        Resolves the CalculationUID stored at linking time to a live object.
+        Returns None if no calculation was linked or the object is not found.
+        Used for display and navigation; formula evaluation uses the
+        snapshotted CalculationFormula field instead.
+        """
+        uid = self.getField("CalculationUID").get(self)
+        if not uid:
+            return None
+        return api.get_object_by_uid(uid, default=None)
+
+    @security.public
+    def getRawCalculation(self):
+        """Return the UID of the linked Calculation, or an empty string.
+        """
+        return self.getField("CalculationUID").get(self) or ""
+
+    @security.public
+    def setCalculation(self, value):
+        """Link a Calculation and snapshot its formula, imports and version.
+
+        Stamps CalculationUID, CalculationFormula, CalculationImports and
+        CalculationVersion onto the analysis from the given Calculation object
+        at the moment of linking.  Subsequent edits to the Calculation do not
+        affect analyses that have already been linked.
+
+        Merges the Calculation's interim fields into the analysis: calc interims
+        come first, then any interims already on the analysis whose keyword is
+        not in the calculation are appended after.  This ensures calculateResult
+        needs no live Calculation lookup.
+        """
+        if value:
+            calc = api.get_object(value)
+            uid = api.get_uid(calc)
+            formula = calc.getMinifiedFormula()
+            imports = json.dumps(calc.getPythonImports() or [])
+            version = api.get_version(calc) or 0
+        else:
+            uid = ""
+            formula = ""
+            imports = json.dumps([])
+            version = 0
+
+        self.getField("CalculationUID").set(self, uid)
+        self.getField("CalculationFormula").set(self, formula)
+        self.getField("CalculationImports").set(self, imports)
+        self.getField("CalculationVersion").set(self, version)
+
+        # Merge calc interims into the analysis: calc interims come first,
+        # then any service-only interims (keywords not in the calculation).
+        if not value:
+            return
+        calc_interims = [
+            _normalize_interim(i)
+            for i in copy.deepcopy(calc.getInterimFields())
+        ]
+        calc_keywords = {i.get("keyword") for i in calc_interims}
+        service_only = [
+            i for i in copy.deepcopy(self.getInterimFields())
+            if i.get("keyword") not in calc_keywords
+        ]
+        self.setInterimFields(calc_interims + service_only)
 
     @deprecated('[1705] Currently returns the Analysis object itself.  If you '
                 'need to get the service, use getAnalysisService instead')
@@ -589,20 +719,20 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if self.getResult() and override is False:
             return False
 
-        calc = self.getCalculation()
-        if not calc:
+        # Use the formula and imports snapshotted at linking time so that
+        # later edits to the Calculation do not affect existing analyses.
+        formula = self.getCalculationFormula()
+        if not formula:
             return False
-
-        # get the formula from the calculation
-        formula = calc.getMinifiedFormula()
 
         # Include the current context UID in the mapping, so it can be passed
         # as a param in built-in functions, like 'get_result(%(context_uid)s)'
         mapping = {"context_uid": '"{}"'.format(self.UID())}
 
-        # Interims' priority order (from low to high):
-        # Calculation < Analysis
-        interims = calc.getInterimFields() + self.getInterimFields()
+        # Interim fields are frozen into the analysis at linking time by
+        # setCalculation, so self.getInterimFields() already contains both
+        # the calculation defaults and any per-analysis overrides.
+        interims = self.getInterimFields()
 
         # Add interims to mapping
         for i in interims:
@@ -709,7 +839,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                             'math': math,
                             'context': self},
                            {'mapping': mapping})
-            result = eval(formula, calc._getGlobals())
+            result = eval(formula, getGlobals(self.getCalculationImports()))
         except ZeroDivisionError:
             self.setResult('0/0')
             return True
@@ -936,11 +1066,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # If string-like result, return without any formatting
         if result_type in ["string", "text"]:
-            if html:
-                result = result if api.is_string(result) else str(result)
-                result = cgi.escape(result)
-                result = result.replace("\n", "<br/>")
-            return result
+            return formatTextResult(result, html=html)
 
         # If a detection limit, return '< LDL' or '> UDL'
         dl = self.getDetectionLimitOperand()
@@ -1148,7 +1274,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """This method is used to populate catalog values
         Returns WS UID if this analysis is assigned to a worksheet, or None.
         """
-        uids = get_backreferences(self, relationship="WorksheetAnalysis")
+        uids = get_backrefs(self, relationship="WorksheetAnalysis")
         if not uids:
             return None
 

@@ -39,20 +39,36 @@
           <div class="pr-3" tal:condition="python:view.can_manage_sample_fields()">
             <a class="text-decoration-none"
                target="_blank"
+               title="Manage sample fields"
+               i18n:attributes="title"
                tal:attributes="href python:context.absolute_url() + '/manage-sample-fields'">
-              <i class="fas fa-tasks"></i>
+              <i class="fas fa-sliders-h"></i>
             </a>
           </div>
           <!-- Toggle standard fields visibility -->
           <div tal:condition="python:render_standard_fields">
-            <a href="#" class="text-decoration-none" data-toggle="collapse" data-target="#sampleheader-standard-fields">
+            <a href="#" class="text-decoration-none"
+               data-toggle="collapse"
+               data-target="#sampleheader-standard-fields">
               <tal:toggleicons tal:condition="python:show_standard_fields">
-                <i id="toggle-show-icon" class="fas fa-window-maximize"></i>
-                <i id="toggle-hide-icon" class="fas fa-window-minimize d-none"></i>
+                <i id="toggle-show-icon"
+                   class="fas fa-chevron-up"
+                   title="Hide additional fields"
+                   i18n:attributes="title"></i>
+                <i id="toggle-hide-icon"
+                   class="fas fa-chevron-down d-none"
+                   title="Show additional fields"
+                   i18n:attributes="title"></i>
               </tal:toggleicons>
               <tal:toggleicons tal:condition="python:not show_standard_fields">
-                <i id="toggle-show-icon" class="fas fa-window-maximize d-none"></i>
-                <i id="toggle-hide-icon" class="fas fa-window-minimize"></i>
+                <i id="toggle-show-icon"
+                   class="fas fa-chevron-up d-none"
+                   title="Hide additional fields"
+                   i18n:attributes="title"></i>
+                <i id="toggle-hide-icon"
+                   class="fas fa-chevron-down"
+                   title="Show additional fields"
+                   i18n:attributes="title"></i>
               </tal:toggleicons>
             </a>
           </div>
@@ -109,7 +125,7 @@
               </tal:batch>
             </tr>
           </table>
-      </div>
+        </div>
 
         <!-- Standard fields -->
         <div id="sampleheader-standard-fields" class="table-responsive"
@@ -165,7 +181,7 @@
           </table>
         </div>
 
-        <tal:controls condition="python:render_prominent_fields and render_standard_fields">
+        <tal:controls condition="python:render_prominent_fields or render_standard_fields">
           <!-- Save Button -->
           <input tal:condition="python:view.show_save"
                  class="btn btn-sm btn-primary mt-2"

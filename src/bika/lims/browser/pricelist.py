@@ -24,7 +24,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api.security import check_permission
 from bika.lims.browser import BrowserView
-from bika.lims.browser.bika_listing import BikaListingView
+from senaite.core.browser.listing.base import ListingView
 from bika.lims.utils import get_link
 from DateTime import DateTime
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -32,7 +32,7 @@ from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.permissions import AddPricelist
 
 
-class PricelistsView(BikaListingView):
+class PricelistsView(ListingView):
     """Listing view for Pricelists
     """
 

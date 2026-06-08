@@ -103,7 +103,7 @@ class PrintView(BrowserView):
     def get_default_decimal_mark(self):
         """Returns the default decimal mark from the setup
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getDecimalMark()
 
     def get_analyses_data_by_title(self, ar_data, title):
@@ -214,7 +214,7 @@ class PrintView(BrowserView):
                   accreditation_body, accreditation_logo, logo
         """
         portal = self.context.portal_url.getPortalObject()
-        lab = self.context.bika_setup.laboratory
+        lab = api.get_senaite_setup().laboratory
         lab_address = lab.getPostalAddress() \
             or lab.getBillingAddress() \
             or lab.getPhysicalAddress()

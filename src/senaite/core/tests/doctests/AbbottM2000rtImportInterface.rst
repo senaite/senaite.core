@@ -44,7 +44,7 @@ Variables:
     >>> sampletypes = senaite_setup.sampletypes
     >>> analysiscategories = senaite_setup.analysiscategories
     >>> bika_analysisservices = bika_setup.bika_analysisservices
-    >>> bika_calculations = bika_setup.bika_calculations
+    >>> calculations = senaite_setup.calculations
 
 We need certain permissions to create and access objects used in this test,
 so here we will assume the role of Lab Manager:
@@ -119,8 +119,7 @@ This service matches the service specified in the file from which the import wil
     >>> analysisservice
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>
 
-    >>> total_calc = api.create(bika_calculations, 'Calculation', title='TotalCalc')
-    >>> total_calc.setFormula('[HIV06ml] * 100')
+    >>> total_calc = api.create(calculations, 'Calculation', title='TotalCalc', Formula='[HIV06ml] * 100')
     >>> analysisservice2 = api.create(bika_analysisservices,
     ...                              "AnalysisService",
     ...                              title="Test Total Results",

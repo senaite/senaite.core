@@ -1,5 +1,5 @@
 /*
- * International Telephone Input v25.3.1
+ * International Telephone Input v26.8.1
  * https://github.com/jackocnr/intl-tel-input.git
  * Licensed under the MIT license
  */
@@ -44,30 +44,43 @@ var factoryOutput = (() => {
     [
       "af",
       // Afghanistan
-      "93"
+      "93",
+      0,
+      null,
+      "0"
     ],
     [
       "ax",
       // Åland Islands
       "358",
-      1
+      1,
+      ["18", "4"],
+      // (4 is a mobile range shared with FI)
+      "0"
     ],
     [
       "al",
       // Albania
-      "355"
+      "355",
+      0,
+      null,
+      "0"
     ],
     [
       "dz",
       // Algeria
-      "213"
+      "213",
+      0,
+      null,
+      "0"
     ],
     [
       "as",
       // American Samoa
       "1",
       5,
-      ["684"]
+      ["684"],
+      "1"
     ],
     [
       "ad",
@@ -84,24 +97,32 @@ var factoryOutput = (() => {
       // Anguilla
       "1",
       6,
-      ["264"]
+      ["264"],
+      "1"
     ],
     [
       "ag",
       // Antigua and Barbuda
       "1",
       7,
-      ["268"]
+      ["268"],
+      "1"
     ],
     [
       "ar",
       // Argentina
-      "54"
+      "54",
+      0,
+      null,
+      "0"
     ],
     [
       "am",
       // Armenia
-      "374"
+      "374",
+      0,
+      null,
+      "0"
     ],
     [
       "aw",
@@ -118,25 +139,33 @@ var factoryOutput = (() => {
       // Australia
       "61",
       0,
-      null,
+      ["4"],
+      // (mobile range shared with CX and CC)
       "0"
     ],
     [
       "at",
       // Austria
-      "43"
+      "43",
+      0,
+      null,
+      "0"
     ],
     [
       "az",
       // Azerbaijan
-      "994"
+      "994",
+      0,
+      null,
+      "0"
     ],
     [
       "bs",
       // Bahamas
       "1",
       8,
-      ["242"]
+      ["242"],
+      "1"
     ],
     [
       "bh",
@@ -146,24 +175,34 @@ var factoryOutput = (() => {
     [
       "bd",
       // Bangladesh
-      "880"
+      "880",
+      0,
+      null,
+      "0"
     ],
     [
       "bb",
       // Barbados
       "1",
       9,
-      ["246"]
+      ["246"],
+      "1"
     ],
     [
       "by",
       // Belarus
-      "375"
+      "375",
+      0,
+      null,
+      "8"
     ],
     [
       "be",
       // Belgium
-      "32"
+      "32",
+      0,
+      null,
+      "0"
     ],
     [
       "bz",
@@ -180,7 +219,8 @@ var factoryOutput = (() => {
       // Bermuda
       "1",
       10,
-      ["441"]
+      ["441"],
+      "1"
     ],
     [
       "bt",
@@ -190,12 +230,18 @@ var factoryOutput = (() => {
     [
       "bo",
       // Bolivia
-      "591"
+      "591",
+      0,
+      null,
+      "0"
     ],
     [
       "ba",
       // Bosnia and Herzegovina
-      "387"
+      "387",
+      0,
+      null,
+      "0"
     ],
     [
       "bw",
@@ -205,7 +251,10 @@ var factoryOutput = (() => {
     [
       "br",
       // Brazil
-      "55"
+      "55",
+      0,
+      null,
+      "0"
     ],
     [
       "io",
@@ -217,7 +266,8 @@ var factoryOutput = (() => {
       // British Virgin Islands
       "1",
       11,
-      ["284"]
+      ["284"],
+      "1"
     ],
     [
       "bn",
@@ -227,7 +277,10 @@ var factoryOutput = (() => {
     [
       "bg",
       // Bulgaria
-      "359"
+      "359",
+      0,
+      null,
+      "0"
     ],
     [
       "bf",
@@ -242,7 +295,10 @@ var factoryOutput = (() => {
     [
       "kh",
       // Cambodia
-      "855"
+      "855",
+      0,
+      null,
+      "0"
     ],
     [
       "cm",
@@ -254,7 +310,8 @@ var factoryOutput = (() => {
       // Canada
       "1",
       1,
-      ["204", "226", "236", "249", "250", "263", "289", "306", "343", "354", "365", "367", "368", "382", "387", "403", "416", "418", "428", "431", "437", "438", "450", "584", "468", "474", "506", "514", "519", "548", "579", "581", "584", "587", "604", "613", "639", "647", "672", "683", "705", "709", "742", "753", "778", "780", "782", "807", "819", "825", "867", "873", "879", "902", "905"]
+      ["204", "226", "236", "249", "250", "257", "263", "289", "306", "343", "354", "365", "367", "368", "382", "403", "416", "418", "428", "431", "437", "438", "450", "468", "474", "506", "514", "519", "548", "579", "581", "584", "587", "604", "613", "639", "647", "672", "683", "705", "709", "742", "753", "778", "780", "782", "807", "819", "825", "867", "873", "879", "902", "905", "942"],
+      "1"
     ],
     [
       "cv",
@@ -273,7 +330,8 @@ var factoryOutput = (() => {
       // Cayman Islands
       "1",
       12,
-      ["345"]
+      ["345"],
+      "1"
     ],
     [
       "cf",
@@ -293,14 +351,18 @@ var factoryOutput = (() => {
     [
       "cn",
       // China
-      "86"
+      "86",
+      0,
+      null,
+      "0"
     ],
     [
       "cx",
       // Christmas Island
       "61",
       2,
-      ["89164"],
+      ["4", "89164"],
+      // (4 is a mobile range shared with AU and CC)
       "0"
     ],
     [
@@ -308,13 +370,17 @@ var factoryOutput = (() => {
       // Cocos (Keeling) Islands
       "61",
       1,
-      ["89162"],
+      ["4", "89162"],
+      // (4 is a mobile range shared with AU and CX)
       "0"
     ],
     [
       "co",
       // Colombia
-      "57"
+      "57",
+      0,
+      null,
+      "0"
     ],
     [
       "km",
@@ -329,7 +395,10 @@ var factoryOutput = (() => {
     [
       "cd",
       // Congo (Kinshasa)
-      "243"
+      "243",
+      0,
+      null,
+      "0"
     ],
     [
       "ck",
@@ -349,12 +418,18 @@ var factoryOutput = (() => {
     [
       "hr",
       // Croatia
-      "385"
+      "385",
+      0,
+      null,
+      "0"
     ],
     [
       "cu",
       // Cuba
-      "53"
+      "53",
+      0,
+      null,
+      "0"
     ],
     [
       "cw",
@@ -387,24 +462,32 @@ var factoryOutput = (() => {
       // Dominica
       "1",
       13,
-      ["767"]
+      ["767"],
+      "1"
     ],
     [
       "do",
       // Dominican Republic
       "1",
       2,
-      ["809", "829", "849"]
+      ["809", "829", "849"],
+      "1"
     ],
     [
       "ec",
       // Ecuador
-      "593"
+      "593",
+      0,
+      null,
+      "0"
     ],
     [
       "eg",
       // Egypt
-      "20"
+      "20",
+      0,
+      null,
+      "0"
     ],
     [
       "sv",
@@ -419,7 +502,10 @@ var factoryOutput = (() => {
     [
       "er",
       // Eritrea
-      "291"
+      "291",
+      0,
+      null,
+      "0"
     ],
     [
       "ee",
@@ -434,7 +520,10 @@ var factoryOutput = (() => {
     [
       "et",
       // Ethiopia
-      "251"
+      "251",
+      0,
+      null,
+      "0"
     ],
     [
       "fk",
@@ -455,17 +544,26 @@ var factoryOutput = (() => {
       "fi",
       // Finland
       "358",
-      0
+      0,
+      ["4"],
+      // (mobile range shared with AX)
+      "0"
     ],
     [
       "fr",
       // France
-      "33"
+      "33",
+      0,
+      null,
+      "0"
     ],
     [
       "gf",
       // French Guiana
-      "594"
+      "594",
+      0,
+      null,
+      "0"
     ],
     [
       "pf",
@@ -485,17 +583,26 @@ var factoryOutput = (() => {
     [
       "ge",
       // Georgia
-      "995"
+      "995",
+      0,
+      null,
+      "0"
     ],
     [
       "de",
       // Germany
-      "49"
+      "49",
+      0,
+      null,
+      "0"
     ],
     [
       "gh",
       // Ghana
-      "233"
+      "233",
+      0,
+      null,
+      "0"
     ],
     [
       "gi",
@@ -517,20 +624,24 @@ var factoryOutput = (() => {
       // Grenada
       "1",
       14,
-      ["473"]
+      ["473"],
+      "1"
     ],
     [
       "gp",
       // Guadeloupe
       "590",
-      0
+      0,
+      null,
+      "0"
     ],
     [
       "gu",
       // Guam
       "1",
       15,
-      ["671"]
+      ["671"],
+      "1"
     ],
     [
       "gt",
@@ -578,7 +689,10 @@ var factoryOutput = (() => {
     [
       "hu",
       // Hungary
-      "36"
+      "36",
+      0,
+      null,
+      "06"
     ],
     [
       "is",
@@ -588,58 +702,82 @@ var factoryOutput = (() => {
     [
       "in",
       // India
-      "91"
+      "91",
+      0,
+      null,
+      "0"
     ],
     [
       "id",
       // Indonesia
-      "62"
+      "62",
+      0,
+      null,
+      "0"
     ],
     [
       "ir",
       // Iran
-      "98"
+      "98",
+      0,
+      null,
+      "0"
     ],
     [
       "iq",
       // Iraq
-      "964"
+      "964",
+      0,
+      null,
+      "0"
     ],
     [
       "ie",
       // Ireland
-      "353"
+      "353",
+      0,
+      null,
+      "0"
     ],
     [
       "im",
       // Isle of Man
       "44",
       2,
-      ["1624", "74576", "7524", "7924", "7624"],
+      ["1624", "74576", "7524", "7624", "7924"],
       "0"
     ],
     [
       "il",
       // Israel
-      "972"
+      "972",
+      0,
+      null,
+      "0"
     ],
     [
       "it",
       // Italy
       "39",
-      0
+      0,
+      ["3"]
+      // (mobile range shared with VA)
     ],
     [
       "jm",
       // Jamaica
       "1",
       4,
-      ["876", "658"]
+      ["658", "876"],
+      "1"
     ],
     [
       "jp",
       // Japan
-      "81"
+      "81",
+      0,
+      null,
+      "0"
     ],
     [
       "je",
@@ -652,7 +790,10 @@ var factoryOutput = (() => {
     [
       "jo",
       // Jordan
-      "962"
+      "962",
+      0,
+      null,
+      "0"
     ],
     [
       "kz",
@@ -660,22 +801,32 @@ var factoryOutput = (() => {
       "7",
       1,
       ["33", "7"],
+      // (33 is shared with RU)
       "8"
     ],
     [
       "ke",
       // Kenya
-      "254"
+      "254",
+      0,
+      null,
+      "0"
     ],
     [
       "ki",
       // Kiribati
-      "686"
+      "686",
+      0,
+      null,
+      "0"
     ],
     [
       "xk",
       // Kosovo
-      "383"
+      "383",
+      0,
+      null,
+      "0"
     ],
     [
       "kw",
@@ -685,12 +836,18 @@ var factoryOutput = (() => {
     [
       "kg",
       // Kyrgyzstan
-      "996"
+      "996",
+      0,
+      null,
+      "0"
     ],
     [
       "la",
       // Laos
-      "856"
+      "856",
+      0,
+      null,
+      "0"
     ],
     [
       "lv",
@@ -700,7 +857,10 @@ var factoryOutput = (() => {
     [
       "lb",
       // Lebanon
-      "961"
+      "961",
+      0,
+      null,
+      "0"
     ],
     [
       "ls",
@@ -710,22 +870,34 @@ var factoryOutput = (() => {
     [
       "lr",
       // Liberia
-      "231"
+      "231",
+      0,
+      null,
+      "0"
     ],
     [
       "ly",
       // Libya
-      "218"
+      "218",
+      0,
+      null,
+      "0"
     ],
     [
       "li",
       // Liechtenstein
-      "423"
+      "423",
+      0,
+      null,
+      "0"
     ],
     [
       "lt",
       // Lithuania
-      "370"
+      "370",
+      0,
+      null,
+      "0"
     ],
     [
       "lu",
@@ -740,17 +912,26 @@ var factoryOutput = (() => {
     [
       "mg",
       // Madagascar
-      "261"
+      "261",
+      0,
+      null,
+      "0"
     ],
     [
       "mw",
       // Malawi
-      "265"
+      "265",
+      0,
+      null,
+      "0"
     ],
     [
       "my",
       // Malaysia
-      "60"
+      "60",
+      0,
+      null,
+      "0"
     ],
     [
       "mv",
@@ -770,12 +951,18 @@ var factoryOutput = (() => {
     [
       "mh",
       // Marshall Islands
-      "692"
+      "692",
+      0,
+      null,
+      "1"
     ],
     [
       "mq",
       // Martinique
-      "596"
+      "596",
+      0,
+      null,
+      "0"
     ],
     [
       "mr",
@@ -808,36 +995,50 @@ var factoryOutput = (() => {
     [
       "md",
       // Moldova
-      "373"
+      "373",
+      0,
+      null,
+      "0"
     ],
     [
       "mc",
       // Monaco
-      "377"
+      "377",
+      0,
+      null,
+      "0"
     ],
     [
       "mn",
       // Mongolia
-      "976"
+      "976",
+      0,
+      null,
+      "0"
     ],
     [
       "me",
       // Montenegro
-      "382"
+      "382",
+      0,
+      null,
+      "0"
     ],
     [
       "ms",
       // Montserrat
       "1",
       16,
-      ["664"]
+      ["664"],
+      "1"
     ],
     [
       "ma",
       // Morocco
       "212",
       0,
-      null,
+      ["6", "7"],
+      // (mobile ranges shared with EH)
       "0"
     ],
     [
@@ -848,12 +1049,18 @@ var factoryOutput = (() => {
     [
       "mm",
       // Myanmar (Burma)
-      "95"
+      "95",
+      0,
+      null,
+      "0"
     ],
     [
       "na",
       // Namibia
-      "264"
+      "264",
+      0,
+      null,
+      "0"
     ],
     [
       "nr",
@@ -863,12 +1070,18 @@ var factoryOutput = (() => {
     [
       "np",
       // Nepal
-      "977"
+      "977",
+      0,
+      null,
+      "0"
     ],
     [
       "nl",
       // Netherlands
-      "31"
+      "31",
+      0,
+      null,
+      "0"
     ],
     [
       "nc",
@@ -878,7 +1091,10 @@ var factoryOutput = (() => {
     [
       "nz",
       // New Zealand
-      "64"
+      "64",
+      0,
+      null,
+      "0"
     ],
     [
       "ni",
@@ -893,7 +1109,10 @@ var factoryOutput = (() => {
     [
       "ng",
       // Nigeria
-      "234"
+      "234",
+      0,
+      null,
+      "0"
     ],
     [
       "nu",
@@ -908,25 +1127,34 @@ var factoryOutput = (() => {
     [
       "kp",
       // North Korea
-      "850"
+      "850",
+      0,
+      null,
+      "0"
     ],
     [
       "mk",
       // North Macedonia
-      "389"
+      "389",
+      0,
+      null,
+      "0"
     ],
     [
       "mp",
       // Northern Mariana Islands
       "1",
       17,
-      ["670"]
+      ["670"],
+      "1"
     ],
     [
       "no",
       // Norway
       "47",
-      0
+      0,
+      ["4", "9"]
+      // (mobile ranges shared with SJ)
     ],
     [
       "om",
@@ -936,7 +1164,10 @@ var factoryOutput = (() => {
     [
       "pk",
       // Pakistan
-      "92"
+      "92",
+      0,
+      null,
+      "0"
     ],
     [
       "pw",
@@ -946,7 +1177,10 @@ var factoryOutput = (() => {
     [
       "ps",
       // Palestinian Territories
-      "970"
+      "970",
+      0,
+      null,
+      "0"
     ],
     [
       "pa",
@@ -961,17 +1195,26 @@ var factoryOutput = (() => {
     [
       "py",
       // Paraguay
-      "595"
+      "595",
+      0,
+      null,
+      "0"
     ],
     [
       "pe",
       // Peru
-      "51"
+      "51",
+      0,
+      null,
+      "0"
     ],
     [
       "ph",
       // Philippines
-      "63"
+      "63",
+      0,
+      null,
+      "0"
     ],
     [
       "pl",
@@ -988,7 +1231,8 @@ var factoryOutput = (() => {
       // Puerto Rico
       "1",
       3,
-      ["787", "939"]
+      ["787", "939"],
+      "1"
     ],
     [
       "qa",
@@ -1006,20 +1250,27 @@ var factoryOutput = (() => {
     [
       "ro",
       // Romania
-      "40"
+      "40",
+      0,
+      null,
+      "0"
     ],
     [
       "ru",
       // Russia
       "7",
       0,
-      null,
+      ["33"],
+      // (shared with KZ)
       "8"
     ],
     [
       "rw",
       // Rwanda
-      "250"
+      "250",
+      0,
+      null,
+      "0"
     ],
     [
       "ws",
@@ -1039,7 +1290,10 @@ var factoryOutput = (() => {
     [
       "sa",
       // Saudi Arabia
-      "966"
+      "966",
+      0,
+      null,
+      "0"
     ],
     [
       "sn",
@@ -1049,7 +1303,10 @@ var factoryOutput = (() => {
     [
       "rs",
       // Serbia
-      "381"
+      "381",
+      0,
+      null,
+      "0"
     ],
     [
       "sc",
@@ -1059,7 +1316,10 @@ var factoryOutput = (() => {
     [
       "sl",
       // Sierra Leone
-      "232"
+      "232",
+      0,
+      null,
+      "0"
     ],
     [
       "sg",
@@ -1071,17 +1331,24 @@ var factoryOutput = (() => {
       // Sint Maarten
       "1",
       21,
-      ["721"]
+      ["721"],
+      "1"
     ],
     [
       "sk",
       // Slovakia
-      "421"
+      "421",
+      0,
+      null,
+      "0"
     ],
     [
       "si",
       // Slovenia
-      "386"
+      "386",
+      0,
+      null,
+      "0"
     ],
     [
       "sb",
@@ -1091,22 +1358,34 @@ var factoryOutput = (() => {
     [
       "so",
       // Somalia
-      "252"
+      "252",
+      0,
+      null,
+      "0"
     ],
     [
       "za",
       // South Africa
-      "27"
+      "27",
+      0,
+      null,
+      "0"
     ],
     [
       "kr",
       // South Korea
-      "82"
+      "82",
+      0,
+      null,
+      "0"
     ],
     [
       "ss",
       // South Sudan
-      "211"
+      "211",
+      0,
+      null,
+      "0"
     ],
     [
       "es",
@@ -1116,13 +1395,18 @@ var factoryOutput = (() => {
     [
       "lk",
       // Sri Lanka
-      "94"
+      "94",
+      0,
+      null,
+      "0"
     ],
     [
       "bl",
       // St. Barthélemy
       "590",
-      1
+      1,
+      null,
+      "0"
     ],
     [
       "sh",
@@ -1134,37 +1418,48 @@ var factoryOutput = (() => {
       // St. Kitts & Nevis
       "1",
       18,
-      ["869"]
+      ["869"],
+      "1"
     ],
     [
       "lc",
       // St. Lucia
       "1",
       19,
-      ["758"]
+      ["758"],
+      "1"
     ],
     [
       "mf",
       // St. Martin
       "590",
-      2
+      2,
+      null,
+      "0"
     ],
     [
       "pm",
       // St. Pierre & Miquelon
-      "508"
+      "508",
+      0,
+      null,
+      "0"
     ],
     [
       "vc",
       // St. Vincent & Grenadines
       "1",
       20,
-      ["784"]
+      ["784"],
+      "1"
     ],
     [
       "sd",
       // Sudan
-      "249"
+      "249",
+      0,
+      null,
+      "0"
     ],
     [
       "sr",
@@ -1176,27 +1471,40 @@ var factoryOutput = (() => {
       // Svalbard & Jan Mayen
       "47",
       1,
-      ["79"]
+      ["4", "79", "9"]
+      // (4 and 9 are mobile ranges shared with NO)
     ],
     [
       "se",
       // Sweden
-      "46"
+      "46",
+      0,
+      null,
+      "0"
     ],
     [
       "ch",
       // Switzerland
-      "41"
+      "41",
+      0,
+      null,
+      "0"
     ],
     [
       "sy",
       // Syria
-      "963"
+      "963",
+      0,
+      null,
+      "0"
     ],
     [
       "tw",
       // Taiwan
-      "886"
+      "886",
+      0,
+      null,
+      "0"
     ],
     [
       "tj",
@@ -1206,12 +1514,18 @@ var factoryOutput = (() => {
     [
       "tz",
       // Tanzania
-      "255"
+      "255",
+      0,
+      null,
+      "0"
     ],
     [
       "th",
       // Thailand
-      "66"
+      "66",
+      0,
+      null,
+      "0"
     ],
     [
       "tl",
@@ -1238,7 +1552,8 @@ var factoryOutput = (() => {
       // Trinidad & Tobago
       "1",
       22,
-      ["868"]
+      ["868"],
+      "1"
     ],
     [
       "tn",
@@ -1248,19 +1563,26 @@ var factoryOutput = (() => {
     [
       "tr",
       // Turkey
-      "90"
+      "90",
+      0,
+      null,
+      "0"
     ],
     [
       "tm",
       // Turkmenistan
-      "993"
+      "993",
+      0,
+      null,
+      "8"
     ],
     [
       "tc",
       // Turks & Caicos Islands
       "1",
       23,
-      ["649"]
+      ["649"],
+      "1"
     ],
     [
       "tv",
@@ -1268,19 +1590,36 @@ var factoryOutput = (() => {
       "688"
     ],
     [
+      "vi",
+      // U.S. Virgin Islands
+      "1",
+      24,
+      ["340"],
+      "1"
+    ],
+    [
       "ug",
       // Uganda
-      "256"
+      "256",
+      0,
+      null,
+      "0"
     ],
     [
       "ua",
       // Ukraine
-      "380"
+      "380",
+      0,
+      null,
+      "0"
     ],
     [
       "ae",
       // United Arab Emirates
-      "971"
+      "971",
+      0,
+      null,
+      "0"
     ],
     [
       "gb",
@@ -1294,19 +1633,17 @@ var factoryOutput = (() => {
       "us",
       // United States
       "1",
-      0
+      0,
+      null,
+      "1"
     ],
     [
       "uy",
       // Uruguay
-      "598"
-    ],
-    [
-      "vi",
-      // U.S. Virgin Islands
-      "1",
-      24,
-      ["340"]
+      "598",
+      0,
+      null,
+      "0"
     ],
     [
       "uz",
@@ -1323,17 +1660,24 @@ var factoryOutput = (() => {
       // Vatican City
       "39",
       1,
-      ["06698"]
+      ["06698", "3"]
+      // (3 is a mobile range shared with IT)
     ],
     [
       "ve",
       // Venezuela
-      "58"
+      "58",
+      0,
+      null,
+      "0"
     ],
     [
       "vn",
       // Vietnam
-      "84"
+      "84",
+      0,
+      null,
+      "0"
     ],
     [
       "wf",
@@ -1345,325 +1689,232 @@ var factoryOutput = (() => {
       // Western Sahara
       "212",
       1,
-      ["5288", "5289"],
+      ["5288", "5289", "6", "7"],
+      // (6 and 7 are mobile ranges shared with MA)
       "0"
     ],
     [
       "ye",
       // Yemen
-      "967"
+      "967",
+      0,
+      null,
+      "0"
     ],
     [
       "zm",
       // Zambia
-      "260"
+      "260",
+      0,
+      null,
+      "0"
     ],
     [
       "zw",
       // Zimbabwe
-      "263"
+      "263",
+      0,
+      null,
+      "0"
     ]
   ];
   var allCountries = [];
-  for (let i = 0; i < rawCountryData.length; i++) {
-    const c = rawCountryData[i];
-    allCountries[i] = {
+  for (const c of rawCountryData) {
+    allCountries.push({
       name: "",
-      // this is now populated in the plugin
+      // populated in the plugin
       iso2: c[0],
       dialCode: c[1],
       priority: c[2] || 0,
       areaCodes: c[3] || null,
       nodeById: {},
-      nationalPrefix: c[4] || null
-    };
+      // populated by the plugin
+      nationalPrefix: c[4] || null,
+      normalisedName: "",
+      // populated in the plugin
+      initials: "",
+      // populated in the plugin
+      dialCodePlus: ""
+      // populated in the plugin
+    });
   }
   var data_default = allCountries;
 
-  // src/js/intl-tel-input/i18n/en/countries.ts
-  var countryTranslations = {
-    ad: "Andorra",
-    ae: "United Arab Emirates",
-    af: "Afghanistan",
-    ag: "Antigua & Barbuda",
-    ai: "Anguilla",
-    al: "Albania",
-    am: "Armenia",
-    ao: "Angola",
-    ar: "Argentina",
-    as: "American Samoa",
-    at: "Austria",
-    au: "Australia",
-    aw: "Aruba",
-    ax: "\xC5land Islands",
-    az: "Azerbaijan",
-    ba: "Bosnia & Herzegovina",
-    bb: "Barbados",
-    bd: "Bangladesh",
-    be: "Belgium",
-    bf: "Burkina Faso",
-    bg: "Bulgaria",
-    bh: "Bahrain",
-    bi: "Burundi",
-    bj: "Benin",
-    bl: "St. Barth\xE9lemy",
-    bm: "Bermuda",
-    bn: "Brunei",
-    bo: "Bolivia",
-    bq: "Caribbean Netherlands",
-    br: "Brazil",
-    bs: "Bahamas",
-    bt: "Bhutan",
-    bw: "Botswana",
-    by: "Belarus",
-    bz: "Belize",
-    ca: "Canada",
-    cc: "Cocos (Keeling) Islands",
-    cd: "Congo - Kinshasa",
-    cf: "Central African Republic",
-    cg: "Congo - Brazzaville",
-    ch: "Switzerland",
-    ci: "C\xF4te d\u2019Ivoire",
-    ck: "Cook Islands",
-    cl: "Chile",
-    cm: "Cameroon",
-    cn: "China",
-    co: "Colombia",
-    cr: "Costa Rica",
-    cu: "Cuba",
-    cv: "Cape Verde",
-    cw: "Cura\xE7ao",
-    cx: "Christmas Island",
-    cy: "Cyprus",
-    cz: "Czechia",
-    de: "Germany",
-    dj: "Djibouti",
-    dk: "Denmark",
-    dm: "Dominica",
-    do: "Dominican Republic",
-    dz: "Algeria",
-    ec: "Ecuador",
-    ee: "Estonia",
-    eg: "Egypt",
-    eh: "Western Sahara",
-    er: "Eritrea",
-    es: "Spain",
-    et: "Ethiopia",
-    fi: "Finland",
-    fj: "Fiji",
-    fk: "Falkland Islands",
-    fm: "Micronesia",
-    fo: "Faroe Islands",
-    fr: "France",
-    ga: "Gabon",
-    gb: "United Kingdom",
-    gd: "Grenada",
-    ge: "Georgia",
-    gf: "French Guiana",
-    gg: "Guernsey",
-    gh: "Ghana",
-    gi: "Gibraltar",
-    gl: "Greenland",
-    gm: "Gambia",
-    gn: "Guinea",
-    gp: "Guadeloupe",
-    gq: "Equatorial Guinea",
-    gr: "Greece",
-    gt: "Guatemala",
-    gu: "Guam",
-    gw: "Guinea-Bissau",
-    gy: "Guyana",
-    hk: "Hong Kong SAR China",
-    hn: "Honduras",
-    hr: "Croatia",
-    ht: "Haiti",
-    hu: "Hungary",
-    id: "Indonesia",
-    ie: "Ireland",
-    il: "Israel",
-    im: "Isle of Man",
-    in: "India",
-    io: "British Indian Ocean Territory",
-    iq: "Iraq",
-    ir: "Iran",
-    is: "Iceland",
-    it: "Italy",
-    je: "Jersey",
-    jm: "Jamaica",
-    jo: "Jordan",
-    jp: "Japan",
-    ke: "Kenya",
-    kg: "Kyrgyzstan",
-    kh: "Cambodia",
-    ki: "Kiribati",
-    km: "Comoros",
-    kn: "St. Kitts & Nevis",
-    kp: "North Korea",
-    kr: "South Korea",
-    kw: "Kuwait",
-    ky: "Cayman Islands",
-    kz: "Kazakhstan",
-    la: "Laos",
-    lb: "Lebanon",
-    lc: "St. Lucia",
-    li: "Liechtenstein",
-    lk: "Sri Lanka",
-    lr: "Liberia",
-    ls: "Lesotho",
-    lt: "Lithuania",
-    lu: "Luxembourg",
-    lv: "Latvia",
-    ly: "Libya",
-    ma: "Morocco",
-    mc: "Monaco",
-    md: "Moldova",
-    me: "Montenegro",
-    mf: "St. Martin",
-    mg: "Madagascar",
-    mh: "Marshall Islands",
-    mk: "North Macedonia",
-    ml: "Mali",
-    mm: "Myanmar (Burma)",
-    mn: "Mongolia",
-    mo: "Macao SAR China",
-    mp: "Northern Mariana Islands",
-    mq: "Martinique",
-    mr: "Mauritania",
-    ms: "Montserrat",
-    mt: "Malta",
-    mu: "Mauritius",
-    mv: "Maldives",
-    mw: "Malawi",
-    mx: "Mexico",
-    my: "Malaysia",
-    mz: "Mozambique",
-    na: "Namibia",
-    nc: "New Caledonia",
-    ne: "Niger",
-    nf: "Norfolk Island",
-    ng: "Nigeria",
-    ni: "Nicaragua",
-    nl: "Netherlands",
-    no: "Norway",
-    np: "Nepal",
-    nr: "Nauru",
-    nu: "Niue",
-    nz: "New Zealand",
-    om: "Oman",
-    pa: "Panama",
-    pe: "Peru",
-    pf: "French Polynesia",
-    pg: "Papua New Guinea",
-    ph: "Philippines",
-    pk: "Pakistan",
-    pl: "Poland",
-    pm: "St. Pierre & Miquelon",
-    pr: "Puerto Rico",
-    ps: "Palestinian Territories",
-    pt: "Portugal",
-    pw: "Palau",
-    py: "Paraguay",
-    qa: "Qatar",
-    re: "R\xE9union",
-    ro: "Romania",
-    rs: "Serbia",
-    ru: "Russia",
-    rw: "Rwanda",
-    sa: "Saudi Arabia",
-    sb: "Solomon Islands",
-    sc: "Seychelles",
-    sd: "Sudan",
-    se: "Sweden",
-    sg: "Singapore",
-    sh: "St. Helena",
-    si: "Slovenia",
-    sj: "Svalbard & Jan Mayen",
-    sk: "Slovakia",
-    sl: "Sierra Leone",
-    sm: "San Marino",
-    sn: "Senegal",
-    so: "Somalia",
-    sr: "Suriname",
-    ss: "South Sudan",
-    st: "S\xE3o Tom\xE9 & Pr\xEDncipe",
-    sv: "El Salvador",
-    sx: "Sint Maarten",
-    sy: "Syria",
-    sz: "Eswatini",
-    tc: "Turks & Caicos Islands",
-    td: "Chad",
-    tg: "Togo",
-    th: "Thailand",
-    tj: "Tajikistan",
-    tk: "Tokelau",
-    tl: "Timor-Leste",
-    tm: "Turkmenistan",
-    tn: "Tunisia",
-    to: "Tonga",
-    tr: "Turkey",
-    tt: "Trinidad & Tobago",
-    tv: "Tuvalu",
-    tw: "Taiwan",
-    tz: "Tanzania",
-    ua: "Ukraine",
-    ug: "Uganda",
-    us: "United States",
-    uy: "Uruguay",
-    uz: "Uzbekistan",
-    va: "Vatican City",
-    vc: "St. Vincent & Grenadines",
-    ve: "Venezuela",
-    vg: "British Virgin Islands",
-    vi: "U.S. Virgin Islands",
-    vn: "Vietnam",
-    vu: "Vanuatu",
-    wf: "Wallis & Futuna",
-    ws: "Samoa",
-    ye: "Yemen",
-    yt: "Mayotte",
-    za: "South Africa",
-    zm: "Zambia",
-    zw: "Zimbabwe"
+  // src/js/modules/constants.ts
+  var EVENTS = {
+    OPEN_COUNTRY_DROPDOWN: "open:countrydropdown",
+    CLOSE_COUNTRY_DROPDOWN: "close:countrydropdown",
+    COUNTRY_CHANGE: "countrychange",
+    INPUT: "input"
+    // used for synthetic input trigger
   };
-  var countries_default = countryTranslations;
-
-  // src/js/intl-tel-input/i18n/en/interface.ts
-  var interfaceTranslations = {
-    selectedCountryAriaLabel: "Selected country",
-    noCountrySelected: "No country selected",
-    countryListAriaLabel: "List of countries",
-    searchPlaceholder: "Search",
-    zeroSearchResults: "No results found",
-    oneSearchResult: "1 result found",
-    multipleSearchResults: "${count} results found",
-    // additional countries (not supported by country-list library)
-    ac: "Ascension Island",
-    xk: "Kosovo"
+  var CLASSES = {
+    HIDE: "iti__hide",
+    V_HIDE: "iti__v-hide",
+    ARROW_UP: "iti__arrow--up",
+    GLOBE: "iti__globe",
+    FLAG: "iti__flag",
+    LOADING: "iti__loading",
+    COUNTRY_ITEM: "iti__country",
+    HIGHLIGHT: "iti__highlight"
   };
-  var interface_default = interfaceTranslations;
+  var KEYS = {
+    ARROW_UP: "ArrowUp",
+    ARROW_DOWN: "ArrowDown",
+    SPACE: " ",
+    ENTER: "Enter",
+    ESC: "Escape",
+    TAB: "Tab"
+  };
+  var INPUT_TYPES = {
+    PASTE: "insertFromPaste",
+    DELETE_FWD: "deleteContentForward"
+  };
+  var REGEX = {
+    ALPHA_UNICODE: /\p{L}/u,
+    // any kind of letter from any language
+    NON_PLUS_NUMERIC: /[^+0-9]/,
+    // chars that are NOT + or digit
+    NON_PLUS_NUMERIC_GLOBAL: /[^+0-9]/g,
+    // chars that are NOT + or digit (global)
+    HIDDEN_SEARCH_CHAR: /^[a-zA-ZÀ-ÿа-яА-Я ]$/
+    // single acceptable hidden-search char
+  };
+  var TIMINGS = {
+    SEARCH_DEBOUNCE_MS: 100,
+    HIDDEN_SEARCH_RESET_MS: 1e3,
+    NEXT_TICK: 0
+  };
+  var SENTINELS = {
+    UNKNOWN_NUMBER_TYPE: -99,
+    UNKNOWN_VALIDATION_ERROR: -99
+  };
+  var LAYOUT = {
+    NARROW_VIEWPORT_WIDTH: 500,
+    // keep in sync with .iti__country-list CSS media query
+    SANE_SELECTED_WITH_DIAL_WIDTH: 78,
+    // px width fallback when separateDialCode enabled
+    SANE_SELECTED_NO_DIAL_WIDTH: 42,
+    // px width fallback when no separate dial code
+    INPUT_PADDING_EXTRA_LEFT: 6,
+    // px gap between selected country container and input text
+    DROPDOWN_MARGIN: 3,
+    // px margin between dropdown and tel input
+    SANE_DROPDOWN_HEIGHT: 200
+    // px height fallback for dropdown
+  };
+  var DIAL = {
+    PLUS: "+",
+    NANP: "1"
+    // North American Numbering Plan
+  };
+  var UK = {
+    ISO2: "gb",
+    DIAL_CODE: "44",
+    // +44 United Kingdom
+    MOBILE_PREFIX: "7",
+    // UK mobile numbers start with 7 after national trunk (0) or core section
+    MOBILE_CORE_LENGTH: 10
+    // core number length (excluding dial code / national prefix) for mobiles
+  };
+  var US = {
+    ISO2: "us",
+    DIAL_CODE: "1"
+    // +1 United States
+  };
+  var PLACEHOLDER_MODES = {
+    AGGRESSIVE: "aggressive",
+    POLITE: "polite",
+    OFF: "off"
+  };
+  var INITIAL_COUNTRY = {
+    AUTO: "auto"
+  };
+  var NUMBER_TYPES = [
+    "FIXED_LINE",
+    "MOBILE",
+    "FIXED_LINE_OR_MOBILE",
+    "TOLL_FREE",
+    "PREMIUM_RATE",
+    "SHARED_COST",
+    "VOIP",
+    "PERSONAL_NUMBER",
+    "PAGER",
+    "UAN",
+    "VOICEMAIL",
+    "UNKNOWN"
+  ];
+  var NUMBER_TYPE_SET = new Set(NUMBER_TYPES);
+  var DATA_KEYS = {
+    COUNTRY_CODE: "countryCode",
+    DIAL_CODE: "dialCode"
+  };
+  var ARIA = {
+    EXPANDED: "aria-expanded",
+    LABEL: "aria-label",
+    SELECTED: "aria-selected",
+    ACTIVE_DESCENDANT: "aria-activedescendant",
+    HASPOPUP: "aria-haspopup",
+    CONTROLS: "aria-controls",
+    HIDDEN: "aria-hidden",
+    AUTOCOMPLETE: "aria-autocomplete",
+    MODAL: "aria-modal"
+  };
 
   // src/js/intl-tel-input/i18n/en/index.ts
-  var allTranslations = { ...countries_default, ...interface_default };
-  var en_default = allTranslations;
+  var interfaceTranslations = {
+    selectedCountryAriaLabel: "Change country, selected ${countryName} (${dialCode})",
+    noCountrySelected: "Select country",
+    countryListAriaLabel: "List of countries",
+    searchPlaceholder: "Search",
+    clearSearchAriaLabel: "Clear search",
+    searchEmptyState: "No results found",
+    searchSummaryAria(count) {
+      if (count === 0) {
+        return "No results found";
+      }
+      if (count === 1) {
+        return "1 result found";
+      }
+      return `${count} results found`;
+    }
+  };
+  var en_default = interfaceTranslations;
 
-  // src/js/intl-tel-input.ts
-  for (let i = 0; i < data_default.length; i++) {
-    data_default[i].name = en_default[data_default[i].iso2];
-  }
-  var id = 0;
+  // src/js/modules/core/options.ts
+  var mq = (q) => typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia(q).matches;
+  var isNarrowViewport = () => mq(`(max-width: ${LAYOUT.NARROW_VIEWPORT_WIDTH}px)`);
+  var computeDefaultUseFullscreenPopup = () => {
+    if (typeof navigator !== "undefined" && typeof window !== "undefined") {
+      const isShortViewport = mq("(max-height: 600px)");
+      const isCoarsePointer = mq("(pointer: coarse)");
+      return isNarrowViewport() || isCoarsePointer && isShortViewport;
+    }
+    return false;
+  };
   var defaults = {
     //* Whether or not to allow the dropdown.
     allowDropdown: true,
+    //* The number type to enforce during validation.
+    allowedNumberTypes: ["MOBILE", "FIXED_LINE"],
+    //* Whether or not to allow extensions after the main number.
+    allowNumberExtensions: false,
+    // Allow alphanumeric "phonewords" (e.g. +1 800 FLOWERS) as valid numbers
+    allowPhonewords: false,
     //* Add a placeholder in the input with an example number for the selected country.
-    autoPlaceholder: "polite",
-    //* Modify the parentClass.
+    autoPlaceholder: PLACEHOLDER_MODES.POLITE,
+    //* Add a custom class to the (injected) container element.
     containerClass: "",
+    //* Locale for localising country names via Intl.DisplayNames.
+    countryNameLocale: "en",
     //* The order of the countries in the dropdown. Defaults to alphabetical.
     countryOrder: null,
     //* Add a country search input at the top of the dropdown.
     countrySearch: true,
     //* Modify the auto placeholder.
     customPlaceholder: null,
+    //* Always show the dropdown
+    dropdownAlwaysOpen: false,
     //* Append menu to specified element.
     dropdownContainer: null,
     //* Don't display these countries.
@@ -1690,23 +1941,1173 @@ var factoryOutput = (() => {
     onlyCountries: [],
     //* Number type to use for placeholders.
     placeholderNumberType: "MOBILE",
-    //* Show flags - for both the selected country, and in the country dropdown
-    showFlags: true,
+    //* Add custom classes to the search input element.
+    searchInputClass: "",
     //* Display the international dial code next to the selected flag.
     separateDialCode: false,
+    //* Show flags - for both the selected country, and in the country dropdown
+    showFlags: true,
     //* Only allow certain chars e.g. a plus followed by numeric digits, and cap at max valid length.
     strictMode: false,
     //* Use full screen popup instead of dropdown for country list.
-    useFullscreenPopup: typeof navigator !== "undefined" && typeof window !== "undefined" ? (
-      //* We cannot just test screen size as some smartphones/website meta tags will report desktop resolutions.
-      //* Note: to target Android Mobiles (and not Tablets), we must find 'Android' and 'Mobile'
-      /Android.+Mobile|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      ) || window.innerWidth <= 500
-    ) : false,
-    //* The number type to enforce during validation.
-    validationNumberTypes: ["MOBILE"]
+    useFullscreenPopup: computeDefaultUseFullscreenPopup()
   };
+  var toString = (val) => JSON.stringify(val);
+  var isPlainObject = (val) => Boolean(val) && typeof val === "object" && !Array.isArray(val);
+  var isFn = (val) => typeof val === "function";
+  var isElLike = (val) => {
+    if (!val || typeof val !== "object") return false;
+    const v = val;
+    return v.nodeType === 1 && typeof v.tagName === "string" && typeof v.appendChild === "function";
+  };
+  var iso2Set = new Set(data_default.map((c) => c.iso2));
+  var isIso2 = (val) => iso2Set.has(val);
+  var placeholderModeSet = new Set(Object.values(PLACEHOLDER_MODES));
+  var warn = (message) => {
+    console.warn(`[intl-tel-input] ${message}`);
+  };
+  var warnOption = (optionName, expectedType, actualValue) => {
+    warn(`Option '${optionName}' must be ${expectedType}; got ${toString(actualValue)}. Ignoring.`);
+  };
+  var hasOwn = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
+  var validateIso2Array = (key, value) => {
+    const expectedType = "an array of ISO2 country code strings";
+    if (!Array.isArray(value)) {
+      warnOption(key, expectedType, value);
+      return false;
+    }
+    for (const v of value) {
+      if (typeof v !== "string") {
+        warnOption(key, expectedType, value);
+        return false;
+      }
+      const lower = v.toLowerCase();
+      if (!isIso2(lower)) {
+        warn(`Invalid country code in '${key}': '${v}'. Ignoring.`);
+        return false;
+      }
+    }
+    return true;
+  };
+  var validateOptions = (customOptions) => {
+    if (customOptions === void 0) {
+      return {};
+    }
+    if (!isPlainObject(customOptions)) {
+      const error = `The second argument must be an options object; got ${toString(customOptions)}. Using defaults.`;
+      warn(error);
+      return {};
+    }
+    const validatedOptions = {};
+    for (const [key, value] of Object.entries(customOptions)) {
+      if (!hasOwn(defaults, key)) {
+        warn(`Unknown option '${key}'. Ignoring.`);
+        continue;
+      }
+      switch (key) {
+        case "allowDropdown":
+        case "allowNumberExtensions":
+        case "allowPhonewords":
+        case "countrySearch":
+        case "dropdownAlwaysOpen":
+        case "fixDropdownWidth":
+        case "formatAsYouType":
+        case "formatOnDisplay":
+        case "nationalMode":
+        case "showFlags":
+        case "separateDialCode":
+        case "strictMode":
+        case "useFullscreenPopup":
+          if (typeof value !== "boolean") {
+            warnOption(key, "a boolean", value);
+            break;
+          }
+          validatedOptions[key] = value;
+          break;
+        case "autoPlaceholder":
+          if (typeof value !== "string" || !placeholderModeSet.has(value)) {
+            const validModes = Array.from(placeholderModeSet).join(", ");
+            warnOption("autoPlaceholder", `one of ${validModes}`, value);
+            break;
+          }
+          validatedOptions[key] = value;
+          break;
+        case "containerClass":
+        case "searchInputClass":
+        case "countryNameLocale":
+          if (typeof value !== "string") {
+            warnOption(key, "a string", value);
+            break;
+          }
+          validatedOptions[key] = value;
+          break;
+        case "countryOrder":
+          if (value === null || validateIso2Array(key, value)) {
+            validatedOptions[key] = value;
+          }
+          break;
+        case "customPlaceholder":
+        case "geoIpLookup":
+        case "hiddenInput":
+        case "loadUtils":
+          if (value !== null && !isFn(value)) {
+            warnOption(key, "a function or null", value);
+            break;
+          }
+          validatedOptions[key] = value;
+          break;
+        case "dropdownContainer":
+          if (value !== null && !isElLike(value)) {
+            warnOption("dropdownContainer", "an HTMLElement or null", value);
+            break;
+          }
+          validatedOptions[key] = value;
+          break;
+        case "excludeCountries":
+        case "onlyCountries":
+          if (validateIso2Array(key, value)) {
+            validatedOptions[key] = value;
+          }
+          break;
+        case "i18n":
+          if (value && !isPlainObject(value)) {
+            warnOption("i18n", "an object", value);
+            break;
+          }
+          validatedOptions[key] = value;
+          break;
+        case "initialCountry": {
+          if (typeof value !== "string") {
+            warnOption("initialCountry", "a string", value);
+            break;
+          }
+          const lower = value.toLowerCase();
+          if (lower && (lower !== INITIAL_COUNTRY.AUTO && !isIso2(lower))) {
+            warnOption("initialCountry", "a valid ISO2 country code or 'auto'", value);
+            break;
+          }
+          validatedOptions[key] = value;
+          break;
+        }
+        case "placeholderNumberType":
+          if (typeof value !== "string" || !NUMBER_TYPE_SET.has(value)) {
+            const validTypes = Array.from(NUMBER_TYPE_SET).join(", ");
+            warnOption("placeholderNumberType", `one of ${validTypes}`, value);
+            break;
+          }
+          validatedOptions[key] = value;
+          break;
+        case "allowedNumberTypes":
+          if (value !== null) {
+            if (!Array.isArray(value)) {
+              warnOption("allowedNumberTypes", "an array of number types or null", value);
+              break;
+            }
+            let allValid = true;
+            for (const v of value) {
+              if (typeof v !== "string" || !NUMBER_TYPE_SET.has(v)) {
+                const validTypes = Array.from(NUMBER_TYPE_SET).join(", ");
+                warnOption("allowedNumberTypes", `an array of valid number types (${validTypes})`, v);
+                allValid = false;
+                break;
+              }
+            }
+            if (allValid) {
+              validatedOptions[key] = value;
+            }
+          } else {
+            validatedOptions[key] = null;
+          }
+          break;
+      }
+    }
+    return validatedOptions;
+  };
+  var applyOptionSideEffects = (o) => {
+    if (o.dropdownAlwaysOpen) {
+      o.useFullscreenPopup = false;
+      o.allowDropdown = true;
+    }
+    if (o.useFullscreenPopup) {
+      o.fixDropdownWidth = false;
+    } else {
+      if (isNarrowViewport()) {
+        o.fixDropdownWidth = true;
+      }
+    }
+    if (o.onlyCountries.length === 1) {
+      o.initialCountry = o.onlyCountries[0];
+    }
+    if (o.separateDialCode) {
+      o.nationalMode = false;
+    }
+    if (o.allowDropdown && !o.showFlags && !o.separateDialCode) {
+      o.nationalMode = false;
+    }
+    if (o.useFullscreenPopup && !o.dropdownContainer) {
+      o.dropdownContainer = document.body;
+    }
+    o.i18n = { ...en_default, ...o.i18n };
+  };
+
+  // src/js/modules/utils/string.ts
+  var getNumeric = (s) => s.replace(/\D/g, "");
+  var normaliseString = (s = "") => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+  // src/js/modules/utils/isAndroid.ts
+  var getIsAndroid = () => typeof navigator !== "undefined" ? /Android/i.test(navigator.userAgent) : false;
+
+  // src/js/modules/core/countrySearch.ts
+  var getMatchedCountries = (countries, query) => {
+    const normalisedQuery = normaliseString(query);
+    const iso2Matches = [];
+    const nameStartWith = [];
+    const nameContains = [];
+    const dialCodeMatches = [];
+    const dialCodeContains = [];
+    const initialsMatches = [];
+    for (const c of countries) {
+      if (c.iso2 === normalisedQuery) {
+        iso2Matches.push(c);
+      } else if (c.normalisedName.startsWith(normalisedQuery)) {
+        nameStartWith.push(c);
+      } else if (c.normalisedName.includes(normalisedQuery)) {
+        nameContains.push(c);
+      } else if (normalisedQuery === c.dialCode || normalisedQuery === c.dialCodePlus) {
+        dialCodeMatches.push(c);
+      } else if (c.dialCodePlus.includes(normalisedQuery)) {
+        dialCodeContains.push(c);
+      } else if (c.initials.includes(normalisedQuery)) {
+        initialsMatches.push(c);
+      }
+    }
+    const sortByPriority = (a, b) => a.priority - b.priority;
+    return [
+      ...iso2Matches.sort(sortByPriority),
+      ...nameStartWith.sort(sortByPriority),
+      ...nameContains.sort(sortByPriority),
+      ...dialCodeMatches.sort(sortByPriority),
+      ...dialCodeContains.sort(sortByPriority),
+      ...initialsMatches.sort(sortByPriority)
+    ];
+  };
+  var findFirstCountryStartingWith = (countries, query) => {
+    const lowerQuery = query.toLowerCase();
+    for (const c of countries) {
+      const lowerName = c.name.toLowerCase();
+      if (lowerName.startsWith(lowerQuery)) {
+        return c;
+      }
+    }
+    return null;
+  };
+
+  // src/js/modules/utils/dom.ts
+  var buildClassNames = (flags) => Object.keys(flags).filter((k) => Boolean(flags[k])).join(" ");
+  var createEl = (tagName, attrs, container) => {
+    const el = document.createElement(tagName);
+    if (attrs) {
+      Object.entries(attrs).forEach(
+        ([key, value]) => el.setAttribute(key, value)
+      );
+    }
+    if (container) {
+      container.appendChild(el);
+    }
+    return el;
+  };
+
+  // src/js/modules/core/icons.ts
+  var buildSearchIcon = () => `
+  <svg class="iti__search-icon-svg" width="14" height="14" viewBox="0 0 24 24" focusable="false" ${ARIA.HIDDEN}="true">
+    <circle cx="11" cy="11" r="7" />
+    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+  </svg>`;
+  var buildClearIcon = (id2) => {
+    const maskId = `iti-${id2}-clear-mask`;
+    return `
+    <svg class="iti__search-clear-svg" width="12" height="12" viewBox="0 0 16 16" ${ARIA.HIDDEN}="true" focusable="false">
+      <mask id="${maskId}" maskUnits="userSpaceOnUse">
+        <rect width="16" height="16" fill="white" />
+        <path d="M5.2 5.2 L10.8 10.8 M10.8 5.2 L5.2 10.8" stroke="black" stroke-linecap="round" class="iti__search-clear-x" />
+      </mask>
+      <circle cx="8" cy="8" r="8" class="iti__search-clear-bg" mask="url(#${maskId})" />
+    </svg>`;
+  };
+  var buildCheckIcon = () => `
+  <svg class="iti__country-check-svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" focusable="false" ${ARIA.HIDDEN}="true">
+    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+  </svg>`;
+  var buildGlobeIcon = () => `
+  <svg width="256" height="256" viewBox="0 0 512 512" class="iti__globe-svg">
+    <path d="M508 213a240 240 0 0 0-449-87l-2 5-2 5c-8 14-13 30-17 46a65 65 0 0 1 56 4c16-10 35-19 56-27l9-3c-6 23-10 48-10 74h-16l4 6c3 4 5 8 6 13h6c0 22 3 44 8 65l2 10-25-10-4 5 12 18 9 3 6 2 8 3 9 26 1 2 16-7h1l-5-13-1-2c24 6 49 9 75 10v26l11 10 7 7v-30l1-13c22 0 44-3 65-8l10-2-21 48-1 1a317 317 0 0 1-14 23l-21 5h-2c6 16 7 33 1 50a240 240 0 0 0 211-265m-401-56-11 6c19-44 54-79 98-98-11 20-21 44-29 69-21 6-40 15-58 23m154 182v4c-29-1-57-6-81-13-7-25-12-52-13-81h94zm0-109h-94c1-29 6-56 13-81 24-7 52-12 81-13zm0-112c-22 1-44 4-65 8l-10 2 12-30 9-17 1-2a332 332 0 0 1 13-23c13-4 26-6 40-7zm187 69 6 4c4 12 6 25 6 38v1h-68c-1-26-4-51-10-74l48 20 1 1 14 8zm-14-44 10 20c-20-11-43-21-68-29-8-25-18-49-29-69 37 16 67 44 87 78M279 49h1c13 1 27 3 39 7l14 23 1 2a343 343 0 0 1 12 26l2 5 6 16c-23-6-48-9-74-10h-1zm0 87h1c29 1 56 6 81 13 7 24 12 51 12 80v1h-94zm2 207h-2v-94h95c-1 29-6 56-13 81-24 7-51 12-80 13m86 60-20 10c11-20 21-43 29-68 25-8 48-18 68-29-16 37-43 67-77 87m87-115-7 5-16 9-2 1a337 337 0 0 1-47 21c6-24 9-49 10-75h68c0 13-2 27-6 39"/>
+    <path d="m261 428-2-2-22-21a40 40 0 0 0-32-11h-1a37 37 0 0 0-18 8l-1 1-4 2-2 2-5 4c-9-3-36-31-47-44s-32-45-34-55l3-2a151 151 0 0 0 11-9v-1a39 39 0 0 0 5-48l-3-3-11-19-3-4-5-7h-1l-3-3-4-3-5-2a35 35 0 0 0-16-3h-5c-4 1-14 5-24 11l-4 2-4 3-4 2c-9 8-17 17-18 27a380 380 0 0 0 212 259h3c12 0 25-10 36-21l10-12 6-11a39 39 0 0 0-8-40"/>
+  </svg>`;
+
+  // src/js/modules/core/ui.ts
+  var UI = class _UI {
+    constructor(input, options, id2) {
+      this.#searchKeyupTimer = null;
+      this.#inlineDropdownHeight = null;
+      this.#dropdownForContainer = null;
+      this.#selectedItem = null;
+      this.highlightedItem = null;
+      input.dataset.intlTelInputId = id2.toString();
+      this.telInput = input;
+      this.#options = options;
+      this.#id = id2;
+      this.hadInitialPlaceholder = Boolean(input.getAttribute("placeholder"));
+      this.#isRTL = !!this.telInput.closest("[dir=rtl]");
+      if (this.#options.separateDialCode) {
+        this.#originalPaddingLeft = this.telInput.style.paddingLeft;
+      }
+    }
+    // private
+    #options;
+    #id;
+    #isRTL;
+    #originalPaddingLeft;
+    #countries;
+    #searchKeyupTimer;
+    #inlineDropdownHeight;
+    #selectedDialCode;
+    #dropdownArrow;
+    #dropdownContent;
+    #searchIcon;
+    #searchNoResults;
+    #searchResultsA11yText;
+    #dropdownForContainer;
+    #selectedItem;
+    // Validate that the provided element is an HTMLInputElement.
+    static validateInput(input) {
+      const tagName = input?.tagName;
+      const isInputEl = Boolean(input) && typeof input === "object" && tagName === "INPUT" && typeof input.setAttribute === "function";
+      if (!isInputEl) {
+        const type = Object.prototype.toString.call(input);
+        throw new TypeError(
+          `The first argument must be an HTMLInputElement, not ${type}`
+        );
+      }
+    }
+    //* Generate all of the markup for the plugin: the selected country overlay, and the dropdown.
+    generateMarkup(countries) {
+      this.#countries = countries;
+      this.telInput.classList.add("iti__tel-input");
+      if (!this.telInput.hasAttribute("autocomplete")) {
+        this.telInput.setAttribute("autocomplete", "tel");
+      }
+      if (!this.telInput.hasAttribute("inputmode")) {
+        this.telInput.setAttribute("inputmode", "tel");
+      }
+      const wrapper = this.#createWrapperAndInsert();
+      this.#maybeBuildCountryContainer(wrapper);
+      wrapper.appendChild(this.telInput);
+      this.#maybeUpdateInputPaddingAndReveal();
+      this.#maybeBuildHiddenInputs(wrapper);
+    }
+    #createWrapperAndInsert() {
+      const {
+        allowDropdown,
+        showFlags,
+        containerClass,
+        useFullscreenPopup
+      } = this.#options;
+      const parentClasses = buildClassNames({
+        iti: true,
+        "iti--allow-dropdown": allowDropdown,
+        "iti--show-flags": showFlags,
+        "iti--inline-dropdown": !useFullscreenPopup,
+        [containerClass]: Boolean(containerClass)
+      });
+      const wrapper = createEl("div", { class: parentClasses });
+      if (this.#isRTL) {
+        wrapper.setAttribute("dir", "ltr");
+      }
+      this.telInput.before(wrapper);
+      return wrapper;
+    }
+    #maybeBuildCountryContainer(wrapper) {
+      const { allowDropdown, separateDialCode, showFlags } = this.#options;
+      if (allowDropdown || showFlags || separateDialCode) {
+        this.countryContainer = createEl(
+          "div",
+          // visibly hidden until we measure it's width to set the input padding correctly
+          { class: `iti__country-container ${CLASSES.V_HIDE}` },
+          wrapper
+        );
+        if (allowDropdown) {
+          this.selectedCountry = createEl(
+            "button",
+            {
+              type: "button",
+              class: "iti__selected-country",
+              [ARIA.EXPANDED]: "false",
+              [ARIA.LABEL]: this.#options.i18n.noCountrySelected,
+              [ARIA.HASPOPUP]: "dialog",
+              [ARIA.CONTROLS]: `iti-${this.#id}__dropdown-content`
+            },
+            this.countryContainer
+          );
+          if (this.telInput.disabled) {
+            this.selectedCountry.setAttribute("disabled", "true");
+          }
+        } else {
+          this.selectedCountry = createEl(
+            "div",
+            { class: "iti__selected-country" },
+            this.countryContainer
+          );
+        }
+        const selectedCountryPrimary = createEl(
+          "div",
+          { class: "iti__selected-country-primary" },
+          this.selectedCountry
+        );
+        this.selectedCountryInner = createEl(
+          "div",
+          { class: CLASSES.FLAG },
+          selectedCountryPrimary
+        );
+        if (allowDropdown) {
+          this.#dropdownArrow = createEl(
+            "div",
+            { class: "iti__arrow", [ARIA.HIDDEN]: "true" },
+            selectedCountryPrimary
+          );
+        }
+        if (separateDialCode) {
+          this.#selectedDialCode = createEl(
+            "div",
+            { class: "iti__selected-dial-code" },
+            this.selectedCountry
+          );
+        }
+        if (allowDropdown) {
+          this.#buildDropdownContent();
+        }
+      }
+    }
+    #maybeEnsureDropdownWidthSet() {
+      const { fixDropdownWidth } = this.#options;
+      if (fixDropdownWidth && !this.#dropdownContent.style.width) {
+        const inputWidth = this.telInput.offsetWidth;
+        if (inputWidth > 0) {
+          this.#dropdownContent.style.width = `${inputWidth}px`;
+        }
+      }
+    }
+    #buildDropdownContent() {
+      const {
+        fixDropdownWidth,
+        useFullscreenPopup,
+        countrySearch,
+        i18n,
+        dropdownContainer,
+        containerClass
+      } = this.#options;
+      const extraClasses = fixDropdownWidth ? "" : "iti--flexible-dropdown-width";
+      this.#dropdownContent = createEl("div", {
+        id: `iti-${this.#id}__dropdown-content`,
+        class: `iti__dropdown-content ${CLASSES.HIDE} ${extraClasses}`,
+        role: "dialog",
+        [ARIA.MODAL]: "true"
+      });
+      if (this.#isRTL) {
+        this.#dropdownContent.setAttribute("dir", "rtl");
+      }
+      if (countrySearch) {
+        this.#buildSearchUI();
+      }
+      this.countryList = createEl(
+        "ul",
+        {
+          class: "iti__country-list",
+          id: `iti-${this.#id}__country-listbox`,
+          role: "listbox",
+          [ARIA.LABEL]: i18n.countryListAriaLabel
+        },
+        this.#dropdownContent
+      );
+      this.#appendListItems();
+      if (countrySearch) {
+        this.#updateSearchResultsA11yText();
+      }
+      if (!useFullscreenPopup) {
+        this.#maybeEnsureDropdownWidthSet();
+        this.#inlineDropdownHeight = this.#getHiddenInlineDropdownHeight();
+        if (countrySearch) {
+          this.#dropdownContent.style.height = `${this.#inlineDropdownHeight}px`;
+        }
+      }
+      if (dropdownContainer) {
+        const dropdownClasses = buildClassNames({
+          iti: true,
+          "iti--container": true,
+          "iti--fullscreen-popup": useFullscreenPopup,
+          "iti--inline-dropdown": !useFullscreenPopup,
+          [containerClass]: Boolean(containerClass)
+        });
+        this.#dropdownForContainer = createEl("div", { class: dropdownClasses });
+        this.#dropdownForContainer.appendChild(this.#dropdownContent);
+      } else {
+        this.countryContainer.appendChild(this.#dropdownContent);
+      }
+    }
+    #buildSearchUI() {
+      const { i18n, searchInputClass } = this.#options;
+      const searchWrapper = createEl(
+        "div",
+        { class: "iti__search-input-wrapper" },
+        this.#dropdownContent
+      );
+      this.#searchIcon = createEl(
+        "span",
+        {
+          class: "iti__search-icon",
+          [ARIA.HIDDEN]: "true"
+        },
+        searchWrapper
+      );
+      this.#searchIcon.innerHTML = buildSearchIcon();
+      this.searchInput = createEl(
+        "input",
+        {
+          id: `iti-${this.#id}__search-input`,
+          // Chrome says inputs need either a name or an id
+          type: "search",
+          class: `iti__search-input ${searchInputClass}`,
+          placeholder: i18n.searchPlaceholder,
+          // role=combobox + aria-autocomplete=list + aria-activedescendant allows maintaining focus on the search input while allowing users to navigate search results with up/down keyboard keys
+          role: "combobox",
+          [ARIA.EXPANDED]: "true",
+          [ARIA.LABEL]: i18n.searchPlaceholder,
+          [ARIA.CONTROLS]: `iti-${this.#id}__country-listbox`,
+          [ARIA.AUTOCOMPLETE]: "list",
+          autocomplete: "off"
+        },
+        searchWrapper
+      );
+      this.searchClearButton = createEl(
+        "button",
+        {
+          type: "button",
+          class: `iti__search-clear ${CLASSES.HIDE}`,
+          [ARIA.LABEL]: i18n.clearSearchAriaLabel,
+          tabindex: "-1"
+        },
+        searchWrapper
+      );
+      this.searchClearButton.innerHTML = buildClearIcon(this.#id);
+      this.#searchResultsA11yText = createEl(
+        "span",
+        { class: "iti__a11y-text" },
+        this.#dropdownContent
+      );
+      this.#searchNoResults = createEl(
+        "div",
+        {
+          class: `iti__no-results ${CLASSES.HIDE}`,
+          [ARIA.HIDDEN]: "true"
+          // all a11y messaging happens in this.#searchResultsA11yText
+        },
+        this.#dropdownContent
+      );
+      this.#searchNoResults.textContent = i18n.searchEmptyState;
+    }
+    #maybeUpdateInputPaddingAndReveal() {
+      if (this.countryContainer) {
+        this.#updateInputPadding();
+        this.countryContainer.classList.remove(CLASSES.V_HIDE);
+      }
+    }
+    #maybeBuildHiddenInputs(wrapper) {
+      const { hiddenInput } = this.#options;
+      if (hiddenInput) {
+        const telInputName = this.telInput.getAttribute("name") || "";
+        const names = hiddenInput(telInputName);
+        if (names.phone) {
+          const existingInput = this.telInput.form?.querySelector(
+            `input[name="${names.phone}"]`
+          );
+          if (existingInput) {
+            this.hiddenInput = existingInput;
+          } else {
+            this.hiddenInput = createEl("input", {
+              type: "hidden",
+              name: names.phone
+            });
+            wrapper.appendChild(this.hiddenInput);
+          }
+        }
+        if (names.country) {
+          const existingInput = this.telInput.form?.querySelector(
+            `input[name="${names.country}"]`
+          );
+          if (existingInput) {
+            this.hiddenInputCountry = existingInput;
+          } else {
+            this.hiddenInputCountry = createEl("input", {
+              type: "hidden",
+              name: names.country
+            });
+            wrapper.appendChild(this.hiddenInputCountry);
+          }
+        }
+      }
+    }
+    //* For each country: add a country list item <li> to the countryList <ul> container.
+    #appendListItems() {
+      const frag = document.createDocumentFragment();
+      for (let i = 0; i < this.#countries.length; i++) {
+        const c = this.#countries[i];
+        const liClass = buildClassNames({
+          [CLASSES.COUNTRY_ITEM]: true
+        });
+        const listItem = createEl("li", {
+          id: `iti-${this.#id}__item-${c.iso2}`,
+          class: liClass,
+          tabindex: "-1",
+          role: "option",
+          [ARIA.SELECTED]: "false"
+        });
+        listItem.dataset.dialCode = c.dialCode;
+        listItem.dataset.countryCode = c.iso2;
+        c.nodeById[this.#id] = listItem;
+        if (this.#options.showFlags) {
+          createEl("div", { class: `${CLASSES.FLAG} iti__${c.iso2}` }, listItem);
+        }
+        const nameEl = createEl("span", { class: "iti__country-name" }, listItem);
+        nameEl.textContent = `${c.name} `;
+        const dialEl = createEl("span", { class: "iti__dial-code" }, nameEl);
+        if (this.#isRTL) {
+          dialEl.setAttribute("dir", "ltr");
+        }
+        dialEl.textContent = `(+${c.dialCode})`;
+        frag.appendChild(listItem);
+      }
+      this.countryList.appendChild(frag);
+    }
+    //* Update the input padding to make space for the selected country/dial code.
+    #updateInputPadding() {
+      if (this.selectedCountry) {
+        const fallbackWidth = this.#options.separateDialCode ? LAYOUT.SANE_SELECTED_WITH_DIAL_WIDTH : LAYOUT.SANE_SELECTED_NO_DIAL_WIDTH;
+        const selectedCountryWidth = this.selectedCountry.offsetWidth || this.#getHiddenSelectedCountryWidth() || fallbackWidth;
+        const inputPadding = selectedCountryWidth + LAYOUT.INPUT_PADDING_EXTRA_LEFT;
+        this.telInput.style.paddingLeft = `${inputPadding}px`;
+      }
+    }
+    static #getBody() {
+      let body;
+      try {
+        body = window.top.document.body;
+      } catch (e) {
+        body = document.body;
+      }
+      return body;
+    }
+    //* When input is in a hidden container during init, we cannot calculate the selected country width.
+    //* Fix: clone the markup, make it invisible, add it to the end of the DOM, and then measure it's width.
+    //* To get the right styling to apply, all we need is a shallow clone of the container,
+    //* and then to inject a deep clone of the selectedCountry element.
+    #getHiddenSelectedCountryWidth() {
+      if (this.telInput.parentNode) {
+        const body = _UI.#getBody();
+        const containerClone = this.telInput.parentNode.cloneNode(
+          false
+        );
+        containerClone.style.visibility = "hidden";
+        body.appendChild(containerClone);
+        const countryContainerClone = this.countryContainer.cloneNode();
+        containerClone.appendChild(countryContainerClone);
+        const selectedCountryClone = this.selectedCountry.cloneNode(
+          true
+        );
+        countryContainerClone.appendChild(selectedCountryClone);
+        const width = selectedCountryClone.offsetWidth;
+        body.removeChild(containerClone);
+        return width;
+      }
+      return 0;
+    }
+    // this is run before we add the dropdown to the DOM
+    #getHiddenInlineDropdownHeight() {
+      const body = _UI.#getBody();
+      this.#dropdownContent.classList.remove(CLASSES.HIDE);
+      const tempContainer = createEl("div", { class: "iti iti--inline-dropdown" });
+      tempContainer.appendChild(this.#dropdownContent);
+      tempContainer.style.visibility = "hidden";
+      body.appendChild(tempContainer);
+      const height = this.#dropdownContent.offsetHeight;
+      body.removeChild(tempContainer);
+      tempContainer.style.visibility = "";
+      this.#dropdownContent.classList.add(CLASSES.HIDE);
+      return height > 0 ? height : LAYOUT.SANE_DROPDOWN_HEIGHT;
+    }
+    //* Update search results text (for a11y).
+    #updateSearchResultsA11yText() {
+      const { i18n } = this.#options;
+      const count = this.countryList.childElementCount;
+      this.#searchResultsA11yText.textContent = i18n.searchSummaryAria(count);
+    }
+    //* Country search: Filter the countries according to the search query.
+    filterCountriesByQuery(query) {
+      let matchedCountries;
+      if (query === "") {
+        matchedCountries = this.#countries;
+      } else {
+        matchedCountries = getMatchedCountries(this.#countries, query);
+      }
+      this.#filterCountries(matchedCountries);
+    }
+    // Search input handlers
+    #doFilter() {
+      const inputQuery = this.searchInput.value.trim();
+      this.filterCountriesByQuery(inputQuery);
+      if (this.searchInput.value) {
+        this.searchClearButton.classList.remove(CLASSES.HIDE);
+      } else {
+        this.searchClearButton.classList.add(CLASSES.HIDE);
+      }
+    }
+    handleSearchChange() {
+      if (this.#searchKeyupTimer) {
+        clearTimeout(this.#searchKeyupTimer);
+      }
+      this.#searchKeyupTimer = setTimeout(() => {
+        this.#doFilter();
+        this.#searchKeyupTimer = null;
+      }, TIMINGS.SEARCH_DEBOUNCE_MS);
+    }
+    handleSearchClear() {
+      this.searchInput.value = "";
+      this.searchInput.focus();
+      this.#doFilter();
+    }
+    //* Check if an element is visible within it's container, else scroll until it is.
+    scrollTo(element) {
+      const container = this.countryList;
+      const scrollTop = document.documentElement.scrollTop;
+      const containerHeight = container.offsetHeight;
+      const containerTop = container.getBoundingClientRect().top + scrollTop;
+      const containerBottom = containerTop + containerHeight;
+      const elementHeight = element.offsetHeight;
+      const elementTop = element.getBoundingClientRect().top + scrollTop;
+      const elementBottom = elementTop + elementHeight;
+      const newScrollTop = elementTop - containerTop + container.scrollTop;
+      if (elementTop < containerTop) {
+        container.scrollTop = newScrollTop;
+      } else if (elementBottom > containerBottom) {
+        const heightDifference = containerHeight - elementHeight;
+        container.scrollTop = newScrollTop - heightDifference;
+      }
+    }
+    //* Remove highlighting from the previous list item and highlight the new one.
+    highlightListItem(listItem, shouldFocus) {
+      const prevItem = this.highlightedItem;
+      if (prevItem) {
+        prevItem.classList.remove(CLASSES.HIGHLIGHT);
+      }
+      this.highlightedItem = listItem;
+      if (this.highlightedItem) {
+        this.highlightedItem.classList.add(CLASSES.HIGHLIGHT);
+        if (this.#options.countrySearch) {
+          const activeDescendant = this.highlightedItem.getAttribute("id") || "";
+          this.searchInput.setAttribute(ARIA.ACTIVE_DESCENDANT, activeDescendant);
+        }
+      }
+      if (shouldFocus) {
+        this.highlightedItem.focus();
+      }
+    }
+    //* Highlight the next/prev item in the list (and ensure it is visible).
+    handleUpDownKey(key) {
+      let next = key === KEYS.ARROW_UP ? this.highlightedItem?.previousElementSibling : this.highlightedItem?.nextElementSibling;
+      if (!next && this.countryList.childElementCount > 1) {
+        next = key === KEYS.ARROW_UP ? this.countryList.lastElementChild : this.countryList.firstElementChild;
+      }
+      if (next) {
+        this.scrollTo(next);
+        this.highlightListItem(next, false);
+      }
+    }
+    // Update the selected list item in the dropdown
+    #updateSelectedItem(iso2) {
+      if (this.#selectedItem && this.#selectedItem.dataset.countryCode !== iso2) {
+        this.#selectedItem.setAttribute(ARIA.SELECTED, "false");
+        this.#selectedItem.querySelector(".iti__country-check")?.remove();
+        this.#selectedItem = null;
+      }
+      if (iso2 && !this.#selectedItem) {
+        const newListItem = this.countryList.querySelector(
+          `[data-country-code="${iso2}"]`
+        );
+        if (newListItem) {
+          newListItem.setAttribute(ARIA.SELECTED, "true");
+          const checkIcon = createEl(
+            "span",
+            { class: "iti__country-check", [ARIA.HIDDEN]: "true" },
+            newListItem
+          );
+          checkIcon.innerHTML = buildCheckIcon();
+          this.#selectedItem = newListItem;
+        }
+      }
+    }
+    //* Country search: Filter the country list to the given array of countries.
+    #filterCountries(matchedCountries) {
+      this.countryList.innerHTML = "";
+      let noCountriesAddedYet = true;
+      for (const c of matchedCountries) {
+        const listItem = c.nodeById[this.#id];
+        if (listItem) {
+          this.countryList.appendChild(listItem);
+          if (noCountriesAddedYet) {
+            this.highlightListItem(listItem, false);
+            noCountriesAddedYet = false;
+          }
+        }
+      }
+      if (noCountriesAddedYet) {
+        this.highlightListItem(null, false);
+        if (this.#searchNoResults) {
+          this.#searchNoResults.classList.remove(CLASSES.HIDE);
+        }
+      } else if (this.#searchNoResults) {
+        this.#searchNoResults.classList.add(CLASSES.HIDE);
+      }
+      this.countryList.scrollTop = 0;
+      this.#updateSearchResultsA11yText();
+    }
+    destroy() {
+      this.telInput.iti = void 0;
+      delete this.telInput.dataset.intlTelInputId;
+      if (this.#options.separateDialCode) {
+        this.telInput.style.paddingLeft = this.#originalPaddingLeft;
+      }
+      const wrapper = this.telInput.parentNode;
+      wrapper.before(this.telInput);
+      wrapper.remove();
+      this.telInput = null;
+      this.countryContainer = null;
+      this.selectedCountry = null;
+      this.selectedCountryInner = null;
+      this.searchInput = null;
+      this.searchClearButton = null;
+      this.countryList = null;
+      this.hiddenInput = null;
+      this.hiddenInputCountry = null;
+      this.highlightedItem = null;
+      this.#selectedDialCode = null;
+      this.#dropdownArrow = null;
+      this.#dropdownContent = null;
+      this.#searchIcon = null;
+      this.#searchNoResults = null;
+      this.#searchResultsA11yText = null;
+      this.#dropdownForContainer = null;
+      this.#selectedItem = null;
+      for (const c of this.#countries) {
+        delete c.nodeById[this.#id];
+      }
+      this.#countries = null;
+    }
+    // UI: Open the dropdown (DOM only).
+    openDropdown() {
+      const {
+        countrySearch,
+        dropdownAlwaysOpen,
+        dropdownContainer
+      } = this.#options;
+      this.#maybeEnsureDropdownWidthSet();
+      if (dropdownContainer) {
+        this.#handleDropdownContainer();
+      } else {
+        const positionBelow = this.#shouldPositionInlineDropdownBelowInput();
+        const distance = this.telInput.offsetHeight + LAYOUT.DROPDOWN_MARGIN;
+        if (positionBelow) {
+          this.#dropdownContent.style.top = `${distance}px`;
+        } else {
+          this.#dropdownContent.style.bottom = `${distance}px`;
+        }
+      }
+      this.#dropdownContent.classList.remove(CLASSES.HIDE);
+      this.selectedCountry.setAttribute(ARIA.EXPANDED, "true");
+      if (countrySearch) {
+        const firstCountryItem = this.countryList.firstElementChild;
+        if (firstCountryItem) {
+          this.highlightListItem(firstCountryItem, false);
+          this.countryList.scrollTop = 0;
+        }
+        if (!dropdownAlwaysOpen) {
+          this.searchInput.focus();
+        }
+      }
+      this.#dropdownArrow.classList.add(CLASSES.ARROW_UP);
+    }
+    // UI: Close the dropdown (DOM only).
+    closeDropdown() {
+      const { countrySearch, dropdownContainer } = this.#options;
+      this.#dropdownContent.classList.add(CLASSES.HIDE);
+      this.selectedCountry.setAttribute(ARIA.EXPANDED, "false");
+      if (countrySearch) {
+        this.searchInput.removeAttribute(ARIA.ACTIVE_DESCENDANT);
+        if (this.highlightedItem) {
+          this.highlightedItem.classList.remove(CLASSES.HIGHLIGHT);
+          this.highlightedItem = null;
+        }
+      }
+      this.#dropdownArrow.classList.remove(CLASSES.ARROW_UP);
+      if (dropdownContainer) {
+        this.#dropdownForContainer.remove();
+        this.#dropdownForContainer.style.top = "";
+        this.#dropdownForContainer.style.bottom = "";
+        this.#dropdownForContainer.style.paddingLeft = "";
+        this.#dropdownForContainer.style.paddingRight = "";
+      } else {
+        this.#dropdownContent.style.top = "";
+        this.#dropdownContent.style.bottom = "";
+      }
+    }
+    #shouldPositionInlineDropdownBelowInput() {
+      if (this.#options.dropdownAlwaysOpen) {
+        return true;
+      }
+      const inputPos = this.telInput.getBoundingClientRect();
+      const spaceAbove = inputPos.top;
+      const spaceBelow = window.innerHeight - inputPos.bottom;
+      return spaceBelow >= this.#inlineDropdownHeight || spaceBelow >= spaceAbove;
+    }
+    // inject dropdown into container and apply positioning styles
+    #handleDropdownContainer() {
+      const { dropdownContainer, useFullscreenPopup } = this.#options;
+      if (useFullscreenPopup) {
+        if (window.innerWidth >= 500) {
+          const inputPos = this.telInput.getBoundingClientRect();
+          this.#dropdownForContainer.style.paddingLeft = `${inputPos.left}px`;
+          this.#dropdownForContainer.style.paddingRight = `${window.innerWidth - inputPos.right}px`;
+        }
+      } else {
+        const inputPos = this.telInput.getBoundingClientRect();
+        this.#dropdownForContainer.style.left = `${inputPos.left}px`;
+        const positionBelow = this.#shouldPositionInlineDropdownBelowInput();
+        if (positionBelow) {
+          this.#dropdownForContainer.style.top = `${inputPos.bottom + LAYOUT.DROPDOWN_MARGIN}px`;
+        } else {
+          this.#dropdownForContainer.style.top = "unset";
+          this.#dropdownForContainer.style.bottom = `${window.innerHeight - inputPos.top + LAYOUT.DROPDOWN_MARGIN}px`;
+        }
+      }
+      dropdownContainer.appendChild(this.#dropdownForContainer);
+    }
+    // UI: Whether the dropdown is currently closed (hidden).
+    isDropdownClosed() {
+      return this.#dropdownContent.classList.contains(CLASSES.HIDE);
+    }
+    setCountry(selectedCountryData) {
+      const { allowDropdown, showFlags, separateDialCode, i18n } = this.#options;
+      const { name, dialCode, iso2 = "" } = selectedCountryData;
+      if (allowDropdown) {
+        this.#updateSelectedItem(iso2);
+      }
+      if (this.selectedCountry) {
+        const flagClass = iso2 && showFlags ? `${CLASSES.FLAG} iti__${iso2}` : `${CLASSES.FLAG} ${CLASSES.GLOBE}`;
+        let ariaLabel, title, selectedCountryInner;
+        if (iso2) {
+          title = name;
+          ariaLabel = i18n.selectedCountryAriaLabel.replace("${countryName}", name).replace("${dialCode}", `+${dialCode}`);
+          selectedCountryInner = showFlags ? "" : buildGlobeIcon();
+        } else {
+          title = i18n.noCountrySelected;
+          ariaLabel = i18n.noCountrySelected;
+          selectedCountryInner = buildGlobeIcon();
+        }
+        this.selectedCountryInner.className = flagClass;
+        this.selectedCountry.setAttribute("title", title);
+        this.selectedCountry.setAttribute(ARIA.LABEL, ariaLabel);
+        this.selectedCountryInner.innerHTML = selectedCountryInner;
+      }
+      if (separateDialCode) {
+        const fullDialCode = dialCode ? `+${dialCode}` : "";
+        this.#selectedDialCode.textContent = fullDialCode;
+        this.#updateInputPadding();
+      }
+    }
+  };
+
+  // src/js/modules/data/country-data.ts
+  var processAllCountries = (options) => {
+    const { onlyCountries, excludeCountries } = options;
+    if (onlyCountries?.length) {
+      const lowerCaseOnlyCountries = onlyCountries.map(
+        (country) => country.toLowerCase()
+      );
+      return data_default.filter(
+        (country) => lowerCaseOnlyCountries.includes(country.iso2)
+      );
+    } else if (excludeCountries?.length) {
+      const lowerCaseExcludeCountries = excludeCountries.map(
+        (country) => country.toLowerCase()
+      );
+      return data_default.filter(
+        (country) => !lowerCaseExcludeCountries.includes(country.iso2)
+      );
+    }
+    return data_default;
+  };
+  var generateCountryNames = (countries, options) => {
+    const { countryNameLocale, i18n } = options;
+    let displayNames;
+    try {
+      const hasDisplayNames = typeof Intl !== "undefined" && typeof Intl.DisplayNames === "function";
+      if (hasDisplayNames) {
+        displayNames = new Intl.DisplayNames(countryNameLocale, {
+          type: "region"
+        });
+      } else {
+        displayNames = null;
+      }
+    } catch (e) {
+      console.error(e);
+      displayNames = null;
+    }
+    for (const c of countries) {
+      c.name = i18n[c.iso2] || displayNames?.of(c.iso2.toUpperCase()) || "";
+    }
+  };
+  var processDialCodes = (countries) => {
+    const dialCodes = /* @__PURE__ */ new Set();
+    let dialCodeMaxLen = 0;
+    const dialCodeToIso2Map = {};
+    const addToDialCodeMap = (iso2, dialCode) => {
+      if (!iso2 || !dialCode) {
+        return;
+      }
+      if (dialCode.length > dialCodeMaxLen) {
+        dialCodeMaxLen = dialCode.length;
+      }
+      if (!dialCodeToIso2Map.hasOwnProperty(dialCode)) {
+        dialCodeToIso2Map[dialCode] = [];
+      }
+      const iso2List = dialCodeToIso2Map[dialCode];
+      if (iso2List.includes(iso2)) {
+        return;
+      }
+      iso2List.push(iso2);
+    };
+    const countriesSortedByPriority = [...countries].sort((a, b) => a.priority - b.priority);
+    for (const c of countriesSortedByPriority) {
+      if (!dialCodes.has(c.dialCode)) {
+        dialCodes.add(c.dialCode);
+      }
+      for (let k = 1; k < c.dialCode.length; k++) {
+        const partialDialCode = c.dialCode.substring(0, k);
+        addToDialCodeMap(c.iso2, partialDialCode);
+      }
+      addToDialCodeMap(c.iso2, c.dialCode);
+      if (c.areaCodes) {
+        const rootIso2Code = dialCodeToIso2Map[c.dialCode][0];
+        for (const areaCode of c.areaCodes) {
+          for (let k = 1; k < areaCode.length; k++) {
+            const partialAreaCode = areaCode.substring(0, k);
+            const partialDialCode = c.dialCode + partialAreaCode;
+            addToDialCodeMap(rootIso2Code, partialDialCode);
+            addToDialCodeMap(c.iso2, partialDialCode);
+          }
+          addToDialCodeMap(c.iso2, c.dialCode + areaCode);
+        }
+      }
+    }
+    return { dialCodes, dialCodeMaxLen, dialCodeToIso2Map };
+  };
+  var sortCountries = (countries, options) => {
+    if (options.countryOrder) {
+      options.countryOrder = options.countryOrder.map(
+        (iso2) => iso2.toLowerCase()
+      );
+    }
+    countries.sort((a, b) => {
+      const { countryOrder } = options;
+      if (countryOrder) {
+        const aIndex = countryOrder.indexOf(a.iso2);
+        const bIndex = countryOrder.indexOf(b.iso2);
+        const aIndexExists = aIndex > -1;
+        const bIndexExists = bIndex > -1;
+        if (aIndexExists || bIndexExists) {
+          if (aIndexExists && bIndexExists) {
+            return aIndex - bIndex;
+          }
+          return aIndexExists ? -1 : 1;
+        }
+      }
+      return a.name.localeCompare(b.name);
+    });
+  };
+  var cacheSearchTokens = (countries) => {
+    for (const c of countries) {
+      c.normalisedName = normaliseString(c.name);
+      c.initials = c.normalisedName.split(/[^a-z]/).map((word) => word[0]).join("");
+      c.dialCodePlus = `+${c.dialCode}`;
+    }
+  };
+
+  // src/js/modules/data/intl-regionless.ts
+  var REGIONLESS_DIAL_CODES = /* @__PURE__ */ new Set([
+    "800",
+    "808",
+    "870",
+    "881",
+    "882",
+    "883",
+    "888",
+    "979"
+  ]);
+  var hasRegionlessDialCode = (number) => {
+    const dialCode = getNumeric(number).slice(0, 3);
+    return number.startsWith("+") && REGIONLESS_DIAL_CODES.has(dialCode);
+  };
+
+  // src/js/modules/format/formatting.ts
+  var beforeSetNumber = (fullNumber, hasValidDialCode, separateDialCode, selectedCountryData) => {
+    let number = fullNumber;
+    if (separateDialCode) {
+      if (hasValidDialCode) {
+        const dialCode = `+${selectedCountryData.dialCode}`;
+        const start = number[dialCode.length] === " " || number[dialCode.length] === "-" ? dialCode.length + 1 : dialCode.length;
+        number = number.substring(start);
+      }
+    }
+    return number;
+  };
+  var formatNumberAsYouType = (fullNumber, telInputValue, utils, selectedCountryData, separateDialCode) => {
+    const result = utils ? utils.formatNumberAsYouType(fullNumber, selectedCountryData.iso2) : fullNumber;
+    const { dialCode } = selectedCountryData;
+    if (separateDialCode && telInputValue.charAt(0) !== "+" && result.includes(`+${dialCode}`)) {
+      const afterDialCode = result.split(`+${dialCode}`)[1] || "";
+      return afterDialCode.trim();
+    }
+    return result;
+  };
+
+  // src/js/modules/format/caret.ts
+  var translateCursorPosition = (relevantChars, formattedValue, prevCaretPos, isDeleteForwards) => {
+    if (prevCaretPos === 0 && !isDeleteForwards) {
+      return 0;
+    }
+    let relevantCharCount = 0;
+    for (let i = 0; i < formattedValue.length; i++) {
+      if (/[+0-9]/.test(formattedValue[i])) {
+        relevantCharCount++;
+      }
+      if (relevantCharCount === relevantChars && !isDeleteForwards) {
+        return i + 1;
+      }
+      if (isDeleteForwards && relevantCharCount === relevantChars + 1) {
+        return i;
+      }
+    }
+    return formattedValue.length;
+  };
+
+  // src/js/modules/data/nanp-regionless.ts
   var regionlessNanpNumbers = [
     "800",
     "822",
@@ -1726,981 +3127,778 @@ var factoryOutput = (() => {
     "888",
     "889"
   ];
-  var getNumeric = (s) => s.replace(/\D/g, "");
-  var normaliseString = (s = "") => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   var isRegionlessNanp = (number) => {
     const numeric = getNumeric(number);
-    if (numeric.charAt(0) === "1") {
-      const areaCode = numeric.substr(1, 3);
+    if (numeric.startsWith(DIAL.NANP) && numeric.length >= 4) {
+      const areaCode = numeric.substring(1, 4);
       return regionlessNanpNumbers.includes(areaCode);
     }
     return false;
   };
-  var translateCursorPosition = (relevantChars, formattedValue, prevCaretPos, isDeleteForwards) => {
-    if (prevCaretPos === 0 && !isDeleteForwards) {
-      return 0;
+
+  // src/js/modules/core/numerals.ts
+  var Numerals = class {
+    #userNumeralSet;
+    constructor() {
     }
-    let count = 0;
-    for (let i = 0; i < formattedValue.length; i++) {
-      if (/[+0-9]/.test(formattedValue[i])) {
-        count++;
+    // If any Arabic-Indic digits, then label it as that set. Same for Persian. Otherwise assume ASCII.
+    #updateNumeralSet(str) {
+      if (/[\u0660-\u0669]/.test(str)) {
+        this.#userNumeralSet = "arabic-indic";
+      } else if (/[\u06F0-\u06F9]/.test(str)) {
+        this.#userNumeralSet = "persian";
+      } else {
+        this.#userNumeralSet = "ascii";
       }
-      if (count === relevantChars && !isDeleteForwards) {
-        return i + 1;
+    }
+    // Denormalise ASCII 0-9 to the user's numeral set, if known. If not known, return the string as-is.
+    denormalise(str, currentInputValue) {
+      if (!this.#userNumeralSet) {
+        this.#updateNumeralSet(currentInputValue);
       }
-      if (isDeleteForwards && count === relevantChars + 1) {
-        return i;
+      if (this.#userNumeralSet === "ascii") {
+        return str;
       }
+      const base = this.#userNumeralSet === "arabic-indic" ? 1632 : 1776;
+      return str.replace(/[0-9]/g, (d) => String.fromCharCode(base + Number(d)));
     }
-    return formattedValue.length;
-  };
-  var createEl = (name, attrs, container) => {
-    const el = document.createElement(name);
-    if (attrs) {
-      Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, value));
+    // Normalize Eastern Arabic (U+0660-0669) and Persian/Extended Arabic-Indic (U+06F0-06F9) numerals to ASCII 0-9
+    normalise(str) {
+      if (!str) {
+        return "";
+      }
+      this.#updateNumeralSet(str);
+      if (this.#userNumeralSet === "ascii") {
+        return str;
+      }
+      const base = this.#userNumeralSet === "arabic-indic" ? 1632 : 1776;
+      const regex = this.#userNumeralSet === "arabic-indic" ? /[\u0660-\u0669]/g : /[\u06F0-\u06F9]/g;
+      return str.replace(regex, (ch) => String.fromCharCode(48 + (ch.charCodeAt(0) - base)));
     }
-    if (container) {
-      container.appendChild(el);
+    isAscii() {
+      return this.#userNumeralSet === "ascii";
     }
-    return el;
   };
-  var forEachInstance = (method, ...args) => {
-    const { instances } = intlTelInput;
-    Object.values(instances).forEach((instance) => instance[method](...args));
-  };
-  var Iti = class {
+
+  // src/js/intl-tel-input.ts
+  var id = 0;
+  var iso2Set2 = new Set(data_default.map((c) => c.iso2));
+  var isIso22 = (val) => iso2Set2.has(val);
+  var Iti = class _Iti {
+    //* PRIVATE FIELDS
+    #ui;
+    #options;
+    #isAndroid;
+    // country data
+    #countries;
+    #dialCodeMaxLen;
+    #dialCodeToIso2Map;
+    #dialCodes;
+    #countryByIso2;
+    #selectedCountryData;
+    #maxCoreNumberLength;
+    #defaultCountry;
+    #abortController;
+    #dropdownAbortController;
+    #numerals;
+    #resolveAutoCountryPromise;
+    #rejectAutoCountryPromise;
+    #resolveUtilsScriptPromise;
+    #rejectUtilsScriptPromise;
     constructor(input, customOptions = {}) {
       this.id = id++;
-      this.telInput = input;
-      this.highlightedItem = null;
-      this.options = Object.assign({}, defaults, customOptions);
-      this.hadInitialPlaceholder = Boolean(input.getAttribute("placeholder"));
+      UI.validateInput(input);
+      const validatedOptions = validateOptions(customOptions);
+      this.#options = { ...defaults, ...validatedOptions };
+      applyOptionSideEffects(this.#options);
+      this.#ui = new UI(input, this.#options, this.id);
+      this.#isAndroid = getIsAndroid();
+      this.#numerals = new Numerals();
+      this.promise = this.#createInitPromises(this.#options);
+      this.#countries = processAllCountries(this.#options);
+      const { dialCodes, dialCodeMaxLen, dialCodeToIso2Map } = processDialCodes(
+        this.#countries
+      );
+      this.#dialCodes = dialCodes;
+      this.#dialCodeMaxLen = dialCodeMaxLen;
+      this.#dialCodeToIso2Map = dialCodeToIso2Map;
+      this.#countryByIso2 = new Map(this.#countries.map((c) => [c.iso2, c]));
+      this.#init();
     }
-    //* Can't be private as it's called from intlTelInput convenience wrapper.
-    _init() {
-      if (this.options.useFullscreenPopup) {
-        this.options.fixDropdownWidth = false;
+    #getTelInputValue() {
+      const inputValue = this.#ui.telInput.value.trim();
+      return this.#numerals.normalise(inputValue);
+    }
+    #setTelInputValue(asciiValue) {
+      const currentValue = this.#ui.telInput.value;
+      this.#ui.telInput.value = this.#numerals.denormalise(asciiValue, currentValue);
+    }
+    #createInitPromises(options) {
+      const { initialCountry, geoIpLookup, loadUtils } = options;
+      const needsAutoCountryPromise = initialCountry === INITIAL_COUNTRY.AUTO && Boolean(geoIpLookup);
+      const needsUtilsScriptPromise = Boolean(loadUtils) && !intlTelInput.utils;
+      let autoCountryPromise;
+      if (needsAutoCountryPromise) {
+        autoCountryPromise = new Promise((resolve, reject) => {
+          this.#resolveAutoCountryPromise = resolve;
+          this.#rejectAutoCountryPromise = reject;
+        });
+      } else {
+        autoCountryPromise = Promise.resolve(void 0);
+        this.#resolveAutoCountryPromise = () => {
+        };
+        this.#rejectAutoCountryPromise = () => {
+        };
       }
-      if (this.options.onlyCountries.length === 1) {
-        this.options.initialCountry = this.options.onlyCountries[0];
+      let utilsScriptPromise;
+      if (needsUtilsScriptPromise) {
+        utilsScriptPromise = new Promise((resolve, reject) => {
+          this.#resolveUtilsScriptPromise = resolve;
+          this.#rejectUtilsScriptPromise = reject;
+        });
+      } else {
+        utilsScriptPromise = Promise.resolve(void 0);
+        this.#resolveUtilsScriptPromise = () => {
+        };
+        this.#rejectUtilsScriptPromise = () => {
+        };
       }
-      if (this.options.separateDialCode) {
-        this.options.nationalMode = false;
+      return Promise.all([autoCountryPromise, utilsScriptPromise]);
+    }
+    #init() {
+      this.#selectedCountryData = {};
+      this.#abortController = new AbortController();
+      this.#processCountryData();
+      this.#ui.generateMarkup(this.#countries);
+      this.#setInitialState();
+      this.#initListeners();
+      this.#initRequests();
+      if (this.#options.dropdownAlwaysOpen) {
+        this.#openDropdown();
       }
-      if (this.options.allowDropdown && !this.options.showFlags && !this.options.separateDialCode) {
-        this.options.nationalMode = false;
-      }
-      if (this.options.useFullscreenPopup && !this.options.dropdownContainer) {
-        this.options.dropdownContainer = document.body;
-      }
-      this.isAndroid = typeof navigator !== "undefined" ? /Android/i.test(navigator.userAgent) : false;
-      this.isRTL = !!this.telInput.closest("[dir=rtl]");
-      const showOnDefaultSide = this.options.allowDropdown || this.options.separateDialCode;
-      this.showSelectedCountryOnLeft = this.isRTL ? !showOnDefaultSide : showOnDefaultSide;
-      if (this.options.separateDialCode) {
-        if (this.isRTL) {
-          this.originalPaddingRight = this.telInput.style.paddingRight;
-        } else {
-          this.originalPaddingLeft = this.telInput.style.paddingLeft;
-        }
-      }
-      this.options.i18n = { ...en_default, ...this.options.i18n };
-      const autoCountryPromise = new Promise((resolve, reject) => {
-        this.resolveAutoCountryPromise = resolve;
-        this.rejectAutoCountryPromise = reject;
-      });
-      const utilsScriptPromise = new Promise((resolve, reject) => {
-        this.resolveUtilsScriptPromise = resolve;
-        this.rejectUtilsScriptPromise = reject;
-      });
-      this.promise = Promise.all([autoCountryPromise, utilsScriptPromise]);
-      this.selectedCountryData = {};
-      this._processCountryData();
-      this._generateMarkup();
-      this._setInitialState();
-      this._initListeners();
-      this._initRequests();
     }
     //********************
     //*  PRIVATE METHODS
     //********************
     //* Prepare all of the country data, including onlyCountries, excludeCountries, countryOrder options.
-    _processCountryData() {
-      this._processAllCountries();
-      this._processDialCodes();
-      this._translateCountryNames();
-      this._sortCountries();
-    }
-    //* Sort countries by countryOrder option (if present), then name.
-    _sortCountries() {
-      if (this.options.countryOrder) {
-        this.options.countryOrder = this.options.countryOrder.map((country) => country.toLowerCase());
-      }
-      this.countries.sort((a, b) => {
-        const { countryOrder } = this.options;
-        if (countryOrder) {
-          const aIndex = countryOrder.indexOf(a.iso2);
-          const bIndex = countryOrder.indexOf(b.iso2);
-          const aIndexExists = aIndex > -1;
-          const bIndexExists = bIndex > -1;
-          if (aIndexExists || bIndexExists) {
-            if (aIndexExists && bIndexExists) {
-              return aIndex - bIndex;
-            }
-            return aIndexExists ? -1 : 1;
-          }
-        }
-        return a.name.localeCompare(b.name);
-      });
-    }
-    //* Add a dial code to this.dialCodeToIso2Map.
-    _addToDialCodeMap(iso2, dialCode, priority) {
-      if (dialCode.length > this.dialCodeMaxLen) {
-        this.dialCodeMaxLen = dialCode.length;
-      }
-      if (!this.dialCodeToIso2Map.hasOwnProperty(dialCode)) {
-        this.dialCodeToIso2Map[dialCode] = [];
-      }
-      for (let i = 0; i < this.dialCodeToIso2Map[dialCode].length; i++) {
-        if (this.dialCodeToIso2Map[dialCode][i] === iso2) {
-          return;
-        }
-      }
-      const index = priority !== void 0 ? priority : this.dialCodeToIso2Map[dialCode].length;
-      this.dialCodeToIso2Map[dialCode][index] = iso2;
-    }
-    //* Process onlyCountries or excludeCountries array if present.
-    _processAllCountries() {
-      const { onlyCountries, excludeCountries } = this.options;
-      if (onlyCountries.length) {
-        const lowerCaseOnlyCountries = onlyCountries.map(
-          (country) => country.toLowerCase()
-        );
-        this.countries = data_default.filter(
-          (country) => lowerCaseOnlyCountries.includes(country.iso2)
-        );
-      } else if (excludeCountries.length) {
-        const lowerCaseExcludeCountries = excludeCountries.map(
-          (country) => country.toLowerCase()
-        );
-        this.countries = data_default.filter(
-          (country) => !lowerCaseExcludeCountries.includes(country.iso2)
-        );
-      } else {
-        this.countries = data_default;
-      }
-    }
-    //* Translate Countries by object literal provided on config.
-    _translateCountryNames() {
-      for (let i = 0; i < this.countries.length; i++) {
-        const iso2 = this.countries[i].iso2.toLowerCase();
-        if (this.options.i18n.hasOwnProperty(iso2)) {
-          this.countries[i].name = this.options.i18n[iso2];
-        }
-      }
-    }
-    //* Generate this.dialCodes and this.dialCodeToIso2Map.
-    _processDialCodes() {
-      this.dialCodes = {};
-      this.dialCodeMaxLen = 0;
-      this.dialCodeToIso2Map = {};
-      for (let i = 0; i < this.countries.length; i++) {
-        const c = this.countries[i];
-        if (!this.dialCodes[c.dialCode]) {
-          this.dialCodes[c.dialCode] = true;
-        }
-        this._addToDialCodeMap(c.iso2, c.dialCode, c.priority);
-      }
-      for (let i = 0; i < this.countries.length; i++) {
-        const c = this.countries[i];
-        if (c.areaCodes) {
-          const rootIso2Code = this.dialCodeToIso2Map[c.dialCode][0];
-          for (let j = 0; j < c.areaCodes.length; j++) {
-            const areaCode = c.areaCodes[j];
-            for (let k = 1; k < areaCode.length; k++) {
-              const partialAreaCode = areaCode.substr(0, k);
-              const partialDialCode = c.dialCode + partialAreaCode;
-              this._addToDialCodeMap(rootIso2Code, partialDialCode);
-              this._addToDialCodeMap(c.iso2, partialDialCode);
-            }
-            this._addToDialCodeMap(c.iso2, c.dialCode + areaCode);
-          }
-        }
-      }
-    }
-    //* Generate all of the markup for the plugin: the selected country overlay, and the dropdown.
-    _generateMarkup() {
-      this.telInput.classList.add("iti__tel-input");
-      if (!this.telInput.hasAttribute("autocomplete") && !(this.telInput.form && this.telInput.form.hasAttribute("autocomplete"))) {
-        this.telInput.setAttribute("autocomplete", "off");
-      }
-      const {
-        allowDropdown,
-        separateDialCode,
-        showFlags,
-        containerClass,
-        hiddenInput,
-        dropdownContainer,
-        fixDropdownWidth,
-        useFullscreenPopup,
-        countrySearch,
-        i18n
-      } = this.options;
-      let parentClass = "iti";
-      if (allowDropdown) {
-        parentClass += " iti--allow-dropdown";
-      }
-      if (showFlags) {
-        parentClass += " iti--show-flags";
-      }
-      if (containerClass) {
-        parentClass += ` ${containerClass}`;
-      }
-      if (!useFullscreenPopup) {
-        parentClass += " iti--inline-dropdown";
-      }
-      const wrapper = createEl("div", { class: parentClass });
-      this.telInput.parentNode?.insertBefore(wrapper, this.telInput);
-      if (allowDropdown || showFlags || separateDialCode) {
-        this.countryContainer = createEl(
-          "div",
-          { class: "iti__country-container" },
-          wrapper
-        );
-        if (this.showSelectedCountryOnLeft) {
-          this.countryContainer.style.left = "0px";
-        } else {
-          this.countryContainer.style.right = "0px";
-        }
-        if (allowDropdown) {
-          this.selectedCountry = createEl(
-            "button",
-            {
-              type: "button",
-              class: "iti__selected-country",
-              "aria-expanded": "false",
-              "aria-label": this.options.i18n.selectedCountryAriaLabel,
-              "aria-haspopup": "true",
-              "aria-controls": `iti-${this.id}__dropdown-content`,
-              "role": "combobox"
-            },
-            this.countryContainer
-          );
-          if (this.telInput.disabled) {
-            this.selectedCountry.setAttribute("disabled", "true");
-          }
-        } else {
-          this.selectedCountry = createEl(
-            "div",
-            { class: "iti__selected-country" },
-            this.countryContainer
-          );
-        }
-        const selectedCountryPrimary = createEl("div", { class: "iti__selected-country-primary" }, this.selectedCountry);
-        this.selectedCountryInner = createEl("div", { class: "iti__flag" }, selectedCountryPrimary);
-        this.selectedCountryA11yText = createEl(
-          "span",
-          { class: "iti__a11y-text" },
-          this.selectedCountryInner
-        );
-        if (allowDropdown) {
-          this.dropdownArrow = createEl(
-            "div",
-            { class: "iti__arrow", "aria-hidden": "true" },
-            selectedCountryPrimary
-          );
-        }
-        if (separateDialCode) {
-          this.selectedDialCode = createEl(
-            "div",
-            { class: "iti__selected-dial-code" },
-            this.selectedCountry
-          );
-        }
-        if (allowDropdown) {
-          const extraClasses = fixDropdownWidth ? "" : "iti--flexible-dropdown-width";
-          this.dropdownContent = createEl("div", {
-            id: `iti-${this.id}__dropdown-content`,
-            class: `iti__dropdown-content iti__hide ${extraClasses}`
-          });
-          if (countrySearch) {
-            this.searchInput = createEl(
-              "input",
-              {
-                type: "text",
-                class: "iti__search-input",
-                placeholder: i18n.searchPlaceholder,
-                role: "combobox",
-                "aria-expanded": "true",
-                "aria-label": i18n.searchPlaceholder,
-                "aria-controls": `iti-${this.id}__country-listbox`,
-                "aria-autocomplete": "list",
-                "autocomplete": "off"
-              },
-              this.dropdownContent
-            );
-            this.searchResultsA11yText = createEl(
-              "span",
-              { class: "iti__a11y-text" },
-              this.dropdownContent
-            );
-          }
-          this.countryList = createEl(
-            "ul",
-            {
-              class: "iti__country-list",
-              id: `iti-${this.id}__country-listbox`,
-              role: "listbox",
-              "aria-label": i18n.countryListAriaLabel
-            },
-            this.dropdownContent
-          );
-          this._appendListItems();
-          if (countrySearch) {
-            this._updateSearchResultsText();
-          }
-          if (dropdownContainer) {
-            let dropdownClasses = "iti iti--container";
-            if (useFullscreenPopup) {
-              dropdownClasses += " iti--fullscreen-popup";
-            } else {
-              dropdownClasses += " iti--inline-dropdown";
-            }
-            this.dropdown = createEl("div", { class: dropdownClasses });
-            this.dropdown.appendChild(this.dropdownContent);
-          } else {
-            this.countryContainer.appendChild(this.dropdownContent);
-          }
-        }
-      }
-      wrapper.appendChild(this.telInput);
-      this._updateInputPadding();
-      if (hiddenInput) {
-        const telInputName = this.telInput.getAttribute("name") || "";
-        const names = hiddenInput(telInputName);
-        if (names.phone) {
-          const existingInput = this.telInput.form?.querySelector(`input[name="${names.phone}"]`);
-          if (existingInput) {
-            this.hiddenInput = existingInput;
-          } else {
-            this.hiddenInput = createEl("input", {
-              type: "hidden",
-              name: names.phone
-            });
-            wrapper.appendChild(this.hiddenInput);
-          }
-        }
-        if (names.country) {
-          const existingInput = this.telInput.form?.querySelector(`input[name="${names.country}"]`);
-          if (existingInput) {
-            this.hiddenInputCountry = existingInput;
-          } else {
-            this.hiddenInputCountry = createEl("input", {
-              type: "hidden",
-              name: names.country
-            });
-            wrapper.appendChild(this.hiddenInputCountry);
-          }
-        }
-      }
-    }
-    //* For each country: add a country list item <li> to the countryList <ul> container.
-    _appendListItems() {
-      for (let i = 0; i < this.countries.length; i++) {
-        const c = this.countries[i];
-        const extraClass = i === 0 ? "iti__highlight" : "";
-        const listItem = createEl(
-          "li",
-          {
-            id: `iti-${this.id}__item-${c.iso2}`,
-            class: `iti__country ${extraClass}`,
-            tabindex: "-1",
-            role: "option",
-            "data-dial-code": c.dialCode,
-            "data-country-code": c.iso2,
-            "aria-selected": "false"
-          },
-          this.countryList
-        );
-        c.nodeById[this.id] = listItem;
-        let content = "";
-        if (this.options.showFlags) {
-          content += `<div class='iti__flag iti__${c.iso2}'></div>`;
-        }
-        content += `<span class='iti__country-name'>${c.name}</span>`;
-        content += `<span class='iti__dial-code'>+${c.dialCode}</span>`;
-        listItem.insertAdjacentHTML("beforeend", content);
-      }
+    #processCountryData() {
+      generateCountryNames(this.#countries, this.#options);
+      sortCountries(this.#countries, this.#options);
+      cacheSearchTokens(this.#countries);
     }
     //* Set the initial state of the input value and the selected country by:
     //* 1. Extracting a dial code from the given number
     //* 2. Using explicit initialCountry
-    _setInitialState(overrideAutoCountry = false) {
-      const attributeValue = this.telInput.getAttribute("value");
-      const inputValue = this.telInput.value;
-      const useAttribute = attributeValue && attributeValue.charAt(0) === "+" && (!inputValue || inputValue.charAt(0) !== "+");
+    #setInitialState(overrideAutoCountry = false) {
+      const attributeValueRaw = this.#ui.telInput.getAttribute("value");
+      const attributeValue = this.#numerals.normalise(attributeValueRaw);
+      const inputValue = this.#getTelInputValue();
+      const useAttribute = attributeValue && attributeValue.startsWith("+") && (!inputValue || !inputValue.startsWith("+"));
       const val = useAttribute ? attributeValue : inputValue;
-      const dialCode = this._getDialCode(val);
+      const dialCode = this.#getDialCode(val);
       const isRegionlessNanpNumber = isRegionlessNanp(val);
-      const { initialCountry, geoIpLookup } = this.options;
-      const isAutoCountry = initialCountry === "auto" && geoIpLookup;
-      if (dialCode && !isRegionlessNanpNumber) {
-        this._updateCountryFromNumber(val);
-      } else if (!isAutoCountry || overrideAutoCountry) {
-        const lowerInitialCountry = initialCountry ? initialCountry.toLowerCase() : "";
-        const isValidInitialCountry = lowerInitialCountry && this._getCountryData(lowerInitialCountry, true);
-        if (isValidInitialCountry) {
-          this._setCountry(lowerInitialCountry);
-        } else {
-          if (dialCode && isRegionlessNanpNumber) {
-            this._setCountry("us");
-          } else {
-            this._setCountry();
+      const { initialCountry, geoIpLookup } = this.#options;
+      const isAutoCountry = initialCountry === INITIAL_COUNTRY.AUTO && geoIpLookup;
+      const doingAutoCountryLookup = isAutoCountry && !overrideAutoCountry;
+      const initialCountryLower = initialCountry.toLowerCase();
+      const isValidInitialCountry = isIso22(initialCountryLower);
+      if (dialCode) {
+        if (isRegionlessNanpNumber) {
+          if (isValidInitialCountry) {
+            this.#setCountry(initialCountryLower);
+          } else if (!doingAutoCountryLookup) {
+            this.#setCountry(US.ISO2);
           }
+        } else {
+          this.#updateCountryFromNumber(val);
         }
+      } else if (isValidInitialCountry) {
+        this.#setCountry(initialCountryLower);
+      } else if (!doingAutoCountryLookup) {
+        this.#setCountry("");
       }
       if (val) {
-        this._updateValFromNumber(val);
+        this.#updateValFromNumber(val);
       }
     }
     //* Initialise the main event listeners: input keyup, and click selected country.
-    _initListeners() {
-      this._initTelInputListeners();
-      if (this.options.allowDropdown) {
-        this._initDropdownListeners();
+    #initListeners() {
+      this.#initTelInputListeners();
+      if (this.#options.allowDropdown) {
+        this.#initDropdownListeners();
       }
-      if ((this.hiddenInput || this.hiddenInputCountry) && this.telInput.form) {
-        this._initHiddenInputListener();
+      if ((this.#ui.hiddenInput || this.#ui.hiddenInputCountry) && this.#ui.telInput.form) {
+        this.#initHiddenInputListener();
       }
     }
     //* Update hidden input on form submit.
-    _initHiddenInputListener() {
-      this._handleHiddenInputSubmit = () => {
-        if (this.hiddenInput) {
-          this.hiddenInput.value = this.getNumber();
+    #initHiddenInputListener() {
+      const handleHiddenInputSubmit = () => {
+        if (this.#ui.hiddenInput) {
+          this.#ui.hiddenInput.value = this.getNumber();
         }
-        if (this.hiddenInputCountry) {
-          this.hiddenInputCountry.value = this.getSelectedCountryData().iso2 || "";
+        if (this.#ui.hiddenInputCountry) {
+          this.#ui.hiddenInputCountry.value = this.#selectedCountryData.iso2 || "";
         }
       };
-      this.telInput.form?.addEventListener(
-        "submit",
-        this._handleHiddenInputSubmit
-      );
+      this.#ui.telInput.form?.addEventListener("submit", handleHiddenInputSubmit, {
+        signal: this.#abortController.signal
+      });
     }
     //* initialise the dropdown listeners.
-    _initDropdownListeners() {
-      this._handleLabelClick = (e) => {
-        if (this.dropdownContent.classList.contains("iti__hide")) {
-          this.telInput.focus();
+    #initDropdownListeners() {
+      const signal = this.#abortController.signal;
+      const handleLabelClick = (e) => {
+        if (this.#ui.isDropdownClosed()) {
+          this.#ui.telInput.focus();
         } else {
           e.preventDefault();
         }
       };
-      const label = this.telInput.closest("label");
+      const label = this.#ui.telInput.closest("label");
       if (label) {
-        label.addEventListener("click", this._handleLabelClick);
+        label.addEventListener("click", handleLabelClick, { signal });
       }
-      this._handleClickSelectedCountry = () => {
-        if (this.dropdownContent.classList.contains("iti__hide") && !this.telInput.disabled && !this.telInput.readOnly) {
-          this._openDropdown();
+      const handleClickSelectedCountry = () => {
+        if (this.#ui.isDropdownClosed() && !this.#ui.telInput.disabled && !this.#ui.telInput.readOnly) {
+          this.#openDropdown();
         }
       };
-      this.selectedCountry.addEventListener("click", this._handleClickSelectedCountry);
-      this._handleCountryContainerKeydown = (e) => {
-        const isDropdownHidden = this.dropdownContent.classList.contains("iti__hide");
-        if (isDropdownHidden && ["ArrowUp", "ArrowDown", " ", "Enter"].includes(e.key)) {
+      this.#ui.selectedCountry.addEventListener(
+        "click",
+        handleClickSelectedCountry,
+        {
+          signal
+        }
+      );
+      const handleCountryContainerKeydown = (e) => {
+        const allowedKeys = [KEYS.ARROW_UP, KEYS.ARROW_DOWN, KEYS.SPACE, KEYS.ENTER];
+        if (this.#ui.isDropdownClosed() && allowedKeys.includes(e.key)) {
           e.preventDefault();
           e.stopPropagation();
-          this._openDropdown();
+          this.#openDropdown();
         }
-        if (e.key === "Tab") {
-          this._closeDropdown();
+        if (e.key === KEYS.TAB) {
+          this.#closeDropdown();
         }
       };
-      this.countryContainer.addEventListener(
+      this.#ui.countryContainer.addEventListener(
         "keydown",
-        this._handleCountryContainerKeydown
+        handleCountryContainerKeydown,
+        { signal }
       );
     }
-    //* Init many requests: utils script / geo ip lookup.
-    _initRequests() {
-      let { loadUtils, initialCountry, geoIpLookup } = this.options;
+    //* Init requests: utils script / geo ip lookup.
+    #initRequests() {
+      const { loadUtils, initialCountry, geoIpLookup } = this.#options;
       if (loadUtils && !intlTelInput.utils) {
-        this._handlePageLoad = () => {
-          window.removeEventListener("load", this._handlePageLoad);
+        const doAttachUtils = () => {
           intlTelInput.attachUtils(loadUtils)?.catch(() => {
           });
         };
         if (intlTelInput.documentReady()) {
-          this._handlePageLoad();
+          doAttachUtils();
         } else {
-          window.addEventListener("load", this._handlePageLoad);
+          const handlePageLoad = () => {
+            doAttachUtils();
+          };
+          window.addEventListener("load", handlePageLoad, {
+            signal: this.#abortController.signal
+          });
         }
       } else {
-        this.resolveUtilsScriptPromise();
+        this.#resolveUtilsScriptPromise();
       }
-      const isAutoCountry = initialCountry === "auto" && geoIpLookup;
-      if (isAutoCountry && !this.selectedCountryData.iso2) {
-        this._loadAutoCountry();
-      } else {
-        this.resolveAutoCountryPromise();
+      const isAutoCountry = initialCountry === INITIAL_COUNTRY.AUTO && geoIpLookup;
+      if (isAutoCountry) {
+        if (this.#selectedCountryData.iso2) {
+          this.#resolveAutoCountryPromise();
+        } else {
+          this.#loadAutoCountry();
+        }
       }
     }
     //* Perform the geo ip lookup.
-    _loadAutoCountry() {
+    #loadAutoCountry() {
       if (intlTelInput.autoCountry) {
-        this.handleAutoCountry();
-      } else if (!intlTelInput.startedLoadingAutoCountry) {
-        intlTelInput.startedLoadingAutoCountry = true;
-        if (typeof this.options.geoIpLookup === "function") {
-          this.options.geoIpLookup(
-            (iso2 = "") => {
+        this.#handleAutoCountry();
+      } else {
+        this.#ui.selectedCountryInner.classList.add(CLASSES.LOADING);
+        if (!intlTelInput.startedLoadingAutoCountry) {
+          intlTelInput.startedLoadingAutoCountry = true;
+          if (typeof this.#options.geoIpLookup === "function") {
+            const successCallback = (iso2 = "") => {
+              this.#ui.selectedCountryInner.classList.remove(CLASSES.LOADING);
               const iso2Lower = iso2.toLowerCase();
-              const isValidIso2 = iso2Lower && this._getCountryData(iso2Lower, true);
-              if (isValidIso2) {
+              if (isIso22(iso2Lower)) {
                 intlTelInput.autoCountry = iso2Lower;
-                setTimeout(() => forEachInstance("handleAutoCountry"));
+                setTimeout(() => _Iti.forEachInstance("handleAutoCountry"));
               } else {
-                this._setInitialState(true);
-                forEachInstance("rejectAutoCountryPromise");
+                _Iti.forEachInstance("handleAutoCountryFailure");
               }
-            },
-            () => {
-              this._setInitialState(true);
-              forEachInstance("rejectAutoCountryPromise");
-            }
-          );
+            };
+            const failureCallback = () => {
+              this.#ui.selectedCountryInner.classList.remove(CLASSES.LOADING);
+              _Iti.forEachInstance("handleAutoCountryFailure");
+            };
+            this.#options.geoIpLookup(successCallback, failureCallback);
+          }
         }
       }
     }
-    _openDropdownWithPlus() {
-      this._openDropdown();
-      this.searchInput.value = "+";
-      this._filterCountries("", true);
+    #openDropdownWithPlus() {
+      this.#openDropdown();
+      this.#ui.searchInput.value = "+";
+      this.#ui.filterCountriesByQuery("");
     }
     //* Initialize the tel input listeners.
-    _initTelInputListeners() {
-      const { strictMode, formatAsYouType, separateDialCode, formatOnDisplay, allowDropdown, countrySearch } = this.options;
+    #initTelInputListeners() {
+      this.#bindInputListener();
+      this.#maybeBindKeydownListener();
+      this.#maybeBindPasteListener();
+    }
+    #bindInputListener() {
+      const {
+        strictMode,
+        formatAsYouType,
+        separateDialCode,
+        allowDropdown,
+        countrySearch
+      } = this.#options;
       let userOverrideFormatting = false;
-      if (/\p{L}/u.test(this.telInput.value)) {
+      if (REGEX.ALPHA_UNICODE.test(this.#getTelInputValue())) {
         userOverrideFormatting = true;
       }
-      this._handleInputEvent = (e) => {
-        if (this.isAndroid && e?.data === "+" && separateDialCode && allowDropdown && countrySearch) {
-          const currentCaretPos = this.telInput.selectionStart || 0;
-          const valueBeforeCaret = this.telInput.value.substring(0, currentCaretPos - 1);
-          const valueAfterCaret = this.telInput.value.substring(currentCaretPos);
-          this.telInput.value = valueBeforeCaret + valueAfterCaret;
-          this._openDropdownWithPlus();
+      const handleInputEvent = (e) => {
+        const inputValue = this.#getTelInputValue();
+        if (this.#isAndroid && e?.data === "+" && separateDialCode && allowDropdown && countrySearch) {
+          const currentCaretPos = this.#ui.telInput.selectionStart || 0;
+          const valueBeforeCaret = inputValue.substring(0, currentCaretPos - 1);
+          const valueAfterCaret = inputValue.substring(currentCaretPos);
+          this.#setTelInputValue(valueBeforeCaret + valueAfterCaret);
+          this.#openDropdownWithPlus();
           return;
         }
-        if (this._updateCountryFromNumber(this.telInput.value)) {
-          this._triggerCountryChange();
+        if (this.#updateCountryFromNumber(inputValue)) {
+          this.#triggerCountryChange();
         }
-        const isFormattingChar = e?.data && /[^+0-9]/.test(e.data);
-        const isPaste = e?.inputType === "insertFromPaste" && this.telInput.value;
+        const isFormattingChar = e?.data && REGEX.NON_PLUS_NUMERIC.test(e.data);
+        const isPaste = e?.inputType === INPUT_TYPES.PASTE && inputValue;
         if (isFormattingChar || isPaste && !strictMode) {
           userOverrideFormatting = true;
-        } else if (!/[^+0-9]/.test(this.telInput.value)) {
+        } else if (!REGEX.NON_PLUS_NUMERIC.test(inputValue)) {
           userOverrideFormatting = false;
         }
-        const disableFormatOnSetNumber = e?.detail && e.detail["isSetNumber"] && !formatOnDisplay;
-        if (formatAsYouType && !userOverrideFormatting && !disableFormatOnSetNumber) {
-          const currentCaretPos = this.telInput.selectionStart || 0;
-          const valueBeforeCaret = this.telInput.value.substring(0, currentCaretPos);
-          const relevantCharsBeforeCaret = valueBeforeCaret.replace(/[^+0-9]/g, "").length;
-          const isDeleteForwards = e?.inputType === "deleteContentForward";
-          const formattedValue = this._formatNumberAsYouType();
-          const newCaretPos = translateCursorPosition(relevantCharsBeforeCaret, formattedValue, currentCaretPos, isDeleteForwards);
-          this.telInput.value = formattedValue;
-          this.telInput.setSelectionRange(newCaretPos, newCaretPos);
+        const isSetNumber = e?.detail && e.detail["isSetNumber"];
+        const isAscii = this.#numerals.isAscii();
+        if (formatAsYouType && !userOverrideFormatting && !isSetNumber && isAscii) {
+          const currentCaretPos = this.#ui.telInput.selectionStart || 0;
+          const valueBeforeCaret = inputValue.substring(
+            0,
+            currentCaretPos
+          );
+          const relevantCharsBeforeCaret = valueBeforeCaret.replace(
+            REGEX.NON_PLUS_NUMERIC_GLOBAL,
+            ""
+          ).length;
+          const isDeleteForwards = e?.inputType === INPUT_TYPES.DELETE_FWD;
+          const fullNumber = this.#getFullNumber();
+          const formattedValue = formatNumberAsYouType(
+            fullNumber,
+            inputValue,
+            intlTelInput.utils,
+            this.#selectedCountryData,
+            separateDialCode
+          );
+          const newCaretPos = translateCursorPosition(
+            relevantCharsBeforeCaret,
+            formattedValue,
+            currentCaretPos,
+            isDeleteForwards
+          );
+          this.#setTelInputValue(formattedValue);
+          this.#ui.telInput.setSelectionRange(newCaretPos, newCaretPos);
+        }
+        if (separateDialCode && inputValue.startsWith("+") && this.#selectedCountryData.dialCode) {
+          const cleanNumber = beforeSetNumber(
+            inputValue,
+            true,
+            separateDialCode,
+            this.#selectedCountryData
+          );
+          this.#setTelInputValue(cleanNumber);
         }
       };
-      this.telInput.addEventListener("input", this._handleInputEvent);
+      this.#ui.telInput.addEventListener(
+        "input",
+        handleInputEvent,
+        {
+          signal: this.#abortController.signal
+        }
+      );
+    }
+    #maybeBindKeydownListener() {
+      const { strictMode, separateDialCode, allowDropdown, countrySearch } = this.#options;
       if (strictMode || separateDialCode) {
-        this._handleKeydownEvent = (e) => {
+        const handleKeydownEvent = (e) => {
           if (e.key && e.key.length === 1 && !e.altKey && !e.ctrlKey && !e.metaKey) {
             if (separateDialCode && allowDropdown && countrySearch && e.key === "+") {
               e.preventDefault();
-              this._openDropdownWithPlus();
+              this.#openDropdownWithPlus();
               return;
             }
             if (strictMode) {
-              const value = this.telInput.value;
-              const alreadyHasPlus = value.charAt(0) === "+";
-              const isInitialPlus = !alreadyHasPlus && this.telInput.selectionStart === 0 && e.key === "+";
-              const isNumeric = /^[0-9]$/.test(e.key);
+              const inputValue = this.#getTelInputValue();
+              const alreadyHasPlus = inputValue.startsWith("+");
+              const isInitialPlus = !alreadyHasPlus && this.#ui.telInput.selectionStart === 0 && e.key === "+";
+              const normalisedKey = this.#numerals.normalise(e.key);
+              const isNumeric = /^[0-9]$/.test(normalisedKey);
               const isAllowedChar = separateDialCode ? isNumeric : isInitialPlus || isNumeric;
-              const newValue = value.slice(0, this.telInput.selectionStart) + e.key + value.slice(this.telInput.selectionEnd);
-              const newFullNumber = this._getFullNumber(newValue);
-              const coreNumber = intlTelInput.utils.getCoreNumber(newFullNumber, this.selectedCountryData.iso2);
-              const hasExceededMaxLength = this.maxCoreNumberLength && coreNumber.length > this.maxCoreNumberLength;
-              let isChangingDialCode = false;
-              if (alreadyHasPlus) {
-                const currentCountry = this.selectedCountryData.iso2;
-                const newCountry = this._getCountryFromNumber(newFullNumber);
-                isChangingDialCode = newCountry !== currentCountry;
-              }
+              const input = this.#ui.telInput;
+              const selStart = input.selectionStart;
+              const selEnd = input.selectionEnd;
+              const before = inputValue.slice(0, selStart);
+              const after = inputValue.slice(selEnd);
+              const newValue = before + e.key + after;
+              const newFullNumber = this.#getFullNumber(newValue);
+              const coreNumber = intlTelInput.utils.getCoreNumber(
+                newFullNumber,
+                this.#selectedCountryData.iso2
+              );
+              const hasExceededMaxLength = this.#maxCoreNumberLength && coreNumber.length > this.#maxCoreNumberLength;
+              const newCountry = this.#getNewCountryFromNumber(newFullNumber);
+              const isChangingDialCode = newCountry !== null;
               if (!isAllowedChar || hasExceededMaxLength && !isChangingDialCode && !isInitialPlus) {
                 e.preventDefault();
               }
             }
           }
         };
-        this.telInput.addEventListener("keydown", this._handleKeydownEvent);
+        this.#ui.telInput.addEventListener("keydown", handleKeydownEvent, {
+          signal: this.#abortController.signal
+        });
+      }
+    }
+    #maybeBindPasteListener() {
+      if (this.#options.strictMode) {
+        const handlePasteEvent = (e) => {
+          e.preventDefault();
+          const input = this.#ui.telInput;
+          const selStart = input.selectionStart;
+          const selEnd = input.selectionEnd;
+          const inputValue = this.#getTelInputValue();
+          const before = inputValue.slice(0, selStart);
+          const after = inputValue.slice(selEnd);
+          const iso2 = this.#selectedCountryData.iso2;
+          const pastedRaw = e.clipboardData.getData("text");
+          const pasted = this.#numerals.normalise(pastedRaw);
+          const initialCharSelected = selStart === 0 && selEnd > 0;
+          const allowLeadingPlus = !inputValue.startsWith("+") || initialCharSelected;
+          const allowedChars = pasted.replace(REGEX.NON_PLUS_NUMERIC_GLOBAL, "");
+          const hasLeadingPlus = allowedChars.startsWith("+");
+          const numerics = allowedChars.replace(/\+/g, "");
+          const sanitised = hasLeadingPlus && allowLeadingPlus ? `+${numerics}` : numerics;
+          let newVal = before + sanitised + after;
+          if (newVal.length > 5) {
+            let coreNumber = intlTelInput.utils.getCoreNumber(newVal, iso2);
+            while (coreNumber.length === 0 && newVal.length > 0) {
+              newVal = newVal.slice(0, -1);
+              coreNumber = intlTelInput.utils.getCoreNumber(newVal, iso2);
+            }
+            if (!coreNumber) {
+              return;
+            }
+            if (this.#maxCoreNumberLength && coreNumber.length > this.#maxCoreNumberLength) {
+              if (input.selectionEnd === inputValue.length) {
+                const trimLength = coreNumber.length - this.#maxCoreNumberLength;
+                newVal = newVal.slice(0, newVal.length - trimLength);
+              } else {
+                return;
+              }
+            }
+          }
+          this.#setTelInputValue(newVal);
+          const caretPos = selStart + sanitised.length;
+          input.setSelectionRange(caretPos, caretPos);
+          input.dispatchEvent(new InputEvent("input", { bubbles: true }));
+        };
+        this.#ui.telInput.addEventListener("paste", handlePasteEvent, {
+          signal: this.#abortController.signal
+        });
       }
     }
     //* Adhere to the input's maxlength attr.
-    _cap(number) {
-      const max = parseInt(this.telInput.getAttribute("maxlength") || "", 10);
-      return max && number.length > max ? number.substr(0, max) : number;
+    #cap(number) {
+      const max = Number(this.#ui.telInput.getAttribute("maxlength"));
+      return max && number.length > max ? number.substring(0, max) : number;
     }
-    //* Trigger a custom event on the input.
-    _trigger(name, detailProps = {}) {
+    //* Trigger a custom event on the input (typed via ItiEventMap).
+    #trigger(name, detailProps = {}) {
       const e = new CustomEvent(name, {
         bubbles: true,
         cancelable: true,
         detail: detailProps
       });
-      this.telInput.dispatchEvent(e);
+      this.#ui.telInput.dispatchEvent(e);
     }
     //* Open the dropdown.
-    _openDropdown() {
-      const { fixDropdownWidth, countrySearch } = this.options;
-      if (fixDropdownWidth) {
-        this.dropdownContent.style.width = `${this.telInput.offsetWidth}px`;
+    #openDropdown() {
+      const { dropdownContainer, useFullscreenPopup } = this.#options;
+      this.#dropdownAbortController = new AbortController();
+      this.#ui.openDropdown();
+      if (!useFullscreenPopup && dropdownContainer) {
+        const handleWindowScroll = () => this.#closeDropdown();
+        window.addEventListener("scroll", handleWindowScroll, {
+          signal: this.#dropdownAbortController.signal
+        });
       }
-      this.dropdownContent.classList.remove("iti__hide");
-      this.selectedCountry.setAttribute("aria-expanded", "true");
-      this._setDropdownPosition();
-      if (countrySearch) {
-        const firstCountryItem = this.countryList.firstElementChild;
-        if (firstCountryItem) {
-          this._highlightListItem(firstCountryItem, false);
-          this.countryList.scrollTop = 0;
-        }
-        this.searchInput.focus();
-      }
-      this._bindDropdownListeners();
-      this.dropdownArrow.classList.add("iti__arrow--up");
-      this._trigger("open:countrydropdown");
-    }
-    //* Set the dropdown position
-    _setDropdownPosition() {
-      if (this.options.dropdownContainer) {
-        this.options.dropdownContainer.appendChild(this.dropdown);
-      }
-      if (!this.options.useFullscreenPopup) {
-        const inputPosRelativeToVP = this.telInput.getBoundingClientRect();
-        const inputHeight = this.telInput.offsetHeight;
-        if (this.options.dropdownContainer) {
-          this.dropdown.style.top = `${inputPosRelativeToVP.top + inputHeight}px`;
-          this.dropdown.style.left = `${inputPosRelativeToVP.left}px`;
-          this._handleWindowScroll = () => this._closeDropdown();
-          window.addEventListener("scroll", this._handleWindowScroll);
-        }
-      }
+      this.#bindDropdownListeners();
+      this.#trigger(EVENTS.OPEN_COUNTRY_DROPDOWN);
     }
     //* We only bind dropdown listeners when the dropdown is open.
-    _bindDropdownListeners() {
-      this._handleMouseoverCountryList = (e) => {
-        const listItem = e.target?.closest(".iti__country");
+    #bindDropdownListeners() {
+      const signal = this.#dropdownAbortController.signal;
+      this.#bindDropdownMouseoverListener(signal);
+      this.#bindDropdownCountryClickListener(signal);
+      if (!this.#options.dropdownAlwaysOpen) {
+        this.#bindDropdownClickOffListener(signal);
+      }
+      this.#bindDropdownKeydownListener(signal);
+      if (this.#options.countrySearch) {
+        this.#bindDropdownSearchListeners(signal);
+      }
+    }
+    //* When mouse over a list item, just highlight that one
+    //* we add the class "highlight", so if they hit "enter" we know which one to select.
+    #bindDropdownMouseoverListener(signal) {
+      const handleMouseoverCountryList = (e) => {
+        const listItem = e.target?.closest(
+          `.${CLASSES.COUNTRY_ITEM}`
+        );
         if (listItem) {
-          this._highlightListItem(listItem, false);
+          this.#ui.highlightListItem(listItem, false);
         }
       };
-      this.countryList.addEventListener(
+      this.#ui.countryList.addEventListener(
         "mouseover",
-        this._handleMouseoverCountryList
+        handleMouseoverCountryList,
+        {
+          signal
+        }
       );
-      this._handleClickCountryList = (e) => {
-        const listItem = e.target?.closest(".iti__country");
+    }
+    //* Listen for country selection.
+    #bindDropdownCountryClickListener(signal) {
+      const handleClickCountryList = (e) => {
+        const listItem = e.target?.closest(
+          `.${CLASSES.COUNTRY_ITEM}`
+        );
         if (listItem) {
-          this._selectListItem(listItem);
+          this.#selectListItem(listItem);
         }
       };
-      this.countryList.addEventListener("click", this._handleClickCountryList);
-      let isOpening = true;
-      this._handleClickOffToClose = () => {
-        if (!isOpening) {
-          this._closeDropdown();
+      this.#ui.countryList.addEventListener("click", handleClickCountryList, {
+        signal
+      });
+    }
+    //* Click off to close (except when this initial opening click is bubbling up).
+    //* We cannot just stopPropagation as it may be needed to close another instance.
+    #bindDropdownClickOffListener(signal) {
+      const handleClickOffToClose = (e) => {
+        const target = e.target;
+        const clickedInsideDropdown = !!target.closest(
+          `#iti-${this.id}__dropdown-content`
+        );
+        if (!clickedInsideDropdown) {
+          this.#closeDropdown();
         }
-        isOpening = false;
       };
-      document.documentElement.addEventListener(
-        "click",
-        this._handleClickOffToClose
-      );
+      setTimeout(() => {
+        document.documentElement.addEventListener(
+          "click",
+          handleClickOffToClose,
+          { signal }
+        );
+      }, 0);
+    }
+    //* Listen for up/down scrolling, enter to select, or escape to close.
+    //* Use keydown as keypress doesn't fire for non-char keys and we want to catch if they
+    //* just hit down and hold it to scroll down (no keyup event).
+    //* Listen on the document because that's where key events are triggered if no input has focus.
+    #bindDropdownKeydownListener(signal) {
       let query = "";
       let queryTimer = null;
-      this._handleKeydownOnDropdown = (e) => {
-        if (["ArrowUp", "ArrowDown", "Enter", "Escape"].includes(e.key)) {
+      const handleKeydownOnDropdown = (e) => {
+        const allowedKeys = [
+          KEYS.ARROW_UP,
+          KEYS.ARROW_DOWN,
+          KEYS.ENTER,
+          KEYS.ESC
+        ];
+        if (allowedKeys.includes(e.key)) {
           e.preventDefault();
           e.stopPropagation();
-          if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-            this._handleUpDownKey(e.key);
-          } else if (e.key === "Enter") {
-            this._handleEnterKey();
-          } else if (e.key === "Escape") {
-            this._closeDropdown();
+          if (e.key === KEYS.ARROW_UP || e.key === KEYS.ARROW_DOWN) {
+            this.#ui.handleUpDownKey(e.key);
+          } else if (e.key === KEYS.ENTER) {
+            this.#handleEnterKey();
+          } else if (e.key === KEYS.ESC) {
+            this.#closeDropdown();
+            this.#ui.selectedCountry.focus();
           }
         }
-        if (!this.options.countrySearch && /^[a-zA-ZÀ-ÿа-яА-Я ]$/.test(e.key)) {
+        if (!this.#options.countrySearch && REGEX.HIDDEN_SEARCH_CHAR.test(e.key)) {
           e.stopPropagation();
           if (queryTimer) {
             clearTimeout(queryTimer);
           }
           query += e.key.toLowerCase();
-          this._searchForCountry(query);
+          this.#searchForCountry(query);
           queryTimer = setTimeout(() => {
             query = "";
-          }, 1e3);
+          }, TIMINGS.HIDDEN_SEARCH_RESET_MS);
         }
       };
-      document.addEventListener("keydown", this._handleKeydownOnDropdown);
-      if (this.options.countrySearch) {
-        const doFilter = () => {
-          const inputQuery = this.searchInput.value.trim();
-          if (inputQuery) {
-            this._filterCountries(inputQuery);
-          } else {
-            this._filterCountries("", true);
-          }
-        };
-        let keyupTimer = null;
-        this._handleSearchChange = () => {
-          if (keyupTimer) {
-            clearTimeout(keyupTimer);
-          }
-          keyupTimer = setTimeout(() => {
-            doFilter();
-            keyupTimer = null;
-          }, 100);
-        };
-        this.searchInput.addEventListener("input", this._handleSearchChange);
-        this.searchInput.addEventListener("click", (e) => e.stopPropagation());
-      }
+      document.addEventListener("keydown", handleKeydownOnDropdown, { signal });
+    }
+    //* Search input listeners when countrySearch enabled.
+    #bindDropdownSearchListeners(signal) {
+      this.#ui.searchInput.addEventListener(
+        "input",
+        () => this.#ui.handleSearchChange(),
+        { signal }
+      );
+      this.#ui.searchClearButton.addEventListener(
+        "click",
+        () => this.#ui.handleSearchClear(),
+        { signal }
+      );
     }
     //* Hidden search (countrySearch disabled): Find the first list item whose name starts with the query string.
-    _searchForCountry(query) {
-      for (let i = 0; i < this.countries.length; i++) {
-        const c = this.countries[i];
-        const startsWith = c.name.substr(0, query.length).toLowerCase() === query;
-        if (startsWith) {
-          const listItem = c.nodeById[this.id];
-          this._highlightListItem(listItem, false);
-          this._scrollTo(listItem);
-          break;
-        }
-      }
-    }
-    //* Country search enabled: Filter the countries according to the search query.
-    _filterCountries(query, isReset = false) {
-      let noCountriesAddedYet = true;
-      this.countryList.innerHTML = "";
-      const normalisedQuery = normaliseString(query);
-      for (let i = 0; i < this.countries.length; i++) {
-        const c = this.countries[i];
-        const normalisedCountryName = normaliseString(c.name);
-        const countryInitials = c.name.split(/[^a-zA-ZÀ-ÿа-яА-Я]/).map((word) => word[0]).join("").toLowerCase();
-        const fullDialCode = `+${c.dialCode}`;
-        if (isReset || normalisedCountryName.includes(normalisedQuery) || fullDialCode.includes(normalisedQuery) || c.iso2.includes(normalisedQuery) || countryInitials.includes(normalisedQuery)) {
-          const listItem = c.nodeById[this.id];
-          if (listItem) {
-            this.countryList.appendChild(listItem);
-          }
-          if (noCountriesAddedYet) {
-            this._highlightListItem(listItem, false);
-            noCountriesAddedYet = false;
-          }
-        }
-      }
-      if (noCountriesAddedYet) {
-        this._highlightListItem(null, false);
-      }
-      this.countryList.scrollTop = 0;
-      this._updateSearchResultsText();
-    }
-    //* Update search results text (for a11y).
-    _updateSearchResultsText() {
-      const { i18n } = this.options;
-      const count = this.countryList.childElementCount;
-      let searchText;
-      if (count === 0) {
-        searchText = i18n.zeroSearchResults;
-      } else if (count === 1) {
-        searchText = i18n.oneSearchResult;
-      } else {
-        searchText = i18n.multipleSearchResults.replace("${count}", count.toString());
-      }
-      this.searchResultsA11yText.textContent = searchText;
-    }
-    //* Highlight the next/prev item in the list (and ensure it is visible).
-    _handleUpDownKey(key) {
-      let next = key === "ArrowUp" ? this.highlightedItem?.previousElementSibling : this.highlightedItem?.nextElementSibling;
-      if (!next && this.countryList.childElementCount > 1) {
-        next = key === "ArrowUp" ? this.countryList.lastElementChild : this.countryList.firstElementChild;
-      }
-      if (next) {
-        this._scrollTo(next);
-        this._highlightListItem(next, false);
+    #searchForCountry(query) {
+      const match = findFirstCountryStartingWith(this.#countries, query);
+      if (match) {
+        const listItem = match.nodeById[this.id];
+        this.#ui.highlightListItem(listItem, false);
+        this.#ui.scrollTo(listItem);
       }
     }
     //* Select the currently highlighted item.
-    _handleEnterKey() {
-      if (this.highlightedItem) {
-        this._selectListItem(this.highlightedItem);
+    #handleEnterKey() {
+      if (this.#ui.highlightedItem) {
+        this.#selectListItem(this.#ui.highlightedItem);
       }
     }
     //* Update the input's value to the given val (format first if possible)
     //* NOTE: this is called from _setInitialState, handleUtils and setNumber.
-    _updateValFromNumber(fullNumber) {
+    #updateValFromNumber(fullNumber) {
+      const { formatOnDisplay, nationalMode, separateDialCode } = this.#options;
       let number = fullNumber;
-      if (this.options.formatOnDisplay && intlTelInput.utils && this.selectedCountryData) {
-        const useNational = this.options.nationalMode || number.charAt(0) !== "+" && !this.options.separateDialCode;
+      if (formatOnDisplay && intlTelInput.utils && this.#selectedCountryData) {
+        const isRegionless = hasRegionlessDialCode(fullNumber);
+        const useNational = nationalMode && !isRegionless || !number.startsWith("+") && !separateDialCode;
         const { NATIONAL, INTERNATIONAL } = intlTelInput.utils.numberFormat;
         const format = useNational ? NATIONAL : INTERNATIONAL;
         number = intlTelInput.utils.formatNumber(
           number,
-          this.selectedCountryData.iso2,
+          this.#selectedCountryData.iso2,
           format
         );
       }
-      number = this._beforeSetNumber(number);
-      this.telInput.value = number;
+      number = this.#beforeSetNumber(number);
+      this.#setTelInputValue(number);
     }
     //* Check if need to select a new country based on the given number
     //* Note: called from _setInitialState, keyup handler, setNumber.
-    _updateCountryFromNumber(fullNumber) {
-      const iso2 = this._getCountryFromNumber(fullNumber);
+    #updateCountryFromNumber(fullNumber) {
+      const iso2 = this.#getNewCountryFromNumber(fullNumber);
       if (iso2 !== null) {
-        return this._setCountry(iso2);
+        return this.#setCountry(iso2);
       }
       return false;
     }
-    _ensureHasDialCode(number) {
-      const { dialCode, nationalPrefix } = this.selectedCountryData;
-      const alreadyHasPlus = number.charAt(0) === "+";
+    // if there is a selected country, and the number doesn't start with a dial code, then add it
+    #ensureHasDialCode(number) {
+      const { dialCode, nationalPrefix } = this.#selectedCountryData;
+      const alreadyHasPlus = number.startsWith("+");
       if (alreadyHasPlus || !dialCode) {
         return number;
       }
-      const hasPrefix = nationalPrefix && number.charAt(0) === nationalPrefix && !this.options.separateDialCode;
+      const hasPrefix = nationalPrefix && number.startsWith(nationalPrefix) && !this.#options.separateDialCode;
       const cleanNumber = hasPrefix ? number.substring(1) : number;
       return `+${dialCode}${cleanNumber}`;
     }
-    _getCountryFromNumber(fullNumber) {
+    //* Get the new country based on the input number, or return null if no change, or empty string if should be empty (e.g. if they type an invalid dial code).
+    #getNewCountryFromNumber(fullNumber) {
       const plusIndex = fullNumber.indexOf("+");
       let number = plusIndex ? fullNumber.substring(plusIndex) : fullNumber;
-      const selectedIso2 = this.selectedCountryData.iso2;
-      const selectedDialCode = this.selectedCountryData.dialCode;
-      number = this._ensureHasDialCode(number);
-      const dialCodeMatch = this._getDialCode(number, true);
+      const selectedIso2 = this.#selectedCountryData.iso2;
+      const selectedDialCode = this.#selectedCountryData.dialCode;
+      number = this.#ensureHasDialCode(number);
+      const dialCodeMatch = this.#getDialCode(number, true);
       const numeric = getNumeric(number);
       if (dialCodeMatch) {
         const dialCodeMatchNumeric = getNumeric(dialCodeMatch);
-        const iso2Codes = this.dialCodeToIso2Map[dialCodeMatchNumeric];
-        if (!selectedIso2 && this.defaultCountry && iso2Codes.includes(this.defaultCountry)) {
-          return this.defaultCountry;
+        const iso2Codes = this.#dialCodeToIso2Map[dialCodeMatchNumeric];
+        if (iso2Codes.length === 1) {
+          if (iso2Codes[0] === selectedIso2) {
+            return null;
+          }
+          return iso2Codes[0];
         }
-        const alreadySelected = selectedIso2 && iso2Codes.includes(selectedIso2) && (numeric.length === dialCodeMatchNumeric.length || !this.selectedCountryData.areaCodes);
-        const isRegionlessNanpNumber = selectedDialCode === "1" && isRegionlessNanp(numeric);
-        if (!isRegionlessNanpNumber && !alreadySelected) {
-          for (let j = 0; j < iso2Codes.length; j++) {
-            if (iso2Codes[j]) {
-              return iso2Codes[j];
+        if (!selectedIso2 && this.#defaultCountry && iso2Codes.includes(this.#defaultCountry)) {
+          return this.#defaultCountry;
+        }
+        const isRegionlessNanpNumber = selectedDialCode === DIAL.NANP && isRegionlessNanp(numeric);
+        if (isRegionlessNanpNumber) {
+          return null;
+        }
+        const { areaCodes, priority } = this.#selectedCountryData;
+        if (areaCodes) {
+          const dialCodeAreaCodes = areaCodes.map(
+            (areaCode) => `${selectedDialCode}${areaCode}`
+          );
+          for (const dialCodeAreaCode of dialCodeAreaCodes) {
+            if (numeric.startsWith(dialCodeAreaCode)) {
+              return null;
             }
           }
         }
-      } else if (number.charAt(0) === "+" && numeric.length) {
+        const isMainCountry = priority === 0;
+        const hasAreaCodesButNoneMatched = areaCodes && !isMainCountry && numeric.length > dialCodeMatchNumeric.length;
+        const isValidSelection = selectedIso2 && iso2Codes.includes(selectedIso2) && !hasAreaCodesButNoneMatched;
+        const alreadySelected = selectedIso2 === iso2Codes[0];
+        if (!isValidSelection && !alreadySelected) {
+          return iso2Codes[0];
+        }
+      } else if (number.startsWith("+") && numeric.length) {
+        const currentDial = this.#selectedCountryData.dialCode || "";
+        if (currentDial && currentDial.startsWith(numeric)) {
+          return null;
+        }
         return "";
-      } else if ((!number || number === "+") && !this.selectedCountryData.iso2) {
-        return this.defaultCountry;
+      } else if ((!number || number === "+") && !selectedIso2 && this.#defaultCountry) {
+        return this.#defaultCountry;
       }
       return null;
     }
-    //* Remove highlighting from other list items and highlight the given item.
-    _highlightListItem(listItem, shouldFocus) {
-      const prevItem = this.highlightedItem;
-      if (prevItem) {
-        prevItem.classList.remove("iti__highlight");
-        prevItem.setAttribute("aria-selected", "false");
-      }
-      this.highlightedItem = listItem;
-      if (this.highlightedItem) {
-        this.highlightedItem.classList.add("iti__highlight");
-        this.highlightedItem.setAttribute("aria-selected", "true");
-        const activeDescendant = this.highlightedItem.getAttribute("id") || "";
-        this.selectedCountry.setAttribute("aria-activedescendant", activeDescendant);
-        if (this.options.countrySearch) {
-          this.searchInput.setAttribute("aria-activedescendant", activeDescendant);
-        }
-      }
-      if (shouldFocus) {
-        this.highlightedItem.focus();
-      }
-    }
-    //* Find the country data for the given iso2 code
-    //* the ignoreOnlyCountriesOption is only used during init() while parsing the onlyCountries array
-    _getCountryData(iso2, allowFail) {
-      for (let i = 0; i < this.countries.length; i++) {
-        if (this.countries[i].iso2 === iso2) {
-          return this.countries[i];
-        }
-      }
-      if (allowFail) {
-        return null;
-      }
-      throw new Error(`No country data for '${iso2}'`);
-    }
-    //* Update the selected country, dial code (if separateDialCode), placeholder, title, and active list item.
+    //* Update the selected country, dial code (if separateDialCode), placeholder, title, and selected list item.
     //* Note: called from _setInitialState, _updateCountryFromNumber, _selectListItem, setCountry.
-    _setCountry(iso2) {
-      const { separateDialCode, showFlags, i18n } = this.options;
-      const prevCountry = this.selectedCountryData.iso2 ? this.selectedCountryData : {};
-      this.selectedCountryData = iso2 ? this._getCountryData(iso2, false) || {} : {};
-      if (this.selectedCountryData.iso2) {
-        this.defaultCountry = this.selectedCountryData.iso2;
+    #setCountry(iso2) {
+      const prevIso2 = this.#selectedCountryData.iso2 || "";
+      this.#selectedCountryData = iso2 ? this.#countryByIso2.get(iso2) : {};
+      if (this.#selectedCountryData.iso2) {
+        this.#defaultCountry = this.#selectedCountryData.iso2;
       }
-      if (this.selectedCountryInner) {
-        let flagClass = "";
-        let a11yText = "";
-        if (iso2 && showFlags) {
-          flagClass = `iti__flag iti__${iso2}`;
-          a11yText = `${this.selectedCountryData.name} +${this.selectedCountryData.dialCode}`;
-        } else {
-          flagClass = "iti__flag iti__globe";
-          a11yText = i18n.noCountrySelected;
-        }
-        this.selectedCountryInner.className = flagClass;
-        this.selectedCountryA11yText.textContent = a11yText;
-      }
-      this._setSelectedCountryTitleAttribute(iso2, separateDialCode);
-      if (separateDialCode) {
-        const dialCode = this.selectedCountryData.dialCode ? `+${this.selectedCountryData.dialCode}` : "";
-        this.selectedDialCode.innerHTML = dialCode;
-        this._updateInputPadding();
-      }
-      this._updatePlaceholder();
-      this._updateMaxLength();
-      return prevCountry.iso2 !== iso2;
-    }
-    //* Update the input padding to make space for the selected country/dial code.
-    _updateInputPadding() {
-      if (this.selectedCountry) {
-        const selectedCountryWidth = this.selectedCountry.offsetWidth || this._getHiddenSelectedCountryWidth();
-        const inputPadding = selectedCountryWidth + 6;
-        if (this.showSelectedCountryOnLeft) {
-          this.telInput.style.paddingLeft = `${inputPadding}px`;
-        } else {
-          this.telInput.style.paddingRight = `${inputPadding}px`;
-        }
-      }
+      this.#ui.setCountry(this.#selectedCountryData);
+      this.#updatePlaceholder();
+      this.#updateMaxLength();
+      return prevIso2 !== iso2;
     }
     //* Update the maximum valid number length for the currently selected country.
-    _updateMaxLength() {
-      const { strictMode, placeholderNumberType, validationNumberTypes } = this.options;
-      const { iso2 } = this.selectedCountryData;
+    #updateMaxLength() {
+      const { strictMode, placeholderNumberType, allowedNumberTypes } = this.#options;
+      const { iso2 } = this.#selectedCountryData;
       if (strictMode && intlTelInput.utils) {
         if (iso2) {
           const numberType = intlTelInput.utils.numberType[placeholderNumberType];
@@ -2711,181 +3909,114 @@ var factoryOutput = (() => {
             true
           );
           let validNumber = exampleNumber;
-          while (intlTelInput.utils.isPossibleNumber(exampleNumber, iso2, validationNumberTypes)) {
+          while (intlTelInput.utils.isPossibleNumber(
+            exampleNumber,
+            iso2,
+            allowedNumberTypes
+          )) {
             validNumber = exampleNumber;
             exampleNumber += "0";
           }
           const coreNumber = intlTelInput.utils.getCoreNumber(validNumber, iso2);
-          this.maxCoreNumberLength = coreNumber.length;
+          this.#maxCoreNumberLength = coreNumber.length;
           if (iso2 === "by") {
-            this.maxCoreNumberLength = coreNumber.length + 1;
+            this.#maxCoreNumberLength = coreNumber.length + 1;
           }
         } else {
-          this.maxCoreNumberLength = null;
+          this.#maxCoreNumberLength = null;
         }
       }
     }
-    _setSelectedCountryTitleAttribute(iso2 = null, separateDialCode) {
-      if (!this.selectedCountry) {
-        return;
-      }
-      let title;
-      if (iso2 && !separateDialCode) {
-        title = `${this.selectedCountryData.name}: +${this.selectedCountryData.dialCode}`;
-      } else if (iso2) {
-        title = this.selectedCountryData.name;
-      } else {
-        title = "Unknown";
-      }
-      this.selectedCountry.setAttribute("title", title);
-    }
-    //* When the input is in a hidden container during initialisation, we must inject some markup
-    //* into the end of the DOM to calculate the correct offsetWidth.
-    //* NOTE: this is only used when separateDialCode is enabled, so countryContainer and selectedCountry
-    //* will definitely exist.
-    _getHiddenSelectedCountryWidth() {
-      if (this.telInput.parentNode) {
-        const containerClone = this.telInput.parentNode.cloneNode(false);
-        containerClone.style.visibility = "hidden";
-        document.body.appendChild(containerClone);
-        const countryContainerClone = this.countryContainer.cloneNode();
-        containerClone.appendChild(countryContainerClone);
-        const selectedCountryClone = this.selectedCountry.cloneNode(true);
-        countryContainerClone.appendChild(selectedCountryClone);
-        const width = selectedCountryClone.offsetWidth;
-        document.body.removeChild(containerClone);
-        return width;
-      }
-      return 0;
-    }
     //* Update the input placeholder to an example number from the currently selected country.
-    _updatePlaceholder() {
+    #updatePlaceholder() {
       const {
         autoPlaceholder,
         placeholderNumberType,
         nationalMode,
         customPlaceholder
-      } = this.options;
-      const shouldSetPlaceholder = autoPlaceholder === "aggressive" || !this.hadInitialPlaceholder && autoPlaceholder === "polite";
+      } = this.#options;
+      const shouldSetPlaceholder = autoPlaceholder === PLACEHOLDER_MODES.AGGRESSIVE || !this.#ui.hadInitialPlaceholder && autoPlaceholder === PLACEHOLDER_MODES.POLITE;
       if (intlTelInput.utils && shouldSetPlaceholder) {
         const numberType = intlTelInput.utils.numberType[placeholderNumberType];
-        let placeholder = this.selectedCountryData.iso2 ? intlTelInput.utils.getExampleNumber(
-          this.selectedCountryData.iso2,
+        let placeholder = this.#selectedCountryData.iso2 ? intlTelInput.utils.getExampleNumber(
+          this.#selectedCountryData.iso2,
           nationalMode,
           numberType
         ) : "";
-        placeholder = this._beforeSetNumber(placeholder);
+        placeholder = this.#beforeSetNumber(placeholder);
         if (typeof customPlaceholder === "function") {
-          placeholder = customPlaceholder(placeholder, this.selectedCountryData);
+          placeholder = customPlaceholder(placeholder, this.#selectedCountryData);
         }
-        this.telInput.setAttribute("placeholder", placeholder);
+        this.#ui.telInput.setAttribute("placeholder", placeholder);
       }
     }
     //* Called when the user selects a list item from the dropdown.
-    _selectListItem(listItem) {
-      const countryChanged = this._setCountry(
-        listItem.getAttribute("data-country-code")
-      );
-      this._closeDropdown();
-      this._updateDialCode(listItem.getAttribute("data-dial-code"));
-      this.telInput.focus();
+    #selectListItem(listItem) {
+      const iso2 = listItem.dataset[DATA_KEYS.COUNTRY_CODE];
+      const countryChanged = this.#setCountry(iso2);
+      this.#closeDropdown();
+      const dialCode = listItem.dataset[DATA_KEYS.DIAL_CODE];
+      this.#updateDialCode(dialCode);
+      if (this.#options.formatOnDisplay) {
+        const inputValue = this.#getTelInputValue();
+        this.#updateValFromNumber(inputValue);
+      }
+      this.#ui.telInput.focus();
       if (countryChanged) {
-        this._triggerCountryChange();
+        this.#triggerCountryChange();
       }
     }
     //* Close the dropdown and unbind any listeners.
-    _closeDropdown() {
-      this.dropdownContent.classList.add("iti__hide");
-      this.selectedCountry.setAttribute("aria-expanded", "false");
-      this.selectedCountry.removeAttribute("aria-activedescendant");
-      if (this.highlightedItem) {
-        this.highlightedItem.setAttribute("aria-selected", "false");
+    #closeDropdown(isDestroy) {
+      if (this.#ui.isDropdownClosed() || this.#options.dropdownAlwaysOpen && !isDestroy) {
+        return;
       }
-      if (this.options.countrySearch) {
-        this.searchInput.removeAttribute("aria-activedescendant");
-      }
-      this.dropdownArrow.classList.remove("iti__arrow--up");
-      document.removeEventListener("keydown", this._handleKeydownOnDropdown);
-      if (this.options.countrySearch) {
-        this.searchInput.removeEventListener("input", this._handleSearchChange);
-      }
-      document.documentElement.removeEventListener(
-        "click",
-        this._handleClickOffToClose
-      );
-      this.countryList.removeEventListener(
-        "mouseover",
-        this._handleMouseoverCountryList
-      );
-      this.countryList.removeEventListener("click", this._handleClickCountryList);
-      if (this.options.dropdownContainer) {
-        if (!this.options.useFullscreenPopup) {
-          window.removeEventListener("scroll", this._handleWindowScroll);
-        }
-        if (this.dropdown.parentNode) {
-          this.dropdown.parentNode.removeChild(this.dropdown);
-        }
-      }
-      if (this._handlePageLoad) {
-        window.removeEventListener("load", this._handlePageLoad);
-      }
-      this._trigger("close:countrydropdown");
-    }
-    //* Check if an element is visible within it's container, else scroll until it is.
-    _scrollTo(element) {
-      const container = this.countryList;
-      const scrollTop = document.documentElement.scrollTop;
-      const containerHeight = container.offsetHeight;
-      const containerTop = container.getBoundingClientRect().top + scrollTop;
-      const containerBottom = containerTop + containerHeight;
-      const elementHeight = element.offsetHeight;
-      const elementTop = element.getBoundingClientRect().top + scrollTop;
-      const elementBottom = elementTop + elementHeight;
-      const newScrollTop = elementTop - containerTop + container.scrollTop;
-      if (elementTop < containerTop) {
-        container.scrollTop = newScrollTop;
-      } else if (elementBottom > containerBottom) {
-        const heightDifference = containerHeight - elementHeight;
-        container.scrollTop = newScrollTop - heightDifference;
-      }
+      this.#ui.closeDropdown();
+      this.#dropdownAbortController.abort();
+      this.#dropdownAbortController = null;
+      this.#trigger(EVENTS.CLOSE_COUNTRY_DROPDOWN);
     }
     //* Replace any existing dial code with the new one
     //* Note: called from _selectListItem and setCountry
-    _updateDialCode(newDialCodeBare) {
-      const inputVal = this.telInput.value;
+    #updateDialCode(newDialCodeBare) {
+      const inputVal = this.#getTelInputValue();
       const newDialCode = `+${newDialCodeBare}`;
       let newNumber;
-      if (inputVal.charAt(0) === "+") {
-        const prevDialCode = this._getDialCode(inputVal);
+      if (inputVal.startsWith("+")) {
+        const prevDialCode = this.#getDialCode(inputVal);
         if (prevDialCode) {
           newNumber = inputVal.replace(prevDialCode, newDialCode);
         } else {
           newNumber = newDialCode;
         }
-        this.telInput.value = newNumber;
+        this.#setTelInputValue(newNumber);
       }
     }
     //* Try and extract a valid international dial code from a full telephone number.
     //* Note: returns the raw string inc plus character and any whitespace/dots etc.
-    _getDialCode(number, includeAreaCode) {
+    #getDialCode(number, includeAreaCode) {
       let dialCode = "";
-      if (number.charAt(0) === "+") {
+      if (number.startsWith("+")) {
         let numericChars = "";
+        let foundBaseDialCode = false;
         for (let i = 0; i < number.length; i++) {
           const c = number.charAt(i);
-          if (!isNaN(parseInt(c, 10))) {
+          if (/[0-9]/.test(c)) {
             numericChars += c;
-            if (includeAreaCode) {
-              if (this.dialCodeToIso2Map[numericChars]) {
-                dialCode = number.substr(0, i + 1);
-              }
-            } else {
-              if (this.dialCodes[numericChars]) {
-                dialCode = number.substr(0, i + 1);
+            const hasMapEntry = Boolean(this.#dialCodeToIso2Map[numericChars]);
+            if (!hasMapEntry) {
+              break;
+            }
+            if (this.#dialCodes.has(numericChars)) {
+              dialCode = number.substring(0, i + 1);
+              foundBaseDialCode = true;
+              if (!includeAreaCode) {
                 break;
               }
+            } else if (includeAreaCode && foundBaseDialCode) {
+              dialCode = number.substring(0, i + 1);
             }
-            if (numericChars.length === this.dialCodeMaxLen) {
+            if (numericChars.length === this.#dialCodeMaxLen) {
               break;
             }
           }
@@ -2894,12 +4025,12 @@ var factoryOutput = (() => {
       return dialCode;
     }
     //* Get the input val, adding the dial code if separateDialCode is enabled.
-    _getFullNumber(overrideVal) {
-      const val = overrideVal || this.telInput.value.trim();
-      const { dialCode } = this.selectedCountryData;
+    #getFullNumber(overrideVal) {
+      const val = overrideVal ? this.#numerals.normalise(overrideVal) : this.#getTelInputValue();
+      const { dialCode } = this.#selectedCountryData;
       let prefix;
       const numericVal = getNumeric(val);
-      if (this.options.separateDialCode && val.charAt(0) !== "+" && dialCode && numericVal) {
+      if (this.#options.separateDialCode && !val.startsWith("+") && dialCode && numericVal) {
         prefix = `+${dialCode}`;
       } else {
         prefix = "";
@@ -2907,214 +4038,297 @@ var factoryOutput = (() => {
       return prefix + val;
     }
     //* Remove the dial code if separateDialCode is enabled also cap the length if the input has a maxlength attribute
-    _beforeSetNumber(fullNumber) {
-      let number = fullNumber;
-      if (this.options.separateDialCode) {
-        let dialCode = this._getDialCode(number);
-        if (dialCode) {
-          dialCode = `+${this.selectedCountryData.dialCode}`;
-          const start = number[dialCode.length] === " " || number[dialCode.length] === "-" ? dialCode.length + 1 : dialCode.length;
-          number = number.substr(start);
-        }
-      }
-      return this._cap(number);
+    #beforeSetNumber(fullNumber) {
+      const hasValidDialCode = Boolean(this.#getDialCode(fullNumber));
+      const number = beforeSetNumber(
+        fullNumber,
+        hasValidDialCode,
+        this.#options.separateDialCode,
+        this.#selectedCountryData
+      );
+      return this.#cap(number);
     }
     //* Trigger the 'countrychange' event.
-    _triggerCountryChange() {
-      this._trigger("countrychange");
+    #triggerCountryChange() {
+      this.#trigger(EVENTS.COUNTRY_CHANGE);
     }
-    //* Format the number as the user types.
-    _formatNumberAsYouType() {
-      const val = this._getFullNumber();
-      const result = intlTelInput.utils ? intlTelInput.utils.formatNumberAsYouType(val, this.selectedCountryData.iso2) : val;
-      const { dialCode } = this.selectedCountryData;
-      if (this.options.separateDialCode && this.telInput.value.charAt(0) !== "+" && result.includes(`+${dialCode}`)) {
-        const afterDialCode = result.split(`+${dialCode}`)[1] || "";
-        return afterDialCode.trim();
+    //**************************
+    //*  INTERNAL METHODS
+    //**************************
+    //* Called when the geoip call returns.
+    #handleAutoCountry() {
+      if (!this.#ui.telInput) {
+        this.#resolveAutoCountryPromise?.();
+        return;
       }
-      return result;
-    }
-    //**************************
-    //*  SECRET PUBLIC METHODS
-    //**************************
-    //* This is called when the geoip call returns.
-    handleAutoCountry() {
-      if (this.options.initialCountry === "auto" && intlTelInput.autoCountry) {
-        this.defaultCountry = intlTelInput.autoCountry;
-        const hasSelectedCountryOrGlobe = this.selectedCountryData.iso2 || this.selectedCountryInner.classList.contains("iti__globe");
+      if (this.#options.initialCountry === INITIAL_COUNTRY.AUTO && intlTelInput.autoCountry) {
+        this.#defaultCountry = intlTelInput.autoCountry;
+        const hasSelectedCountryOrGlobe = this.#selectedCountryData.iso2 || this.#ui.selectedCountryInner.classList.contains(CLASSES.GLOBE);
         if (!hasSelectedCountryOrGlobe) {
-          this.setCountry(this.defaultCountry);
+          this.setCountry(this.#defaultCountry);
         }
-        this.resolveAutoCountryPromise();
+        this.#resolveAutoCountryPromise();
       }
     }
-    //* This is called when the utils request completes.
-    handleUtils() {
+    //* Called when the geoip call fails or times out.
+    #handleAutoCountryFailure() {
+      if (!this.#ui.telInput) {
+        this.#rejectAutoCountryPromise?.();
+        return;
+      }
+      this.#setInitialState(true);
+      this.#rejectAutoCountryPromise();
+    }
+    //* Called when the utils request completes.
+    #handleUtils() {
+      if (!this.#ui.telInput) {
+        this.#resolveUtilsScriptPromise?.();
+        return;
+      }
       if (intlTelInput.utils) {
-        if (this.telInput.value) {
-          this._updateValFromNumber(this.telInput.value);
+        const inputValue = this.#getTelInputValue();
+        if (inputValue) {
+          this.#updateValFromNumber(inputValue);
         }
-        if (this.selectedCountryData.iso2) {
-          this._updatePlaceholder();
-          this._updateMaxLength();
+        if (this.#selectedCountryData.iso2) {
+          this.#updatePlaceholder();
+          this.#updateMaxLength();
         }
       }
-      this.resolveUtilsScriptPromise();
+      this.#resolveUtilsScriptPromise();
+    }
+    //* Called when the utils request fails or times out.
+    #handleUtilsFailure(error) {
+      if (!this.#ui.telInput) {
+        this.#rejectUtilsScriptPromise?.(error);
+        return;
+      }
+      this.#rejectUtilsScriptPromise(error);
     }
     //********************
     //*  PUBLIC METHODS
     //********************
     //* Remove plugin.
     destroy() {
-      const { allowDropdown, separateDialCode } = this.options;
-      if (allowDropdown) {
-        this._closeDropdown();
-        this.selectedCountry.removeEventListener(
-          "click",
-          this._handleClickSelectedCountry
-        );
-        this.countryContainer.removeEventListener(
-          "keydown",
-          this._handleCountryContainerKeydown
-        );
-        const label = this.telInput.closest("label");
-        if (label) {
-          label.removeEventListener("click", this._handleLabelClick);
-        }
+      if (!this.#ui.telInput) {
+        return;
       }
-      const { form } = this.telInput;
-      if (this._handleHiddenInputSubmit && form) {
-        form.removeEventListener("submit", this._handleHiddenInputSubmit);
+      if (this.#options.allowDropdown) {
+        this.#closeDropdown(true);
       }
-      this.telInput.removeEventListener("input", this._handleInputEvent);
-      if (this._handleKeydownEvent) {
-        this.telInput.removeEventListener("keydown", this._handleKeydownEvent);
+      this.#abortController.abort();
+      this.#abortController = null;
+      this.#ui.destroy();
+      if (intlTelInput.instances instanceof Map) {
+        intlTelInput.instances.delete(this.id);
+      } else {
+        delete intlTelInput.instances[this.id];
       }
-      this.telInput.removeAttribute("data-intl-tel-input-id");
-      if (separateDialCode) {
-        if (this.isRTL) {
-          this.telInput.style.paddingRight = this.originalPaddingRight;
-        } else {
-          this.telInput.style.paddingLeft = this.originalPaddingLeft;
-        }
-      }
-      const wrapper = this.telInput.parentNode;
-      wrapper?.parentNode?.insertBefore(this.telInput, wrapper);
-      wrapper?.parentNode?.removeChild(wrapper);
-      delete intlTelInput.instances[this.id];
+    }
+    // check if the instance is still valid (not destroyed/unmounted)
+    isActive() {
+      return !!this.#ui?.telInput;
     }
     //* Get the extension from the current number.
     getExtension() {
-      if (intlTelInput.utils) {
+      if (intlTelInput.utils && this.#ui.telInput) {
         return intlTelInput.utils.getExtension(
-          this._getFullNumber(),
-          this.selectedCountryData.iso2
+          this.#getFullNumber(),
+          this.#selectedCountryData.iso2
         );
       }
       return "";
     }
     //* Format the number to the given format.
     getNumber(format) {
-      if (intlTelInput.utils) {
-        const { iso2 } = this.selectedCountryData;
-        return intlTelInput.utils.formatNumber(
-          this._getFullNumber(),
+      if (intlTelInput.utils && this.#ui.telInput) {
+        const { iso2 } = this.#selectedCountryData;
+        const fullNumber = this.#getFullNumber();
+        const formattedNumber = intlTelInput.utils.formatNumber(
+          fullNumber,
           iso2,
           format
         );
+        const currentVal = this.#ui.telInput.value;
+        return this.#numerals.denormalise(formattedNumber, currentVal);
       }
       return "";
     }
     //* Get the type of the entered number e.g. landline/mobile.
     getNumberType() {
-      if (intlTelInput.utils) {
+      if (intlTelInput.utils && this.#ui.telInput) {
         return intlTelInput.utils.getNumberType(
-          this._getFullNumber(),
-          this.selectedCountryData.iso2
+          this.#getFullNumber(),
+          this.#selectedCountryData.iso2
         );
       }
-      return -99;
+      return SENTINELS.UNKNOWN_NUMBER_TYPE;
     }
     //* Get the country data for the currently selected country.
     getSelectedCountryData() {
-      return this.selectedCountryData;
+      return this.#selectedCountryData;
     }
     //* Get the validation error.
     getValidationError() {
-      if (intlTelInput.utils) {
-        const { iso2 } = this.selectedCountryData;
-        return intlTelInput.utils.getValidationError(this._getFullNumber(), iso2);
+      if (intlTelInput.utils && this.#ui.telInput) {
+        const { iso2 } = this.#selectedCountryData;
+        return intlTelInput.utils.getValidationError(this.#getFullNumber(), iso2);
       }
-      return -99;
+      return SENTINELS.UNKNOWN_VALIDATION_ERROR;
     }
-    //* Validate the input val
+    //* Validate the input val using number length only
     isValidNumber() {
-      if (!this.selectedCountryData.iso2) {
-        return false;
+      const { dialCode, iso2 } = this.#selectedCountryData;
+      if (intlTelInput.utils && this.#ui.telInput) {
+        const number = this.#getFullNumber();
+        const coreNumber = intlTelInput.utils.getCoreNumber(number, iso2);
+        if (coreNumber) {
+          if (dialCode === UK.DIAL_CODE) {
+            if (coreNumber[0] === UK.MOBILE_PREFIX && coreNumber.length !== UK.MOBILE_CORE_LENGTH) {
+              return false;
+            }
+          }
+          const hasAlphaChar = REGEX.ALPHA_UNICODE.test(number);
+          if (!hasAlphaChar && dialCode) {
+            const nationalPortion = number.startsWith("+") ? number.slice(1 + dialCode.length) : number;
+            const nationalDigitCount = getNumeric(nationalPortion).length;
+            if (coreNumber.length > nationalDigitCount) {
+              return false;
+            }
+          }
+        }
       }
-      const val = this._getFullNumber();
-      const alphaCharPosition = val.search(/\p{L}/u);
-      if (alphaCharPosition > -1) {
-        const beforeAlphaChar = val.substring(0, alphaCharPosition);
-        const beforeAlphaIsValid = this._utilsIsPossibleNumber(beforeAlphaChar);
-        const isValid = this._utilsIsPossibleNumber(val);
-        return beforeAlphaIsValid && isValid;
-      }
-      return this._utilsIsPossibleNumber(val);
+      return this.#validateNumber(false);
     }
-    _utilsIsPossibleNumber(val) {
-      return intlTelInput.utils ? intlTelInput.utils.isPossibleNumber(val, this.selectedCountryData.iso2, this.options.validationNumberTypes) : null;
-    }
-    //* Validate the input val (precise)
+    //* Validate the input val with precise validation
     isValidNumberPrecise() {
-      if (!this.selectedCountryData.iso2) {
+      return this.#validateNumber(true);
+    }
+    #utilsIsPossibleNumber(val) {
+      return intlTelInput.utils ? intlTelInput.utils.isPossibleNumber(
+        val,
+        this.#selectedCountryData.iso2,
+        this.#options.allowedNumberTypes
+      ) : null;
+    }
+    //* Shared internal validation logic to handle alpha character extension rules.
+    #validateNumber(precise) {
+      if (!intlTelInput.utils || !this.#ui.telInput) {
+        return null;
+      }
+      const { allowNumberExtensions, allowPhonewords } = this.#options;
+      const testValidity = (s) => precise ? this.#utilsIsValidNumber(s) : this.#utilsIsPossibleNumber(s);
+      const val = this.#getFullNumber();
+      if (!this.#selectedCountryData.iso2) {
+        const isRegionlessDialCode = hasRegionlessDialCode(val);
+        if (!isRegionlessDialCode) {
+          return false;
+        }
+      }
+      if (!testValidity(val)) {
         return false;
       }
-      const val = this._getFullNumber();
-      const alphaCharPosition = val.search(/\p{L}/u);
-      if (alphaCharPosition > -1) {
-        const beforeAlphaChar = val.substring(0, alphaCharPosition);
-        const beforeAlphaIsValid = this._utilsIsValidNumber(beforeAlphaChar);
-        const isValid = this._utilsIsValidNumber(val);
-        return beforeAlphaIsValid && isValid;
+      const alphaCharPosition = val.search(REGEX.ALPHA_UNICODE);
+      const hasAlphaChar = alphaCharPosition > -1;
+      if (hasAlphaChar) {
+        const selectedIso2 = this.#selectedCountryData.iso2;
+        const hasExtension = Boolean(intlTelInput.utils.getExtension(val, selectedIso2));
+        if (hasExtension) {
+          return allowNumberExtensions;
+        }
+        return allowPhonewords;
       }
-      return this._utilsIsValidNumber(val);
+      return true;
     }
-    _utilsIsValidNumber(val) {
-      return intlTelInput.utils ? intlTelInput.utils.isValidNumber(val, this.selectedCountryData.iso2, this.options.validationNumberTypes) : null;
+    #utilsIsValidNumber(val) {
+      return intlTelInput.utils ? intlTelInput.utils.isValidNumber(
+        val,
+        this.#selectedCountryData.iso2,
+        this.#options.allowedNumberTypes
+      ) : null;
     }
     //* Update the selected country, and update the input val accordingly.
     setCountry(iso2) {
+      if (!this.#ui.telInput) {
+        return;
+      }
       const iso2Lower = iso2?.toLowerCase();
-      const currentCountry = this.selectedCountryData.iso2;
+      if (!isIso22(iso2Lower)) {
+        throw new Error(`Invalid country code: '${iso2Lower}'`);
+      }
+      const currentCountry = this.#selectedCountryData.iso2;
       const isCountryChange = iso2 && iso2Lower !== currentCountry || !iso2 && currentCountry;
       if (isCountryChange) {
-        this._setCountry(iso2Lower);
-        this._updateDialCode(this.selectedCountryData.dialCode);
-        this._triggerCountryChange();
+        this.#setCountry(iso2Lower);
+        this.#updateDialCode(this.#selectedCountryData.dialCode);
+        if (this.#options.formatOnDisplay) {
+          const inputValue = this.#getTelInputValue();
+          this.#updateValFromNumber(inputValue);
+        }
+        this.#triggerCountryChange();
       }
     }
     //* Set the input value and update the country.
     setNumber(number) {
-      const countryChanged = this._updateCountryFromNumber(number);
-      this._updateValFromNumber(number);
-      if (countryChanged) {
-        this._triggerCountryChange();
+      if (!this.#ui.telInput) {
+        return;
       }
-      this._trigger("input", { isSetNumber: true });
+      const normalisedNumber = this.#numerals.normalise(number);
+      const countryChanged = this.#updateCountryFromNumber(normalisedNumber);
+      this.#updateValFromNumber(normalisedNumber);
+      if (countryChanged) {
+        this.#triggerCountryChange();
+      }
+      this.#trigger(EVENTS.INPUT, { isSetNumber: true });
     }
     //* Set the placeholder number typ
     setPlaceholderNumberType(type) {
-      this.options.placeholderNumberType = type;
-      this._updatePlaceholder();
+      if (!this.#ui.telInput) {
+        return;
+      }
+      this.#options.placeholderNumberType = type;
+      this.#updatePlaceholder();
     }
     setDisabled(disabled) {
-      this.telInput.disabled = disabled;
-      if (disabled) {
-        this.selectedCountry.setAttribute("disabled", "true");
-      } else {
-        this.selectedCountry.removeAttribute("disabled");
+      if (!this.#ui.telInput) {
+        return;
       }
+      this.#ui.telInput.disabled = disabled;
+      if (disabled) {
+        this.#ui.selectedCountry.setAttribute("disabled", "true");
+      } else {
+        this.#ui.selectedCountry.removeAttribute("disabled");
+      }
+    }
+    //********************
+    //*  STATIC METHODS
+    //********************
+    // Internal instance notification used by utils/geoip loaders.
+    // Kept public so module-level helpers (e.g. attachUtils) can call it, while still allowing
+    // access to private instance methods.
+    static forEachInstance(method, ...args) {
+      const instances = intlTelInput.instances;
+      const values = instances instanceof Map ? Array.from(instances.values()) : Object.values(instances);
+      const arg = args[0];
+      values.forEach((instance) => {
+        if (!(instance instanceof _Iti)) {
+          return;
+        }
+        switch (method) {
+          case "handleUtils":
+            instance.#handleUtils();
+            break;
+          case "handleUtilsFailure":
+            instance.#handleUtilsFailure(arg);
+            break;
+          case "handleAutoCountry":
+            instance.#handleAutoCountry();
+            break;
+          case "handleAutoCountryFailure":
+            instance.#handleAutoCountryFailure();
+            break;
+        }
+      });
     }
   };
   var attachUtils = (source) => {
@@ -3127,19 +4341,25 @@ var factoryOutput = (() => {
           return Promise.reject(error);
         }
       } else {
-        return Promise.reject(new TypeError(`The argument passed to attachUtils must be a function that returns a promise for the utilities module, not ${typeof source}`));
+        return Promise.reject(
+          new TypeError(
+            `The argument passed to attachUtils must be a function that returns a promise for the utilities module, not ${typeof source}`
+          )
+        );
       }
       intlTelInput.startedLoadingUtilsScript = true;
       return loadCall.then((module) => {
         const utils = module?.default;
         if (!utils || typeof utils !== "object") {
-          throw new TypeError("The loader function passed to attachUtils did not resolve to a module object with utils as its default export.");
+          throw new TypeError(
+            "The loader function passed to attachUtils did not resolve to a module object with utils as its default export."
+          );
         }
         intlTelInput.utils = utils;
-        forEachInstance("handleUtils");
+        Iti.forEachInstance("handleUtils");
         return true;
       }).catch((error) => {
-        forEachInstance("rejectUtilsScriptPromise", error);
+        Iti.forEachInstance("handleUtilsFailure", error);
         throw error;
       });
     }
@@ -3148,9 +4368,8 @@ var factoryOutput = (() => {
   var intlTelInput = Object.assign(
     (input, options) => {
       const iti = new Iti(input, options);
-      iti._init();
-      input.setAttribute("data-intl-tel-input-id", iti.id.toString());
       intlTelInput.instances[iti.id] = iti;
+      input.iti = iti;
       return iti;
     },
     {
@@ -3161,7 +4380,7 @@ var factoryOutput = (() => {
       getCountryData: () => data_default,
       //* A getter for the plugin instance.
       getInstance: (input) => {
-        const id2 = input.getAttribute("data-intl-tel-input-id");
+        const id2 = input.dataset.intlTelInputId;
         return id2 ? intlTelInput.instances[id2] : null;
       },
       //* A map from instance ID to instance object.
@@ -3169,7 +4388,7 @@ var factoryOutput = (() => {
       attachUtils,
       startedLoadingUtilsScript: false,
       startedLoadingAutoCountry: false,
-      version: "25.3.1"
+      version: "26.8.1"
     }
   );
   var intl_tel_input_default = intlTelInput;

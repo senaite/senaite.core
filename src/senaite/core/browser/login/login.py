@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from senaite.core import logger
 from Products.CMFPlone.browser.login.login import LoginForm as BaseLoginForm
 
 
@@ -46,5 +47,14 @@ class LoginForm(BaseLoginForm):
 
     @property
     def lab_name(self):
-        lab = api.get_setup().laboratory
-        return api.get_title(lab)
+        try:
+            lab = api.get_senaite_setup().laboratory
+            return api.get_title(lab)
+        except AttributeError as e:
+            # This might happen if the upgrade step 2731 in charge of migrating
+            # Laboratory AT content type to DX has not been run yet and the
+            # setting "ShowLabNameInLogin" was set to True in setup.
+            # User cannot login, so is not possible to run the migration step
+            # See https://github.com/senaite/senaite.core/pull/2924
+            logger.error("setup.laboratory not found: %s" % str(e))
+            return ""

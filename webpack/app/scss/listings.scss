@@ -1,5 +1,26 @@
 /* Listing Table Styles  */
 
+/* Iframe-edit pencil icon: hidden by default, shown on row hover */
+.iframe-edit-icon {
+    visibility: hidden;
+    opacity: 0;
+    margin-left: 0.35rem;
+    font-size: 0.8em;
+    color: #888;
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+
+    &:hover {
+        color: #333;
+        text-decoration: none;
+    }
+}
+tr:hover .iframe-edit-icon,
+li:hover .iframe-edit-icon {
+    visibility: visible;
+    opacity: 1;
+}
+
 div.listing-container {
 
     input[type=date] {

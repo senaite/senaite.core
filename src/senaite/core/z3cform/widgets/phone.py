@@ -76,7 +76,7 @@ class PhoneWidget(text.TextWidget):
     def get_default_country(self, default="us"):
         """Return the default country from the system
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         country = setup.getDefaultCountry()
         if not country:
             return default

@@ -20,12 +20,14 @@
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.workflow import RequestContextAware
 from bika.lims.browser.workflow import WorkflowActionGenericAdapter
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IWorkflowActionUIDsAdapter
 from DateTime import DateTime
+from senaite.core.api import dtime
 from zope.interface import implements
 
 
@@ -174,18 +176,25 @@ class WorkflowActionPrintSampleAdapter(WorkflowActionGenericAdapter):
         # Redirect the user to success page
         return self.success(transitioned)
 
+    def get_last_report(self, sample):
+        reports = sample.getReports()
+        if not reports:
+            return None
+        return reports[-1]
+
     def set_printed_time(self, sample):
         """Updates the printed time of the last results report from the sample
         """
         if api.get_workflow_status_of(sample) != "published":
             return False
 
-        reports = sample.objectIds("ARReport")
-        if not reports:
+        # Get the last report
+        last_report = self.get_last_report(sample)
+        if not last_report:
             return False
 
-        last_report = sample.get(reports[-1])
-        last_report.setDatePrinted(DateTime())
+        timestamp = dtime.now()
+        last_report.setDatePrinted(timestamp)
         sample.reindexObject(idxs=["getPrinted"])
         return True
 
@@ -376,7 +385,7 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
         """Returns whether the assignment of specs at analysis level within
         sample context is enabled or not
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getEnableARSpecs()
 
     def is_hidden(self, service):
@@ -396,3 +405,40 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
             specs_value = self.request.form.get(key, [{}])[0].get(uid, None)
             specs[key] = specs_value or specs.get(key)
         return specs
+
+
+class WorkflowActionDuplicateAdapter(WorkflowActionGenericAdapter):
+    """Adapter in charge of the Sample 'duplicate_sample' action.
+
+    Triggers the workflow transition (which fires
+    `after_duplicate_sample` and creates the sibling) and reports
+    the new IDs in a status message. Unlike Copy-to-new, this
+    adapter does not redirect to `ar_add` — duplication happens
+    directly.
+    """
+
+    def __call__(self, action, objects):
+        sources = list(filter(IAnalysisRequest.providedBy, objects))
+
+        # Snapshot existing duplicate UIDs per source so we can
+        # report only the duplicates created by *this* invocation.
+        relation = "AnalysisRequestDuplicatedFrom"
+        before = {
+            api.get_uid(source): set(
+                get_backreferences(source, relationship=relation))
+            for source in sources
+        }
+
+        transitioned = self.do_action(action, sources)
+        if not transitioned:
+            return self.redirect(
+                message=_("No duplicate created"), level="warning")
+
+        new_uids = []
+        for source in transitioned:
+            after = set(get_backreferences(source, relationship=relation))
+            new_uids.extend(after - before.get(api.get_uid(source), set()))
+        duplicates = filter(None, map(api.get_object_by_uid, new_uids))
+        ids = ", ".join(map(api.get_id, duplicates))
+        message = _("Duplicated samples: {}").format(ids)
+        return self.success(transitioned, message=message)

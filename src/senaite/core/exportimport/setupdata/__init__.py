@@ -26,15 +26,15 @@ import transaction
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from senaite.core.idserver import renameAfterCreation
+from bika.lims.api import safe_unicode as u
 from bika.lims.interfaces import ISetupDataSetList
 from bika.lims.utils import getFromString
-from senaite.core.i18n import translate as t
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_unicode
 from bika.lims.utils import to_utf8
 from bika.lims.utils.analysis import create_analysis
 from pkg_resources import resource_filename
+from plone.namedfile.file import NamedBlobImage
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
@@ -44,6 +44,8 @@ from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.exportimport.dataimport import SetupDataSetList as SDL
+from senaite.core.i18n import translate as t
+from senaite.core.idserver import renameAfterCreation
 from senaite.core.schema.addressfield import BILLING_ADDRESS
 from senaite.core.schema.addressfield import PHYSICAL_ADDRESS
 from senaite.core.schema.addressfield import POSTAL_ADDRESS
@@ -269,51 +271,50 @@ class WorksheetImporter(object):
             PhysicalAddress, PostalAddress, CountryState, BillingAddress
         """
         addresses = {}
-        for add_type in ['Physical', 'Postal', 'Billing', 'CountryState']:
+        for add_type in ["Physical", "Postal", "Billing", "CountryState"]:
             addresses[add_type] = {}
-            for key in ['Address', 'City', 'State', 'District', 'Zip', 'Country']:
+            for key in ["Address", "City", "State", "District", "Zip", "Country"]:
                 addresses[add_type][key.lower()] = str(
-                    row.get("%s_%s" % (add_type, key), ''))
+                    row.get("%s_%s" % (add_type, key), ""))
 
-        if addresses['CountryState']['country'] == '' \
-                and addresses['CountryState']['state'] == '':
-            addresses['CountryState']['country'] = addresses['Physical']['country']
-            addresses['CountryState']['state'] = addresses['Physical']['state']
+        if addresses["CountryState"]["country"] == "" \
+                and addresses["CountryState"]["state"] == "":
+            addresses["CountryState"]["country"] = addresses["Physical"]["country"]
+            addresses["CountryState"]["state"] = addresses["Physical"]["state"]
 
-        if hasattr(obj, 'setPhysicalAddress'):
-            obj.setPhysicalAddress(addresses['Physical'])
-        if hasattr(obj, 'setPostalAddress'):
-            obj.setPostalAddress(addresses['Postal'])
-        if hasattr(obj, 'setCountryState'):
-            obj.setCountryState(addresses['CountryState'])
-        if hasattr(obj, 'setBillingAddress'):
-            obj.setBillingAddress(addresses['Billing'])
+        if hasattr(obj, "setPhysicalAddress"):
+            obj.setPhysicalAddress(addresses["Physical"])
+        if hasattr(obj, "setPostalAddress"):
+            obj.setPostalAddress(addresses["Postal"])
+        if hasattr(obj, "setCountryState"):
+            obj.setCountryState(addresses["CountryState"])
+        if hasattr(obj, "setBillingAddress"):
+            obj.setBillingAddress(addresses["Billing"])
 
     def fill_contactfields(self, row, obj):
         """ Fills the contact fields for the specified object if allowed:
             EmailAddress, Phone, Fax, BusinessPhone, BusinessFax, HomePhone,
             MobilePhone
         """
-        fieldnames = ['EmailAddress',
-                      'Phone',
-                      'Fax',
-                      'BusinessPhone',
-                      'BusinessFax',
-                      'HomePhone',
-                      'MobilePhone',
-                      ]
-        schema = obj.Schema()
-        fields = dict([(field.getName(), field) for field in schema.fields()])
+        fieldnames = [
+            "EmailAddress",
+            "Phone",
+            "Fax",
+            "BusinessPhone",
+            "BusinessFax",
+            "HomePhone",
+            "MobilePhone",
+        ]
         for fieldname in fieldnames:
             try:
-                field = fields[fieldname]
-            except Exception:
+                getattr(obj, fieldname)
+            except AttributeError:
                 if fieldname in row:
                     logger.info("Address field %s not found on %s" %
                                 (fieldname, obj))
                 continue
-            value = row.get(fieldname, '')
-            field.set(obj, value)
+            value = row.get(fieldname, "")
+            setattr(obj, fieldname, value)
 
     def get_object(self, catalog, portal_type, title=None, **kwargs):
         """This will return an object from the catalog.
@@ -357,37 +358,44 @@ class Sub_Groups(WorksheetImporter):
 
 class Lab_Information(WorksheetImporter):
 
+    def get_logo(self, filename):
+        """Read a setup data image and return it as a NamedBlobImage
+        """
+        if not filename:
+            return None
+        path = resource_filename(
+            self.dataset_project,
+            "setupdata/%s/%s" % (self.dataset_name, filename))
+        try:
+            file_data = read_file(path)
+        except IOError as msg:
+            logger.warning("%s. Error on sheet: %s" % (msg, self.sheetname))
+            return None
+        return NamedBlobImage(
+            data=file_data, filename=api.safe_unicode(filename))
+
     def Import(self):
-        laboratory = self.context.bika_setup.laboratory
+        laboratory = self.context.setup.laboratory
         values = {}
         for row in self.get_rows(3):
-            values[row['Field']] = row['Value']
+            values[row["Field"]] = row["Value"]
 
-        if values['AccreditationBodyLogo']:
-            path = resource_filename(
-                self.dataset_project,
-                "setupdata/%s/%s" % (self.dataset_name,
-                                     values['AccreditationBodyLogo']))
-            try:
-                file_data = read_file(path)
-            except Exception as msg:
-                file_data = None
-                logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
-        else:
-            file_data = None
-
-        laboratory.edit(
-            Name=values['Name'],
-            LabURL=values['LabURL'],
-            Confidence=values['Confidence'],
-            LaboratoryAccredited=self.to_bool(values['LaboratoryAccredited']),
-            AccreditationBodyLong=values['AccreditationBodyLong'],
-            AccreditationBody=values['AccreditationBody'],
-            AccreditationBodyURL=values['AccreditationBodyURL'],
-            Accreditation=values['Accreditation'],
-            AccreditationReference=values['AccreditationReference'],
-            AccreditationBodyLogo=file_data,
-            TaxNumber=values['TaxNumber'],
+        api.edit(
+            laboratory,
+            title=api.safe_unicode(values["Name"]),
+            lab_url=api.safe_unicode(values["LabURL"]),
+            confidence=api.to_int(values["Confidence"], default=None),
+            laboratory_accredited=self.to_bool(
+                values["LaboratoryAccredited"]),
+            accreditation_body=api.safe_unicode(values["AccreditationBody"]),
+            accreditation_body_url=api.safe_unicode(
+                values["AccreditationBodyURL"]),
+            accreditation=api.safe_unicode(values["Accreditation"]),
+            accreditation_reference=api.safe_unicode(
+                values["AccreditationReference"]),
+            accreditation_body_logo=self.get_logo(
+                values["AccreditationBodyLogo"]),
+            tax_number=api.safe_unicode(values["TaxNumber"]),
         )
         self.fill_contactfields(values, laboratory)
         self.fill_addressfields(values, laboratory)
@@ -607,66 +615,65 @@ class Clients(WorksheetImporter):
 class Client_Contacts(WorksheetImporter):
 
     def Import(self):
-        portal_groups = getToolByName(self.context, 'portal_groups')
         cat = api.get_tool(CLIENT_CATALOG)
         for row in self.get_rows(3):
-            client = cat(portal_type="Client",
-                         getName=row['Client_title'])
+            client = cat(portal_type="Client", getName=row["Client_title"])
             if len(client) == 0:
                 client_contact = "%(Firstname)s %(Surname)s" % row
-                error = "Client invalid: '%s'. The Client Contact %s will not be uploaded."
-                logger.error(error, row['Client_title'], client_contact)
+                error = "Client invalid: '%s'. " \
+                        "The Client Contact %s will not be uploaded."
+                logger.error(error, row["Client_title"], client_contact)
                 continue
             client = client[0].getObject()
-            contact = _createObjectByType("Contact", client, tmpID())
-            fullname = "%(Firstname)s %(Surname)s" % row
-            pub_pref = [x.strip() for x in
-                        row.get('PublicationPreference', '').split(",")]
-            contact.edit(
-                Salutation=row.get('Salutation', ''),
-                Firstname=row.get('Firstname', ''),
-                Surname=row.get('Surname', ''),
-                Username=row['Username'],
-                JobTitle=row.get('JobTitle', ''),
-                Department=row.get('Department', ''),
-                PublicationPreference=pub_pref,
+
+            def u_row_get(name):
+                return api.safe_unicode(row.get(name, ""))
+
+            contact = api.create(
+                client, "Contact",
+                salutation=u_row_get("Salutation"),
+                firstname=u_row_get("Firstname"),
+                surname=u_row_get("Surname"),
+                username=u_row_get("Username"),
+                job_title=u_row_get("JobTitle"),
+                department=u_row_get("Department"),
             )
+
             self.fill_contactfields(row, contact)
             self.fill_addressfields(row, contact)
-            contact.unmarkCreationFlag()
-            renameAfterCreation(contact)
-            notify(ObjectInitializedEvent(contact))
+
             # CC Contacts
-            if row['CCContacts']:
-                names = [x.strip() for x in row['CCContacts'].split(",")]
+            if row["CCContacts"]:
+                names = [x.strip() for x in row["CCContacts"].split(",")]
                 for _fullname in names:
                     self.defer(src_obj=contact,
-                               src_field='CCContact',
+                               src_field="cc_contact",
                                dest_catalog=CONTACT_CATALOG,
-                               dest_query={'portal_type': 'Contact',
-                                           'getFullname': _fullname}
-                               )
+                               dest_query={
+                                   "portal_type": "Contact",
+                                   "getFullname": _fullname,
+                               })
             # Create Plone user
-            username = safe_unicode(row['Username']).encode('utf-8')
-            password = safe_unicode(row['Password']).encode('utf-8')
+            username = u_row_get("Username").encode("utf-8")
+            password = u_row_get("Password").encode("utf-8")
+            fullname = "%(Firstname)s %(Surname)s" % row
             if (username):
                 try:
                     self.context.portal_registration.addMember(
                         username,
                         password,
                         properties={
-                            'username': username,
-                            'email': row['EmailAddress'],
-                            'fullname': fullname}
+                            "username": username,
+                            "email": row["EmailAddress"],
+                            "fullname": fullname,
+                        }
                     )
+                    # This will add the user to a client specific group which
+                    # has the "Client" role assigned
+                    contact.setUser(username)
+
                 except Exception as msg:
                     logger.info("Error adding user (%s): %s" % (msg, username))
-                contact.aq_parent.manage_setLocalRoles(
-                    row['Username'], ['Owner', ])
-                contact.reindexObject()
-                # add user to Clients group
-                group = portal_groups.getGroupById('Clients')
-                group.addMember(username)
 
 
 class Container_Types(WorksheetImporter):
@@ -874,14 +881,16 @@ class Instruments(WorksheetImporter):
                         msg[0] + " Error on sheet: " + self.sheetname)
 
             # Attaching the Instrument's manual if exists
-            if row.get('UserManualFile', None):
-                row_dict = {'DocumentID': row.get('UserManualID', 'manual'),
-                            'DocumentVersion': '',
-                            'DocumentLocation': '',
-                            'DocumentType': 'Manual',
-                            'File': row.get('UserManualFile', None)
-                            }
+            if row.get("UserManualFile", None):
+                row_dict = {
+                    "DocumentID": row.get("UserManualID", "manual"),
+                    "DocumentVersion": "",
+                    "DocumentoLcation": "",
+                    "DocumentType": "Manual",
+                    "File": row.get("UserManualFile", None)
+                }
                 addDocument(self, row_dict, obj)
+
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
             notify(ObjectInitializedEvent(obj))
@@ -1018,26 +1027,26 @@ class Instrument_Documents(WorksheetImporter):
     def Import(self):
         bsc = getToolByName(self.context, SETUP_CATALOG)
         for row in self.get_rows(3):
-            if not row.get('instrument', ''):
+            if not row.get("instrument", ""):
                 continue
             folder = self.get_object(
-                bsc, 'Instrument', row.get('instrument', ''))
+                bsc, "Instrument", row.get("instrument", ""))
             addDocument(self, row, folder)
 
 
 def addDocument(self, row_dict, folder):
-    """
-    This function adds a multifile object to the instrument folder
+    """This function adds a multifile object to the instrument folder
+
     :param row_dict: the dictionary which contains the document information
     :param folder: the instrument object
     """
     if folder:
         # This content type need a file
-        if row_dict.get('File', None):
+        if row_dict.get("File", None):
             path = resource_filename(
                 self.dataset_project,
                 "setupdata/%s/%s" % (self.dataset_name,
-                                     row_dict['File'])
+                                     row_dict["File"])
             )
             try:
                 file_data = read_file(path)
@@ -1046,30 +1055,30 @@ def addDocument(self, row_dict, folder):
                 logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
 
             # Obtain all created instrument documents content type
-            catalog = getToolByName(self.context, SETUP_CATALOG)
-            documents_brains = catalog.searchResults(
-                {'portal_type': 'Multifile'})
-            # If a the new document has the same DocumentID as a created document, this object won't be created.
+            documents_brains = api.search({"portal_type": "Multifile"})
+            # If a the new document has the same DocumentID as a created
+            # document, this object won't be created.
             idAlreadyInUse = False
-            for item in documents_brains:
-                if item.getObject().getDocumentID() == row_dict.get('DocumentID', ''):
-                    warning = "The ID '%s' used for this document is already in use on instrument '%s', consequently " \
-                              "the file hasn't been upload." % (row_dict.get(
-                                  'DocumentID', ''), row_dict.get('instrument', ''))
-                    self.context.plone_utils.addPortalMessage(warning)
+            for brain in documents_brains:
+                obj = api.get_object(brain)
+                instrument = obj.aq_parent
+                doc_id = obj.getDocumentID()
+                new_doc_id = row_dict.get("DocumentID", "")
+                if doc_id == new_doc_id:
+                    msg = "The ID '%s' used for this document is already in " \
+                          "use on instrument '%s', consequently the file " \
+                          "hasn't been upload." % (
+                              doc_id, api.get_title(instrument))
+                    self.context.plone_utils.addPortalMessage(msg)
                     idAlreadyInUse = True
             if not idAlreadyInUse:
-                obj = _createObjectByType("Multifile", folder, tmpID())
-                obj.edit(
-                    DocumentID=row_dict.get('DocumentID', ''),
-                    DocumentVersion=row_dict.get('DocumentVersion', ''),
-                    DocumentLocation=row_dict.get('DocumentLocation', ''),
-                    DocumentType=row_dict.get('DocumentType', ''),
-                    File=file_data
-                )
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+                obj = api.create(folder, "Multifile", **dict(
+                    document_id=u(row_dict.get("DocumentID", "")),
+                    document_version=u(row_dict.get("DocumentVersion", "")),
+                    document_location=u(row_dict.get("DocumentLocation", "")),
+                    document_type=u(row_dict.get("DocumentType", "")),
+                    file=file_data
+                ))
 
 
 class Instrument_Maintenance_Tasks(WorksheetImporter):
@@ -1390,67 +1399,63 @@ class Calculations(WorksheetImporter):
 
     def get_interim_fields(self):
         # preload Calculation Interim Fields sheet
-        sheetname = 'Calculation Interim Fields'
+        sheetname = "Calculation Interim Fields"
         worksheet = self.workbook[sheetname]
         if not worksheet:
             return
         self.interim_fields = {}
         rows = self.get_rows(3, worksheet=worksheet)
         for row in rows:
-            calc_title = row['Calculation_title']
+            calc_title = row["Calculation_title"]
             if calc_title not in self.interim_fields.keys():
                 self.interim_fields[calc_title] = []
             self.interim_fields[calc_title].append({
-                'keyword': row['keyword'],
-                'title': row.get('title', ''),
-                'type': 'int',
-                'hidden': ('hidden' in row and row['hidden']) and True or False,
-                'value': row['value'],
-                'unit': row['unit'] and row['unit'] or ''})
+                "keyword": row["keyword"],
+                "title": row.get("title", ""),
+                "type": "int",
+                "hidden": ("hidden" in row and row["hidden"]) and True or False,
+                "value": row["value"],
+                "unit": row["unit"] and row["unit"] or ""})
 
     def Import(self):
         self.get_interim_fields()
-        folder = self.context.bika_setup.bika_calculations
+        container = self.context.setup.calculations
         for row in self.get_rows(3):
-            if not row['title']:
+            calc_title = row.get("title")
+            if not calc_title:
                 continue
-            calc_title = row['title']
             calc_interims = self.interim_fields.get(calc_title, [])
-            formula = row['Formula']
+            formula = row.get("Formula")
             # scan formula for dep services
             keywords = re.compile(r"\[([^\.^\]]+)\]").findall(formula)
             # remove interims from deps
-            interim_keys = [k['keyword'] for k in calc_interims]
+            interim_keys = [k["keyword"] for k in calc_interims]
             dep_keywords = [k for k in keywords if k not in interim_keys]
 
-            obj = _createObjectByType("Calculation", folder, tmpID())
-            obj.edit(
-                title=calc_title,
-                description=row.get('description', ''),
-                InterimFields=calc_interims,
-                Formula=str(row['Formula'])
-            )
+            obj = api.create(container, "Calculation",
+                             title=calc_title,
+                             description=row.get("description"),
+                             InterimFields=calc_interims,
+                             Formula=formula)
+
             for kw in dep_keywords:
                 self.defer(src_obj=obj,
-                           src_field='DependentServices',
+                           src_field="dependent_services",
                            dest_catalog=SETUP_CATALOG,
-                           dest_query={'portal_type': 'AnalysisService',
-                                       'getKeyword': kw}
+                           dest_query={"portal_type": "AnalysisService",
+                                       "getKeyword": kw}
                            )
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
 
         # Now we have the calculations registered, try to assign default calcs
         # to methods
         sheet = self.workbook["Methods"]
         bsc = getToolByName(self.context, SETUP_CATALOG)
         for row in self.get_rows(3, sheet):
-            if row.get('title', '') and row.get('Calculation_title', ''):
-                meth = self.get_object(bsc, "Method", row.get('title'))
+            if row.get("title", "") and row.get("Calculation_title", ""):
+                meth = self.get_object(bsc, "Method", row.get("title"))
                 if meth and not meth.getCalculation():
                     calctit = safe_unicode(
-                        row['Calculation_title']).encode('utf-8')
+                        row["Calculation_title"]).encode("utf-8")
                     calc = self.get_object(bsc, "Calculation", calctit)
                     if calc:
                         meth.setCalculation(calc.UID())
@@ -2112,7 +2117,9 @@ class Setup(WorksheetImporter):
     def to_string_vocab_value(self, field, value):
         vocabulary = field.vocabulary
         if type(vocabulary) is str:
-            vocabulary = getFromString(api.get_setup(), vocabulary)
+            # Use bika_setup for vocabulary access (has subfolders)
+            bika_setup = api.get_portal().get("bika_setup")
+            vocabulary = getFromString(bika_setup, vocabulary)
         else:
             vocabulary = vocabulary.items()
 
@@ -2276,8 +2283,8 @@ class Reference_Samples(WorksheetImporter):
         for row in self.get_rows(3):
             if not row['id']:
                 continue
-            supplier = bsc(portal_type='Supplier',
-                           getName=row.get('Supplier_title', ''))[0].getObject()
+            supplier = self.get_object(bsc, 'Supplier',
+                                       row.get('Supplier_title', ''))
             obj = _createObjectByType("ReferenceSample", supplier, row['id'])
             ref_def = self.get_object(bsc, 'ReferenceDefinition',
                                       row.get('ReferenceDefinition_title'))

@@ -18,6 +18,4 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-# BBB
-from senaite.core.browser.dashboard.dashboard import DashboardView
-from senaite.core.browser.dashboard.dashboard import setup_dashboard_panels_visibility_registry
+# BBB: DashboardView moved to senaite.core.browser.dashboard

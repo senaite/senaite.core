@@ -1,0 +1,15 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+
+  <tal:widget define="name view/name;
+                      value view/value">
+
+    <input type="hidden"
+           tal:repeat="uid value"
+           tal:attributes="name string:${name}:list;
+                           value uid" />
+
+  </tal:widget>
+
+</html>

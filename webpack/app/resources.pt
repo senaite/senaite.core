@@ -14,9 +14,6 @@
 <link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/modules/bootstrap-select/css/bootstrap-select.min.css"/>
 <link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/modules/jquery-ui/themes/smoothness/jquery-ui.min.css"/>
 
-<!-- Plone jQuery Tools -->
-<script tal:attributes="src string:${view/site_url}/++resource++plone.app.jquerytools.js"></script>
-
 <!-- Core JS bundle -->
 <% for (let js in htmlWebpackPlugin.files.js) { %>
 <script tal:attributes="src <%= 'string:${view/site_url}' + htmlWebpackPlugin.files.js[js] %>"></script>
@@ -27,17 +24,14 @@
 <link href="#" rel="stylesheet" tal:attributes="href <%= 'string:${view/site_url}' + htmlWebpackPlugin.files.css[f] %>" />
 <% } %>
 
-<!-- Legacy JS bundle -->
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/bundles/legacy.js"></script>
-
-<!-- Legacy CSS bundle -->
-<link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/bundles/legacy.css" />
-
-<!-- Thirdparty JS bundle -->
+<!-- Thirdparty JS bundle (loaded before legacy.js as it contains jQuery plugins used by legacy code) -->
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/bundles/thirdparty.js"></script>
 
 <!-- Thirdparty CSS bundle -->
 <link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/bundles/thirdparty.css" />
 
-<!-- Note: Styles refer to images and cannot be merged by webpack -->
-<link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++resource++plone.app.jquerytools.overlays.css" />
+<!-- Legacy JS bundle -->
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/bundles/legacy.js"></script>
+
+<!-- Legacy CSS bundle -->
+<link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/bundles/legacy.css" />

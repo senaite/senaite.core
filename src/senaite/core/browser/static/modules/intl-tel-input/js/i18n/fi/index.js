@@ -1,5 +1,18 @@
-import countryTranslations from "./countries.js";
-import interfaceTranslations from "./interface.js";
-export { countryTranslations, interfaceTranslations };
-const allTranslations = { ...countryTranslations, ...interfaceTranslations };
-export default allTranslations;
+const interfaceTranslations = {
+  selectedCountryAriaLabel: "Valittu maa",
+  noCountrySelected: "Maata ei ole valittu",
+  countryListAriaLabel: "Luettelo maista",
+  searchPlaceholder: "Haku",
+  clearSearchAriaLabel: "Tyhjennä haku",
+  searchEmptyState: "Ei tuloksia",
+  searchSummaryAria(count) {
+    if (count === 0) {
+      return "Ei tuloksia";
+    }
+    if (count === 1) {
+      return "1 tulos löytyi";
+    }
+    return `${count} tulosta löytyi`;
+  }
+};
+export default interfaceTranslations;

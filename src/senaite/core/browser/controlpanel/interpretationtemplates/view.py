@@ -25,11 +25,11 @@ from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import get_link_for
 from senaite.core.i18n import translate
 from senaite.core.catalog import SETUP_CATALOG
-from senaite.app.listing import ListingView
+from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from plone.app.textfield import RichTextValue
 
 
-class InterpretationTemplatesView(ListingView):
+class InterpretationTemplatesView(ControlPanelListingView):
     """Results Interpretation Templates listing view
     """
 

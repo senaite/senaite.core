@@ -96,7 +96,7 @@ Variables:
 
     >>> analysiscategories = setup.analysiscategories
     >>> analysisservices = bikasetup.bika_analysisservices
-    >>> calculations = bikasetup.bika_calculations
+    >>> calculations = setup.calculations
     >>> departments = setup.departments
     >>> instruments = bikasetup.bika_instruments
     >>> labcontacts = bikasetup.bika_labcontacts
@@ -187,8 +187,7 @@ Reference Samples:
 
 Calculation:
 
-    >>> calculation = api.create(calculations, "Calculation", title="Total Metals")
-    >>> calculation.setFormula("[Au] + [Cu] + [Fe]")
+    >>> calculation = api.create(calculations, "Calculation", title="Total Metals", Formula="[Au] + [Cu] + [Fe]")
 
 Calculation Analysis Service:
 

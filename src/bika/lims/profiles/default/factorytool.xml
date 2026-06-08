@@ -10,9 +10,7 @@
   <type portal_type="Attachment"/>
   <type portal_type="Batch"/>
   <type portal_type="BikaSetup"/>
-  <type portal_type="Calculation"/>
   <type portal_type="Client"/>
-  <type portal_type="Contact"/>
   <type portal_type="IdentifierType"/>
   <type portal_type="Instrument"/>
   <type portal_type="InstrumentCalibration"/>

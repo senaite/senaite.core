@@ -143,7 +143,7 @@ class AnalysisResultsImporter(Logger):
     def bika_setup(self):
         """Get the bika setup object
         """
-        return api.get_bika_setup()
+        return api.get_senaite_setup()
 
     @lazy_property
     def setup(self):

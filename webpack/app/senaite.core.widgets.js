@@ -5,6 +5,7 @@ import {
   render_selectother_widget,
   render_tinymce_widget,
   render_uidreference_widget,
+  render_multiupload_widget,
 } from "./widgets/renderer.js"
 
 // Provide widget controllers in a global namespace
@@ -55,6 +56,13 @@ const WIDGETS = [
     selector: ".senaite-selectother-widget-input",
     renderer: (el) => {
       return render_selectother_widget(el);
+    },
+  },
+  // Multi-Upload Widget
+  {
+    selector: ".multiuploadfield",
+    renderer: (el) => {
+      return render_multiupload_widget(el);
     },
   }
 ]

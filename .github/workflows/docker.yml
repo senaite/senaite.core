@@ -46,6 +46,7 @@ jobs:
           context: ${{ github.workspace }}/senaite.docker/latest
           file: ${{ github.workspace }}/senaite.docker/latest/Dockerfile
           no-cache: true
+          platforms: linux/amd64,linux/arm64
           push: true
           # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
           tags: senaite/senaite:edge,senaite/senaite:${{ github.ref_name }}

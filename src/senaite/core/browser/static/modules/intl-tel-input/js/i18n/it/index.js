@@ -1,5 +1,18 @@
-import countryTranslations from "./countries.js";
-import interfaceTranslations from "./interface.js";
-export { countryTranslations, interfaceTranslations };
-const allTranslations = { ...countryTranslations, ...interfaceTranslations };
-export default allTranslations;
+const interfaceTranslations = {
+  selectedCountryAriaLabel: "Paese selezionato",
+  noCountrySelected: "Nessun paese selezionato",
+  countryListAriaLabel: "Elenco dei paesi",
+  searchPlaceholder: "Ricerca",
+  clearSearchAriaLabel: "Cancella ricerca",
+  searchEmptyState: "Nessun risultato trovato",
+  searchSummaryAria(count) {
+    if (count === 0) {
+      return "Nessun risultato trovato";
+    }
+    if (count === 1) {
+      return "1 risultato trovato";
+    }
+    return `${count} risultati trovati`;
+  }
+};
+export default interfaceTranslations;

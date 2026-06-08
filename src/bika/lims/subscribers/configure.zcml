@@ -51,13 +51,6 @@
       handler=".auditlog.ObjectRemovedEventHandler"
       />
 
-  <!-- Newly created analyses -->
-  <subscriber
-      for="*
-           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
-      handler="bika.lims.subscribers.objectmodified.ObjectModifiedEventHandler"
-      />
-
   <!-- Newly created analyses (applies to routine analyses only) -->
   <subscriber
       for="bika.lims.interfaces.IRoutineAnalysis
@@ -78,12 +71,6 @@
            zope.lifecycleevent.interfaces.IObjectModifiedEvent"
       handler="bika.lims.subscribers.pricelist.ObjectModifiedEventHandler"
       />
-
-  <!-- Setup: Object modified event -->
-  <subscriber
-    for="bika.lims.interfaces.IBikaSetup
-         zope.lifecycleevent.interfaces.IObjectModifiedEvent"
-    handler="bika.lims.subscribers.setup.ObjectModifiedEventHandler" />
 
   <!-- AnalysisRequest modified
   Apply permissions to object in accordance with the value for InternalUse -->

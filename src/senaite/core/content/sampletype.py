@@ -37,6 +37,8 @@ from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.duration.widget import DurationWidgetFactory
+from senaite.core.z3cform.widgets.hazard_categories import (
+    HazardCategoriesFieldWidget)
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
 from zope import schema
 from zope.interface import Interface
@@ -68,17 +70,24 @@ def admitted_stickers_vocabulary(context):
 def default_retention_period():
     """Returns the default retention period
     """
-    period = api.get_setup().getDefaultSampleLifetime()
+    period = api.get_senaite_setup().getDefaultSampleLifetime()
     return dtime.to_timedelta(period, default=timedelta(0))
 
 
-def prefix_whitespaces_constraint(value):
-    """Check that the prefix does not contain whitespaces
+def prefix_ascii_no_whitespaces_constraint(value):
+    """Check that the prefix does not contain whitespaces and is ASCII only
     """
     if " " in value:
         raise Invalid(_(
-            u"sampletype_prefix_whitespace_validator_message",
+            u"sampletype_prefix_no_whitespace_validator_message",
             default=u"No whitespaces in prefix allowed"
+        ))
+    try:
+        str(value).encode("ascii")
+    except UnicodeEncodeError:
+        raise Invalid(_(
+            u"sampletype_prefix_ascii_validator_message",
+            default=u"Only ASCII characters in prefix allowed"
         ))
     return True
 
@@ -163,6 +172,25 @@ class ISampleTypeSchema(model.Schema):
         required=False)
 
     directives.widget(
+        "hazard_categories",
+        HazardCategoriesFieldWidget)
+    hazard_categories = schema.List(
+        title=_(u"title_sampletype_hazard_categories",
+                default=u"Hazard categories"),
+        description=_(u"description_sampletype_hazard_categories",
+                      default=u"Hazard categories that apply to "
+                              u"samples of this type. Used to display "
+                              u"the appropriate pictograms in reports "
+                              u"and lists."),
+        value_type=schema.Choice(
+            vocabulary="senaite.core.vocabularies.hazard_categories",
+        ),
+        required=False,
+        missing_value=[],
+        default=[],
+    )
+
+    directives.widget(
         "sample_matrix",
         UIDReferenceWidgetFactory,
         catalog=SETUP_CATALOG,
@@ -193,9 +221,9 @@ class ISampleTypeSchema(model.Schema):
         ),
         description=_(
             u"description_sampletype_prefix",
-            default=u"Please provide a unique profile keyword"
+            default=u"Only ASCII characters without whitespaces are allowed."
         ),
-        constraint=prefix_whitespaces_constraint,
+        constraint=prefix_ascii_no_whitespaces_constraint,
         required=True,
     )
 
@@ -298,6 +326,19 @@ class SampleType(Container):
 
     # BBB: AT schema field property
     Hazardous = property(getHazardous, setHazardous)
+
+    @security.protected(permissions.View)
+    def getHazardCategories(self):
+        accessor = self.accessor("hazard_categories")
+        return list(accessor(self) or [])
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setHazardCategories(self, value):
+        mutator = self.mutator("hazard_categories")
+        mutator(self, list(value or []))
+
+    # BBB: AT schema field property
+    HazardCategories = property(getHazardCategories, setHazardCategories)
 
     @security.protected(permissions.View)
     def getRawSampleMatrix(self):

@@ -23,11 +23,11 @@ import collections
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import get_link_for
-from senaite.app.listing import ListingView
+from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from senaite.core.catalog import SETUP_CATALOG
 
 
-class LabelsView(ListingView):
+class LabelsView(ControlPanelListingView):
     """Displays all available labels
     """
 

@@ -116,7 +116,7 @@
      <property name="url_expr">string:${portal_url}/my_organization</property>
      <property name="link_target"/>
      <property name="icon_expr"/>
-     <property name="available_expr">python:member and "Client" in member.getRoles()</property>
+     <property name="available_expr">object/@@my_organization/available</property>
      <property name="permissions"/>
      <property name="visible">True</property>
    </object>

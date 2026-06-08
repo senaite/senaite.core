@@ -24,12 +24,12 @@ from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import get_link_for
 from senaite.core.i18n import translate
-from senaite.app.listing import ListingView
+from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.permissions import AddSamplingDeviation
 
 
-class SamplingDeviationsView(ListingView):
+class SamplingDeviationsView(ControlPanelListingView):
 
     def __init__(self, context, request):
         super(SamplingDeviationsView, self).__init__(context, request)

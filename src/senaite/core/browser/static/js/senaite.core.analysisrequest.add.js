@@ -428,6 +428,11 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     this.deselected_uids = {};
     // flag that indicates that form already has been submitted once
     this.form_submission_flag = false;
+    // number of recalculate_records ajax calls currently in flight
+    // used to suppress queryselect deselect events that fire during
+    // bulk form (re)hydration, e.g. when copy-to-new loads many rows
+    // at once
+    this.recalculate_in_flight = 0;
     // Remove the '.blurrable' class to avoid inline field validation
     $(".blurrable").removeClass("blurrable");
     // manually flush service search terms
@@ -486,12 +491,20 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
   }
 
   recalculate_records() {
+    var me;
+    me = this;
+    me.recalculate_in_flight += 1;
     return this.ajax_post_form("recalculate_records").done(function(records) {
-      console.debug("Recalculate Analyses: Records=", records);
+      console.debug("Recalculate Records=", records);
       // remember a services snapshot
       this.records_snapshot = records;
       // trigger event for whom it might concern
       return $(this).trigger("data:updated", records);
+    }).always(function() {
+      me.recalculate_in_flight -= 1;
+      if (me.recalculate_in_flight < 0) {
+        return me.recalculate_in_flight = 0;
+      }
     });
   }
 
@@ -928,7 +941,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
    * @param values {Object, Array} The value to be set
    */
   apply_dependent_value(arnum, field_name, values) {
-    var field, manually_deselected, me, uids, values_json;
+    var current_value, field, manually_deselected, me, to_set, values_json;
     // always handle values as array internally
     if (!this.is_array(values)) {
       values = [values];
@@ -944,21 +957,26 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     // (multi-) reference fields, e.g. CC Contacts of selected Contact
     if (this.is_reference_field(field)) {
       manually_deselected = this.deselected_uids[field_name] || [];
-      // filter out values that were manually deselected
-      values = values.filter(function(value) {
-        var ref;
-        return ref = value.uid, indexOf.call(manually_deselected, ref) < 0;
-      });
-      // get a list of uids
-      uids = values.map(function(value) {
-        return value.uid;
-      });
-      // update reference field data records
-      values.forEach((value) => {
-        return this.set_reference_field_records(field, value);
+      current_value = this.get_reference_field_value(field);
+      to_set = [];
+      values.forEach(function(value, index) {
+        var if_empty, ref;
+        // skip manually deselected references
+        if (ref = value.uid, indexOf.call(manually_deselected, ref) >= 0) {
+          return;
+        }
+        // skip if the `if_empty` flag is set and the field is not empty
+        if_empty = (value.if_empty != null) && value.if_empty === true;
+        if (if_empty && current_value.length > 0) {
+          return;
+        }
+        // remember the others
+        return to_set.push(value.uid);
       });
       // update reference field values
-      return this.set_reference_field(field, uids);
+      if (to_set.length > 0) {
+        return this.set_reference_field(field, to_set);
+      }
     } else {
       // other fields, e.g. default CC Emails of Client
       return values.forEach(function(value, index) {
@@ -995,8 +1013,10 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     me = this;
     chain = Promise.resolve();
     return $.each(record.filter_queries, function(field_name, query) {
-      var field;
-      field = $("#" + field_name + `-${arnum}`);
+      var field, field_id;
+      field_id = field_name + `-${arnum}`;
+      field = $("#" + field_id);
+      console.debug(`Apply filter query from ${record.id} to ${field_id}: ${JSON.stringify(query)}`);
       return chain = chain.then(function() {
         return me.set_reference_field_query(field, query);
       });
@@ -1004,7 +1024,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
   }
 
   set_reference_field_query(field, query) {
-    var controller, data, me, target_base_query, target_catalog, target_field_label, target_field_name, target_query, target_value;
+    var controller, data, field_id, me, target_base_query, target_catalog, target_field_label, target_field_name, target_query, target_value;
     controller = this.get_widget_controller(field);
     // No controller found, return immediately
     // -> happens when the field is hidden or absent
@@ -1013,7 +1033,8 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     }
     // set the new query
     controller.set_search_query(query);
-    console.debug(`Set custom search query for field ${field.selector}: ${JSON.stringify(query)}`);
+    field_id = field.attr("id");
+    console.debug(`Set custom search query for field ${field_id}: ${JSON.stringify(query)}`);
     // check if the target field needs to be flushed
     target_field_name = field.closest("tr[fieldname]").attr("fieldname");
     target_field_label = field.closest("tr[fieldlabel]").attr("fieldlabel");
@@ -1615,7 +1636,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
   }
 
   on_referencefield_value_changed(event) {
-    var $el, after_change, arnum, deselected, el, event_data, field_name, filter_queries, manually_deselected, me, metadata, record, ref, selected, value;
+    var $el, after_change, arnum, deselected, el, event_data, field_name, filter_queries, manually_deselected, me, metadata, ref, selected, value;
     me = this;
     el = event.currentTarget;
     $el = $(el);
@@ -1625,7 +1646,6 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     selected = event.type === "select" ? true : false;
     deselected = !selected;
     manually_deselected = this.deselected_uids[field_name] || [];
-    record = this.records_snapshot[arnum] || {};
     metadata = this.get_metadata_for(arnum, field_name);
     // reset all dependent filter queries
     if (deselected && metadata) {
@@ -1801,6 +1821,17 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
   on_analysis_profile_removed(event) {
     var $el, arnum, context, dialog, el, me, profile_metadata, profile_services, profile_uid, record;
     console.debug("°°° on_analysis_profile_removed °°°");
+    // During bulk form hydration (e.g. copy-to-new with many rows) the
+    // queryselect widget can emit a transient deselect for the
+    // Profiles field while it re-syncs its options against the
+    // snapshot. The user hasn't actually removed the profile, so we
+    // must not pop up the "remove services?" dialog. Recognise that
+    // state by the presence of an in-flight recalculate_records ajax
+    // call, which is what drives the bulk re-render on copy-to-new.
+    if (this.recalculate_in_flight > 0) {
+      console.debug("Suppressing profile-remove dialog during bulk form hydration");
+      return;
+    }
     me = this;
     el = event.currentTarget;
     $el = $(el);
@@ -2255,7 +2286,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
   }
 
   on_ajax_start() {
-    var save_and_copy_button, save_button;
+    var cancel_button, save_and_copy_button, save_button;
     console.debug("°°° on_ajax_start °°°");
     // deactivate the save button
     save_button = $("input[name=save_button]");
@@ -2265,13 +2296,18 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     save_button[0].value = _t("Loading ...");
     // deactivate the save and copy button
     save_and_copy_button = $("input[name=save_and_copy_button]");
-    return save_and_copy_button.prop({
+    save_and_copy_button.prop({
+      "disabled": true
+    });
+    // deactivate the cancel button
+    cancel_button = $("input[name=cancel_button]");
+    return cancel_button.prop({
       "disabled": true
     });
   }
 
   on_ajax_end() {
-    var save_and_copy_button, save_button;
+    var cancel_button, save_and_copy_button, save_button;
     console.debug("°°° on_ajax_end °°°");
     // reactivate the save button
     save_button = $("input[name=save_button]");
@@ -2281,7 +2317,12 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     save_button[0].value = _t("Save");
     // reactivate the save and copy button
     save_and_copy_button = $("input[name=save_and_copy_button]");
-    return save_and_copy_button.prop({
+    save_and_copy_button.prop({
+      "disabled": false
+    });
+    // reactivate the cancel button
+    cancel_button = $("input[name=cancel_button]");
+    return cancel_button.prop({
       "disabled": false
     });
   }

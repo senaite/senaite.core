@@ -23,13 +23,13 @@ import collections
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import get_link_for
-from senaite.app.listing import ListingView
+from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.i18n import translate
 from senaite.core.permissions import AddAttachmentType
 
 
-class AttachmentTypesView(ListingView):
+class AttachmentTypesView(ControlPanelListingView):
 
     def __init__(self, context, request):
         super(AttachmentTypesView, self).__init__(context, request)

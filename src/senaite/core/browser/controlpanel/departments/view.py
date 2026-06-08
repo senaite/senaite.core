@@ -22,14 +22,14 @@ import collections
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
+from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.permissions import AddDepartment
 
 
-class DepartmentsView(BikaListingView):
+class DepartmentsView(ControlPanelListingView):
     """Controlpanel Listing for Departments
     """
 

@@ -37,6 +37,18 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
+  <!-- Analysis Requests: "duplicate_sample"
+  Single-click sibling creation. Runs the WF transition, which
+  fires `after_duplicate_sample` to create the sibling and report
+  it via status message. -->
+  <adapter
+    name="workflow_action_duplicate_sample"
+    for="*
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysisrequest.WorkflowActionDuplicateAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
   <!-- Analysis Request: "print_stickers"
   Note this applies wide, cause at the moment, this action only exists
   for Analysis Requests and we always want this adapter to be in charge,
@@ -190,24 +202,6 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
-  <!-- Worksheet: "assign" analyses -->
-  <adapter
-    name="workflow_action_assign"
-    for="bika.lims.interfaces.IWorksheet
-         zope.publisher.interfaces.browser.IBrowserRequest"
-    factory=".worksheet.WorkflowActionAssignAdapter"
-    provides="bika.lims.interfaces.IWorkflowActionAdapter"
-    permission="zope.Public" />
-
-  <!-- Worksheet: "reassign" analyst -->
-  <adapter
-    name="workflow_action_reassign"
-    for="bika.lims.interfaces.IWorksheetFolder
-         zope.publisher.interfaces.browser.IBrowserRequest"
-    factory=".worksheet.WorkflowActionReassignAdapter"
-    provides="bika.lims.interfaces.IWorkflowActionAdapter"
-    permission="zope.Public" />
-
   <!-- Analysis: "submit" from inside AnalysisRequest context -->
   <adapter
     name="workflow_action_submit"
@@ -220,7 +214,7 @@
   <!-- Analysis: "submit" from inside Worksheet context -->
   <adapter
     name="workflow_action_submit"
-    for="bika.lims.interfaces.IWorksheet
+    for="senaite.core.interfaces.IWorksheet
          zope.publisher.interfaces.browser.IBrowserRequest"
     factory=".analysis.WorkflowActionSubmitAdapter"
     provides="bika.lims.interfaces.IWorkflowActionAdapter"

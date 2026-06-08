@@ -22,13 +22,13 @@
 import copy
 
 from plone.memoize import forever
-
 from senaite.core import logger
-from senaite.core.catalog.analysis_catalog import \
-    CATALOG_ID as ANALYSIS_CATALOG
+from senaite.core.catalog.analysis_catalog import CATALOG_ID as ANALYSIS_CATALOG
 from senaite.core.catalog.analysis_catalog import AnalysisCatalog
-from senaite.core.catalog.auditlog_catalog import \
-    CATALOG_ID as AUDITLOG_CATALOG
+from senaite.core.catalog.attachments_catalog import \
+    CATALOG_ID as ATTACHMENTS_CATALOG
+from senaite.core.catalog.attachments_catalog import AttachmentsCatalog
+from senaite.core.catalog.auditlog_catalog import CATALOG_ID as AUDITLOG_CATALOG
 from senaite.core.catalog.auditlog_catalog import AuditlogCatalog
 from senaite.core.catalog.autoimportlog_catalog import \
     CATALOG_ID as AUTOIMPORTLOG_CATALOG
@@ -105,6 +105,8 @@ CATALOG_MAPPINGS = (
     ("SamplePreservation", [SETUP_CATALOG]),
     ("SampleType", [SETUP_CATALOG]),
     ("SamplingDeviation", [SETUP_CATALOG]),
+    ("SimpleFile", [ATTACHMENTS_CATALOG]),
+    ("SimpleImage", [ATTACHMENTS_CATALOG]),
     ("StorageLocation", [SETUP_CATALOG]),
     ("SubGroup", [SETUP_CATALOG]),
     ("Supplier", [SETUP_CATALOG]),

@@ -130,14 +130,14 @@ class AnalysisRequestAnalysesView(BikaListingView):
     def show_prices(self):
         """Checks if prices should be shown or not
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getShowPrices()
 
     @view.memoize
     def show_ar_specs(self):
         """Checks if AR specs should be shown or not
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getEnableARSpecs()
 
     @view.memoize
@@ -169,7 +169,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         """Get the currency Symbol
         """
         locale = locales.getLocale('en')
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         currency = setup.getCurrency()
         return locale.numbers.currencies[currency].symbol
 

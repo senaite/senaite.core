@@ -35,7 +35,7 @@ from plone.memoize import view
 from Products.CMFPlone.i18nl10n import ulocalized_time
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.app.listing import ListingView
+from senaite.core.browser.listing.base import ListingView
 
 
 class HasAuditLog(BrowserView):

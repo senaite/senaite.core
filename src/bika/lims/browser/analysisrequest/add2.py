@@ -17,11 +17,16 @@
 #
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
+import copy
+import hashlib
 import json
+import time
 from collections import OrderedDict
 from datetime import datetime
 from datetime import timedelta
+from random import uniform
+from threading import current_thread
+from threading import Lock
 
 import six
 import transaction
@@ -29,7 +34,6 @@ from bika.lims import POINTS_OF_CAPTURE
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.api.security import check_permission
 from bika.lims.decorators import returns_json
 from bika.lims.interfaces import IAddSampleConfirmation
@@ -38,6 +42,7 @@ from bika.lims.interfaces import IAddSampleObjectInfo
 from bika.lims.interfaces import IAddSampleRecordsValidator
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
 from bika.lims.interfaces.field import IUIDReferenceField
+from bika.lims.utils import get_client as get_client_from_chain
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from BTrees.OOBTree import OOBTree
 from DateTime import DateTime
@@ -51,14 +56,19 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.api import dtime
+from senaite.core.api.analysisservice import get_calculation_dependencies_for
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.content.contact import IContactSchema
+from senaite.core.interfaces import IAfterCreateSampleHook
 from senaite.core.p3compat import cmp
 from senaite.core.permissions import TransitionMultiResults
 from senaite.core.registry import get_registry_record
+from ZODB.POSException import ConflictError
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getAdapters
 from zope.component import queryAdapter
+from zope.component import subscribers
 from zope.i18n.locales import locales
 from zope.i18nmessageid import Message
 from zope.interface import alsoProvides
@@ -69,6 +79,29 @@ AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
 SKIP_FIELD_ON_COPY = ["Sample", "PrimaryAnalysisRequest", "Remarks",
                       "NumSamples", "_ARAttachment"]
 NO_COPY_FIELDS = ["_ARAttachment"]
+# Maximum number of attempts for a single sample creation before giving
+# up within one pass of the per-sample commit strategy. Combined with
+# the exponential backoff in `_create_one_with_retry`, the worst-case
+# wait per pass is bounded (~6 s). A second pass runs at the end of the
+# batch, so the effective budget per record is twice this value.
+MAX_CREATE_ATTEMPTS = 8
+# In-flight cache used to make `create_samples` idempotent across
+# Zope publisher-level retries. Zope discards the HTTPRequest on a
+# TransientError retry but reuses the same WSGI environ on the same
+# worker thread, so a content-based fingerprint of the submission
+# matches across attempts. Cache hits return the already-committed
+# samples by UID instead of creating duplicates.
+#
+# Each entry is one submission key -> ([list of UIDs], monotonic ts).
+# The cap is a purely defensive bound: in normal operation entries
+# age out via TTL (10 minutes) and each entry is alive only while a
+# submission is in flight, so steady-state size is the number of
+# concurrent submissions on this worker (typically 1-5). Memory at
+# the cap is roughly entries * UIDs * UID_size = a few MB worst case.
+INFLIGHT_CACHE_SIZE = 32
+INFLIGHT_CACHE_TTL = 600
+_inflight = OrderedDict()
+_inflight_lock = Lock()
 ALLOW_MULTI_PASTE_WIDGET_TYPES = [
     # disable paste functionality for date fields, see:
     # https://github.com/senaite/senaite.core/pull/2658#discussion_r1946229751
@@ -88,6 +121,79 @@ def cache_key(method, self, obj):
     return api.get_cache_key(obj)
 
 
+def _submission_fingerprint(request):
+    """Content-based fingerprint of the submission body, scoped to
+    the worker thread. Stable across Zope publisher-level retries
+    of the same request (Zope re-publishes on the same worker
+    thread, reusing the same WSGI environ and body bytes), but
+    distinct between concurrent same-body submissions on different
+    workers — which is what we want when an operator hammers
+    "Submit" across several browser tabs whose form bodies happen
+    to be byte-identical.
+
+    Two distinct submissions whose body is byte-identical and which
+    happen to land on the same worker still produce the same
+    fingerprint, but waitress only handles one request at a time
+    per worker so two requests on the same thread are serialised by
+    construction and cannot race on the in-flight cache entry.
+
+    The fingerprint is only safe to use for the cache *lookup* when
+    the request is actually a publisher retry — see
+    `_is_publisher_retry`.
+    """
+    method = request.get("REQUEST_METHOD", "") or ""
+    path = request.get("PATH_INFO", "") or ""
+    body = request.get("BODY", "") or ""
+    raw = "{}\n{}\n{}".format(method, path, body)
+    if isinstance(raw, unicode):
+        raw = raw.encode("utf-8")
+    body_hash = hashlib.sha256(raw).hexdigest()
+    return "{}:{}".format(current_thread().ident, body_hash)
+
+
+def _is_publisher_retry(request):
+    """True iff the publisher already re-published this request after
+    a previous attempt raised TransientError. Zope increments
+    `retry_count` on every retry and propagates it to the rebuilt
+    request, so a value > 0 unambiguously means we are inside a
+    retry. On a fresh first attempt the attribute is 0 (or missing on
+    non-HTTP requests).
+    """
+    return getattr(request, "retry_count", 0) > 0
+
+
+def _inflight_get(key):
+    """Return the cached UID list for the given submission key, or
+    None if the entry is absent or expired. Touches LRU order on hit.
+    """
+    now = time.time()
+    with _inflight_lock:
+        entry = _inflight.get(key)
+        if entry is None:
+            return None
+        uids, ts = entry
+        if now - ts > INFLIGHT_CACHE_TTL:
+            _inflight.pop(key, None)
+            return None
+        # bump LRU position by reinserting
+        _inflight.pop(key)
+        _inflight[key] = entry
+        return uids
+
+
+def _inflight_set(key, uids):
+    """Register the (mutable) UID list as the in-flight value for the
+    given submission key. The caller keeps a reference to the same
+    list and appends to it as samples commit; a concurrent retry on
+    the same worker sees those updates.
+    """
+    with _inflight_lock:
+        _inflight.pop(key, None)
+        _inflight[key] = (uids, time.time())
+        while len(_inflight) > INFLIGHT_CACHE_SIZE:
+            _inflight.popitem(last=False)
+
+
 class AnalysisRequestAddView(BrowserView):
     """AR Add view
     """
@@ -105,7 +211,7 @@ class AnalysisRequestAddView(BrowserView):
     def __call__(self):
         self.portal = api.get_portal()
         self.portal_url = self.portal.absolute_url()
-        self.setup = api.get_setup()
+        self.setup = api.get_senaite_setup()
         self.came_from = "add"
         self.tmp_ar = self.get_ar()
         self.ar_count = self.get_ar_count()
@@ -143,13 +249,13 @@ class AnalysisRequestAddView(BrowserView):
     def analyses_required(self):
         """Check if analyses are required
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getSampleAnalysesRequired()
 
     def get_currency(self):
         """Returns the configured currency
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         currency = setup.getCurrency()
         currencies = locales.getLocale("en").numbers.currencies
         return currencies[currency]
@@ -332,7 +438,8 @@ class AnalysisRequestAddView(BrowserView):
             return context.getClient()
         elif parent.portal_type == "Batch":
             return context.getClient()
-        return None
+        # Fallback: walk the full acquisition chain up to find a client
+        return get_client_from_chain(context)
 
     def get_sample(self):
         """Returns the Sample
@@ -391,6 +498,7 @@ class AnalysisRequestAddView(BrowserView):
             parent = None
             if source is not None:
                 parent = self.get_parent_ar(source)
+
             for field in fields:
                 value = None
                 fieldname = field.getName()
@@ -402,6 +510,17 @@ class AnalysisRequestAddView(BrowserView):
                     # get the default value of this field
                     value = self.get_default_value(
                         field, ar_context, arnum=arnum)
+
+                # Filter out analyses in certain workflow states when copying
+                if fieldname == "Analyses" and value:
+                    skip_states = self.get_skip_analyses_states()
+                    value = self.filter_objs_with_states(
+                        value, filter_states=skip_states)
+
+                    # Filter out partition analyses if configured
+                    if self.get_skip_partition_analyses() and source:
+                        value = self.filter_partition_analyses(value, source)
+
                 # store the value on the new fieldname
                 new_fieldname = self.get_fieldname(field, arnum)
                 out[new_fieldname] = value
@@ -421,6 +540,10 @@ class AnalysisRequestAddView(BrowserView):
         """
         catalog = api.get_tool(CONTACT_CATALOG)
         client = client or self.get_client()
+        if client:
+            primary = client.getPrimaryContact()
+            if primary and api.is_active(primary):
+                return primary
         path = api.get_path(self.context)
         if client:
             path = api.get_path(client)
@@ -460,8 +583,8 @@ class AnalysisRequestAddView(BrowserView):
         context = self.context
         fieldname = field.getName()
 
-        # hide the Client field on client and batch contexts
-        if fieldname == "Client" and context.portal_type in ("Client", ):
+        # hide the Client field when within a client context at any depth
+        if fieldname == "Client" and get_client_from_chain(context):
             return False
 
         # hide the Batch field on batch contexts
@@ -484,6 +607,16 @@ class AnalysisRequestAddView(BrowserView):
             if visible is False and visibility != "hidden":
                 continue
             out.append(field)
+
+        # Fields configured as 'edit' but forced hidden by is_field_visible
+        # (e.g. Client when inside a client context) must appear as hidden
+        # inputs so the form submission carries their value.
+        if visibility == "hidden":
+            for field in mv.get_fields_with_visibility("edit", mode):
+                if self.is_field_visible(field) is False:
+                    if field not in out:
+                        out.append(field)
+
         return out
 
     def get_service_categories(self, restricted=True):
@@ -599,7 +732,6 @@ class AnalysisRequestAddView(BrowserView):
             widget_type = None
         return widget_type in ALLOW_MULTI_PASTE_WIDGET_TYPES
 
-    @viewcache.memoize
     def get_allowed_multi_paste_fields(self):
         """Returns a list of fields that allow multi paste
         """
@@ -607,7 +739,72 @@ class AnalysisRequestAddView(BrowserView):
         record = get_registry_record(key)
         if not record:
             return []
-        return record
+        # convert to plain list to avoid persistent references
+        return list(record)
+
+    def get_skip_analyses_states(self):
+        """Returns a list of analyses WF states to skip on copy
+        """
+        key = "sample_add_form_skip_analyses_in_states"
+        record = get_registry_record(key)
+        if not record:
+            return []
+        # convert to plain list to avoid persistent references
+        return list(record)
+
+    def get_skip_partition_analyses(self):
+        """Returns whether to skip partition analyses on copy
+        """
+        key = "sample_add_form_skip_partition_analyses"
+        record = get_registry_record(key)
+        return bool(record)
+
+    def filter_objs_with_states(self, objs, filter_states=None):
+        """Filter out objects that are in the given workflow states
+
+        :param objs: List of objects to filter
+        :param filter_states: List of workflow state IDs to exclude
+        :return: List of objects not in the filter_states
+        """
+        if not filter_states:
+            return objs
+        if not isinstance(filter_states, (list, tuple)):
+            return objs
+        filtered = []
+        for obj in objs:
+            status = api.get_review_status(obj)
+            if status not in filter_states:
+                filtered.append(obj)
+        return filtered
+
+    def filter_partition_analyses(self, analyses, source):
+        """Filter out analyses that belong to partitions
+
+        Only keeps analyses that directly belong to the source sample.
+        Analyses from partitions are identified by checking if they are
+        direct children of the source sample.
+
+        :param analyses: List of analysis brains/objects to filter
+        :param source: The source sample object
+        :return: List of analyses that belong directly to the source sample
+        """
+        if not analyses or not source:
+            return analyses
+
+        # Get the physical paths of analyses that directly belong to the source
+        source_analysis_paths = set()
+        for analysis in source.objectValues("Analysis"):
+            source_analysis_paths.add(api.get_path(analysis))
+
+        # Filter the analyses to keep only those in the source
+        filtered = []
+        for analysis in analyses:
+            # Get the object if it's a brain
+            analysis_path = api.get_path(analysis)
+            if analysis_path in source_analysis_paths:
+                filtered.append(analysis)
+
+        return filtered
 
 
 class AnalysisRequestManageView(BrowserView):
@@ -641,7 +838,7 @@ class AnalysisRequestManageView(BrowserView):
         return self.tmp_ar
 
     def get_annotation(self):
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return IAnnotations(setup)
 
     @property
@@ -889,13 +1086,31 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # Set the default contact, but only if empty. The Contact field is
         # flushed each time the Client changes, so we can assume that if there
-        # is a selected contact, it belongs to current client already
+        # is a selected contact, it belongs to current client already.
+        # get_contact_info already merges the client's CCContacts, so the
+        # Contact cascade carries the full merged CCContact list.
         default_contact = self.get_default_contact(client=obj)
         if default_contact:
             contact_info = self.get_contact_info(default_contact)
             contact_info.update({"if_empty": True})
             info["field_values"].update({
                 "Contact": contact_info
+            })
+
+        # Set default CC Contacts from client directly, so they are filled
+        # even when no default Contact is found. When a Contact is auto-filled
+        # above, its cascade will overwrite this with the merged list (which
+        # already includes the client CCContacts).
+        # CCContact is a reference field: the JS expects a list of per-item
+        # dicts with a "uid" key. The "if_empty" flag must be on each item,
+        # not on a wrapping object (which is only valid for plain fields).
+        cc_contacts = self._get_merged_cc_contact_values(client=obj,
+                                                         contact=None)
+        if cc_contacts:
+            for cc in cc_contacts:
+                cc["if_empty"] = True
+            info["field_values"].update({
+                "CCContact": cc_contacts
             })
 
         # Set default CC Email field
@@ -905,28 +1120,50 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         return info
 
+    def _get_merged_cc_contact_values(self, client, contact):
+        """Return a merged, deduplicated CCContact value list.
+
+        Combines CCContacts from the client and from the given contact
+        (primary contact). Client entries come first.
+        """
+        seen = set()
+        values = []
+
+        def add_cc(cc):
+            uid = api.get_uid(cc)
+            if uid in seen:
+                return
+            seen.add(uid)
+            values.append({
+                "uid": uid,
+                "title": cc.getFullname(),
+                "fullname": cc.getFullname(),
+                "email": cc.getEmailAddress(),
+            })
+
+        if client:
+            for cc in client.getCCContacts():
+                add_cc(cc)
+        if contact and IContactSchema.providedBy(contact):
+            for cc in contact.getCCContact():
+                add_cc(cc)
+
+        return values
+
     @cache(cache_key)
     def get_contact_info(self, obj):
-        """Returns the client info of an object
+        """Returns the contact info of an object
         """
-
         info = self.get_base_info(obj)
         fullname = obj.getFullname()
         email = obj.getEmailAddress()
 
-        # Note: It might get a circular dependency when calling:
-        #       map(self.get_contact_info, obj.getCCContact())
-        cccontacts = []
-        for contact in obj.getCCContact():
-            uid = api.get_uid(contact)
-            fullname = contact.getFullname()
-            email = contact.getEmailAddress()
-            cccontacts.append({
-                "uid": uid,
-                "title": fullname,
-                "fullname": fullname,
-                "email": email
-            })
+        # Merge CCContacts from the contact's parent client (if any) and the
+        # contact itself, deduplicated by UID.
+        # Note: do NOT call get_contact_info recursively on CCContacts here
+        #       to avoid circular dependencies.
+        client = get_client_from_chain(obj)
+        cccontacts = self._get_merged_cc_contact_values(client, obj)
 
         info.update({
             "fullname": fullname,
@@ -1159,7 +1396,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
     def ajax_get_global_settings(self):
         """Returns the global Bika settings
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         settings = {
             "show_prices": setup.getShowPrices(),
         }
@@ -1186,6 +1423,33 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             return {"allowed": True}
 
         if all([catalog, query, uids]):
+            # Special handling for Contact fields with getParentUID filter
+            # Global contacts should always be allowed regardless of client
+            if name in ["Contact", "CCContact"] and "getParentUID" in query:
+                from bika.lims.interfaces import IClient
+
+                # Check each selected contact
+                for uid in uids:
+                    contact = api.get_object_by_uid(uid, None)
+                    if not contact:
+                        # Invalid contact, will fail later
+                        break
+
+                    parent = api.get_parent(contact)
+                    # Global contacts (not under a client) are always allowed
+                    if not IClient.providedBy(parent):
+                        continue
+
+                    # Client contacts must match the query
+                    parent_uid = api.get_uid(parent)
+                    parent_uid_query = query.get("getParentUID", [])
+                    if parent_uid not in parent_uid_query:
+                        # This client contact doesn't match the query
+                        break
+                else:
+                    # All contacts are either global or match the query
+                    return {"allowed": True}
+
             # check if the current value is allowed for the new query
             brains = api.search(query, catalog=catalog)
             allowed_uids = list(map(api.get_uid, brains))
@@ -1375,7 +1639,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 continue
             metadata[key] = {obj_info["uid"]: obj_info}
 
-        return metadata
+        return copy.deepcopy(metadata)
 
     def get_template_additional_info(self, metadata):
         template_to_services = {}
@@ -1462,14 +1726,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             obj, key, record=record), objects)
         return filter(None, objects)
 
-    def object_info_cache_key(method, self, obj, key, **kw):
-        if obj is None or not key:
-            raise DontCache
-        field_name = key.lower()
-        obj_key = api.get_cache_key(obj)
-        return "-".join([field_name, obj_key] + kw.keys())
-
-    @cache(object_info_cache_key)
     def get_object_info(self, obj, key, record=None):
         """Returns the object info metadata for the passed in object and key
         :param obj: the object from which extract the info from
@@ -1512,10 +1768,10 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # catalog queries for UI field filtering
         queries = {
             "Contact": {
-                "getParentUID": [uid]
+                "getParentUID": [uid, ""]
             },
             "CCContact": {
-                "getParentUID": [uid]
+                "getParentUID": [uid, ""]
             },
             "SamplePoint": {
                 "getClientUID": [uid, ""],
@@ -1544,9 +1800,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         record = record if record else {}
         sample_type_uid = record.get("SampleType")
         if api.is_uid(sample_type_uid):
-            fields = ["Template", "Specification", "Profiles", "SamplePoint"]
-            for field in fields:
-                queries[field]["sampletype_uid"] = [sample_type_uid, ""]
+            st_queries = self.get_sampletype_queries(sample_type_uid, record)
+            queries.update(st_queries)
 
         return queries
 
@@ -1608,7 +1863,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         base_info["filter_queries"] = filter_queries
 
     def show_recalculate_prices(self):
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         return setup.getShowPrices()
 
     def ajax_recalculate_prices(self):
@@ -1623,7 +1878,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         records = self.get_records()
 
         client = self.get_client()
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
 
         member_discount = float(setup.getMemberDiscount())
         member_discount_applies = False
@@ -1796,15 +2051,29 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Re-add the Contact
             required_fields["Contact"] = contact
 
-            # Check if the contact belongs to the selected client
+            # Check if the contact belongs to the selected client or is global
             contact_obj = api.get_object(contact, None)
             if not contact_obj:
                 fielderrors["Contact"] = _("No valid contact")
             else:
-                parent_uid = api.get_uid(api.get_parent(contact_obj))
-                if parent_uid != record.get("Client"):
+                parent = api.get_parent(contact_obj)
+                parent_uid = api.get_uid(parent)
+                # Allow contacts that belong to the client or are global
+                from bika.lims.interfaces import IClient
+                is_client_contact = parent_uid == record.get("Client")
+                is_global_contact = not IClient.providedBy(parent)
+                if not (is_client_contact or is_global_contact):
                     msg = _("Contact does not belong to the selected client")
                     fielderrors["Contact"] = msg
+
+            # Auto-add CCContact when hidden on Sample Add form
+            field = self.get_field("CCContact")
+            hidden_fields = self.get_fields_with_visibility(
+                    "hidden", mode="add")
+            if field in hidden_fields and contact_obj:
+                cc_contacts = contact_obj.getCCContact()
+                if cc_contacts:
+                    record["CCContact"] = [cc.UID() for cc in cc_contacts]
 
             # Check if the number of samples per record is permitted
             num_samples = self.get_num_samples(record)
@@ -1880,6 +2149,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # add the attachments to the record
             valid_record["attachments"] = filter(None, attachments)
 
+            # keep the `_source_uid` in the record for the create process
+            valid_record["_source_uid"] = record.get("_source_uid")
+
             # append the valid record to the list of valid records
             valid_records.append(valid_record)
 
@@ -1929,31 +2201,261 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         return self.handle_redirect(ARs.values(), message)
 
     def create_samples(self, records):
-        """Creates samples for the given records
+        """Creates samples for the given records.
+
+        Dispatches between two strategies based on the registry flag
+        `sample_add_form_commit_per_sample`:
+
+        - When enabled (recommended for instances with many concurrent
+          users), each sample is created in its own ZODB transaction
+          with a per-sample retry-on-conflict and a second-pass retry
+          for the leftovers. Partial success is possible: already
+          committed samples remain durable even if later ones fail.
+        - When disabled (legacy behaviour, the default), the whole
+          batch is created in a single transaction using savepoints
+          for per-sample rollback on error.
+        """
+        if get_registry_record("sample_add_form_commit_per_sample"):
+            return self._create_samples_per_commit(records)
+        return self._create_samples_single_transaction(records)
+
+    def _create_samples_single_transaction(self, records):
+        """Legacy path: create the whole batch in a single transaction.
+        Each sample is wrapped in a savepoint so a per-sample failure
+        rolls back only that sample, not the rest of the batch.
         """
         samples = []
         for record in records:
-            client_uid = record.get("Client")
-            client = self.get_object_by_uid(client_uid)
+            client = self.get_object_by_uid(record.get("Client"))
             if not client:
                 raise ValueError("No client found")
-
-            # Pop the attachments
             attachments = record.pop("attachments", [])
-
-            # Create as many samples as required
+            source_uid = record.pop("_source_uid", None)
+            source = api.get_object(source_uid) if source_uid else None
             num_samples = self.get_num_samples(record)
-            for idx in range(num_samples):
-                sample = crar(client, self.request, record)
+            for _idx in range(num_samples):
+                sample = self.create_sample(
+                    client, record,
+                    attachments=attachments, source=source)
+                samples.append(sample)
+        return samples
 
-                # Create the attachments
+    def _create_samples_per_commit(self, records):
+        """Per-sample commit path with retry-on-conflict.
+
+        On ConflictError the per-sample transaction is aborted and
+        retried with exponential backoff plus jitter. Records that fail
+        in the first pass are kept aside and retried in a second pass
+        after the rest of the batch has been committed, since contention
+        usually subsides once the burst is over. Records that still fail
+        are logged with their identifying fields and surfaced back to
+        the user via a portal message so the operator knows exactly
+        which rows need to be re-entered.
+
+        The path is idempotent across Zope publisher-level retries: if
+        the publisher commits the response transaction with a
+        ConflictError and re-publishes the request, we recognise the
+        submission by its body fingerprint and return the
+        already-committed samples instead of creating duplicates.
+
+        The cache is only consulted when the request is itself a
+        publisher retry (`retry_count > 0`). On a fresh first attempt
+        we always create the samples, because two independent
+        submissions with identical bodies (same client, same defaults,
+        no operator-supplied identifier) hash to the same fingerprint
+        and a cache lookup would silently return the previously
+        created samples instead of creating a new one — manifesting
+        as a "successfully created" UI banner for a sample that was
+        never written (see #2741 follow-up).
+        """
+        fingerprint = _submission_fingerprint(self.request)
+        if _is_publisher_retry(self.request):
+            existing_uids = _inflight_get(fingerprint)
+            if existing_uids:
+                logger.info(
+                    "Resuming ar_add submission after publisher retry "
+                    "(attempt=%d); %d sample(s) already committed",
+                    self.request.retry_count, len(existing_uids))
+                return [api.get_object_by_uid(uid)
+                        for uid in existing_uids]
+
+        # Reference the list inside the cache so each successful
+        # per-sample commit immediately updates the entry visible to a
+        # retry on the same worker thread. Set unconditionally so a
+        # publisher retry of *this* request (retry_count >= 1) finds
+        # the in-flight UIDs and resumes mid-batch.
+        committed_uids = []
+        _inflight_set(fingerprint, committed_uids)
+
+        samples = []
+        # Records that failed the first attempt; retried in pass 2
+        pending = []
+        # (column_index, record) pairs that ultimately failed
+        failed = []
+        user = api.user.get_user()
+        path_info = self.request.get("PATH_INFO", "")
+
+        # First pass: normal retry budget, batch order
+        for column, record in enumerate(records, start=1):
+            self._normalize_record(record)
+            client = self.get_object_by_uid(record["Client"])
+            if not client:
+                raise ValueError("No client found")
+            num_samples = self.get_num_samples(record)
+            for _idx in range(num_samples):
+                sample = self._create_one_with_retry(
+                    client, record, record["_attachments"],
+                    record["_source"],
+                    user=user, path_info=path_info)
+                if sample is None:
+                    pending.append((column, record, client))
+                else:
+                    samples.append(sample)
+                    committed_uids.append(api.get_uid(sample))
+
+        # Second pass: by now the original burst has subsided, so a
+        # longer pre-delay and an independent retry budget usually
+        # rescues anything that lost the race the first time.
+        if pending:
+            logger.info(
+                "Retrying %d sample(s) in a second pass after the "
+                "initial batch settled", len(pending))
+            time.sleep(uniform(0.5, 1.5))
+            for column, record, client in pending:
+                sample = self._create_one_with_retry(
+                    client, record, record["_attachments"],
+                    record["_source"],
+                    user=user, path_info=path_info)
+                if sample is None:
+                    failed.append((column, record))
+                else:
+                    samples.append(sample)
+                    committed_uids.append(api.get_uid(sample))
+
+        if failed:
+            self._report_failed_records(failed)
+
+        return samples
+
+    def _normalize_record(self, record):
+        """Pop attachments and resolve the source object once per
+        record so the retry passes can reuse them without re-popping
+        keys from the same dict.
+        """
+        if "_attachments" not in record:
+            record["_attachments"] = record.pop("attachments", [])
+        if "_source" not in record:
+            source_uid = record.pop("_source_uid", None)
+            record["_source"] = (
+                api.get_object(source_uid) if source_uid else None)
+
+    def _report_failed_records(self, failed):
+        """Log the failed records with their full data and surface a
+        user-readable message listing each row by its column index and
+        any operator-supplied identifiers (ClientSampleID,
+        ClientReference) so the user knows exactly which inputs to
+        re-submit.
+        """
+        descriptions = []
+        for column, record in failed:
+            ident = self._record_identifier(record)
+            descriptions.append(
+                u"#{col} ({ident})".format(col=column, ident=ident))
+            # Full record to the log so support can recover from logs
+            logger.error(
+                "Sample creation failed for column %d: %r",
+                column, record)
+        message = _(
+            "Could not create the following sample(s) due to "
+            "transaction conflicts, please retry them: ${rows}",
+            mapping={"rows": safe_unicode(u", ".join(descriptions))})
+        self.context.plone_utils.addPortalMessage(message, "warning")
+
+    def _record_identifier(self, record):
+        """Best-effort human-readable identifier for a failed record.
+        Falls back to '-' when the operator did not supply any of the
+        usual identifying fields.
+        """
+        for key in ("ClientSampleID", "ClientReference"):
+            value = record.get(key)
+            if value:
+                return safe_unicode(value)
+        return u"-"
+
+    def _create_one_with_retry(self, client, record, attachments, source,
+                               user, path_info):
+        """Create a single sample, committing in its own transaction.
+
+        Retries on ZODB ConflictError with exponential backoff plus
+        jitter. Returns the created sample on success, or None if all
+        attempts were exhausted.
+        """
+        for attempt in range(MAX_CREATE_ATTEMPTS):
+            transaction.begin()
+            T = transaction.get()
+            T.setUser(user.getId())
+            T.note("{}/create_samples".format(path_info))
+            try:
+                sample = self.create_sample(
+                    client, record,
+                    attachments=attachments, source=source)
+                transaction.commit()
+                return sample
+            except ConflictError as exc:
+                transaction.abort()
+                # ConflictError carries the contended oid and class
+                # name; logging both makes it possible to tell counter
+                # contention apart from container / catalog contention
+                # in production.
+                logger.warning(
+                    "ConflictError creating sample "
+                    "(attempt %d/%d) on %s oid=%r: %s",
+                    attempt + 1, MAX_CREATE_ATTEMPTS,
+                    getattr(exc, "class_name", "?"),
+                    getattr(exc, "oid", None), exc)
+                # Exponential backoff with jitter; capped at 2 s
+                delay = min(2.0, 0.05 * (2 ** attempt))
+                time.sleep(delay * uniform(0.5, 1.5))
+        return None
+
+    def create_sample(self, client, record, attachments=None, source=None):
+        """Creates a single sample with proper transaction handling
+
+        :param client: The client container where the sample will be created
+        :param record: Dict with sample data (field names to values)
+        :param attachments: List of attachment records to add to the sample
+        :param source: Source object for sample hooks (e.g., for copy/partition)
+        :return: The created sample object
+        """
+        # Create a savepoint before sample creation to allow proper rollback
+        # if sample creation fails (e.g., ID generation error)
+        sp = transaction.savepoint()
+        try:
+            # Create the sample
+            sample = crar(client, self.request, record)
+
+            # Create the attachments
+            if attachments:
                 for attachment_record in attachments:
                     self.create_attachment(sample, attachment_record)
 
-                transaction.savepoint(optimistic=True)
-                samples.append(sample)
+            # Pass the new sample to all subscription hooks
+            hooks = subscribers((sample, self.request), IAfterCreateSampleHook)
+            # Lower sort keys are processed first
+            sorted_hooks = sorted(
+                hooks, key=lambda x: api.to_float(getattr(x, "sort", 10)))
+            for hook in sorted_hooks:
+                hook.update(sample, source=source)
 
-        return samples
+            # Commit the sample creation
+            transaction.savepoint(optimistic=True)
+            return sample
+        except Exception:
+            # Roll back to the savepoint before this sample creation
+            # This properly reverts all changes including catalog entries,
+            # workflow history, annotations, etc.
+            sp.rollback()
+            raise
 
     def get_num_samples(self, record):
         """Return the number of samples to create for the given record
@@ -1973,7 +2475,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
     def is_automatic_label_printing_enabled(self):
         """Returns whether the automatic printing of barcode labels is active
         """
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         auto_print = setup.getAutoPrintStickers()
         auto_receive = setup.getAutoreceiveSamples()
         action = "receive" if auto_receive else "register"
@@ -1983,7 +2485,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Handle redirect after sample creation or cancel
         """
         # Automatic label printing
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         auto_print = self.is_automatic_label_printing_enabled()
         # Check if immediate results entry is enabled in setup and the current
         # user has enough privileges to do so

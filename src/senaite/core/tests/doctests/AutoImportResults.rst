@@ -62,6 +62,19 @@ Functional Helpers:
     ...     login(portal, current_user.getUserName())
     ...     return out
 
+    >>> def auto_import_with_override(user, override_non_empty=0,
+    ...                               override_with_empty=0):
+    ...     current_user = api.user.get_user()
+    ...     login(portal, user)
+    ...     request.set("override_non_empty", str(override_non_empty))
+    ...     request.set("override_with_empty", str(override_with_empty))
+    ...     view = api.get_view("auto_import_results")
+    ...     out = view()
+    ...     request.set("override_non_empty", "0")
+    ...     request.set("override_with_empty", "0")
+    ...     login(portal, current_user.getUserName())
+    ...     return out
+
 
 Variables:
 
@@ -328,3 +341,67 @@ Autologs should be created:
     2... W-0004 result for 'Fe': '2'
     2... W-0004: Analysis Au, Cu, Fe imported sucessfully
     2... Import finished successfully: 1 Samples and 3 results updated
+
+
+Test override settings via request parameters
+.............................................
+
+Reset ``Au`` to numeric result type so the results are floatable:
+
+    >>> Au.setStringResult(False)
+
+Create a new sample and import results to give it existing values:
+
+    >>> sample5 = new_sample([Au])
+    >>> sample5
+    <AnalysisRequest at /plone/clients/client-1/W-0005>
+
+    >>> with open(os.path.join(resultsfolder, "import5.csv"), "w") as f:
+    ...     f.write("SampleID,Au\n")
+    ...     f.write("%s,99\n" % sample5.getId())
+
+    >>> log = auto_import("analyst")
+    >>> sample5.Au.getResult()
+    '99.0'
+
+By default the import does not override already set results. Create a new
+results file for the same sample with a different value:
+
+    >>> with open(os.path.join(resultsfolder, "import6.csv"), "w") as f:
+    ...     f.write("SampleID,Au\n")
+    ...     f.write("%s,88\n" % sample5.getId())
+
+Default import (no override flags) keeps the existing result:
+
+    >>> log = auto_import("analyst")
+    >>> sample5.Au.getResult()
+    '99.0'
+
+The log reports that the existing result was kept:
+
+    >>> "kept due to the selected override option" in log
+    True
+
+Now import with ``override_non_empty=1`` — the existing result should be
+overwritten:
+
+    >>> with open(os.path.join(resultsfolder, "import7.csv"), "w") as f:
+    ...     f.write("SampleID,Au\n")
+    ...     f.write("%s,77\n" % sample5.getId())
+
+    >>> log = auto_import_with_override("analyst", override_non_empty=1)
+    >>> sample5.Au.getResult()
+    '77.0'
+
+The log confirms the override setting was active:
+
+    >>> autolog = instrument.objectValues("AutoImportLog")[-1]
+    >>> print autolog.getResults()
+    2... [INFO] Parsing file .../results/import7.csv
+    2... [INFO] End of file reached successfully: 1 objects, 1 analyses, 1 results
+    2... [INFO] Allowed sample states: sample_received, to_be_verified
+    2... [INFO] Allowed analysis states: unassigned, assigned, to_be_verified
+    2... [INFO] Override non-empty analysis results
+    2... [INFO] W-0005 result for 'Au': '77.0'
+    2... [INFO] W-0005: Analysis Au imported sucessfully
+    2... [INFO] Import finished successfully: 1 Samples and 1 results updated

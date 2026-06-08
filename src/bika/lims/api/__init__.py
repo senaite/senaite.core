@@ -35,19 +35,20 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from bika.lims import logger
 from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
 from DateTime import DateTime
 from OFS.event import ObjectWillBeMovedEvent
 from plone import api as ploneapi
 from plone.api.exc import InvalidParameterError
 from plone.app.layout.viewlets.content import ContentHistoryView
+from plone.app.textfield import RichText
 from plone.behavior.interfaces import IBehaviorAssignable
 from plone.behavior.registration import lookup_behavior_registration
 from plone.dexterity.interfaces import IDexterityContent
 from plone.dexterity.schema import SchemaInvalidatedEvent
 from plone.dexterity.utils import addContentToContainer
 from plone.dexterity.utils import createContent
+from plone.dexterity.utils import iterSchemataForType
 from plone.dexterity.utils import resolveDottedName
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.i18n.normalizer.interfaces import IIDNormalizer
@@ -56,6 +57,7 @@ from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.BaseObject import BaseObject
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.Archetypes.public import StringField
+from Products.Archetypes.utils import getRelURL
 from Products.Archetypes.utils import mapply
 from Products.CMFCore.interfaces import IFolderish
 from Products.CMFCore.interfaces import ISiteRoot
@@ -67,15 +69,19 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.RegistrationTool import get_member_by_login_name
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import base_hasattr
-from Products.CMFPlone.utils import safe_unicode
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
+from senaite.core.events.lifecycle import AfterAPICreatedObjectEvent
+from senaite.core.interfaces import IContact
+from senaite.core.interfaces import IContacts
 from senaite.core.interfaces import ITemporaryObject
+from z3c.form.validator import Data as ValidatorData
 from zope import globalrequest
 from zope.annotation.interfaces import IAttributeAnnotatable
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.container.contained import notifyContainerModified
+from zope.deprecation import deprecate
 from zope.event import notify
 from zope.i18n import translate
 from zope.interface import Invalid
@@ -134,6 +140,7 @@ SKIP_VALIDATION_FIELDS = [
     "subjects",
 ]
 
+
 class APIError(Exception):
     """Base exception class for bika.lims errors."""
 
@@ -146,17 +153,14 @@ def get_portal():
     return ploneapi.portal.getSite()
 
 
+@deprecate("Please use get_senaite_setup() insetad")
 def get_setup():
-    """Fetch the `bika_setup` folder.
+    """Fetch the old `bika_setup` folder.
+
+    TODO: Change in the future to return the SENAITE setup instead
     """
     portal = get_portal()
     return portal.get("bika_setup")
-
-
-def get_bika_setup():
-    """Fetch the `bika_setup` folder.
-    """
-    return get_setup()
 
 
 def get_senaite_setup():
@@ -164,6 +168,13 @@ def get_senaite_setup():
     """
     portal = get_portal()
     return portal.get("setup")
+
+
+def get_bika_setup():
+    """Fetch the `bika_setup` folder.
+    """
+    portal = get_portal()
+    return portal.get("bika_setup")
 
 
 def create(container, portal_type, *args, **kwargs):
@@ -203,12 +214,107 @@ def create(container, portal_type, *args, **kwargs):
         # notify that the object was created
         notify(ObjectInitializedEvent(obj))
     else:
-        content = createContent(portal_type, **kwargs)
-        content.id = id
-        content.title = title
+        # Avoid circular imports
+        from bika.lims.api.snapshot import pause_snapshots_for
+        from bika.lims.api.snapshot import resume_snapshots_for
+        from bika.lims.api.snapshot import take_snapshot
+
+        # Dexterity content creation
+        # Schema fields (especially UID reference fields) must be set AFTER
+        # the object has a UID assigned, which happens in addContentToContainer
+
+        # Get all schema fields for this portal type
+        schema_fields = get_fields(portal_type)
+
+        # Separate schema field kwargs from other attributes
+        field_kwargs = {}
+        other_kwargs = {}
+        for name, value in kwargs.items():
+            if name in schema_fields:
+                field_kwargs[name] = value
+            else:
+                other_kwargs[name] = value
+
+        # Create content with only non-schema attributes
+        # Note: createContent() fires ObjectCreatedEvent, but this does not
+        # trigger snapshots for Dexterity (only ObjectAddedEvent does)
+        content = createContent(portal_type, id=id or tmp_id, title=title,
+                                **other_kwargs)
+
+        # Initialize the remaining schema fields so the object is fully
+        # formed *before* addContentToContainer fires ObjectAddedEvent.
+        # createContent() does not initialize schema fields, so they stay
+        # absent as instance attributes. A subscriber that reads such a
+        # field (e.g. plone.app.linkintegrity reading RichText fields)
+        # would otherwise trigger an attribute lookup that falls through
+        # acquisition to the request container and raises AttributeError.
+        initialize_schema_fields(content, schema_fields, skip=field_kwargs)
+
+        # Pause snapshots to prevent ObjectAddedEvent from creating
+        # an incomplete snapshot (fields not yet set)
+        pause_snapshots_for(content)
+
+        # Add content to container (this assigns UID via ObjectAddedEvent)
         obj = addContentToContainer(container, content)
 
+        # Now set schema fields using their setters
+        # This ensures custom setters (like UIDReferenceField.set) are called
+        # AFTER the object has a UID for proper backreference handling
+        for name, value in field_kwargs.items():
+            field = schema_fields.get(name)
+            if field and hasattr(field, "set"):
+                field.set(obj, value)
+            else:
+                setattr(obj, name, value)
+
+        # Resume snapshots and manually create the initial snapshot
+        # now that the object is fully initialized with all fields set
+        resume_snapshots_for(obj)
+        # Manually reindex the object to ensure all indexes are updated
+        obj.reindexObject()
+        take_snapshot(obj, action="create")
+
+        # notify that the object was created using api.create
+        notify(AfterAPICreatedObjectEvent(obj))
+
     return obj
+
+
+def initialize_schema_fields(content, fields, skip=None):
+    """Initialize unset RichText schema fields to their missing_value
+
+    `plone.dexterity.utils.createContent` does not initialize schema
+    fields, so they remain absent as instance attributes until written.
+    `plone.app.linkintegrity` reads every RichText field of an object on
+    `ObjectAddedEvent` through a raw attribute lookup; for an unset field
+    that lookup falls through acquisition to the request container and
+    raises AttributeError, which aborts object creation (e.g. during site
+    setup). Assigning the RichText fields their `missing_value` makes the
+    object fully formed before it is added to its container.
+
+    Only RichText fields are touched on purpose: they are the field type
+    link integrity inspects, and initializing unrelated fields would
+    change the empty-state semantics other code relies on. Field defaults
+    are not materialized here either, because some `defaultFactory`
+    callables depend on the object already being placed (e.g. the Setup
+    publication email body renders a view bound to the not-yet-created
+    setup); the content types apply their defaults lazily through their
+    accessors anyway.
+
+    :param content: the freshly created (not yet contained) DX object
+    :param fields: name -> field mapping for the content's portal type
+    :param skip: field names to leave untouched (e.g. provided kwargs)
+    """
+    skip = skip or []
+    for name, field in fields.items():
+        if name in skip or field.readonly:
+            continue
+        if not isinstance(field, RichText):
+            continue
+        # leave fields that are already set as instance attributes
+        if name in content.__dict__:
+            continue
+        setattr(content, name, field.missing_value)
 
 
 def copy_object(source, container=None, portal_type=None, *args, **kwargs):
@@ -227,6 +333,7 @@ def copy_object(source, container=None, portal_type=None, *args, **kwargs):
     """
     # Prevent circular dependencies
     from security import check_permission
+
     # Use same container as source unless explicitly set
     source = get_object(source)
     if not container:
@@ -411,18 +518,28 @@ def uncatalog_object(obj, recursive=False):
     :param recursive: recursively uncatalog all child objects
     :type obj: ATContentType/DexterityContentType
     """
-    # un-catalog from registered catalogs
-    obj.unindexObject()
-    # explicitly un-catalog from uid_catalog
-    uid_catalog = get_tool("uid_catalog")
-    # the uids of uid_catalog are relative paths to portal root
-    # see Products.Archetypes.UIDCatalog.UIDResolver.catalog_object
-    url = "/".join(obj.getPhysicalPath()[2:])
-    uid_catalog.uncatalog_object(url)
+    # explicitly uncatalog from uid_catalog
+    uid_catalog = get_tool(UID_CATALOG)
+
+    # make sure that both AT/DX paths are uncatalogued
+    rel_url = getRelURL(uid_catalog, obj.getPhysicalPath())
+    abs_url = "/".join(obj.getPhysicalPath())
+
+    # Try to uncatalog with both path variations
+    # Only uncatalog if the path exists in the catalog
+    for path in [rel_url, abs_url]:
+        if path in uid_catalog._catalog.uids:
+            try:
+                uid_catalog.uncatalog_object(path)
+            except Exception:
+                pass
 
     if recursive:
         for child in obj.objectValues():
             uncatalog_object(child, recursive=recursive)
+
+    # uncatalog from registered catalogs
+    obj.unindexObject()
 
 
 def catalog_object(obj, recursive=False):
@@ -433,13 +550,20 @@ def catalog_object(obj, recursive=False):
     :type obj: ATContentType/DexterityContentType
     """
     if is_at_content(obj):
-        # explicitly re-catalog AT types at uid_catalog (DX types are
-        # automatically reindexed in UID catalog on reindexObject)
-        uc = get_tool("uid_catalog")
         # the uids of uid_catalog are relative paths to portal root
         # see Products.Archetypes.UIDCatalog.UIDResolver.catalog_object
-        url = "/".join(obj.getPhysicalPath()[2:])
-        uc.catalog_object(obj, url)
+        uc = get_tool(UID_CATALOG)
+        rel_url = getRelURL(uc, obj.getPhysicalPath())
+        uc.catalog_object(obj, rel_url)
+
+    elif is_dexterity_content(obj):
+        # we catalog the object here below the absolute path, as it is done in
+        # `plone.app.referencablebehavior.uidcatalog``
+        uc = get_tool(UID_CATALOG)
+        abs_url = "/".join(obj.getPhysicalPath())
+        uc.catalog_object(obj, abs_url)
+
+    # reindex in registered catalogs
     obj.reindexObject()
 
     if recursive:
@@ -461,8 +585,15 @@ def delete(obj, check_permissions=True, suppress_events=False):
 
     # un-catalog the object from all catalogs (uid_catalog included)
     uncatalog_object(obj)
+    if suppress_events:
+        # five.intid's removal subscriber listens on IObjectRemovedEvent,
+        # which is suppressed here — drop the keyref manually to avoid an
+        # orphan entry pinning the dead oid in storage.
+        from senaite.core.api import delete_intid  # noqa
+        delete_intid(obj)
+
     # delete the object
-    parent = get_parent(obj)
+    parent = aq_parent(obj)
     parent._delObject(obj.getId(), suppress_events=suppress_events)
 
 
@@ -575,7 +706,7 @@ def is_supermodel(brain_or_object):
 
     :param brain_or_object: A single catalog brain or content object
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
-    :returns: True if the object is a catalog brain
+    :returns: True if the object is a supermodel
     :rtype: bool
     """
     # avoid circular imports
@@ -718,15 +849,29 @@ def disable_behavior(portal_type, behavior_id):
     notify(SchemaInvalidatedEvent(portal_type))
 
 
-def get_fields(brain_or_object):
-    """Get a name to field mapping of the object
+def get_fields(brain_or_object_or_portal_type):
+    """Get a name to field mapping of the object or portal type
 
-    :param brain_or_object: A single catalog brain or content object
-    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
+    :param brain_or_object_or_portal_type: A catalog brain, content object,
+        or portal type name
+    :type brain_or_object_or_portal_type: ATContentType/DexterityContentType/
+        CatalogBrain/string
     :returns: Mapping of name -> field
     :rtype: OrderedDict
     """
-    obj = get_object(brain_or_object)
+    # Handle portal_type (string parameter)
+    # NOTE: Only supports Dexterity types. For Archetypes types, pass an
+    # object or brain instead.
+    if is_string(brain_or_object_or_portal_type):
+        portal_type = brain_or_object_or_portal_type
+        # For Dexterity types, use iterSchemataForType
+        fields = []
+        for schema in iterSchemataForType(portal_type):
+            fields.extend(getFieldsInOrder(schema))
+        return OrderedDict(fields)
+
+    # Handle brain_or_object parameter (existing behavior)
+    obj = get_object(brain_or_object_or_portal_type)
     schema = get_schema(obj)
     if is_dexterity_content(obj):
         # get the fields directly provided by the interface
@@ -809,8 +954,10 @@ def get_url(brain_or_object):
     :returns: Absolute URL
     :rtype: string
     """
-    if is_brain(brain_or_object) and base_hasattr(brain_or_object, "getURL"):
-        return brain_or_object.getURL()
+    if is_brain(brain_or_object):
+        request = get_request()
+        path = get_path(brain_or_object)
+        return request.physicalPathToURL(path, relative=0)
     return get_object(brain_or_object).absolute_url()
 
 
@@ -944,7 +1091,15 @@ def get_path(brain_or_object):
     :rtype: string
     """
     if is_brain(brain_or_object):
-        return brain_or_object.getPath()
+        path = brain_or_object.getPath()
+        # Handle uid_catalog brains that may return relative paths
+        # Check if path is missing the portal path prefix
+        portal = get_portal()
+        portal_path = "/".join(portal.getPhysicalPath())
+        if not path.startswith(portal_path):
+            # Prepend portal path
+            path = "/".join([portal_path, path])
+        return path
     return "/".join(get_object(brain_or_object).getPhysicalPath())
 
 
@@ -1305,7 +1460,9 @@ def get_catalogs_for(brain_or_object, default=PORTAL_CATALOG):
     # => Lookup catalogs by FTI
     if len(catalogs) == 0:
         fti = get_fti(portal_type)
-        if fti.product:
+        if fti is None:
+            catalogs = []
+        elif fti.product:
             # AT content type
             # => Looup via archetype_tool
             archetype_tool = get_tool("archetype_tool")
@@ -1376,20 +1533,6 @@ def get_roles_for_permission(permission, brain_or_object):
     return sorted(allowed)
 
 
-def is_versionable(brain_or_object, policy='at_edit_autoversion'):
-    """Checks if the passed in object is versionable.
-
-    :param brain_or_object: A single catalog brain or content object
-    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
-    :returns: True if the object is versionable
-    :rtype: bool
-    """
-    pr = get_tool("portal_repository")
-    obj = get_object(brain_or_object)
-    return pr.supportsPolicy(obj, 'at_edit_autoversion') \
-        and pr.isVersionable(obj)
-
-
 def get_version(brain_or_object):
     """Get the version of the current object
 
@@ -1398,10 +1541,8 @@ def get_version(brain_or_object):
     :returns: The current version of the object, or None if not available
     :rtype: int or None
     """
-    obj = get_object(brain_or_object)
-    if not is_versionable(obj):
-        return None
-    return getattr(aq_base(obj), "version_id", 0)
+    from bika.lims.api.snapshot import get_version
+    return get_version(get_object(brain_or_object))
 
 
 def get_view(name, context=None, request=None, default=None):
@@ -1511,7 +1652,7 @@ def get_current_user():
     return ploneapi.user.get_current()
 
 
-def get_user_contact(user, contact_types=['Contact', 'LabContact']):
+def get_user_contact(user, contact_types=None):
     """Returns the associated contact of a Plone user
 
     If the user passed in has no contact associated, return None.
@@ -1525,6 +1666,10 @@ def get_user_contact(user, contact_types=['Contact', 'LabContact']):
         return None
 
     from senaite.core.catalog import CONTACT_CATALOG  # Avoid circular import
+
+    if contact_types is None:
+        contact_types = ["Contact", "LabContact"]
+
     query = {"portal_type": contact_types, "getUsername": user.getId()}
     brains = search(query, catalog=CONTACT_CATALOG)
     if not brains:
@@ -1550,13 +1695,13 @@ def get_user_client(user_or_contact):
     :param: Plone user or contact
     :returns: Client the contact of the Plone user belongs to
     """
-    if not user_or_contact or ILabContact.providedBy(user_or_contact):
+    if not user_or_contact or is_lab_contact(user_or_contact):
         # Lab contacts cannot belong to a client
         return None
 
-    if not IContact.providedBy(user_or_contact):
-        contact = get_user_contact(user_or_contact, contact_types=['Contact'])
-        if IContact.providedBy(contact):
+    if not is_contact(user_or_contact):
+        contact = get_user_contact(user_or_contact, contact_types=["Contact"])
+        if is_client_contact(contact):
             return get_user_client(contact)
         return None
 
@@ -1576,7 +1721,7 @@ def get_user_fullname(user_or_contact):
     :param: Plone user or contact
     :returns: Fullname of the contact or user
     """
-    if IContact.providedBy(user_or_contact):
+    if is_contact(user_or_contact):
         return user_or_contact.getFullname()
 
     user = get_user(user_or_contact)
@@ -1598,7 +1743,7 @@ def get_user_email(user_or_contact):
     :param: Plone user or contact
     :returns: Fullname of the contact or user
     """
-    if IContact.providedBy(user_or_contact):
+    if is_contact(user_or_contact):
         return user_or_contact.getEmailAddress()
 
     user = get_user(user_or_contact)
@@ -1611,6 +1756,58 @@ def get_user_email(user_or_contact):
         return user.getProperty("email", default="")
 
     return contact.getEmailAddress()
+
+
+def is_lab_contact(brain_or_object):
+    """Checks if the brain or object is a Lab Contact
+
+    :returns: True if the brain or object is a Lab Contact, False otherwise
+    """
+    if not is_object(brain_or_object):
+        return False
+    obj = get_object(brain_or_object)
+    return ILabContact.providedBy(obj)
+
+
+def is_client_contact(brain_or_object):
+    """Checks if the brain or object is a Client Contact
+
+    :returns: True if the brain or object is a Client Contact, False otherwise
+    """
+    if not is_object(brain_or_object):
+        return False
+    obj = get_object(brain_or_object)
+    return IContact.providedBy(obj) and not is_global_contact(obj)
+
+
+def is_global_contact(brain_or_object):
+    """Checks if the brain or object is a global contact
+
+    :returns: True if the brain or object is a global contact, False otherwise
+    """
+    if not is_object(brain_or_object):
+        return False
+    obj = get_object(brain_or_object)
+    if not IContact.providedBy(obj):
+        return False
+    parent = get_parent(brain_or_object)
+    if not IContacts.providedBy(parent):
+        return False
+    return True
+
+
+def is_contact(brain_or_object):
+    """Checks if the brain or object is a Client Contact or Lab Contact
+
+    :returns: True if the brain or object is a Contact, False otherwise
+    """
+    if is_client_contact(brain_or_object):
+        return True
+    if is_lab_contact(brain_or_object):
+        return True
+    if is_global_contact(brain_or_object):
+        return True
+    return False
 
 
 def get_current_client():
@@ -1968,6 +2165,36 @@ def text_to_html(text, wrap="p", encoding="utf8"):
     return html.encode(encoding)
 
 
+def safe_unicode(value, default=u""):
+    """Safely convert a value to a unicode string
+
+    :param value: Value to be converted to unicode
+    :param default: Default value if conversion fails
+    :returns: Unicode string
+    """
+    if value is None:
+        return default
+
+    # If already unicode, return as is
+    if isinstance(value, six.text_type):
+        return value
+
+    try:
+        # First convert to str (handles int, long, etc.)
+        try:
+            value = str(value)
+        except UnicodeDecodeError:
+            # If value is bytes with non-ASCII chars
+            value = value.encode("utf8")
+
+        # Convert to unicode
+        if isinstance(value, six.binary_type):
+            return value.decode("utf8")
+        return six.text_type(value)
+    except Exception:
+        return default
+
+
 def to_utf8(string, default=_marker):
     """Encode string to UTF8
 
@@ -2080,7 +2307,7 @@ def to_list(value):
     return list(value)
 
 
-def validate(obj, invariants=True):
+def validate(obj):
     """Validates the full object
 
     :param obj: the object to validate the data against
@@ -2100,24 +2327,37 @@ def validate(obj, invariants=True):
             getattr(field, "_type", None) in [str]
 
     errors = {}
+    obj_data = {}
 
     # iterate through object fields and validate each
     fields = get_fields(obj)
-
     for field_name, field in fields.items():
-        if field_name in SKIP_VALIDATION_FIELDS:
-            continue
 
+        # extract the field value
         value = getattr(obj, field_name, None)
-
         if callable(value):
             # Handle callable values, e.g. effective, expired etc.
             value = value()
         if isinstance(value, six.string_types):
             value = safe_unicode(value)
         if is_string_field(field):
-            # provide UTF8 encoded strings for stringfields, e.g. the ID field.
-            value = to_utf8(value)
+            # Provide UTF-8 encoded strings for StringField or NativeString.
+            # This prevents a WrongType error when the value is unicode instead
+            # of str. For example, the field used to store an object's ID is a
+            # StringField, which only accepts str. However, in Senaite, values
+            # are stored as unicode and returned as UTF-8 to maintain AT legacy
+            # behavior.
+            # Note that this "trick" only applies to top-level fields: a
+            # WrongContainedType error will be raised if the field is, e.g., a
+            # DataGridField whose subfield inherits from NativeString.
+            missing_value = getattr(field, "missing_value", None)
+            value = to_utf8(value, default=None) or missing_value
+
+        # update obj_data for later use with invariants
+        obj_data[field_name] = value
+
+        if field_name in SKIP_VALIDATION_FIELDS:
+            continue
 
         try:
             field.validate(value)
@@ -2128,22 +2368,23 @@ def validate(obj, invariants=True):
             if value is not None:
                 errors[field_name] = "wrong type"
         except Invalid as ex:
-            errors[field_name] = translate(ex.message)
+            errors[field_name] = translate(ex.message) or type(ex).__name__
 
     # validate invariants from schema
     sch = get_schema(obj)
     try:
-        sch.validateInvariants(obj)
+        sch.validateInvariants(ValidatorData(sch, obj_data, obj))
     except Invalid as ex:
-        errors[sch.getName()] = translate(ex.message)
+        errors[sch.getName()] = translate(ex.message) or type(ex).__name__
 
     # validate invariants from behaviors
     for behavior_id in get_behaviors(obj):
         behavior = lookup_behavior_registration(behavior_id)
+        sch = behavior.interface
         try:
-            behavior.interface.validateInvariants(obj)
+            sch.validateInvariants(ValidatorData(sch, obj_data, obj))
         except Invalid as ex:
-            errors[behavior_id] = translate(ex.message)
+            errors[behavior_id] = translate(ex.message) or type(ex).__name__
 
     return errors
 

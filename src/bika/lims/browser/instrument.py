@@ -25,7 +25,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
-from bika.lims.browser.bika_listing import BikaListingView
+from senaite.core.browser.listing.base import ListingView
 from bika.lims.browser.chart.analyses import EvolutionChart
 from bika.lims.browser.resultsimport.autoimportlogs import AutoImportLogsView
 from bika.lims.content.instrumentmaintenancetask import \
@@ -44,7 +44,7 @@ from ZODB.POSException import POSKeyError
 from zope.interface import implements
 
 
-class InstrumentMaintenanceView(BikaListingView):
+class InstrumentMaintenanceView(ListingView):
     """Listing view for instrument maintenance tasks
     """
 
@@ -172,7 +172,7 @@ class InstrumentMaintenanceView(BikaListingView):
         return item
 
 
-class InstrumentCalibrationsView(BikaListingView):
+class InstrumentCalibrationsView(ListingView):
     """Listing view for instrument calibrations
     """
 
@@ -269,7 +269,7 @@ class InstrumentCalibrationsView(BikaListingView):
         return item
 
 
-class InstrumentValidationsView(BikaListingView):
+class InstrumentValidationsView(ListingView):
     """Listing view for instrument validations
     """
 
@@ -361,7 +361,7 @@ class InstrumentValidationsView(BikaListingView):
         return item
 
 
-class InstrumentScheduleView(BikaListingView):
+class InstrumentScheduleView(ListingView):
     """Listing view for instrument scheduled tasks
     """
 
@@ -616,12 +616,12 @@ class InstrumentReferenceAnalysesView(AnalysesView):
         item["replace"]["Instrument"] = get_link_for(instrument, tabindex="-1")
 
 
-class InstrumentCertificationsView(BikaListingView):
+class InstrumentCertificationsView(ListingView):
     """Listing view for instrument certifications
     """
 
     def __init__(self, context, request, **kwargs):
-        BikaListingView.__init__(self, context, request, **kwargs)
+        ListingView.__init__(self, context, request, **kwargs)
         self.catalog = SETUP_CATALOG
         self.contentFilter = {
             "portal_type": "InstrumentCertification",
@@ -769,7 +769,7 @@ class InstrumentAutoImportLogsView(AutoImportLogsView):
         self.pagesize = 30
 
 
-class InstrumentMultifileView(BikaListingView):
+class InstrumentMultifileView(ListingView):
     """Listing view for instrument multi files
     """
 
@@ -795,7 +795,7 @@ class InstrumentMultifileView(BikaListingView):
         )
         self.context_actions = {
             _("Add"): {
-                "url": "createObject?type_name=Multifile",
+                "url": "++add++Multifile",
                 "icon": "++resource++bika.lims.images/add.png"
             }
         }
@@ -808,12 +808,9 @@ class InstrumentMultifileView(BikaListingView):
         self.columns = {
             "DocumentID": {"title": _("Document ID"),
                            "index": "sortable_title"},
-            "DocumentVersion": {"title": _("Document Version"),
-                                "index": "sortable_title"},
-            "DocumentLocation": {"title": _("Document Location"),
-                                 "index": "sortable_title"},
-            "DocumentType": {"title": _("Document Type"),
-                             "index": "sortable_title"},
+            "DocumentVersion": {"title": _("Document Version")},
+            "DocumentLocation": {"title": _("Document Location")},
+            "DocumentType": {"title": _("Document Type")},
             "FileDownload": {"title": _("File")}
         }
 
@@ -853,9 +850,10 @@ class InstrumentMultifileView(BikaListingView):
         item["FileDownload"] = ""
         item["replace"]["FileDownload"] = ""
         file = self.get_file(obj)
-        if file and file.get_size() > 0:
-            filename = file.filename
-            download_url = "{}/at_download/File".format(url)
+
+        if file and file.getSize() > 0:
+            filename = api.safe_unicode(file.filename)
+            download_url = u"{}/@@download/file".format(url)
             anchor = get_link(download_url, filename)
             item["FileDownload"] = filename
             item["replace"]["FileDownload"] = anchor

@@ -1,0 +1,19 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+
+  <div i18n:domain="senaite.core"
+       tal:attributes="python:view.get_input_widget_attributes();
+                       class view/klass;
+                       style view/style;
+                       title view/title;">
+    <!-- ReactJS controlled component -->
+
+    <!-- The hidden input field provides the field value before the widget is rendered.
+         This is necessary if e.g. a JS requires the value directly after DOM loaded event -->
+    <input type="hidden"
+           tal:attributes="name python:view.name;
+                           value python:'\r\n'.join(view.get_value())" />
+  </div>
+
+</html>

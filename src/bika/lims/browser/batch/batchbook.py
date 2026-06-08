@@ -27,7 +27,7 @@ from bika.lims import api
 from bika.lims.utils import get_link_for
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api.security import check_permission
-from bika.lims.browser.bika_listing import BikaListingView
+from senaite.core.browser.listing.base import ListingView
 from bika.lims.interfaces import IBatchBookView
 from senaite.core.permissions import AddAnalysisRequest
 from senaite.core.permissions import FieldEditAnalysisResult
@@ -43,7 +43,7 @@ DESCRIPTION = _("The batch book allows to introduce analysis results for all "
 
 
 @implementer(IBatchBookView)
-class BatchBookView(BikaListingView):
+class BatchBookView(ListingView):
 
     def __init__(self, context, request):
         super(BatchBookView, self).__init__(context, request)

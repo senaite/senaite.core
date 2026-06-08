@@ -279,6 +279,16 @@ def is_reference_analysis(brain_or_object):
     return IReferenceAnalysis.providedBy(analysis)
 
 
+def is_duplicate_analysis(brain_or_object):
+    """Checks if the object is a duplicate analysis
+
+    :param brain_or_object: A single catalog brain or content object
+    :returns: True if the object is a duplicate analysis, False otherwise
+    """
+    analysis = api.get_object(brain_or_object)
+    return IDuplicateAnalysis.providedBy(analysis)
+
+
 def is_retracted(brain_or_object):
     """Checks if an analysis is retracted
 

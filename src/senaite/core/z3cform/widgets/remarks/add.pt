@@ -1,0 +1,14 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:metal="http://xml.zope.org/namespaces/metal"
+     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+     tal:omit-tag="">
+
+    <textarea id="" name="" class="" disabled="" style=""
+        tal:attributes="id view/id;
+                        name view/name;
+                        class view/klass;
+                        style view/style;
+                        disabled view/disabled;"></textarea>
+
+</div>

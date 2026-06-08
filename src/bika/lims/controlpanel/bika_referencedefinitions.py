@@ -22,12 +22,13 @@ import collections
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
+from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IReferenceDefinitions
 from senaite.core.permissions import AddReferenceDefinition
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
+from senaite.core.api import hazard as hazard_api
 from senaite.core.i18n import translate as t
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
@@ -37,7 +38,7 @@ from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 
-class ReferenceDefinitionsView(BikaListingView):
+class ReferenceDefinitionsView(ControlPanelListingView):
     """Listing view for all Methods
     """
 
@@ -122,9 +123,8 @@ class ReferenceDefinitionsView(BikaListingView):
         if obj.getBlank():
             after_icons += get_image(
                 "blank.png", title=t(_("Blank")))
-        if obj.getHazardous():
-            after_icons += get_image(
-                "hazardous.png", title=t(_("Hazardous")))
+        for picto in hazard_api.get_pictograms_for_reference(obj):
+            after_icons += hazard_api.render_pictogram_img(picto)
         if after_icons:
             item["after"]["Title"] = after_icons
 

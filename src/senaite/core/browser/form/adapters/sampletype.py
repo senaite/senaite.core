@@ -19,22 +19,51 @@
 # Some rights reserved, see README and LICENSE.
 
 from senaite.core.browser.form.adapters import EditFormAdapterBase
+from senaite.core.browser.form.helpers import get_form_value
+from senaite.core.browser.form.helpers import has_form_field
+from senaite.core.browser.form.helpers import is_checked
 from senaite.core.interfaces import ISampleType
 from senaite.core.vocabularies.stickers import get_sticker_templates
 
 _DGF_WIDGET_PREFIX = "form.widgets.admitted_sticker_templates.0.widgets."
+
+HAZARDOUS_FIELD = "form.widgets.hazardous"
+HAZARD_CATEGORIES_FIELD = "form.widgets.hazard_categories"
 
 
 class EditForm(EditFormAdapterBase):
     """Edit form adapter for Sample Type
     """
 
+    def _toggle_hazard_categories(self, hazardous):
+        """Show or hide the hazard_categories field."""
+        if hazardous:
+            self.add_show_field(HAZARD_CATEGORIES_FIELD)
+        else:
+            self.add_hide_field(HAZARD_CATEGORIES_FIELD)
+
     def initialized(self, data):
+        # Read the currently-submitted form state when present so the
+        # toggle survives a re-render after validation errors. Falls
+        # back to the persisted context value on the initial render.
+        form = data.get("form") or {}
+        if has_form_field(form, HAZARDOUS_FIELD):
+            hazardous = is_checked(get_form_value(form, HAZARDOUS_FIELD))
+        elif ISampleType.providedBy(self.context):
+            hazardous = bool(self.context.getHazardous())
+        else:
+            hazardous = False
+        self._toggle_hazard_categories(hazardous)
         return self.data
 
     def modified(self, data):
         name = data.get("name")
         value = data.get("value")
+
+        # toggle hazard categories visibility with the Hazardous flag
+        if name == HAZARDOUS_FIELD:
+            self._toggle_hazard_categories(is_checked(value))
+            return self.data
 
         # filter default small/large sticker
         if name == _DGF_WIDGET_PREFIX + "admitted":

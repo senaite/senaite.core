@@ -352,6 +352,19 @@
         <input type="hidden" id="ar_count" name="ar_count"
                tal:attributes="value view/ar_count"/>
 
+        <!-- Hidden fields for source UIDs (for partition copying) -->
+        <tal:source_uids tal:repeat="arnum python:range(view.ar_count)"
+                         tal:define="copy_from python:view.get_copy_from()">
+          <tal:source_uid tal:define="source_uid_key python:'_source_uid-{}'.format(arnum);
+                                      source_obj python:copy_from.get(arnum);
+                                      source_uid python:source_obj.UID() if source_obj else None">
+            <input type="hidden"
+                   tal:condition="source_uid"
+                   tal:attributes="name source_uid_key;
+                                   value source_uid"/>
+          </tal:source_uid>
+        </tal:source_uids>
+
         <ul class="nav nav-tabs float-right" id="sample-tabs" style="margin-bottom:-1px;">
           <tal:columns tal:repeat="arnum python:range(view.ar_count)">
             <li class="nav-item" tal:attributes="class string:nav-item nav-item-${arnum}">

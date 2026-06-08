@@ -1,0 +1,10 @@
+<div class="mb-2" i18n:domain="senaite.core"
+     tal:define="target_url view/get_target_url | nothing;
+                 link_text view/get_link_text | nothing"
+     tal:condition="target_url">
+  <a tal:attributes="href target_url"
+     class="text-muted small">
+    <i class="fas fa-arrow-right"></i>
+    <span tal:content="link_text">Link text</span>
+  </a>
+</div>

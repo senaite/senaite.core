@@ -2300,7 +2300,7 @@ def migrate_samplepoints_coordinates(tool):
         delattr(obj, "longitude")
 
         obj.reindexObject()
-        obj._p_deactivate() # noqa
+        obj._p_deactivate()  # noqa
 
     logger.info("Migrating coordinates from SamplePoint [DONE]")
 

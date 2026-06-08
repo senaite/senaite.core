@@ -27,6 +27,7 @@ from bika.lims.interfaces import IBaseAnalysis
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import formatDecimalMark
+from bika.lims.utils import formatTextResult
 from bika.lims.utils import format_supsub
 
 DEFAULT_SKIP_FIELDS = [
@@ -66,8 +67,11 @@ def create_analysis(context, source, **kwargs):
     # use "Analysis" as portal_type unless explicitly set
     portal_type = kwargs.pop("portal_type", "Analysis")
 
-    # initialize interims with those from the service if not explicitly set
-    interim_fields = kwargs.pop("InterimFields", service.getInterimFields())
+    # initialize interims from source directly:
+    #  - AnalysisService: service-only interims; setCalculation merges the
+    #    calc interims in below (service == source in this branch)
+    #  - Analysis: frozen interims from the source are used as-is
+    interim_fields = kwargs.pop("InterimFields", source.getInterimFields())
 
     # do not copy these fields from source
     skip_fields = kwargs.pop("skip", DEFAULT_SKIP_FIELDS)
@@ -80,7 +84,22 @@ def create_analysis(context, source, **kwargs):
         "AnalysisService": service,
         "InterimFields": interim_fields,
     })
-    return api.copy_object(source, **kwargs)
+    analysis = api.copy_object(source, **kwargs)
+
+    # When the source is an AnalysisService, snapshot the Calculation.
+    # The service stores its calculation in an AT 'Calculation' field,
+    # while Analysis uses CalculationUID + snapshot fields. The field
+    # name mismatch means copy_object cannot transfer it automatically.
+    # Reindex afterwards so catalog indexes (e.g. has_calculation) reflect
+    # the snapshotted value; api.copy_object reindexes before setCalculation
+    # is called, so without this the index would be stale.
+    if IAnalysisService.providedBy(source):
+        calc = service.getCalculation()
+        if calc:
+            analysis.setCalculation(calc)
+            analysis.reindexObject()
+
+    return analysis
 
 
 def get_significant_digits(numeric_value):
@@ -439,6 +458,7 @@ def format_interim(interim_field, html=True):
     for visualization, like formatted_result and formatted_unit
     """
     separator = "<br/>" if html else ", "
+    result_type = interim_field.get("result_type", "")
 
     # copy to prevent persistent changes
     item = copy.deepcopy(interim_field)
@@ -458,9 +478,12 @@ def format_interim(interim_field, html=True):
         texts = [choices.get(v, "") for v in values]
         values = filter(None, texts)
 
+    elif result_type in ["string", "text"]:
+        # If string-like result, return without any formatting
+        values = [formatTextResult(val, html) for val in values]
     else:
         # default formatting
-        setup = api.get_setup()
+        setup = api.get_senaite_setup()
         decimal_mark = setup.getResultsDecimalMark()
         values = [formatDecimalMark(val, decimal_mark) for val in values]
 

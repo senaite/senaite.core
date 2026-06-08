@@ -193,14 +193,42 @@ class EditForm {
   }
 
   /**
+  * check field type for text control
+  */
+  is_text_control(field) {
+    const tagName = field.tagName.toLowerCase();
+    const fieldType = field.type.toLowerCase();
+    const textTypes = ["text", "search", "tel", "url", "email", "password",
+      "date", "month", "week", "time", "datetime-local", "number"
+    ];
+    const isTextControl = tagName === "input" && textTypes.includes(fieldType);
+
+    return isTextControl || tagName === "textarea";
+  }
+
+  /**
    * set field readonly
    */
-  set_field_readonly(field, message=null) {
-    field.setAttribute("readonly", "");
-    // Only text controls can be made read-only, since for other controls (such
-    // as checkboxes and buttons) there is no useful distinction between being
-    // read-only and being disabled. We cover other controls like select here.
-    field.setAttribute("disabled", "");
+  set_field_readonly(form, field, message=null) {
+    // Only text controls can be made read-only
+    if (this.is_text_control(field)) {
+      field.setAttribute("readonly", "");
+    } else {
+      // since for other controls (such as checkboxes and buttons)
+      // there is no useful distinction between being
+      // read-only and being disabled.
+      const fieldName = field.name;
+      let hiddenField = document.createElement("input");
+      hiddenField.setAttribute("type", "hidden");
+      hiddenField.setAttribute("name", fieldName);
+      hiddenField.setAttribute("value", field.value);
+
+      field.setAttribute("disabled", "");
+      field.setAttribute("name", "disabled-" + fieldName);
+      // insert hidden control to first positions into form for search by name
+      form.prepend(hiddenField);
+    }
+
     let existing_message = field.parentElement.querySelector("div.message");
     if (existing_message) {
       existing_message.innerHTML = _t(message)
@@ -215,20 +243,36 @@ class EditForm {
   /**
    * set field editable
    */
-  set_field_editable(field, message=null) {
-    field.removeAttribute("readonly");
-    // Only text controls can be made read-only, since for other controls (such
-    // as checkboxes and buttons) there is no useful distinction between being
-    // read-only and being disabled. We cover other controls like select here.
-    field.removeAttribute("disabled");
-    let existing_message = field.parentElement.querySelector("div.message");
+  set_field_editable(form, field, message=null) {
+    // Only text controls can be made read-only
+    let formField = field
+    if (this.is_text_control(field)) {
+      field.removeAttribute("readonly");
+    } else {
+      // since for other controls (such as checkboxes and buttons)
+      // there is no useful distinction between being
+      // read-only and being disabled. We cover other controls like select here.
+
+      const fieldName = field.name;
+      form.removeChild(field);
+
+      const disabledFieldName = "disabled-" + fieldName;
+      let disabledField = this.get_form_field_by_name(form, disabledFieldName);
+      if (disabledField) {
+        formField = disabledField
+        disabledField.removeAttribute("disabled");
+        disabledField.setAttribute("name", fieldName);
+      }
+    }
+
+    let existing_message = formField.parentElement.querySelector("div.message");
     if (existing_message) {
       existing_message.innerHTML = _t(message)
     } else {
       let div = document.createElement("div");
       div.className = "message text-secondary small";
       div.innerHTML = _t(message);
-      field.parentElement.appendChild(div);
+      formField.parentElement.appendChild(div);
     }
   }
 
@@ -436,7 +480,7 @@ class EditForm {
       ({name, message, ...rest} = record);
       let el = this.get_form_field_by_name(form, name);
       if (!el) continue;
-      this.set_field_readonly(el, message);
+      this.set_field_readonly(form, el, message);
     }
 
     // editable fields
@@ -445,7 +489,7 @@ class EditForm {
       ({name, message, ...rest} = record);
       let el = this.get_form_field_by_name(form, name);
       if (!el) continue;
-      this.set_field_editable(el, message);
+      this.set_field_editable(form, el, message);
     }
 
     // updated fields
@@ -598,7 +642,13 @@ class EditForm {
 
     // set reference value
     if (this.is_reference(field)) {
-      field.value = selected.join("\n");
+      // Fallback: Use raw value if selected is not set
+      if (value && selected.length == 0) {
+        selected = value.split("\n");
+      }
+      // XXX: does not work for ReactJS components!
+      // field.value = selected.join("\n");
+      this.native_set_value(field, selected.join("\n"));
     }
     // set select field
     else if (this.is_select(field)) {
@@ -645,6 +695,32 @@ class EditForm {
     }
   }
 
+  /**
+   * set input value with native setter to support ReactJS components
+   *
+   * https://stackoverflow.com/questions/23892547/what-is-the-best-way-to-trigger-onchange-event-in-react-js
+   * TL;DR: React library overrides input value setter
+   */
+  native_set_value(input, value) {
+    let setter = null;
+
+    if (input.tagName === "TEXTAREA") {
+      setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value")?.set;
+    } else if (input.tagName === "SELECT") {
+      setter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, "value")?.set;
+    } else if (input.tagName === "INPUT") {
+      setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set;
+    } else {
+      input.value = value;
+    }
+
+    if (setter) {
+      setter.call(input, value);
+    }
+
+    const event = new Event("input", { bubbles: true });
+    input.dispatchEvent(event);
+  }
 
   /**
    * trigger `modified` event on the form
@@ -870,6 +946,8 @@ class EditForm {
     if (!this.is_textarea(el)) {
       return false;
     }
+    // NOTE: This class is only used if the field is not hidden.
+    // Otherwise, it behaves like a normal textarea field.
     return el.classList.contains("queryselectwidget-value");
   }
 

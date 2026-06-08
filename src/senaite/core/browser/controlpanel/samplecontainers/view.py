@@ -24,11 +24,11 @@ from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import get_link_for
 from senaite.core.i18n import translate
-from senaite.app.listing import ListingView
+from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from senaite.core.catalog import SETUP_CATALOG
 
 
-class SampleContainersView(ListingView):
+class SampleContainersView(ControlPanelListingView):
     """Displays all available sample containers in a table
     """
 

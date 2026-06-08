@@ -18,7 +18,13 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from z3c.form.interfaces import IWidget
 from zope.interface import Interface
+
+
+class IMultiUploadWidget(IWidget):
+    """Multi-file upload widget with drag & drop support
+    """
 
 
 class IReferenceWidgetDataProvider(Interface):

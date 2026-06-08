@@ -7,8 +7,12 @@
 
   <metal:block fill-slot="main">
 
+    <div tal:replace="structure provider:plone.abovecontenttitle" />
+
     <h1 class="documentFirstHeading"
         tal:content="view/label | nothing" />
+
+    <div tal:replace="structure provider:plone.belowcontenttitle" />
 
     <div id="content-core">
       <metal:block use-macro="context/@@ploneform-macros/titlelessform" />

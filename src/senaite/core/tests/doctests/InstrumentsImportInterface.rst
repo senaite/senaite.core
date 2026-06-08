@@ -44,6 +44,7 @@ Needed imports::
     >>> from senaite.core.exportimport.instruments.abbott.m2000rt.m2000rt \
     ...      import Abbottm2000rtTSVParser, Abbottm2000rtImporter
     >>> from zope.publisher.browser import FileUpload, TestRequest
+    >>> from zope.lifecycleevent import modified
 
 Functional helpers::
 
@@ -56,6 +57,12 @@ Functional helpers::
     ...         self.headers = {}
     ...         self.filename = filename
 
+    >>> def notify_edited(content):
+    ...     if api.is_at_content(content):
+    ...         content.processForm()
+    ...     elif api.is_dexterity_content(content):
+    ...         modified(content)
+
 Variables::
 
     >>> date_now = timestamp()
@@ -66,7 +73,7 @@ Variables::
     >>> sampletypes = portal.setup.sampletypes
     >>> analysiscategories = portal.setup.analysiscategories
     >>> bika_analysisservices = bika_setup.bika_analysisservices
-    >>> bika_calculations = bika_setup.bika_calculations
+    >>> calculations = portal.setup.calculations
 
 We need certain permissions to create and access objects used in this test,
 so here we will assume the role of Lab Manager::
@@ -128,22 +135,22 @@ This service matches the service specified in the file from which the import wil
     >>> analysisservice3
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-3>
 
-    >>> total_calc = api.create(bika_calculations, 'Calculation', title='TotalMagCal')
-    >>> total_calc.setFormula('[Mg] + [Ca]')
+    >>> total_calc = api.create(calculations, 'Calculation', title='TotalMagCal', Formula='[Mg] + [Ca]')
     >>> analysisservice4 = api.create(bika_analysisservices, 'AnalysisService', title='THCaCO3', Keyword="THCaCO3")
     >>> analysisservice4.setUseDefaultCalculation(False)
     >>> analysisservice4.setCalculation(total_calc)
     >>> analysisservice4
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-4>
 
-    >>> interim_calc = api.create(bika_calculations, 'Calculation', title='Test-Total-Pest')
-    >>> pest1 = {'keyword': 'pest1', 'title': 'Pesticide 1', 'value': 0, 'type': 'int', 'hidden': False, 'unit': ''}
-    >>> pest2 = {'keyword': 'pest2', 'title': 'Pesticide 2', 'value': 0, 'type': 'int', 'hidden': False, 'unit': ''}
-    >>> pest3 = {'keyword': 'pest3', 'title': 'Pesticide 3', 'value': 0, 'type': 'int', 'hidden': False, 'unit': ''}
+    >>> interim_calc = api.create(calculations, 'Calculation', title='Test-Total-Pest')
+    >>> pest1 = {'keyword': 'pest1', 'title': 'Pesticide 1', 'value': 0, 'result_type': 'numeric', 'choices': u'', 'hidden': False, 'unit': ''}
+    >>> pest2 = {'keyword': 'pest2', 'title': 'Pesticide 2', 'value': 0, 'result_type': 'numeric', 'choices': u'', 'hidden': False, 'unit': ''}
+    >>> pest3 = {'keyword': 'pest3', 'title': 'Pesticide 3', 'value': 0, 'result_type': 'numeric', 'choices': u'', 'hidden': False, 'unit': ''}
     >>> interims = [pest1, pest2, pest3]
     >>> interim_calc.setInterimFields(interims)
     >>> self.assertEqual(interim_calc.getInterimFields(), interims)
     >>> interim_calc.setFormula('((([pest1] > 0.0) or ([pest2] > .05) or ([pest3] > 10.0) ) and "PASS" or "FAIL" )')
+    >>> notify_edited(interim_calc)
     >>> analysisservice5 = api.create(bika_analysisservices, 'AnalysisService', title='Total Terpenes', Keyword="TotalTerpenes")
     >>> analysisservice5.setUseDefaultCalculation(False)
     >>> analysisservice5.setCalculation(interim_calc)

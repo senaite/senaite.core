@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+  <!-- Client Contacts listing view -->
+  <browser:page
+      for="bika.lims.interfaces.IClient"
+      name="contacts"
+      class=".view.ClientContactsView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Contact Login Details view -->
+  <browser:page
+      for="senaite.core.interfaces.IContact"
+      name="login_details"
+      class=".login_details.ContactLoginDetailsView"
+      permission="cmf.ModifyPortalContent"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- LabContact Login Details view -->
+  <browser:page
+      for="bika.lims.interfaces.ILabContact"
+      name="login_details"
+      class=".login_details.ContactLoginDetailsView"
+      permission="senaite.core.permissions.ManageLoginDetails"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Redirect to user's organization view -->
+  <browser:page
+      for="*"
+      name="my_organization"
+      allowed_attributes="available"
+      class=".myorganization.MyOrganizationView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+</configure>
