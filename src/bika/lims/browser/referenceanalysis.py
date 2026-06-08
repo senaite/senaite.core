@@ -28,6 +28,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import createPdf, encode_header
@@ -108,7 +109,7 @@ class AnalysesRetractedListReport(BrowserView):
                 email = safe_unicode(manager.getEmailAddress()).encode('utf-8')
                 to = '%s, %s' % (to, formataddr((encode_header(name), email)))
         html = safe_unicode(self.template()).encode('utf-8')
-        lab = self.context.bika_setup.laboratory
+        lab = api.get_senaite_setup().laboratory
         mime_msg = MIMEMultipart('related')
         mime_msg['Subject'] = self.title
         mime_msg['From'] = formataddr(

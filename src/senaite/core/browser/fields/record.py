@@ -40,6 +40,7 @@ from Products.CMFCore.Expression import Expression
 from Products.CMFCore.Expression import createExprContext
 from Products.CMFCore.utils import getToolByName
 from Products.PythonScripts.standard import html_quote
+from senaite.core.browser.fields.parsing import parse_record_literal
 from senaite.core.browser.widgets.recordwidget import RecordWidget
 
 # we have to define our own validation handling
@@ -253,7 +254,7 @@ class RecordField(ObjectField):
     def set(self, instance, value, **kwargs):
         if type(value) in StringTypes:
             try:
-                value = eval(value)
+                value = parse_record_literal(value)
                 # more checks to add?
             except Exception: # what to catch here?
                 pass

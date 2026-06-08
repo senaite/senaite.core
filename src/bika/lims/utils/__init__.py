@@ -691,7 +691,9 @@ def get_link_for(obj, **kwargs):
     if not obj:
         return ""
     href = api.get_url(obj)
-    value = api.get_title(obj)
+    value = kwargs.pop("value", None)
+    if not value:
+        value = api.get_title(obj)
     return get_link(href=href, value=value, **kwargs)
 
 
@@ -757,12 +759,23 @@ def get_progress_bar_html(percentage):
 
 def render_html_attributes(**kwargs):
     """Returns a string representation of attributes for html entities
+
+    Values are normalized to unicode internally so callers can safely
+    pass translated strings (e.g. hazard pictogram titles) without
+    hitting an implicit ASCII codec. The result is then encoded back
+    to utf-8 bytes to preserve the legacy return type that downstream
+    consumers (e.g. `bytes += get_image(...)` accumulators) rely on.
+
     :param kwargs: attributes and values
-    :return: a well-formed string representation of attributes"""
-    attr = list()
-    if kwargs:
-        attr = ['{}="{}"'.format(key, val) for key, val in kwargs.items()]
-    return " ".join(attr).replace("css_class", "class")
+    :return: a well-formed utf-8 encoded string of attributes
+    :rtype: bytes
+    """
+    if not kwargs:
+        return ""
+    attr = [u'{}="{}"'.format(key, safe_unicode(val))
+            for key, val in kwargs.items()]
+    result = u" ".join(attr).replace(u"css_class", u"class")
+    return result.encode("utf-8")
 
 
 def get_registry_value(key, default=None):

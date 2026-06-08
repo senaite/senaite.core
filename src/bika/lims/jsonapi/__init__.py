@@ -18,19 +18,37 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import json
+import sys
+import traceback
+
+import Missing
+import six
+from AccessControl import Unauthorized
+from AccessControl import getSecurityManager
+from bika.lims import api
+from bika.lims import logger
+from bika.lims.utils import to_utf8
 from plone.app.textfield import RichTextValue
 from Products.Archetypes.config import TOOL_NAME
 from Products.CMFCore.utils import getToolByName
+from senaite.core.browser.fields.parsing import parse_record_literal
+from senaite.core.permissions import AccessJSONAPI
 
-from bika.lims import api
-from bika.lims.utils import to_utf8
-from bika.lims import logger
 
-import json
-import Missing
-import six
-import sys
-import traceback
+def check_jsonapi_permission(obj):
+    """Check the AccessJSONAPI permission on the given object
+
+    Raises Unauthorized if the current user does not hold the
+    `senaite.core: Access JSON API` permission on the passed-in object.
+    This guards the state-changing JSON API routes against anonymous and
+    under-privileged callers (CWE-862).
+    """
+    if getSecurityManager().checkPermission(AccessJSONAPI, obj):
+        return
+    msg = "You don't have the '{0}' permission on {1}".format(
+        AccessJSONAPI, obj.absolute_url())
+    raise Unauthorized(msg)
 
 
 def handle_errors(f):
@@ -237,7 +255,7 @@ def set_fields_from_request(obj, request):
         elif fieldtype in ['senaite.core.browser.fields.records.RecordsField',
                            'senaite.core.browser.fields.record.RecordField']:
             try:
-                value = eval(value)
+                value = parse_record_literal(value)
             except Exception:
                 logger.warning(
                     "JSONAPI: " + fieldname + ": Invalid "

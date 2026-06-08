@@ -27,6 +27,7 @@ from bika.lims.interfaces import IInvalidated
 from bika.lims.interfaces import IReceived
 from bika.lims.interfaces import IVerified
 from bika.lims.utils import changeWorkflowState
+from bika.lims.utils.analysisrequest import create_duplicate_of
 from bika.lims.utils.analysisrequest import create_retest
 from bika.lims.workflow import doActionFor as do_action_for
 from bika.lims.workflow.analysisrequest import do_action_to_analyses
@@ -87,6 +88,15 @@ def after_invalidate(obj):
     create_retest(obj)
     # Flag this sample as IInvalidated
     alsoProvides(obj, IInvalidated)
+
+
+def after_duplicate_sample(analysis_request):
+    """Method triggered after a 'duplicate_sample' transition. Creates a
+    sibling Sample by copying the source's schema fields and
+    re-instantiating its analyses from services. The source's
+    workflow state is unchanged.
+    """
+    create_duplicate_of(analysis_request)
 
 
 def after_submit(analysis_request):
@@ -214,6 +224,33 @@ def after_detach(analysis_request):
     # catalog to return the analyses: calling `getAnalyses` to the parent
     # will return all them, so no need to do the same with the detached
     analyses = parent.getAnalyses(full_objects=True)
+    map(lambda an: an.reindexObject(), analyses)
+
+
+def after_reattach(analysis_request):
+    """Function triggered after "reattach" transition is performed.
+
+    Inverse of after_detach: restores the partition link to the original
+    primary sample, clears the DetachedFrom backref and swaps the
+    IDetachedPartition marker back to IAnalysisRequestPartition.
+    """
+    parent = analysis_request.getDetachedFrom()
+
+    # Restore the partition link to the primary
+    analysis_request.setParentAnalysisRequest(parent)
+    analysis_request.setDetachedFrom(None)
+
+    # Swap markers: no longer a detached primary, back to being a partition
+    noLongerProvides(analysis_request, IDetachedPartition)
+    alsoProvides(analysis_request, IAnalysisRequestPartition)
+
+    # Reindex both the parent and the reattached partition
+    analysis_request.reindexObject()
+    parent.reindexObject()
+
+    # The parent's aranalysesfield aggregates analyses via catalog search,
+    # so reindex the partition's analyses to make them visible to the parent
+    analyses = analysis_request.getAnalyses(full_objects=True)
     map(lambda an: an.reindexObject(), analyses)
 
 

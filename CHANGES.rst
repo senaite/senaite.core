@@ -5,6 +5,26 @@ Changelog
 ------------------
 
 - #2898 Add AllowManualEntry for select result options
+- #2928 Fix ASTM consumer boundary bugs (sender shape, instrument cascade, sample fallback)
+- #2925 Add 'reattach' workflow transition to re-link detached partitions to their primary
+- #2926 Strip surrounding whitespace from analysis unit choices so configuration typos don't break the round-trip
+- #2927 Sort analysis categories on the analysis specification listing by SortKey
+- #2920 Fix TypeError in DynamicAnalysisSpec when xlsx has trailing empty headers
+- #2924 Fix login traceback that blocks running upgrade step 2731
+- #2923 Fix CopyError when migrating AT laboratory to DX
+- #2921 Fix duplicate Laboratory object by making setup/laboratory the single canonical Laboratory
+- #2922 Initialize unset Dexterity schema fields in api.create so ObjectAddedEvent subscribers don't read through acquisition
+- #2919 Enforce the AccessJSONAPI permission on state-changing JSON API routes
+- #2918 Fix Lab Information setup data import after Laboratory migration to Dexterity
+- #2917 Fix `ClientID` is not displayed in samples listing, but client name
+- #2916 Fix msgid collision on `description_calculation_imports` in Calculation content type
+- #2915 Rename 'Duplicate' sample transition to 'Duplicate Sample' to avoid translation collision with the worksheet duplicate-analysis label
+- #2914 Skip DublinCore creators/contributors when duplicating a sample
+- #2903 Refactor record parsing to use ast.literal_eval to prevent code execution
+- #2895 Add 'duplicate_sample' workflow transition for samples (with global toggle in setup)
+- #2910 Centralize intid cleanup in api.delete
+- #2913 Fix UnicodeEncodeError in render_html_attributes for non-ASCII attribute values
+- #2912 Fix missing <genericsetup:upgradeStep> tag for Worksheet Dexterity migration
 - #2908 Drop intid registrations created for portal_factory transients
 - #2907 Unregister intid on migration-time object deletion
 - #2909 Restore getPrintAddress on the DX Organization content type

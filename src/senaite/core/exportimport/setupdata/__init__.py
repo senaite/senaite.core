@@ -34,6 +34,7 @@ from bika.lims.utils import to_unicode
 from bika.lims.utils import to_utf8
 from bika.lims.utils.analysis import create_analysis
 from pkg_resources import resource_filename
+from plone.namedfile.file import NamedBlobImage
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
@@ -357,37 +358,44 @@ class Sub_Groups(WorksheetImporter):
 
 class Lab_Information(WorksheetImporter):
 
+    def get_logo(self, filename):
+        """Read a setup data image and return it as a NamedBlobImage
+        """
+        if not filename:
+            return None
+        path = resource_filename(
+            self.dataset_project,
+            "setupdata/%s/%s" % (self.dataset_name, filename))
+        try:
+            file_data = read_file(path)
+        except IOError as msg:
+            logger.warning("%s. Error on sheet: %s" % (msg, self.sheetname))
+            return None
+        return NamedBlobImage(
+            data=file_data, filename=api.safe_unicode(filename))
+
     def Import(self):
         laboratory = self.context.setup.laboratory
         values = {}
         for row in self.get_rows(3):
-            values[row['Field']] = row['Value']
+            values[row["Field"]] = row["Value"]
 
-        if values['AccreditationBodyLogo']:
-            path = resource_filename(
-                self.dataset_project,
-                "setupdata/%s/%s" % (self.dataset_name,
-                                     values['AccreditationBodyLogo']))
-            try:
-                file_data = read_file(path)
-            except Exception as msg:
-                file_data = None
-                logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
-        else:
-            file_data = None
-
-        laboratory.edit(
-            Name=values['Name'],
-            LabURL=values['LabURL'],
-            Confidence=values['Confidence'],
-            LaboratoryAccredited=self.to_bool(values['LaboratoryAccredited']),
-            AccreditationBodyLong=values['AccreditationBodyLong'],
-            AccreditationBody=values['AccreditationBody'],
-            AccreditationBodyURL=values['AccreditationBodyURL'],
-            Accreditation=values['Accreditation'],
-            AccreditationReference=values['AccreditationReference'],
-            AccreditationBodyLogo=file_data,
-            TaxNumber=values['TaxNumber'],
+        api.edit(
+            laboratory,
+            title=api.safe_unicode(values["Name"]),
+            lab_url=api.safe_unicode(values["LabURL"]),
+            confidence=api.to_int(values["Confidence"], default=None),
+            laboratory_accredited=self.to_bool(
+                values["LaboratoryAccredited"]),
+            accreditation_body=api.safe_unicode(values["AccreditationBody"]),
+            accreditation_body_url=api.safe_unicode(
+                values["AccreditationBodyURL"]),
+            accreditation=api.safe_unicode(values["Accreditation"]),
+            accreditation_reference=api.safe_unicode(
+                values["AccreditationReference"]),
+            accreditation_body_logo=self.get_logo(
+                values["AccreditationBodyLogo"]),
+            tax_number=api.safe_unicode(values["TaxNumber"]),
         )
         self.fill_contactfields(values, laboratory)
         self.fill_addressfields(values, laboratory)

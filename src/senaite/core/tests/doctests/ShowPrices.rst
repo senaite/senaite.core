@@ -49,7 +49,7 @@ Variables:
     >>> portal = self.portal
     >>> setup = portal.setup
     >>> bikasetup = portal.bika_setup
-    >>> laboratory = bikasetup.laboratory
+    >>> laboratory = setup.laboratory
     >>> portal_url = portal.absolute_url()
 
 We need certain permissions to create and access objects used in this test,
