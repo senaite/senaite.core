@@ -235,7 +235,9 @@ class AddressWidget(HTMLFormElement, Widget):
                 subdivisions = geo.get_subdivisions(country, [])
                 sub1[country] = map(lambda sub: sub.name, subdivisions)
 
-                label = geo.get_subdivision_type(subdivisions, _("State"))
+                label = _("State")
+                if subdivisions:
+                    label = _(subdivisions[0].type)
                 labels[country]["subdivision1"] = translate(label)
 
             subdivision1 = item.get("subdivision1")
@@ -243,7 +245,9 @@ class AddressWidget(HTMLFormElement, Widget):
                 subdivisions = geo.get_subdivisions(subdivision1, [])
                 sub2[subdivision1] = map(lambda sub: sub.name, subdivisions)
 
-                label = geo.get_subdivision_type(subdivisions, _("District"))
+                label = _("District")
+                if subdivisions:
+                    label = _(subdivisions[0].type)
                 labels[country]["subdivision2"] = translate(label)
 
         attributes = {
@@ -301,13 +305,12 @@ class AjaxSubdivisions(BrowserView):
         # Extract the subdivisions for this parent
         parent = safe_unicode(parent)
         items = geo.get_subdivisions(parent, default=[])
-        subdivision_type = geo.get_subdivision_type(items, "State")
 
         def to_dict(subdivision):
             return {
                 "name": subdivision.name,
                 "code": subdivision.code,
-                "type": self.context.translate(_(subdivision_type)),
+                "type": self.context.translate(_(subdivision.type)),
             }
         return [to_dict(item) for item in items]
 
