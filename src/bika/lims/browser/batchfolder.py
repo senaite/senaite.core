@@ -208,8 +208,7 @@ class BatchFolderContentsView(ListingView):
         item["BatchDate"] = self.ulocalized_time(date, long_format=True)
         item["BatchLabels"] = ""
 
-        item["getNumberOfSamples"] = str(
-            obj.getNumberOfSamples())
+        item["getNumberOfSamples"] = str(obj.getNumberOfSamples())
 
         if batch_labels:
             item["BatchLabels"] = ",".join(batch_labels)

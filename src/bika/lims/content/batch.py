@@ -276,7 +276,7 @@ class Batch(ATFolder, ClientAwareMixin):
         :returns: number of samples
         :rtype: integer
         """
-        samples = self.getAnalysisRequests()
+        samples = self.getAnalysisRequestsBrains()
         return len(samples)
 
 
