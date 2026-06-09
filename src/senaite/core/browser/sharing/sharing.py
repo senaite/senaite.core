@@ -20,9 +20,7 @@
 
 from plone.app.workflow.browser.sharing import SharingView as BaseView
 from plone.memoize.instance import memoize
-from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from zExceptions import NotFound
 
 # Ignore default Plone roles
 IGNORE_ROLES = [
@@ -34,7 +32,14 @@ IGNORE_ROLES = [
 
 
 class SharingView(BaseView):
-    """Custom Sharing View for lab-side content.
+    """Custom Sharing View.
+
+    The @@sharing tab is no longer surfaced from the Client FTI (the
+    `manage_access` action has been removed) because client access is
+    granted dynamically via the ILocalRoleProvider in
+    ``senaite.core.security.clientrole``. The view itself remains
+    reachable by URL so admins can still review and revoke any
+    persistent local-role entries left over from older installs.
     """
     STICKY = ()
     template = ViewPageTemplateFile("templates/client_sharing.pt")
@@ -46,14 +51,3 @@ class SharingView(BaseView):
 
     def can_edit_inherit(self):
         return False
-
-
-class ClientTreeSharingDisabledView(BrowserView):
-    """Disable @@sharing on Client / IClientAwareMixin content.
-
-    Access is granted dynamically by
-    ``senaite.core.security.clientrole``; persistent local-role
-    grants here would defeat the purpose.
-    """
-    def __call__(self):
-        raise NotFound("sharing")

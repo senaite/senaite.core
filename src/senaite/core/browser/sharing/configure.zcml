@@ -11,25 +11,4 @@
         layer="senaite.core.interfaces.ISenaiteCore"
         />
 
-    <!-- Disable @@sharing on the client tree: access is granted
-         dynamically via the linked_client_uid property + the
-         ILocalRoleProvider in senaite.core.security.clientrole.
-         The more specific registrations below shadow the generic one
-         above for Client and for any client-aware content. -->
-    <browser:page
-        name="sharing"
-        for="bika.lims.interfaces.IClient"
-        class=".sharing.ClientTreeSharingDisabledView"
-        permission="zope2.View"
-        layer="senaite.core.interfaces.ISenaiteCore"
-        />
-
-    <browser:page
-        name="sharing"
-        for="bika.lims.interfaces.IClientAwareMixin"
-        class=".sharing.ClientTreeSharingDisabledView"
-        permission="zope2.View"
-        layer="senaite.core.interfaces.ISenaiteCore"
-        />
-
 </configure>
