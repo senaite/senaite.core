@@ -82,7 +82,7 @@ def invalid_keyword():
         keywords = re.compile(r"\[([^\.^\]]+)\]").findall(data['formula'])
         interim_keywords = filter(
             None, map(lambda i: i.get("keyword"), data['interim_fields'] or []))
-        as_keywords = set([k for k in keywords if k not in interim_keywords])
+        as_keywords = list(set([k for k in keywords if k not in interim_keywords]))
         services = get_by_keyword(as_keywords)
         if len(as_keywords) != len(services):
             err_keywords = [k for k in as_keywords if k not in [
