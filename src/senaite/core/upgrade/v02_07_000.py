@@ -2209,3 +2209,49 @@ def add_sample_catalog_indexes(tool):
             )
 
     logger.info("Adding new indexes to sample catalog [DONE]")
+
+
+@upgradestep(product, version)
+def strip_global_client_role(tool):
+    """Remove directly-assigned global 'Client' role from users.
+
+    The 'Client' role is now granted implicitly to users via membership
+    in the per-client group (the group itself carries ``roles=["Client"]``).
+    A user with the role assigned directly through the portal role
+    manager but no client-group membership has the Client landing page
+    but no Owner role on any client folder, which is a half-configured
+    state with no useful access.
+
+    Iterate the principals assigned the 'Client' role via the portal
+    role manager and remove the direct assignment. Users keep the role
+    indirectly through group membership where applicable.
+    """
+    logger.info("Stripping global 'Client' role from users ...")
+    acl = api.get_tool("acl_users")
+    prm = getattr(acl, "portal_role_manager", None)
+    if prm is None:
+        logger.warn(
+            "No portal_role_manager available; nothing to strip")
+        return
+
+    principals = prm.listAssignedPrincipals("Client")
+    total = len(principals)
+    logger.info(
+        "Found %s principals with directly-assigned 'Client' role"
+        % total)
+
+    removed = 0
+    for principal_id, _title in principals:
+        try:
+            prm.removeRoleFromPrincipal("Client", principal_id)
+        except KeyError:
+            logger.warn(
+                "Could not remove 'Client' from '%s'" % principal_id)
+            continue
+        removed += 1
+        logger.info(
+            "Removed direct 'Client' role from '%s'" % principal_id)
+
+    logger.info(
+        "Stripped global 'Client' role from %s/%s principals"
+        % (removed, total))
