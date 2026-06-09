@@ -2393,3 +2393,72 @@ def remove_client_manage_access_action(tool):
         return
     fti.deleteActions(target_indices)
     logger.info("Removed 'manage_access' action from Client FTI")
+
+
+@upgradestep(product, version)
+def remove_legacy_client_groups(tool):
+    """Remove the per-client group + Owner local-role grant on every
+    Client.
+
+    Pre-2.7 SENAITE auto-created a group per Client (`Client.GROUP_KEY`
+    stored the id on the client object) and granted that group the
+    local Owner role on the client folder. With #2934 client users get
+    Owner + Client dynamically via the ILocalRoleProvider, so the
+    legacy group and its persisted local-role grant are dead weight.
+
+    For each Client:
+
+    1. Find the stored group id and the matching group in
+       portal_groups. Skip the client if no id is stored or the group
+       no longer exists.
+    2. Skip the client if the persisted group id no longer matches the
+       client's own stored ``_client_group_id`` — protects against an
+       admin who renamed the group manually.
+    3. Remove the corresponding entry from ``__ac_local_roles__`` on
+       the client folder via ``manage_delLocalRoles``. This triggers
+       ``reindexObjectSecurity`` recursively so the stale
+       ``user:<group_id>`` token drops out of ``allowedRolesAndUsers``
+       on every descendant. One-time cost; the new ``client:<uid>``
+       token added by #2934 already carries client access from here on.
+    4. Remove the group from portal_groups.
+    5. Clear the ``_client_group_id`` attribute on the client.
+    """
+    portal_groups = api.get_tool("portal_groups")
+    clients = api.search({"portal_type": "Client"}, CLIENT_CATALOG)
+    total = len(clients)
+    removed_groups = 0
+    cleared_local_roles = 0
+    for num, brain in enumerate(clients, start=1):
+        client = api.get_object(brain)
+        if num % 50 == 0:
+            logger.info("Cleaning client groups: %s/%s" % (num, total))
+        group_id = getattr(client, "_client_group_id", None)
+        if not group_id:
+            continue
+        if group_id in (client.__ac_local_roles__ or {}):
+            client.manage_delLocalRoles([group_id])
+            # `manage_delLocalRoles` only mutates `__ac_local_roles__`;
+            # the catalog still carries the stale `user:<group_id>`
+            # token on every descendant until reindexObjectSecurity
+            # walks the subtree. Paying the cost once here is the whole
+            # point of this upgrade step.
+            client.reindexObjectSecurity()
+            cleared_local_roles += 1
+            logger.info(
+                "Cleared Owner local role for group '%s' on client '%s'"
+                % (group_id, client.getName()))
+        group = portal_groups.getGroupById(group_id)
+        if group is not None:
+            portal_groups.removeGroup(group_id)
+            removed_groups += 1
+            logger.info(
+                "Removed legacy client group '%s' for client '%s'"
+                % (group_id, client.getName()))
+        try:
+            delattr(client, "_client_group_id")
+        except AttributeError:
+            pass
+    logger.info(
+        "Legacy client-group cleanup: %s groups removed, "
+        "%s local-role grants cleared on %s clients"
+        % (removed_groups, cleared_local_roles, total))
