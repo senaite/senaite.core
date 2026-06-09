@@ -497,18 +497,34 @@ Link the user to a client contact to grant access to this client::
     True
     >>> transaction.commit()
 
-Linking a user adds this user to the `Clients` group::
+Linking a user records the linked client's UID on the user
+profile. The dynamic local-role provider grants access on the
+client tree from that property — no per-client group is created
+and no local role is persisted on the client folder::
 
-    >>> clients_group = client.get_group()
-    >>> user.getId() in clients_group.getAllGroupMemberIds()
+    >>> client.get_group() is None
     True
 
-This gives the user the global `Client` role::
+    >>> portal_user = portal.acl_users.getUserById(user.getId())
+    >>> portal_user.getProperty("linked_client_uid") == client.UID()
+    True
+
+The dynamic role provider returns `Owner` and `Client` for the
+linked user against any client-tree object::
+
+    >>> from senaite.core.security.clientrole import ClientRoleProvider
+    >>> sorted(ClientRoleProvider(client).getRoles(user.getId()))
+    ['Client', 'Owner']
+
+The user does not get the `Client` role globally; the role is
+granted dynamically on the client tree only::
 
     >>> sorted(ploneapi.user.get_roles(user=user))
-    ['Authenticated', 'Client', 'Member']
+    ['Authenticated', 'Member']
 
-It also grants local `Owner` role on the client object::
+In the context of the client, both `Owner` and `Client` are
+granted dynamically by the ILocalRoleProvider on IClient /
+IClientAwareMixin::
 
     >>> sorted(ploneapi.user.get_roles(user=user, obj=client))
     ['Authenticated', 'Client', 'Member', 'Owner']
