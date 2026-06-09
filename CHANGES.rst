@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2932 Fix validation for formulas with duplicate keywords
 - #2928 Fix ASTM consumer boundary bugs (sender shape, instrument cascade, sample fallback)
 - #2925 Add 'reattach' workflow transition to re-link detached partitions to their primary
 - #2926 Strip surrounding whitespace from analysis unit choices so configuration typos don't break the round-trip
