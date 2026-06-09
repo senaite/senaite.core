@@ -27,7 +27,13 @@ from zope.component import adapter
 from zope.interface import implementer
 
 LINKED_CLIENT_UID_PROPERTY = "linked_client_uid"
-GRANTED_ROLES = ("Owner",)
+# Owner gives broad read/edit access on the client tree (matches the
+# legacy local-role grant). Client gives the SENAITE-specific
+# per-field edit permissions on Sample (Date Sampled, Sample Type,
+# Client Order Number, …) and `senaite.core: View Navigation`, none
+# of which are covered by Owner. Granting both here makes Client a
+# dynamic, contextual role that is never assigned globally.
+GRANTED_ROLES = ("Owner", "Client")
 
 
 def _get_context_client_uid(context):
