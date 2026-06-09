@@ -2255,3 +2255,124 @@ def strip_global_client_role(tool):
     logger.info(
         "Stripped global 'Client' role from %s/%s principals"
         % (removed, total))
+
+
+CLIENT_TREE_CATALOGS = (
+    "senaite_catalog_sample",
+    "senaite_catalog_analysis",
+    "senaite_catalog",
+    "senaite_catalog_report",
+    "senaite_catalog_attachments",
+    "senaite_catalog_client",
+    "senaite_catalog_setup",
+    "senaite_catalog_worksheet",
+)
+
+
+@upgradestep(product, version)
+def switch_to_dynamic_client_roles(tool):
+    """Migrate persistent group/local-role access to the dynamic
+    ILocalRoleProvider model.
+
+    Three idempotent passes:
+
+    1. Reindex `allowedRolesAndUsers` on every client-tree object so it
+       picks up the new stable `client:<client_uid>` token.
+    2. Backfill the `linked_client_uid` member property for every
+       already-linked client contact, so the dynamic role provider can
+       authorise those users without having to walk the catalog.
+    3. Remove the orphan `auto_create_client_group` registry record
+       (the field has been dropped from `IClientRegistry`).
+
+    Existing per-client groups and persisted Owner local roles on the
+    client folders are left untouched here; they are removed by the
+    follow-up cleanup upgrade step.
+    """
+    portal = tool.aq_inner.aq_parent
+    reindex_client_tree_allowed_roles()
+    backfill_linked_client_uid()
+    drop_auto_create_client_group_record(portal)
+
+
+def reindex_client_tree_allowed_roles():
+    """Reindex `allowedRolesAndUsers` on every IClient + IClientAware
+    object so they carry the new `client:<uid>` token.
+    """
+    from bika.lims.interfaces import IClient
+    from bika.lims.interfaces import IClientAwareMixin
+
+    logger.info("Reindexing allowedRolesAndUsers on client-tree content ...")
+    seen = set()
+    total = 0
+    for catalog_id in CLIENT_TREE_CATALOGS:
+        catalog = api.get_tool(catalog_id, default=None)
+        if catalog is None:
+            continue
+        brains = catalog.unrestrictedSearchResults({})
+        for brain in brains:
+            uid = getattr(brain, "UID", None)
+            if uid and uid in seen:
+                continue
+            try:
+                obj = brain.getObject()
+            except (AttributeError, KeyError):
+                continue
+            if obj is None:
+                continue
+            if not (IClient.providedBy(obj)
+                    or IClientAwareMixin.providedBy(obj)):
+                continue
+            obj.reindexObject(idxs=["allowedRolesAndUsers"])
+            if uid:
+                seen.add(uid)
+            total += 1
+            if total % 500 == 0:
+                logger.info("  ... reindexed %s objects" % total)
+    logger.info(
+        "Reindexed allowedRolesAndUsers on %s client-tree objects" % total)
+
+
+def backfill_linked_client_uid():
+    """Set the `linked_client_uid` user property for every existing
+    client contact that is already linked to a user account.
+    """
+    from bika.lims.interfaces import IClient
+
+    logger.info("Backfilling `linked_client_uid` on linked users ...")
+    contacts = api.search({"portal_type": "Contact"}, CONTACT_CATALOG)
+    updated = 0
+    for brain in contacts:
+        contact = api.get_object(brain)
+        parent = contact.aq_parent
+        if not IClient.providedBy(parent):
+            continue
+        user = contact.getUser()
+        if user is None:
+            continue
+        try:
+            user.getProperty("linked_client_uid")
+        except ValueError:
+            user._tool.manage_addProperty(
+                "linked_client_uid", "", "string")
+        user.setMemberProperties(
+            {"linked_client_uid": api.get_uid(parent)})
+        updated += 1
+    logger.info(
+        "Backfilled `linked_client_uid` on %s users" % updated)
+
+
+def drop_auto_create_client_group_record(portal):
+    """Delete the obsolete `auto_create_client_group` registry record.
+
+    The setting moved out of the registry when client access switched
+    to the dynamic role provider. Leaving the record behind would
+    only confuse future readers.
+    """
+    registry = api.get_tool("portal_registry", default=None)
+    if registry is None:
+        return
+    key = ("senaite.core.registry.schema.IClientRegistry."
+           "auto_create_client_group")
+    if key in registry.records:
+        del registry.records[key]
+        logger.info("Removed orphan registry record '%s'" % key)

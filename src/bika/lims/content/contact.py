@@ -43,6 +43,7 @@ from senaite.core.catalog import CONTACT_CATALOG
 from zope.interface import implements
 
 CONTACT_UID_KEY = "linked_contact_uid"
+CLIENT_UID_KEY = "linked_client_uid"
 
 
 schema = Person.schema.copy() + atapi.Schema((
@@ -258,11 +259,20 @@ class Contact(Person):
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
 
-        # N.B. Local owner role and client group applies only to client
-        #      contacts, but not lab contacts.
+        # N.B. The dynamic client-role provider grants the user the
+        #      Owner role on every object of this client by checking
+        #      `linked_client_uid` against the client's UID.
+        #      This is a property on the user, so the catalog tokens
+        #      indexed on client-tree content (`client:<uid>`) do not
+        #      need to be rewritten when contacts are linked.
         if IClient.providedBy(self.aq_parent):
-            # add user to clients group
-            self.aq_parent.add_user_to_group(username)
+            try:
+                user.getProperty(CLIENT_UID_KEY)
+            except ValueError:
+                logger.info("Adding User property {}".format(CLIENT_UID_KEY))
+                user._tool.manage_addProperty(CLIENT_UID_KEY, "", "string")
+            user.setMemberProperties(
+                {CLIENT_UID_KEY: self.aq_parent.UID()})
 
         return True
 
@@ -276,7 +286,6 @@ class Contact(Person):
             return False
 
         user = self.getUser()
-        username = user.getId()
 
         # Unset the UID from the User Property
         user.setMemberProperties({CONTACT_UID_KEY: ""})
@@ -295,11 +304,10 @@ class Contact(Person):
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
 
-        # N.B. Local owner role and client group applies only to client
-        #      contacts, but not lab contacts.
+        # Clear the linked client UID so the dynamic role provider no
+        # longer grants access on the client tree.
         if IClient.providedBy(self.aq_parent):
-            # remove user from clients group
-            self.aq_parent.del_user_from_group(username)
+            user.setMemberProperties({CLIENT_UID_KEY: ""})
 
         return True
 

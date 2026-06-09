@@ -3,6 +3,19 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Switch client access to dynamic local-role provider"
+      description="Reindex `allowedRolesAndUsers` on every client-tree
+                   object so each carries the new stable
+                   `client:&lt;client_uid&gt;` token, backfill the
+                   `linked_client_uid` member property on already-linked
+                   client contacts, and remove the orphan
+                   `auto_create_client_group` registry record."
+      source="2739"
+      destination="2740"
+      handler=".v02_07_000.switch_to_dynamic_client_roles"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Strip the global 'Client' role from users"
       description="Remove the directly-assigned global 'Client' role from
                    every user. The role is now granted implicitly via
