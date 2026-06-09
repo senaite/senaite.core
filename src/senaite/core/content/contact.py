@@ -35,6 +35,8 @@ from plone import api
 from plone.autoform import directives
 from plone.supermodel import model
 from Products.CMFCore import permissions
+from Products.PluggableAuthService.interfaces.plugins import \
+    IPropertiesPlugin
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.content.person import IPersonSchema
 from senaite.core.content.person import Person
@@ -45,6 +47,36 @@ from zope.interface import implementer
 
 CONTACT_UID_KEY = "linked_contact_uid"
 CLIENT_UID_KEY = "linked_client_uid"
+
+
+def _set_linked_client_uid(user, client_uid):
+    """Persist `linked_client_uid` on a user's mutable property storage.
+
+    Registers the property on portal_memberdata the first time it's
+    needed, then writes the value via the ZODB mutable property
+    plugin. Going through the plugin directly avoids the cache-staleness
+    bug in `MemberData.setMemberProperties`, where the user's already-
+    attached property sheets are built with the schema as it was at
+    user-creation time and silently ignore properties registered
+    later.
+    """
+    portal_memberdata = user._tool
+    if not portal_memberdata.hasProperty(CLIENT_UID_KEY):
+        portal_memberdata.manage_addProperty(CLIENT_UID_KEY, "", "string")
+        logger.info("Registered user property {}".format(CLIENT_UID_KEY))
+
+    acl_users = portal_memberdata.acl_users
+    for plugin_id, plugin in acl_users.plugins.listPlugins(IPropertiesPlugin):
+        sheet = plugin.getPropertiesForUser(user)
+        if sheet is None or not sheet.hasProperty(CLIENT_UID_KEY):
+            continue
+        setter = getattr(sheet, "setProperty", None)
+        if setter is None:
+            continue
+        setter(user, CLIENT_UID_KEY, client_uid)
+        return
+    logger.warn(
+        "No mutable properties plugin accepted '{}'".format(CLIENT_UID_KEY))
 
 
 class IContactSchema(IPersonSchema):
@@ -282,13 +314,7 @@ class Contact(Person):
         #      indexed on client-tree content (`client:<uid>`) do not
         #      need to be rewritten when contacts are linked.
         if IClient.providedBy(self.aq_parent):
-            try:
-                user.getProperty(CLIENT_UID_KEY)
-            except ValueError:
-                logger.info("Adding User property {}".format(CLIENT_UID_KEY))
-                user._tool.manage_addProperty(CLIENT_UID_KEY, "", "string")
-            user.setMemberProperties(
-                {CLIENT_UID_KEY: self.aq_parent.UID()})
+            _set_linked_client_uid(user, self.aq_parent.UID())
 
         return True
 
@@ -327,7 +353,7 @@ class Contact(Person):
         # Clear the linked client UID so the dynamic role provider no
         # longer grants access on the client tree.
         if IClient.providedBy(self.aq_parent):
-            user.setMemberProperties({CLIENT_UID_KEY: ""})
+            _set_linked_client_uid(user, "")
 
         return True
 

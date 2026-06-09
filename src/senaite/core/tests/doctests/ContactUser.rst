@@ -114,18 +114,27 @@ Linking the user to a client contact grants access to this client::
     True
     >>> transaction.commit()
 
-Linking a user adds this user to the `Client` group::
+Linking a user records the linked client's UID on the user profile.
+The dynamic local-role provider grants access on the client tree
+from that property; no per-client group is created and no local
+role is persisted on the client folder::
 
-    >>> client_group = client1.get_group()
-    >>> user1.getId() in client_group.getAllGroupMemberIds()
+    >>> client1.get_group() is None
     True
 
-This gives the user the global `Client` role::
+    >>> portal_user1 = portal.acl_users.getUserById(user1.getId())
+    >>> portal_user1.getProperty("linked_client_uid") == client1.UID()
+    True
+
+The user does not get the `Client` role globally; the role is
+granted dynamically on the client tree only::
 
     >>> sorted(ploneapi.user.get_roles(user=user1))
-    ['Authenticated', 'Client', 'Member']
+    ['Authenticated', 'Member']
 
-It also grants local `Owner` role on the client object::
+In the context of the client, both `Owner` and `Client` are
+granted dynamically by the ILocalRoleProvider on IClient /
+IClientAwareMixin::
 
     >>> sorted(ploneapi.user.get_roles(user=user1, obj=client1))
     ['Authenticated', 'Client', 'Member', 'Owner']

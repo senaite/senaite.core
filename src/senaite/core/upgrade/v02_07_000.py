@@ -2337,6 +2337,7 @@ def backfill_linked_client_uid():
     client contact that is already linked to a user account.
     """
     from bika.lims.interfaces import IClient
+    from senaite.core.content.contact import _set_linked_client_uid
 
     logger.info("Backfilling `linked_client_uid` on linked users ...")
     contacts = api.search({"portal_type": "Contact"}, CONTACT_CATALOG)
@@ -2349,13 +2350,7 @@ def backfill_linked_client_uid():
         user = contact.getUser()
         if user is None:
             continue
-        try:
-            user.getProperty("linked_client_uid")
-        except ValueError:
-            user._tool.manage_addProperty(
-                "linked_client_uid", "", "string")
-        user.setMemberProperties(
-            {"linked_client_uid": api.get_uid(parent)})
+        _set_linked_client_uid(user, api.get_uid(parent))
         updated += 1
     logger.info(
         "Backfilled `linked_client_uid` on %s users" % updated)
