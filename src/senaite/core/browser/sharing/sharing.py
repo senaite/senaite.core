@@ -20,8 +20,8 @@
 
 from plone.app.workflow.browser.sharing import SharingView as BaseView
 from plone.memoize.instance import memoize
+from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims.interfaces import IClient
 
 # Ignore default Plone roles
 IGNORE_ROLES = [
@@ -33,23 +33,15 @@ IGNORE_ROLES = [
 
 
 class SharingView(BaseView):
-    """Custom Sharing View especially for client context
+    """Custom Sharing View for lab-side content.
+
+    Client-tree content (Client / IClientAwareMixin) gets a different,
+    explanatory view (see ``ClientTreeSharingDisabledView``) because
+    sharing is granted there via the dynamic role provider when a
+    contact is linked to a user, not via persistent local roles.
     """
     STICKY = ()
     template = ViewPageTemplateFile("templates/client_sharing.pt")
-
-    def __call__(self):
-        # always ensure the client group is visible
-        if self.is_client():
-            group = self.context.get_group()
-            if group:
-                self.STICKY += (group.getId(), )
-        return super(SharingView, self).__call__()
-
-    def is_client(self):
-        """Checks if the current context is a client
-        """
-        return IClient.providedBy(self.context)
 
     @memoize
     def roles(self):
@@ -58,3 +50,21 @@ class SharingView(BaseView):
 
     def can_edit_inherit(self):
         return False
+
+
+class ClientTreeSharingDisabledView(BrowserView):
+    """Replacement for @@sharing on Client / IClientAwareMixin content.
+
+    Sharing is disabled on the client tree because access is granted
+    dynamically by ``senaite.core.security.clientrole`` based on the
+    ``linked_client_uid`` member property set when a contact is linked
+    to a user. Using the @@sharing tab to grant local roles here would
+    write persistent ``__ac_local_roles__`` entries and trigger a
+    recursive ``reindexObjectSecurity`` over the client tree — the
+    exact cost the dynamic-role refactor was introduced to eliminate.
+    """
+    template = ViewPageTemplateFile(
+        "templates/client_sharing_disabled.pt")
+
+    def __call__(self):
+        return self.template()
