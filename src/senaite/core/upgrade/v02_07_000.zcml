@@ -3,6 +3,21 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove legacy per-client groups and persisted Owner local roles"
+      description="Iterate every Client, remove the per-client group
+                   created by the legacy auto-create mechanism, clear
+                   the corresponding Owner entry from the client folder's
+                   `__ac_local_roles__`, and reindex object security
+                   so the stale `user:&lt;group_id&gt;` token drops out
+                   of `allowedRolesAndUsers`. Only touches groups whose
+                   id matches the client's stored `_client_group_id` —
+                   groups renamed manually by an admin are left alone."
+      source="2741"
+      destination="2742"
+      handler=".v02_07_000.remove_legacy_client_groups"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Remove 'Manage Access' action from Client FTI"
       description="Drop the per-type `manage_access` action that points
                    at @@sharing on every Client. Sharing on the client
