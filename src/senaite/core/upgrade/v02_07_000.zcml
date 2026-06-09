@@ -3,6 +3,19 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Strip the global 'Client' role from users"
+      description="Remove the directly-assigned global 'Client' role from
+                   every user. The role is now granted implicitly via
+                   membership in the per-client group, so a direct
+                   assignment is redundant and produces a half-configured
+                   user that has the Client landing page but no Owner
+                   role on any client folder."
+      source="2738"
+      destination="2739"
+      handler=".v02_07_000.strip_global_client_role"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Add 'reattach' workflow transition"
       description="Register the reattach workflow transition that
                    re-links a detached partition back to its primary.
