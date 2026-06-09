@@ -4,7 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
-- #XXXX Grant client access via a dynamic local-role provider instead of per-client groups
+- #2934 Grant client access via a dynamic local-role provider instead of per-client groups
 - #2933 Hide 'Client' role column and strip direct Client role assignments
 - #2928 Fix ASTM consumer boundary bugs (sender shape, instrument cascade, sample fallback)
 - #2925 Add 'reattach' workflow transition to re-link detached partitions to their primary
