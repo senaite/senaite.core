@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #XXXX Disable @@sharing on the client tree
 - #2934 Grant client access via a dynamic local-role provider instead of per-client groups
 - #2933 Hide 'Client' role column and strip direct Client role assignments
 - #2928 Fix ASTM consumer boundary bugs (sender shape, instrument cascade, sample fallback)
