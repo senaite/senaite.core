@@ -145,6 +145,67 @@ the same request as the user was created::
     >>> bool(portal_memberdata.hasProperty("linked_client_uid"))
     True
 
+The property is persisted by the mutable_properties PAS plugin
+(not by an in-memory sheet from another property plugin). Reading
+the property sheet back directly proves the value lives there::
+
+    >>> mutable_properties = portal.acl_users.mutable_properties
+    >>> sheet = mutable_properties.getPropertiesForUser(portal_user1)
+    >>> sheet.getProperty("linked_client_uid") == client1.UID()
+    True
+    >>> sheet.getProperty("linked_contact_uid") == contact1.UID()
+    True
+
+The dynamic role provider works alongside a catalog-side token: the
+client and every IClientAwareMixin descendant carry a stable
+`client:<client_uid>` entry in `allowedRolesAndUsers`, so a linked
+client user can find their content without any persisted local
+role::
+
+    >>> from senaite.core.catalog import CLIENT_CATALOG
+    >>> client_brain = portal[CLIENT_CATALOG](UID=client1.UID())[0]
+    >>> ("client:" + client1.UID()) in client_brain.allowedRolesAndUsers
+    True
+
+`BaseCatalog._listAllowedRolesAndUsers` injects the matching token
+for any user whose `linked_client_uid` is set. The injection is
+what closes the loop with the indexer above — a catalog query by
+the linked user picks up the client's content while no other
+client's token is added::
+
+    >>> catalog = portal[CLIENT_CATALOG]
+    >>> tokens = catalog._listAllowedRolesAndUsers(portal_user1)
+    >>> ("client:" + client1.UID()) in tokens
+    True
+    >>> ("client:" + client2.UID()) in tokens
+    False
+
+A user without a linked client gets no `client:` token at all, so
+the runtime cost of the override is one member-property read per
+query::
+
+    >>> portal_user2 = portal.acl_users.getUserById(user2.getId())
+    >>> tokens2 = catalog._listAllowedRolesAndUsers(portal_user2)
+    >>> [t for t in tokens2 if t.startswith("client:")]
+    []
+
+The `senaite.core: View Navigation` permission gates the sidebar
+viewlet. It is granted to the `Client` role, and the global
+provider's role grant must reach the portal root, otherwise linked
+client users would have no navigation panel after login. Asserting
+the permission resolves for the linked user is the regression
+sentinel that protects the sidebar render::
+
+    >>> from AccessControl import getSecurityManager
+    >>> from AccessControl.SecurityManagement import newSecurityManager
+    >>> from AccessControl.SecurityManagement import setSecurityManager
+    >>> previous_sm = getSecurityManager()
+    >>> newSecurityManager(None, portal_user1)
+    >>> bool(getSecurityManager().checkPermission(
+    ...     "senaite.core: View Navigation", portal))
+    True
+    >>> setSecurityManager(previous_sm)
+
 The user does not get the `Client` role globally; the role is
 granted dynamically on the client tree only::
 
