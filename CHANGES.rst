@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2941 Remove leftover per-client-group code paths
 - #2940 Grant the global 'Client' role to users with linked_client_uid set
 - #2939 Persist linked user properties through the mutable properties plugin
 - #2938 Remove legacy per-client groups and persisted Owner local roles
