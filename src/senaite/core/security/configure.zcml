@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope">
+
+  <!-- Dynamic Owner role for client users: grant Owner on a client
+       tree to any user whose `linked_client_uid` member property
+       matches the client's UID. -->
+  <adapter
+      factory=".clientrole.ClientLinkRoleProvider"
+      name="senaite.core.clientrole.aware"
+      />
+
+  <adapter
+      factory=".clientrole.ClientRoleProvider"
+      name="senaite.core.clientrole.client"
+      />
+
+</configure>

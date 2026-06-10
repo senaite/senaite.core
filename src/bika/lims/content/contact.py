@@ -43,6 +43,36 @@ from senaite.core.catalog import CONTACT_CATALOG
 from zope.interface import implements
 
 CONTACT_UID_KEY = "linked_contact_uid"
+CLIENT_UID_KEY = "linked_client_uid"
+
+
+def _set_linked_client_uid(user, client_uid):
+    """Persist `linked_client_uid` on a user's mutable property storage.
+
+    See `senaite.core.content.contact._set_linked_client_uid` for the
+    rationale; this is the AT-side mirror so contacts on either base
+    set the same property the dynamic role provider reads.
+    """
+    from Products.PluggableAuthService.interfaces.plugins import \
+        IPropertiesPlugin
+
+    portal_memberdata = user._tool
+    if not portal_memberdata.hasProperty(CLIENT_UID_KEY):
+        portal_memberdata.manage_addProperty(CLIENT_UID_KEY, "", "string")
+        logger.info("Registered user property {}".format(CLIENT_UID_KEY))
+
+    acl_users = portal_memberdata.acl_users
+    for plugin_id, plugin in acl_users.plugins.listPlugins(IPropertiesPlugin):
+        sheet = plugin.getPropertiesForUser(user)
+        if sheet is None or not sheet.hasProperty(CLIENT_UID_KEY):
+            continue
+        setter = getattr(sheet, "setProperty", None)
+        if setter is None:
+            continue
+        setter(user, CLIENT_UID_KEY, client_uid)
+        return
+    logger.warn(
+        "No mutable properties plugin accepted '{}'".format(CLIENT_UID_KEY))
 
 
 schema = Person.schema.copy() + atapi.Schema((
@@ -258,11 +288,14 @@ class Contact(Person):
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
 
-        # N.B. Local owner role and client group applies only to client
-        #      contacts, but not lab contacts.
+        # N.B. The dynamic client-role provider grants the user the
+        #      Owner role on every object of this client by checking
+        #      `linked_client_uid` against the client's UID.
+        #      This is a property on the user, so the catalog tokens
+        #      indexed on client-tree content (`client:<uid>`) do not
+        #      need to be rewritten when contacts are linked.
         if IClient.providedBy(self.aq_parent):
-            # add user to clients group
-            self.aq_parent.add_user_to_group(username)
+            _set_linked_client_uid(user, self.aq_parent.UID())
 
         return True
 
@@ -276,7 +309,6 @@ class Contact(Person):
             return False
 
         user = self.getUser()
-        username = user.getId()
 
         # Unset the UID from the User Property
         user.setMemberProperties({CONTACT_UID_KEY: ""})
@@ -295,11 +327,10 @@ class Contact(Person):
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
 
-        # N.B. Local owner role and client group applies only to client
-        #      contacts, but not lab contacts.
+        # Clear the linked client UID so the dynamic role provider no
+        # longer grants access on the client tree.
         if IClient.providedBy(self.aq_parent):
-            # remove user from clients group
-            self.aq_parent.del_user_from_group(username)
+            _set_linked_client_uid(user, "")
 
         return True
 
