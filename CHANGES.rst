@@ -4,7 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
-- #2939 Make _set_linked_client_uid tolerant of property plugins that return dicts
+- #2939 Persist linked user properties through the mutable properties plugin
 - #2938 Remove legacy per-client groups and persisted Owner local roles
 - #2937 Disable @@sharing on the client tree
 - #2934 Grant client access via a dynamic local-role provider instead of per-client groups
