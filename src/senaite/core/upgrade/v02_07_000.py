@@ -2294,9 +2294,17 @@ def switch_to_dynamic_client_roles(tool):
     drop_auto_create_client_group_record(portal)
 
 
+REINDEX_BATCH_SIZE = 100
+
+
 def reindex_client_tree_allowed_roles():
     """Reindex `allowedRolesAndUsers` on every IClient + IClientAware
     object so they carry the new `client:<uid>` token.
+
+    Wakes every brain via `getObject()` to reindex the live object.
+    On large installs (50k+ samples) that loads everything into the
+    ZODB cache, so checkpoint a savepoint and deactivate each object
+    after the reindex to keep memory bounded.
     """
     from bika.lims.interfaces import IClient
     from bika.lims.interfaces import IClientAwareMixin
@@ -2323,9 +2331,12 @@ def reindex_client_tree_allowed_roles():
                     or IClientAwareMixin.providedBy(obj)):
                 continue
             obj.reindexObject(idxs=["allowedRolesAndUsers"])
+            obj._p_deactivate()
             if uid:
                 seen.add(uid)
             total += 1
+            if total % REINDEX_BATCH_SIZE == 0:
+                transaction.savepoint(optimistic=True)
             if total % 500 == 0:
                 logger.info("  ... reindexed %s objects" % total)
     logger.info(
@@ -2333,14 +2344,26 @@ def reindex_client_tree_allowed_roles():
 
 
 def backfill_linked_client_uid():
-    """Set the `linked_client_uid` user property for every existing
-    client contact that is already linked to a user account.
+    """Set the `linked_client_uid` and `linked_contact_uid` user
+    properties for every existing client contact already linked to a
+    user account.
+
+    Both properties drive different parts of the runtime: the client
+    UID is what the dynamic local-role provider in
+    `senaite.core.security.clientrole` reads to grant access on the
+    client tree, while the contact UID is the back-reference that
+    resolves a logged-in user to their contact object. The link path
+    in `Contact._linkUser` writes both, so existing links must carry
+    both for parity.
     """
     from bika.lims.interfaces import IClient
     from senaite.core.content.contact import CLIENT_UID_KEY
+    from senaite.core.content.contact import CONTACT_UID_KEY
     from senaite.core.content.contact import _set_user_property
 
-    logger.info("Backfilling `linked_client_uid` on linked users ...")
+    logger.info(
+        "Backfilling `linked_client_uid` and `linked_contact_uid` "
+        "on linked users ...")
     contacts = api.search({"portal_type": "Contact"}, CONTACT_CATALOG)
     updated = 0
     for brain in contacts:
@@ -2352,9 +2375,10 @@ def backfill_linked_client_uid():
         if user is None:
             continue
         _set_user_property(user, CLIENT_UID_KEY, api.get_uid(parent))
+        _set_user_property(user, CONTACT_UID_KEY, api.get_uid(contact))
         updated += 1
     logger.info(
-        "Backfilled `linked_client_uid` on %s users" % updated)
+        "Backfilled linked UID properties on %s users" % updated)
 
 
 def drop_auto_create_client_group_record(portal):
