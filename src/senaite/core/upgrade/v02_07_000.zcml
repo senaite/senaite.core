@@ -3,6 +3,19 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove 'Manage Access' action from Client FTI"
+      description="Drop the per-type `manage_access` action that points
+                   at @@sharing on every Client. Sharing on the client
+                   tree is disabled because access is granted
+                   dynamically via the ILocalRoleProvider; leaving the
+                   action exposed would let an admin re-introduce the
+                   slow path."
+      source="2740"
+      destination="2741"
+      handler=".v02_07_000.remove_client_manage_access_action"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Switch client access to dynamic local-role provider"
       description="Reindex `allowedRolesAndUsers` on every client-tree
                    object so each carries the new stable

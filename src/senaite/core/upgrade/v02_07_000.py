@@ -2371,3 +2371,25 @@ def drop_auto_create_client_group_record(portal):
     if key in registry.records:
         del registry.records[key]
         logger.info("Removed orphan registry record '%s'" % key)
+
+
+@upgradestep(product, version)
+def remove_client_manage_access_action(tool):
+    """Drop the `manage_access` action from the Client FTI.
+
+    The action linked to @@sharing on every Client; sharing on the
+    client tree is now disabled because access is granted dynamically
+    by the ILocalRoleProvider. Removing the action prevents admins
+    from clicking through to the (now NotFound) view.
+    """
+    types_tool = api.get_tool("portal_types")
+    fti = types_tool.getTypeInfo("Client")
+    if fti is None:
+        return
+    actions = list(fti.listActions())
+    target_indices = [str(i) for i, a in enumerate(actions)
+                      if a.id == "manage_access"]
+    if not target_indices:
+        return
+    fti.deleteActions(target_indices)
+    logger.info("Removed 'manage_access' action from Client FTI")
