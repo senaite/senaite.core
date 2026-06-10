@@ -22,6 +22,7 @@ from bika.lims import api
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IClientAwareMixin
 from borg.localrole.interfaces import ILocalRoleProvider
+from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFCore.utils import getToolByName
 from zope.component import adapter
 from zope.interface import implementer
@@ -112,3 +113,53 @@ class ClientLinkRoleProvider(object):
 @adapter(IClient)
 class ClientRoleProvider(ClientLinkRoleProvider):
     """Same dynamic Owner grant for the Client folder itself."""
+
+
+@implementer(ILocalRoleProvider)
+@adapter(ISiteRoot)
+class GlobalClientRoleProvider(object):
+    """Grant the global `Client` role to users with `linked_client_uid`.
+
+    Restores the global `Client` role that linked client users used to
+    receive via membership in the per-client group (which carried
+    ``roles=["Client"]``). Without it, permission checks performed at
+    the site root, such as the sidebar's `View Navigation` check in
+    ``senaite.core.browser.viewlets.sidebar.SidebarViewletManager``,
+    fail for client users because the per-context providers above only
+    fire on the client tree.
+
+    Local-role acquisition propagates the grant from the site root to
+    every descendant, so this single registration covers every
+    permission check anywhere in the site without re-introducing a
+    persistent group.
+
+    `getAllRoles` returns empty for the same reason as on the client
+    tree: enumerating every linked user would force a catalog reindex
+    on every link/unlink. Catalog filtering keeps using the
+    `client:<uid>` token injected by
+    ``BaseCatalog._listAllowedRolesAndUsers``; this provider exists
+    only to satisfy runtime permission checks that walk
+    ``user.getRolesInContext``.
+    """
+
+    def __init__(self, context):
+        self.context = context
+
+    def getRoles(self, principal_id):
+        if not principal_id:
+            return ()
+        acl_users = getToolByName(self.context, "acl_users", None)
+        if acl_users is None:
+            return ()
+        user = acl_users.getUserById(principal_id)
+        if user is None:
+            return ()
+        try:
+            linked = user.getProperty(
+                LINKED_CLIENT_UID_PROPERTY, "") or ""
+        except Exception:
+            return ()
+        return ("Client",) if linked else ()
+
+    def getAllRoles(self):
+        return iter(())
