@@ -4,8 +4,9 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
-- #2936 Remove legacy per-client groups and persisted Owner local roles
-- #2935 Disable @@sharing on the client tree
+- #2939 Persist linked user properties through the mutable properties plugin
+- #2938 Remove legacy per-client groups and persisted Owner local roles
+- #2937 Disable @@sharing on the client tree
 - #2934 Grant client access via a dynamic local-role provider instead of per-client groups
 - #2933 Hide 'Client' role column and strip direct Client role assignments
 - #2928 Fix ASTM consumer boundary bugs (sender shape, instrument cascade, sample fallback)

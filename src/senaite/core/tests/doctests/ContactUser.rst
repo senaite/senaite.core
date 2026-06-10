@@ -126,6 +126,25 @@ role is persisted on the client folder::
     >>> portal_user1.getProperty("linked_client_uid") == client1.UID()
     True
 
+Linking also writes the back-reference to the linked contact on
+the user profile, so a logged-in user can be resolved back to its
+contact via the `linked_contact_uid` property::
+
+    >>> portal_user1.getProperty("linked_contact_uid") == contact1.UID()
+    True
+
+Both keys are registered on portal_memberdata the first time a
+contact is linked. The write goes through the mutable_properties
+plugin, which reads its schema from portal_memberdata on every
+call, so the property is persisted even when it was registered in
+the same request as the user was created::
+
+    >>> portal_memberdata = portal.portal_memberdata
+    >>> bool(portal_memberdata.hasProperty("linked_contact_uid"))
+    True
+    >>> bool(portal_memberdata.hasProperty("linked_client_uid"))
+    True
+
 The user does not get the `Client` role globally; the role is
 granted dynamically on the client tree only::
 
@@ -180,6 +199,16 @@ The user has no local owner role anymore on the client::
     Traceback (most recent call last):
     ...
     Unauthorized: ...
+
+Both linked-UID properties on the user are cleared by unlinkUser,
+so the dynamic role provider no longer grants any role and a
+re-link starts from a clean state::
+
+    >>> portal_user1 = portal.acl_users.getUserById(user1.getId())
+    >>> portal_user1.getProperty("linked_client_uid", "")
+    ''
+    >>> portal_user1.getProperty("linked_contact_uid", "")
+    ''
 
 LabContact users
 ----------------
