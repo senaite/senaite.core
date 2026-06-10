@@ -529,6 +529,26 @@ IClientAwareMixin::
     >>> sorted(ploneapi.user.get_roles(user=user, obj=client))
     ['Authenticated', 'Client', 'Member', 'Owner']
 
+On the portal root, a second ILocalRoleProvider grants `Client`
+to every user with a `linked_client_uid` set. Local-role
+acquisition then propagates the role to every context, which is
+what makes site-root permission checks (e.g. the sidebar's
+`View Navigation`) pass for linked client users::
+
+    >>> from senaite.core.security.clientrole import (
+    ...     GlobalClientRoleProvider)
+    >>> sorted(GlobalClientRoleProvider(portal).getRoles(user.getId()))
+    ['Client']
+
+    >>> sorted(ploneapi.user.get_roles(user=user, obj=portal))
+    ['Authenticated', 'Client', 'Member']
+
+The provider intentionally returns an empty `getAllRoles` so the
+catalog indexer never has to enumerate linked users::
+
+    >>> list(GlobalClientRoleProvider(portal).getAllRoles())
+    []
+
 ~~
    TODO: Fails with LocationError: (<UnauthorizedBinding: context>, 'main_template')
    The user is able to modify the client properties::
@@ -568,6 +588,15 @@ Unlink the user to revoke all access to the client::
 The user has no local owner role anymore on the client::
 
     >>> sorted(ploneapi.user.get_roles(user=user, obj=client))
+    ['Authenticated', 'Member']
+
+The cleared `linked_client_uid` also revokes the global `Client`
+role granted by the portal-root provider::
+
+    >>> sorted(GlobalClientRoleProvider(portal).getRoles(user.getId()))
+    []
+
+    >>> sorted(ploneapi.user.get_roles(user=user, obj=portal))
     ['Authenticated', 'Member']
 
 The user can not access the client anymore::
