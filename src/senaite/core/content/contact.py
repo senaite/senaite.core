@@ -68,10 +68,16 @@ def _set_linked_client_uid(user, client_uid):
     acl_users = portal_memberdata.acl_users
     for plugin_id, plugin in acl_users.plugins.listPlugins(IPropertiesPlugin):
         sheet = plugin.getPropertiesForUser(user)
-        if sheet is None or not sheet.hasProperty(CLIENT_UID_KEY):
+        if sheet is None:
             continue
+        # Some property plugins return a plain dict rather than a
+        # PropertySheet; ignore those — we want the mutable_properties
+        # plugin's sheet, which exposes hasProperty/setProperty.
+        has = getattr(sheet, "hasProperty", None)
         setter = getattr(sheet, "setProperty", None)
-        if setter is None:
+        if not callable(has) or not callable(setter):
+            continue
+        if not has(CLIENT_UID_KEY):
             continue
         setter(user, CLIENT_UID_KEY, client_uid)
         return
