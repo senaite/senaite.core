@@ -142,7 +142,7 @@ via ``getattr(obj, column)`` -- which raises ``TypeError`` on a non-string:
     >>> ds_padded = api.create(setup.dynamicanalysisspecs, "DynamicAnalysisSpec")
     >>> ds_padded.specs_file = to_excel_with_padding(data)
     >>> ds_padded.get_header()
-    [u'Keyword', u'Method', u'min', u'max']
+    [u'Keyword', u'Method', u'min', u'max', u'rangecomment']
 
 
 Hooking in a Dynamic Analysis Specification
