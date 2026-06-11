@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2945 Merge linked-user property sheets in first-non-empty-wins order
 - #2940 Grant the global 'Client' role to users with linked_client_uid set
 - #2939 Persist linked user properties through the mutable properties plugin
 - #2938 Remove legacy per-client groups and persisted Owner local roles
