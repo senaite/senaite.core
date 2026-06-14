@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2949 Render NamedImage display widget at a scaled size via @@images
 - #2947 Fix barcodes missing from PDFs behind a virtual-host path
 - #2940 Grant the global 'Client' role to users with linked_client_uid set
 - #2939 Persist linked user properties through the mutable properties plugin
