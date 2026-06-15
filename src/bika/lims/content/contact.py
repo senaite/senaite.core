@@ -43,6 +43,44 @@ from senaite.core.catalog import CONTACT_CATALOG
 from zope.interface import implements
 
 CONTACT_UID_KEY = "linked_contact_uid"
+CLIENT_UID_KEY = "linked_client_uid"
+
+
+def _set_user_property(user, key, value):
+    """Persist a string property on a user's mutable property storage.
+
+    See `senaite.core.content.contact._set_user_property` for the
+    rationale; this is the AT-side mirror so contacts on either base
+    write through the mutable properties plugin instead of the cached
+    user sheets.
+    """
+    from Products.PluggableAuthService.interfaces.plugins import \
+        IPropertiesPlugin
+
+    portal_memberdata = user._tool
+    if not portal_memberdata.hasProperty(key):
+        portal_memberdata.manage_addProperty(key, "", "string")
+        logger.info("Registered user property {}".format(key))
+
+    acl_users = portal_memberdata.acl_users
+    for plugin_id, plugin in acl_users.plugins.listPlugins(IPropertiesPlugin):
+        sheet = plugin.getPropertiesForUser(user)
+        if sheet is None:
+            continue
+        # Some property plugins return a plain dict rather than a
+        # PropertySheet (e.g. pas.plugins.ldap for non-LDAP users);
+        # ignore those — we want the mutable_properties plugin's
+        # sheet, which exposes hasProperty/setProperty.
+        has = getattr(sheet, "hasProperty", None)
+        setter = getattr(sheet, "setProperty", None)
+        if not callable(has) or not callable(setter):
+            continue
+        if not has(key):
+            continue
+        setter(user, key, value)
+        return
+    logger.warn(
+        "No mutable properties plugin accepted '{}'".format(key))
 
 
 schema = Person.schema.copy() + atapi.Schema((
@@ -230,18 +268,13 @@ class Contact(Person):
                              .format(username, ",".join(
                                  map(lambda x: x.Title(), contact))))
 
-        # Linked Contact UID is used in member profile as backreference
-        try:
-            user.getProperty(CONTACT_UID_KEY)
-        except ValueError:
-            logger.info("Adding User property {}".format(CONTACT_UID_KEY))
-            user._tool.manage_addProperty(CONTACT_UID_KEY, "", "string")
-
-        # Set the UID as a User Property
+        # Set the UID as a User Property — write through the mutable
+        # properties plugin so it persists for users whose cached
+        # property sheets predate the registration of the property.
         uid = self.UID()
-        user.setMemberProperties({CONTACT_UID_KEY: uid})
+        _set_user_property(user, CONTACT_UID_KEY, uid)
         logger.info("Linked Contact UID {} to User {}".format(
-            user.getProperty(CONTACT_UID_KEY), username))
+            user.getProperty(CONTACT_UID_KEY, ""), username))
 
         # Set the Username
         self.setUsername(user.getId())
@@ -258,11 +291,14 @@ class Contact(Person):
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
 
-        # N.B. Local owner role and client group applies only to client
-        #      contacts, but not lab contacts.
+        # N.B. The dynamic client-role provider grants the user the
+        #      Owner role on every object of this client by checking
+        #      `linked_client_uid` against the client's UID.
+        #      This is a property on the user, so the catalog tokens
+        #      indexed on client-tree content (`client:<uid>`) do not
+        #      need to be rewritten when contacts are linked.
         if IClient.providedBy(self.aq_parent):
-            # add user to clients group
-            self.aq_parent.add_user_to_group(username)
+            _set_user_property(user, CLIENT_UID_KEY, self.aq_parent.UID())
 
         return True
 
@@ -276,10 +312,9 @@ class Contact(Person):
             return False
 
         user = self.getUser()
-        username = user.getId()
 
         # Unset the UID from the User Property
-        user.setMemberProperties({CONTACT_UID_KEY: ""})
+        _set_user_property(user, CONTACT_UID_KEY, "")
         logger.info("Unlinked Contact UID from User {}"
                     .format(user.getProperty(CONTACT_UID_KEY, "")))
 
@@ -295,11 +330,10 @@ class Contact(Person):
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
 
-        # N.B. Local owner role and client group applies only to client
-        #      contacts, but not lab contacts.
+        # Clear the linked client UID so the dynamic role provider no
+        # longer grants access on the client tree.
         if IClient.providedBy(self.aq_parent):
-            # remove user from clients group
-            self.aq_parent.del_user_from_group(username)
+            _set_user_property(user, CLIENT_UID_KEY, "")
 
         return True
 

@@ -52,19 +52,6 @@
     <permission value="Modify portal content"/>
   </action>
 
-  <!-- Manage Client Access / Sharing -->
-  <action title="Manage Access"
-          action_id="manage_access"
-          category="object"
-          url_expr="string:${object_url}/@@sharing"
-          i18n:attributes="title"
-          i18n:domain="senaite.core"
-          visible="True">
-    <!--Use Manage permission to hide action from logged in client contacts -->
-    <!-- <permission value="Sharing page: Delegate roles"/> -->
-    <permission value="senaite.core: Manage Bika"/>
-  </action>
-
   <action title="Contacts"
           action_id="contacts"
           category="object"

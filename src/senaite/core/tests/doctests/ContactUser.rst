@@ -114,18 +114,46 @@ Linking the user to a client contact grants access to this client::
     True
     >>> transaction.commit()
 
-Linking a user adds this user to the `Client` group::
+Linking a user records the linked client's UID on the user profile.
+The dynamic local-role provider grants access on the client tree
+from that property; no per-client group is created and no local
+role is persisted on the client folder::
 
-    >>> client_group = client1.get_group()
-    >>> user1.getId() in client_group.getAllGroupMemberIds()
+    >>> client1.get_group() is None
     True
 
-This gives the user the global `Client` role::
+    >>> portal_user1 = portal.acl_users.getUserById(user1.getId())
+    >>> portal_user1.getProperty("linked_client_uid") == client1.UID()
+    True
+
+Linking also writes the back-reference to the linked contact on
+the user profile, so a logged-in user can be resolved back to its
+contact via the `linked_contact_uid` property::
+
+    >>> portal_user1.getProperty("linked_contact_uid") == contact1.UID()
+    True
+
+Both keys are registered on portal_memberdata the first time a
+contact is linked. The write goes through the mutable_properties
+plugin, which reads its schema from portal_memberdata on every
+call, so the property is persisted even when it was registered in
+the same request as the user was created::
+
+    >>> portal_memberdata = portal.portal_memberdata
+    >>> bool(portal_memberdata.hasProperty("linked_contact_uid"))
+    True
+    >>> bool(portal_memberdata.hasProperty("linked_client_uid"))
+    True
+
+The user does not get the `Client` role globally; the role is
+granted dynamically on the client tree only::
 
     >>> sorted(ploneapi.user.get_roles(user=user1))
-    ['Authenticated', 'Client', 'Member']
+    ['Authenticated', 'Member']
 
-It also grants local `Owner` role on the client object::
+In the context of the client, both `Owner` and `Client` are
+granted dynamically by the ILocalRoleProvider on IClient /
+IClientAwareMixin::
 
     >>> sorted(ploneapi.user.get_roles(user=user1, obj=client1))
     ['Authenticated', 'Client', 'Member', 'Owner']
@@ -171,6 +199,16 @@ The user has no local owner role anymore on the client::
     Traceback (most recent call last):
     ...
     Unauthorized: ...
+
+Both linked-UID properties on the user are cleared by unlinkUser,
+so the dynamic role provider no longer grants any role and a
+re-link starts from a clean state::
+
+    >>> portal_user1 = portal.acl_users.getUserById(user1.getId())
+    >>> portal_user1.getProperty("linked_client_uid", "")
+    ''
+    >>> portal_user1.getProperty("linked_contact_uid", "")
+    ''
 
 LabContact users
 ----------------

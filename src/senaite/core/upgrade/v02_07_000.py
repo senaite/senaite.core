@@ -2209,3 +2209,257 @@ def add_sample_catalog_indexes(tool):
             )
 
     logger.info("Adding new indexes to sample catalog [DONE]")
+
+
+@upgradestep(product, version)
+def strip_global_client_role(tool):
+    """Remove directly-assigned global 'Client' role from users.
+
+    The 'Client' role is now granted implicitly to users via membership
+    in the per-client group (the group itself carries ``roles=["Client"]``).
+    A user with the role assigned directly through the portal role
+    manager but no client-group membership has the Client landing page
+    but no Owner role on any client folder, which is a half-configured
+    state with no useful access.
+
+    Iterate the principals assigned the 'Client' role via the portal
+    role manager and remove the direct assignment. Users keep the role
+    indirectly through group membership where applicable.
+    """
+    logger.info("Stripping global 'Client' role from users ...")
+    acl = api.get_tool("acl_users")
+    prm = getattr(acl, "portal_role_manager", None)
+    if prm is None:
+        logger.warn(
+            "No portal_role_manager available; nothing to strip")
+        return
+
+    principals = prm.listAssignedPrincipals("Client")
+    total = len(principals)
+    logger.info(
+        "Found %s principals with directly-assigned 'Client' role"
+        % total)
+
+    removed = 0
+    for principal_id, _title in principals:
+        try:
+            prm.removeRoleFromPrincipal("Client", principal_id)
+        except KeyError:
+            logger.warn(
+                "Could not remove 'Client' from '%s'" % principal_id)
+            continue
+        removed += 1
+        logger.info(
+            "Removed direct 'Client' role from '%s'" % principal_id)
+
+    logger.info(
+        "Stripped global 'Client' role from %s/%s principals"
+        % (removed, total))
+
+
+CLIENT_TREE_CATALOGS = (
+    "senaite_catalog_sample",
+    "senaite_catalog_analysis",
+    "senaite_catalog",
+    "senaite_catalog_report",
+    "senaite_catalog_attachments",
+    "senaite_catalog_client",
+    "senaite_catalog_setup",
+    "senaite_catalog_worksheet",
+)
+
+
+@upgradestep(product, version)
+def switch_to_dynamic_client_roles(tool):
+    """Migrate persistent group/local-role access to the dynamic
+    ILocalRoleProvider model.
+
+    Three idempotent passes:
+
+    1. Reindex `allowedRolesAndUsers` on every client-tree object so it
+       picks up the new stable `client:<client_uid>` token.
+    2. Backfill the `linked_client_uid` member property for every
+       already-linked client contact, so the dynamic role provider can
+       authorise those users without having to walk the catalog.
+    3. Remove the orphan `auto_create_client_group` registry record
+       (the field has been dropped from `IClientRegistry`).
+
+    Existing per-client groups and persisted Owner local roles on the
+    client folders are left untouched here; they are removed by the
+    follow-up cleanup upgrade step.
+    """
+    portal = tool.aq_inner.aq_parent
+    reindex_client_tree_allowed_roles()
+    backfill_linked_client_uid()
+    drop_auto_create_client_group_record(portal)
+
+
+def reindex_client_tree_allowed_roles():
+    """Reindex `allowedRolesAndUsers` on every IClient + IClientAware
+    object so they carry the new `client:<uid>` token.
+    """
+    from bika.lims.interfaces import IClient
+    from bika.lims.interfaces import IClientAwareMixin
+
+    logger.info("Reindexing allowedRolesAndUsers on client-tree content ...")
+    seen = set()
+    total = 0
+    for catalog_id in CLIENT_TREE_CATALOGS:
+        catalog = api.get_tool(catalog_id, default=None)
+        if catalog is None:
+            continue
+        brains = catalog.unrestrictedSearchResults({})
+        for brain in brains:
+            uid = getattr(brain, "UID", None)
+            if uid and uid in seen:
+                continue
+            try:
+                obj = brain.getObject()
+            except (AttributeError, KeyError):
+                continue
+            if obj is None:
+                continue
+            if not (IClient.providedBy(obj)
+                    or IClientAwareMixin.providedBy(obj)):
+                continue
+            obj.reindexObject(idxs=["allowedRolesAndUsers"])
+            if uid:
+                seen.add(uid)
+            total += 1
+            if total % 500 == 0:
+                logger.info("  ... reindexed %s objects" % total)
+    logger.info(
+        "Reindexed allowedRolesAndUsers on %s client-tree objects" % total)
+
+
+def backfill_linked_client_uid():
+    """Set the `linked_client_uid` user property for every existing
+    client contact that is already linked to a user account.
+    """
+    from bika.lims.interfaces import IClient
+    from senaite.core.content.contact import CLIENT_UID_KEY
+    from senaite.core.content.contact import _set_user_property
+
+    logger.info("Backfilling `linked_client_uid` on linked users ...")
+    contacts = api.search({"portal_type": "Contact"}, CONTACT_CATALOG)
+    updated = 0
+    for brain in contacts:
+        contact = api.get_object(brain)
+        parent = contact.aq_parent
+        if not IClient.providedBy(parent):
+            continue
+        user = contact.getUser()
+        if user is None:
+            continue
+        _set_user_property(user, CLIENT_UID_KEY, api.get_uid(parent))
+        updated += 1
+    logger.info(
+        "Backfilled `linked_client_uid` on %s users" % updated)
+
+
+def drop_auto_create_client_group_record(portal):
+    """Delete the obsolete `auto_create_client_group` registry record.
+
+    The setting moved out of the registry when client access switched
+    to the dynamic role provider. Leaving the record behind would
+    only confuse future readers.
+    """
+    registry = api.get_tool("portal_registry", default=None)
+    if registry is None:
+        return
+    key = ("senaite.core.registry.schema.IClientRegistry."
+           "auto_create_client_group")
+    if key in registry.records:
+        del registry.records[key]
+        logger.info("Removed orphan registry record '%s'" % key)
+
+
+@upgradestep(product, version)
+def remove_client_manage_access_action(tool):
+    """Drop the `manage_access` action from the Client FTI.
+
+    The action linked to @@sharing on every Client; sharing on the
+    client tree is now disabled because access is granted dynamically
+    by the ILocalRoleProvider. Removing the action prevents admins
+    from clicking through to the (now NotFound) view.
+    """
+    types_tool = api.get_tool("portal_types")
+    fti = types_tool.getTypeInfo("Client")
+    if fti is None:
+        return
+    actions = list(fti.listActions())
+    target_indices = [str(i) for i, a in enumerate(actions)
+                      if a.id == "manage_access"]
+    if not target_indices:
+        return
+    fti.deleteActions(target_indices)
+    logger.info("Removed 'manage_access' action from Client FTI")
+
+
+@upgradestep(product, version)
+def remove_legacy_client_groups(tool):
+    """Remove the per-client group + Owner local-role grant on every
+    Client.
+
+    Pre-2.7 SENAITE auto-created a group per Client (`Client.GROUP_KEY`
+    stored the id on the client object) and granted that group the
+    local Owner role on the client folder. With #2934 client users get
+    Owner + Client dynamically via the ILocalRoleProvider, so the
+    legacy group and its persisted local-role grant are dead weight.
+
+    For each Client:
+
+    1. Find the stored group id and the matching group in
+       portal_groups. Skip the client if no id is stored or the group
+       no longer exists.
+    2. Skip the client if the persisted group id no longer matches the
+       client's own stored ``_client_group_id`` — protects against an
+       admin who renamed the group manually.
+    3. Remove the corresponding entry from ``__ac_local_roles__`` on
+       the client folder via ``manage_delLocalRoles``. This triggers
+       ``reindexObjectSecurity`` recursively so the stale
+       ``user:<group_id>`` token drops out of ``allowedRolesAndUsers``
+       on every descendant. One-time cost; the new ``client:<uid>``
+       token added by #2934 already carries client access from here on.
+    4. Remove the group from portal_groups.
+    5. Clear the ``_client_group_id`` attribute on the client.
+    """
+    portal_groups = api.get_tool("portal_groups")
+    clients = api.search({"portal_type": "Client"}, CLIENT_CATALOG)
+    total = len(clients)
+    removed_groups = 0
+    cleared_local_roles = 0
+    for num, brain in enumerate(clients, start=1):
+        client = api.get_object(brain)
+        if num % 50 == 0:
+            logger.info("Cleaning client groups: %s/%s" % (num, total))
+        group_id = getattr(client, "_client_group_id", None)
+        if not group_id:
+            continue
+        if group_id in (client.__ac_local_roles__ or {}):
+            client.manage_delLocalRoles([group_id])
+            # `manage_delLocalRoles` only mutates `__ac_local_roles__`;
+            # the catalog still carries the stale `user:<group_id>`
+            # token on every descendant until reindexObjectSecurity
+            # walks the subtree. Paying the cost once here is the whole
+            # point of this upgrade step.
+            client.reindexObjectSecurity()
+            cleared_local_roles += 1
+            logger.info(
+                "Cleared Owner local role for group '%s' on client '%s'"
+                % (group_id, client.getName()))
+        group = portal_groups.getGroupById(group_id)
+        if group is not None:
+            portal_groups.removeGroup(group_id)
+            removed_groups += 1
+            logger.info(
+                "Removed legacy client group '%s' for client '%s'"
+                % (group_id, client.getName()))
+        try:
+            delattr(client, "_client_group_id")
+        except AttributeError:
+            pass
+    logger.info(
+        "Legacy client-group cleanup: %s groups removed, "
+        "%s local-role grants cleared on %s clients"
+        % (removed_groups, cleared_local_roles, total))

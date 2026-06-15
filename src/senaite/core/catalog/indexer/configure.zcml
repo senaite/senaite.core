@@ -8,6 +8,15 @@
   <adapter name="sortable_title" factory=".generic.sortable_title"/>
   <adapter name="title" factory=".generic.title"/>
 
+  <!-- allowedRolesAndUsers: append a stable `client:<uid>` token for
+       any client-tree content so access can be granted dynamically
+       via the asking user's `linked_client_uid` member property
+       without ever rewriting the catalog when contacts are linked. -->
+  <adapter name="allowedRolesAndUsers"
+      factory=".allowedrolesandusers.allowedRolesAndUsers_for_client"/>
+  <adapter name="allowedRolesAndUsers"
+      factory=".allowedrolesandusers.allowedRolesAndUsers_for_client_aware"/>
+
   <!-- Client Indexer -->
   <adapter name="client_searchable_text" factory=".client.client_searchable_text"/>
 
