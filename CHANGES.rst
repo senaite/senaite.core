@@ -5,6 +5,14 @@ Changelog
 ------------------
 
 - #2932 Fix validation for formulas with duplicate keywords
+- #2945 Add rangecomment support to dynamic results ranges
+- #2947 Fix barcodes missing from PDFs behind a virtual-host path
+- #2940 Grant the global 'Client' role to users with linked_client_uid set
+- #2939 Persist linked user properties through the mutable properties plugin
+- #2938 Remove legacy per-client groups and persisted Owner local roles
+- #2937 Disable @@sharing on the client tree
+- #2934 Grant client access via a dynamic local-role provider instead of per-client groups
+- #2933 Hide 'Client' role column and strip direct Client role assignments
 - #2928 Fix ASTM consumer boundary bugs (sender shape, instrument cascade, sample fallback)
 - #2925 Add 'reattach' workflow transition to re-link detached partitions to their primary
 - #2926 Strip surrounding whitespace from analysis unit choices so configuration typos don't break the round-trip

@@ -393,10 +393,26 @@ def senaite_url_fetcher(url):
 
     logger.info("Fetching URL '{}' for WeasyPrint".format(url))
 
+    # `data:` URIs (e.g. the data:image/svg+xml barcodes embedded in stickers)
+    # are handled natively by WeasyPrint's default fetcher. Resolving them to a
+    # physical path makes no sense and raises `ValueError` when the request is
+    # served under a virtual-host *path* (e.g. behind a path-based reverse
+    # proxy), which would silently drop the image from the generated PDF.
+    if url.lower().startswith("data:"):
+        return default_url_fetcher(url)
+
     # get the pyhsical path from the URL
     request = api.get_request()
     host = request.get_header("HOST")
-    path = "/".join(request.physicalPathFromURL(url))
+    try:
+        path = "/".join(request.physicalPathFromURL(url))
+    except ValueError:
+        # The URL does not match the current virtual hosting context (e.g. an
+        # external resource, or a path that does not share the virtual-host
+        # root). Let WeasyPrint's default fetcher deal with it.
+        logger.info("URL '{}' does not match the virtual hosting context, "
+                    "passing over to the default URL fetcher...".format(url))
+        return default_url_fetcher(url)
 
     # fetch the object by sub-request
     portal = api.get_portal()
