@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2932 Fix validation for formulas with duplicate keywords
 - #2945 Add rangecomment support to dynamic results ranges
 - #2947 Fix barcodes missing from PDFs behind a virtual-host path
 - #2940 Grant the global 'Client' role to users with linked_client_uid set
