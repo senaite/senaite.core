@@ -4,7 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
-- #xxxx Remove twitter-together workflow and tweet drafts
+- #2951 Remove twitter-together workflow and tweet drafts
 - #2932 Fix validation for formulas with duplicate keywords
 - #2945 Add rangecomment support to dynamic results ranges
 - #2947 Fix barcodes missing from PDFs behind a virtual-host path
