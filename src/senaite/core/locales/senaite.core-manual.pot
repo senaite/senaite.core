@@ -95,3 +95,152 @@ msgstr ""
 # senaite.core: Sidebar loading state
 msgid "Loading navigation..."
 msgstr ""
+
+
+# senaite.app.listing: Saved filter presets — toggle title + menu header
+msgid "Saved filters"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — menu subtitle
+msgid "per listing"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — empty state
+msgid "No saved filters yet."
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — footer button to save the current view
+msgid "Save current view"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — inline editor placeholder
+msgid "Filter name"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — default name when saving
+msgid "My filter"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — row action tooltip
+msgid "Rename filter"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — row action tooltip
+msgid "Delete filter"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — star action tooltip
+msgid "Auto-apply on open"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — star action tooltip when active
+msgid "Stop auto-applying"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — micro-tag on the default preset
+msgid "auto"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — dirty indicator on the applied preset
+msgid "modified"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — apply button tooltip
+msgid "Apply this filter"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — release button tooltip on the applied preset
+msgid "Click to release this filter"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — Update preset action tooltip
+msgid "Update preset with current view"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — Revert action tooltip
+msgid "Discard edits and restore preset"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — dirty tag hover tooltip
+msgid "Current view differs from saved"
+msgstr ""
+
+# senaite.app.listing: Column header — sort arrow tooltip / aria-label
+msgid "Sort ascending"
+msgstr ""
+
+# senaite.app.listing: Column header — sort arrow tooltip / aria-label
+msgid "Sort descending"
+msgstr ""
+
+# senaite.app.listing: Search box — undo / reset-view button tooltip
+msgid "Reset view"
+msgstr ""
+
+# senaite.app.listing: Search box — undo button tooltip when only clearing search
+msgid "Clear search"
+msgstr ""
+
+# senaite.app.listing: Column-filter row — searchable-select placeholder
+msgid "Type to filter..."
+msgstr ""
+
+# senaite.app.listing: Column-filter row — text-input placeholder
+msgid "Filter..."
+msgstr ""
+
+# senaite.app.listing: Column-filter row — boolean select placeholder
+msgid "-- Select --"
+msgstr ""
+
+# senaite.app.listing: Column-filter row — clear button tooltip
+msgid "Clear filter"
+msgstr ""
+
+# senaite.app.listing: Column config — trigger button label
+msgid "Configure"
+msgstr ""
+
+# senaite.app.listing: Column config — search input placeholder
+msgid "Search columns…"
+msgstr ""
+
+# senaite.app.listing: Column config — visible-section header
+msgid "Visible"
+msgstr ""
+
+# senaite.app.listing: Column config — bulk action button
+msgid "Hide all"
+msgstr ""
+
+# senaite.app.listing: Column config — counter title attribute
+msgid "Visible / total columns"
+msgstr ""
+
+# senaite.app.listing: Column config — drag handle tooltip / aria-label
+msgid "Drag to reorder"
+msgstr ""
+
+# senaite.app.listing: Column config — eye-slash button tooltip / aria-label
+msgid "Hide this column"
+msgstr ""
+
+# senaite.app.listing: Column config — plus button tooltip / aria-label
+msgid "Show this column"
+msgstr ""
+
+# senaite.app.listing: Column config — reset link tooltip
+msgid "Reset to default columns and order"
+msgstr ""
+
+# senaite.app.listing: Column config — empty state for visible section with search
+msgid "No matches in visible columns."
+msgstr ""
+
+# senaite.app.listing: Column config — empty state when no columns are visible
+msgid "All columns are hidden."
+msgstr ""
+
+# senaite.app.listing: Column config — empty state for hidden section with search
+msgid "No matches in hidden columns."
+msgstr ""

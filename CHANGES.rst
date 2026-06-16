@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2945 Add rangecomment support to dynamic results ranges
+- #2950 Add translations for new senaite.app.listing UI strings
 - #2947 Fix barcodes missing from PDFs behind a virtual-host path
 - #2940 Grant the global 'Client' role to users with linked_client_uid set
 - #2939 Persist linked user properties through the mutable properties plugin
