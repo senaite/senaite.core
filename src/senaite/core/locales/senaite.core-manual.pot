@@ -84,6 +84,10 @@ msgstr ""
 msgid "Reset columns"
 msgstr ""
 
+# senaite.app.listing: Reset-columns button tooltip
+msgid "Reset column visibility and order to the defaults"
+msgstr ""
+
 # senaite.app.listing: Disable auto fetch transitions
 msgid "Disable auto fetch transitions"
 msgstr ""
