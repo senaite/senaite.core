@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #ISSUE Skip fields whose widget returns empty_marker in sample header submit
 - #2932 Fix validation for formulas with duplicate keywords
 - #2945 Add rangecomment support to dynamic results ranges
 - #2947 Fix barcodes missing from PDFs behind a virtual-host path
