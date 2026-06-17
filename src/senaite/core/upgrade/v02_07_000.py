@@ -2270,6 +2270,34 @@ CLIENT_TREE_CATALOGS = (
 
 
 @upgradestep(product, version)
+def reindex_dx_client_aware_allowed_roles(tool):
+    """Re-run `reindex_client_tree_allowed_roles` after the
+    `IClientAwareMixin` interface mismatch was fixed.
+
+    #2934 wired the new `allowedRolesAndUsers` indexer, the
+    dynamic client-role provider, and this very reindex step
+    against `bika.lims.interfaces.IClientAwareMixin` (the AT
+    marker). The DX `ClientAwareMixin` base class in
+    `senaite.core.content.mixins`, however, implements the
+    separate `senaite.core.interfaces.IClientAwareMixin`. The
+    `providedBy` check in the original step therefore
+    silently rejected every DX descendant -- including
+    `SamplePoint`, `SampleType`, and `AnalysisProfile` -- and
+    none of them ever received the new `client:<uid>` token.
+    Catalog queries from client users (e.g. the Excel-import
+    sample-point lookup) returned no hits even though the
+    objects exist and direct traversal works via the dynamic
+    role provider.
+
+    All four call sites now import `IClientAwareMixin` from
+    `senaite.core.interfaces`; this follow-up step iterates
+    the client-tree catalogs again so every DX descendant
+    picks up the missing token.
+    """
+    reindex_client_tree_allowed_roles()
+
+
+@upgradestep(product, version)
 def switch_to_dynamic_client_roles(tool):
     """Migrate persistent group/local-role access to the dynamic
     ILocalRoleProvider model.
@@ -2299,7 +2327,7 @@ def reindex_client_tree_allowed_roles():
     object so they carry the new `client:<uid>` token.
     """
     from bika.lims.interfaces import IClient
-    from bika.lims.interfaces import IClientAwareMixin
+    from senaite.core.interfaces import IClientAwareMixin
 
     logger.info("Reindexing allowedRolesAndUsers on client-tree content ...")
     seen = set()

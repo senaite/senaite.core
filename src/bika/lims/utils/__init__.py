@@ -38,7 +38,7 @@ from bika.lims.api import safe_unicode as u
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IClientAwareMixin
+from senaite.core.interfaces import IClientAwareMixin
 from DateTime import DateTime
 from plone.protect.utils import addTokenToUrl
 from plone.registry.interfaces import IRegistry

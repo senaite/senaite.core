@@ -20,10 +20,10 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IClientAwareMixin
 from borg.localrole.interfaces import ILocalRoleProvider
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFCore.utils import getToolByName
+from senaite.core.interfaces import IClientAwareMixin
 from zope.component import adapter
 from zope.interface import implementer
 

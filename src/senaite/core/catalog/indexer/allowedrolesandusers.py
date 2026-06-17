@@ -20,8 +20,8 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IClientAwareMixin
 from plone.indexer import indexer
+from senaite.core.interfaces import IClientAwareMixin
 from Products.CMFPlone.CatalogTool import \
     allowedRolesAndUsers as base_indexer_factory
 
