@@ -29,7 +29,7 @@ from plone.supermodel import model
 from Products.CMFCore import permissions
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
-from senaite.core.content.base import Container
+from senaite.core.content.mixins import ClientAwareMixin
 from senaite.core.interfaces import IResultsReport
 from senaite.core.schema import DatetimeField
 from senaite.core.schema import UIDReferenceField
@@ -265,11 +265,19 @@ class IResultsReportSchema(model.Schema):
 
 
 @implementer(IResultsReport, IResultsReportSchema)
-class ResultsReport(Container):
+class ResultsReport(ClientAwareMixin):
     """A results report for analysis requests, containing the report itself in
        pdf format. It includes information about the date when it was
        published, from whom, the report recipients (and their emails) and the
        publication mode
+
+    Extends `ClientAwareMixin` so the report carries the
+    `IClientAwareMixin` marker. Without it, the catalog
+    `allowedRolesAndUsers` indexer never appended the
+    `client:<uid>` token to the report's `senaite_catalog_report`
+    entry, and the per-client `ReportsListingView` query (filtered
+    via `BaseCatalog._listAllowedRolesAndUsers`) returned zero
+    rows for the client contact.
     """
     # Catalogs where this type will be catalogued
     _catalogs = [REPORT_CATALOG]
