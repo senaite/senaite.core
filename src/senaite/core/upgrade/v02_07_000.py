@@ -2369,8 +2369,13 @@ def reindex_client_tree_allowed_roles():
                     update_metadata=False)
             try:
                 obj._p_deactivate()
-            except Exception:
-                pass
+            except Exception as exc:
+                # `_p_deactivate` is a cache-eviction optimisation;
+                # failures here are non-fatal and the reindex above
+                # has already persisted. Log at debug for
+                # troubleshooting but do not interrupt the upgrade.
+                logger.debug(
+                    "_p_deactivate failed on %r: %s" % (obj, exc))
             if uid:
                 seen.add(uid)
             total += 1
