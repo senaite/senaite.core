@@ -113,7 +113,14 @@ class BaseCatalog(CatalogTool):
         result = super(BaseCatalog, self)._listAllowedRolesAndUsers(user)
         try:
             client_uid = user.getProperty("linked_client_uid", "") or ""
-        except Exception:
+        except Exception as exc:
+            # A broken `getProperty` would silently strip the
+            # client-token from every query and lock the linked
+            # user out of their own data. Log loud enough to be
+            # traceable, but keep the query itself working.
+            logger.debug(
+                "linked_client_uid lookup failed on user %r: %s"
+                % (user, exc))
             client_uid = ""
         if client_uid:
             result.append("client:" + client_uid)

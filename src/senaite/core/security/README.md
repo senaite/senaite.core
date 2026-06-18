@@ -137,6 +137,77 @@ who currently have access. Linking or unlinking a Contact therefore
 does not require a reindex.
 
 
+## Security model invariants (what stops cross-client leakage)
+
+The dynamic role mechanism above keeps a linked client contact out
+of other clients' data through three layered defences. Each layer
+is necessary; none of them is sufficient on its own. New code
+touching the client tree must respect every one.
+
+### Defence 1: identity-bound catalog token
+
+Every client-tree brain carries a stable `client:<client_uid>`
+token in its `allowedRolesAndUsers` index, and every SENAITE
+catalog (subclasses of `BaseCatalog`) injects the asking user's
+`client:<linked_client_uid>` token at query time. Brains and
+queries match only when both UIDs are identical.
+
+This is what protects **identity-scoped catalog listings** from
+returning another client's content. It is independent of role
+names and persistent local roles.
+
+### Defence 2: per-view permission stricter than `View`
+
+The `View` permission's role list in the portal rolemap includes
+`Client`, and every linked client contact carries the global
+`Client` role from `GlobalClientRoleProvider`. Local-role
+acquisition propagates `Client` from the site root to every
+descendant. Combined with `View acquired="True"` in most workflow
+states, this means a linked client user technically has `View`
+permission on every client-tree object in the portal, not just
+their own.
+
+The cross-client isolation on **direct URL access** therefore
+relies on each `<browser:page>` registration declaring a
+permission stricter than `View` — typically
+`senaite.core.permissions.ManageAnalysisRequests`, which is only
+granted to `Owner` (per-context, on the user's own client tree
+via `ClientLinkRoleProvider`) and to lab roles.
+
+> **Rule for new views on `IClient`, `IBatch`, `IAnalysisRequest`,
+> `IAnalysis`, `IResultsReport`, `IAttachment` and any other
+> client-tree type**: do not register them with
+> `permission="zope2.View"` or `permission="cmf.View"`. Use a
+> per-context permission such as
+> `senaite.core.permissions.ManageAnalysisRequests` (read views)
+> or `senaite.core.permissions.ModifyPortalContent` (edit views),
+> both of which only grant to `Owner` + lab roles.
+
+### Defence 3: query path-scoping
+
+Listings that traverse the client subtree (e.g. the per-Client
+`ReportsListingView`, the per-Batch `analysisrequests` view) add
+an explicit `path` filter scoped to `api.get_path(self.context)`
+to the catalog query. This is belt-and-suspenders next to
+defence 1: even if a catalog bug skips the
+`client:<uid>` injection one day, the path filter still constrains
+the result set to the current container's subtree.
+
+### Why all three defences together
+
+The global `Client` role is the legacy compatibility shim that
+makes the sidebar's `View Navigation` permission resolve for
+client users. Removing it would break the UI. Replacing it with
+a strictly per-context grant would force `getAllRoles` to
+enumerate every linked user, which is the very catalog-reindex
+storm #2934 was written to eliminate.
+
+The cost of keeping the global `Client` grant is that **role
+names alone cannot enforce cross-client isolation**. Defences 1
+and 2 close that gap: defence 1 inside the catalog query, defence
+2 at every direct-URL entry point.
+
+
 ## `IClientAwareMixin` notes
 
 Two interfaces share the name `IClientAwareMixin`:

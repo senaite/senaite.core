@@ -21,6 +21,7 @@
 from bika.lims import api
 from bika.lims.interfaces import IClient
 from plone.indexer import indexer
+from senaite.core import logger
 from senaite.core.interfaces import IClientAwareMixin
 from Products.CMFPlone.CatalogTool import \
     allowedRolesAndUsers as base_indexer_factory
@@ -38,7 +39,13 @@ def _get_client_uid(instance):
         return ""
     try:
         return getter() or ""
-    except Exception:
+    except Exception as exc:
+        # A broken `getClientUID` would silently strip every
+        # `client:<uid>` token at next reindex, so log loud
+        # enough that the cause is traceable while keeping
+        # the catalog write itself non-fatal.
+        logger.debug(
+            "getClientUID failed on %r: %s" % (instance, exc))
         return ""
 
 
