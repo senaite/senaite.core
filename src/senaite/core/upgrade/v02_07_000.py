@@ -2325,6 +2325,18 @@ def switch_to_dynamic_client_roles(tool):
 def reindex_client_tree_allowed_roles():
     """Reindex `allowedRolesAndUsers` on every IClient + IClientAware
     object so they carry the new `client:<uid>` token.
+
+    Bypasses `reindexObject` (and therefore the
+    `CatalogMultiplexProcessor` queue) and writes the single index
+    directly on every catalog the object lives in. Without this,
+    the queue would re-fan the reindex to every mapped catalog at
+    transaction-commit time, redo work that has just been done, and
+    dominate the upgrade-step runtime on production-size datasets.
+
+    Per-object: deactivate from the ZODB cache after the write to
+    keep the cache from filling up over very large catalogs;
+    savepoint every 5000 instead of every 500 because each item is
+    a single index write with no metadata refresh.
     """
     from bika.lims.interfaces import IClient
     from senaite.core.interfaces import IClientAwareMixin
@@ -2350,12 +2362,22 @@ def reindex_client_tree_allowed_roles():
             if not (IClient.providedBy(obj)
                     or IClientAwareMixin.providedBy(obj)):
                 continue
-            obj.reindexObject(idxs=["allowedRolesAndUsers"])
+            for cat in api.get_catalogs_for(obj):
+                cat.catalog_object(
+                    obj,
+                    idxs=["allowedRolesAndUsers"],
+                    update_metadata=False)
+            try:
+                obj._p_deactivate()
+            except Exception:
+                pass
             if uid:
                 seen.add(uid)
             total += 1
             if total % 500 == 0:
                 logger.info("  ... reindexed %s objects" % total)
+            if total % 5000 == 0:
+                transaction.savepoint(optimistic=True)
     logger.info(
         "Reindexed allowedRolesAndUsers on %s client-tree objects" % total)
 
