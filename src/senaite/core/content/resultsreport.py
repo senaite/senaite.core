@@ -29,6 +29,7 @@ from plone.supermodel import model
 from Products.CMFCore import permissions
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
+from senaite.core.content.base import Container
 from senaite.core.content.mixins import ClientAwareMixin
 from senaite.core.interfaces import IResultsReport
 from senaite.core.schema import DatetimeField
@@ -265,7 +266,7 @@ class IResultsReportSchema(model.Schema):
 
 
 @implementer(IResultsReport, IResultsReportSchema)
-class ResultsReport(ClientAwareMixin):
+class ResultsReport(Container, ClientAwareMixin):
     """A results report for analysis requests, containing the report itself in
        pdf format. It includes information about the date when it was
        published, from whom, the report recipients (and their emails) and the
