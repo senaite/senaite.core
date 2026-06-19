@@ -23,10 +23,13 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.interfaces import IHideActionsMenu
 from zope.browsermenu.interfaces import IBrowserMenu
 from zope.component import getUtility
+from zope.i18n import translate
 
 HIDE_WF_ITEMS = [
     "workflow-transition-advanced"
 ]
+
+WORKFLOW_I18N_DOMAIN = "senaite.core"
 
 
 class ContentMenuProvider(Base):
@@ -38,6 +41,19 @@ class ContentMenuProvider(Base):
         if IHideActionsMenu.providedBy(self.context):
             return False
         return True
+
+    def translate_workflow_msg(self, msg):
+        """Translate a workflow state/transition msgid against the
+        current request locale.
+
+        Used by the TAL template to pre-translate the state title so
+        the React workflow menu renders the same value as the SSR
+        skeleton (no English flash).
+        """
+        if not msg:
+            return msg
+        return translate(
+            msg, domain=WORKFLOW_I18N_DOMAIN, context=self.request)
 
     def fiddle_menu_item(self, item):
         """A helper to  process the menu items before rendering
