@@ -11,14 +11,14 @@ Example
 
 Given is an Excel with the following minimal set of columns:
 
-------- -------- --- ---
-Keyword Method   min max
-------- -------- --- ---
-Ca      Method A 1   2
-Ca      Method B 3   4
-Mg      Method A 5   6
-Mg      Method B 7   8
-------- -------- --- ---
+------- -------- --- --- ------------
+Keyword Method   min max rangecomment
+------- -------- --- --- ------------
+Ca      Method A 1   2   Ca Method A
+Ca      Method B 3   4   Ca Method B
+Mg      Method A 5   6   Mg Method A
+Mg      Method B 7   8   Mg Method B
+------- -------- --- --- ------------
 
 This Excel is uploaded to an *Dynamic Analysis Specification* object, which is
 linked to an Analysis Specification for the Sample Type "Water".
@@ -93,11 +93,11 @@ Let's create first a small helper function that generates an Excel for us:
 
 Then we create the data according to the example given above:
 
-    >>> data = """Keyword,Method,min,max
-    ... Ca,Method A,1,2
-    ... Ca,Method B,3,4
-    ... Mg,Method A,5,6
-    ... Mg,Method B,7,8"""
+    >>> data = """Keyword,Method,min,max,rangecomment
+    ... Ca,Method A,1,2,Ca Method A
+    ... Ca,Method B,3,4,Ca Method B
+    ... Mg,Method A,5,6,Mg Method A
+    ... Mg,Method B,7,8,Mg Method B"""
 
 Now we can create a Dynamic Analysis Specification Object:
 
@@ -108,19 +108,19 @@ We can get now directly the parsed header:
 
     >>> header = ds.get_header()
     >>> header
-    [u'Keyword', u'Method', u'min', u'max']
+    [u'Keyword', u'Method', u'min', u'max', u'rangecomment']
 
 And the result ranges:
 
     >>> rr = ds.get_specs()
     >>> map(lambda r: [r.get(k) for k in header], rr)
-    [[u'Ca', u'Method A', u'1', u'2'], [u'Ca', u'Method B', u'3', u'4'], [u'Mg', u'Method A', u'5', u'6'], [u'Mg', u'Method B', u'7', u'8']]
+    [[u'Ca', u'Method A', u'1', u'2', u'Ca Method A'], [u'Ca', u'Method B', u'3', u'4', u'Ca Method B'], [u'Mg', u'Method A', u'5', u'6', u'Mg Method A'], [u'Mg', u'Method B', u'7', u'8', u'Mg Method B']]
 
 We can also get the specs by Keyword:
 
     >>> mg_rr = ds.get_by_keyword()["Mg"]
     >>> map(lambda r: [r.get(k) for k in header], mg_rr)
-    [[u'Mg', u'Method A', u'5', u'6'], [u'Mg', u'Method B', u'7', u'8']]
+    [[u'Mg', u'Method A', u'5', u'6', u'Mg Method A'], [u'Mg', u'Method B', u'7', u'8', u'Mg Method B']]
 
 
 Excel files in the wild often pad the used range with trailing empty cells
@@ -142,7 +142,7 @@ via ``getattr(obj, column)`` -- which raises ``TypeError`` on a non-string:
     >>> ds_padded = api.create(setup.dynamicanalysisspecs, "DynamicAnalysisSpec")
     >>> ds_padded.specs_file = to_excel_with_padding(data)
     >>> ds_padded.get_header()
-    [u'Keyword', u'Method', u'min', u'max']
+    [u'Keyword', u'Method', u'min', u'max', u'rangecomment']
 
 
 Hooking in a Dynamic Analysis Specification
@@ -202,6 +202,8 @@ The specification of the `Ca` Analysis with the Method `Method A`:
     >>> ca_spec = ca.getResultsRange()
     >>> ca_spec["min"], ca_spec["max"]
     ('1', '2')
+    >>> ca_spec["rangecomment"]
+    'Ca Method A'
 
 Now let's change the `Ca` Analysis Method to `Method B`:
 
@@ -217,12 +219,16 @@ And get the results range again:
     >>> ca_spec = ca.getResultsRange()
     >>> ca_spec["min"], ca_spec["max"]
     ('3', '4')
+    >>> ca_spec["rangecomment"]
+    'Ca Method B'
 
 The same now with the `Mg` Analysis in one run:
 
     >>> mg_spec = mg.getResultsRange()
     >>> mg_spec["min"], mg_spec["max"]
     ('5', '6')
+    >>> mg_spec["rangecomment"]
+    'Mg Method A'
 
     >>> mg.setMethod(method_b)
 
@@ -234,6 +240,8 @@ Unset and set the specification again:
     >>> mg_spec = mg.getResultsRange()
     >>> mg_spec["min"], mg_spec["max"]
     ('7', '8')
+    >>> mg_spec["rangecomment"]
+    'Mg Method B'
 
 
 Prioritized ranges
@@ -245,21 +253,21 @@ range that will eventually be used.
 
 Update our dynamic specification with the following data:
 
-------- -------- --- ---
-Keyword Method   min max
-------- -------- --- ---
-Ca               1   2
-Ca      Method B 3   4
-Mg               5   6
-Mg               7   8
-------- -------- --- ---
+------- -------- --- --- ------------
+Keyword Method   min max rangecomment
+------- -------- --- --- ------------
+Ca               1   2   Ca Generic
+Ca      Method B 3   4   Ca Method B
+Mg               5   6   Mg Generic
+Mg               7   8   Mg Priority
+------- -------- --- --- ------------
 
     >>> original_data = ds.specs_file
-    >>> data = """Keyword,Method,min,max
-    ... Ca,,1,2
-    ... Ca,Method B,3,4
-    ... Mg,,5,6
-    ... Mg,,7,8"""
+    >>> data = """Keyword,Method,min,max,rangecomment
+    ... Ca,,1,2,Ca Generic
+    ... Ca,Method B,3,4,Ca Method B
+    ... Mg,,5,6,Mg Generic
+    ... Mg,,7,8,Mg Priority"""
     >>> ds.specs_file = to_excel(data)
 
 Create a new sample with Analyses and Specification:
@@ -274,6 +282,8 @@ assigned) is returned:
     >>> rr = ca.getResultsRange()
     >>> rr["min"], rr["max"]
     ('1', '2')
+    >>> rr["rangecomment"]
+    'Ca Generic'
 
 If we assign the "Method B" to the analysis "Ca", the range with "Method B"
 explicitely set is returned though:
@@ -284,6 +294,8 @@ explicitely set is returned though:
     >>> rr = ca.getResultsRange()
     >>> rr["min"], rr["max"]
     ('3', '4')
+    >>> rr["rangecomment"]
+    'Ca Method B'
 
 However, if "Method A" is assigned to the analysis "Ca", the valid range
 becomes the one without a method explicitely set:
@@ -294,6 +306,8 @@ becomes the one without a method explicitely set:
     >>> rr = ca.getResultsRange()
     >>> rr["min"], rr["max"]
     ('1', '2')
+    >>> rr["rangecomment"]
+    'Ca Generic'
 
 Same if we use a method that is not explicitely considered:
 
@@ -304,6 +318,8 @@ Same if we use a method that is not explicitely considered:
     >>> rr = ca.getResultsRange()
     >>> rr["min"], rr["max"]
     ('1', '2')
+    >>> rr["rangecomment"]
+    'Ca Generic'
 
 If we don't assign any method to "Mg", system finds matches with both specs,
 but returns the range that is more specific. In this case, ('7', '8') because
@@ -312,6 +328,8 @@ is the range with a highest 'min' value:
     >>> rr = mg.getResultsRange()
     >>> rr["min"], rr["max"]
     ('7', '8')
+    >>> rr["rangecomment"]
+    'Mg Priority'
 
 And we get same result regardless of the method, cause none of the ranges for
 "Mg" service have a method set:
@@ -322,6 +340,8 @@ And we get same result regardless of the method, cause none of the ranges for
     >>> rr = mg.getResultsRange()
     >>> rr["min"], rr["max"]
     ('7', '8')
+    >>> rr["rangecomment"]
+    'Mg Priority'
 
     >>> mg.setMethod(method_b)
     >>> sample.setSpecification(None)
@@ -329,6 +349,8 @@ And we get same result regardless of the method, cause none of the ranges for
     >>> rr = mg.getResultsRange()
     >>> rr["min"], rr["max"]
     ('7', '8')
+    >>> rr["rangecomment"]
+    'Mg Priority'
 
 Restore the dynamic specifications with original values:
 

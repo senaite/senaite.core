@@ -3,6 +3,29 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove 'sharing' alias from Client FTI"
+      description="Drop the `sharing` method alias on the Client FTI.
+                   The alias still routed `/&lt;client&gt;/sharing` to
+                   @@sharing after `manage_access` was removed; the
+                   alias is dead weight once access is granted
+                   dynamically by the ILocalRoleProvider."
+      source="2743"
+      destination="2744"
+      handler=".v02_07_000.remove_client_sharing_alias"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Drop 'getGroupId' column from client catalog"
+      description="Remove the `getGroupId` metadata column from
+                   `senaite_catalog_client`. The column mirrored the
+                   legacy per-client group id and now only carries
+                   stale values."
+      source="2742"
+      destination="2743"
+      handler=".v02_07_000.drop_client_catalog_group_id_column"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Remove legacy per-client groups and persisted Owner local roles"
       description="Iterate every Client, remove the per-client group
                    created by the legacy auto-create mechanism, clear

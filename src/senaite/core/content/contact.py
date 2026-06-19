@@ -49,6 +49,9 @@ CONTACT_UID_KEY = "linked_contact_uid"
 CLIENT_UID_KEY = "linked_client_uid"
 
 
+MUTABLE_PROPERTIES_PLUGIN_ID = "mutable_properties"
+
+
 def _set_user_property(user, key, value):
     """Persist a string property on a user's mutable property storage.
 
@@ -62,6 +65,19 @@ def _set_user_property(user, key, value):
     new user to a contact also registers the property for the first
     time). The plugin's sheet, by contrast, reflects current
     portal_memberdata.propertyMap on every call.
+
+    Prefers the named `mutable_properties` plugin so a custom PAS
+    layout that puts another writable property plugin earlier in the
+    interface registration order cannot intercept the write. Falls
+    back to the IPropertiesPlugin walk only when that named plugin
+    is absent. Raises `RuntimeError` if no plugin accepts the write
+    so callers (and tests) can surface the failure instead of seeing
+    a silent loss.
+
+    :param user: PAS user object (the one returned by `getUserById`).
+    :param key: property name to write.
+    :param value: string value to persist (use `""` to clear).
+    :raises RuntimeError: when no property plugin can persist `key`.
     """
     portal_memberdata = user._tool
     if not portal_memberdata.hasProperty(key):
@@ -69,24 +85,40 @@ def _set_user_property(user, key, value):
         logger.info("Registered user property {}".format(key))
 
     acl_users = portal_memberdata.acl_users
-    for plugin_id, plugin in acl_users.plugins.listPlugins(IPropertiesPlugin):
-        sheet = plugin.getPropertiesForUser(user)
-        if sheet is None:
-            continue
-        # Some property plugins return a plain dict rather than a
-        # PropertySheet (e.g. pas.plugins.ldap for non-LDAP users);
-        # ignore those — we want the mutable_properties plugin's
-        # sheet, which exposes hasProperty/setProperty.
-        has = getattr(sheet, "hasProperty", None)
-        setter = getattr(sheet, "setProperty", None)
-        if not callable(has) or not callable(setter):
-            continue
-        if not has(key):
-            continue
-        setter(user, key, value)
+    plugin = acl_users.get(MUTABLE_PROPERTIES_PLUGIN_ID, None)
+    if _try_write_property(plugin, user, key, value):
         return
-    logger.warn(
-        "No mutable properties plugin accepted '{}'".format(key))
+
+    # Fallback: walk every IPropertiesPlugin in registration order
+    # and write to the first sheet that exposes `hasProperty` /
+    # `setProperty` and already knows about `key`. Some property
+    # plugins return a plain dict rather than a property sheet (e.g.
+    # `pas.plugins.ldap` for non-LDAP users); those get skipped.
+    for _id, plugin in acl_users.plugins.listPlugins(IPropertiesPlugin):
+        if _try_write_property(plugin, user, key, value):
+            return
+
+    raise RuntimeError(
+        "No mutable properties plugin accepted '{}' for user '{}'"
+        .format(key, user.getId()))
+
+
+def _try_write_property(plugin, user, key, value):
+    """Attempt to persist `key` via `plugin`. Returns True on success.
+    """
+    if plugin is None:
+        return False
+    sheet = plugin.getPropertiesForUser(user)
+    if sheet is None:
+        return False
+    has = getattr(sheet, "hasProperty", None)
+    setter = getattr(sheet, "setProperty", None)
+    if not callable(has) or not callable(setter):
+        return False
+    if not has(key):
+        return False
+    setter(user, key, value)
+    return True
 
 
 class IContactSchema(IPersonSchema):
@@ -305,10 +337,6 @@ class Contact(Person):
         # grant the owner role
         sec_api.grant_local_roles_for(self, roles=["Owner"], user=user)
 
-        # Allow modificiations
-        sec_api.grant_permission_for(self, permissions.ModifyPortalContent,
-                                     ["Owner"], acquire=True)
-
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
 
@@ -347,10 +375,6 @@ class Contact(Person):
 
         # revoke the owner role
         sec_api.revoke_local_roles_for(self, roles=["Owner"], user=user)
-
-        # Disallow modificiations
-        sec_api.revoke_permission_for(self, permissions.ModifyPortalContent,
-                                      ["Owner"], acquire=True)
 
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
