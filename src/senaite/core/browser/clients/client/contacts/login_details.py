@@ -102,9 +102,20 @@ class ContactLoginDetailsView(BrowserView):
         out = {}
         plone_user = user.getUser()
         userid = plone_user.getId()
+        # Merge property sheets in "first non-empty wins" order. PAS
+        # lists sheets in plugin priority order (highest first); a
+        # blind ``out.update(dict(ps.propertyItems()))`` lets a later,
+        # lower-priority sheet (e.g. ``mutable_properties`` with an
+        # empty ``email`` for a linked LDAP user) clobber the value
+        # from a higher-priority sheet (e.g. ``pasldap``). That's the
+        # opposite of how ``member.getProperty`` resolves the same
+        # lookup. Mirror PAS semantics here instead.
         for sheet in plone_user.listPropertysheets():
             ps = plone_user.getPropertysheet(sheet)
-            out.update(dict(ps.propertyItems()))
+            for key, value in ps.propertyItems():
+                if value in (None, ""):
+                    continue
+                out.setdefault(key, value)
 
         portal = api.get_portal()
         mtool = getToolByName(self.context, "portal_membership")
