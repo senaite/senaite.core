@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2951 Remove twitter-together workflow and tweet drafts
 - #2949 Render NamedImage display widget at a scaled size via @@images
 - #2948 Fix UnicodeDecodeError in get_link when href contains non-ASCII bytes
 - #2945 Merge linked-user property sheets in first-non-empty-wins order
