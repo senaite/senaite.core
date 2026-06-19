@@ -44,7 +44,6 @@ from Products.ATContentTypes.content import schemata
 from Products.CMFCore import permissions
 from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
 from Products.CMFCore.utils import _checkPermission
-from Products.CMFPlone.RegistrationTool import get_member_by_login_name
 from senaite.core.browser.fields.multiupload import MultiUploadField
 from senaite.core.browser.widgets.multiuploadwidget import MultiUploadWidget
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
@@ -267,144 +266,10 @@ class Client(Organisation):
 
     security = ClassSecurityInfo()
     schema = schema
-    GROUP_KEY = "_client_group_id"
 
     def _renameAfterCreation(self, check_auto_id=False):
         from senaite.core.idserver import renameAfterCreation
         renameAfterCreation(self)
-
-    @property
-    def group_id(self):
-        """Client group ID
-        """
-        if not hasattr(self, self.GROUP_KEY):
-            setattr(self, self.GROUP_KEY, self._get_group_id())
-        return getattr(self, self.GROUP_KEY)
-
-    def _get_group_id(self):
-        """Get a valid group ID
-        """
-        # Try first the client ID
-        client_id = self.getClientID()
-        if self.is_valid_group_id(client_id):
-            return client_id
-
-        # Use the context ID
-        context_id = self.getId()
-        if self.is_valid_group_id(context_id):
-            return context_id
-
-        # Use the ID + prefix
-        prefix_id = "group_%s" % client_id or context_id
-        count = 0
-        while not self.is_valid_group_id(prefix_id):
-            count += 1
-            prefix_id = "group_%s_%s" % (count, client_id or context_id)
-
-        return prefix_id
-
-    def is_valid_group_id(self, group_id):
-        """Check if the group ID is valid
-
-        :param group_id: The group ID to validate
-        """
-        # Check for string
-        if not api.is_string(group_id):
-            return False
-
-        # Check for empty string
-        if not len(group_id) > 0:
-            return False
-
-        portal = api.get_portal()
-        # Check if the ID is already used by a user login
-        if get_member_by_login_name(portal, group_id, False):
-            return False
-
-        return True
-
-    @security.public
-    def get_group(self):
-        """Returns our client group
-
-        :returns: Client group object
-        """
-        portal_groups = api.get_tool("portal_groups")
-        return portal_groups.getGroupById(self.group_id)
-
-    @security.private
-    def create_group(self):
-        """Create a new client group
-
-        :returns: Client group object
-        """
-        group = self.get_group()
-
-        # return the existing Group immediately
-        if group:
-            return group
-
-        portal_groups = api.get_tool("portal_groups")
-        group_name = self.getName()
-
-        # Create a new Client Group
-        # NOTE: The global "Client" role is necessary for the client contacts
-        portal_groups.addGroup(self.group_id,
-                               roles=["Client"],
-                               title=group_name)
-
-        # Grant the group the "Owner" role on ourself
-        # NOTE: This will grant each member of this group later immediate
-        #       access to all exisiting objects with the same role.
-        self.manage_setLocalRoles(self.group_id, ["Owner"])
-
-        return self.get_group()
-
-    @security.private
-    def remove_group(self):
-        """Remove the own client group
-
-        :returns: True if the group was removed, otherwise False
-        """
-        group = self.get_group()
-        if not group:
-            return False
-        portal_groups = api.get_tool("portal_groups")
-        # Use the client ID for the group ID
-        portal_groups.removeGroup(self.group_id)
-        # also remove the group attribute
-        delattr(self, self.GROUP_KEY)
-        return True
-
-    @security.private
-    def add_user_to_group(self, user):
-        """Add a user to the client group
-
-        :param user: user/group object or user/group ID
-        :returns: list of new group IDs
-        """
-        group = self.get_group()
-        if not group:
-            group = self.create_group()
-        return api.user.add_group(group, user)
-
-    @security.private
-    def del_user_from_group(self, user):
-        """Add a user to the client group
-
-        :param user: user/group object or user/group ID
-        :returns: list of new group IDs
-        """
-        group = self.get_group()
-        if not group:
-            group = self.create_group()
-        return api.user.del_group(group, user)
-
-    @security.public
-    def getGroupId(self):
-        """Returns the id of the Plone's client-speficic group for this client
-        """
-        return self.group_id
 
     @security.public
     def getContactFromUsername(self, username):
