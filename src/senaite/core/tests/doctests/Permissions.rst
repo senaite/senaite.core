@@ -502,7 +502,8 @@ profile. The dynamic local-role provider grants access on the
 client tree from that property — no per-client group is created
 and no local role is persisted on the client folder::
 
-    >>> client.get_group() is None
+    >>> portal_groups = portal.portal_groups
+    >>> portal_groups.getGroupById(client.getId()) is None
     True
 
     >>> portal_user = portal.acl_users.getUserById(user.getId())
