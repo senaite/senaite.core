@@ -3,6 +3,24 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Reindex DX client-aware content after IClientAwareMixin interface mismatch fix"
+      description="The new `allowedRolesAndUsers` indexer wired by
+                   #2934 was registered against the AT-era
+                   `bika.lims.interfaces.IClientAwareMixin`, while the
+                   DX `ClientAwareMixin` base class implements
+                   `senaite.core.interfaces.IClientAwareMixin`. Every
+                   DX descendant (SamplePoint, SampleType,
+                   AnalysisProfile, ...) therefore never received the
+                   `client:&lt;uid&gt;` token, breaking catalog-level
+                   client access. The four call sites now import the
+                   DX interface; this step re-runs the client-tree
+                   reindex so existing DX content picks up the token."
+      source="2744"
+      destination="2745"
+      handler=".v02_07_000.reindex_dx_client_aware_allowed_roles"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Remove 'sharing' alias from Client FTI"
       description="Drop the `sharing` method alias on the Client FTI.
                    The alias still routed `/&lt;client&gt;/sharing` to

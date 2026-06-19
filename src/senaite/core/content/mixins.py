@@ -22,13 +22,21 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims.interfaces import IClient
 from bika.lims.utils import chain
-from senaite.core.content.base import Container
 from senaite.core.interfaces import IClientAwareMixin
 from zope.interface import implementer
 
 
 @implementer(IClientAwareMixin)
-class ClientAwareMixin(Container):
+class ClientAwareMixin(object):
+    """Method mixin that marks content as client-aware.
+
+    Folderish/non-folderish neutral: combine with
+    `senaite.core.content.base.Container` for folderish DX
+    content, with `senaite.core.content.base.Item` for
+    contentish (non-folderish) DX content, or use as a pure
+    interface marker on AT content via the `ClientAwareMixin`
+    in `bika.lims.content.clientawaremixin`.
+    """
     security = ClassSecurityInfo()
 
     @security.public

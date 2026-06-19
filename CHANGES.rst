@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2953 Fix IClientAwareMixin interface mismatch breaking client access on DX content
 - #2955 Defer workflow transition lookup with a React content-menu component
 - #2954 Declare i18n:domain on duration widget templates
 - #2952 Skip fields whose widget returns empty_marker in sample header submit

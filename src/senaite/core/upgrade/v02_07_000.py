@@ -2271,6 +2271,34 @@ CLIENT_TREE_CATALOGS = (
 
 
 @upgradestep(product, version)
+def reindex_dx_client_aware_allowed_roles(tool):
+    """Re-run `reindex_client_tree_allowed_roles` after the
+    `IClientAwareMixin` interface mismatch was fixed.
+
+    #2934 wired the new `allowedRolesAndUsers` indexer, the
+    dynamic client-role provider, and this very reindex step
+    against `bika.lims.interfaces.IClientAwareMixin` (the AT
+    marker). The DX `ClientAwareMixin` base class in
+    `senaite.core.content.mixins`, however, implements the
+    separate `senaite.core.interfaces.IClientAwareMixin`. The
+    `providedBy` check in the original step therefore
+    silently rejected every DX descendant -- including
+    `SamplePoint`, `SampleType`, and `AnalysisProfile` -- and
+    none of them ever received the new `client:<uid>` token.
+    Catalog queries from client users (e.g. the Excel-import
+    sample-point lookup) returned no hits even though the
+    objects exist and direct traversal works via the dynamic
+    role provider.
+
+    All four call sites now import `IClientAwareMixin` from
+    `senaite.core.interfaces`; this follow-up step iterates
+    the client-tree catalogs again so every DX descendant
+    picks up the missing token.
+    """
+    reindex_client_tree_allowed_roles()
+
+
+@upgradestep(product, version)
 def switch_to_dynamic_client_roles(tool):
     """Migrate persistent group/local-role access to the dynamic
     ILocalRoleProvider model.
@@ -2302,13 +2330,20 @@ def reindex_client_tree_allowed_roles():
     """Reindex `allowedRolesAndUsers` on every IClient + IClientAware
     object so they carry the new `client:<uid>` token.
 
-    Wakes every brain via `getObject()` to reindex the live object.
-    On large installs (50k+ samples) that loads everything into the
-    ZODB cache, so checkpoint a savepoint and deactivate each object
-    after the reindex to keep memory bounded.
+    Bypasses `reindexObject` (and therefore the
+    `CatalogMultiplexProcessor` queue) and writes the single index
+    directly on every catalog the object lives in. Without this,
+    the queue would re-fan the reindex to every mapped catalog at
+    transaction-commit time, redo work that has just been done, and
+    dominate the upgrade-step runtime on production-size datasets.
+
+    Per-object: deactivate from the ZODB cache after the write to
+    keep the cache from filling up over very large catalogs;
+    savepoint every 5000 instead of every 500 because each item is
+    a single index write with no metadata refresh.
     """
     from bika.lims.interfaces import IClient
-    from bika.lims.interfaces import IClientAwareMixin
+    from senaite.core.interfaces import IClientAwareMixin
 
     logger.info("Reindexing allowedRolesAndUsers on client-tree content ...")
     seen = set()
@@ -2331,8 +2366,20 @@ def reindex_client_tree_allowed_roles():
             if not (IClient.providedBy(obj)
                     or IClientAwareMixin.providedBy(obj)):
                 continue
-            obj.reindexObject(idxs=["allowedRolesAndUsers"])
-            obj._p_deactivate()
+            for cat in api.get_catalogs_for(obj):
+                cat.catalog_object(
+                    obj,
+                    idxs=["allowedRolesAndUsers"],
+                    update_metadata=False)
+            try:
+                obj._p_deactivate()
+            except Exception as exc:
+                # `_p_deactivate` is a cache-eviction optimisation;
+                # failures here are non-fatal and the reindex above
+                # has already persisted. Log at debug for
+                # troubleshooting but do not interrupt the upgrade.
+                logger.debug(
+                    "_p_deactivate failed on %r: %s" % (obj, exc))
             if uid:
                 seen.add(uid)
             total += 1
@@ -2340,6 +2387,8 @@ def reindex_client_tree_allowed_roles():
                 transaction.savepoint(optimistic=True)
             if total % 500 == 0:
                 logger.info("  ... reindexed %s objects" % total)
+            if total % 5000 == 0:
+                transaction.savepoint(optimistic=True)
     logger.info(
         "Reindexed allowedRolesAndUsers on %s client-tree objects" % total)
 
