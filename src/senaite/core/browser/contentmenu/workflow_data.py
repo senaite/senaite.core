@@ -23,14 +23,10 @@ from bika.lims.decorators import returns_json
 from plone.protect.utils import addTokenToUrl
 from Products.Five import BrowserView
 from senaite.core.decorators import readonly_transaction
-from zope.i18n import translate
+from senaite.core.i18n import translate
 
 
 HIDE_WF_ITEMS = ("workflow-transition-advanced",)
-
-# Workflow state and transition titles are msgids in the senaite.core
-# translation domain (see workflow definition.xml files).
-WORKFLOW_I18N_DOMAIN = "senaite.core"
 
 # Mirrors plone.app.contentmenu.menu.WorkflowMenu.getMenuItems: only
 # transitions with `category="workflow"` belong in the WF menu.
@@ -60,13 +56,13 @@ class WorkflowMenuDataView(BrowserView):
         }
 
     def translate(self, msg):
-        """Translate `msg` in the workflow i18n domain using the
-        current request's locale.
+        """Translate `msg` against the current request locale, using
+        the `senaite.core` domain by default (overridden when the
+        msgid is a `Message` with its own domain).
         """
         if not msg:
             return msg
-        return translate(
-            msg, domain=WORKFLOW_I18N_DOMAIN, context=self.request)
+        return translate(msg)
 
     def get_state(self, wf_tool):
         """Return the current review state info

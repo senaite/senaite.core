@@ -20,16 +20,14 @@
 
 from plone.app.contentmenu.view import ContentMenuProvider as Base
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.i18n import translate
 from senaite.core.interfaces import IHideActionsMenu
 from zope.browsermenu.interfaces import IBrowserMenu
 from zope.component import getUtility
-from zope.i18n import translate
 
 HIDE_WF_ITEMS = [
     "workflow-transition-advanced"
 ]
-
-WORKFLOW_I18N_DOMAIN = "senaite.core"
 
 
 class ContentMenuProvider(Base):
@@ -52,8 +50,7 @@ class ContentMenuProvider(Base):
         """
         if not msg:
             return msg
-        return translate(
-            msg, domain=WORKFLOW_I18N_DOMAIN, context=self.request)
+        return translate(msg)
 
     def fiddle_menu_item(self, item):
         """A helper to  process the menu items before rendering
