@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2948 Fix UnicodeDecodeError in get_link when href contains non-ASCII bytes
 - #2945 Merge linked-user property sheets in first-non-empty-wins order
 - #2944 Cover catalog token and sidebar grant for linked client users
 - #2943 Polish client-role upgrade steps
