@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2943 Polish client-role upgrade steps
 - #2942 Harden contact-to-user link path
 - #2941 Remove leftover per-client-group code paths
 - #2932 Fix validation for formulas with duplicate keywords
