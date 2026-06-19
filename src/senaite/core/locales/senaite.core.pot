@@ -4680,6 +4680,10 @@ msgstr ""
 msgid "Reset columns"
 msgstr ""
 
+# senaite.app.listing: Reset-columns button tooltip
+msgid "Reset column visibility and order to the defaults"
+msgstr ""
+
 #: bika/lims/browser/publish/templates/email.pt:83
 #: bika/lims/browser/templates/analysisreport_info.pt:154
 msgid "Responsibles"
