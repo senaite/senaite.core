@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2942 Harden contact-to-user link path
 - #2941 Remove leftover per-client-group code paths
 - #2932 Fix validation for formulas with duplicate keywords
 - #2945 Add rangecomment support to dynamic results ranges

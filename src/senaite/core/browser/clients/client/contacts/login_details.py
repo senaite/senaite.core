@@ -197,16 +197,29 @@ class ContactLoginDetailsView(BrowserView):
         """Link an existing user to the current Contact
         """
         # check if we have a selected user from the search-list
-        if userid:
-            try:
-                self.context.setUser(userid)
-                self.add_status_message(
-                    _("User linked to this Contact"), "info")
-            except ValueError as e:
-                self.add_status_message(e, "error")
-        else:
+        if not userid:
             self.add_status_message(
                 _("Please select a User from the list"), "info")
+            return
+        try:
+            self.context.setUser(userid)
+        except ValueError as exc:
+            self.add_status_message(exc, "error")
+            return
+        except RuntimeError as exc:
+            # `_set_user_property` raises when no PAS plugin can
+            # persist the linked_*_uid properties. The link is then
+            # half-applied (Username set, but the dynamic role
+            # provider has no property to read) — surface the
+            # failure instead of telling the user it worked.
+            logger.exception("Failed to persist linked user properties")
+            self.add_status_message(
+                _("Could not link User: ${error}",
+                  mapping={"error": safe_unicode(str(exc))}),
+                "error")
+            return
+        self.add_status_message(
+            _("User linked to this Contact"), "info")
 
     def _unlink_user(self):
         """Unlink and delete the User from the current Contact
