@@ -46,6 +46,9 @@ CONTACT_UID_KEY = "linked_contact_uid"
 CLIENT_UID_KEY = "linked_client_uid"
 
 
+MUTABLE_PROPERTIES_PLUGIN_ID = "mutable_properties"
+
+
 def _set_user_property(user, key, value):
     """Persist a string property on a user's mutable property storage.
 
@@ -53,6 +56,11 @@ def _set_user_property(user, key, value):
     rationale; this is the AT-side mirror so contacts on either base
     write through the mutable properties plugin instead of the cached
     user sheets.
+
+    :param user: PAS user object (the one returned by `getUserById`).
+    :param key: property name to write.
+    :param value: string value to persist (use `""` to clear).
+    :raises RuntimeError: when no property plugin can persist `key`.
     """
     from Products.PluggableAuthService.interfaces.plugins import \
         IPropertiesPlugin
@@ -63,24 +71,35 @@ def _set_user_property(user, key, value):
         logger.info("Registered user property {}".format(key))
 
     acl_users = portal_memberdata.acl_users
-    for plugin_id, plugin in acl_users.plugins.listPlugins(IPropertiesPlugin):
-        sheet = plugin.getPropertiesForUser(user)
-        if sheet is None:
-            continue
-        # Some property plugins return a plain dict rather than a
-        # PropertySheet (e.g. pas.plugins.ldap for non-LDAP users);
-        # ignore those — we want the mutable_properties plugin's
-        # sheet, which exposes hasProperty/setProperty.
-        has = getattr(sheet, "hasProperty", None)
-        setter = getattr(sheet, "setProperty", None)
-        if not callable(has) or not callable(setter):
-            continue
-        if not has(key):
-            continue
-        setter(user, key, value)
+    plugin = acl_users.get(MUTABLE_PROPERTIES_PLUGIN_ID, None)
+    if _try_write_property(plugin, user, key, value):
         return
-    logger.warn(
-        "No mutable properties plugin accepted '{}'".format(key))
+
+    for _id, plugin in acl_users.plugins.listPlugins(IPropertiesPlugin):
+        if _try_write_property(plugin, user, key, value):
+            return
+
+    raise RuntimeError(
+        "No mutable properties plugin accepted '{}' for user '{}'"
+        .format(key, user.getId()))
+
+
+def _try_write_property(plugin, user, key, value):
+    """Attempt to persist `key` via `plugin`. Returns True on success.
+    """
+    if plugin is None:
+        return False
+    sheet = plugin.getPropertiesForUser(user)
+    if sheet is None:
+        return False
+    has = getattr(sheet, "hasProperty", None)
+    setter = getattr(sheet, "setProperty", None)
+    if not callable(has) or not callable(setter):
+        return False
+    if not has(key):
+        return False
+    setter(user, key, value)
+    return True
 
 
 schema = Person.schema.copy() + atapi.Schema((

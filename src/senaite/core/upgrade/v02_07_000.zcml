@@ -15,9 +15,32 @@
                    client access. The four call sites now import the
                    DX interface; this step re-runs the client-tree
                    reindex so existing DX content picks up the token."
+      source="2744"
+      destination="2745"
+      handler=".v02_07_000.reindex_dx_client_aware_allowed_roles"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove 'sharing' alias from Client FTI"
+      description="Drop the `sharing` method alias on the Client FTI.
+                   The alias still routed `/&lt;client&gt;/sharing` to
+                   @@sharing after `manage_access` was removed; the
+                   alias is dead weight once access is granted
+                   dynamically by the ILocalRoleProvider."
+      source="2743"
+      destination="2744"
+      handler=".v02_07_000.remove_client_sharing_alias"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Drop 'getGroupId' column from client catalog"
+      description="Remove the `getGroupId` metadata column from
+                   `senaite_catalog_client`. The column mirrored the
+                   legacy per-client group id and now only carries
+                   stale values."
       source="2742"
       destination="2743"
-      handler=".v02_07_000.reindex_dx_client_aware_allowed_roles"
+      handler=".v02_07_000.drop_client_catalog_group_id_column"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
