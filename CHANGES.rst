@@ -5,6 +5,11 @@ Changelog
 ------------------
 
 - #2943 Polish client-role upgrade steps
+- #2942 Harden contact-to-user link path
+- #2941 Remove leftover per-client-group code paths
+- #2932 Fix validation for formulas with duplicate keywords
+- #2945 Add rangecomment support to dynamic results ranges
+- #2947 Fix barcodes missing from PDFs behind a virtual-host path
 - #2940 Grant the global 'Client' role to users with linked_client_uid set
 - #2939 Persist linked user properties through the mutable properties plugin
 - #2938 Remove legacy per-client groups and persisted Owner local roles

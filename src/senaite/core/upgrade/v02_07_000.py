@@ -2215,16 +2215,17 @@ def add_sample_catalog_indexes(tool):
 def strip_global_client_role(tool):
     """Remove directly-assigned global 'Client' role from users.
 
-    The 'Client' role is now granted implicitly to users via membership
-    in the per-client group (the group itself carries ``roles=["Client"]``).
-    A user with the role assigned directly through the portal role
-    manager but no client-group membership has the Client landing page
-    but no Owner role on any client folder, which is a half-configured
-    state with no useful access.
+    The 'Client' role is now granted dynamically by the
+    ILocalRoleProvider in `senaite.core.security.clientrole` based on
+    the user's `linked_client_uid` member property. A user with the
+    role assigned directly through the portal role manager but no
+    contact link has the Client landing page but no Owner role on any
+    client folder, which is a half-configured state with no useful
+    access.
 
     Iterate the principals assigned the 'Client' role via the portal
-    role manager and remove the direct assignment. Users keep the role
-    indirectly through group membership where applicable.
+    role manager and remove the direct assignment. Users keep the
+    role dynamically wherever their `linked_client_uid` matches.
     """
     logger.info("Stripping global 'Client' role from users ...")
     acl = api.get_tool("acl_users")
@@ -2487,3 +2488,42 @@ def remove_legacy_client_groups(tool):
         "Legacy client-group cleanup: %s groups removed, "
         "%s local-role grants cleared on %s clients"
         % (removed_groups, cleared_local_roles, total))
+
+
+@upgradestep(product, version)
+def drop_client_catalog_group_id_column(tool):
+    """Drop the `getGroupId` metadata column from `senaite_catalog_client`.
+
+    The column mirrored the legacy per-client group id. After the
+    dynamic role provider replaces the group mechanism, the column is
+    dead weight and every brain that still carries a stale value
+    misleads any code that reads it.
+    """
+    catalog = api.get_tool("senaite_catalog_client", default=None)
+    if catalog is None:
+        return
+    if del_column(catalog, "getGroupId"):
+        logger.info(
+            "Dropped 'getGroupId' column from senaite_catalog_client")
+
+
+@upgradestep(product, version)
+def remove_client_sharing_alias(tool):
+    """Drop the `sharing` method alias from the Client FTI.
+
+    The alias used to route `/<client>/sharing` to `@@sharing`. The
+    `manage_access` action that exposed it was removed by
+    `remove_client_manage_access_action`, but the alias itself kept
+    the view reachable by direct URL. Sharing on the client tree is
+    redundant now that access is granted dynamically.
+    """
+    types_tool = api.get_tool("portal_types")
+    fti = types_tool.getTypeInfo("Client")
+    if fti is None:
+        return
+    aliases = dict(fti.getMethodAliases() or {})
+    if "sharing" not in aliases:
+        return
+    del aliases["sharing"]
+    fti.setMethodAliases(aliases)
+    logger.info("Removed 'sharing' method alias from Client FTI")
