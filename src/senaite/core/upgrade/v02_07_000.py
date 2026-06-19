@@ -2215,16 +2215,17 @@ def add_sample_catalog_indexes(tool):
 def strip_global_client_role(tool):
     """Remove directly-assigned global 'Client' role from users.
 
-    The 'Client' role is now granted implicitly to users via membership
-    in the per-client group (the group itself carries ``roles=["Client"]``).
-    A user with the role assigned directly through the portal role
-    manager but no client-group membership has the Client landing page
-    but no Owner role on any client folder, which is a half-configured
-    state with no useful access.
+    The 'Client' role is now granted dynamically by the
+    ILocalRoleProvider in `senaite.core.security.clientrole` based on
+    the user's `linked_client_uid` member property. A user with the
+    role assigned directly through the portal role manager but no
+    contact link has the Client landing page but no Owner role on any
+    client folder, which is a half-configured state with no useful
+    access.
 
     Iterate the principals assigned the 'Client' role via the portal
-    role manager and remove the direct assignment. Users keep the role
-    indirectly through group membership where applicable.
+    role manager and remove the direct assignment. Users keep the
+    role dynamically wherever their `linked_client_uid` matches.
     """
     logger.info("Stripping global 'Client' role from users ...")
     acl = api.get_tool("acl_users")
@@ -2294,9 +2295,17 @@ def switch_to_dynamic_client_roles(tool):
     drop_auto_create_client_group_record(portal)
 
 
+REINDEX_BATCH_SIZE = 100
+
+
 def reindex_client_tree_allowed_roles():
     """Reindex `allowedRolesAndUsers` on every IClient + IClientAware
     object so they carry the new `client:<uid>` token.
+
+    Wakes every brain via `getObject()` to reindex the live object.
+    On large installs (50k+ samples) that loads everything into the
+    ZODB cache, so checkpoint a savepoint and deactivate each object
+    after the reindex to keep memory bounded.
     """
     from bika.lims.interfaces import IClient
     from bika.lims.interfaces import IClientAwareMixin
@@ -2323,9 +2332,12 @@ def reindex_client_tree_allowed_roles():
                     or IClientAwareMixin.providedBy(obj)):
                 continue
             obj.reindexObject(idxs=["allowedRolesAndUsers"])
+            obj._p_deactivate()
             if uid:
                 seen.add(uid)
             total += 1
+            if total % REINDEX_BATCH_SIZE == 0:
+                transaction.savepoint(optimistic=True)
             if total % 500 == 0:
                 logger.info("  ... reindexed %s objects" % total)
     logger.info(
@@ -2333,14 +2345,26 @@ def reindex_client_tree_allowed_roles():
 
 
 def backfill_linked_client_uid():
-    """Set the `linked_client_uid` user property for every existing
-    client contact that is already linked to a user account.
+    """Set the `linked_client_uid` and `linked_contact_uid` user
+    properties for every existing client contact already linked to a
+    user account.
+
+    Both properties drive different parts of the runtime: the client
+    UID is what the dynamic local-role provider in
+    `senaite.core.security.clientrole` reads to grant access on the
+    client tree, while the contact UID is the back-reference that
+    resolves a logged-in user to their contact object. The link path
+    in `Contact._linkUser` writes both, so existing links must carry
+    both for parity.
     """
     from bika.lims.interfaces import IClient
     from senaite.core.content.contact import CLIENT_UID_KEY
+    from senaite.core.content.contact import CONTACT_UID_KEY
     from senaite.core.content.contact import _set_user_property
 
-    logger.info("Backfilling `linked_client_uid` on linked users ...")
+    logger.info(
+        "Backfilling `linked_client_uid` and `linked_contact_uid` "
+        "on linked users ...")
     contacts = api.search({"portal_type": "Contact"}, CONTACT_CATALOG)
     updated = 0
     for brain in contacts:
@@ -2352,9 +2376,10 @@ def backfill_linked_client_uid():
         if user is None:
             continue
         _set_user_property(user, CLIENT_UID_KEY, api.get_uid(parent))
+        _set_user_property(user, CONTACT_UID_KEY, api.get_uid(contact))
         updated += 1
     logger.info(
-        "Backfilled `linked_client_uid` on %s users" % updated)
+        "Backfilled linked UID properties on %s users" % updated)
 
 
 def drop_auto_create_client_group_record(portal):
@@ -2463,3 +2488,42 @@ def remove_legacy_client_groups(tool):
         "Legacy client-group cleanup: %s groups removed, "
         "%s local-role grants cleared on %s clients"
         % (removed_groups, cleared_local_roles, total))
+
+
+@upgradestep(product, version)
+def drop_client_catalog_group_id_column(tool):
+    """Drop the `getGroupId` metadata column from `senaite_catalog_client`.
+
+    The column mirrored the legacy per-client group id. After the
+    dynamic role provider replaces the group mechanism, the column is
+    dead weight and every brain that still carries a stale value
+    misleads any code that reads it.
+    """
+    catalog = api.get_tool("senaite_catalog_client", default=None)
+    if catalog is None:
+        return
+    if del_column(catalog, "getGroupId"):
+        logger.info(
+            "Dropped 'getGroupId' column from senaite_catalog_client")
+
+
+@upgradestep(product, version)
+def remove_client_sharing_alias(tool):
+    """Drop the `sharing` method alias from the Client FTI.
+
+    The alias used to route `/<client>/sharing` to `@@sharing`. The
+    `manage_access` action that exposed it was removed by
+    `remove_client_manage_access_action`, but the alias itself kept
+    the view reachable by direct URL. Sharing on the client tree is
+    redundant now that access is granted dynamically.
+    """
+    types_tool = api.get_tool("portal_types")
+    fti = types_tool.getTypeInfo("Client")
+    if fti is None:
+        return
+    aliases = dict(fti.getMethodAliases() or {})
+    if "sharing" not in aliases:
+        return
+    del aliases["sharing"]
+    fti.setMethodAliases(aliases)
+    logger.info("Removed 'sharing' method alias from Client FTI")
