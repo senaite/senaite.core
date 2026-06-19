@@ -68,7 +68,15 @@ class PortletManagerSubMenuItem(BasePortletManagerSubMenuItem):
 
 class WorkflowSubMenuItem(BaseWorkflowSubMenuItem):
     """The Workflow Menu
+
+    The transition list is rendered client-side by the React
+    `WorkflowMenu` component, which fetches it from the
+    `@@workflow_menu_data` endpoint on demand. We therefore skip
+    the expensive `getSubMenuItems` lookup at page-load time.
     """
 
     def available(self):
         return super(WorkflowSubMenuItem, self).available()
+
+    def getSubMenuItems(self):
+        return []

@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2955 Defer workflow transition lookup with a React content-menu component
 - #2954 Declare i18n:domain on duration widget templates
 - #2952 Skip fields whose widget returns empty_marker in sample header submit
 - #2951 Remove twitter-together workflow and tweet drafts
