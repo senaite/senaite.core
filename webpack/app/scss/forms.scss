@@ -147,28 +147,8 @@ form[name='edit_form'] {
 }
 
 form[name=analysisrequest_add_form] {
-  /* Sample add form is a column-grid: inputs fill their cell rather than
-     using the default fixed width. */
-  --senaite-input-width: 100%;
-  --senaite-input-width-date: 100%;
-  --senaite-input-width-time: 100%;
   .field {
     margin-bottom: 0;
-  }
-  /* Date widget wraps two inputs in a w-auto input-group; expand it so
-     the date/time inputs can fill the cell. !important is needed to
-     beat Bootstrap's .w-auto utility that the template hardcodes. */
-  .datetimewidget {
-    width: 100% !important;
-    display: flex !important;
-  }
-  .datetimewidget > input[type=date] {
-    flex: 2 1 0;
-    min-width: 0;
-  }
-  .datetimewidget > input[type=time] {
-    flex: 1 1 0;
-    min-width: 0;
   }
 }
 
