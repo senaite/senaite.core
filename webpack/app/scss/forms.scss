@@ -33,6 +33,15 @@ form[name='edit_form'] div.listing-container {
     }
 }
 
+/* Default widths for form inputs.
+   Overridable per-form by redefining the CSS variables on a wrapping
+   selector (see analysisrequest_add_form below for an example). */
+:root {
+    --senaite-input-width: 20rem;       /* ~320px (text, select, etc.) */
+    --senaite-input-width-date: 10rem;  /* ~160px */
+    --senaite-input-width-time: 6rem;   /* ~96px */
+}
+
 article#content>form,
 article#content>#content-core>form,
 ul.configlets>li>form,
@@ -53,16 +62,16 @@ form[name='edit_form'] {
         [type='radio'],
         [name*='__ac']
     ), select {
-        width: 250px!important;
-        max-width: 250px;
+        width: var(--senaite-input-width);
+        max-width: 100%;
     }
     input[type=date] {
-        width: 160px!important;
-        max-width: 160px;
+        width: var(--senaite-input-width-date);
+        max-width: 100%;
     }
     input[type=time] {
-        width: 90px!important;
-        max-width: 90px;
+        width: var(--senaite-input-width-time);
+        max-width: 100%;
     }
     select {
         @extend .form-control;
@@ -138,6 +147,11 @@ form[name='edit_form'] {
 }
 
 form[name=analysisrequest_add_form] {
+  /* Sample add form is a column-grid: inputs fill their cell rather than
+     using the default fixed width. */
+  --senaite-input-width: 100%;
+  --senaite-input-width-date: 100%;
+  --senaite-input-width-time: 100%;
   .field {
     margin-bottom: 0;
   }
