@@ -73,6 +73,24 @@ form[name='edit_form'] {
         width: var(--senaite-input-width-time);
         max-width: 100%;
     }
+    /* Datetime widget: stretch the date+time pair to the same width as
+       other inputs so date/reference/text fields line up. !important
+       beats the .w-auto baked into the widget template. */
+    .datetimewidget {
+        width: var(--senaite-input-width) !important;
+        max-width: 100%;
+        display: flex !important;
+    }
+    .datetimewidget > input[type=date] {
+        flex: 2 1 0;
+        width: auto;
+        min-width: 0;
+    }
+    .datetimewidget > input[type=time] {
+        flex: 1 1 0;
+        width: auto;
+        min-width: 0;
+    }
     select {
         @extend .form-control;
         @extend .form-control-sm;
