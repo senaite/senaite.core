@@ -37,9 +37,10 @@ form[name='edit_form'] div.listing-container {
    Overridable per-form by redefining the CSS variables on a wrapping
    selector (see analysisrequest_add_form below for an example). */
 :root {
-    --senaite-input-width: 20rem;       /* ~320px (text, select, etc.) */
-    --senaite-input-width-date: 10rem;  /* ~160px */
-    --senaite-input-width-time: 6rem;   /* ~96px */
+    --senaite-input-width: 20rem;        /* ~320px (text, select, etc.) */
+    --senaite-input-width-date: 10rem;   /* ~160px */
+    --senaite-input-width-time: 6rem;    /* ~96px */
+    --senaite-input-width-narrow: 6rem;  /* ~96px (small numeric inputs) */
 }
 
 article#content>form,
@@ -91,6 +92,9 @@ form[name='edit_form'] {
         width: auto;
         min-width: 0;
     }
+    input[type='text'],
+    input[type='number'],
+    input[type='password'],
     select {
         @extend .form-control;
         @extend .form-control-sm;
@@ -128,22 +132,6 @@ form[name='edit_form'] {
             @extend .form-check-input;
         }
     }
-    input[type='file'] {
-    }
-    input[type='text'] {
-        @extend .form-control;
-        @extend .form-control-sm;
-    }
-    input[type='checkbox'] {
-    }
-    input[type='number'] {
-        @extend .form-control;
-        @extend .form-control-sm;
-    }
-    input[type='password'] {
-        @extend .form-control;
-        @extend .form-control-sm;
-    }
     input[type='button'] {
         @extend .btn;
         @extend .btn-sm;
@@ -171,8 +159,8 @@ form[name=analysisrequest_add_form] {
 }
 
 input.num-positions {
-  max-width: 100px;
-  margin-right: 10px;
+  max-width: var(--senaite-input-width-narrow);
+  margin-right: 0.5rem;
   border-radius: 0.2rem!important;
 }
 
