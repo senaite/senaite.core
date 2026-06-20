@@ -155,6 +155,11 @@ form[name=analysisrequest_add_form] {
   .field {
     margin-bottom: 0;
   }
+  /* Date widget wraps two inputs in a w-auto input-group; expand it so
+     the date/time inputs can fill the cell. */
+  .datetimewidget {
+    width: 100%;
+  }
 }
 
 input.num-positions {
