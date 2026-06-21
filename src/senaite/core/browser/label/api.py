@@ -114,7 +114,16 @@ class LabelsAPI(BrowserView):
         brains = label_api.query_labels()
         labels = []
         for brain in brains:
+            # Prefer the `getColor` metadata column. Falls back to
+            # waking the Label and reading the live attribute when
+            # the catalog rebuild has not yet propagated the new
+            # column to existing brains (matches the fallback in
+            # `senaite.core.api.label.get_label_colors`).
             color = getattr(brain, "getColor", u"") or u""
+            if not color:
+                obj = api.get_object(brain, default=None)
+                if obj is not None:
+                    color = getattr(obj, "color", u"") or u""
             labels.append({
                 "name": api.safe_unicode(brain.Title),
                 "color": api.safe_unicode(color),
