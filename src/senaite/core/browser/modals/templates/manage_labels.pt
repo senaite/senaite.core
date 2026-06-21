@@ -112,54 +112,6 @@
     </div>
   </div>
 
-  <script type="text/javascript">
-   (function() {
-     var form = document.querySelector(".manage-labels-form");
-     if (!form) return;
-     var selectedField = form.querySelector('input[name="selected_labels"]');
-     var newInput = form.querySelector('input[name="new_label"]');
-     var colorInput = form.querySelector('input[name="new_label_color"]');
-
-     function syncSelected() {
-       var picked = [];
-       form.querySelectorAll(".manage-labels-toggle").forEach(function(btn) {
-         if (btn.getAttribute("data-selected") === "1") {
-           picked.push(btn.getAttribute("data-label"));
-         }
-       });
-       selectedField.value = picked.join(",");
-     }
-     syncSelected();
-
-     form.querySelectorAll(".manage-labels-toggle").forEach(function(btn) {
-       btn.addEventListener("click", function() {
-         var on = btn.getAttribute("data-selected") === "1";
-         btn.setAttribute("data-selected", on ? "0" : "1");
-         btn.classList.toggle("is-selected", !on);
-         btn.classList.toggle("is-removed", on);
-         syncSelected();
-       });
-       if (btn.getAttribute("data-selected") === "1") {
-         btn.classList.add("is-selected");
-       }
-     });
-
-     form.querySelectorAll(".manage-labels-preset").forEach(function(sw) {
-       sw.addEventListener("click", function() {
-         colorInput.value = sw.getAttribute("data-color");
-       });
-     });
-
-     var randomBtn = form.querySelector(".manage-labels-random");
-     if (randomBtn) {
-       randomBtn.addEventListener("click", function() {
-         var hex = "#" + Math.floor(Math.random() * 0xffffff)
-           .toString(16).padStart(6, "0");
-         colorInput.value = hex;
-       });
-     }
-
-     if (newInput) newInput.focus();
-   })();
-  </script>
+  <script type="text/javascript"
+          tal:attributes="src string:${context/portal_url}/++plone++senaite.core.static/js/senaite.core.modal.manage_labels.js"></script>
 </div>
