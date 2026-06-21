@@ -33,13 +33,13 @@ from Products.CMFPlone.utils import classDoesNotImplement
 from Products.CMFPlone.utils import classImplements
 from senaite.core.catalog import LABEL_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.config.labels import LABEL_STORAGE
 from senaite.core.interfaces import ICanHaveLabels
 from senaite.core.interfaces import IHaveLabels
 from senaite.core.interfaces import ILabel
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
 
-LABEL_STORAGE = "senaite.core.labels"
 BEHAVIOR_ID = ICanHaveLabels.__identifier__
 
 # 6-digit hex color string `#rrggbb`. Used to validate the optional

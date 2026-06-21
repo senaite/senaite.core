@@ -23,10 +23,9 @@ from bika.lims import senaiteMessageFactory as _
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.api import label as label_api
 from senaite.core.browser.modals import Modal
+from senaite.core.config.labels import DEFAULT_LABEL_COLOR
 from senaite.core.config.labels import LABEL_COLOR_PRESETS
-
-
-SAMPLE_LABEL_REINDEX = ["labels"]
+from senaite.core.config.labels import SAMPLE_LABEL_REINDEX
 
 
 def _normalize_color(value):
@@ -55,6 +54,10 @@ class ManageLabelsModal(Modal):
 
     def add_status_message(self, message, level="info"):
         return self.context.plone_utils.addPortalMessage(message, level)
+
+    def default_new_label_color(self):
+        """Seed value for the new-label color picker."""
+        return DEFAULT_LABEL_COLOR
 
     def get_color_presets(self):
         """Returns `[{name, color}, ...]` for the preset palette."""

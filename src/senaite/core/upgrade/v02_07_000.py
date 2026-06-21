@@ -2219,7 +2219,7 @@ def setup_sample_labels(tool):
     # each Label's annotations to detect title changes; seed it for
     # every pre-existing Label so the *first* post-upgrade rename
     # actually cascades rather than being treated as the baseline.
-    from senaite.core.subscribers.label import PREVIOUS_TITLE_KEY
+    from senaite.core.config.labels import PREVIOUS_TITLE_KEY
     from zope.annotation.interfaces import IAnnotations
     for brain in label_brains:
         obj = api.get_object(brain, default=None)

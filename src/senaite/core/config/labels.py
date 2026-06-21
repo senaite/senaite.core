@@ -18,6 +18,24 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+# Annotation key holding the tuple of assigned label names on a
+# labeled object. Set / read via senaite.core.api.label.
+LABEL_STORAGE = "senaite.core.labels"
+
+# Annotation key on a Label content item carrying the last-known
+# title. Read by the rename-cascade subscriber to detect title
+# changes and rewrite stored names across all labeled objects.
+PREVIOUS_TITLE_KEY = "senaite.core.label.previous_title"
+
+# Catalog index name re-fetched on every label add / remove so
+# listings, the click-to-filter URL and the saved-filter presets
+# see the change in the same transaction.
+SAMPLE_LABEL_REINDEX = ["labels"]
+
+# Default color seeded into the Manage Labels modal's color picker
+# when the user types a new free-text label. SENAITE blue accent.
+DEFAULT_LABEL_COLOR = u"#0d6efd"
+
 # Curated preset palette for the Manage Labels modal's color picker.
 # Mid-saturation values picked so white chip text stays readable.
 # Names are i18n-stable English keys used as preset button tooltips.

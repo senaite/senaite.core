@@ -23,12 +23,10 @@ from bika.lims.api.security import check_permission
 from bika.lims.decorators import returns_json
 from Products.Five.browser import BrowserView
 from senaite.core.api import label as label_api
+from senaite.core.config.labels import SAMPLE_LABEL_REINDEX
 from senaite.core.permissions import ManageLabels
 from zope.interface import implementer
 from zope.publisher.interfaces import IPublishTraverse
-
-
-SAMPLE_LABEL_REINDEX = ["labels"]
 
 
 @implementer(IPublishTraverse)

@@ -72,7 +72,7 @@
                    id="manage-labels-new-color"
                    class="manage-labels-color"
                    name="new_label_color"
-                   value="#0d6efd" />
+                   tal:attributes="value view/default_new_label_color" />
             <button type="button"
                     class="btn btn-sm btn-outline-secondary manage-labels-random"
                     title="Random color"

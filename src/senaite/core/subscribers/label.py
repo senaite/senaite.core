@@ -22,15 +22,9 @@ from bika.lims import api
 from senaite.core import logger
 from senaite.core.api import label as label_api
 from senaite.core.catalog import LABEL_CATALOG
+from senaite.core.config.labels import PREVIOUS_TITLE_KEY
+from senaite.core.config.labels import SAMPLE_LABEL_REINDEX
 from zope.annotation.interfaces import IAnnotations
-
-
-# Persistent annotation key holding the last-known title of a Label.
-# Stored on the Label object itself (ZODB-persistent) so the value
-# survives the GET/POST boundary that splits a Plone edit form, and
-# does not depend on subscriber ordering against the catalog
-# reindexer to discover the old title.
-PREVIOUS_TITLE_KEY = "senaite.core.label.previous_title"
 
 
 def on_label_added(label, event):
@@ -109,6 +103,6 @@ def _rename_label_in_storage(old_title, new_title):
         else:
             labels[index] = new_title
         label_api.set_obj_labels(obj, labels)
-        obj.reindexObject(idxs=["labels"])
+        obj.reindexObject(idxs=SAMPLE_LABEL_REINDEX)
         affected += 1
     return affected
