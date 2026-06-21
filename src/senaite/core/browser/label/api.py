@@ -116,7 +116,7 @@ class LabelsAPI(BrowserView):
         brains = label_api.query_labels()
         labels = []
         for brain in brains:
-            color = getattr(brain, "color", u"") or u""
+            color = getattr(brain, "getColor", u"") or u""
             labels.append({
                 "name": api.safe_unicode(brain.Title),
                 "color": api.safe_unicode(color),

@@ -2203,9 +2203,14 @@ def setup_sample_labels(tool):
     logger.info("Adding 'getLabels' column to sample catalog ...")
     add_catalog_column(catalog, "getLabels")
 
-    logger.info("Adding 'color' column to setup catalog ...")
+    logger.info("Adding 'getColor' column to setup catalog ...")
     setup_catalog = api.get_tool(SETUP_CATALOG)
-    add_catalog_column(setup_catalog, "color")
+    add_catalog_column(setup_catalog, "getColor")
+    # The pre-release of this PR used a bare 'color' attribute column;
+    # drop it if present so the catalog reflects the final method-call
+    # convention.
+    if "color" in setup_catalog.schema():
+        del_column(setup_catalog, "color")
     label_brains = setup_catalog(portal_type="Label")
     logger.info("Refreshing %s Label brains for color metadata "
                 "and seeding rename-cascade baseline ..."

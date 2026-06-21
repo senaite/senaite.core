@@ -98,3 +98,14 @@ class Label(Container):
     """A container for labels
     """
     _catalogs = [SETUP_CATALOG]
+
+    def getColor(self):
+        """Return the configured chip color as a unicode hex string.
+
+        Exposed as a catalog metadata column on senaite_catalog_setup
+        so chip-rendering consumers can read the color from the brain
+        without waking the Label object. Always returns a unicode
+        value (empty string for unset / invalid colors).
+        """
+        value = getattr(self, "color", u"") or u""
+        return value if isinstance(value, unicode) else value.decode("utf-8")

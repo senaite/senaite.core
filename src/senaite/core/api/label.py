@@ -292,7 +292,7 @@ def get_label_colors(names=None):
     brains = search(query, catalog=SETUP_CATALOG)
     out = {}
     for brain in brains:
-        color = getattr(brain, "color", None)
+        color = getattr(brain, "getColor", None)
         if color:
             out[api.safe_unicode(brain.Title)] = api.safe_unicode(color)
     return out
