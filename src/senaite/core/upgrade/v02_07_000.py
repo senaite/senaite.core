@@ -2182,6 +2182,45 @@ def cleanup_sample_catalog(tool):
 
 
 @upgradestep(product, version)
+def setup_sample_labels(tool):
+    """Register ManageLabels permission and add labels KeywordIndex to
+    senaite_catalog_sample. Reindex so labels on existing samples are
+    queryable via the new index.
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+
+    logger.info("Importing rolemap for ManageLabels permission ...")
+    setup.runImportStepFromProfile(profile, "rolemap")
+
+    logger.info("Adding 'labels' index to sample catalog ...")
+    catalog = api.get_tool(SAMPLE_CATALOG)
+    if add_catalog_index(catalog, "labels", "", "KeywordIndex"):
+        logger.info("Reindexing 'labels' in sample catalog ...")
+        reindex_index(SAMPLE_CATALOG, "labels")
+        logger.info("Reindexing 'labels' in sample catalog [DONE]")
+
+    logger.info("Adding 'getLabels' column to sample catalog ...")
+    add_catalog_column(catalog, "getLabels")
+
+    logger.info("Adding 'color' column to setup catalog ...")
+    setup_catalog = api.get_tool(SETUP_CATALOG)
+    add_catalog_column(setup_catalog, "color")
+    label_brains = setup_catalog(portal_type="Label")
+    logger.info("Refreshing %s Label brains for color metadata ..."
+                % len(label_brains))
+    for brain in label_brains:
+        obj = api.get_object(brain, default=None)
+        if obj is None:
+            logger.warn("Could not wake Label brain '%s'" % brain.UID)
+            continue
+        # No idxs= so the metadata columns get refreshed too.
+        obj.reindexObject()
+
+    logger.info("Setup sample labels [DONE]")
+
+
+@upgradestep(product, version)
 def add_sample_catalog_indexes(tool):
     """Add new indexes to senaite_catalog_sample
 
