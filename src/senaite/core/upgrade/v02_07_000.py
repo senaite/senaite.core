@@ -2207,8 +2207,15 @@ def setup_sample_labels(tool):
     setup_catalog = api.get_tool(SETUP_CATALOG)
     add_catalog_column(setup_catalog, "color")
     label_brains = setup_catalog(portal_type="Label")
-    logger.info("Refreshing %s Label brains for color metadata ..."
+    logger.info("Refreshing %s Label brains for color metadata "
+                "and seeding rename-cascade baseline ..."
                 % len(label_brains))
+    # The label rename subscriber reads `PREVIOUS_TITLE_KEY` from
+    # each Label's annotations to detect title changes; seed it for
+    # every pre-existing Label so the *first* post-upgrade rename
+    # actually cascades rather than being treated as the baseline.
+    from senaite.core.subscribers.label import PREVIOUS_TITLE_KEY
+    from zope.annotation.interfaces import IAnnotations
     for brain in label_brains:
         obj = api.get_object(brain, default=None)
         if obj is None:
@@ -2216,6 +2223,10 @@ def setup_sample_labels(tool):
             continue
         # No idxs= so the metadata columns get refreshed too.
         obj.reindexObject()
+        annotations = IAnnotations(obj)
+        if PREVIOUS_TITLE_KEY not in annotations:
+            annotations[PREVIOUS_TITLE_KEY] = api.safe_unicode(
+                obj.title or u"")
 
     logger.info("Setup sample labels [DONE]")
 

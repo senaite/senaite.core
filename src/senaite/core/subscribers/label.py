@@ -25,53 +25,55 @@ from senaite.core.catalog import LABEL_CATALOG
 from zope.annotation.interfaces import IAnnotations
 
 
-# Annotation key used to stash the current title while the Label
-# edit form is open. The on_label_modified subscriber reads this on
-# save and cascades a rename to every labeled content.
-ANNOTATION_OLD_TITLE = "senaite.core.label.pre_edit_title"
+# Persistent annotation key holding the last-known title of a Label.
+# Stored on the Label object itself (ZODB-persistent) so the value
+# survives the GET/POST boundary that splits a Plone edit form, and
+# does not depend on subscriber ordering against the catalog
+# reindexer to discover the old title.
+PREVIOUS_TITLE_KEY = "senaite.core.label.previous_title"
 
 
-def on_label_edit_begun(label, event):
-    """Snapshot the Label's current title onto the request.
+def on_label_added(label, event):
+    """Record the initial title as the rename baseline.
 
-    Fires when the edit form for a Label is opened (DX
-    IEditBegunEvent). The post-save handler `on_label_modified`
-    needs this snapshot to detect a rename — by the time
-    `IObjectModifiedEvent` reaches us, the form has already written
-    the new title and Plone's `IObjectModifiedEvent.descriptions`
-    do not carry old values.
+    Fires when a `Label` is added to `setup.labels`. We seed the
+    persistent annotation here so the first edit can compare against
+    a known baseline rather than treating every modification as a
+    rename.
     """
-    request = _safe_request(label)
-    if request is None:
-        return
-    IAnnotations(request)[ANNOTATION_OLD_TITLE] = api.safe_unicode(
-        label.title or u"")
+    title = api.safe_unicode(label.title or u"")
+    IAnnotations(label)[PREVIOUS_TITLE_KEY] = title
 
 
 def on_label_modified(label, event):
     """Cascade a Label title rename across every labeled content.
 
-    Reads the pre-edit snapshot left by `on_label_edit_begun`. If
-    the title actually changed, walks the label catalog
-    (`senaite_catalog_label` only indexes objects providing
+    Reads the previous title from the persistent annotation on the
+    Label itself. If the title actually changed, walks the label
+    catalog (`senaite_catalog_label` only indexes objects providing
     `IHaveLabels`) and rewrites the stored name on each, then
-    reindexes the `labels` index so listings, filters and the
-    color map see the rename immediately.
+    reindexes the `labels` index so listings, filters and the color
+    map see the rename immediately.
 
-    Edits not driven by the form (REST, scripts) do not fire
-    `IEditBegunEvent`, so the snapshot is absent and the cascade
-    is skipped. Such callers are expected to keep storage and
-    title in sync themselves.
+    Pre-existing Labels created before the subscriber was installed
+    have no annotation yet — the first modification seeds the
+    baseline rather than firing a false-positive cascade.
     """
-    request = _safe_request(label)
-    if request is None:
-        return
-    old_title = IAnnotations(request).pop(ANNOTATION_OLD_TITLE, None)
+    annotations = IAnnotations(label)
     new_title = api.safe_unicode(label.title or u"")
-    if not old_title or old_title == new_title:
+    old_title = annotations.get(PREVIOUS_TITLE_KEY)
+
+    if old_title is None:
+        # First modification after install / first save after upgrade.
+        # Seed the baseline; no rename to cascade.
+        annotations[PREVIOUS_TITLE_KEY] = new_title
+        return
+
+    if old_title == new_title:
         return
 
     affected = _rename_label_in_storage(old_title, new_title)
+    annotations[PREVIOUS_TITLE_KEY] = new_title
     if affected:
         logger.info(
             "Label rename '{}' -> '{}': updated {} content(s)".format(
@@ -80,10 +82,6 @@ def on_label_modified(label, event):
                 affected,
             )
         )
-
-
-def _safe_request(label):
-    return getattr(label, "REQUEST", None)
 
 
 def _rename_label_in_storage(old_title, new_title):
