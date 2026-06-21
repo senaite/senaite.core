@@ -33,7 +33,7 @@ from senaite.core.permissions import ViewLabels
 
 LABEL_INDEX = "labels"
 LABEL_COLUMN = "getLabels"
-PRIMARY_COLUMN_CANDIDATES = ("Title", "title", "getId")
+PRIMARY_COLUMN_CANDIDATES = ("Title", "title", "Name", "name", "getId")
 
 
 def _read_labels(obj):

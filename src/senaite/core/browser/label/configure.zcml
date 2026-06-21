@@ -10,25 +10,21 @@
       permission="senaite.core.permissions.ManageBika"
       layer="senaite.core.interfaces.ISenaiteCore"/>
 
-  <browser:page
-      for="senaite.core.interfaces.ICanHaveLabels"
-      name="add_label"
-      class=".manage_labels.AddLabelView"
-      permission="senaite.core.permissions.ManageLabels"
-      layer="senaite.core.interfaces.ISenaiteCore"/>
+  <!-- Single JSON endpoint for label management. Subpath traversal
+       dispatches to:
+       - @@labels/add       (POST, requires ManageLabels)
+       - @@labels/remove    (POST, requires ManageLabels)
+       - @@labels/available (GET,  requires ViewLabels)
 
-  <browser:page
-      for="senaite.core.interfaces.ICanHaveLabels"
-      name="remove_label"
-      class=".manage_labels.RemoveLabelView"
-      permission="senaite.core.permissions.ManageLabels"
-      layer="senaite.core.interfaces.ISenaiteCore"/>
-
+       The ZCML page registration uses the lowest of the two
+       permissions; the write routes re-check `ManageLabels` and
+       return 403 when missing. -->
   <browser:page
       for="*"
-      name="available_labels"
-      class=".manage_labels.AvailableLabelsView"
+      name="labels"
+      class=".api.LabelsAPI"
       permission="senaite.core.permissions.ViewLabels"
-      layer="senaite.core.interfaces.ISenaiteCore"/>
+      layer="senaite.core.interfaces.ISenaiteCore"
+      allowed_attributes="publishTraverse"/>
 
 </configure>
