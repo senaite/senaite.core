@@ -148,6 +148,16 @@ class SampleHeaderViewlet(ViewletBase):
         prominent_fields = filter(is_visible, settings.get("prominent_fields"))
         standard_fields = filter(is_visible, settings.get("standard_fields"))
 
+        # filter out fields the current user has no read or write
+        # permission on, so neither the field's label cell nor an
+        # empty value cell render. Note: required for fields with a
+        # `read_permission` other than the default View permission
+        # (e.g. Labels, gated by ViewLabels).
+        prominent_fields = filter(self._user_can_see_field,
+                                  prominent_fields)
+        standard_fields = filter(self._user_can_see_field,
+                                 standard_fields)
+
         config = {}
         config.update(settings)
         config["prominent_fields"] = prominent_fields
@@ -192,6 +202,18 @@ class SampleHeaderViewlet(ViewletBase):
         """
         for chunk in iter(lambda it=iter(iterable): list(islice(it, n)), []):
             yield chunk
+
+    def _user_can_see_field(self, name):
+        """True if the current user has read or write permission on
+        the named field. Used to filter out fields entirely from the
+        header table (label cell + value cell) when the user is not
+        allowed to see them.
+        """
+        field = self.fields.get(name)
+        if field is None:
+            return False
+        return (field.checkPermission("view", self.context)
+                or field.checkPermission("edit", self.context))
 
     def get_field_info(self, name):
         """Return field information required for the template
