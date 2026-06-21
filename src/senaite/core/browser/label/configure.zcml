@@ -12,16 +12,23 @@
 
   <!-- Single JSON endpoint for label management. Subpath traversal
        dispatches to:
-       - @@labels/add       (POST, requires ManageLabels)
-       - @@labels/remove    (POST, requires ManageLabels)
-       - @@labels/available (GET,  requires ViewLabels)
+       - @@senaite_labels/add       (POST, requires ManageLabels)
+       - @@senaite_labels/remove    (POST, requires ManageLabels)
+       - @@senaite_labels/available (GET,  requires ViewLabels)
 
        The ZCML page registration uses the lowest of the two
        permissions; the write routes re-check `ManageLabels` and
-       return 403 when missing. -->
+       return 403 when missing.
+
+       N.B. The name is intentionally namespaced to `senaite_labels`
+       rather than the bare `labels` so the for="*" registration
+       cannot intercept traversal to e.g.
+       ++plone++senaite.core.static/assets/icons/labels — a path
+       that `bootstrap.py::resource_exists` walks when resolving
+       Label FTI icons. -->
   <browser:page
       for="*"
-      name="labels"
+      name="senaite_labels"
       class=".api.LabelsAPI"
       permission="senaite.core.permissions.ViewLabels"
       layer="senaite.core.interfaces.ISenaiteCore"
