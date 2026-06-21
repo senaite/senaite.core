@@ -68,4 +68,18 @@
            zope.lifecycleevent.interfaces.IObjectAddedEvent"
       handler=".intid.drop_intid_for_temporary_object"/>
 
+  <!-- Label rename cascade: snapshot the title on edit begin so the
+       modified handler can detect a rename, then walk the label
+       catalog and rewrite the stored name on every labeled
+       content. -->
+  <subscriber
+      for="senaite.core.interfaces.ILabel
+           plone.dexterity.interfaces.IEditBegunEvent"
+      handler=".label.on_label_edit_begun"/>
+
+  <subscriber
+      for="senaite.core.interfaces.ILabel
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".label.on_label_modified"/>
+
 </configure>

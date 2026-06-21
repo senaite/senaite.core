@@ -332,3 +332,59 @@ Removing a label updates the index — `client1` drops out of the
     >>> labels_brains = search_objects_by_label("Spain")
     >>> client1.UID() in [b.UID for b in labels_brains]
     False
+
+
+Renaming a Label cascades to all labeled contents
+.................................................
+
+When the title of a `Label` content changes, the rename subscriber
+walks the label catalog and rewrites the stored name on every
+labeled object so storage and listing chips stay in sync.
+
+The cascade is wired through `IEditBegunEvent` (snapshot the old
+title) + `IObjectModifiedEvent` (compare and rewrite). For this
+test we invoke the rename helper directly because the form events
+do not fire from inside doctests:
+
+    >>> from senaite.core.subscribers.label import (
+    ...     _rename_label_in_storage)
+
+`client2` and `client3` carry the "SENAITE" label assigned above.
+Rename it to "SENAITE LIMS" and verify both clients move:
+
+    >>> brains_before = search_objects_by_label("SENAITE")
+    >>> uids_before = sorted([b.UID for b in brains_before])
+    >>> len(uids_before) >= 2
+    True
+
+    >>> affected = _rename_label_in_storage(u"SENAITE", u"SENAITE LIMS")
+    >>> affected == len(uids_before)
+    True
+
+    >>> u"SENAITE" in get_obj_labels(client2)
+    False
+    >>> u"SENAITE LIMS" in get_obj_labels(client2)
+    True
+
+The label catalog index reflects the new name and forgets the old:
+
+    >>> [b.UID for b in search_objects_by_label("SENAITE")]
+    []
+    >>> renamed = search_objects_by_label("SENAITE LIMS")
+    >>> sorted([b.UID for b in renamed]) == uids_before
+    True
+
+Merge case: renaming a label to a name that some objects already
+carry drops the old entry rather than duplicating. Set up a fresh
+pair of labels on a clean object, then collapse them:
+
+    >>> _ = add_obj_labels(client3, [u"Alpha", u"Beta"])
+    >>> sorted(get_obj_labels(client3))
+    [u'Alpha', u'Beta', 'LIMS', u'SENAITE LIMS']
+
+    >>> _ = _rename_label_in_storage(u"Alpha", u"Beta")
+    >>> sorted(get_obj_labels(client3))
+    [u'Beta', 'LIMS', u'SENAITE LIMS']
+
+    >>> get_obj_labels(client3).count(u"Beta")
+    1

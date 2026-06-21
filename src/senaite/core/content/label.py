@@ -42,6 +42,13 @@ class ILabelSchema(model.Schema):
             u"title_label_title",
             default=u"Name"
         ),
+        description=_(
+            u"description_label_title",
+            default=u"Renaming this label rewrites the stored name "
+                    u"on every currently labeled content. The cascade "
+                    u"runs in the same transaction as the save and may "
+                    u"take a moment on large datasets."
+        ),
         required=True,
     )
 
