@@ -250,13 +250,22 @@ class SampleHeaderViewlet(ViewletBase):
 
           - edit: field is rendered in edit mode
           - view: field is rendered in view mode
+          - <default>: hidden — user has neither write nor read
+            permission, so the field is not rendered at all
         """
-        mode = "view"
         if field.checkPermission("edit", self.context):
             mode = "edit"
             self.show_save = True
         elif field.checkPermission("view", self.context):
             mode = "view"
+        else:
+            # No permission to write *or* read — hide the field
+            # entirely. Without this branch the initial mode='view'
+            # leaked through and the field rendered in view mode
+            # regardless of the field's read_permission, defeating
+            # any per-field gating (e.g. the Labels field's
+            # ViewLabels / ManageLabels guards).
+            return default
 
         widget = self.get_widget(field)
         mode_vis = widget.isVisible(self.context, mode=mode, field=field)
