@@ -1,13 +1,15 @@
-<div class="slot-header"
+<div class="sample-labels"
      i18n:domain="senaite.core"
-     tal:define="labels options/labels;">
-
-  <ul class="list-unstyled d-table-row">
-    <li tal:repeat="label labels" class="d-inline-block">
-      <div class="p-1 mb-1 mr-1 bg-light border rounded small">
-        <span tal:replace="python:label"/>
-      </div>
-    </li>
-  </ul>
-
+     tal:define="labels options/labels;
+                 colors options/colors;
+                 chip_style options/chip_style;">
+  <tal:chip repeat="label labels">
+    <span class="sample-label"
+          tal:define="style python:chip_style(colors.get(label))"
+          tal:attributes="data-label python:label;
+                          style python:style or None">
+      <span class="sample-label-text"
+            tal:content="python:label" />
+    </span>
+  </tal:chip>
 </div>
