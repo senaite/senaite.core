@@ -91,7 +91,18 @@ class SampleHeaderViewlet(ViewletBase):
 
             # process the value as the widget would usually do
             process_value = field.widget.process_form
-            value, msgs = process_value(self.context, field, form_values)
+            result = process_value(self.context, field, form_values)
+
+            # Archetypes widgets are allowed to return the bare
+            # `empty_marker` (typically `None`) to signal "no change
+            # for this field", instead of a `(value, msgs)` tuple.
+            # File/Image widgets do this when no new upload was
+            # posted. Skip the field in that case so its current
+            # value on the context is preserved.
+            if not isinstance(result, tuple):
+                continue
+
+            value, msgs = result
 
             # Keep track of field-values
             field_values.update({name: value})

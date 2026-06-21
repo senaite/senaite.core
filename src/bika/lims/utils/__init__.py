@@ -38,7 +38,7 @@ from bika.lims.api import safe_unicode as u
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IClientAwareMixin
+from senaite.core.interfaces import IClientAwareMixin
 from DateTime import DateTime
 from plone.protect.utils import addTokenToUrl
 from plone.registry.interfaces import IRegistry
@@ -693,6 +693,13 @@ def get_link(href, value=None, csrf=True, **kwargs):
     """
     if not href:
         return ""
+    # Decode href to unicode up front. Callers commonly pass an
+    # f-string/.format() result that contains a content field value
+    # (phone, email, URL). On Py2 that result is a bytestring;
+    # mixing it into the unicode template below would trigger an
+    # implicit ASCII decode and raise on any non-ASCII byte
+    # (e.g. a UTF-8 en-dash 0xe2 0x80 0x93 inside a phone number).
+    href = u(href)
     anchor_value = value and u(value) or href
     attr = render_html_attributes(**kwargs)
     # Add a CSRF token

@@ -20,10 +20,11 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IClientAwareMixin
 from borg.localrole.interfaces import ILocalRoleProvider
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFCore.utils import getToolByName
+from senaite.core import logger
+from senaite.core.interfaces import IClientAwareMixin
 from zope.component import adapter
 from zope.interface import implementer
 
@@ -46,7 +47,38 @@ def _get_context_client_uid(context):
         return ""
     try:
         return getter() or ""
-    except Exception:
+    except Exception as exc:
+        # A broken `getClientUID` would silently revoke Owner from
+        # every linked client user on this context. Log at debug
+        # so the failure is traceable.
+        logger.debug(
+            "getClientUID failed on %r: %s" % (context, exc))
+        return ""
+
+
+def _get_linked_client_uid(context, principal_id):
+    """Return the `linked_client_uid` member property for the
+    given principal, or an empty string.
+
+    Shared by the per-context and the site-root role providers.
+    Returns "" on every soft failure (missing acl_users, unknown
+    principal, missing property, broken plugin) and logs the
+    exception at debug.
+    """
+    if not principal_id:
+        return ""
+    acl_users = getToolByName(context, "acl_users", None)
+    if acl_users is None:
+        return ""
+    user = acl_users.getUserById(principal_id)
+    if user is None:
+        return ""
+    try:
+        return user.getProperty(LINKED_CLIENT_UID_PROPERTY, "") or ""
+    except Exception as exc:
+        logger.debug(
+            "linked_client_uid lookup failed on user %r: %s"
+            % (user, exc))
         return ""
 
 
@@ -85,23 +117,11 @@ class ClientLinkRoleProvider(object):
         self.context = context
 
     def getRoles(self, principal_id):
-        if not principal_id:
-            return ()
-        acl_users = getToolByName(self.context, "acl_users", None)
-        if acl_users is None:
-            return ()
-        user = acl_users.getUserById(principal_id)
-        if user is None:
-            return ()
-        try:
-            linked_client_uid = user.getProperty(
-                LINKED_CLIENT_UID_PROPERTY, "") or ""
-        except Exception:
-            return ()
+        linked_client_uid = _get_linked_client_uid(
+            self.context, principal_id)
         if not linked_client_uid:
             return ()
-        context_client_uid = _get_context_client_uid(self.context)
-        if context_client_uid and context_client_uid == linked_client_uid:
+        if _get_context_client_uid(self.context) == linked_client_uid:
             return GRANTED_ROLES
         return ()
 
@@ -146,19 +166,7 @@ class GlobalClientRoleProvider(object):
         self.context = context
 
     def getRoles(self, principal_id):
-        if not principal_id:
-            return ()
-        acl_users = getToolByName(self.context, "acl_users", None)
-        if acl_users is None:
-            return ()
-        user = acl_users.getUserById(principal_id)
-        if user is None:
-            return ()
-        try:
-            linked = user.getProperty(
-                LINKED_CLIENT_UID_PROPERTY, "") or ""
-        except Exception:
-            return ()
+        linked = _get_linked_client_uid(self.context, principal_id)
         return ("Client",) if linked else ()
 
     def getAllRoles(self):

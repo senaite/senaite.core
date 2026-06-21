@@ -26,10 +26,18 @@ from bika.lims import api
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IClientAwareMixin
 from bika.lims.utils import chain
+from senaite.core.interfaces import IClientAwareMixin as _DXClientAwareMixin
 
 
 class ClientAwareMixin(BaseObject):
-    implements(IClientAwareMixin)
+    # Provide both markers so AT content participates in the DX-keyed
+    # client-role machinery (indexer / ILocalRoleProvider / reindex
+    # upgrade step) introduced by #2934, while keeping the AT-era
+    # symbol declared for any downstream code that still checks it.
+    # The AT-era `bika.lims.interfaces.IClientAwareMixin` is scheduled
+    # to be removed once external consumers migrate; once it goes,
+    # only the DX marker remains.
+    implements(IClientAwareMixin, _DXClientAwareMixin)
 
     security = ClassSecurityInfo()
 

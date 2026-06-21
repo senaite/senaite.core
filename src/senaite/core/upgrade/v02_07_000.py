@@ -2215,16 +2215,17 @@ def add_sample_catalog_indexes(tool):
 def strip_global_client_role(tool):
     """Remove directly-assigned global 'Client' role from users.
 
-    The 'Client' role is now granted implicitly to users via membership
-    in the per-client group (the group itself carries ``roles=["Client"]``).
-    A user with the role assigned directly through the portal role
-    manager but no client-group membership has the Client landing page
-    but no Owner role on any client folder, which is a half-configured
-    state with no useful access.
+    The 'Client' role is now granted dynamically by the
+    ILocalRoleProvider in `senaite.core.security.clientrole` based on
+    the user's `linked_client_uid` member property. A user with the
+    role assigned directly through the portal role manager but no
+    contact link has the Client landing page but no Owner role on any
+    client folder, which is a half-configured state with no useful
+    access.
 
     Iterate the principals assigned the 'Client' role via the portal
-    role manager and remove the direct assignment. Users keep the role
-    indirectly through group membership where applicable.
+    role manager and remove the direct assignment. Users keep the
+    role dynamically wherever their `linked_client_uid` matches.
     """
     logger.info("Stripping global 'Client' role from users ...")
     acl = api.get_tool("acl_users")
@@ -2270,6 +2271,34 @@ CLIENT_TREE_CATALOGS = (
 
 
 @upgradestep(product, version)
+def reindex_dx_client_aware_allowed_roles(tool):
+    """Re-run `reindex_client_tree_allowed_roles` after the
+    `IClientAwareMixin` interface mismatch was fixed.
+
+    #2934 wired the new `allowedRolesAndUsers` indexer, the
+    dynamic client-role provider, and this very reindex step
+    against `bika.lims.interfaces.IClientAwareMixin` (the AT
+    marker). The DX `ClientAwareMixin` base class in
+    `senaite.core.content.mixins`, however, implements the
+    separate `senaite.core.interfaces.IClientAwareMixin`. The
+    `providedBy` check in the original step therefore
+    silently rejected every DX descendant -- including
+    `SamplePoint`, `SampleType`, and `AnalysisProfile` -- and
+    none of them ever received the new `client:<uid>` token.
+    Catalog queries from client users (e.g. the Excel-import
+    sample-point lookup) returned no hits even though the
+    objects exist and direct traversal works via the dynamic
+    role provider.
+
+    All four call sites now import `IClientAwareMixin` from
+    `senaite.core.interfaces`; this follow-up step iterates
+    the client-tree catalogs again so every DX descendant
+    picks up the missing token.
+    """
+    reindex_client_tree_allowed_roles()
+
+
+@upgradestep(product, version)
 def switch_to_dynamic_client_roles(tool):
     """Migrate persistent group/local-role access to the dynamic
     ILocalRoleProvider model.
@@ -2294,12 +2323,27 @@ def switch_to_dynamic_client_roles(tool):
     drop_auto_create_client_group_record(portal)
 
 
+REINDEX_BATCH_SIZE = 100
+
+
 def reindex_client_tree_allowed_roles():
     """Reindex `allowedRolesAndUsers` on every IClient + IClientAware
     object so they carry the new `client:<uid>` token.
+
+    Bypasses `reindexObject` (and therefore the
+    `CatalogMultiplexProcessor` queue) and writes the single index
+    directly on every catalog the object lives in. Without this,
+    the queue would re-fan the reindex to every mapped catalog at
+    transaction-commit time, redo work that has just been done, and
+    dominate the upgrade-step runtime on production-size datasets.
+
+    Per-object: deactivate from the ZODB cache after the write to
+    keep the cache from filling up over very large catalogs;
+    savepoint every 5000 instead of every 500 because each item is
+    a single index write with no metadata refresh.
     """
     from bika.lims.interfaces import IClient
-    from bika.lims.interfaces import IClientAwareMixin
+    from senaite.core.interfaces import IClientAwareMixin
 
     logger.info("Reindexing allowedRolesAndUsers on client-tree content ...")
     seen = set()
@@ -2322,25 +2366,54 @@ def reindex_client_tree_allowed_roles():
             if not (IClient.providedBy(obj)
                     or IClientAwareMixin.providedBy(obj)):
                 continue
-            obj.reindexObject(idxs=["allowedRolesAndUsers"])
+            for cat in api.get_catalogs_for(obj):
+                cat.catalog_object(
+                    obj,
+                    idxs=["allowedRolesAndUsers"],
+                    update_metadata=False)
+            try:
+                obj._p_deactivate()
+            except Exception as exc:
+                # `_p_deactivate` is a cache-eviction optimisation;
+                # failures here are non-fatal and the reindex above
+                # has already persisted. Log at debug for
+                # troubleshooting but do not interrupt the upgrade.
+                logger.debug(
+                    "_p_deactivate failed on %r: %s" % (obj, exc))
             if uid:
                 seen.add(uid)
             total += 1
+            if total % REINDEX_BATCH_SIZE == 0:
+                transaction.savepoint(optimistic=True)
             if total % 500 == 0:
                 logger.info("  ... reindexed %s objects" % total)
+            if total % 5000 == 0:
+                transaction.savepoint(optimistic=True)
     logger.info(
         "Reindexed allowedRolesAndUsers on %s client-tree objects" % total)
 
 
 def backfill_linked_client_uid():
-    """Set the `linked_client_uid` user property for every existing
-    client contact that is already linked to a user account.
+    """Set the `linked_client_uid` and `linked_contact_uid` user
+    properties for every existing client contact already linked to a
+    user account.
+
+    Both properties drive different parts of the runtime: the client
+    UID is what the dynamic local-role provider in
+    `senaite.core.security.clientrole` reads to grant access on the
+    client tree, while the contact UID is the back-reference that
+    resolves a logged-in user to their contact object. The link path
+    in `Contact._linkUser` writes both, so existing links must carry
+    both for parity.
     """
     from bika.lims.interfaces import IClient
     from senaite.core.content.contact import CLIENT_UID_KEY
+    from senaite.core.content.contact import CONTACT_UID_KEY
     from senaite.core.content.contact import _set_user_property
 
-    logger.info("Backfilling `linked_client_uid` on linked users ...")
+    logger.info(
+        "Backfilling `linked_client_uid` and `linked_contact_uid` "
+        "on linked users ...")
     contacts = api.search({"portal_type": "Contact"}, CONTACT_CATALOG)
     updated = 0
     for brain in contacts:
@@ -2352,9 +2425,10 @@ def backfill_linked_client_uid():
         if user is None:
             continue
         _set_user_property(user, CLIENT_UID_KEY, api.get_uid(parent))
+        _set_user_property(user, CONTACT_UID_KEY, api.get_uid(contact))
         updated += 1
     logger.info(
-        "Backfilled `linked_client_uid` on %s users" % updated)
+        "Backfilled linked UID properties on %s users" % updated)
 
 
 def drop_auto_create_client_group_record(portal):
@@ -2463,3 +2537,42 @@ def remove_legacy_client_groups(tool):
         "Legacy client-group cleanup: %s groups removed, "
         "%s local-role grants cleared on %s clients"
         % (removed_groups, cleared_local_roles, total))
+
+
+@upgradestep(product, version)
+def drop_client_catalog_group_id_column(tool):
+    """Drop the `getGroupId` metadata column from `senaite_catalog_client`.
+
+    The column mirrored the legacy per-client group id. After the
+    dynamic role provider replaces the group mechanism, the column is
+    dead weight and every brain that still carries a stale value
+    misleads any code that reads it.
+    """
+    catalog = api.get_tool("senaite_catalog_client", default=None)
+    if catalog is None:
+        return
+    if del_column(catalog, "getGroupId"):
+        logger.info(
+            "Dropped 'getGroupId' column from senaite_catalog_client")
+
+
+@upgradestep(product, version)
+def remove_client_sharing_alias(tool):
+    """Drop the `sharing` method alias from the Client FTI.
+
+    The alias used to route `/<client>/sharing` to `@@sharing`. The
+    `manage_access` action that exposed it was removed by
+    `remove_client_manage_access_action`, but the alias itself kept
+    the view reachable by direct URL. Sharing on the client tree is
+    redundant now that access is granted dynamically.
+    """
+    types_tool = api.get_tool("portal_types")
+    fti = types_tool.getTypeInfo("Client")
+    if fti is None:
+        return
+    aliases = dict(fti.getMethodAliases() or {})
+    if "sharing" not in aliases:
+        return
+    del aliases["sharing"]
+    fti.setMethodAliases(aliases)
+    logger.info("Removed 'sharing' method alias from Client FTI")
