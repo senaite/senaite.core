@@ -10,4 +10,25 @@
       permission="senaite.core.permissions.ManageBika"
       layer="senaite.core.interfaces.ISenaiteCore"/>
 
+  <browser:page
+      for="senaite.core.interfaces.ICanHaveLabels"
+      name="add_label"
+      class=".manage_labels.AddLabelView"
+      permission="senaite.core.permissions.ManageLabels"
+      layer="senaite.core.interfaces.ISenaiteCore"/>
+
+  <browser:page
+      for="senaite.core.interfaces.ICanHaveLabels"
+      name="remove_label"
+      class=".manage_labels.RemoveLabelView"
+      permission="senaite.core.permissions.ManageLabels"
+      layer="senaite.core.interfaces.ISenaiteCore"/>
+
+  <browser:page
+      for="*"
+      name="available_labels"
+      class=".manage_labels.AvailableLabelsView"
+      permission="senaite.core.permissions.ViewLabels"
+      layer="senaite.core.interfaces.ISenaiteCore"/>
+
 </configure>
