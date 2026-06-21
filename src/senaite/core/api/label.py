@@ -292,7 +292,16 @@ def get_label_colors(names=None):
     brains = search(query, catalog=SETUP_CATALOG)
     out = {}
     for brain in brains:
+        # Prefer the `getColor` metadata column — populated by the
+        # 2.7 upgrade step `setup_sample_labels`. Falls back to
+        # waking the Label and reading the attribute directly for
+        # instances where the catalog rebuild has not yet run
+        # (e.g. between code deploy and `portal_setup` re-import).
         color = getattr(brain, "getColor", None)
+        if not color:
+            obj = api.get_object(brain, default=None)
+            if obj is not None:
+                color = getattr(obj, "color", None)
         if color:
             out[api.safe_unicode(brain.Title)] = api.safe_unicode(color)
     return out
