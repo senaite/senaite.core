@@ -35,32 +35,32 @@ class LabelsAPI(BrowserView):
 
     Routes are dispatched via subpath traversal:
 
-    - ``<context>/@@labels/add`` — POST: add one or more labels to
-      the context object. Auto-creates the corresponding ``Label``
-      in ``setup.labels`` when the name is new. Requires
-      ``senaite.core: Manage Labels``.
+    - `<context>/@@labels/add` — POST: add one or more labels to
+      the context object. Auto-creates the corresponding `Label`
+      in `setup.labels` when the name is new. Requires
+      `senaite.core: Manage Labels`.
 
-    - ``<context>/@@labels/remove`` — POST: remove one or more
+    - `<context>/@@labels/remove` — POST: remove one or more
       labels from the context object. Requires
-      ``senaite.core: Manage Labels``.
+      `senaite.core: Manage Labels`.
 
-    - ``@@labels/available`` — GET: returns ``{name, color,
-      description}`` for every active label so consumers (e.g. the
+    - `@@labels/available` — GET: returns `{name, color,
+      description}` for every active label so consumers (e.g. the
       active-filter chips above the listing search box) can paint
-      chips in the matching color. Requires ``senaite.core: View
-      Labels``.
+      chips in the matching color. Requires `senaite.core: View
+      Labels`.
 
     The browser page is registered at the lowest of the two
-    permissions (``ViewLabels``); the write routes re-check
-    ``ManageLabels`` and return 403 when missing. This keeps the
+    permissions (`ViewLabels`); the write routes re-check
+    `ManageLabels` and return 403 when missing. This keeps the
     JSON contract symmetric (every route returns a JSON body) and
     avoids exposing two ZCML page registrations for what is
     logically one endpoint.
 
     Labels are accepted in either of the two request shapes that
-    HTTP can deliver: ``label=foo&label=bar`` (repeated key) or
-    ``labels=foo,bar`` (comma-separated). Both are parsed through
-    ``senaite.core.api.label.parse_label_csv``.
+    HTTP can deliver: `label=foo&label=bar` (repeated key) or
+    `labels=foo,bar` (comma-separated). Both are parsed through
+    `senaite.core.api.label.parse_label_csv`.
     """
 
     def __init__(self, context, request):
@@ -129,8 +129,8 @@ class LabelsAPI(BrowserView):
     def _read_submitted_labels(self):
         """Parse labels from the request form into a sorted unique list.
 
-        Accepts both ``label=foo&label=bar`` (repeated keys) and
-        ``labels=foo,bar`` (comma-separated) shapes; both go through
+        Accepts both `label=foo&label=bar` (repeated keys) and
+        `labels=foo,bar` (comma-separated) shapes; both go through
         the same parser to return unicode names.
         """
         values = []
