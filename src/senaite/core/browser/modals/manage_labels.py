@@ -23,7 +23,7 @@ from bika.lims import senaiteMessageFactory as _
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.api import label as label_api
 from senaite.core.browser.modals import Modal
-from senaite.core.config import LABEL_COLOR_PRESETS
+from senaite.core.config.labels import LABEL_COLOR_PRESETS
 
 
 SAMPLE_LABEL_REINDEX = ["labels"]

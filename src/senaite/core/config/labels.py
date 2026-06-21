@@ -18,5 +18,17 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-PROFILE_ID = "profile-senaite.core:default"
-PROJECTNAME = "senaite.core"
+# Curated preset palette for the Manage Labels modal's color picker.
+# Mid-saturation values picked so white chip text stays readable.
+# Names are i18n-stable English keys used as preset button tooltips.
+LABEL_COLOR_PRESETS = [
+    ("Red", u"#d33a3a"),
+    ("Orange", u"#e8852b"),
+    ("Yellow", u"#d4a017"),
+    ("Green", u"#2f9e44"),
+    ("Teal", u"#0d9488"),
+    ("Blue", u"#0d6efd"),
+    ("Purple", u"#7c3aed"),
+    ("Pink", u"#db2777"),
+    ("Slate", u"#475569"),
+]
