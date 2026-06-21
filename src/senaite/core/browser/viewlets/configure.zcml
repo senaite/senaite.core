@@ -14,6 +14,16 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Label color swatch next to the title on the Label view -->
+  <browser:viewlet
+      name="senaite.core.label.color"
+      manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
+      class=".label_color.LabelColorViewlet"
+      for="senaite.core.interfaces.ILabel"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Listing Table: Title Viewlet -->
   <browser:viewlet
       name="senaite.core.listings.title"

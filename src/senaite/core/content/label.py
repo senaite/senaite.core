@@ -19,12 +19,15 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import senaiteMessageFactory as _
+from plone.autoform.interfaces import IDisplayForm
+from plone.autoform import directives
 from plone.supermodel import model
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.interfaces import IHideActionsMenu
 from senaite.core.api import label as label_api
 from senaite.core.interfaces import ILabel
+from senaite.core.schema.colorfield import ColorField
 from zope import schema
 from zope.interface import Invalid
 from zope.interface import implementer
@@ -48,6 +51,24 @@ class ILabelSchema(model.Schema):
             default=u"Description"
         ),
         required=False,
+    )
+
+    # Hide the color row on the display view — a viewlet renders the
+    # swatch next to the title instead. The field is still editable
+    # in the add / edit forms via the ColorField widget.
+    directives.mode(IDisplayForm, color="hidden")
+    color = ColorField(
+        title=_(
+            u"title_label_color",
+            default=u"Color"
+        ),
+        description=_(
+            u"description_label_color",
+            default=u"Hex color code used for the chip "
+                    u"(e.g. #0d6efd). Leave empty for the default style."
+        ),
+        required=False,
+        default=u"",
     )
 
     @invariant
