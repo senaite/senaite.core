@@ -48,6 +48,7 @@ from bika.lims.interfaces import IRemarksField as IATRemarksField
 from bika.lims.utils import tmpID
 from senaite.core.api.dtime import now
 from senaite.core.api.dtime import to_localized_time
+from senaite.core.i18n import translate
 from senaite.core.permissions import FieldEditRemarks
 from senaite.core.permissions import ManageSenaite
 from senaite.core.schema.interfaces import IRemarksField as IDXRemarksField
@@ -70,9 +71,12 @@ def to_safe_html(content):
 
 
 def to_plain_text(content):
-    """Convert (safe) HTML content back to plain text for editing. Block tags
-    and line breaks become newlines, remaining tags are stripped and HTML
-    entities are unescaped.
+    """Convert (safe) HTML content back to plain text for editing.
+
+    Block tags and line breaks become newlines, remaining tags are stripped
+    and HTML entities are unescaped. Note: the `portal_transforms`
+    `text/plain` transform is not used here because it collapses paragraph and
+    line breaks into spaces, which would lose the line structure of remarks.
     """
     if not content:
         return ""
@@ -257,10 +261,9 @@ def get_localized_records(obj, field, request):
     return out
 
 
-def get_i18n_labels(context):
+def get_i18n_labels():
     """Return the translated labels passed to the React widget
     """
-    translate = context.translate
     return {
         "add_remarks": translate(_("Add remarks")),
         "save": translate(_("Save")),
@@ -293,6 +296,6 @@ def get_widget_attributes(context, field, request):
         "data-can_add": can_add_remark(context),
         "data-can_manage": can_manage_remarks(context),
         "data-current_user_id": get_user_id(),
-        "data-i18n": get_i18n_labels(context),
+        "data-i18n": get_i18n_labels(),
     }
     return {key: json.dumps(value) for key, value in attributes.items()}

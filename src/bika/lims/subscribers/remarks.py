@@ -19,4 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 # BBB: this module was moved to senaite.core.subscribers.remarks
-from senaite.core.subscribers.remarks import RemarksAddedEventHandler  # noqa: F401,E501
+from senaite.core.subscribers.remarks import RemarksAddedEventHandler
+
+__all__ = [
+    "RemarksAddedEventHandler",
+]

@@ -19,7 +19,14 @@
 # Some rights reserved, see README and LICENSE.
 
 # BBB: this module was moved to senaite.core.events.remarks
-from senaite.core.events.remarks import IRemarksAddedEvent  # noqa: F401
-from senaite.core.events.remarks import RemarksAddedEvent  # noqa: F401
-from senaite.core.events.remarks import IRemarksChangedEvent  # noqa: F401
-from senaite.core.events.remarks import RemarksChangedEvent  # noqa: F401
+from senaite.core.events.remarks import IRemarksAddedEvent
+from senaite.core.events.remarks import RemarksAddedEvent
+from senaite.core.events.remarks import IRemarksChangedEvent
+from senaite.core.events.remarks import RemarksChangedEvent
+
+__all__ = [
+    "IRemarksAddedEvent",
+    "RemarksAddedEvent",
+    "IRemarksChangedEvent",
+    "RemarksChangedEvent",
+]

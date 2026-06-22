@@ -19,6 +19,12 @@
 # Some rights reserved, see README and LICENSE.
 
 # BBB: this module was moved to senaite.core.browser.fields.remarksfield
-from senaite.core.browser.fields.remarksfield import RemarksField  # noqa: F401
-from senaite.core.browser.fields.remarksfield import RemarksHistory  # noqa: F401,E501
-from senaite.core.browser.fields.remarksfield import RemarksHistoryRecord  # noqa: F401,E501
+from senaite.core.browser.fields.remarksfield import RemarksField
+from senaite.core.browser.fields.remarksfield import RemarksHistory
+from senaite.core.browser.fields.remarksfield import RemarksHistoryRecord
+
+__all__ = [
+    "RemarksField",
+    "RemarksHistory",
+    "RemarksHistoryRecord",
+]

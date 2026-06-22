@@ -50,7 +50,7 @@ class RemarksHistory(list):
     def __str__(self):
         """Returns the remarks in legacy format
         """
-        remarks = map(lambda rec: str(rec), self)
+        remarks = map(str, self)
         remarks = filter(None, remarks)
         return "\n".join(remarks)
 

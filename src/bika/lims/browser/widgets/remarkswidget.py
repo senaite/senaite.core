@@ -19,4 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 # BBB: this module was moved to senaite.core.browser.widgets.remarkswidget
-from senaite.core.browser.widgets.remarkswidget import RemarksWidget  # noqa: F401,E501
+from senaite.core.browser.widgets.remarkswidget import RemarksWidget
+
+__all__ = [
+    "RemarksWidget",
+]
