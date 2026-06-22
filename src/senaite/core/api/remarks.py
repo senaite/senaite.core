@@ -41,6 +41,7 @@ data migration is required. They are filled lazily on the first edit.
 import json
 import re
 
+from Products.CMFCore import permissions
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.api.security import get_user_id
@@ -234,6 +235,17 @@ def get_records(obj, field):
     """
     records = field.get(obj) or []
     return [dict(record) for record in records]
+
+
+def can_view_remarks(context):
+    """Check if the current user can view the remarks of the context
+
+    :param context: the object to check the permission against
+    :returns: True if the current user can view the object
+    :rtype: bool
+    """
+    mtool = api.get_tool("portal_membership")
+    return bool(mtool.checkPermission(permissions.View, context))
 
 
 def can_add_remark(context):

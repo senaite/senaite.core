@@ -316,6 +316,10 @@ class AjaxFetchRemarks(BrowserView):
         if not obj:
             return {"success": False}
 
+        if not remarks_api.can_view_remarks(obj):
+            self.request.response.setStatus(403)
+            return {"success": False}
+
         field = remarks_api.get_remarks_field(obj, field_name)
         if field is None:
             return {"success": False}

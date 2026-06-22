@@ -24,6 +24,7 @@ Needed Imports::
     >>> from senaite.core.events.remarks import IRemarksChangedEvent
     >>> from senaite.core.z3cform.widgets.remarks.widget import AjaxAddRemark
     >>> from senaite.core.z3cform.widgets.remarks.widget import AjaxEditRemark
+    >>> from senaite.core.z3cform.widgets.remarks.widget import AjaxFetchRemarks
     >>> from DateTime import DateTime
 
 Functional Helpers::
@@ -187,3 +188,24 @@ Editing the same remark through the endpoint fires an `edited` event::
 Cleanup::
 
     >>> subscribers.remove(captured.append)
+
+
+Fetching requires view access
+.............................
+
+Fetching remarks is gated by view access on the object, so an anonymous user
+is rejected::
+
+    >>> from plone.app.testing import login, logout, TEST_USER_NAME
+    >>> logout()
+    >>> request.form["fieldName"] = "Remarks"
+    >>> request.form["uid"] = sample.UID()
+    >>> json.loads(AjaxFetchRemarks(sample, request)())["success"]
+    False
+
+    >>> login(portal, TEST_USER_NAME)
+
+An authenticated manager can fetch the remarks::
+
+    >>> json.loads(AjaxFetchRemarks(sample, request)())["success"]
+    True

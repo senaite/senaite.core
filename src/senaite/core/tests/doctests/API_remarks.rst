@@ -156,12 +156,27 @@ Create a Sample that holds a Remarks field::
 Permissions
 ...........
 
-A manager can add and manage remarks::
+A manager can view, add and manage remarks::
 
+    >>> remarks.can_view_remarks(sample)
+    True
     >>> remarks.can_add_remark(sample)
     True
     >>> remarks.can_manage_remarks(sample)
     True
+
+An anonymous user can neither view nor add remarks::
+
+    >>> from plone.app.testing import logout
+    >>> logout()
+    >>> remarks.can_view_remarks(sample)
+    False
+    >>> remarks.can_add_remark(sample)
+    False
+
+    >>> from plone.app.testing import login
+    >>> from plone.app.testing import TEST_USER_NAME
+    >>> login(portal, TEST_USER_NAME)
 
 A manager can edit any record, even one authored by somebody else::
 
