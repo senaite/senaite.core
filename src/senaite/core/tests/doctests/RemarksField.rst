@@ -65,45 +65,7 @@ Create a Sample
     >>> sample = create_analysisrequest(client, request, values, [service.UID()])
     >>> field = sample.getField("Remarks")
 
-
-Shared helpers
-..............
-
-A new record carries the full shape, with empty edit metadata::
-
-    >>> record = remarks_api.make_record("Hello world", user_id="bob")
-    >>> sorted(record.keys())
-    ['content', 'created', 'id', 'modified', 'modified_by', 'user_id', 'user_name', 'versions']
-    >>> record["modified"]
-    ''
-    >>> record["versions"]
-    []
-
-Editing pushes the prior content as a version and stamps the modification::
-
-    >>> updated = remarks_api.apply_edit(record, "Hello there", editor_id="alice")
-    >>> "Hello there" in updated["content"]
-    True
-    >>> updated["modified_by"]
-    'alice'
-    >>> updated["modified"] != ""
-    True
-    >>> len(updated["versions"])
-    1
-    >>> "Hello world" in updated["versions"][0]["content"]
-    True
-
-The original creation date is preserved::
-
-    >>> updated["created"] == record["created"]
-    True
-
-Sanitized HTML content is converted back to plain text for editing::
-
-    >>> remarks_api.to_plain_text("<p>Bitte z&uuml;gig bearbeiten</p>")
-    u'Bitte z\xfcgig bearbeiten'
-    >>> remarks_api.to_plain_text("<p>line one</p><p>line two</p>")
-    u'line one\nline two'
+The pure helper functions of the remarks API are covered in `API_remarks`.
 
 
 Add and edit on the field

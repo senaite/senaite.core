@@ -62,6 +62,11 @@ except ImportError:  # Python 2
 
 def to_safe_html(content):
     """Sanitize the given content through the `text/x-html-safe` transform
+
+    :param content: the (plain or HTML) text to sanitize
+    :type content: str
+    :returns: sanitized, safe HTML
+    :rtype: str
     """
     if not content:
         return content
@@ -71,12 +76,17 @@ def to_safe_html(content):
 
 
 def to_plain_text(content):
-    """Convert (safe) HTML content back to plain text for editing.
+    """Convert (safe) HTML content back to plain text for editing
 
     Block tags and line breaks become newlines, remaining tags are stripped
     and HTML entities are unescaped. Note: the `portal_transforms`
     `text/plain` transform is not used here because it collapses paragraph and
     line breaks into spaces, which would lose the line structure of remarks.
+
+    :param content: the (safe) HTML content to convert
+    :type content: str
+    :returns: the plain text representation
+    :rtype: unicode
     """
     if not content:
         return ""
@@ -91,7 +101,12 @@ def to_plain_text(content):
 
 
 def get_user_fullname(user_id):
-    """Return the full name for the given user id, falling back to the id
+    """Return the full name for the given user id
+
+    :param user_id: the id of the user
+    :type user_id: str
+    :returns: the user's full name, or the user id if not available
+    :rtype: str
     """
     properties = api.get_user_properties(user_id)
     return properties and properties.get("fullname") or user_id
@@ -99,6 +114,17 @@ def get_user_fullname(user_id):
 
 def make_record(content, user_id=None, user_name=None):
     """Create a new remark record for the given content
+
+    :param content: the content of the new remark
+    :type content: str
+    :param user_id: id of the author (defaults to the current user)
+    :type user_id: str
+    :param user_name: full name of the author (resolved from `user_id` when
+                      not provided)
+    :type user_name: str
+    :returns: a new remark record with sanitized content and empty edit
+              metadata
+    :rtype: dict
     """
     if user_id is None:
         user_id = get_user_id()
@@ -117,8 +143,21 @@ def make_record(content, user_id=None, user_name=None):
 
 
 def apply_edit(record, content, editor_id=None):
-    """Update the record in place with the new content, preserving the prior
-    content as a version. Returns the same record.
+    """Update the record in place with the new content, keeping the prior
+    content as a version
+
+    The current content is pushed onto the front of the `versions` list and
+    the `modified` / `modified_by` metadata is stamped. The original `created`
+    date and author are preserved.
+
+    :param record: the remark record to edit
+    :type record: dict
+    :param content: the new content of the remark
+    :type content: str
+    :param editor_id: id of the editing user (defaults to the current user)
+    :type editor_id: str
+    :returns: the same record, updated
+    :rtype: dict
     """
     if editor_id is None:
         editor_id = get_user_id()
@@ -140,7 +179,14 @@ def apply_edit(record, content, editor_id=None):
 
 
 def find_record(records, remark_id):
-    """Return the (index, record) tuple for the given remark id or (None, None)
+    """Find a remark record by its id
+
+    :param records: the list of remark records to search
+    :type records: list
+    :param remark_id: the id of the remark to find
+    :type remark_id: str
+    :returns: the (index, record) tuple, or (None, None) if not found
+    :rtype: tuple
     """
     for index, record in enumerate(records):
         if record.get("id") == remark_id:
@@ -150,7 +196,12 @@ def find_record(records, remark_id):
 
 def get_remarks_field(obj, field_name):
     """Resolve a remarks field by name, accepting both the AT and DX field
-    interfaces. Returns the field or None.
+    interfaces
+
+    :param obj: the object holding the field
+    :param field_name: the name of the remarks field
+    :type field_name: str
+    :returns: the remarks field, or None if not found or not a remarks field
     """
     fields = api.get_fields(obj)
     if field_name not in fields:
@@ -163,6 +214,10 @@ def get_remarks_field(obj, field_name):
 
 def get_field_name(field):
     """Return the name of an AT or DX field
+
+    :param field: an Archetypes or Dexterity field
+    :returns: the field name
+    :rtype: str
     """
     if hasattr(field, "getName"):
         return field.getName()
@@ -171,6 +226,11 @@ def get_field_name(field):
 
 def get_records(obj, field):
     """Return the remark records of the field as a list of plain dicts
+
+    :param obj: the object holding the field
+    :param field: the remarks field
+    :returns: the remark records as plain dicts
+    :rtype: list
     """
     records = field.get(obj) or []
     return [dict(record) for record in records]
@@ -178,6 +238,10 @@ def get_records(obj, field):
 
 def can_add_remark(context):
     """Check if the current user can add remarks on the context
+
+    :param context: the object to check the permission against
+    :returns: True if the current user can add remarks
+    :rtype: bool
     """
     mtool = api.get_tool("portal_membership")
     return bool(mtool.checkPermission(FieldEditRemarks, context))
@@ -185,14 +249,27 @@ def can_add_remark(context):
 
 def can_manage_remarks(context):
     """Check if the current user can manage (edit any) remarks on the context
+
+    :param context: the object to check the permission against
+    :returns: True if the current user can manage remarks
+    :rtype: bool
     """
     mtool = api.get_tool("portal_membership")
     return bool(mtool.checkPermission(ManageSenaite, context))
 
 
 def can_edit_record(context, record, user_id=None):
-    """Check if the current user can edit the given remark record. Users may
-    edit their own remarks; managers may edit any remark.
+    """Check if the current user can edit the given remark record
+
+    Users may edit their own remarks; managers may edit any remark.
+
+    :param context: the object holding the remark
+    :param record: the remark record to check
+    :type record: dict
+    :param user_id: the acting user id (defaults to the current user)
+    :type user_id: str
+    :returns: True if the user can edit the record
+    :rtype: bool
     """
     if can_manage_remarks(context):
         return True
@@ -204,6 +281,13 @@ def can_edit_record(context, record, user_id=None):
 
 def localize_time(value, context, request):
     """Return the localized representation of an ISO timestamp
+
+    :param value: the ISO timestamp to localize
+    :type value: str
+    :param context: the context for the localization
+    :param request: the current request
+    :returns: the localized time, or "" if no value was given
+    :rtype: str
     """
     if not value:
         return ""
@@ -212,10 +296,17 @@ def localize_time(value, context, request):
 
 
 def localize_record(record, context, request):
-    """Return a display copy of the record with localized timestamps, a
-    rendered `content_html` for display and a derived `edited` flag. The raw
-    `content` is kept so the widget can edit the plain text. Does not mutate
-    the input.
+    """Return a display copy of the record with localized timestamps
+
+    Adds a rendered `content_html` for display, a plain text `content_text`
+    for the editor and a derived `edited` flag. Does not mutate the input.
+
+    :param record: the remark record to localize
+    :type record: dict
+    :param context: the context for the localization
+    :param request: the current request
+    :returns: a localized copy of the record
+    :rtype: dict
     """
     data = dict(record)
     data["created"] = localize_time(record.get("created"), context, request)
@@ -239,7 +330,13 @@ def localize_record(record, context, request):
 
 def get_localized_records(obj, field, request):
     """Return the field records, newest first, localized and annotated with a
-    per-record `can_edit` flag for the current user.
+    per-record `can_edit` flag for the current user
+
+    :param obj: the object holding the field
+    :param field: the remarks field
+    :param request: the current request
+    :returns: the localized remark records, newest first
+    :rtype: list
     """
     records = get_records(obj, field)
     # raw `created` is ISO, so a reverse string sort yields newest first
@@ -263,6 +360,9 @@ def get_localized_records(obj, field, request):
 
 def get_i18n_labels():
     """Return the translated labels passed to the React widget
+
+    :returns: a mapping of label key to translated text
+    :rtype: dict
     """
     return {
         "add_remarks": translate(_("Add remarks")),
@@ -281,9 +381,16 @@ def get_i18n_labels():
 
 
 def get_widget_attributes(context, field, request):
-    """Build the JSON-encoded `data-*` attributes for the React mount element.
+    """Build the JSON-encoded `data-*` attributes for the React mount element
+
     Both the AT skins widget and the DX z3cform widget call this so the same
     component is mounted with identical data in every context.
+
+    :param context: the object holding the field
+    :param field: the remarks field
+    :param request: the current request
+    :returns: a mapping of `data-*` attribute name to JSON-encoded value
+    :rtype: dict
     """
     field_name = get_field_name(field)
     uid = api.get_uid(context)
