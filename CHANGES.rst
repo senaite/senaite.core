@@ -4,7 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
-- #2958 Refactor Remarks into a reusable React widget with edit and version history
+- #2959 Refactor Remarks into a reusable React widget with edit and version history
 - #2953 Fix IClientAwareMixin interface mismatch breaking client access on DX content
 - #2955 Defer workflow transition lookup with a React content-menu component
 - #2954 Declare i18n:domain on duration widget templates
