@@ -28,22 +28,6 @@
   border-top: 1px solid #f1f2f4;
 }
 
-/* avatar */
-.senaite-remarks-widget .remark-avatar {
-  flex: 0 0 auto;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  color: #fff;
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-}
-
 /* body */
 .senaite-remarks-widget .remark-body {
   flex: 1 1 auto;

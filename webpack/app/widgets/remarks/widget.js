@@ -1,7 +1,7 @@
 import React from "react";
 
 import RemarksAPI from "./api.js";
-import Avatar from "./components/Avatar.js";
+import Avatar from "../components/Avatar.js";
 import RemarksList from "./components/RemarksList.js";
 import RemarkEditor from "./components/RemarkEditor.js";
 import "./remarks.css";

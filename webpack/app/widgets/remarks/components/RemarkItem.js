@@ -1,6 +1,6 @@
 import React from "react";
 
-import Avatar from "./Avatar.js";
+import Avatar from "../../components/Avatar.js";
 import RemarkEditor from "./RemarkEditor.js";
 import VersionHistory from "./VersionHistory.js";
 
