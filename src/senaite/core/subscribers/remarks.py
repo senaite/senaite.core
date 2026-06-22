@@ -18,5 +18,13 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-# BBB: this module was moved to senaite.core.browser.widgets.remarkswidget
-from senaite.core.browser.widgets.remarkswidget import RemarksWidget  # noqa: F401,E501
+from bika.lims import logger
+
+
+def RemarksAddedEventHandler(event):
+    """New Remarks Added
+    """
+    context = event.context
+    history = event.history
+    logger.info("New Remarks added for {}: {}"
+                .format(repr(context), history[0]))

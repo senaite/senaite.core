@@ -1,0 +1,189 @@
+/* Styles for the Remarks React widget (comment-thread look) */
+
+.senaite-remarks-widget {
+  width: 100%;
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+/* shared row layout for composer and remarks */
+.senaite-remarks-widget .remark,
+.senaite-remarks-widget .remarks-composer {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.senaite-remarks-widget .remarks-composer {
+  padding-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #eceef1;
+}
+
+.senaite-remarks-widget .remark {
+  padding: 0.75rem 0;
+}
+
+.senaite-remarks-widget .remark + .remark {
+  border-top: 1px solid #f1f2f4;
+}
+
+/* avatar */
+.senaite-remarks-widget .remark-avatar {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+/* body */
+.senaite-remarks-widget .remark-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.senaite-remarks-widget .remark-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  line-height: 1.3;
+}
+
+.senaite-remarks-widget .remark-author {
+  font-weight: 600;
+  color: #2c3038;
+}
+
+.senaite-remarks-widget .remark-time {
+  font-size: 0.78rem;
+  color: #9aa0a6;
+}
+
+.senaite-remarks-widget .remark-edited-badge {
+  font-size: 0.72rem;
+  color: #9aa0a6;
+  font-style: italic;
+}
+
+.senaite-remarks-widget .remark-content {
+  margin-top: 0.15rem;
+  color: #3c4149;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.senaite-remarks-widget .remark-content p {
+  margin: 0 0 0.35rem;
+}
+
+.senaite-remarks-widget .remark-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* actions */
+.senaite-remarks-widget .remark-actions {
+  margin-top: 0.3rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.senaite-remarks-widget .remark-action {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 0.78rem;
+  color: #8a9097;
+  cursor: pointer;
+  transition: color 0.12s ease;
+}
+
+.senaite-remarks-widget .remark:hover .remark-action {
+  color: #5b8def;
+}
+
+.senaite-remarks-widget .remark-action:hover {
+  color: #3b6fd4;
+  text-decoration: underline;
+}
+
+/* editor */
+.senaite-remarks-widget .remarks-editor {
+  flex: 1 1 auto;
+}
+
+.senaite-remarks-widget .remarks-textarea {
+  border-radius: 0.5rem;
+  resize: vertical;
+  min-height: 2.5rem;
+}
+
+.senaite-remarks-widget .remarks-textarea:focus {
+  border-color: #9bbcf6;
+  box-shadow: 0 0 0 0.15rem rgba(91, 141, 239, 0.2);
+}
+
+.senaite-remarks-widget .remarks-editor-actions {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* version history */
+.senaite-remarks-widget .remarks-versions {
+  margin-top: 0.5rem;
+  padding-left: 0.85rem;
+  border-left: 2px solid #eceef1;
+}
+
+.senaite-remarks-widget .remark-version {
+  margin: 0.4rem 0;
+}
+
+.senaite-remarks-widget .remark-version-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: baseline;
+  font-size: 0.75rem;
+  color: #9aa0a6;
+}
+
+.senaite-remarks-widget .remark-version-content {
+  color: #6b7178;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.senaite-remarks-widget .remark-original {
+  font-style: italic;
+}
+
+/* misc */
+.senaite-remarks-widget .remarks-empty {
+  color: #9aa0a6;
+  font-style: italic;
+  padding: 0.5rem 0;
+}
+
+.senaite-remarks-widget .remarks-toggle {
+  background: none;
+  border: 0;
+  padding: 0.4rem 0 0;
+  color: #5b8def;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.senaite-remarks-widget .remarks-toggle:hover {
+  text-decoration: underline;
+}

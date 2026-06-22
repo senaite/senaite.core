@@ -23,6 +23,15 @@
         layer="senaite.core.interfaces.ISenaiteFormLayer"
     />
 
+    <!-- POST for editing a remark -->
+    <browser:page
+        for="*"
+        name="edit_remark"
+        class=".widget.AjaxEditRemark"
+        permission="zope.Public"
+        layer="senaite.core.interfaces.ISenaiteFormLayer"
+    />
+
     <!-- POST for fetch of remarks -->
     <browser:page
         for="*"

@@ -12383,3 +12383,27 @@ msgstr "Alle Spalten sind ausgeblendet."
 # senaite.app.listing: Column config — empty state for hidden section with search
 msgid "No matches in hidden columns."
 msgstr "Keine Treffer in ausgeblendeten Spalten."
+
+#: senaite/core/api/remarks.py
+msgid "Add a remark..."
+msgstr "Bemerkung hinzufügen..."
+
+#: senaite/core/api/remarks.py
+msgid "Hide history"
+msgstr "Verlauf ausblenden"
+
+#: senaite/core/api/remarks.py
+msgid "No remarks yet"
+msgstr "Noch keine Bemerkungen"
+
+#: senaite/core/api/remarks.py
+msgid "Show history"
+msgstr "Verlauf anzeigen"
+
+#: senaite/core/api/remarks.py
+msgid "edited"
+msgstr "bearbeitet"
+
+#: senaite/core/api/remarks.py
+msgid "original"
+msgstr "Original"

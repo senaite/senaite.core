@@ -68,4 +68,9 @@
            zope.lifecycleevent.interfaces.IObjectAddedEvent"
       handler=".intid.drop_intid_for_temporary_object"/>
 
+  <!-- Legacy logging handler for added remarks (AT field) -->
+  <subscriber
+      for="senaite.core.events.remarks.IRemarksAddedEvent"
+      handler=".remarks.RemarksAddedEventHandler"/>
+
 </configure>

@@ -1,0 +1,298 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE.
+#
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2025 by it's authors.
+# Some rights reserved, see README and LICENSE.
+
+"""Shared helpers for the Remarks field, used by both the Archetypes and the
+Dexterity field implementations as well as the widget endpoints.
+
+A remark record is a plain dict with the following keys:
+
+    id           Stable identity, used to target edits
+    user_id      Original author
+    user_name    Original author full name
+    created      ISO timestamp of the original content (never changes)
+    content      Current (latest) content, sanitized HTML
+    modified     ISO timestamp of the last edit ("" => never edited)
+    modified_by  User id of the last editor (may differ from the author)
+    versions     List of prior versions, newest first, each a dict with
+                 {content, created, user_id}
+
+The new keys (modified, modified_by, versions) are optional. Records created
+before this feature simply lack them and are read with safe defaults, so no
+data migration is required. They are filled lazily on the first edit.
+"""
+
+import json
+import re
+
+from bika.lims import api
+from bika.lims import senaiteMessageFactory as _
+from bika.lims.api.security import get_user_id
+from bika.lims.interfaces import IRemarksField as IATRemarksField
+from bika.lims.utils import tmpID
+from senaite.core.api.dtime import now
+from senaite.core.api.dtime import to_localized_time
+from senaite.core.permissions import FieldEditRemarks
+from senaite.core.permissions import ManageSenaite
+from senaite.core.schema.interfaces import IRemarksField as IDXRemarksField
+
+try:
+    from html import unescape as html_unescape
+except ImportError:  # Python 2
+    from HTMLParser import HTMLParser
+    html_unescape = HTMLParser().unescape
+
+
+def to_safe_html(content):
+    """Sanitize the given content through the `text/x-html-safe` transform
+    """
+    if not content:
+        return content
+    pt = api.get_tool("portal_transforms")
+    stream = pt.convertTo("text/x-html-safe", content)
+    return stream.getData()
+
+
+def to_plain_text(content):
+    """Convert (safe) HTML content back to plain text for editing. Block tags
+    and line breaks become newlines, remaining tags are stripped and HTML
+    entities are unescaped.
+    """
+    if not content:
+        return ""
+    text = api.safe_unicode(content)
+    text = re.sub(r"(?i)<\s*br\s*/?\s*>", "\n", text)
+    text = re.sub(r"(?i)</\s*(p|div|li)\s*>", "\n", text)
+    text = re.sub(r"(?i)<[^>]+>", "", text)
+    text = html_unescape(text)
+    # collapse runs of blank lines and trim
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
+
+
+def get_user_fullname(user_id):
+    """Return the full name for the given user id, falling back to the id
+    """
+    properties = api.get_user_properties(user_id)
+    return properties and properties.get("fullname") or user_id
+
+
+def make_record(content, user_id=None, user_name=None):
+    """Create a new remark record for the given content
+    """
+    if user_id is None:
+        user_id = get_user_id()
+    if user_name is None:
+        user_name = get_user_fullname(user_id)
+    return {
+        "id": tmpID(),
+        "user_id": user_id,
+        "user_name": user_name,
+        "created": now(),
+        "content": to_safe_html(content),
+        "modified": "",
+        "modified_by": "",
+        "versions": [],
+    }
+
+
+def apply_edit(record, content, editor_id=None):
+    """Update the record in place with the new content, preserving the prior
+    content as a version. Returns the same record.
+    """
+    if editor_id is None:
+        editor_id = get_user_id()
+
+    # the version being replaced: when the current content was authored
+    prior = {
+        "content": record.get("content", ""),
+        "created": record.get("modified") or record.get("created", ""),
+        "user_id": record.get("modified_by") or record.get("user_id", ""),
+    }
+    versions = list(record.get("versions") or [])
+    versions.insert(0, prior)
+
+    record["versions"] = versions
+    record["content"] = to_safe_html(content)
+    record["modified"] = now()
+    record["modified_by"] = editor_id
+    return record
+
+
+def find_record(records, remark_id):
+    """Return the (index, record) tuple for the given remark id or (None, None)
+    """
+    for index, record in enumerate(records):
+        if record.get("id") == remark_id:
+            return index, record
+    return None, None
+
+
+def get_remarks_field(obj, field_name):
+    """Resolve a remarks field by name, accepting both the AT and DX field
+    interfaces. Returns the field or None.
+    """
+    fields = api.get_fields(obj)
+    if field_name not in fields:
+        return None
+    field = fields.get(field_name)
+    if IDXRemarksField.providedBy(field) or IATRemarksField.providedBy(field):
+        return field
+    return None
+
+
+def get_field_name(field):
+    """Return the name of an AT or DX field
+    """
+    if hasattr(field, "getName"):
+        return field.getName()
+    return getattr(field, "__name__", "")
+
+
+def get_records(obj, field):
+    """Return the remark records of the field as a list of plain dicts
+    """
+    records = field.get(obj) or []
+    return [dict(record) for record in records]
+
+
+def can_add_remark(context):
+    """Check if the current user can add remarks on the context
+    """
+    mtool = api.get_tool("portal_membership")
+    return bool(mtool.checkPermission(FieldEditRemarks, context))
+
+
+def can_manage_remarks(context):
+    """Check if the current user can manage (edit any) remarks on the context
+    """
+    mtool = api.get_tool("portal_membership")
+    return bool(mtool.checkPermission(ManageSenaite, context))
+
+
+def can_edit_record(context, record, user_id=None):
+    """Check if the current user can edit the given remark record. Users may
+    edit their own remarks; managers may edit any remark.
+    """
+    if can_manage_remarks(context):
+        return True
+    if user_id is None:
+        user_id = get_user_id()
+    is_owner = user_id == record.get("user_id")
+    return bool(is_owner and can_add_remark(context))
+
+
+def localize_time(value, context, request):
+    """Return the localized representation of an ISO timestamp
+    """
+    if not value:
+        return ""
+    return to_localized_time(value, long_format=True,
+                             context=context, request=request)
+
+
+def localize_record(record, context, request):
+    """Return a display copy of the record with localized timestamps, a
+    rendered `content_html` for display and a derived `edited` flag. The raw
+    `content` is kept so the widget can edit the plain text. Does not mutate
+    the input.
+    """
+    data = dict(record)
+    data["created"] = localize_time(record.get("created"), context, request)
+    data["modified"] = localize_time(record.get("modified"), context, request)
+    data["edited"] = bool(record.get("modified"))
+    # content is stored as sanitized HTML; render it as-is and provide a plain
+    # text variant for the editor textarea
+    content = record.get("content") or ""
+    data["content_html"] = content
+    data["content_text"] = to_plain_text(content)
+    versions = []
+    for version in record.get("versions") or []:
+        item = dict(version)
+        item["created"] = localize_time(
+            version.get("created"), context, request)
+        item["content_html"] = version.get("content") or ""
+        versions.append(item)
+    data["versions"] = versions
+    return data
+
+
+def get_localized_records(obj, field, request):
+    """Return the field records, newest first, localized and annotated with a
+    per-record `can_edit` flag for the current user.
+    """
+    records = get_records(obj, field)
+    # raw `created` is ISO, so a reverse string sort yields newest first
+    records.sort(key=lambda r: r.get("created") or "", reverse=True)
+
+    user_id = get_user_id()
+    manage = can_manage_remarks(obj)
+    add = can_add_remark(obj)
+
+    out = []
+    for record in records:
+        data = localize_record(record, obj, request)
+        if manage:
+            data["can_edit"] = True
+        else:
+            is_owner = user_id == record.get("user_id")
+            data["can_edit"] = bool(is_owner and add)
+        out.append(data)
+    return out
+
+
+def get_i18n_labels(context):
+    """Return the translated labels passed to the React widget
+    """
+    translate = context.translate
+    return {
+        "add_remarks": translate(_("Add remarks")),
+        "save": translate(_("Save")),
+        "cancel": translate(_("Cancel")),
+        "edit": translate(_("Edit")),
+        "edited": translate(_("edited")),
+        "show_history": translate(_("Show history")),
+        "hide_history": translate(_("Hide history")),
+        "show_more": translate(_("Show more")),
+        "show_less": translate(_("Show less")),
+        "placeholder": translate(_("Add a remark...")),
+        "no_remarks": translate(_("No remarks yet")),
+        "original": translate(_("original")),
+    }
+
+
+def get_widget_attributes(context, field, request):
+    """Build the JSON-encoded `data-*` attributes for the React mount element.
+    Both the AT skins widget and the DX z3cform widget call this so the same
+    component is mounted with identical data in every context.
+    """
+    field_name = get_field_name(field)
+    uid = api.get_uid(context)
+    attributes = {
+        "data-id": "remarks-{}-{}".format(uid, field_name),
+        "data-uid": uid,
+        "data-fieldname": field_name,
+        "data-portal_url": api.get_url(api.get_portal()),
+        "data-remarks": get_localized_records(context, field, request),
+        "data-can_add": can_add_remark(context),
+        "data-can_manage": can_manage_remarks(context),
+        "data-current_user_id": get_user_id(),
+        "data-i18n": get_i18n_labels(context),
+    }
+    return {key: json.dumps(value) for key, value in attributes.items()}
