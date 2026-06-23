@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2957 Harmonize form input widths via tunable CSS variables
+- #2956 Restrict client discount fields to lab staff
+- #2958 Add labels with colors, filtering, and bulk-manage modal for samples
 - #2953 Fix IClientAwareMixin interface mismatch breaking client access on DX content
 - #2955 Defer workflow transition lookup with a React content-menu component
 - #2954 Declare i18n:domain on duration widget templates

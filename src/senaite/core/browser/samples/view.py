@@ -83,6 +83,8 @@ class SamplesView(ListingView):
     edit_icon_column = "getId"
     # Open the SENAITE sample view (not the generic /edit form)
     edit_view = ""
+    # Pin label chips under the Sample ID column
+    label_target_column = "getId"
 
     def __init__(self, context, request):
         super(SamplesView, self).__init__(context, request)
@@ -718,6 +720,17 @@ class SamplesView(ListingView):
                     api.get_url(self.context)),
                 "css_class": "btn btn-outline-secondary",
                 "help": _("Create a new worksheet for the selected samples")
+            })
+
+        # Allow to add labels to the selected samples
+        if self.can_manage_labels():
+            custom_transitions.append({
+                "id": "modal_manage_labels",
+                "title": _("Labels"),
+                "url": "{}/manage_labels_modal".format(
+                    api.get_url(self.context)),
+                "css_class": "btn btn-outline-secondary",
+                "help": _("Add or remove labels on the selected samples"),
             })
 
         for rv in self.review_states:
