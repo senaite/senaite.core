@@ -68,4 +68,19 @@
            zope.lifecycleevent.interfaces.IObjectAddedEvent"
       handler=".intid.drop_intid_for_temporary_object"/>
 
+  <!-- Label rename cascade: the persistent annotation on the Label
+       records the last-known title; the modified handler compares
+       against it and rewrites the stored name on every labeled
+       content if the title changed. Seeded on add so the first
+       edit has a baseline. -->
+  <subscriber
+      for="senaite.core.interfaces.ILabel
+           zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler=".label.on_label_added"/>
+
+  <subscriber
+      for="senaite.core.interfaces.ILabel
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".label.on_label_modified"/>
+
 </configure>
