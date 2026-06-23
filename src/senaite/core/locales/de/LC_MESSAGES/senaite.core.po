@@ -12407,3 +12407,19 @@ msgstr "bearbeitet"
 #: senaite/core/api/remarks.py
 msgid "original"
 msgstr "Original"
+
+#: senaite/core/api/remarks.py
+msgid "Delete this remark?"
+msgstr "Diese Bemerkung löschen?"
+
+#: senaite/core/api/remarks.py
+msgid "deleted by {user} at {time}"
+msgstr "gelöscht von {user} um {time}"
+
+#: senaite/core/api/remarks.py
+msgid "Newest first"
+msgstr "Neueste zuerst"
+
+#: senaite/core/api/remarks.py
+msgid "Oldest first"
+msgstr "Älteste zuerst"

@@ -62,7 +62,7 @@ Creating and editing records
 
     >>> record = remarks.make_record("Hello world", user_id="bob")
     >>> sorted(record.keys())
-    ['content', 'created', 'id', 'modified', 'modified_by', 'user_id', 'user_name', 'versions']
+    ['content', 'created', 'deleted', 'deleted_by', 'id', 'modified', 'modified_by', 'user_id', 'user_name', 'versions']
     >>> record["user_id"]
     'bob'
     >>> record["modified"]
@@ -88,6 +88,14 @@ Creating and editing records
 The original creation date is preserved::
 
     >>> updated["created"] == created
+    True
+
+`apply_delete` soft-deletes the record, stamping who deleted it and when::
+
+    >>> deleted = remarks.apply_delete(record, user_id="carol")
+    >>> deleted["deleted_by"]
+    'carol'
+    >>> deleted["deleted"] != ""
     True
 
 
@@ -178,19 +186,37 @@ An anonymous user can neither view nor add remarks::
     >>> from plone.app.testing import TEST_USER_NAME
     >>> login(portal, TEST_USER_NAME)
 
-A manager can edit any record, even one authored by somebody else::
+Editing is restricted to the author: a manager may not edit a remark authored
+by somebody else (the manager override is deletion, not editing)::
 
+    >>> current = api.get_current_user().id
     >>> remarks.can_edit_record(sample, {"user_id": "somebody-else"})
+    False
+    >>> remarks.can_edit_record(sample, {"user_id": current})
     True
 
-A non-manager who is not the author cannot edit the record::
+A manager may delete any remark (the manager override)::
+
+    >>> remarks.can_delete_record(sample, {"user_id": "somebody-else"})
+    True
+
+A non-manager may neither edit somebody else's remark nor delete::
 
     >>> setRoles(portal, TEST_USER_ID, ["Owner"])
     >>> remarks.can_manage_remarks(sample)
     False
     >>> remarks.can_edit_record(sample, {"user_id": "somebody-else"})
     False
+    >>> remarks.can_delete_record(sample, {"user_id": "somebody-else"})
+    False
     >>> setRoles(portal, TEST_USER_ID, ["Manager"])
+
+Deleted remarks can no longer be edited or deleted again::
+
+    >>> remarks.can_edit_record(sample, {"user_id": current, "deleted": "x"})
+    False
+    >>> remarks.can_delete_record(sample, {"deleted": "x"})
+    False
 
 
 Localization
@@ -208,11 +234,26 @@ text `content_text` and a derived `edited` flag::
     >>> "content_text" in data
     True
 
-`get_localized_records` returns the records newest first, with a per-record
-`can_edit` flag::
+`get_localized_records` returns the records newest first, with per-record
+`can_edit` and `can_delete` flags::
 
     >>> localized = remarks.get_localized_records(sample, field, request)
     >>> localized[0]["can_edit"]
+    True
+    >>> localized[0]["can_delete"]
+    True
+
+A deleted record exposes the deletion info but keeps its original content::
+
+    >>> raw = remarks.get_records(sample, field)[0]
+    >>> remarks.apply_delete(raw, user_id="admin")["deleted"] != ""
+    True
+    >>> data = remarks.localize_record(raw, sample, request)
+    >>> data["is_deleted"]
+    True
+    >>> data["deleted_by"]
+    'admin'
+    >>> "First remark" in data["content_html"]
     True
 
 
@@ -223,7 +264,7 @@ Widget attributes
 
     >>> labels = remarks.get_i18n_labels()
     >>> sorted(labels.keys())
-    ['add_remarks', 'cancel', 'edit', 'edited', 'hide_history', 'no_remarks', 'original', 'placeholder', 'save', 'show_history', 'show_less', 'show_more']
+    ['add_remarks', 'cancel', 'confirm_delete', 'delete', 'deleted_note', 'edit', 'edited', 'hide_history', 'no_remarks', 'original', 'placeholder', 'save', 'show_history', 'show_less', 'show_more', 'sort_newest', 'sort_oldest']
 
 `get_widget_attributes` builds the JSON-encoded `data-*` attributes::
 

@@ -24,6 +24,7 @@ Needed Imports::
     >>> from senaite.core.events.remarks import IRemarksChangedEvent
     >>> from senaite.core.z3cform.widgets.remarks.widget import AjaxAddRemark
     >>> from senaite.core.z3cform.widgets.remarks.widget import AjaxEditRemark
+    >>> from senaite.core.z3cform.widgets.remarks.widget import AjaxDeleteRemark
     >>> from senaite.core.z3cform.widgets.remarks.widget import AjaxFetchRemarks
     >>> from DateTime import DateTime
 
@@ -119,23 +120,31 @@ widget::
     True
 
 
-Edit permissions
-................
+Edit and delete permissions
+...........................
 
-A manager may edit any remark, even one authored by somebody else::
+Editing is restricted to the author; the manager override is deletion, not
+editing::
 
     >>> other = {"user_id": "somebody-else"}
+    >>> current = api.get_current_user().id
     >>> remarks_api.can_manage_remarks(sample)
     True
     >>> remarks_api.can_edit_record(sample, other)
+    False
+    >>> remarks_api.can_edit_record(sample, {"user_id": current})
+    True
+    >>> remarks_api.can_delete_record(sample, other)
     True
 
-A non-manager who is not the author may not edit the record::
+A non-manager who is not the author may neither edit nor delete::
 
     >>> setRoles(portal, TEST_USER_ID, ['Owner',])
     >>> remarks_api.can_manage_remarks(sample)
     False
     >>> remarks_api.can_edit_record(sample, other)
+    False
+    >>> remarks_api.can_delete_record(sample, other)
     False
 
 Restore the manager role::
@@ -184,6 +193,22 @@ Editing the same remark through the endpoint fires an `edited` event::
     >>> changed = [e for e in captured if IRemarksChangedEvent.providedBy(e)]
     >>> changed[-1].action
     'edited'
+
+Deleting the remark through the endpoint fires a `deleted` event; the record
+is marked as deleted but keeps its original content::
+
+    >>> result = json.loads(AjaxDeleteRemark(sample, request)())
+    >>> result["success"]
+    True
+    >>> result["remark"]["is_deleted"]
+    True
+    >>> "Endpoint remark" in result["remark"]["content_html"]
+    True
+    >>> result["remark"]["deleted_by"] == get_user_id()
+    True
+    >>> changed = [e for e in captured if IRemarksChangedEvent.providedBy(e)]
+    >>> changed[-1].action
+    'deleted'
 
 Cleanup::
 

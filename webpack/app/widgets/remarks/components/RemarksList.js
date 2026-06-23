@@ -48,7 +48,8 @@ class RemarksList extends React.Component {
             i18n={i18n}
             on_start_edit={this.props.on_start_edit}
             on_cancel_edit={this.props.on_cancel_edit}
-            on_edit={this.props.on_edit}/>
+            on_edit={this.props.on_edit}
+            on_delete={this.props.on_delete}/>
         ))}
         {remarks.length > COLLAPSE_AFTER &&
           <button

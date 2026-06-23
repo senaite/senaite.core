@@ -32,6 +32,15 @@
         layer="senaite.core.interfaces.ISenaiteFormLayer"
     />
 
+    <!-- POST for deleting a remark -->
+    <browser:page
+        for="*"
+        name="delete_remark"
+        class=".widget.AjaxDeleteRemark"
+        permission="zope.Public"
+        layer="senaite.core.interfaces.ISenaiteFormLayer"
+    />
+
     <!-- POST for fetch of remarks -->
     <browser:page
         for="*"

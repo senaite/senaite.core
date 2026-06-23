@@ -255,8 +255,8 @@ class AjaxAddRemark(BrowserView):
 
 
 class AjaxEditRemark(BrowserView):
-    """Endpoint to edit an existing remark record. Users may edit their own
-    remarks; managers may edit any remark.
+    """Endpoint to edit an existing remark record. Users may only edit their
+    own remarks (not those of others, and not deleted ones).
     """
 
     @returns_json
@@ -296,6 +296,52 @@ class AjaxEditRemark(BrowserView):
 
         remark = remarks_api.localize_record(updated, obj, self.request)
         remark["can_edit"] = True
+        return {"success": True, "remark": remark}
+
+
+class AjaxDeleteRemark(BrowserView):
+    """Endpoint to soft-delete an existing remark record. Managers may delete
+    any remark that is not already deleted; the record is kept for audit but
+    no longer displayed.
+    """
+
+    @returns_json
+    def __call__(self):
+        data = get_request_data(
+            self.request, ["fieldName", "uid", "remark_id"])
+        field_name = data.get("fieldName")
+        uid = data.get("uid")
+        remark_id = data.get("remark_id")
+        if not field_name or not uid or not remark_id:
+            return {"success": False}
+
+        obj = api.get_object_by_uid(uid, None)
+        if not obj:
+            return {"success": False}
+
+        field = remarks_api.get_remarks_field(obj, field_name)
+        if field is None:
+            return {"success": False}
+
+        records = remarks_api.get_records(obj, field)
+        index, record = remarks_api.find_record(records, remark_id)
+        if record is None:
+            return {"success": False}
+
+        if not remarks_api.can_delete_record(obj, record):
+            self.request.response.setStatus(403)
+            return {"success": False}
+
+        deleted = field.delete(obj, remark_id)
+        if not deleted:
+            return {"success": False}
+
+        actor = get_user_id()
+        event.notify(RemarksChangedEvent(obj, dict(deleted), actor, "deleted"))
+
+        remark = remarks_api.localize_record(deleted, obj, self.request)
+        remark["can_edit"] = False
+        remark["can_delete"] = False
         return {"success": True, "remark": remark}
 
 

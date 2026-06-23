@@ -139,6 +139,8 @@ def make_record(content, user_id=None, user_name=None):
         "content": to_safe_html(content),
         "modified": "",
         "modified_by": "",
+        "deleted": "",
+        "deleted_by": "",
         "versions": [],
     }
 
@@ -176,6 +178,26 @@ def apply_edit(record, content, editor_id=None):
     record["content"] = to_safe_html(content)
     record["modified"] = now()
     record["modified_by"] = editor_id
+    return record
+
+
+def apply_delete(record, user_id=None):
+    """Soft-delete the record in place, stamping who deleted it and when
+
+    The content is kept in storage for audit purposes but is no longer
+    exposed for display (see `localize_record`).
+
+    :param record: the remark record to delete
+    :type record: dict
+    :param user_id: id of the deleting user (defaults to the current user)
+    :type user_id: str
+    :returns: the same record, marked as deleted
+    :rtype: dict
+    """
+    if user_id is None:
+        user_id = get_user_id()
+    record["deleted"] = now()
+    record["deleted_by"] = user_id
     return record
 
 
@@ -273,7 +295,8 @@ def can_manage_remarks(context):
 def can_edit_record(context, record, user_id=None):
     """Check if the current user can edit the given remark record
 
-    Users may edit their own remarks; managers may edit any remark.
+    Users may only edit their own (not deleted) remarks. Managers do not get
+    an edit override; they may delete instead (see `can_delete_record`).
 
     :param context: the object holding the remark
     :param record: the remark record to check
@@ -283,12 +306,29 @@ def can_edit_record(context, record, user_id=None):
     :returns: True if the user can edit the record
     :rtype: bool
     """
-    if can_manage_remarks(context):
-        return True
+    if record.get("deleted"):
+        return False
     if user_id is None:
         user_id = get_user_id()
     is_owner = user_id == record.get("user_id")
     return bool(is_owner and can_add_remark(context))
+
+
+def can_delete_record(context, record=None):
+    """Check if the current user can delete the given remark record
+
+    Deletion is the manager override: managers may delete any remark that is
+    not already deleted. Deletion is a soft-delete (see `apply_delete`).
+
+    :param context: the object holding the remark
+    :param record: the remark record to check (optional)
+    :type record: dict
+    :returns: True if the user can delete the record
+    :rtype: bool
+    """
+    if record is not None and record.get("deleted"):
+        return False
+    return can_manage_remarks(context)
 
 
 def localize_time(value, context, request):
@@ -324,8 +364,14 @@ def localize_record(record, context, request):
     data["created"] = localize_time(record.get("created"), context, request)
     data["modified"] = localize_time(record.get("modified"), context, request)
     data["edited"] = bool(record.get("modified"))
-    # content is stored as sanitized HTML; render it as-is and provide a plain
-    # text variant for the editor textarea
+    deleted = record.get("deleted")
+    data["deleted"] = localize_time(deleted, context, request)
+    data["deleted_by"] = record.get("deleted_by", "")
+    data["is_deleted"] = bool(deleted)
+
+    # the original content is kept and still rendered (the widget marks it as
+    # deleted and shows a placeholder); content is stored as sanitized HTML, so
+    # render it as-is and provide a plain text variant for the editor textarea
     content = record.get("content") or ""
     data["content_html"] = content
     data["content_text"] = to_plain_text(content)
@@ -361,11 +407,11 @@ def get_localized_records(obj, field, request):
     out = []
     for record in records:
         data = localize_record(record, obj, request)
-        if manage:
-            data["can_edit"] = True
-        else:
-            is_owner = user_id == record.get("user_id")
-            data["can_edit"] = bool(is_owner and add)
+        is_owner = user_id == record.get("user_id")
+        # users may edit their own remarks; managers may delete any remark
+        data["can_edit"] = bool(
+            is_owner and add and not data["is_deleted"])
+        data["can_delete"] = bool(manage and not data["is_deleted"])
         out.append(data)
     return out
 
@@ -382,10 +428,15 @@ def get_i18n_labels():
         "cancel": translate(_("Cancel")),
         "edit": translate(_("Edit")),
         "edited": translate(_("edited")),
+        "delete": translate(_("Delete")),
+        "confirm_delete": translate(_("Delete this remark?")),
+        "deleted_note": translate(_("deleted by {user} at {time}")),
         "show_history": translate(_("Show history")),
         "hide_history": translate(_("Hide history")),
         "show_more": translate(_("Show more")),
         "show_less": translate(_("Show less")),
+        "sort_newest": translate(_("Newest first")),
+        "sort_oldest": translate(_("Oldest first")),
         "placeholder": translate(_("Add a remark...")),
         "no_remarks": translate(_("No remarks yet")),
         "original": translate(_("original")),

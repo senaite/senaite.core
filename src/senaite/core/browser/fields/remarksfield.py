@@ -31,6 +31,7 @@ from Products.Archetypes.event import ObjectEditedEvent
 from Products.Archetypes.Field import ObjectField
 from Products.Archetypes.Registry import registerField
 from Products.CMFPlone.i18nl10n import ulocalized_time
+from senaite.core.api.remarks import apply_delete
 from senaite.core.api.remarks import apply_edit
 from senaite.core.api.remarks import find_record
 from senaite.core.browser.widgets.remarkswidget import RemarksWidget
@@ -73,6 +74,8 @@ class RemarksHistoryRecord(dict):
         self["content"] = self.content
         self["modified"] = self.modified
         self["modified_by"] = self.modified_by
+        self["deleted"] = self.deleted
+        self["deleted_by"] = self.deleted_by
         self["versions"] = self.versions
 
     @property
@@ -124,6 +127,18 @@ class RemarksHistoryRecord(dict):
                                context=api.get_portal(),
                                request=api.get_request(),
                                domain="senaite.core")
+
+    @property
+    def deleted(self):
+        return self.get("deleted", "")
+
+    @property
+    def deleted_by(self):
+        return self.get("deleted_by", "")
+
+    @property
+    def is_deleted(self):
+        return bool(self.deleted)
 
     @property
     def versions(self):
@@ -249,6 +264,33 @@ class RemarksField(ObjectField):
 
         # update the record in place, keeping the prior content as a version
         apply_edit(record, value)
+        history[index] = record
+
+        # store the whole history
+        ObjectField.set(self, instance, history)
+
+        if not api.is_temporary(instance):
+            # N.B. ensure updated catalog metadata for the snapshot
+            instance.reindexObject()
+            # notify object edited event
+            event.notify(ObjectEditedEvent(instance))
+
+        return record
+
+    @security.private
+    def delete(self, instance, remark_id):
+        """Soft-delete an existing remark record, keeping it for audit but
+        marking it as deleted.
+        :param instance: the instance of this field
+        :param remark_id: the id of the remark record to delete
+        :returns: the deleted remark record or None if not found
+        """
+        history = self.get_history(instance)
+        index, record = find_record(history, remark_id)
+        if record is None:
+            return None
+
+        apply_delete(record)
         history[index] = record
 
         # store the whole history

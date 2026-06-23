@@ -18,6 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from senaite.core.api.remarks import apply_delete
 from senaite.core.api.remarks import apply_edit
 from senaite.core.api.remarks import find_record
 from senaite.core.api.remarks import make_record
@@ -87,6 +88,22 @@ class RemarksField(List, BaseField):
         if record is None:
             return None
         apply_edit(record, value)
+        remarks[index] = record
+        self.set(object, remarks)
+        return record
+
+    def delete(self, object, remark_id):
+        """Soft-delete an existing remark record, keeping it for audit but
+        marking it as deleted.
+        :param object: the instance of this field
+        :param remark_id: the id of the remark record to delete
+        :returns: the deleted remark record or None if not found
+        """
+        remarks = self.get(object)
+        index, record = find_record(remarks, remark_id)
+        if record is None:
+            return None
+        apply_delete(record)
         remarks[index] = record
         self.set(object, remarks)
         return record

@@ -28,6 +28,45 @@
   border-top: 1px solid #f1f2f4;
 }
 
+/* sort bar */
+.senaite-remarks-widget .remarks-sortbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.25rem;
+}
+
+.senaite-remarks-widget .remarks-sort-toggle {
+  background: none;
+  border: 0;
+  padding: 0.2rem 0;
+  color: #8a9097;
+  cursor: pointer;
+  font-size: 0.78rem;
+}
+
+.senaite-remarks-widget .remarks-sort-toggle:hover {
+  color: #5b8def;
+}
+
+/* deleted remark: original content is kept but marked as deleted */
+.senaite-remarks-widget .remark-deleted .remark-avatar {
+  opacity: 0.5;
+}
+
+.senaite-remarks-widget .remark-deleted .remark-content {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+
+.senaite-remarks-widget .remark-deleted-note {
+  color: #e03131;
+  font-style: italic;
+}
+
+.senaite-remarks-widget .remark-action-delete:hover {
+  color: #e03131;
+}
+
 /* body */
 .senaite-remarks-widget .remark-body {
   flex: 1 1 auto;

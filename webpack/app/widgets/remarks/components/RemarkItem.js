@@ -18,6 +18,23 @@ class RemarkItem extends React.Component {
     this.toggle_history = this.toggle_history.bind(this);
     this.on_edit = this.on_edit.bind(this);
     this.on_start_edit = this.on_start_edit.bind(this);
+    this.on_delete = this.on_delete.bind(this);
+  }
+
+  on_delete() {
+    this.props.on_delete(this.props.record.id);
+  }
+
+  /**
+   * Build the placeholder note shown in place of a deleted remark
+   */
+  deleted_note() {
+    let record = this.props.record;
+    let i18n = this.props.i18n || {};
+    let template = i18n.deleted_note || "deleted by {user} at {time}";
+    return template
+      .replace("{user}", record.deleted_by)
+      .replace("{time}", record.deleted);
   }
 
   toggle_history() {
@@ -56,16 +73,22 @@ class RemarkItem extends React.Component {
       );
     }
 
+    let css_class = record.is_deleted ? "remark remark-deleted" : "remark";
+
     return (
-      <div className="remark">
+      <div className={css_class}>
         <Avatar seed={record.user_id} name={author}/>
         <div className="remark-body">
           <div className="remark-meta">
             <span className="remark-author">{author}</span>
             <span className="remark-time">{record.created}</span>
-            {record.edited &&
+            {record.edited && !record.is_deleted &&
               <span className="remark-edited-badge">
                 {i18n.edited || "edited"} · {record.modified}
+              </span>}
+            {record.is_deleted &&
+              <span className="remark-deleted-note">
+                -- {this.deleted_note()} --
               </span>}
           </div>
           <div
@@ -88,6 +111,13 @@ class RemarkItem extends React.Component {
                 {this.state.show_history
                   ? (i18n.hide_history || "Hide history")
                   : (i18n.show_history || "Show history")}
+              </button>}
+            {record.can_delete &&
+              <button
+                type="button"
+                className="remark-action remark-action-delete"
+                onClick={this.on_delete}>
+                {i18n.delete || "Delete"}
               </button>}
           </div>
           {this.state.show_history &&

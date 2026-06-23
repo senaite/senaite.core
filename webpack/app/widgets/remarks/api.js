@@ -64,6 +64,11 @@ class RemarksAPI {
     return this.post("edit_remark", data, signal);
   }
 
+  delete_remark(uid, fieldname, remark_id, signal) {
+    let data = {uid: uid, fieldName: fieldname, remark_id: remark_id};
+    return this.post("delete_remark", data, signal);
+  }
+
   fetch_remarks(uid, fieldname, signal) {
     let data = {uid: uid, fieldName: fieldname};
     return this.post("fetch_remarks", data, signal);

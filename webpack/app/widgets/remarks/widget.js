@@ -9,6 +9,10 @@ import "./remarks.css";
 // abort an in-flight request after this many milliseconds
 const REQUEST_TIMEOUT = 30000;
 
+// localStorage key + event for the (global) sort direction preference
+const SORT_KEY = "senaite.core.remarks.sort";
+const SORT_EVENT = "senaite.core.remarks:sort_changed";
+
 
 class RemarksWidgetController extends React.Component {
 
@@ -44,6 +48,8 @@ class RemarksWidgetController extends React.Component {
       submitting: false,
       // increments after each successful add to reset the add editor
       add_token: 0,
+      // sort direction, shared across all remarks widgets (localStorage)
+      sort: this.read_sort(),
       error: null,
     };
 
@@ -54,10 +60,22 @@ class RemarksWidgetController extends React.Component {
 
     this.handle_add = this.handle_add.bind(this);
     this.handle_edit = this.handle_edit.bind(this);
+    this.handle_delete = this.handle_delete.bind(this);
     this.start_edit = this.start_edit.bind(this);
     this.cancel_edit = this.cancel_edit.bind(this);
+    this.toggle_sort = this.toggle_sort.bind(this);
+    this.on_sort_changed = this.on_sort_changed.bind(this);
 
     return this;
+  }
+
+  componentDidMount() {
+    // keep all mounted remarks widgets in sync when the sort changes
+    window.addEventListener(SORT_EVENT, this.on_sort_changed);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener(SORT_EVENT, this.on_sort_changed);
   }
 
   parse_json(value) {
@@ -75,6 +93,38 @@ class RemarksWidgetController extends React.Component {
   translate(key) {
     let i18n = this.data.i18n || {};
     return i18n[key] || key;
+  }
+
+  /**
+   * Read the persisted (global) sort direction, defaulting to "desc"
+   */
+  read_sort() {
+    try {
+      return localStorage.getItem(SORT_KEY) === "asc" ? "asc" : "desc";
+    } catch (error) {
+      return "desc";
+    }
+  }
+
+  /**
+   * Toggle the sort direction and broadcast it to all remarks widgets
+   */
+  toggle_sort() {
+    let sort = this.state.sort === "desc" ? "asc" : "desc";
+    try {
+      localStorage.setItem(SORT_KEY, sort);
+    } catch (error) {
+      // ignore storage errors (private mode etc.)
+    }
+    this.setState({sort: sort});
+    window.dispatchEvent(new CustomEvent(SORT_EVENT, {detail: {sort: sort}}));
+  }
+
+  on_sort_changed(event) {
+    let sort = event.detail && event.detail.sort;
+    if (sort && sort !== this.state.sort) {
+      this.setState({sort: sort});
+    }
   }
 
   /**
@@ -106,6 +156,18 @@ class RemarksWidgetController extends React.Component {
     }
     console.error("RemarksWidget: request failed", error);
     this.setState({submitting: false, error: this.translate("error")});
+  }
+
+  /**
+   * Replace the record with the given id by the server response
+   */
+  reconcile(remark_id, remark) {
+    this.setState((state) => ({
+      remarks: state.remarks.map(
+        (record) => record.id === remark_id ? remark : record),
+      submitting: false,
+      editing_id: null,
+    }));
   }
 
   handle_add(value) {
@@ -161,13 +223,32 @@ class RemarksWidgetController extends React.Component {
           this.setState({submitting: false, error: this.translate("error")});
           return;
         }
-        // replace the edited record by id
-        this.setState((state) => ({
-          remarks: state.remarks.map(
-            (record) => record.id === remark_id ? data.remark : record),
-          submitting: false,
-          editing_id: null,
-        }));
+        this.reconcile(remark_id, data.remark);
+      })
+      .catch((error) => this.on_error(error, timeout));
+  }
+
+  handle_delete(remark_id) {
+    if (this.state.submitting) {
+      return;
+    }
+    if (!window.confirm(this.translate("confirm_delete"))) {
+      return;
+    }
+
+    this.setState({submitting: true, error: null});
+    let timeout = this.begin_request();
+    let signal = this.controller.signal;
+
+    this.api.delete_remark(
+      this.data.uid, this.data.fieldname, remark_id, signal)
+      .then((data) => {
+        this.end_request(timeout);
+        if (!data || !data.success || !data.remark) {
+          this.setState({submitting: false, error: this.translate("error")});
+          return;
+        }
+        this.reconcile(remark_id, data.remark);
       })
       .catch((error) => this.on_error(error, timeout));
   }
@@ -181,6 +262,11 @@ class RemarksWidgetController extends React.Component {
   }
 
   render() {
+    let remarks = this.state.remarks;
+    // canonical order is newest first; render reversed for ascending
+    let ordered = this.state.sort === "asc"
+      ? remarks.slice().reverse()
+      : remarks;
     return (
       <div className="senaite-remarks-widget">
         {this.data.can_add &&
@@ -202,14 +288,26 @@ class RemarksWidgetController extends React.Component {
                 </div>}
             </div>
           </div>}
+        {remarks.length > 1 &&
+          <div className="remarks-sortbar">
+            <button
+              type="button"
+              className="remarks-sort-toggle"
+              onClick={this.toggle_sort}>
+              {this.state.sort === "desc"
+                ? this.translate("sort_newest")
+                : this.translate("sort_oldest")}
+            </button>
+          </div>}
         <RemarksList
-          remarks={this.state.remarks}
+          remarks={ordered}
           editing_id={this.state.editing_id}
           submitting={this.state.submitting}
           i18n={this.data.i18n}
           on_start_edit={this.start_edit}
           on_cancel_edit={this.cancel_edit}
-          on_edit={this.handle_edit}/>
+          on_edit={this.handle_edit}
+          on_delete={this.handle_delete}/>
       </div>
     );
   }
