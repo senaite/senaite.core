@@ -47,6 +47,7 @@ from Products.CMFCore.utils import _checkPermission
 from senaite.core.browser.fields.multiupload import MultiUploadField
 from senaite.core.browser.widgets.multiuploadwidget import MultiUploadWidget
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
+from senaite.core.permissions import ManageSenaite
 from zope.interface import implements
 
 schema = Organisation.schema.copy() + Schema((
@@ -70,6 +71,8 @@ schema = Organisation.schema.copy() + Schema((
     BooleanField(
         "BulkDiscount",
         default=False,
+        read_permission=permissions.View,
+        write_permission=ManageSenaite,
         widget=BooleanWidget(
             label=_("Bulk discount applies"),
         ),
@@ -78,6 +81,8 @@ schema = Organisation.schema.copy() + Schema((
     BooleanField(
         "MemberDiscountApplies",
         default=False,
+        read_permission=permissions.View,
+        write_permission=ManageSenaite,
         widget=BooleanWidget(
             label=_("Member discount applies"),
         ),
