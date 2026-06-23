@@ -65,6 +65,8 @@ Creating and editing records
     ['content', 'created', 'deleted', 'deleted_by', 'id', 'modified', 'modified_by', 'user_id', 'user_name', 'versions']
     >>> record["user_id"]
     'bob'
+    >>> record["user_name"]
+    'bob'
     >>> record["modified"]
     ''
     >>> record["versions"]
@@ -117,15 +119,6 @@ Finding records
     (1, {'id': 'b'})
     >>> remarks.find_record(records, "x")
     (None, None)
-
-
-User helpers
-............
-
-`get_user_fullname` falls back to the user id when no full name is available::
-
-    >>> remarks.get_user_fullname("nonexistent-user")
-    'nonexistent-user'
 
 
 Resolving the field

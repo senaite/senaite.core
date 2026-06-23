@@ -44,6 +44,7 @@ import re
 from Products.CMFCore import permissions
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
+from bika.lims.api.security import check_permission
 from bika.lims.api.security import get_user_id
 from bika.lims.interfaces import IRemarksField as IATRemarksField
 from bika.lims.utils import tmpID
@@ -102,18 +103,6 @@ def to_plain_text(content):
     return text.strip()
 
 
-def get_user_fullname(user_id):
-    """Return the full name for the given user id
-
-    :param user_id: the id of the user
-    :type user_id: str
-    :returns: the user's full name, or the user id if not available
-    :rtype: str
-    """
-    properties = api.get_user_properties(user_id)
-    return properties and properties.get("fullname") or user_id
-
-
 def make_record(content, user_id=None, user_name=None):
     """Create a new remark record for the given content
 
@@ -131,7 +120,7 @@ def make_record(content, user_id=None, user_name=None):
     if user_id is None:
         user_id = get_user_id()
     if user_name is None:
-        user_name = get_user_fullname(user_id)
+        user_name = api.get_user_fullname(user_id) or user_id
     return {
         "id": tmpID(),
         "user_id": user_id,
@@ -280,8 +269,7 @@ def can_view_remarks(context):
     :returns: True if the current user can view the object
     :rtype: bool
     """
-    mtool = api.get_tool("portal_membership")
-    return bool(mtool.checkPermission(permissions.View, context))
+    return check_permission(permissions.View, context)
 
 
 def can_add_remark(context):
@@ -291,8 +279,7 @@ def can_add_remark(context):
     :returns: True if the current user can add remarks
     :rtype: bool
     """
-    mtool = api.get_tool("portal_membership")
-    return bool(mtool.checkPermission(FieldEditRemarks, context))
+    return check_permission(FieldEditRemarks, context)
 
 
 def can_manage_remarks(context):
@@ -302,8 +289,7 @@ def can_manage_remarks(context):
     :returns: True if the current user can manage remarks
     :rtype: bool
     """
-    mtool = api.get_tool("portal_membership")
-    return bool(mtool.checkPermission(ManageSenaite, context))
+    return check_permission(ManageSenaite, context)
 
 
 def can_delete_remarks(context):
@@ -316,8 +302,7 @@ def can_delete_remarks(context):
     :returns: True if the current user may delete/restore remarks
     :rtype: bool
     """
-    mtool = api.get_tool("portal_membership")
-    return bool(mtool.checkPermission(DeleteRemarks, context))
+    return check_permission(DeleteRemarks, context)
 
 
 def can_edit_record(context, record, user_id=None):
