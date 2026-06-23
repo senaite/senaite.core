@@ -25,6 +25,7 @@ Needed Imports::
     >>> from senaite.core.z3cform.widgets.remarks.widget import AjaxAddRemark
     >>> from senaite.core.z3cform.widgets.remarks.widget import AjaxEditRemark
     >>> from senaite.core.z3cform.widgets.remarks.widget import AjaxDeleteRemark
+    >>> from senaite.core.z3cform.widgets.remarks.widget import AjaxRestoreRemark
     >>> from senaite.core.z3cform.widgets.remarks.widget import AjaxFetchRemarks
     >>> from DateTime import DateTime
 
@@ -147,6 +148,16 @@ A non-manager who is not the author may neither edit nor delete::
     >>> remarks_api.can_delete_record(sample, other)
     False
 
+A Lab Manager is also a manager and may delete and restore::
+
+    >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
+    >>> remarks_api.can_manage_remarks(sample)
+    True
+    >>> remarks_api.can_delete_record(sample, other)
+    True
+    >>> remarks_api.can_restore_record(sample, {"deleted": "2026-06-22"})
+    True
+
 Restore the manager role::
 
     >>> setRoles(portal, TEST_USER_ID, ['Manager',])
@@ -209,6 +220,20 @@ is marked as deleted and its content is hidden from display::
     >>> changed = [e for e in captured if IRemarksChangedEvent.providedBy(e)]
     >>> changed[-1].action
     'deleted'
+
+Restoring the remark through the endpoint fires a `restored` event; the
+record is no longer deleted and its content is visible again::
+
+    >>> result = json.loads(AjaxRestoreRemark(sample, request)())
+    >>> result["success"]
+    True
+    >>> result["remark"]["is_deleted"]
+    False
+    >>> "Endpoint remark" in result["remark"]["content_html"]
+    True
+    >>> changed = [e for e in captured if IRemarksChangedEvent.providedBy(e)]
+    >>> changed[-1].action
+    'restored'
 
 Cleanup::
 

@@ -25,6 +25,7 @@ from zope.interface import implements
 ACTION_ADDED = "added"
 ACTION_EDITED = "edited"
 ACTION_DELETED = "deleted"
+ACTION_RESTORED = "restored"
 
 
 class IRemarksAddedEvent(Interface):

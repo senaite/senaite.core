@@ -98,6 +98,14 @@ The original creation date is preserved::
     >>> deleted["deleted"] != ""
     True
 
+`apply_restore` clears the deletion stamp again::
+
+    >>> restored = remarks.apply_restore(record)
+    >>> restored["deleted"]
+    ''
+    >>> restored["deleted_by"]
+    ''
+
 
 Finding records
 ...............
@@ -195,10 +203,15 @@ by somebody else (the manager override is deletion, not editing)::
     >>> remarks.can_edit_record(sample, {"user_id": current})
     True
 
-A manager may delete any remark (the manager override)::
+A manager may delete any remark and restore a deleted one (the manager
+override). Restore only applies to deleted records::
 
     >>> remarks.can_delete_record(sample, {"user_id": "somebody-else"})
     True
+    >>> remarks.can_restore_record(sample, {"deleted": "2026-06-22"})
+    True
+    >>> remarks.can_restore_record(sample, {"user_id": "somebody-else"})
+    False
 
 A non-manager may neither edit somebody else's remark nor delete::
 
@@ -217,6 +230,8 @@ Deleted remarks can no longer be edited or deleted again::
     False
     >>> remarks.can_delete_record(sample, {"deleted": "x"})
     False
+    >>> remarks.can_restore_record(sample, {"deleted": "x"}) and True
+    True
 
 
 Localization
@@ -265,7 +280,7 @@ Widget attributes
 
     >>> labels = remarks.get_i18n_labels()
     >>> sorted(labels.keys())
-    ['add_remarks', 'cancel', 'confirm_delete', 'delete', 'deleted_note', 'edit', 'edited', 'hide_history', 'no_remarks', 'original', 'placeholder', 'save', 'show_history', 'show_less', 'show_more', 'sort_newest', 'sort_oldest']
+    ['add_remarks', 'cancel', 'confirm_delete', 'delete', 'deleted_note', 'edit', 'edited', 'hide_history', 'no_remarks', 'original', 'placeholder', 'restore', 'save', 'show_history', 'show_less', 'show_more', 'sort_newest', 'sort_oldest']
 
 `get_widget_attributes` builds the JSON-encoded `data-*` attributes::
 

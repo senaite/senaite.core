@@ -201,6 +201,19 @@ def apply_delete(record, user_id=None):
     return record
 
 
+def apply_restore(record):
+    """Restore a soft-deleted record in place by clearing the deletion stamp
+
+    :param record: the remark record to restore
+    :type record: dict
+    :returns: the same record, no longer marked as deleted
+    :rtype: dict
+    """
+    record["deleted"] = ""
+    record["deleted_by"] = ""
+    return record
+
+
 def find_record(records, remark_id):
     """Find a remark record by its id
 
@@ -331,8 +344,25 @@ def can_delete_record(context, record=None):
     return can_manage_remarks(context)
 
 
+def can_restore_record(context, record):
+    """Check if the current user can restore the given (deleted) remark record
+
+    Restoring is part of the manager override: managers may bring back a
+    soft-deleted remark.
+
+    :param context: the object holding the remark
+    :param record: the remark record to check
+    :type record: dict
+    :returns: True if the user can restore the record
+    :rtype: bool
+    """
+    if not (record and record.get("deleted")):
+        return False
+    return can_manage_remarks(context)
+
+
 def annotate_permissions(data, context, record, user_id=None):
-    """Annotate a localized record with the acting user's edit/delete flags
+    """Annotate a localized record with the acting user's action flags
 
     :param data: the localized record to annotate (mutated in place)
     :type data: dict
@@ -341,13 +371,14 @@ def annotate_permissions(data, context, record, user_id=None):
     :type record: dict
     :param user_id: the acting user id (defaults to the current user)
     :type user_id: str
-    :returns: the same `data`, with `can_edit` and `can_delete` set
+    :returns: the same `data`, with `can_edit` / `can_delete` / `can_restore`
     :rtype: dict
     """
     if user_id is None:
         user_id = get_user_id()
     data["can_edit"] = can_edit_record(context, record, user_id)
     data["can_delete"] = can_delete_record(context, record)
+    data["can_restore"] = can_restore_record(context, record)
     return data
 
 
@@ -449,6 +480,7 @@ def get_i18n_labels():
         "edit": translate(_("Edit")),
         "edited": translate(_("edited")),
         "delete": translate(_("Delete")),
+        "restore": translate(_("Restore")),
         "confirm_delete": translate(_("Delete this remark?")),
         "deleted_note": translate(_("deleted by {user} at {time}")),
         "show_history": translate(_("Show history")),

@@ -33,6 +33,7 @@ from senaite.core.api.dtime import to_localized_time
 from senaite.core.events.remarks import ACTION_ADDED
 from senaite.core.events.remarks import ACTION_DELETED
 from senaite.core.events.remarks import ACTION_EDITED
+from senaite.core.events.remarks import ACTION_RESTORED
 from senaite.core.events.remarks import RemarksChangedEvent
 from senaite.core.schema.interfaces import IRemarksField
 from senaite.core.schema.remarksfield import fill_remark_object
@@ -338,6 +339,51 @@ class AjaxDeleteRemark(BrowserView):
 
         remark = remarks_api.localize_record(deleted, obj, self.request)
         remarks_api.annotate_permissions(remark, obj, deleted, actor)
+        return {"success": True, "remark": remark}
+
+
+class AjaxRestoreRemark(BrowserView):
+    """Endpoint to restore a soft-deleted remark record. Managers may restore
+    any deleted remark; its content becomes visible again.
+    """
+
+    @returns_json
+    def __call__(self):
+        data = get_request_data(
+            self.request, ["fieldName", "uid", "remark_id"])
+        field_name = data.get("fieldName")
+        uid = data.get("uid")
+        remark_id = data.get("remark_id")
+        if not field_name or not uid or not remark_id:
+            return {"success": False}
+
+        obj = api.get_object_by_uid(uid, None)
+        if not obj:
+            return {"success": False}
+
+        field = remarks_api.get_remarks_field(obj, field_name)
+        if field is None:
+            return {"success": False}
+
+        records = remarks_api.get_records(obj, field)
+        index, record = remarks_api.find_record(records, remark_id)
+        if record is None:
+            return {"success": False}
+
+        if not remarks_api.can_restore_record(obj, record):
+            self.request.response.setStatus(403)
+            return {"success": False}
+
+        restored = field.restore(obj, remark_id)
+        if not restored:
+            return {"success": False}
+
+        actor = get_user_id()
+        event.notify(
+            RemarksChangedEvent(obj, dict(restored), actor, ACTION_RESTORED))
+
+        remark = remarks_api.localize_record(restored, obj, self.request)
+        remarks_api.annotate_permissions(remark, obj, restored, actor)
         return {"success": True, "remark": remark}
 
 

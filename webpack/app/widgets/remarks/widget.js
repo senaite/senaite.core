@@ -61,6 +61,7 @@ class RemarksWidgetController extends React.Component {
     this.handle_add = this.handle_add.bind(this);
     this.handle_edit = this.handle_edit.bind(this);
     this.handle_delete = this.handle_delete.bind(this);
+    this.handle_restore = this.handle_restore.bind(this);
     this.start_edit = this.start_edit.bind(this);
     this.cancel_edit = this.cancel_edit.bind(this);
     this.toggle_sort = this.toggle_sort.bind(this);
@@ -202,21 +203,18 @@ class RemarksWidgetController extends React.Component {
       .catch((error) => this.on_error(error, timeout));
   }
 
-  handle_edit(remark_id, value) {
+  /**
+   * Run a request that mutates a single remark and reconcile the response by
+   * id (used by edit / delete / restore). `make_request(signal)` returns the
+   * api promise.
+   */
+  run_reconciling(remark_id, make_request) {
     if (this.state.submitting) {
       return;
     }
-    let text = (value || "").trim();
-    if (!text) {
-      return;
-    }
-
     this.setState({submitting: true, error: null});
     let timeout = this.begin_request();
-    let signal = this.controller.signal;
-
-    this.api.edit_remark(
-      this.data.uid, this.data.fieldname, remark_id, text, signal)
+    make_request(this.controller.signal)
       .then((data) => {
         this.end_request(timeout);
         if (!data || !data.success || !data.remark) {
@@ -228,27 +226,27 @@ class RemarksWidgetController extends React.Component {
       .catch((error) => this.on_error(error, timeout));
   }
 
-  handle_delete(remark_id) {
-    // deletion is confirmed inline in RemarkItem before reaching here
-    if (this.state.submitting) {
+  handle_edit(remark_id, value) {
+    let text = (value || "").trim();
+    if (!text) {
       return;
     }
+    this.run_reconciling(remark_id, (signal) =>
+      this.api.edit_remark(
+        this.data.uid, this.data.fieldname, remark_id, text, signal));
+  }
 
-    this.setState({submitting: true, error: null});
-    let timeout = this.begin_request();
-    let signal = this.controller.signal;
+  handle_delete(remark_id) {
+    // deletion is confirmed inline in RemarkItem before reaching here
+    this.run_reconciling(remark_id, (signal) =>
+      this.api.delete_remark(
+        this.data.uid, this.data.fieldname, remark_id, signal));
+  }
 
-    this.api.delete_remark(
-      this.data.uid, this.data.fieldname, remark_id, signal)
-      .then((data) => {
-        this.end_request(timeout);
-        if (!data || !data.success || !data.remark) {
-          this.setState({submitting: false, error: this.translate("error")});
-          return;
-        }
-        this.reconcile(remark_id, data.remark);
-      })
-      .catch((error) => this.on_error(error, timeout));
+  handle_restore(remark_id) {
+    this.run_reconciling(remark_id, (signal) =>
+      this.api.restore_remark(
+        this.data.uid, this.data.fieldname, remark_id, signal));
   }
 
   start_edit(remark_id) {
@@ -305,7 +303,8 @@ class RemarksWidgetController extends React.Component {
           on_start_edit={this.start_edit}
           on_cancel_edit={this.cancel_edit}
           on_edit={this.handle_edit}
-          on_delete={this.handle_delete}/>
+          on_delete={this.handle_delete}
+          on_restore={this.handle_restore}/>
       </div>
     );
   }

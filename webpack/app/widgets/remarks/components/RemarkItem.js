@@ -27,6 +27,11 @@ class RemarkItem extends React.Component {
     this.open_delete = this.open_delete.bind(this);
     this.cancel_delete = this.cancel_delete.bind(this);
     this.confirm_delete = this.confirm_delete.bind(this);
+    this.on_restore = this.on_restore.bind(this);
+  }
+
+  on_restore() {
+    this.props.on_restore(this.props.record.id);
   }
 
   /**
@@ -174,6 +179,16 @@ class RemarkItem extends React.Component {
         <div className="remark-body">
           {this.render_meta()}
           <div className="remark-deleted-note">-- {this.deleted_note()} --</div>
+          {record.can_restore &&
+            <div className="remark-actions">
+              <button
+                type="button"
+                className="remark-action"
+                disabled={this.props.submitting}
+                onClick={this.on_restore}>
+                {this.translate("restore", "Restore")}
+              </button>
+            </div>}
         </div>
       </div>
     );

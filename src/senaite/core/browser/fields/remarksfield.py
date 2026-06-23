@@ -33,6 +33,7 @@ from Products.Archetypes.Registry import registerField
 from Products.CMFPlone.i18nl10n import ulocalized_time
 from senaite.core.api.remarks import apply_delete
 from senaite.core.api.remarks import apply_edit
+from senaite.core.api.remarks import apply_restore
 from senaite.core.api.remarks import find_record
 from senaite.core.browser.widgets.remarkswidget import RemarksWidget
 from senaite.core.events.remarks import RemarksAddedEvent
@@ -294,6 +295,23 @@ class RemarksField(ObjectField):
             return None
 
         apply_delete(record)
+        history[index] = record
+        self.store_history(instance, history)
+        return record
+
+    @security.private
+    def restore(self, instance, remark_id):
+        """Restore a soft-deleted remark record, making it visible again.
+        :param instance: the instance of this field
+        :param remark_id: the id of the remark record to restore
+        :returns: the restored remark record or None if not found
+        """
+        history = self.get_history(instance)
+        index, record = find_record(history, remark_id)
+        if record is None:
+            return None
+
+        apply_restore(record)
         history[index] = record
         self.store_history(instance, history)
         return record

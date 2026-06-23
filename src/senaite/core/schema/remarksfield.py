@@ -20,6 +20,7 @@
 
 from senaite.core.api.remarks import apply_delete
 from senaite.core.api.remarks import apply_edit
+from senaite.core.api.remarks import apply_restore
 from senaite.core.api.remarks import find_record
 from senaite.core.api.remarks import make_record
 from senaite.core.schema.interfaces import IRemarksField
@@ -104,6 +105,21 @@ class RemarksField(List, BaseField):
         if record is None:
             return None
         apply_delete(record)
+        remarks[index] = record
+        self.set(object, remarks)
+        return record
+
+    def restore(self, object, remark_id):
+        """Restore a soft-deleted remark record, making it visible again.
+        :param object: the instance of this field
+        :param remark_id: the id of the remark record to restore
+        :returns: the restored remark record or None if not found
+        """
+        remarks = self.get(object)
+        index, record = find_record(remarks, remark_id)
+        if record is None:
+            return None
+        apply_restore(record)
         remarks[index] = record
         self.set(object, remarks)
         return record
