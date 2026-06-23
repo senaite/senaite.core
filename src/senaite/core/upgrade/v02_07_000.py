@@ -2182,6 +2182,19 @@ def cleanup_sample_catalog(tool):
 
 
 @upgradestep(product, version)
+def setup_delete_remarks_permission(tool):
+    """Register the new `senaite.core: Delete Remarks` permission by
+    reimporting the rolemap. It is granted to LabManager / Manager (not
+    LabClerk) and gates the deletion and restoration of sample remarks.
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    logger.info("Importing rolemap for 'Delete Remarks' permission ...")
+    setup.runImportStepFromProfile(profile, "rolemap")
+    logger.info("Importing rolemap for 'Delete Remarks' permission [DONE]")
+
+
+@upgradestep(product, version)
 def setup_sample_labels(tool):
     """Register ManageLabels permission and add labels KeywordIndex to
     senaite_catalog_sample. Reindex so labels on existing samples are

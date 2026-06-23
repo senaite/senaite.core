@@ -50,6 +50,7 @@ from bika.lims.utils import tmpID
 from senaite.core.api.dtime import now
 from senaite.core.api.dtime import to_localized_time
 from senaite.core.i18n import translate
+from senaite.core.permissions import DeleteRemarks
 from senaite.core.permissions import FieldEditRemarks
 from senaite.core.permissions import ManageSenaite
 from senaite.core.schema.interfaces import IRemarksField as IDXRemarksField
@@ -295,7 +296,7 @@ def can_add_remark(context):
 
 
 def can_manage_remarks(context):
-    """Check if the current user can manage (edit any) remarks on the context
+    """Check if the current user can manage (administer) remarks on the context
 
     :param context: the object to check the permission against
     :returns: True if the current user can manage remarks
@@ -303,6 +304,20 @@ def can_manage_remarks(context):
     """
     mtool = api.get_tool("portal_membership")
     return bool(mtool.checkPermission(ManageSenaite, context))
+
+
+def can_delete_remarks(context):
+    """Check if the current user may delete/restore remarks on the context
+
+    This is the manager override, granted to LabManager / Manager but not to
+    LabClerk (see the `senaite.core: Delete Remarks` permission).
+
+    :param context: the object to check the permission against
+    :returns: True if the current user may delete/restore remarks
+    :rtype: bool
+    """
+    mtool = api.get_tool("portal_membership")
+    return bool(mtool.checkPermission(DeleteRemarks, context))
 
 
 def can_edit_record(context, record, user_id=None):
@@ -341,7 +356,7 @@ def can_delete_record(context, record=None):
     """
     if record is not None and record.get("deleted"):
         return False
-    return can_manage_remarks(context)
+    return can_delete_remarks(context)
 
 
 def can_restore_record(context, record):
@@ -358,7 +373,7 @@ def can_restore_record(context, record):
     """
     if not (record and record.get("deleted")):
         return False
-    return can_manage_remarks(context)
+    return can_delete_remarks(context)
 
 
 def annotate_permissions(data, context, record, user_id=None):

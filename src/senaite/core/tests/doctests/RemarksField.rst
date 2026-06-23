@@ -148,11 +148,17 @@ A non-manager who is not the author may neither edit nor delete::
     >>> remarks_api.can_delete_record(sample, other)
     False
 
-A Lab Manager is also a manager and may delete and restore::
+A Lab Clerk may add/edit remarks but may NOT delete or restore them::
+
+    >>> setRoles(portal, TEST_USER_ID, ['LabClerk',])
+    >>> remarks_api.can_delete_record(sample, other)
+    False
+    >>> remarks_api.can_restore_record(sample, {"deleted": "2026-06-22"})
+    False
+
+A Lab Manager may delete and restore::
 
     >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
-    >>> remarks_api.can_manage_remarks(sample)
-    True
     >>> remarks_api.can_delete_record(sample, other)
     True
     >>> remarks_api.can_restore_record(sample, {"deleted": "2026-06-22"})
