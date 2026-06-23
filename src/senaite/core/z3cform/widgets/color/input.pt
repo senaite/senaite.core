@@ -1,0 +1,26 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag="">
+
+  <!-- Native HTML5 color picker. A small preview swatch sits next to
+       it so the chosen value is readable as text too. -->
+  <span class="senaite-color-widget-wrap d-inline-flex align-items-center"
+        style="gap: .35rem;">
+    <input type="color"
+           tal:attributes="
+             id view/id;
+             name view/name;
+             class string:${view/klass} senaite-color-widget-input;
+             title view/title;
+             value view/value;
+             disabled view/disabled;
+             readonly view/readonly;"
+           style="width: 2.25rem; height: 2.25rem; padding: 2px;
+                  flex: 0 0 2.25rem; border: 1px solid #ced4da;
+                  border-radius: .25rem; background: #fff;
+                  cursor: pointer;" />
+    <code class="senaite-color-widget-value text-muted"
+          style="font-size: .75rem;"
+          tal:content="view/value" />
+  </span>
+</html>

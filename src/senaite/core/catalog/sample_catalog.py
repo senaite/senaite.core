@@ -51,6 +51,7 @@ INDEXES = BASE_INDEXES + [
     ("getSamplingDate", "", "DateIndex"),
     ("isRootAncestor", "", "BooleanIndex"),
     ("is_received", "", "BooleanIndex"),
+    ("labels", "", "KeywordIndex"),
     # https://zope.readthedocs.io/en/latest/zopebook/SearchingZCatalog.html
     ("listing_searchable_text", "", "ZCTextIndex"),
     ("modified", "", "DateIndex"),
@@ -79,6 +80,7 @@ COLUMNS = BASE_COLUMNS + [
     "getDueDate",
     "getInternalUse",
     "getInvoiceExclude",
+    "getLabels",
     "getPrinted",
     "getPrioritySortkey",
     "getProfilesTitleStr",

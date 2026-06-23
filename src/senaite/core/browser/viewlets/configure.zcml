@@ -14,6 +14,7 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+
   <!-- Listing Table: Title Viewlet -->
   <browser:viewlet
       name="senaite.core.listings.title"
