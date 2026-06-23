@@ -195,15 +195,15 @@ Editing the same remark through the endpoint fires an `edited` event::
     'edited'
 
 Deleting the remark through the endpoint fires a `deleted` event; the record
-is marked as deleted but keeps its original content::
+is marked as deleted and its content is hidden from display::
 
     >>> result = json.loads(AjaxDeleteRemark(sample, request)())
     >>> result["success"]
     True
     >>> result["remark"]["is_deleted"]
     True
-    >>> "Endpoint remark" in result["remark"]["content_html"]
-    True
+    >>> result["remark"]["content_html"]
+    u''
     >>> result["remark"]["deleted_by"] == get_user_id()
     True
     >>> changed = [e for e in captured if IRemarksChangedEvent.providedBy(e)]

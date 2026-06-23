@@ -30,12 +30,14 @@ from bika.lims.api.security import get_user_id
 from bika.lims.decorators import returns_json
 from senaite.core.api import remarks as remarks_api
 from senaite.core.api.dtime import to_localized_time
+from senaite.core.events.remarks import ACTION_ADDED
+from senaite.core.events.remarks import ACTION_DELETED
+from senaite.core.events.remarks import ACTION_EDITED
 from senaite.core.events.remarks import RemarksChangedEvent
 from senaite.core.schema.interfaces import IRemarksField
 from senaite.core.schema.remarksfield import fill_remark_object
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.p3compat import cmp
-from senaite.core.permissions import FieldEditRemarks
 from senaite.core.z3cform.interfaces import IRemarksWidget
 from z3c.form.browser import widget
 from z3c.form.converter import BaseDataConverter
@@ -50,13 +52,6 @@ from zope import event
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.component import adapter
 from zope.interface import implementer
-
-
-def check_permission_edit_remark(context):
-    """Check is can add remark
-    """
-    tool = api.get_tool("portal_membership")
-    return tool.checkPermission(FieldEditRemarks, context)
 
 
 def get_request_data(request, keys):
@@ -194,11 +189,10 @@ class RemarksWidget(widget.HTMLFormElement, Widget):
 
     @property
     def can_add_remark(self):
-        """Check is can add remark
+        """Check if the current user can add a remark
         """
         modes = [INPUT_MODE, DISPLAY_MODE]
-        can_edit_field = check_permission_edit_remark(self.context)
-        return self.mode in modes and can_edit_field
+        return self.mode in modes and remarks_api.can_add_remark(self.context)
 
     def get_input_widget_attributes(self):
         """Return the JSON-encoded `data-*` attributes for the React widget
@@ -210,7 +204,7 @@ class RemarksWidget(widget.HTMLFormElement, Widget):
 @adapter(IRemarksField, ISenaiteFormLayer)
 @implementer(IFieldWidget)
 def RemarksWidgetFactory(field, request):
-    """Widget factory for Address Widget
+    """Widget factory for the Remarks Widget
     """
     return FieldWidget(field, RemarksWidget(request))
 
@@ -247,10 +241,11 @@ class AjaxAddRemark(BrowserView):
             return {"success": False}
 
         actor = get_user_id()
-        event.notify(RemarksChangedEvent(obj, dict(record), actor, "added"))
+        event.notify(
+            RemarksChangedEvent(obj, dict(record), actor, ACTION_ADDED))
 
         remark = remarks_api.localize_record(record, obj, self.request)
-        remark["can_edit"] = remarks_api.can_edit_record(obj, record, actor)
+        remarks_api.annotate_permissions(remark, obj, record, actor)
         return {"success": True, "remark": remark}
 
 
@@ -292,10 +287,11 @@ class AjaxEditRemark(BrowserView):
             return {"success": False}
 
         actor = get_user_id()
-        event.notify(RemarksChangedEvent(obj, dict(updated), actor, "edited"))
+        event.notify(
+            RemarksChangedEvent(obj, dict(updated), actor, ACTION_EDITED))
 
         remark = remarks_api.localize_record(updated, obj, self.request)
-        remark["can_edit"] = True
+        remarks_api.annotate_permissions(remark, obj, updated, actor)
         return {"success": True, "remark": remark}
 
 
@@ -337,11 +333,11 @@ class AjaxDeleteRemark(BrowserView):
             return {"success": False}
 
         actor = get_user_id()
-        event.notify(RemarksChangedEvent(obj, dict(deleted), actor, "deleted"))
+        event.notify(
+            RemarksChangedEvent(obj, dict(deleted), actor, ACTION_DELETED))
 
         remark = remarks_api.localize_record(deleted, obj, self.request)
-        remark["can_edit"] = False
-        remark["can_delete"] = False
+        remarks_api.annotate_permissions(remark, obj, deleted, actor)
         return {"success": True, "remark": remark}
 
 

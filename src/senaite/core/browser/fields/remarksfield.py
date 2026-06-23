@@ -249,6 +249,18 @@ class RemarksField(ObjectField):
         return record
 
     @security.private
+    def store_history(self, instance, history):
+        """Persist the whole history and, for a non-temporary object, reindex
+        and notify so the snapshot/catalog stay up to date.
+        """
+        ObjectField.set(self, instance, history)
+        if not api.is_temporary(instance):
+            # N.B. ensure updated catalog metadata for the snapshot
+            instance.reindexObject()
+            # notify object edited event
+            event.notify(ObjectEditedEvent(instance))
+
+    @security.private
     def edit(self, instance, remark_id, value):
         """Edit the content of an existing remark record, keeping the prior
         content as a version.
@@ -265,16 +277,7 @@ class RemarksField(ObjectField):
         # update the record in place, keeping the prior content as a version
         apply_edit(record, value)
         history[index] = record
-
-        # store the whole history
-        ObjectField.set(self, instance, history)
-
-        if not api.is_temporary(instance):
-            # N.B. ensure updated catalog metadata for the snapshot
-            instance.reindexObject()
-            # notify object edited event
-            event.notify(ObjectEditedEvent(instance))
-
+        self.store_history(instance, history)
         return record
 
     @security.private
@@ -292,16 +295,7 @@ class RemarksField(ObjectField):
 
         apply_delete(record)
         history[index] = record
-
-        # store the whole history
-        ObjectField.set(self, instance, history)
-
-        if not api.is_temporary(instance):
-            # N.B. ensure updated catalog metadata for the snapshot
-            instance.reindexObject()
-            # notify object edited event
-            event.notify(ObjectEditedEvent(instance))
-
+        self.store_history(instance, history)
         return record
 
     def to_safe_html(self, html):

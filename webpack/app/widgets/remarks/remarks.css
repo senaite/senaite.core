@@ -48,23 +48,38 @@
   color: #5b8def;
 }
 
-/* deleted remark: original content is kept but marked as deleted */
+/* deleted remark: the content is hidden and a placeholder is shown */
 .senaite-remarks-widget .remark-deleted .remark-avatar {
   opacity: 0.5;
 }
 
-.senaite-remarks-widget .remark-deleted .remark-content {
-  opacity: 0.55;
-  text-decoration: line-through;
-}
-
 .senaite-remarks-widget .remark-deleted-note {
-  color: #e03131;
+  margin-top: 0.15rem;
+  color: #9aa0a6;
   font-style: italic;
 }
 
 .senaite-remarks-widget .remark-action-delete:hover {
   color: #e03131;
+}
+
+/* inline delete confirmation */
+.senaite-remarks-widget .remark-confirm {
+  align-items: center;
+}
+
+.senaite-remarks-widget .remark-confirm-text {
+  font-size: 0.78rem;
+  color: #6b7178;
+}
+
+.senaite-remarks-widget .remark-confirm-yes {
+  color: #e03131;
+  font-weight: 600;
+}
+
+.senaite-remarks-widget .remark-confirm-yes:hover {
+  color: #c92a2a;
 }
 
 /* body */

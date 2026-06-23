@@ -243,7 +243,8 @@ text `content_text` and a derived `edited` flag::
     >>> localized[0]["can_delete"]
     True
 
-A deleted record exposes the deletion info but keeps its original content::
+A deleted record exposes the deletion info but hides its content from
+display (the original is kept in storage for audit)::
 
     >>> raw = remarks.get_records(sample, field)[0]
     >>> remarks.apply_delete(raw, user_id="admin")["deleted"] != ""
@@ -253,8 +254,8 @@ A deleted record exposes the deletion info but keeps its original content::
     True
     >>> data["deleted_by"]
     'admin'
-    >>> "First remark" in data["content_html"]
-    True
+    >>> data["content_html"]
+    ''
 
 
 Widget attributes

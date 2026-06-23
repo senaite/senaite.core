@@ -82,7 +82,7 @@ class RemarksWidgetController extends React.Component {
     try {
       return JSON.parse(value);
     } catch (error) {
-      console.error(`Could not parse "${value}" to JSON`);
+      console.debug(`Could not parse "${value}" to JSON`);
       return null;
     }
   }
@@ -229,10 +229,8 @@ class RemarksWidgetController extends React.Component {
   }
 
   handle_delete(remark_id) {
+    // deletion is confirmed inline in RemarkItem before reaching here
     if (this.state.submitting) {
-      return;
-    }
-    if (!window.confirm(this.translate("confirm_delete"))) {
       return;
     }
 

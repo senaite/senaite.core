@@ -136,7 +136,7 @@ def make_record(content, user_id=None, user_name=None):
         "user_id": user_id,
         "user_name": user_name,
         "created": now(),
-        "content": to_safe_html(content),
+        "content": to_safe_html((content or "").strip()),
         "modified": "",
         "modified_by": "",
         "deleted": "",
@@ -175,7 +175,7 @@ def apply_edit(record, content, editor_id=None):
     versions.insert(0, prior)
 
     record["versions"] = versions
-    record["content"] = to_safe_html(content)
+    record["content"] = to_safe_html((content or "").strip())
     record["modified"] = now()
     record["modified_by"] = editor_id
     return record
@@ -331,6 +331,26 @@ def can_delete_record(context, record=None):
     return can_manage_remarks(context)
 
 
+def annotate_permissions(data, context, record, user_id=None):
+    """Annotate a localized record with the acting user's edit/delete flags
+
+    :param data: the localized record to annotate (mutated in place)
+    :type data: dict
+    :param context: the object holding the remark
+    :param record: the raw remark record the flags are computed from
+    :type record: dict
+    :param user_id: the acting user id (defaults to the current user)
+    :type user_id: str
+    :returns: the same `data`, with `can_edit` and `can_delete` set
+    :rtype: dict
+    """
+    if user_id is None:
+        user_id = get_user_id()
+    data["can_edit"] = can_edit_record(context, record, user_id)
+    data["can_delete"] = can_delete_record(context, record)
+    return data
+
+
 def localize_time(value, context, request):
     """Return the localized representation of an ISO timestamp
 
@@ -369,9 +389,16 @@ def localize_record(record, context, request):
     data["deleted_by"] = record.get("deleted_by", "")
     data["is_deleted"] = bool(deleted)
 
-    # the original content is kept and still rendered (the widget marks it as
-    # deleted and shows a placeholder); content is stored as sanitized HTML, so
-    # render it as-is and provide a plain text variant for the editor textarea
+    if deleted:
+        # the original content is kept in storage for audit but hidden from
+        # display; the widget renders a placeholder instead
+        data["content_html"] = ""
+        data["content_text"] = ""
+        data["versions"] = []
+        return data
+
+    # content is stored as sanitized HTML; render it as-is and provide a plain
+    # text variant for the editor textarea
     content = record.get("content") or ""
     data["content_html"] = content
     data["content_text"] = to_plain_text(content)
@@ -387,8 +414,8 @@ def localize_record(record, context, request):
 
 
 def get_localized_records(obj, field, request):
-    """Return the field records, newest first, localized and annotated with a
-    per-record `can_edit` flag for the current user
+    """Return the field records, newest first, localized and annotated with
+    per-record `can_edit` and `can_delete` flags for the current user
 
     :param obj: the object holding the field
     :param field: the remarks field
@@ -401,17 +428,10 @@ def get_localized_records(obj, field, request):
     records.sort(key=lambda r: r.get("created") or "", reverse=True)
 
     user_id = get_user_id()
-    manage = can_manage_remarks(obj)
-    add = can_add_remark(obj)
-
     out = []
     for record in records:
         data = localize_record(record, obj, request)
-        is_owner = user_id == record.get("user_id")
-        # users may edit their own remarks; managers may delete any remark
-        data["can_edit"] = bool(
-            is_owner and add and not data["is_deleted"])
-        data["can_delete"] = bool(manage and not data["is_deleted"])
+        annotate_permissions(data, obj, record, user_id)
         out.append(data)
     return out
 

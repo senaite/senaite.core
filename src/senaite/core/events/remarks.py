@@ -21,6 +21,11 @@
 from zope.interface import Interface
 from zope.interface import implements
 
+# Actions carried by a RemarksChangedEvent (the subscriber contract)
+ACTION_ADDED = "added"
+ACTION_EDITED = "edited"
+ACTION_DELETED = "deleted"
+
 
 class IRemarksAddedEvent(Interface):
     """Remarks Added Event

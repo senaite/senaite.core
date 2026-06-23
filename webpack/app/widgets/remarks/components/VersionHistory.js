@@ -15,7 +15,9 @@ class VersionHistory extends React.Component {
     return (
       <div className="remarks-versions">
         {versions.map((version, index) => (
-          <div className="remark-version" key={index}>
+          <div
+            className="remark-version"
+            key={(version.created || "") + (version.user_id || "") + index}>
             <div className="remark-version-meta">
               <span className="remark-author">{version.user_id}</span>
               <span className="remark-time">{version.created}</span>
