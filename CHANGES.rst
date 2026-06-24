@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2962 Remove the obsolete RegulatoryInspector role
 - #2956 Restrict client discount fields to lab staff
 - #2958 Add labels with colors, filtering, and bulk-manage modal for samples
 - #2953 Fix IClientAwareMixin interface mismatch breaking client access on DX content

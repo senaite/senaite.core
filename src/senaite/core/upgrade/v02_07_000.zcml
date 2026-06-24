@@ -3,6 +3,19 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove the obsolete 'RegulatoryInspector' role"
+      description="Remove the unused RegulatoryInspector role and the
+                   RegulatoryInspectors group from existing installations.
+                   The role is dropped from the portal_role_manager (which
+                   also clears any direct assignments), the group is removed
+                   from portal_groups, and the role is dropped from the
+                   portal's known roles."
+      source="2746"
+      destination="2747"
+      handler=".v02_07_000.remove_regulatory_inspector_role"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Add labels index to sample catalog and ManageLabels permission"
       description="Register the new `senaite.core: Manage Labels` permission
                    (granted to LabClerk, LabManager, Manager) and add a

@@ -309,7 +309,7 @@ class WorksheetsView(ListingView):
     def is_privileged_user(self):
         """Returns whether the current user is a privileged member
         """
-        privileged = ["Manager", "LabManager", "RegulatoryInspector"]
+        privileged = ["Manager", "LabManager"]
         user_roles = self.member.getRoles()
         if set(privileged).intersection(user_roles):
             return True
