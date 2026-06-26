@@ -359,6 +359,11 @@ class AnalysisServicesView(ControlPanelListingView):
             item["Department"] = title
             item["replace"]["Department"] = get_link(url, title)
 
+        # Keyword
+        keyword = obj.getKeyword()
+        if keyword:
+            item["replace"]["Keyword"] = "<code>{}</code>".format(keyword)
+
         # Unit
         unit = obj.getUnit()
         item["Unit"] = unit and format_supsub(unit) or ""
