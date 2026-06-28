@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
+from cgi import escape as html_escape
 from string import Template
 
 from bika.lims import _
@@ -233,6 +234,12 @@ class SamplesView(ListingView):
                 "alt": _("Open / To be verified / Verified / Total"),
                 "sortable": True,
                 "index": "getAnalysesNum",
+                "toggle": False}),
+            ("getAnalysesKeywords", {
+                "title": _("Analyses"),
+                "alt": _("Keywords of the analyses contained in the sample"),
+                "index": "getAnalysesKeywords",
+                "sortable": False,
                 "toggle": False}),
             ("getTemplateTitle", {
                 "title": _("Template"),
@@ -533,6 +540,15 @@ class SamplesView(ListingView):
                 ANALYSES_NUM_TPL_HTML.safe_substitute(numbers)
         else:
             item["getAnalysesNum"] = ""
+
+        # Analyses keywords (read from brain metadata, list of keywords)
+        keywords = obj.getAnalysesKeywords
+        if not isinstance(keywords, (list, tuple)):
+            keywords = []
+        keywords = sorted(keywords)
+        item["getAnalysesKeywords"] = ", ".join(keywords)
+        item["replace"]["getAnalysesKeywords"] = " ".join(
+            ["<code>{}</code>".format(html_escape(kw)) for kw in keywords])
 
         # Progress
         progress_perc = obj.getProgress

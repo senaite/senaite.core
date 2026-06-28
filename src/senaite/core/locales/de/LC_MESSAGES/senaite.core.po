@@ -3020,6 +3020,10 @@ msgstr "Schlüsselwort benötigt"
 msgid "Keywords"
 msgstr "Schlüsselwörter"
 
+#: senaite/core/browser/samples/view.py:239
+msgid "Keywords of the analyses contained in the sample"
+msgstr "Schlüsselwörter der in der Probe enthaltenen Analysen"
+
 #: bika/lims/browser/templates/analysisservice_info.pt:100
 #: bika/lims/config.py:52
 #: bika/lims/content/analysisspec.py:142
