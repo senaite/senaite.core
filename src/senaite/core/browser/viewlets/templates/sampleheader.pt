@@ -29,7 +29,8 @@
       <form id="senaite-sampleheader-form"
             name="sampleheader_form"
             class="senaite-form"
-            method="post" novalidate>
+            method="post" novalidate
+            enctype="multipart/form-data">
 
         <!-- Hidden fields -->
         <input type="hidden" name="sampleheader_form_submitted" value="1" />
