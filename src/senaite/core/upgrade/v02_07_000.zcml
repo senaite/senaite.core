@@ -3,6 +3,19 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add labels index to sample catalog and ManageLabels permission"
+      description="Register the new `senaite.core: Manage Labels` permission
+                   (granted to LabClerk, LabManager, Manager) and add a
+                   `labels` KeywordIndex to `senaite_catalog_sample` so
+                   sample listings can filter by label. The existing
+                   `IHaveLabels` indexer populates the new index for
+                   already-labeled samples on reindex."
+      source="2745"
+      destination="2746"
+      handler=".v02_07_000.setup_sample_labels"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Reindex DX client-aware content after IClientAwareMixin interface mismatch fix"
       description="The new `allowedRolesAndUsers` indexer wired by
                    #2934 was registered against the AT-era
