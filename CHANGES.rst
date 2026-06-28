@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2960 Set multipart enctype on the sample header form so file uploads persist
 - #2957 Harmonize form input widths via tunable CSS variables
 - #2956 Restrict client discount fields to lab staff
 - #2958 Add labels with colors, filtering, and bulk-manage modal for samples
