@@ -2237,6 +2237,20 @@ def setup_sample_labels(tool):
 
 
 @upgradestep(product, version)
+def reindex_client_title(tool):
+    """Reindex getClientTitle in the sample catalog with unicode keys
+
+    getClientTitle is now normalized to unicode by an indexer adapter so the
+    FieldIndex can be queried with non-ASCII values (e.g. accented client
+    names) without raising a UnicodeDecodeError on Python 2. Reindex existing
+    samples so their index keys become unicode.
+    """
+    logger.info("Reindexing getClientTitle in sample catalog ...")
+    reindex_index(SAMPLE_CATALOG, "getClientTitle")
+    logger.info("Reindexing getClientTitle in sample catalog [DONE]")
+
+
+@upgradestep(product, version)
 def add_sample_catalog_indexes(tool):
     """Add new indexes to senaite_catalog_sample
 
