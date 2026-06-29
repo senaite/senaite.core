@@ -2289,9 +2289,11 @@ def add_sample_analyses_keywords_metadata(tool):
         obj = api.get_object(brain, default=None)
         if obj is None:
             continue
-        # idxs=[] -> update metadata only, do not touch indexes
-        catalog.catalog_object(obj, api.get_path(obj), idxs=[],
-                               update_metadata=1)
+        # reindexObject refreshes the full metadata record (populating the new
+        # getAnalysesKeywords column); idxs limits the index work to the
+        # getAnalysesKeywords index, which keeps its existing key type so no
+        # clear is needed.
+        obj.reindexObject(idxs=["getAnalysesKeywords"])
     logger.info("Refreshing getAnalysesKeywords metadata [DONE]")
 
 
