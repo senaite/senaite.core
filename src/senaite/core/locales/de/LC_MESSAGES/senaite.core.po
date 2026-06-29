@@ -12387,3 +12387,7 @@ msgstr "Alle Spalten sind ausgeblendet."
 # senaite.app.listing: Column config — empty state for hidden section with search
 msgid "No matches in hidden columns."
 msgstr "Keine Treffer in ausgeblendeten Spalten."
+
+#: senaite/core/browser/samples/view.py:507
+msgid "Filter samples by this analysis"
+msgstr "Proben nach dieser Analyse filtern"

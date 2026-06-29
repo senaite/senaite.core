@@ -11872,3 +11872,7 @@ msgstr ""
 #: bika/lims/controlpanel/bika_instruments.py:173
 msgid "{} weeks and {} day(s)"
 msgstr ""
+
+#: senaite/core/browser/samples/view.py:507
+msgid "Filter samples by this analysis"
+msgstr ""

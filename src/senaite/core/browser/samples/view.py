@@ -19,8 +19,11 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
+import json
 from cgi import escape as html_escape
 from string import Template
+
+from six.moves.urllib.parse import quote
 
 from bika.lims import _
 from bika.lims import api
@@ -491,6 +494,24 @@ class SamplesView(ListingView):
         if self.flat_listing:
             self.contentFilter.pop("isRootAncestor", None)
 
+    def get_keyword_filter_url(self, keyword):
+        """Return a URL to this listing pre-filtered by the analysis keyword
+        """
+        query = json.dumps({"getAnalysesKeywords": keyword})
+        return "?{}_column_filters={}".format(self.form_id, quote(query))
+
+    def render_keyword_filter_chip(self, keyword):
+        """Render an analysis keyword as a clickable filter chip
+        """
+        href = html_escape(self.get_keyword_filter_url(keyword), quote=True)
+        title = t(_("Filter samples by this analysis"))
+        title = html_escape(title, quote=True)
+        return (
+            u'<a href="{href}" class="analysis-keyword-filter" '
+            u'title="{title}" style="text-decoration:none">'
+            u'<code>{keyword}</code></a>'
+        ).format(href=href, title=title, keyword=html_escape(keyword))
+
     def folderitem(self, obj, item, index):
         # Read everything from brain metadata; only wake the sample
         # when a value is not available on the brain (sampling workflow
@@ -548,7 +569,7 @@ class SamplesView(ListingView):
         keywords = sorted(keywords)
         item["getAnalysesKeywords"] = ", ".join(keywords)
         item["replace"]["getAnalysesKeywords"] = " ".join(
-            ["<code>{}</code>".format(html_escape(kw)) for kw in keywords])
+            [self.render_keyword_filter_chip(kw) for kw in keywords])
 
         # Progress
         progress_perc = obj.getProgress
