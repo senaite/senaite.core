@@ -12391,3 +12391,7 @@ msgstr "Keine Treffer in ausgeblendeten Spalten."
 #: senaite/core/browser/samples/view.py:507
 msgid "Filter samples by this analysis"
 msgstr "Proben nach dieser Analyse filtern"
+
+#: senaite/core/browser/samples/view.py:537
+msgid "Remove this analysis from the filter"
+msgstr "Diese Analyse aus dem Filter entfernen"

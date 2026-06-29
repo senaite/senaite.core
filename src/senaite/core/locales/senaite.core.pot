@@ -11876,3 +11876,7 @@ msgstr ""
 #: senaite/core/browser/samples/view.py:507
 msgid "Filter samples by this analysis"
 msgstr ""
+
+#: senaite/core/browser/samples/view.py:537
+msgid "Remove this analysis from the filter"
+msgstr ""

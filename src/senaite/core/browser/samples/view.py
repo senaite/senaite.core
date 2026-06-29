@@ -50,6 +50,9 @@ from senaite.core.permissions import TransitionSampleSample
 from senaite.core.permissions.worksheet import can_add_worksheet
 from zope.interface import implementer
 
+# Catalog index / metadata column holding the analysis keywords of a sample
+ANALYSES_KEYWORDS_INDEX = "getAnalysesKeywords"
+
 ANALYSES_NUM_TPL = Template("$not_submitted/$to_be_verified/$verified/$total")
 ANALYSES_NUM_TPL_HTML = Template("""<div class="d-flex flex-row">
   <span data-toggle="tooltip"
@@ -494,23 +497,57 @@ class SamplesView(ListingView):
         if self.flat_listing:
             self.contentFilter.pop("isRootAncestor", None)
 
-    def get_keyword_filter_url(self, keyword):
-        """Return a URL to this listing pre-filtered by the analysis keyword
+    @view.memoize
+    def get_current_column_filters(self):
+        """Return the active column filters for this listing render
         """
-        query = json.dumps({"getAnalysesKeywords": keyword})
+        return dict(self.get_column_filters() or {})
+
+    def get_active_keywords(self):
+        """Return the analysis keywords the listing is filtered by
+        """
+        raw = self.get_current_column_filters().get(
+            ANALYSES_KEYWORDS_INDEX, "")
+        return [kw.strip() for kw in raw.split(",") if kw.strip()]
+
+    def get_keyword_filter_url(self, keyword):
+        """Return a URL that toggles the keyword in the analyses filter
+
+        The keyword is added when not yet active and removed when already
+        active, so chips accumulate into an AND filter across keywords.
+        """
+        active = self.get_active_keywords()
+        if keyword in active:
+            active = [kw for kw in active if kw != keyword]
+        else:
+            active = active + [keyword]
+        column_filters = dict(self.get_current_column_filters())
+        if active:
+            column_filters[ANALYSES_KEYWORDS_INDEX] = ",".join(sorted(active))
+        else:
+            column_filters.pop(ANALYSES_KEYWORDS_INDEX, None)
+        query = json.dumps(column_filters)
         return "?{}_column_filters={}".format(self.form_id, quote(query))
 
-    def render_keyword_filter_chip(self, keyword):
-        """Render an analysis keyword as a clickable filter chip
+    def render_keyword_filter_chip(self, keyword, active_keywords):
+        """Render an analysis keyword as a clickable, toggleable filter chip
         """
         href = html_escape(self.get_keyword_filter_url(keyword), quote=True)
-        title = t(_("Filter samples by this analysis"))
+        if keyword in active_keywords:
+            title = t(_("Remove this analysis from the filter"))
+            css = "analysis-keyword-filter active"
+            style = "text-decoration:none;font-weight:bold"
+        else:
+            title = t(_("Filter samples by this analysis"))
+            css = "analysis-keyword-filter"
+            style = "text-decoration:none"
         title = html_escape(title, quote=True)
         return (
-            u'<a href="{href}" class="analysis-keyword-filter" '
-            u'title="{title}" style="text-decoration:none">'
+            u'<a href="{href}" class="{css}" '
+            u'title="{title}" style="{style}">'
             u'<code>{keyword}</code></a>'
-        ).format(href=href, title=title, keyword=html_escape(keyword))
+        ).format(href=href, css=css, title=title, style=style,
+                 keyword=html_escape(keyword))
 
     def folderitem(self, obj, item, index):
         # Read everything from brain metadata; only wake the sample
@@ -568,8 +605,10 @@ class SamplesView(ListingView):
             keywords = []
         keywords = sorted(keywords)
         item["getAnalysesKeywords"] = ", ".join(keywords)
+        active_keywords = self.get_active_keywords()
         item["replace"]["getAnalysesKeywords"] = " ".join(
-            [self.render_keyword_filter_chip(kw) for kw in keywords])
+            [self.render_keyword_filter_chip(kw, active_keywords)
+             for kw in keywords])
 
         # Progress
         progress_perc = obj.getProgress
