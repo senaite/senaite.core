@@ -2243,11 +2243,21 @@ def reindex_client_title(tool):
     getClientTitle is now normalized to unicode by an indexer adapter so the
     FieldIndex can be queried with non-ASCII values (e.g. accented client
     names) without raising a UnicodeDecodeError on Python 2. Reindex existing
-    samples so their index keys become unicode.
+    samples via reindexObject (idxs only, update_metadata defaults to True) so
+    both the index keys and the getClientTitle metadata become unicode.
     """
-    logger.info("Reindexing getClientTitle in sample catalog ...")
-    reindex_index(SAMPLE_CATALOG, "getClientTitle")
-    logger.info("Reindexing getClientTitle in sample catalog [DONE]")
+    catalog = api.get_tool(SAMPLE_CATALOG)
+    brains = catalog(portal_type="AnalysisRequest")
+    total = len(brains)
+    logger.info("Reindexing getClientTitle of %s samples ..." % total)
+    for num, brain in enumerate(brains):
+        if num and num % 1000 == 0:
+            logger.info("Reindexed %s/%s samples ..." % (num, total))
+        obj = api.get_object(brain, default=None)
+        if obj is None:
+            continue
+        obj.reindexObject(idxs=["getClientTitle"])
+    logger.info("Reindexing getClientTitle [DONE]")
 
 
 @upgradestep(product, version)
