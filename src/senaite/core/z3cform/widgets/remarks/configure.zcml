@@ -23,6 +23,33 @@
         layer="senaite.core.interfaces.ISenaiteFormLayer"
     />
 
+    <!-- POST for editing a remark -->
+    <browser:page
+        for="*"
+        name="edit_remark"
+        class=".widget.AjaxEditRemark"
+        permission="zope.Public"
+        layer="senaite.core.interfaces.ISenaiteFormLayer"
+    />
+
+    <!-- POST for deleting a remark -->
+    <browser:page
+        for="*"
+        name="delete_remark"
+        class=".widget.AjaxDeleteRemark"
+        permission="zope.Public"
+        layer="senaite.core.interfaces.ISenaiteFormLayer"
+    />
+
+    <!-- POST for restoring a deleted remark -->
+    <browser:page
+        for="*"
+        name="restore_remark"
+        class=".widget.AjaxRestoreRemark"
+        permission="zope.Public"
+        layer="senaite.core.interfaces.ISenaiteFormLayer"
+    />
+
     <!-- POST for fetch of remarks -->
     <browser:page
         for="*"

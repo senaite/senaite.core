@@ -40,10 +40,7 @@ const CONTROLLER_MAP = {
   // Worksheets
   ".portaltype-worksheetfolder": ["WorksheetFolderView"],
   ".portaltype-worksheet.template-manage_results": ["WorksheetManageResultsView"],
-  "#worksheet-printview-wrapper": ["WorksheetPrintView"],
-
-  // Remarks Widget
-  ".ArchetypesRemarksWidget": ["RemarksWidgetView"]
+  "#worksheet-printview-wrapper": ["WorksheetPrintView"]
 };
 
 /**

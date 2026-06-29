@@ -37,7 +37,6 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import EmailsField
 from bika.lims.browser.fields import ResultsRangesField
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import DecimalWidget
@@ -88,6 +87,7 @@ from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.datetime import DateTimeField
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.browser.fields.remarksfield import RemarksField
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import CLIENT_CATALOG
