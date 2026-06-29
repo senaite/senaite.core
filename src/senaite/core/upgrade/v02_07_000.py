@@ -2244,32 +2244,17 @@ def reindex_client_title(tool):
     FieldIndex can be queried with non-ASCII values (e.g. accented client
     names) without raising a UnicodeDecodeError on Python 2.
 
-    The index is rebuilt from scratch first: `manage_reindexIndex` (via
-    `reindex_index`) clears the index before repopulating it, so all old
-    byte-string keys are dropped in one go. Reindexing object by object would
-    instead insert unicode keys into an index that still holds byte-string
-    keys, and comparing the two key types raises a UnicodeDecodeError. Once the
-    index is unicode, the metadata (fed by the same indexer) is refreshed per
-    object without mixing key types.
+    `manage_reindexIndex` (via `reindex_index`) clears the index before
+    repopulating it, so all old byte-string keys are dropped in one go.
+    Reindexing object by object would instead insert unicode keys into an
+    index that still holds byte-string keys, and comparing the two key types
+    raises a UnicodeDecodeError. The getClientTitle metadata (fed by the same
+    indexer) is left to migrate lazily on each sample's next reindex; it is
+    harmless as a byte string in the meantime.
     """
-    catalog = api.get_tool(SAMPLE_CATALOG)
-
     logger.info("Reindexing getClientTitle in sample catalog ...")
     reindex_index(SAMPLE_CATALOG, "getClientTitle")
     logger.info("Reindexing getClientTitle in sample catalog [DONE]")
-
-    brains = catalog(portal_type="AnalysisRequest")
-    total = len(brains)
-    logger.info("Refreshing getClientTitle metadata of %s samples ..." % total)
-    for num, brain in enumerate(brains):
-        if num and num % 1000 == 0:
-            logger.info("Refreshed %s/%s samples ..." % (num, total))
-        obj = api.get_object(brain, default=None)
-        if obj is None:
-            continue
-        catalog.catalog_object(obj, api.get_path(obj),
-                               idxs=["getClientTitle"], update_metadata=1)
-    logger.info("Refreshing getClientTitle metadata [DONE]")
 
 
 @upgradestep(product, version)
