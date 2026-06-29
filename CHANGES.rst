@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2963 Show analysis service keyword as code across service listings
 - #2959 Refactor Remarks into a reusable React widget with edit and version history
 - #2961 Expose React and ReactDOM globally for SENAITE add-ons
 - #2960 Set multipart enctype on the sample header form so file uploads persist
