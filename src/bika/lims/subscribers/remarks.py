@@ -18,13 +18,9 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import logger
+# BBB: this module was moved to senaite.core.subscribers.remarks
+from senaite.core.subscribers.remarks import RemarksAddedEventHandler
 
-
-def RemarksAddedEventHandler(event):
-    """New Remarks Added
-    """
-    context = event.context
-    history = event.history
-    logger.info("New Remarks added for {}: {}"
-                .format(repr(context), history[0]))
+__all__ = [
+    "RemarksAddedEventHandler",
+]

@@ -11935,4 +11935,42 @@ msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:466
 msgid "Analyses included in a published report"
+#: senaite/core/api/remarks.py
+msgid "Add a remark..."
+msgstr ""
+
+#: senaite/core/api/remarks.py
+msgid "Hide history"
+msgstr ""
+
+#: senaite/core/api/remarks.py
+msgid "No remarks yet"
+msgstr ""
+
+#: senaite/core/api/remarks.py
+msgid "Show history"
+msgstr ""
+
+#: senaite/core/api/remarks.py
+msgid "edited"
+msgstr ""
+
+#: senaite/core/api/remarks.py
+msgid "original"
+msgstr ""
+
+#: senaite/core/api/remarks.py
+msgid "Delete this remark?"
+msgstr ""
+
+#: senaite/core/api/remarks.py
+msgid "deleted by {user} at {time}"
+msgstr ""
+
+#: senaite/core/api/remarks.py
+msgid "Newest first"
+msgstr ""
+
+#: senaite/core/api/remarks.py
+msgid "Oldest first"
 msgstr ""
