@@ -95,7 +95,7 @@ STATUS_CARD_DEFS = [
      "fa-paper-plane"),
     (EditResults, "Open Worksheets",
      "Worksheet", "open", WORKSHEET_CATALOG,
-     "worksheets?list_review_state=open",
+     "worksheets?worksheets_review_state=open",
      "fa-th-list"),
 ]
 
