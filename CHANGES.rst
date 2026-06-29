@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2959 Refactor Remarks into a reusable React widget with edit and version history
 - #2961 Expose React and ReactDOM globally for SENAITE add-ons
 - #2960 Set multipart enctype on the sample header form so file uploads persist
 - #2957 Harmonize form input widths via tunable CSS variables

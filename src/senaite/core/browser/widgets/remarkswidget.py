@@ -18,9 +18,14 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-# BBB: this module was moved to senaite.core.browser.widgets.remarkswidget
-from senaite.core.browser.widgets.remarkswidget import RemarksWidget
+from AccessControl import ClassSecurityInfo
+from Products.Archetypes.Widget import TypesWidget
 
-__all__ = [
-    "RemarksWidget",
-]
+
+class RemarksWidget(TypesWidget):
+    _properties = TypesWidget._properties.copy()
+    _properties.update({
+        "macro": "senaite_widgets/remarkswidget",
+        })
+
+    security = ClassSecurityInfo()
