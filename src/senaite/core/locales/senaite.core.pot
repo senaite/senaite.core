@@ -11868,3 +11868,109 @@ msgstr ""
 #: bika/lims/controlpanel/bika_instruments.py:173
 msgid "{} weeks and {} day(s)"
 msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:368
+msgid "Samples awaiting collection of the sample"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:372
+msgid "Samples awaiting preservation"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:377
+msgid "Samples with a scheduled sampling date"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:384
+msgid "Samples awaiting reception at the laboratory"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:388
+msgid "Received samples with analyses awaiting results"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:392
+msgid "Samples whose results are awaiting verification"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:396
+msgid "Verified samples ready to be published"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:400
+msgid "Samples whose reports have been published"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:416
+msgid "Published samples whose reports have not been printed yet"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:448
+msgid "Analyses not yet assigned to a worksheet"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:453
+msgid "Analyses assigned to a worksheet, awaiting results"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:458
+msgid "Submitted analyses awaiting verification"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:462
+msgid "Analyses that have been verified"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:486
+msgid "Open worksheets with analyses awaiting results"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:490
+msgid "Worksheets whose results are awaiting verification"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:495
+msgid "Worksheets that have been verified"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:466
+msgid "Analyses included in a published report"
+#: senaite/core/api/remarks.py
+msgid "Add a remark..."
+msgstr ""
+
+#: senaite/core/api/remarks.py
+msgid "Hide history"
+msgstr ""
+
+#: senaite/core/api/remarks.py
+msgid "No remarks yet"
+msgstr ""
+
+#: senaite/core/api/remarks.py
+msgid "Show history"
+msgstr ""
+
+#: senaite/core/api/remarks.py
+msgid "edited"
+msgstr ""
+
+#: senaite/core/api/remarks.py
+msgid "original"
+msgstr ""
+
+#: senaite/core/api/remarks.py
+msgid "Delete this remark?"
+msgstr ""
+
+#: senaite/core/api/remarks.py
+msgid "deleted by {user} at {time}"
+msgstr ""
+
+#: senaite/core/api/remarks.py
+msgid "Newest first"
+msgstr ""
+
+#: senaite/core/api/remarks.py
+msgid "Oldest first"
+msgstr ""

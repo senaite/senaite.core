@@ -22,7 +22,6 @@ import collections
 import datetime
 import json
 from calendar import monthrange
-from operator import itemgetter
 from time import time
 
 from AccessControl import getSecurityManager
@@ -96,7 +95,7 @@ STATUS_CARD_DEFS = [
      "fa-paper-plane"),
     (EditResults, "Open Worksheets",
      "Worksheet", "open", WORKSHEET_CATALOG,
-     "worksheets?list_review_state=open",
+     "worksheets?worksheets_review_state=open",
      "fa-th-list"),
 ]
 
@@ -119,13 +118,14 @@ QUICK_LINK_DEFS = [
 # State labels for evolution charts
 ANALYSIS_STATES = collections.OrderedDict([
     ("registered", _("Registered")),
-    ("unassigned", _("Assignment pending")),
-    ("assigned", _("Results pending")),
+    ("unassigned", _("Unassigned")),
+    ("assigned", _("Assigned")),
     ("to_be_verified", _("To be verified")),
-    ("rejected", _("Rejected")),
-    ("retracted", _("Retracted")),
     ("verified", _("Verified")),
     ("published", _("Published")),
+    # exception states last
+    ("retracted", _("Retracted")),
+    ("rejected", _("Rejected")),
 ])
 
 SAMPLE_STATES = collections.OrderedDict([
@@ -133,13 +133,14 @@ SAMPLE_STATES = collections.OrderedDict([
     ("to_be_preserved", _("To be preserved")),
     ("scheduled_sampling", _("Sampling scheduled")),
     ("sample_due", _("Reception pending")),
-    ("rejected", _("Rejected")),
-    ("invalid", _("Invalid")),
     ("sample_received", _("Results pending")),
     ("assigned", _("Results pending")),
     ("to_be_verified", _("To be verified")),
     ("verified", _("Verified")),
     ("published", _("Published")),
+    # exception states last
+    ("rejected", _("Rejected")),
+    ("invalid", _("Invalid")),
 ])
 
 WORKSHEET_STATES = collections.OrderedDict([
@@ -163,7 +164,9 @@ STATE_COLORS = {
     "scheduled_sampling": "#F38630",
     "sample_due": "#ffff8d",        # $state-sample_due-color
     "sample_received": "#a1887f",   # $state-sample_received-color
-    "unassigned": "#f8f9fa",        # $state-unassigned-color
+    # $state-unassigned-color (#f8f9fa) is near-white and invisible on the
+    # chart; use a distinguishable blue-grey for the dashboard legend.
+    "unassigned": "#90a4ae",
     "assigned": "#ced4da",          # $state-unassigned-active-color
     "open": "#ced4da",
     "rejected": "#6c757d",          # $state-rejected-color
@@ -361,32 +364,40 @@ class DashboardView(BrowserView):
             panels += [
                 self._panel(
                     _("To be sampled"), "to_be_sampled",
-                    "samples", catalog, query, total),
+                    "samples", catalog, query, total,
+                    tooltip=_("Samples awaiting collection of the sample")),
                 self._panel(
                     _("To be preserved"), "to_be_preserved",
-                    "samples", catalog, query, total),
+                    "samples", catalog, query, total,
+                    tooltip=_("Samples awaiting preservation")),
                 self._panel(
                     _("Sampling scheduled"),
                     "scheduled_sampling",
-                    "samples", catalog, query, total),
+                    "samples", catalog, query, total,
+                    tooltip=_("Samples with a scheduled sampling date")),
             ]
 
         panels += [
             self._panel(
                 _("Reception pending"), "sample_due",
-                "samples", catalog, query, total),
+                "samples", catalog, query, total,
+                tooltip=_("Samples awaiting reception at the laboratory")),
             self._panel(
                 _("Results pending"), "sample_received",
-                "samples", catalog, query, total),
+                "samples", catalog, query, total,
+                tooltip=_("Received samples with analyses awaiting results")),
             self._panel(
                 _("To be verified"), "to_be_verified",
-                "samples", catalog, query, total),
+                "samples", catalog, query, total,
+                tooltip=_("Samples whose results are awaiting verification")),
             self._panel(
                 _("Verified"), "verified",
-                "samples", catalog, query, total),
+                "samples", catalog, query, total,
+                tooltip=_("Verified samples ready to be published")),
             self._panel(
                 _("Published"), "published",
-                "samples", catalog, query, total),
+                "samples", catalog, query, total,
+                tooltip=_("Samples whose reports have been published")),
         ]
 
         if bika_setup.getPrintingWorkflowEnabled():
@@ -400,7 +411,10 @@ class DashboardView(BrowserView):
                 "percentage": self._pct(count, total),
                 "legend": self._legend(count, total),
                 "link": "%s/samples?samples_getPrinted=0"
+                        "&samples_review_state=published"
                         % self.portal_url,
+                "tooltip": _("Published samples whose reports have not been "
+                             "printed yet"),
             })
 
         panels.append(self._chart_panel(
@@ -423,32 +437,33 @@ class DashboardView(BrowserView):
             query, "analyses")
         total = self._cached_count(query, catalog.id)
 
+        # Each analysis state maps 1:1 to a samples listing tab: unassigned
+        # and assigned resolve via the assigned_state-based tabs, the rest via
+        # the matching review_state tabs.
         panels = [
             self._panel(
-                _("Assignment pending"), "unassigned",
-                None, catalog, query, total),
-        ]
-
-        # "Results pending" counts both states
-        q = dict(query,
-                 review_state=["unassigned", "assigned"])
-        count = self._cached_count(q, catalog.id)
-        panels.append({
-            "type": "simple-panel",
-            "description": _("Results pending"),
-            "number": count,
-            "percentage": self._pct(count, total),
-            "legend": self._legend(count, total),
-            "link": "#",
-        })
-
-        panels += [
+                _("Unassigned"), "unassigned",
+                None, catalog, query, total,
+                link=self._listing_link("samples", "unassigned"),
+                tooltip=_("Analyses not yet assigned to a worksheet")),
+            self._panel(
+                _("Assigned"), "assigned",
+                None, catalog, query, total,
+                link=self._listing_link("samples", "assigned"),
+                tooltip=_("Analyses assigned to a worksheet, "
+                          "awaiting results")),
             self._panel(
                 _("To be verified"), "to_be_verified",
-                None, catalog, query, total),
+                "samples", catalog, query, total,
+                tooltip=_("Submitted analyses awaiting verification")),
             self._panel(
                 _("Verified"), "verified",
-                None, catalog, query, total),
+                "samples", catalog, query, total,
+                tooltip=_("Analyses that have been verified")),
+            self._panel(
+                _("Published"), "published",
+                "samples", catalog, query, total,
+                tooltip=_("Analyses included in a published report")),
         ]
 
         panels.append(self._chart_panel(
@@ -471,13 +486,17 @@ class DashboardView(BrowserView):
         panels = [
             self._panel(
                 _("Results pending"), "open",
-                "worksheets", catalog, query, total),
+                "worksheets", catalog, query, total,
+                tooltip=_("Open worksheets with analyses awaiting results")),
             self._panel(
                 _("To be verified"), "to_be_verified",
-                "worksheets", catalog, query, total),
+                "worksheets", catalog, query, total,
+                tooltip=_("Worksheets whose results are awaiting "
+                          "verification")),
             self._panel(
                 _("Verified"), "verified",
-                "worksheets", catalog, query, total),
+                "worksheets", catalog, query, total,
+                tooltip=_("Worksheets that have been verified")),
         ]
 
         panels.append(self._chart_panel(
@@ -492,20 +511,31 @@ class DashboardView(BrowserView):
 
     # --- Panel builders ---
 
+    def _listing_link(self, listing_view, review_state):
+        """Build a link to a listing pre-filtered by review_state
+        """
+        return "%s/%s?%s_review_state=%s" % (
+            self.portal_url, listing_view, listing_view, review_state)
+
     def _panel(self, description, review_state,
-               listing_view, catalog, base_query, total):
+               listing_view, catalog, base_query, total, link=None,
+               tooltip=None):
         """Build a simple statistics panel
+
+        When `link` is given it is used verbatim; this allows panels whose
+        navigation target (listing + filter) differs from the catalog and
+        review_state used to compute the count. `tooltip` is shown as the
+        card hover hint.
         """
         q = dict(base_query,
                  review_state=[review_state])
         count = self._cached_count(q, catalog.id)
 
-        if listing_view:
-            link = "%s/%s?%s_review_state=%s" % (
-                self.portal_url, listing_view,
-                listing_view, review_state)
-        else:
-            link = "#"
+        if link is None:
+            if listing_view:
+                link = self._listing_link(listing_view, review_state)
+            else:
+                link = "#"
 
         return {
             "type": "simple-panel",
@@ -514,6 +544,7 @@ class DashboardView(BrowserView):
             "percentage": self._pct(count, total),
             "legend": self._legend(count, total),
             "link": link,
+            "tooltip": tooltip,
         }
 
     def _chart_panel(self, title, catalog, query):
@@ -700,14 +731,18 @@ class DashboardView(BrowserView):
         self._remove_empty_states(
             buckets, state_totals)
 
-        # Sort states by total count descending
-        sorted_states = [
-            s for s, _ in sorted(
-                state_totals.items(),
-                key=itemgetter(1),
-                reverse=True)]
+        # Order the states following the workflow flow defined by the
+        # statesmap instead of by count, so the chart legend reads in a
+        # predictable order. The legend is rendered reversed (latest state
+        # on top), and the catch-all "other" bucket always comes last.
+        ordered_states = []
+        seen = set()
+        for label in list(statesmap.values()) + [other_label]:
+            if label not in seen:
+                seen.add(label)
+                ordered_states.append(label)
 
-        return {"data": buckets, "states": sorted_states}
+        return {"data": buckets, "states": ordered_states}
 
     def _init_buckets(self, date_from, date_to, days,
                       periodicity, statesmap,
