@@ -11880,3 +11880,11 @@ msgstr ""
 #: senaite/core/browser/samples/view.py:537
 msgid "Remove this analysis from the filter"
 msgstr ""
+
+#: senaite/core/browser/samples/view.py:518
+msgid "Showing samples that contain:"
+msgstr ""
+
+#: senaite/core/browser/samples/view.py:519
+msgid "Clear filter"
+msgstr ""

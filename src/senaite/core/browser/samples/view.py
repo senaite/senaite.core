@@ -496,6 +496,32 @@ class SamplesView(ListingView):
         # remove query filter for root samples when listing is flat
         if self.flat_listing:
             self.contentFilter.pop("isRootAncestor", None)
+        self.set_analyses_filter_description()
+
+    def get_clear_keywords_url(self):
+        """Return a URL that clears the analyses keyword filter
+        """
+        column_filters = dict(self.get_current_column_filters())
+        column_filters.pop(ANALYSES_KEYWORDS_INDEX, None)
+        query = json.dumps(column_filters)
+        return "?{}_column_filters={}".format(self.form_id, quote(query))
+
+    def set_analyses_filter_description(self):
+        """Show a note in the listing description when it is filtered by
+        analysis keywords, so the user is aware the results are narrowed down.
+        """
+        keywords = self.get_active_keywords()
+        if not keywords:
+            return
+        chips = u" ".join(
+            [u"<code>{}</code>".format(html_escape(kw)) for kw in keywords])
+        label = html_escape(t(_("Showing samples that contain:")))
+        clear = html_escape(t(_("Clear filter")))
+        clear_url = html_escape(self.get_clear_keywords_url(), quote=True)
+        self.description = (
+            u'<span class="analyses-filter-note">{label} {chips} '
+            u'<a href="{url}">{clear}</a></span>'
+        ).format(label=label, chips=chips, url=clear_url, clear=clear)
 
     @view.memoize
     def get_current_column_filters(self):

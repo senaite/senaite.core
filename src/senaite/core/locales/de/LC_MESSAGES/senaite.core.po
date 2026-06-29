@@ -12395,3 +12395,7 @@ msgstr "Proben nach dieser Analyse filtern"
 #: senaite/core/browser/samples/view.py:537
 msgid "Remove this analysis from the filter"
 msgstr "Diese Analyse aus dem Filter entfernen"
+
+#: senaite/core/browser/samples/view.py:518
+msgid "Showing samples that contain:"
+msgstr "Angezeigt werden Proben, die Folgendes enthalten:"
