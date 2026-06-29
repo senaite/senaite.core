@@ -2244,36 +2244,31 @@ def reindex_client_title(tool):
     FieldIndex can be queried with non-ASCII values (e.g. accented client
     names) without raising a UnicodeDecodeError on Python 2.
 
-    The index BTree must be cleared before reindexing: `manage_reindexIndex`
-    only re-catalogs each object, so inserting unicode keys into an index that
-    still holds the old byte-string keys raises a UnicodeDecodeError when the
-    two key types are compared. `rebuild_index` clears the BTree first, so the
-    index is repopulated with unicode keys only. Once the index is unicode, the
-    getClientTitle metadata (fed by the same indexer) is refreshed per object
-    so it becomes unicode too, without mixing key types.
+    The index BTree must be cleared *before* reindexing. `manage_reindexIndex`
+    and a plain per-object reindex both only re-catalog each object, so a
+    unicode key gets inserted into an index that still holds the old
+    byte-string keys, and comparing the two key types raises a
+    UnicodeDecodeError. With the index emptied first, each `reindexObject`
+    repopulates it with unicode keys only and refreshes the getClientTitle
+    metadata (fed by the same indexer) in the same pass.
     """
     catalog = api.get_tool(SAMPLE_CATALOG)
 
-    # Clear + rebuild the index so the old byte-string keys are dropped and
-    # the index is repopulated with unicode keys only.
-    logger.info("Reindexing getClientTitle in sample catalog ...")
-    rebuild_index(catalog, "getClientTitle")
-    logger.info("Reindexing getClientTitle in sample catalog [DONE]")
+    # Clear the index BTree so the old byte-string keys are dropped; the
+    # per-object reindex below then fills it with unicode keys only.
+    catalog._catalog.getIndex("getClientTitle").clear()
 
-    # Refresh the getClientTitle metadata to unicode too. Safe now that the
-    # index holds only unicode keys.
     brains = catalog(portal_type="AnalysisRequest")
     total = len(brains)
-    logger.info("Refreshing getClientTitle metadata of %s samples ..." % total)
+    logger.info("Reindexing getClientTitle of %s samples ..." % total)
     for num, brain in enumerate(brains):
         if num and num % 1000 == 0:
-            logger.info("Refreshed %s/%s samples ..." % (num, total))
+            logger.info("Reindexed %s/%s samples ..." % (num, total))
         obj = api.get_object(brain, default=None)
         if obj is None:
             continue
-        catalog.catalog_object(obj, api.get_path(obj),
-                               idxs=["getClientTitle"], update_metadata=1)
-    logger.info("Refreshing getClientTitle metadata [DONE]")
+        obj.reindexObject(idxs=["getClientTitle"])
+    logger.info("Reindexing getClientTitle [DONE]")
 
 
 @upgradestep(product, version)
