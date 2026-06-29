@@ -5,6 +5,9 @@ Changelog
 ------------------
 
 - #2966 Fix UnicodeDecodeError when filtering samples by a non-ASCII client name
+- #2964 Improve dashboard panel links, tooltips, and workflow-ordered chart legends
+- #2963 Show analysis service keyword as code across service listings
+- #2959 Refactor Remarks into a reusable React widget with edit and version history
 - #2961 Expose React and ReactDOM globally for SENAITE add-ons
 - #2960 Set multipart enctype on the sample header form so file uploads persist
 - #2957 Harmonize form input widths via tunable CSS variables

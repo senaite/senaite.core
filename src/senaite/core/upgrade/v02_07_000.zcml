@@ -8,9 +8,20 @@
                    adapter so the sample catalog FieldIndex can be queried
                    with non-ASCII client names without a UnicodeDecodeError.
                    Reindex existing samples so their keys become unicode."
+      source="2747"
+      destination="2748"
+      handler=".v02_07_000.reindex_client_title"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Register the 'Delete Remarks' permission"
+      description="Register the new `senaite.core: Delete Remarks`
+                   permission (granted to LabManager, Manager) that gates
+                   the deletion and restoration of sample remarks, so a
+                   LabClerk can add/edit remarks but not delete them."
       source="2746"
       destination="2747"
-      handler=".v02_07_000.reindex_client_title"
+      handler=".v02_07_000.setup_delete_remarks_permission"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

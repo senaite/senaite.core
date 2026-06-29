@@ -152,6 +152,10 @@ class ServicesView(BikaListingView):
         item["selected"] = False
         item["selected"] = uid in self.selected_services_uids
 
+        keyword = obj.getKeyword()
+        item["Keyword"] = keyword
+        item["replace"]["Keyword"] = "<code>{}</code>".format(keyword)
+
         # Add methods
         methods = obj.getMethods()
         if methods:

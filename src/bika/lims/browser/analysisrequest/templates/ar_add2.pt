@@ -104,6 +104,15 @@
               {{title}}
             </td>
           </tr>
+          {{#if keyword}}
+          <tr>
+            <td class="service-info-key"
+                i18n:translate="">Keyword</td>
+            <td class="service-info-value">
+              <code>{{keyword}}</code>
+            </td>
+          </tr>
+          {{/if}}
           {{#if unit}}
           <tr>
             <td class="service-info-key"
@@ -560,6 +569,7 @@
                                         class python:'{} {} service'.format(category_id, poc);
                                         poc python:poc;
                                         data-uid python:service_uid;
+                                        data-keyword python:service_keyword;
                                         data-category python:category_id;
                                         fieldname python:'Analyses';">
                       <td class="service-header">

@@ -44,6 +44,7 @@ from .sample.permissions import FieldEditProfiles
 from .sample.permissions import FieldEditPublicationSpecifications
 from .sample.permissions import FieldEditRejectionReasons
 from .sample.permissions import FieldEditRemarks
+from .sample.permissions import DeleteRemarks
 from .sample.permissions import FieldEditResultsInterpretation
 from .sample.permissions import FieldEditSampleCondition
 from .sample.permissions import FieldEditSamplePoint

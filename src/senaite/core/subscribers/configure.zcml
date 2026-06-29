@@ -68,6 +68,11 @@
            zope.lifecycleevent.interfaces.IObjectAddedEvent"
       handler=".intid.drop_intid_for_temporary_object"/>
 
+  <!-- Legacy logging handler for added remarks (AT field) -->
+  <subscriber
+      for="senaite.core.events.remarks.IRemarksAddedEvent"
+      handler=".remarks.RemarksAddedEventHandler"/>
+
   <!-- Label rename cascade: the persistent annotation on the Label
        records the last-known title; the modified handler compares
        against it and rewrites the stored name on every labeled
