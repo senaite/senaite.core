@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2966 Fix UnicodeDecodeError when filtering samples by a non-ASCII client name
 - #2964 Improve dashboard panel links, tooltips, and workflow-ordered chart legends
 - #2963 Show analysis service keyword as code across service listings
 - #2959 Refactor Remarks into a reusable React widget with edit and version history
