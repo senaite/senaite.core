@@ -224,6 +224,7 @@ class PartitionMagicView(BrowserView):
             info = self.get_base_info(an)
             info.update({
                 "service_uid": an.getServiceUID(),
+                "keyword": an.getKeyword(),
             })
             out.append(info)
         return out
