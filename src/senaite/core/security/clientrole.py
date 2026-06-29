@@ -56,7 +56,7 @@ def _get_context_client_uid(context):
         return ""
 
 
-def _get_linked_client_uid(context, principal_id):
+def get_linked_client_uid(context, principal_id):
     """Return the `linked_client_uid` member property for the
     given principal, or an empty string.
 
@@ -117,7 +117,7 @@ class ClientLinkRoleProvider(object):
         self.context = context
 
     def getRoles(self, principal_id):
-        linked_client_uid = _get_linked_client_uid(
+        linked_client_uid = get_linked_client_uid(
             self.context, principal_id)
         if not linked_client_uid:
             return ()
@@ -166,7 +166,7 @@ class GlobalClientRoleProvider(object):
         self.context = context
 
     def getRoles(self, principal_id):
-        linked = _get_linked_client_uid(self.context, principal_id)
+        linked = get_linked_client_uid(self.context, principal_id)
         return ("Client",) if linked else ()
 
     def getAllRoles(self):

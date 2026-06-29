@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2967 Fix My Organization menu action hidden for client users
 - #2961 Expose React and ReactDOM globally for SENAITE add-ons
 - #2960 Set multipart enctype on the sample header form so file uploads persist
 - #2957 Harmonize form input widths via tunable CSS variables
