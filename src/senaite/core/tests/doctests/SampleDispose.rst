@@ -67,7 +67,7 @@ Setup Client, Contact, SampleType and AnalysisService
 
 
 Helper to create and receive a sample
-......................................
+.....................................
 
     >>> def new_sample(services):
     ...     values = {
@@ -83,7 +83,7 @@ Helper to create and receive a sample
 
 
 The toggle gates the transition
-................................
+...............................
 
 The `dispose_workflow_enabled` flag is disabled by default:
 
@@ -135,7 +135,7 @@ Restoring brings the sample back to the state it was in before:
 
 
 Disposed samples freeze their analyses
-.......................................
+......................................
 
 Analyses of a disposed sample can no longer be edited, regardless of
 the workflow state of the analysis itself.
@@ -190,7 +190,7 @@ Restoring the sample makes its analyses editable again:
 
 
 The guard blocks disposal of worksheet-assigned analyses
-.........................................................
+........................................................
 
 When an analysis of the sample is assigned to a worksheet, the
 sample can no longer be disposed:
@@ -250,7 +250,7 @@ Restoring the primary restores its partitions too:
 
 
 Primary is auto-disposed when all partitions are disposed
-..........................................................
+.........................................................
 
 Disposing every partition promotes the primary to `disposed`:
 
