@@ -2261,9 +2261,13 @@ def reindex_client_title(tool):
     and a plain per-object reindex both only re-catalog each object, so a
     unicode key gets inserted into an index that still holds the old
     byte-string keys, and comparing the two key types raises a
-    UnicodeDecodeError. With the index emptied first, each `reindexObject`
-    repopulates it with unicode keys only and refreshes the getClientTitle
-    metadata (fed by the same indexer) in the same pass.
+    UnicodeDecodeError. With the index emptied first, each object repopulates
+    it with unicode keys only.
+
+    Only the getClientTitle metadata column is refreshed (via the partial
+    update_metadata support in BaseCatalog) instead of recomputing the whole
+    record, which would re-run expensive accessors like getProgress and
+    getAnalysesNum on every sample.
     """
     catalog = api.get_tool(SAMPLE_CATALOG)
 
@@ -2280,7 +2284,9 @@ def reindex_client_title(tool):
         obj = api.get_object(brain, default=None)
         if obj is None:
             continue
-        obj.reindexObject(idxs=["getClientTitle"])
+        catalog.catalog_object(obj, api.get_path(obj),
+                               idxs=["getClientTitle"],
+                               update_metadata=["getClientTitle"])
     logger.info("Reindexing getClientTitle [DONE]")
 
 
