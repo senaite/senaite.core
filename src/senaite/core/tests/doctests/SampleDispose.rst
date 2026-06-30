@@ -134,6 +134,51 @@ Restoring brings the sample back to the state it was in before:
     'sample_received'
 
 
+Disposed samples freeze their analyses
+.......................................
+
+Analyses of a disposed sample can no longer be edited, regardless of
+the workflow state of the analysis itself.
+
+(`is_analysis_edition_allowed` is memoized on the request, so each
+assertion below uses its own sample/analysis to avoid a cached
+result.)
+
+    >>> from bika.lims.browser.analyses.view import AnalysesView
+
+A received sample has editable analyses:
+
+    >>> editable = new_sample([service.UID()])
+    >>> editable_analysis = editable.getAnalyses(full_objects=True)[0]
+    >>> view = AnalysesView(editable, request)
+    >>> view.is_analysis_edition_allowed(editable_analysis)
+    True
+
+A disposed sample freezes them:
+
+    >>> frozen = new_sample([service.UID()])
+    >>> frozen_analysis = frozen.getAnalyses(full_objects=True)[0]
+    >>> succeeded, message = do_action_for(frozen, "dispose")
+    >>> api.get_workflow_status_of(frozen)
+    'disposed'
+
+    >>> view = AnalysesView(frozen, request)
+    >>> view.is_analysis_edition_allowed(frozen_analysis)
+    False
+
+Restoring the sample makes its analyses editable again:
+
+    >>> restored = new_sample([service.UID()])
+    >>> do_action_for(restored, "dispose")
+    (True, ...)
+    >>> do_action_for(restored, "restore")
+    (True, ...)
+    >>> restored_analysis = restored.getAnalyses(full_objects=True)[0]
+    >>> view = AnalysesView(restored, request)
+    >>> view.is_analysis_edition_allowed(restored_analysis)
+    True
+
+
 The guard blocks disposal of worksheet-assigned analyses
 .........................................................
 

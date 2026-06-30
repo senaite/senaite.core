@@ -71,6 +71,11 @@ from senaite.core.permissions import ViewRetractedAnalyses
 from zope.component import getAdapters
 from zope.component import getMultiAdapter
 
+# Sample review states that freeze their analyses. Results of analyses that
+# belong to a sample in one of these states can no longer be edited, no matter
+# the workflow state of the analysis itself
+FROZEN_SAMPLE_STATES = ["dispatched", "disposed"]
+
 
 class AnalysesView(ListingView):
     """Displays a list of Analyses in a table.
@@ -377,6 +382,15 @@ class AnalysesView(ListingView):
             return False
 
         analysis_obj = self.get_object(analysis_brain)
+
+        # We cannot edit analyses of a sample in a frozen state, e.g. a
+        # dispatched or disposed sample, regardless of the workflow state of
+        # the analysis itself
+        if IRoutineAnalysis.providedBy(analysis_obj):
+            sample = analysis_obj.getRequest()
+            if api.get_review_status(sample) in FROZEN_SAMPLE_STATES:
+                return False
+
         if analysis_obj.getPointOfCapture() == 'field':
             # This analysis must be captured on field, during sampling.
             if not self.has_permission(EditFieldResults, analysis_obj):
