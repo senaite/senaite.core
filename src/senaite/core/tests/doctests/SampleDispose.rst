@@ -166,6 +166,16 @@ A disposed sample freezes them:
     >>> view.is_analysis_edition_allowed(frozen_analysis)
     False
 
+The sample is recognized as frozen, which also disables the report
+visibility ("Hidden") checkbox of its analyses:
+
+    >>> view.is_sample_frozen(frozen_analysis)
+    True
+
+    >>> editable_view = AnalysesView(editable, request)
+    >>> editable_view.is_sample_frozen(editable_analysis)
+    False
+
 Restoring the sample makes its analyses editable again:
 
     >>> restored = new_sample([service.UID()])

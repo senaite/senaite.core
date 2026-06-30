@@ -370,6 +370,22 @@ class AnalysesView(ListingView):
         return check_permission(permission, self.get_object(obj))
 
     @viewcache.memoize
+    def is_sample_frozen(self, analysis_brain):
+        """Returns whether the analysis belongs to a sample in a frozen
+        (read-only) state, e.g. a dispatched or disposed sample. Neither the
+        results nor any other field of such analyses can be edited, regardless
+        of the workflow state of the analysis itself.
+
+        :param analysis_brain: Brain that represents an analysis
+        :return: True if the analysis belongs to a frozen sample
+        """
+        analysis_obj = self.get_object(analysis_brain)
+        if not IRoutineAnalysis.providedBy(analysis_obj):
+            return False
+        sample = analysis_obj.getRequest()
+        return api.get_review_status(sample) in FROZEN_SAMPLE_STATES
+
+    @viewcache.memoize
     def is_analysis_edition_allowed(self, analysis_brain):
         """Returns if the analysis passed in can be edited by the current user
 
@@ -381,16 +397,13 @@ class AnalysesView(ListingView):
             # inside a deactivated Analysis Request, for instance
             return False
 
-        analysis_obj = self.get_object(analysis_brain)
-
         # We cannot edit analyses of a sample in a frozen state, e.g. a
         # dispatched or disposed sample, regardless of the workflow state of
         # the analysis itself
-        if IRoutineAnalysis.providedBy(analysis_obj):
-            sample = analysis_obj.getRequest()
-            if api.get_review_status(sample) in FROZEN_SAMPLE_STATES:
-                return False
+        if self.is_sample_frozen(analysis_brain):
+            return False
 
+        analysis_obj = self.get_object(analysis_brain)
         if analysis_obj.getPointOfCapture() == 'field':
             # This analysis must be captured on field, during sampling.
             if not self.has_permission(EditFieldResults, analysis_obj):
@@ -1730,6 +1743,12 @@ class AnalysesView(ListingView):
 
         # Hidden checkbox is not reachable by tabbing
         item["tabindex"]["Hidden"] = "disabled"
+
+        # Analyses of a frozen sample (e.g. dispatched, disposed) are fully
+        # read-only, so the report visibility cannot be edited either
+        if self.is_sample_frozen(analysis_brain):
+            return
+
         if self.has_permission(FieldEditAnalysisHidden, obj=full_obj):
             item['allow_edit'].append('Hidden')
 
