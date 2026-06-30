@@ -371,6 +371,18 @@ class SamplesView(ListingView):
                 "custom_transitions": [],
                 "columns": self.columns.keys(),
             }, {
+                "id": "disposed",
+                "title": _("Disposed"),
+                "flat_listing": True,
+                "confirm_transitions": ["restore"],
+                "contentFilter": {
+                    "review_state": ("disposed"),
+                    "sort_on": "created",
+                    "sort_order": "descending",
+                },
+                "custom_transitions": [],
+                "columns": self.columns.keys(),
+            }, {
                 "id": "cancelled",
                 "title": _("Cancelled"),
                 "contentFilter": {
@@ -680,6 +692,8 @@ class SamplesView(ListingView):
             remove_filters.append("to_be_preserved")
         if not setup.getRejectionReasons():
             remove_filters.append("rejected")
+        if not setup.getDisposeWorkflowEnabled():
+            remove_filters.append("disposed")
 
         self.review_states = filter(lambda r: r.get("id") not in remove_filters,
                                     self.review_states)
