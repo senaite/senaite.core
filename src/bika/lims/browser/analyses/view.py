@@ -788,7 +788,7 @@ class AnalysesView(ListingView):
         # Show a lock icon after the title of locked analyses
         if api.get_review_status(obj) == "locked":
             item["after"]["Service"] = (
-                "<i class='fas fa-lock text-state-locked' title='{}'></i>"
+                "<i class='fas fa-lock' title='{}'></i>"
             ).format(t(_("Locked")))
 
         # Note that getSampleTypeUID returns the type of the Sample, no matter
