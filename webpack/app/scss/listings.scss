@@ -31,7 +31,11 @@ div.listing-container {
     }
 }
 
-/* Highlight locked rows, e.g. analyses of a disposed sample */
+/* Locked rows, e.g. analyses of a disposed sample: mark them with the locked
+   border color and highlight the row with a lighter shade on mouseover */
 tr.contentrow.state-locked > td {
+    border-color: $state-locked-color;
+}
+tr.contentrow.state-locked:hover > td {
     background-color: $state-locked-active-color;
 }
