@@ -134,59 +134,53 @@ Restoring brings the sample back to the state it was in before:
     'sample_received'
 
 
-Disposed samples freeze their analyses
+Disposing a sample locks its analyses
 ......................................
 
-Analyses of a disposed sample can no longer be edited, regardless of
-the workflow state of the analysis itself.
+Disposing a sample transitions its analyses to the read-only `locked`
+state, so their results can no longer be edited by any surface (listing,
+JSON API, ...) because the edit permissions are revoked at the object
+level.
 
-(`is_analysis_edition_allowed` is memoized on the request, so each
-assertion below uses its own sample/analysis to avoid a cached
-result.)
-
-    >>> from bika.lims.browser.analyses.view import AnalysesView
+    >>> from senaite.core.permissions import EditResults
 
 A received sample has editable analyses:
 
-    >>> editable = new_sample([service.UID()])
-    >>> editable_analysis = editable.getAnalyses(full_objects=True)[0]
-    >>> view = AnalysesView(editable, request)
-    >>> view.is_analysis_edition_allowed(editable_analysis)
+    >>> sample = new_sample([service.UID()])
+    >>> analysis = sample.getAnalyses(full_objects=True)[0]
+    >>> api.get_workflow_status_of(analysis)
+    'unassigned'
+    >>> from bika.lims.api.security import check_permission
+    >>> check_permission(EditResults, analysis)
     True
 
-A disposed sample freezes them:
+Disposing the sample locks the analysis:
 
-    >>> frozen = new_sample([service.UID()])
-    >>> frozen_analysis = frozen.getAnalyses(full_objects=True)[0]
-    >>> succeeded, message = do_action_for(frozen, "dispose")
-    >>> api.get_workflow_status_of(frozen)
+    >>> succeeded, message = do_action_for(sample, "dispose")
+    >>> api.get_workflow_status_of(sample)
     'disposed'
-
-    >>> view = AnalysesView(frozen, request)
-    >>> view.is_analysis_edition_allowed(frozen_analysis)
+    >>> api.get_workflow_status_of(analysis)
+    'locked'
+    >>> check_permission(EditResults, analysis)
     False
 
-The sample is recognized as frozen, which also disables the report
-visibility ("Hidden") checkbox of its analyses:
+Restoring the sample brings the analysis back to its previous status and
+makes it editable again:
 
-    >>> view.is_sample_frozen(frozen_analysis)
+    >>> succeeded, message = do_action_for(sample, "restore")
+    >>> api.get_workflow_status_of(sample)
+    'sample_received'
+    >>> api.get_workflow_status_of(analysis)
+    'unassigned'
+    >>> check_permission(EditResults, analysis)
     True
 
-    >>> editable_view = AnalysesView(editable, request)
-    >>> editable_view.is_sample_frozen(editable_analysis)
+The `lock` transition cannot be triggered manually on an analysis whose
+sample is not in a locking state:
+
+    >>> from bika.lims.workflow import isTransitionAllowed as is_allowed
+    >>> is_allowed(analysis, "lock")
     False
-
-Restoring the sample makes its analyses editable again:
-
-    >>> restored = new_sample([service.UID()])
-    >>> do_action_for(restored, "dispose")
-    (True, ...)
-    >>> do_action_for(restored, "restore")
-    (True, ...)
-    >>> restored_analysis = restored.getAnalyses(full_objects=True)[0]
-    >>> view = AnalysesView(restored, request)
-    >>> view.is_analysis_edition_allowed(restored_analysis)
-    True
 
 
 The guard blocks disposal of worksheet-assigned analyses
@@ -223,6 +217,7 @@ Create a primary sample with a partition:
     >>> partition = create_partition(primary, request, primary.getAnalyses())
     >>> receive(partition)
     'sample_received'
+    >>> part_analysis = partition.getAnalyses(full_objects=True)[0]
 
 Disposing the primary propagates the transition to the partition:
 
@@ -236,6 +231,12 @@ Disposing the primary propagates the transition to the partition:
     >>> api.get_workflow_status_of(partition)
     'disposed'
 
+The analyses of the partition (child sample) are locked as well, not just
+those of the primary:
+
+    >>> api.get_workflow_status_of(part_analysis)
+    'locked'
+
 Restoring the primary restores its partitions too:
 
     >>> succeeded, message = do_action_for(primary, "restore")
@@ -247,6 +248,11 @@ Restoring the primary restores its partitions too:
 
     >>> api.get_workflow_status_of(partition)
     'sample_received'
+
+And the partition analyses are brought back to their previous status:
+
+    >>> api.get_workflow_status_of(part_analysis)
+    'unassigned'
 
 
 Primary is auto-disposed when all partitions are disposed

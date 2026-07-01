@@ -35,6 +35,7 @@ from bika.lims.workflow.analysisrequest import do_action_to_ancestors
 from bika.lims.workflow.analysisrequest import do_action_to_descendants
 from DateTime import DateTime
 from Products.CMFCore.WorkflowCore import WorkflowException
+from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
@@ -294,10 +295,35 @@ def after_dispatch(sample):
         dispatch(primary, comment)
 
 
+def lock_analyses(sample):
+    """Transition the analyses of the sample to the read-only "locked" state
+    """
+    do_action_to_analyses(sample, "lock")
+
+
+def restore_analyses(sample):
+    """Bring the locked analyses of the sample back to the status they had
+    before they were locked
+    """
+    for analysis in sample.objectValues("Analysis"):
+        if api.get_review_status(analysis) != "locked":
+            continue
+        previous_state = api.get_previous_worfklow_status_of(
+            analysis, skip=["locked"], default="unassigned")
+        # Note: we pause the snapshots here because events are fired next
+        pause_snapshots_for(analysis)
+        changeWorkflowState(analysis, ANALYSIS_WORKFLOW, previous_state)
+        resume_snapshots_for(analysis)
+        analysis.reindexObject()
+
+
 def after_dispose(sample):
     """Event triggered after "dispose" transition takes place for a given
     sample
     """
+    # Lock the analyses of the sample so they become read-only
+    lock_analyses(sample)
+
     primary = sample.getParentAnalysisRequest()
 
     def get_last_wf_comment(obj):
@@ -350,6 +376,9 @@ def after_restore(sample):
 
     # Reindex the sample
     sample.reindexObject()
+
+    # Bring the locked analyses back to their previous status
+    restore_analyses(sample)
 
     # If the sample is a partition, try to promote to the primary
     primary = sample.getParentAnalysisRequest()
