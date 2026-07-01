@@ -785,12 +785,6 @@ class AnalysesView(ListingView):
             info = item["before"]["Service"]
             item["before"]["Service"] = "<br/>".join([info, conditions])
 
-        # Show a lock icon after the title of locked analyses
-        if api.get_review_status(obj) == "locked":
-            item["after"]["Service"] = (
-                "<i class='fas fa-lock' title='{}'></i>"
-            ).format(t(_("Locked")))
-
         # Note that getSampleTypeUID returns the type of the Sample, no matter
         # if the sample associated to the analysis is a regular Sample (routine
         # analysis) or if is a Reference Sample (Reference Analysis). If the
