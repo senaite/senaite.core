@@ -32,10 +32,12 @@ div.listing-container {
 }
 
 /* Locked rows, e.g. analyses of a disposed sample: mark them with the locked
-   border color and highlight the row with a lighter shade on mouseover */
-tr.contentrow.state-locked > td {
-    border-color: $state-locked-color;
+   color on the left border (matching the other listing state accents) and
+   highlight the row with a lighter shade on mouseover */
+.ajax-contents-table tr.state-locked,
+.ajax-contents-table td.result.state-locked {
+    border-left: 2px solid $state-locked-color !important;
 }
-tr.contentrow.state-locked:hover > td {
+.ajax-contents-table tr.state-locked:hover {
     background-color: $state-locked-active-color;
 }
