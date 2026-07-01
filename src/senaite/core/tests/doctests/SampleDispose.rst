@@ -164,6 +164,15 @@ Disposing the sample locks the analysis:
     >>> check_permission(EditResults, analysis)
     False
 
+Locked analyses are still listed together with the active ones (the
+"Valid" review state), so they do not disappear from the sample view:
+
+    >>> from bika.lims.browser.analyses.view import AnalysesView
+    >>> aview = AnalysesView(sample, request)
+    >>> valid = [rs for rs in aview.review_states if rs["id"] == "default"][0]
+    >>> "locked" in valid["contentFilter"]["review_state"]
+    True
+
 Restoring the sample brings the analysis back to its previous status and
 makes it editable again:
 
