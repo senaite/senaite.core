@@ -56,6 +56,10 @@ Variables:
     >>> date_now = DateTime().strftime("%Y-%m-%d")
     >>> date_future = (DateTime() + 5).strftime("%Y-%m-%d")
 
+The dispatch workflow is optional, so we enable it first:
+
+    >>> setup.setDispatchWorkflowEnabled(True)
+
 We need to create some basic objects for the test:
 
     >>> setRoles(portal, TEST_USER_ID, ['LabManager',])

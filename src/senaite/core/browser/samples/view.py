@@ -694,6 +694,8 @@ class SamplesView(ListingView):
             remove_filters.append("rejected")
         if not setup.getDisposeWorkflowEnabled():
             remove_filters.append("disposed")
+        if not setup.getDispatchWorkflowEnabled():
+            remove_filters.append("dispatched")
 
         self.review_states = filter(lambda r: r.get("id") not in remove_filters,
                                     self.review_states)

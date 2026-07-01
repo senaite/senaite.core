@@ -263,10 +263,8 @@ def after_dispatch(sample):
     # Mark the sample as dispatched
     alsoProvides(sample, IDispatched)
 
-    # Optionally lock the analyses of the sample so they become read-only
-    setup = api.get_senaite_setup()
-    if setup and setup.getLockAnalysesOnDispatch():
-        lock_analyses(sample)
+    # Lock the analyses of the sample so they become read-only
+    lock_analyses(sample)
 
     primary = sample.getParentAnalysisRequest()
 

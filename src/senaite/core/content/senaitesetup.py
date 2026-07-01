@@ -995,12 +995,14 @@ class ISetupSchema(model.Schema):
         default=False,
     )
 
-    lock_analyses_on_dispatch = schema.Bool(
-        title=_(u"Lock analyses when a sample is dispatched"),
+    dispatch_workflow_enabled = schema.Bool(
+        title=_(u"Enable the Sample Dispatch workflow"),
         description=_(
-            u"Select this to make the analyses of a sample read-only when it "
-            u"is dispatched. The analyses are brought back to their previous "
-            u"status when the sample is restored. Disabled by default."
+            u"Select this to allow dispatching samples through the 'dispatch' "
+            u"transition and to enable the additional 'dispatched' status. "
+            u"The analyses of a dispatched sample become read-only and are "
+            u"brought back to their previous status when the sample is "
+            u"restored. Disabled by default."
         ),
         default=False,
     )
@@ -1359,7 +1361,7 @@ class ISetupSchema(model.Schema):
             "sample_duplicate_enabled",
             "printing_workflow_enabled",
             "dispose_workflow_enabled",
-            "lock_analyses_on_dispatch",
+            "dispatch_workflow_enabled",
             "sampling_workflow_enabled",
             "schedule_sampling_enabled",
             "date_sampled_required",
@@ -2253,17 +2255,17 @@ class Setup(Container):
         return mutator(self, value)
 
     @security.protected(permissions.View)
-    def getLockAnalysesOnDispatch(self):
-        """Get lock analyses on dispatch setting
+    def getDispatchWorkflowEnabled(self):
+        """Get dispatch workflow enabled setting
         """
-        accessor = self.accessor("lock_analyses_on_dispatch")
+        accessor = self.accessor("dispatch_workflow_enabled")
         return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
-    def setLockAnalysesOnDispatch(self, value):
-        """Set lock analyses on dispatch setting
+    def setDispatchWorkflowEnabled(self, value):
+        """Set dispatch workflow enabled setting
         """
-        mutator = self.mutator("lock_analyses_on_dispatch")
+        mutator = self.mutator("dispatch_workflow_enabled")
         return mutator(self, value)
 
     @security.protected(permissions.View)

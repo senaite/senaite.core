@@ -3,14 +3,16 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
-      title="SENAITE.CORE 2.7.0: Mark existing dispatched samples"
-      description="The dispatched viewlet and the analysis lock guard now rely
-                   on the IDispatched marker interface instead of the sample
-                   review_state. Mark already dispatched samples so they keep
-                   behaving as before."
+      title="SENAITE.CORE 2.7.0: Enable the dispatch workflow for existing installs"
+      description="The dispatch workflow is now optional and disabled by
+                   default. Enable it for existing installations to preserve
+                   the current behavior, and mark already dispatched samples
+                   with the IDispatched marker interface (the dispatched
+                   viewlet and the analysis lock guard now rely on it instead
+                   of the sample review_state)."
       source="2749"
       destination="2750"
-      handler=".v02_07_000.mark_dispatched_samples"
+      handler=".v02_07_000.setup_dispatch_workflow"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

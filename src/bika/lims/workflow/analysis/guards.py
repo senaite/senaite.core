@@ -53,19 +53,13 @@ def guard_lock(analysis):
     """Return whether the transition "lock" can be performed or not.
 
     The lock takes place automatically when the sample the analysis belongs to
-    is moved to a locking state: disposed, or dispatched when the setup option
-    "Lock analyses on dispatch" is enabled. It cannot be performed manually:
-    this prevents locking an analysis of an active sample, which could not be
-    unlocked afterwards because unlocking only happens when the sample is
-    restored.
+    is moved to a locking state (dispatched or disposed). It cannot be
+    performed manually: this prevents locking an analysis of an active sample,
+    which could not be unlocked afterwards because unlocking only happens when
+    the sample is restored.
     """
     sample = analysis.getRequest()
-    if IDisposed.providedBy(sample):
-        return True
-    if IDispatched.providedBy(sample):
-        setup = api.get_senaite_setup()
-        return bool(setup) and setup.getLockAnalysesOnDispatch()
-    return False
+    return IDispatched.providedBy(sample) or IDisposed.providedBy(sample)
 
 
 def guard_initialize(analysis):

@@ -320,13 +320,24 @@ def setup_dispose_transition(tool):
 
 
 @upgradestep(product, version)
-def mark_dispatched_samples(tool):
-    """Mark existing dispatched samples with the IDispatched interface.
+def setup_dispatch_workflow(tool):
+    """Enable the dispatch workflow for existing installations and mark
+    existing dispatched samples with the IDispatched interface.
 
-    The dispatched viewlet and the analysis lock guard now rely on the
-    IDispatched marker instead of the sample review_state, so already
-    dispatched samples must be marked to keep behaving as before.
+    Dispatch used to be always available. The workflow is now optional and
+    disabled by default for new installations, so it is enabled here to
+    preserve the behavior of existing installations. The dispatched viewlet
+    and the analysis lock guard rely on the IDispatched marker instead of the
+    sample review_state, so already dispatched samples are marked as well.
+    Their analyses are not locked retroactively; only samples dispatched from
+    now on get their analyses locked.
     """
+    # Preserve the dispatch workflow for existing installations
+    setup = api.get_senaite_setup()
+    if setup:
+        setup.setDispatchWorkflowEnabled(True)
+
+    # Mark existing dispatched samples
     query = {
         "portal_type": "AnalysisRequest",
         "review_state": "dispatched",

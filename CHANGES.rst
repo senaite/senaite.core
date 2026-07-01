@@ -4,7 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
-- #2971 Add an optional "Lock analyses on dispatch" setup option
+- #2971 Make the Sample Dispatch workflow optional and lock analyses on dispatch
 - #2970 Add an optional Sample Dispose workflow
 - #2967 Fix My Organization menu action hidden for client users
 - #2966 Fix UnicodeDecodeError when filtering samples by a non-ASCII client name

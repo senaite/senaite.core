@@ -1,15 +1,16 @@
-Lock analyses on dispatch
--------------------------
+Sample dispatch workflow
+------------------------
 
-Dispatching a sample marks it with the `IDispatched` interface and can
-optionally lock its analyses, reusing the same `locked` analysis state as
-the dispose workflow. The locking is gated by the `lock_analyses_on_dispatch`
-setup flag (disabled by default). When a dispatched sample is restored, its
-analyses are brought back to their previous status.
+The `dispatch` transition is gated by a global `dispatch_workflow_enabled`
+setup flag (disabled by default), mirroring the dispose workflow. When a
+sample is dispatched, it is marked with the `IDispatched` interface and its
+analyses are transitioned to the read-only `locked` state. Restoring the
+sample removes the marker and brings the analyses back to their previous
+status.
 
 Running this test from the buildout directory:
 
-    bin/test test_textual_doctests -t DispatchLockAnalyses
+    bin/test test_textual_doctests -t SampleDispatchWorkflow
 
 
 Test Setup
@@ -84,67 +85,68 @@ Helper to create and receive a sample
     ...     return sample
 
 
-The flag is disabled by default
+The toggle gates the transition
 ...............................
 
+The `dispatch_workflow_enabled` flag is disabled by default:
+
     >>> senaite_setup = api.get_senaite_setup()
-    >>> senaite_setup.getLockAnalysesOnDispatch()
+    >>> senaite_setup.getDispatchWorkflowEnabled()
     False
 
-With the flag disabled, dispatching a sample marks it as dispatched but
-leaves its analyses editable:
+With the flag disabled the `dispatch` transition is not offered, even on
+a received sample:
 
     >>> sample = new_sample()
-    >>> analysis = sample.getAnalyses(full_objects=True)[0]
-    >>> succeeded, message = do_action_for(sample, "dispatch")
-    >>> api.get_workflow_status_of(sample)
-    'dispatched'
-    >>> IDispatched.providedBy(sample)
-    True
-    >>> api.get_workflow_status_of(analysis)
-    'unassigned'
-    >>> check_permission(EditResults, analysis)
-    True
-
-The `lock` transition is not offered while the flag is disabled:
-
-    >>> isTransitionAllowed(analysis, "lock")
-    False
-
-Restoring removes the marker:
-
-    >>> succeeded, message = do_action_for(sample, "restore")
     >>> api.get_workflow_status_of(sample)
     'sample_received'
-    >>> IDispatched.providedBy(sample)
+
+    >>> isTransitionAllowed(sample, "dispatch")
     False
 
+    >>> succeeded, message = do_action_for(sample, "dispatch")
+    >>> succeeded
+    False
 
-With the flag enabled, dispatch locks the analyses
-...................................................
+Enabling the flag makes the transition available:
 
-    >>> senaite_setup.setLockAnalysesOnDispatch(True)
+    >>> senaite_setup.setDispatchWorkflowEnabled(True)
+    >>> isTransitionAllowed(sample, "dispatch")
+    True
 
-    >>> sample = new_sample()
+
+Dispatch marks the sample and locks its analyses
+.................................................
+
     >>> analysis = sample.getAnalyses(full_objects=True)[0]
     >>> succeeded, message = do_action_for(sample, "dispatch")
     >>> api.get_workflow_status_of(sample)
     'dispatched'
+    >>> IDispatched.providedBy(sample)
+    True
+
     >>> api.get_workflow_status_of(analysis)
     'locked'
     >>> check_permission(EditResults, analysis)
     False
 
-Restoring the sample brings the analysis back to its previous status:
+
+Restore brings everything back
+..............................
+
+Restoring the sample removes the marker and unlocks the analyses:
 
     >>> succeeded, message = do_action_for(sample, "restore")
     >>> api.get_workflow_status_of(sample)
     'sample_received'
+    >>> IDispatched.providedBy(sample)
+    False
+
     >>> api.get_workflow_status_of(analysis)
     'unassigned'
     >>> check_permission(EditResults, analysis)
     True
 
-Re-disable the flag to leave the setup untouched:
+Re-disable the dispatch workflow to leave the setup untouched:
 
-    >>> senaite_setup.setLockAnalysesOnDispatch(False)
+    >>> senaite_setup.setDispatchWorkflowEnabled(False)
