@@ -35,6 +35,7 @@ from bika.lims.workflow.analysisrequest import do_action_to_ancestors
 from bika.lims.workflow.analysisrequest import do_action_to_descendants
 from DateTime import DateTime
 from Products.CMFCore.WorkflowCore import WorkflowException
+from senaite.core.interfaces import IDisposed
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope.interface import alsoProvides
@@ -321,6 +322,9 @@ def after_dispose(sample):
     """Event triggered after "dispose" transition takes place for a given
     sample
     """
+    # Mark the sample as disposed
+    alsoProvides(sample, IDisposed)
+
     # Lock the analyses of the sample so they become read-only
     lock_analyses(sample)
 
@@ -347,7 +351,7 @@ def after_dispose(sample):
         return
 
     # Return when primary sample is already disposed
-    if api.get_workflow_status_of(primary) == "disposed":
+    if IDisposed.providedBy(primary):
         return
 
     # Dispose primary sample when all partitions are disposed
@@ -373,6 +377,10 @@ def after_restore(sample):
     pause_snapshots_for(sample)
     changeWorkflowState(sample, SAMPLE_WORKFLOW, previous_state)
     resume_snapshots_for(sample)
+
+    # Unmark the sample: it is no longer disposed
+    if IDisposed.providedBy(sample):
+        noLongerProvides(sample, IDisposed)
 
     # Reindex the sample
     sample.reindexObject()

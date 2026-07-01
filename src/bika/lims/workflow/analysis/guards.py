@@ -26,14 +26,8 @@ from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from plone.memoize.request import cache
+from senaite.core.interfaces import IDisposed
 from senaite.core.interfaces import IWorksheet
-
-# Sample review states that lock their analyses. When a sample is moved to one
-# of these states, its analyses are transitioned to the read-only "locked"
-# state and brought back to their previous status when the sample is restored.
-# Add-ons that introduce their own sample locking states (e.g. dispatched or
-# stored) can extend this list.
-SAMPLE_LOCKING_STATES = ["disposed"]
 
 
 def is_worksheet_context():
@@ -64,7 +58,7 @@ def guard_lock(analysis):
     sample is restored.
     """
     sample = analysis.getRequest()
-    return api.get_review_status(sample) in SAMPLE_LOCKING_STATES
+    return IDisposed.providedBy(sample)
 
 
 def guard_initialize(analysis):

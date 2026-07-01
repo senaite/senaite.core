@@ -115,8 +115,10 @@ Enabling the flag makes the transition available:
 Dispose and restore a sample
 ............................
 
-Disposing the sample moves it to the `disposed` state:
+Disposing the sample moves it to the `disposed` state and marks it with
+the `IDisposed` interface:
 
+    >>> from senaite.core.interfaces import IDisposed
     >>> succeeded, message = do_action_for(sample, "dispose")
     >>> succeeded
     True
@@ -124,7 +126,11 @@ Disposing the sample moves it to the `disposed` state:
     >>> api.get_workflow_status_of(sample)
     'disposed'
 
-Restoring brings the sample back to the state it was in before:
+    >>> IDisposed.providedBy(sample)
+    True
+
+Restoring brings the sample back to the state it was in before and
+removes the marker:
 
     >>> succeeded, message = do_action_for(sample, "restore")
     >>> succeeded
@@ -132,6 +138,9 @@ Restoring brings the sample back to the state it was in before:
 
     >>> api.get_workflow_status_of(sample)
     'sample_received'
+
+    >>> IDisposed.providedBy(sample)
+    False
 
 
 Disposing a sample locks its analyses

@@ -22,6 +22,7 @@ from bika.lims import api
 from bika.lims.browser import ulocalized_time
 from plone.app.layout.viewlets import ViewletBase
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.interfaces import IDisposed
 
 
 class SampleDisposedViewlet(ViewletBase):
@@ -39,7 +40,7 @@ class SampleDisposedViewlet(ViewletBase):
     def is_disposed(self):
         """Returns whether the current sample is disposed
         """
-        return api.get_review_status(self.context) == "disposed"
+        return IDisposed.providedBy(self.context)
 
     def get_state_info(self):
         """Returns the WF state information

@@ -164,6 +164,11 @@ class ISamplesView(Interface):
     """
 
 
+class IDisposed(Interface):
+    """Marker interface for disposed samples
+    """
+
+
 class IHaveUIDReferences(Interface):
     """Marker interface when the object contains UID references
     """
