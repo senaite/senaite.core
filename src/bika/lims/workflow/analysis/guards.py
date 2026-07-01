@@ -26,6 +26,7 @@ from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from plone.memoize.request import cache
+from senaite.core.interfaces import IDispatched
 from senaite.core.interfaces import IDisposed
 from senaite.core.interfaces import IWorksheet
 
@@ -52,13 +53,19 @@ def guard_lock(analysis):
     """Return whether the transition "lock" can be performed or not.
 
     The lock takes place automatically when the sample the analysis belongs to
-    is moved to a locking state (e.g. disposed). It cannot be performed
-    manually: this prevents locking an analysis of an active sample, which
-    could not be unlocked afterwards because unlocking only happens when the
-    sample is restored.
+    is moved to a locking state: disposed, or dispatched when the setup option
+    "Lock analyses on dispatch" is enabled. It cannot be performed manually:
+    this prevents locking an analysis of an active sample, which could not be
+    unlocked afterwards because unlocking only happens when the sample is
+    restored.
     """
     sample = analysis.getRequest()
-    return IDisposed.providedBy(sample)
+    if IDisposed.providedBy(sample):
+        return True
+    if IDispatched.providedBy(sample):
+        setup = api.get_senaite_setup()
+        return bool(setup) and setup.getLockAnalysesOnDispatch()
+    return False
 
 
 def guard_initialize(analysis):

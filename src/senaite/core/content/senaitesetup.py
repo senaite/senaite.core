@@ -995,6 +995,16 @@ class ISetupSchema(model.Schema):
         default=False,
     )
 
+    lock_analyses_on_dispatch = schema.Bool(
+        title=_(u"Lock analyses when a sample is dispatched"),
+        description=_(
+            u"Select this to make the analyses of a sample read-only when it "
+            u"is dispatched. The analyses are brought back to their previous "
+            u"status when the sample is restored. Disabled by default."
+        ),
+        default=False,
+    )
+
     sampling_workflow_enabled = schema.Bool(
         title=_(u"Enable Sampling"),
         description=_(
@@ -1349,6 +1359,7 @@ class ISetupSchema(model.Schema):
             "sample_duplicate_enabled",
             "printing_workflow_enabled",
             "dispose_workflow_enabled",
+            "lock_analyses_on_dispatch",
             "sampling_workflow_enabled",
             "schedule_sampling_enabled",
             "date_sampled_required",
@@ -2239,6 +2250,20 @@ class Setup(Container):
         """Set dispose workflow enabled setting
         """
         mutator = self.mutator("dispose_workflow_enabled")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getLockAnalysesOnDispatch(self):
+        """Get lock analyses on dispatch setting
+        """
+        accessor = self.accessor("lock_analyses_on_dispatch")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setLockAnalysesOnDispatch(self, value):
+        """Set lock analyses on dispatch setting
+        """
+        mutator = self.mutator("lock_analyses_on_dispatch")
         return mutator(self, value)
 
     @security.protected(permissions.View)

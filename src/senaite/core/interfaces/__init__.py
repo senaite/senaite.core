@@ -164,6 +164,11 @@ class ISamplesView(Interface):
     """
 
 
+class IDispatched(Interface):
+    """Marker interface for dispatched samples
+    """
+
+
 class IDisposed(Interface):
     """Marker interface for disposed samples
     """

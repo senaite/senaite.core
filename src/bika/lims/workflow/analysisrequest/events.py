@@ -35,6 +35,7 @@ from bika.lims.workflow.analysisrequest import do_action_to_ancestors
 from bika.lims.workflow.analysisrequest import do_action_to_descendants
 from DateTime import DateTime
 from Products.CMFCore.WorkflowCore import WorkflowException
+from senaite.core.interfaces import IDispatched
 from senaite.core.interfaces import IDisposed
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
@@ -259,6 +260,14 @@ def after_reattach(analysis_request):
 def after_dispatch(sample):
     """Event triggered after "dispatch" transition takes place for a given sample
     """
+    # Mark the sample as dispatched
+    alsoProvides(sample, IDispatched)
+
+    # Optionally lock the analyses of the sample so they become read-only
+    setup = api.get_senaite_setup()
+    if setup and setup.getLockAnalysesOnDispatch():
+        lock_analyses(sample)
+
     primary = sample.getParentAnalysisRequest()
 
     def get_last_wf_comment(obj):
@@ -282,7 +291,7 @@ def after_dispatch(sample):
         return
 
     # Return when primary sample is already dispatched
-    if api.get_workflow_status_of(primary) == "dispatched":
+    if IDispatched.providedBy(primary):
         return
 
     # Dipsatch primary sample when all partitions are dispatched
@@ -378,9 +387,10 @@ def after_restore(sample):
     changeWorkflowState(sample, SAMPLE_WORKFLOW, previous_state)
     resume_snapshots_for(sample)
 
-    # Unmark the sample: it is no longer disposed
-    if IDisposed.providedBy(sample):
-        noLongerProvides(sample, IDisposed)
+    # Unmark the sample: it is no longer dispatched nor disposed
+    for marker in (IDispatched, IDisposed):
+        if marker.providedBy(sample):
+            noLongerProvides(sample, marker)
 
     # Reindex the sample
     sample.reindexObject()
@@ -398,11 +408,12 @@ def after_restore(sample):
         return
 
     # Return when primary sample is not dispatched nor disposed
-    if api.get_workflow_status_of(primary) not in ["dispatched", "disposed"]:
+    if not (IDispatched.providedBy(primary) or IDisposed.providedBy(primary)):
         return
 
     # Restore primary sample if all its partitions have been restored
     parts = primary.getDescendants()
-    states = map(api.get_workflow_status_of, parts)
-    if "dispatched" not in states and "disposed" not in states:
+    sidelined = [p for p in parts
+                 if IDispatched.providedBy(p) or IDisposed.providedBy(p)]
+    if not sidelined:
         do_action_for(primary, "restore")

@@ -30,6 +30,7 @@ from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.interfaces import IAuditable
 from bika.lims.interfaces import IDetachedPartition
 from bika.lims.interfaces import IInvalidated
+from senaite.core.interfaces import IDispatched
 from bika.lims.utils import tmpID
 from persistent.list import PersistentList
 from plone.app.blob.field import BlobWrapper
@@ -316,6 +317,30 @@ def setup_dispose_transition(tool):
 
     setup.runImportStepFromProfile(profile, "rolemap")
     setup.runImportStepFromProfile(profile, "workflow")
+
+
+@upgradestep(product, version)
+def mark_dispatched_samples(tool):
+    """Mark existing dispatched samples with the IDispatched interface.
+
+    The dispatched viewlet and the analysis lock guard now rely on the
+    IDispatched marker instead of the sample review_state, so already
+    dispatched samples must be marked to keep behaving as before.
+    """
+    query = {
+        "portal_type": "AnalysisRequest",
+        "review_state": "dispatched",
+    }
+    brains = api.search(query, SAMPLE_CATALOG)
+    total = len(brains)
+    logger.info("Marking dispatched samples: {} to process".format(total))
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Marking dispatched samples {}/{}".format(num, total))
+        sample = api.get_object(brain)
+        if not IDispatched.providedBy(sample):
+            alsoProvides(sample, IDispatched)
+    logger.info("Marking dispatched samples [DONE]")
 
 
 @upgradestep(product, version)

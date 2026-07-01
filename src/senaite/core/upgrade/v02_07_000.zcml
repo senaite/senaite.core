@@ -3,6 +3,17 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Mark existing dispatched samples"
+      description="The dispatched viewlet and the analysis lock guard now rely
+                   on the IDispatched marker interface instead of the sample
+                   review_state. Mark already dispatched samples so they keep
+                   behaving as before."
+      source="2749"
+      destination="2750"
+      handler=".v02_07_000.mark_dispatched_samples"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Register the 'dispose' sample workflow transition"
       description="Register the new `senaite.core: Transition: Dispose Sample`
                    permission (granted to LabManager, Manager), the 'disposed'
