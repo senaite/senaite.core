@@ -1285,8 +1285,12 @@ class InlineFieldValidator:
 
     def __call__(self, value, *args, **kwargs):
         field = kwargs['field']
-        request = kwargs['REQUEST']
+        request = kwargs.get('REQUEST')
         instance = kwargs['instance']
+
+        # skip inter-field validation when REQUEST is not available (API context)
+        if request is None:
+            return
 
         # extract the request values
         data = request.get(field.getName())
@@ -1484,6 +1488,9 @@ class LowerLimitOfDetectionValidator(object):
         default = instance.getField(field_name).getDefault(instance)
         llod = api.to_float(value, default)
 
+        # skip inter-field validation when REQUEST is not available (API context)
+        if kwargs.get("REQUEST") is None:
+            return
         form = kwargs["REQUEST"].form
         lloq = form.get("LowerLimitOfQuantification", None)
         lloq = api.to_float(lloq, llod)
@@ -1511,6 +1518,9 @@ class LowerLimitOfQuantificationValidator(object):
         default = instance.getField(field_name).getDefault(instance)
         lloq = api.to_float(value, default)
 
+        # skip inter-field validation when REQUEST is not available (API context)
+        if kwargs.get("REQUEST") is None:
+            return
         # compare with the lower limit of detection
         form = kwargs["REQUEST"].form
         uloq = form.get("UpperLimitOfQuantification", None)
@@ -1539,6 +1549,9 @@ class UpperLimitOfQuantificationValidator(object):
         default = instance.getField(field_name).getDefault(instance)
         uloq = api.to_float(value, default)
 
+        # skip inter-field validation when REQUEST is not available (API context)
+        if kwargs.get("REQUEST") is None:
+            return
         # compare with the lower limit of detection
         form = kwargs["REQUEST"].form
         ulod = form.get("UpperDetectionLimit", None)
