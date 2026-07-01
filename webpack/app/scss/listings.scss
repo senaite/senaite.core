@@ -30,3 +30,8 @@ div.listing-container {
         min-width: 75px;
     }
 }
+
+/* Highlight locked rows, e.g. analyses of a disposed sample */
+tr.contentrow.state-locked > td {
+    background-color: $state-locked-active-color;
+}
