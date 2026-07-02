@@ -22,6 +22,7 @@ from bika.lims import api
 from bika.lims.browser import BrowserView
 from senaite.core.config.registry import CLIENT_LANDING_PAGE
 from senaite.core.registry import get_registry_record
+from senaite.core.security.clientrole import get_linked_client_uid
 
 
 class MyOrganizationView(BrowserView):
@@ -51,10 +52,25 @@ class MyOrganizationView(BrowserView):
         return self.request.response.redirect(url)
 
     def available(self):
-        """Available expression for the menu action
+        """Available expression for the menu action.
+
+        The action lives in the user pulldown, so `self.context` is the
+        currently-viewed object (dashboard, sample, portal root, ...) and not
+        the user. We therefore decide availability from the asking user, not
+        from the context.
+
+        Fast path: the `linked_client_uid` member property introduced by #2934
+        is set on every client contact's user. If it is populated, the user
+        belongs to a Client and the action is shown.
+
+        Fallback: for users that pre-date the #2934 backfill or were linked by
+        hand without setting the property, fall back to a contact lookup via
+        `api.get_user_contact` and check that the contact is not a global one.
         """
-        if not api.is_client_contact(self.context):
+        user = api.get_current_user()
+        if not user:
             return False
-        if self.context.isGlobal():
-            return False
-        return True
+        if get_linked_client_uid(self.context, user.getId()):
+            return True
+        contact = api.get_user_contact(user, contact_types=["Contact"])
+        return bool(contact) and not contact.isGlobal()

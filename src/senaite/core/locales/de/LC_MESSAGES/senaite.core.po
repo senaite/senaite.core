@@ -12383,3 +12383,110 @@ msgstr "Alle Spalten sind ausgeblendet."
 # senaite.app.listing: Column config — empty state for hidden section with search
 msgid "No matches in hidden columns."
 msgstr "Keine Treffer in ausgeblendeten Spalten."
+
+#: senaite/core/browser/dashboard/dashboard.py:368
+msgid "Samples awaiting collection of the sample"
+msgstr "Proben, die auf die Probenahme warten"
+
+#: senaite/core/browser/dashboard/dashboard.py:372
+msgid "Samples awaiting preservation"
+msgstr "Proben, die auf die Konservierung warten"
+
+#: senaite/core/browser/dashboard/dashboard.py:377
+msgid "Samples with a scheduled sampling date"
+msgstr "Proben mit geplantem Probenahmedatum"
+
+#: senaite/core/browser/dashboard/dashboard.py:384
+msgid "Samples awaiting reception at the laboratory"
+msgstr "Proben, die auf den Eingang im Labor warten"
+
+#: senaite/core/browser/dashboard/dashboard.py:388
+msgid "Received samples with analyses awaiting results"
+msgstr "Eingegangene Proben mit Analysen, die auf Ergebnisse warten"
+
+#: senaite/core/browser/dashboard/dashboard.py:392
+msgid "Samples whose results are awaiting verification"
+msgstr "Proben, deren Ergebnisse auf Verifizierung warten"
+
+#: senaite/core/browser/dashboard/dashboard.py:396
+msgid "Verified samples ready to be published"
+msgstr "Verifizierte Proben, bereit zur Veröffentlichung"
+
+#: senaite/core/browser/dashboard/dashboard.py:400
+msgid "Samples whose reports have been published"
+msgstr "Proben, deren Berichte veröffentlicht wurden"
+
+#: senaite/core/browser/dashboard/dashboard.py:416
+msgid "Published samples whose reports have not been printed yet"
+msgstr "Veröffentlichte Proben, deren Berichte noch nicht gedruckt wurden"
+
+#: senaite/core/browser/dashboard/dashboard.py:448
+msgid "Analyses not yet assigned to a worksheet"
+msgstr "Analysen, die noch keinem Arbeitsblatt zugewiesen sind"
+
+#: senaite/core/browser/dashboard/dashboard.py:453
+msgid "Analyses assigned to a worksheet, awaiting results"
+msgstr "Analysen, die einem Arbeitsblatt zugewiesen sind und auf Ergebnisse warten"
+
+#: senaite/core/browser/dashboard/dashboard.py:458
+msgid "Submitted analyses awaiting verification"
+msgstr "Eingereichte Analysen, die auf Verifizierung warten"
+
+#: senaite/core/browser/dashboard/dashboard.py:462
+msgid "Analyses that have been verified"
+msgstr "Analysen, die verifiziert wurden"
+
+#: senaite/core/browser/dashboard/dashboard.py:486
+msgid "Open worksheets with analyses awaiting results"
+msgstr "Offene Arbeitsblätter mit Analysen, die auf Ergebnisse warten"
+
+#: senaite/core/browser/dashboard/dashboard.py:490
+msgid "Worksheets whose results are awaiting verification"
+msgstr "Arbeitsblätter, deren Ergebnisse auf Verifizierung warten"
+
+#: senaite/core/browser/dashboard/dashboard.py:495
+msgid "Worksheets that have been verified"
+msgstr "Arbeitsblätter, die verifiziert wurden"
+
+#: senaite/core/browser/dashboard/dashboard.py:466
+msgid "Analyses included in a published report"
+msgstr "Analysen, die in einem veröffentlichten Bericht enthalten sind"
+#: senaite/core/api/remarks.py
+msgid "Add a remark..."
+msgstr "Bemerkung hinzufügen..."
+
+#: senaite/core/api/remarks.py
+msgid "Hide history"
+msgstr "Verlauf ausblenden"
+
+#: senaite/core/api/remarks.py
+msgid "No remarks yet"
+msgstr "Noch keine Bemerkungen"
+
+#: senaite/core/api/remarks.py
+msgid "Show history"
+msgstr "Verlauf anzeigen"
+
+#: senaite/core/api/remarks.py
+msgid "edited"
+msgstr "bearbeitet"
+
+#: senaite/core/api/remarks.py
+msgid "original"
+msgstr "Original"
+
+#: senaite/core/api/remarks.py
+msgid "Delete this remark?"
+msgstr "Diese Bemerkung löschen?"
+
+#: senaite/core/api/remarks.py
+msgid "deleted by {user} at {time}"
+msgstr "gelöscht von {user} um {time}"
+
+#: senaite/core/api/remarks.py
+msgid "Newest first"
+msgstr "Neueste zuerst"
+
+#: senaite/core/api/remarks.py
+msgid "Oldest first"
+msgstr "Älteste zuerst"

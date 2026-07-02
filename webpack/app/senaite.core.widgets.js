@@ -6,6 +6,7 @@ import {
   render_tinymce_widget,
   render_uidreference_widget,
   render_multiupload_widget,
+  render_remarks_widget,
 } from "./widgets/renderer.js"
 
 // Provide widget controllers in a global namespace
@@ -63,6 +64,13 @@ const WIDGETS = [
     selector: ".multiuploadfield",
     renderer: (el) => {
       return render_multiupload_widget(el);
+    },
+  },
+  // Remarks Widget
+  {
+    selector: ".senaite-remarks-widget-input",
+    renderer: (el) => {
+      return render_remarks_widget(el);
     },
   }
 ]

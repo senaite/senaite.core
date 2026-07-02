@@ -2224,6 +2224,19 @@ def cleanup_sample_catalog(tool):
 
 
 @upgradestep(product, version)
+def setup_delete_remarks_permission(tool):
+    """Register the new `senaite.core: Delete Remarks` permission by
+    reimporting the rolemap. It is granted to LabManager / Manager (not
+    LabClerk) and gates the deletion and restoration of sample remarks.
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    logger.info("Importing rolemap for 'Delete Remarks' permission ...")
+    setup.runImportStepFromProfile(profile, "rolemap")
+    logger.info("Importing rolemap for 'Delete Remarks' permission [DONE]")
+
+
+@upgradestep(product, version)
 def setup_sample_labels(tool):
     """Register ManageLabels permission and add labels KeywordIndex to
     senaite_catalog_sample. Reindex so labels on existing samples are
@@ -2276,6 +2289,41 @@ def setup_sample_labels(tool):
                 obj.title or u"")
 
     logger.info("Setup sample labels [DONE]")
+
+
+@upgradestep(product, version)
+def reindex_client_title(tool):
+    """Reindex getClientTitle in the sample catalog with unicode keys
+
+    getClientTitle is now normalized to unicode by an indexer adapter so the
+    FieldIndex can be queried with non-ASCII values (e.g. accented client
+    names) without raising a UnicodeDecodeError on Python 2.
+
+    The index BTree must be cleared *before* reindexing. `manage_reindexIndex`
+    and a plain per-object reindex both only re-catalog each object, so a
+    unicode key gets inserted into an index that still holds the old
+    byte-string keys, and comparing the two key types raises a
+    UnicodeDecodeError. With the index emptied first, each `reindexObject`
+    repopulates it with unicode keys only and refreshes the getClientTitle
+    metadata (fed by the same indexer) in the same pass.
+    """
+    catalog = api.get_tool(SAMPLE_CATALOG)
+
+    # Clear the index BTree so the old byte-string keys are dropped; the
+    # per-object reindex below then fills it with unicode keys only.
+    catalog._catalog.getIndex("getClientTitle").clear()
+
+    brains = catalog(portal_type="AnalysisRequest")
+    total = len(brains)
+    logger.info("Reindexing getClientTitle of %s samples ..." % total)
+    for num, brain in enumerate(brains):
+        if num and num % 1000 == 0:
+            logger.info("Reindexed %s/%s samples ..." % (num, total))
+        obj = api.get_object(brain, default=None)
+        if obj is None:
+            continue
+        obj.reindexObject(idxs=["getClientTitle"])
+    logger.info("Reindexing getClientTitle [DONE]")
 
 
 @upgradestep(product, version)

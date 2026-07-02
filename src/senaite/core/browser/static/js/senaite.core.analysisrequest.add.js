@@ -1590,7 +1590,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     // iterate through all registered services to find matches
     services = $(`tr.${poc}.service`);
     $.each(services, function(num, service) {
-      var $service, category_id, name, name_el, service_uid;
+      var $service, category_id, keyword, name, name_el, service_uid;
       // get the service basic info
       $service = $(service);
       category_id = $service.data("category");
@@ -1598,8 +1598,10 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
       // get the service human name
       name_el = $("div.service-title", $service);
       name = name_el.html().toLowerCase();
-      // hide service if no match found and not checked for any sample
-      if (name.indexOf(term) !== -1) {
+      // get the service keyword
+      keyword = ($service.data("keyword") || "").toString().toLowerCase();
+      // match against the human name or the keyword
+      if (name.indexOf(term) !== -1 || keyword.indexOf(term) !== -1) {
         return matches.push(service_uid);
       }
     });

@@ -250,6 +250,9 @@ document.addEventListener("DOMContentLoaded", function () {
     a.style.cssText =
       "flex:1 1 140px;max-width:200px;overflow:hidden;";
     a.href = panel.link;
+    if (panel.tooltip) {
+      a.title = panel.tooltip;
+    }
 
     var body = document.createElement("div");
     body.className = "card-body text-center py-3 px-3";
