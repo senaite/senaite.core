@@ -22,8 +22,49 @@ from functools import wraps
 
 import transaction
 from bika.lims import api
+from bika.lims.api.security import check_permission
 from senaite.core import logger
 from ZODB.POSException import ConflictError
+
+
+def require_permission(permission, message="Forbidden", status=403):
+    """Endpoint decorator that returns a JSON error unless the current user
+    holds the given permission on the view context.
+
+    Compose it below `returns_json`::
+
+        @returns_json
+        @require_permission(ManageLabels)
+        def ajax_add(self):
+            ...
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            if not check_permission(permission, self.context):
+                self.request.response.setStatus(status)
+                return {"success": False, "error": message}
+            return func(self, *args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def require_method(method, message="Method not allowed", status=405):
+    """Endpoint decorator that returns a JSON error unless the request method
+    matches the given HTTP method (e.g. `require_method("POST")`).
+    """
+    method = method.upper()
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            got = self.request.get("REQUEST_METHOD", "GET").upper()
+            if got != method:
+                self.request.response.setStatus(status)
+                return {"success": False, "error": message}
+            return func(self, *args, **kwargs)
+        return wrapper
+    return decorator
 
 
 def readonly_transaction(func):

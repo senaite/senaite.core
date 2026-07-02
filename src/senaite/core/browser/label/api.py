@@ -22,8 +22,8 @@ from bika.lims import api
 from bika.lims.decorators import returns_json
 from senaite.core.api import label as label_api
 from senaite.core.browser.views import JSONView
-from senaite.core.browser.views import require_permission
 from senaite.core.config.labels import SAMPLE_LABEL_REINDEX
+from senaite.core.decorators import require_permission
 from senaite.core.permissions import ManageLabels
 
 

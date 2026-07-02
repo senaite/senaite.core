@@ -89,7 +89,7 @@ Reading the JSON body
 Method restriction with `require_method`
 ........................................
 
-    >>> from senaite.core.browser.views import require_method
+    >>> from senaite.core.decorators import require_method
 
     >>> class MethodView(JSONView):
     ...     @returns_json
