@@ -14,12 +14,19 @@ Test Setup
 ..........
 
     >>> import json
-    >>> from bika.lims.decorators import returns_json
+    >>> from senaite.core.decorators import returns_json
     >>> from senaite.core.browser.views import JSONView
     >>> from senaite.core.browser.views import PublishTraverseView
 
     >>> portal = self.portal
     >>> request = self.request
+
+`returns_json` is also importable from its old location for backwards
+compatibility:
+
+    >>> from bika.lims.decorators import returns_json as bbb_returns_json
+    >>> bbb_returns_json is returns_json
+    True
 
 
 A demo JSON view with two endpoints

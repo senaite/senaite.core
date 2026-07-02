@@ -21,8 +21,8 @@
 import inspect
 import json
 
-from bika.lims.decorators import returns_json
 from Products.Five.browser import BrowserView
+from senaite.core.decorators import returns_json
 from zExceptions import NotFound
 from zope.interface import implementer
 from zope.publisher.interfaces import IPublishTraverse
@@ -38,7 +38,7 @@ class PublishTraverseView(BrowserView):
     `render` is called instead.
 
     Subclasses expose their endpoints as `ajax_<name>` methods and typically
-    decorate them with `bika.lims.decorators.returns_json`::
+    decorate them with `senaite.core.decorators.returns_json`::
 
         class MyView(PublishTraverseView):
             @returns_json

@@ -18,6 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import json
 from functools import wraps
 
 import transaction
@@ -25,6 +26,18 @@ from bika.lims import api
 from bika.lims.api.security import check_permission
 from senaite.core import logger
 from ZODB.POSException import ConflictError
+
+
+def returns_json(func):
+    """Decorator for functions which return JSON
+    """
+    def decorator(*args, **kwargs):
+        instance = args[0]
+        result = func(*args, **kwargs)
+        request = getattr(instance, "request", None)
+        request.response.setHeader("Content-Type", "application/json")
+        return json.dumps(result)
+    return decorator
 
 
 def json_require_permission(permission, message="Forbidden", status=403):
