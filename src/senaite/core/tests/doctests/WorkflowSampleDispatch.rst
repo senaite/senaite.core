@@ -1,5 +1,12 @@
-Analysis Request cancel guard and event
----------------------------------------
+Sample dispatch workflow
+------------------------
+
+The `dispatch` transition is gated by a global `dispatch_workflow_enabled`
+setup flag (disabled by default), mirroring the dispose workflow. When a
+sample is dispatched, it is marked with the `IDispatched` interface and its
+analyses are transitioned to the read-only `locked` state. Restoring the
+sample removes the marker and brings the analyses back to their previous
+status. Dispatch and restore propagate to the sample partitions as well.
 
 Running this test from the buildout directory:
 
