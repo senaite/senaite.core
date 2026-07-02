@@ -12,11 +12,14 @@ Needed Imports:
 
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
+    >>> from bika.lims.api.security import check_permission
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.utils.analysisrequest import create_partition
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from bika.lims.workflow import isTransitionAllowed
     >>> from bika.lims.workflow import getAllowedTransitions
+    >>> from senaite.core.interfaces import IDispatched
+    >>> from senaite.core.permissions import EditResults
     >>> from DateTime import DateTime
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
@@ -94,11 +97,33 @@ Receive the sample:
     >>> api.get_workflow_status_of(sample)
     'sample_received'
 
+The dispatch transition is gated by the setup flag. When disabled, it is
+not offered; when enabled, it is:
+
+    >>> setup.setDispatchWorkflowEnabled(False)
+    >>> isTransitionAllowed(sample, "dispatch")
+    False
+    >>> setup.setDispatchWorkflowEnabled(True)
+    >>> isTransitionAllowed(sample, "dispatch")
+    True
+
 Now the sample can be dispatched:
 
     >>> transitioned = do_action_for(sample, "dispatch")
     >>> api.get_workflow_status_of(sample)
     'dispatched'
+
+The sample is marked as dispatched and its analyses are locked:
+
+    >>> IDispatched.providedBy(sample)
+    True
+
+    >>> sorted(set(map(api.get_workflow_status_of,
+    ...                 sample.getAnalyses(full_objects=True))))
+    ['locked']
+
+    >>> check_permission(EditResults, sample.getAnalyses(full_objects=True)[0])
+    False
 
 At this point, only "restore" transition is possible:
 
@@ -106,11 +131,18 @@ At this point, only "restore" transition is possible:
     ['restore']
 
 When the sample is restored, the status becomes the previous before the dispatch
-took place:
+took place, the marker is removed and the analyses are unlocked:
 
     >>> transitioned = do_action_for(sample, "restore")
     >>> api.get_workflow_status_of(sample)
     'sample_received'
+
+    >>> IDispatched.providedBy(sample)
+    False
+
+    >>> sorted(set(map(api.get_workflow_status_of,
+    ...                 sample.getAnalyses(full_objects=True))))
+    ['unassigned']
 
 Dispatching can be done again now:
 
