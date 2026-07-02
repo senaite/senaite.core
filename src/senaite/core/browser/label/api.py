@@ -19,10 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.api.security import check_permission
 from bika.lims.decorators import returns_json
 from senaite.core.api import label as label_api
 from senaite.core.browser.views import JSONView
+from senaite.core.browser.views import require_permission
 from senaite.core.config.labels import SAMPLE_LABEL_REINDEX
 from senaite.core.permissions import ManageLabels
 
@@ -73,9 +73,8 @@ class LabelsAPI(JSONView):
     # ------------------------------------------------------------------
 
     @returns_json
+    @require_permission(ManageLabels)
     def ajax_add(self):
-        if not check_permission(ManageLabels, self.context):
-            return self.error("Forbidden", status=403)
         labels = self._read_submitted_labels()
         if not labels:
             return self._empty_input()
@@ -87,9 +86,8 @@ class LabelsAPI(JSONView):
         return {"success": True, "labels": list(new_labels)}
 
     @returns_json
+    @require_permission(ManageLabels)
     def ajax_remove(self):
-        if not check_permission(ManageLabels, self.context):
-            return self.error("Forbidden", status=403)
         labels = self._read_submitted_labels()
         if not labels:
             return self._empty_input()

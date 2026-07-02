@@ -86,6 +86,36 @@ Reading the JSON body
     {}
 
 
+Method restriction with `require_method`
+........................................
+
+    >>> from senaite.core.browser.views import require_method
+
+    >>> class MethodView(JSONView):
+    ...     @returns_json
+    ...     @require_method("POST")
+    ...     def ajax_save(self):
+    ...         return self.success(saved=True)
+
+    >>> def method_call(method):
+    ...     request.set("REQUEST_METHOD", method)
+    ...     view = MethodView(portal, request)
+    ...     view.traverse_subpath = ["save"]
+    ...     return json.loads(view())
+
+A GET is rejected with a 405:
+
+    >>> print(method_call("GET")["error"])
+    Method not allowed
+    >>> request.response.getStatus()
+    405
+
+A POST goes through:
+
+    >>> method_call("POST")["success"]
+    True
+
+
 Non-JSON views raise a 404 on an unknown route
 ..............................................
 

@@ -85,3 +85,21 @@ Empty input and unknown routes
     Unknown route. Use one of: add, remove, available
     >>> request.response.getStatus()
     404
+
+
+Permission enforcement via `require_permission`
+...............................................
+
+A user without the "Manage Labels" permission gets a 403 on the write
+routes:
+
+    >>> setRoles(portal, TEST_USER_ID, ['Authenticated'])
+    >>> result = call("add", label="urgent")
+    >>> result["success"]
+    False
+    >>> print(result["error"])
+    Forbidden
+    >>> request.response.getStatus()
+    403
+
+    >>> setRoles(portal, TEST_USER_ID, ['Manager', 'LabManager'])
