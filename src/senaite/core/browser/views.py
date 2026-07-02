@@ -52,7 +52,7 @@ class PublishTraverseView(BrowserView):
     of its `<browser:page>` registration. Register it with a permission that
     Anonymous does not hold (a role-based one) to prevent anonymous calls;
     `zope2.View` is not enough, as Anonymous usually holds View. Use the
-    `require_permission` decorator for finer, per-endpoint checks.
+    `json_require_permission` decorator for finer, per-endpoint checks.
     """
 
     def __init__(self, context, request):

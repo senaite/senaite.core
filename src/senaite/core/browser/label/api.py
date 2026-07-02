@@ -23,7 +23,7 @@ from bika.lims.decorators import returns_json
 from senaite.core.api import label as label_api
 from senaite.core.browser.views import JSONView
 from senaite.core.config.labels import SAMPLE_LABEL_REINDEX
-from senaite.core.decorators import require_permission
+from senaite.core.decorators import json_require_permission
 from senaite.core.permissions import ManageLabels
 
 
@@ -73,7 +73,7 @@ class LabelsAPI(JSONView):
     # ------------------------------------------------------------------
 
     @returns_json
-    @require_permission(ManageLabels)
+    @json_require_permission(ManageLabels)
     def ajax_add(self):
         labels = self._read_submitted_labels()
         if not labels:
@@ -86,7 +86,7 @@ class LabelsAPI(JSONView):
         return {"success": True, "labels": list(new_labels)}
 
     @returns_json
-    @require_permission(ManageLabels)
+    @json_require_permission(ManageLabels)
     def ajax_remove(self):
         labels = self._read_submitted_labels()
         if not labels:

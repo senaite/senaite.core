@@ -27,14 +27,14 @@ from senaite.core import logger
 from ZODB.POSException import ConflictError
 
 
-def require_permission(permission, message="Forbidden", status=403):
+def json_require_permission(permission, message="Forbidden", status=403):
     """Endpoint decorator that returns a JSON error unless the current user
     holds the given permission on the view context.
 
     Compose it below `returns_json`::
 
         @returns_json
-        @require_permission(ManageLabels)
+        @json_require_permission(ManageLabels)
         def ajax_add(self):
             ...
     """
@@ -49,9 +49,9 @@ def require_permission(permission, message="Forbidden", status=403):
     return decorator
 
 
-def require_method(method, message="Method not allowed", status=405):
+def json_require_method(method, message="Method not allowed", status=405):
     """Endpoint decorator that returns a JSON error unless the request method
-    matches the given HTTP method (e.g. `require_method("POST")`).
+    matches the given HTTP method (e.g. `json_require_method("POST")`).
     """
     method = method.upper()
 

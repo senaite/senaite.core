@@ -86,14 +86,14 @@ Reading the JSON body
     {}
 
 
-Method restriction with `require_method`
-........................................
+Method restriction with `json_require_method`
+.............................................
 
-    >>> from senaite.core.decorators import require_method
+    >>> from senaite.core.decorators import json_require_method
 
     >>> class MethodView(JSONView):
     ...     @returns_json
-    ...     @require_method("POST")
+    ...     @json_require_method("POST")
     ...     def ajax_save(self):
     ...         return self.success(saved=True)
 
