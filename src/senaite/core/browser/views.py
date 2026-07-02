@@ -75,9 +75,9 @@ class PublishTraverseView(BrowserView):
     """Base browser view that dispatches traversal subpaths to methods.
 
     A request to `<context>/@@view/foo/bar` traverses to this view and
-    dispatches to the `<traverse_prefix>foo` method, passing the remaining
-    subpath segments (`bar`) as positional arguments. When no subpath is
-    traversed, `render` is called instead.
+    dispatches to the `ajax_foo` method, passing the remaining subpath
+    segments (`bar`) as positional arguments. When no subpath is traversed,
+    `render` is called instead.
 
     Subclasses expose their endpoints as `ajax_<name>` methods and typically
     decorate them with `bika.lims.decorators.returns_json`::
@@ -88,6 +88,13 @@ class PublishTraverseView(BrowserView):
                 return {"hello": name}
 
     reachable at `@@my_view/hello/world`.
+
+    Access control: this view enforces no permission on its own. Access to the
+    view (and therefore to every subpath endpoint) is gated by the `permission`
+    of its `<browser:page>` registration. Register it with a permission that
+    Anonymous does not hold (a role-based one) to prevent anonymous calls;
+    `zope2.View` is not enough, as Anonymous usually holds View. Use the
+    `require_permission` decorator for finer, per-endpoint checks.
     """
 
     def __init__(self, context, request):
