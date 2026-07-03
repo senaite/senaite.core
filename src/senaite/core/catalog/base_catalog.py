@@ -97,6 +97,35 @@ class BaseCatalog(CatalogTool):
     def mapped_catalog_types(self):
         return TYPES
 
+    def _listAllowedRolesAndUsers(self, user):
+        """Extend the base allowed-roles list with the asking user's
+        linked client token.
+
+        Client-tree content carries a stable ``client:<client_uid>``
+        token in its ``allowedRolesAndUsers`` index (see
+        ``senaite.core.catalog.indexer.allowedrolesandusers``). For
+        every catalog query we look up the user's
+        ``linked_client_uid`` member property (set when a client
+        contact is linked to the user) and inject the matching
+        ``client:<uid>`` token, so client users see their client's
+        content without any persistent local role or group.
+        """
+        result = super(BaseCatalog, self)._listAllowedRolesAndUsers(user)
+        try:
+            client_uid = user.getProperty("linked_client_uid", "") or ""
+        except Exception as exc:
+            # A broken `getProperty` would silently strip the
+            # client-token from every query and lock the linked
+            # user out of their own data. Log loud enough to be
+            # traceable, but keep the query itself working.
+            logger.debug(
+                "linked_client_uid lookup failed on user %r: %s"
+                % (user, exc))
+            client_uid = ""
+        if client_uid:
+            result.append("client:" + client_uid)
+        return result
+
     def supports_indexing(self, obj):
         """Checks if the object can be indexed
         """

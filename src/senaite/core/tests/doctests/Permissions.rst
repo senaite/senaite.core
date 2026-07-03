@@ -497,21 +497,58 @@ Link the user to a client contact to grant access to this client::
     True
     >>> transaction.commit()
 
-Linking a user adds this user to the `Clients` group::
+Linking a user records the linked client's UID on the user
+profile. The dynamic local-role provider grants access on the
+client tree from that property — no per-client group is created
+and no local role is persisted on the client folder::
 
-    >>> clients_group = client.get_group()
-    >>> user.getId() in clients_group.getAllGroupMemberIds()
+    >>> portal_groups = portal.portal_groups
+    >>> portal_groups.getGroupById(client.getId()) is None
     True
 
-This gives the user the global `Client` role::
+    >>> portal_user = portal.acl_users.getUserById(user.getId())
+    >>> portal_user.getProperty("linked_client_uid") == client.UID()
+    True
+
+The dynamic role provider returns `Owner` and `Client` for the
+linked user against any client-tree object::
+
+    >>> from senaite.core.security.clientrole import ClientRoleProvider
+    >>> sorted(ClientRoleProvider(client).getRoles(user.getId()))
+    ['Client', 'Owner']
+
+The user does not get the `Client` role globally; the role is
+granted dynamically on the client tree only::
 
     >>> sorted(ploneapi.user.get_roles(user=user))
-    ['Authenticated', 'Client', 'Member']
+    ['Authenticated', 'Member']
 
-It also grants local `Owner` role on the client object::
+In the context of the client, both `Owner` and `Client` are
+granted dynamically by the ILocalRoleProvider on IClient /
+IClientAwareMixin::
 
     >>> sorted(ploneapi.user.get_roles(user=user, obj=client))
     ['Authenticated', 'Client', 'Member', 'Owner']
+
+On the portal root, a second ILocalRoleProvider grants `Client`
+to every user with a `linked_client_uid` set. Local-role
+acquisition then propagates the role to every context, which is
+what makes site-root permission checks (e.g. the sidebar's
+`View Navigation`) pass for linked client users::
+
+    >>> from senaite.core.security.clientrole import (
+    ...     GlobalClientRoleProvider)
+    >>> sorted(GlobalClientRoleProvider(portal).getRoles(user.getId()))
+    ['Client']
+
+    >>> sorted(ploneapi.user.get_roles(user=user, obj=portal))
+    ['Authenticated', 'Client', 'Member']
+
+The provider intentionally returns an empty `getAllRoles` so the
+catalog indexer never has to enumerate linked users::
+
+    >>> list(GlobalClientRoleProvider(portal).getAllRoles())
+    []
 
 ~~
    TODO: Fails with LocationError: (<UnauthorizedBinding: context>, 'main_template')
@@ -552,6 +589,15 @@ Unlink the user to revoke all access to the client::
 The user has no local owner role anymore on the client::
 
     >>> sorted(ploneapi.user.get_roles(user=user, obj=client))
+    ['Authenticated', 'Member']
+
+The cleared `linked_client_uid` also revokes the global `Client`
+role granted by the portal-root provider::
+
+    >>> sorted(GlobalClientRoleProvider(portal).getRoles(user.getId()))
+    []
+
+    >>> sorted(ploneapi.user.get_roles(user=user, obj=portal))
     ['Authenticated', 'Member']
 
 The user can not access the client anymore::

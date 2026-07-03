@@ -3,11 +3,20 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser">
 
+    <!-- The permission is intentionally not `zope2.View`: every
+         linked client contact carries the global `Client` role,
+         which has `View` on every workflow state of `IBatch`.
+         `senaite.core: Manage Analysis Requests` is the
+         per-context permission a client contact only obtains via
+         the dynamic `ClientLinkRoleProvider` on their own client
+         subtree, so this view is reachable only inside the
+         user's own batches. Cross-client direct-URL access via
+         `/clients/Y/batch-Z/analysisrequests` is blocked. -->
     <browser:page
       for="bika.lims.interfaces.IBatch"
       name="analysisrequests"
       class=".samples.SamplesView"
-      permission="zope2.View"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
       layer="senaite.core.interfaces.ISenaiteCore"
     />
 

@@ -3,6 +3,7 @@
     i18n_domain="senaite.core">
 
   <!-- package includes -->
+  <include package=".color" />
   <include package=".coordinate" />
   <include package=".datagrid" />
   <include package=".duration" />
@@ -10,6 +11,7 @@
   <include package=".hazard_categories" />
   <include package=".listing" />
   <include package=".multiupload" />
+  <include package=".namedimage" />
   <include package=".queryselect" />
   <include package=".remarks" />
   <include package=".selectother" />

@@ -48,6 +48,10 @@ class WorksheetsView(ListingView):
     # No URL suffix needed — the manage view is the default view.
     edit_view = "manage_results"
 
+    # Namespaces the request params (e.g. worksheets_review_state) so the
+    # listing can be deep-linked, e.g. from the dashboard.
+    form_id = "worksheets"
+
     def __init__(self, context, request):
         super(WorksheetsView, self).__init__(context, request)
 

@@ -38,7 +38,7 @@ from bika.lims.api import safe_unicode as u
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IClientAwareMixin
+from senaite.core.interfaces import IClientAwareMixin
 from DateTime import DateTime
 from plone.protect.utils import addTokenToUrl
 from plone.registry.interfaces import IRegistry
@@ -393,10 +393,26 @@ def senaite_url_fetcher(url):
 
     logger.info("Fetching URL '{}' for WeasyPrint".format(url))
 
+    # `data:` URIs (e.g. the data:image/svg+xml barcodes embedded in stickers)
+    # are handled natively by WeasyPrint's default fetcher. Resolving them to a
+    # physical path makes no sense and raises `ValueError` when the request is
+    # served under a virtual-host *path* (e.g. behind a path-based reverse
+    # proxy), which would silently drop the image from the generated PDF.
+    if url.lower().startswith("data:"):
+        return default_url_fetcher(url)
+
     # get the pyhsical path from the URL
     request = api.get_request()
     host = request.get_header("HOST")
-    path = "/".join(request.physicalPathFromURL(url))
+    try:
+        path = "/".join(request.physicalPathFromURL(url))
+    except ValueError:
+        # The URL does not match the current virtual hosting context (e.g. an
+        # external resource, or a path that does not share the virtual-host
+        # root). Let WeasyPrint's default fetcher deal with it.
+        logger.info("URL '{}' does not match the virtual hosting context, "
+                    "passing over to the default URL fetcher...".format(url))
+        return default_url_fetcher(url)
 
     # fetch the object by sub-request
     portal = api.get_portal()
@@ -677,6 +693,13 @@ def get_link(href, value=None, csrf=True, **kwargs):
     """
     if not href:
         return ""
+    # Decode href to unicode up front. Callers commonly pass an
+    # f-string/.format() result that contains a content field value
+    # (phone, email, URL). On Py2 that result is a bytestring;
+    # mixing it into the unicode template below would trigger an
+    # implicit ASCII decode and raise on any non-ASCII byte
+    # (e.g. a UTF-8 en-dash 0xe2 0x80 0x93 inside a phone number).
+    href = u(href)
     anchor_value = value and u(value) or href
     attr = render_html_attributes(**kwargs)
     # Add a CSRF token

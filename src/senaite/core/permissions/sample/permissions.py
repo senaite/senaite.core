@@ -46,6 +46,8 @@ FieldEditProfiles = "senaite.core: Field: Edit Profiles"
 FieldEditPublicationSpecifications = "senaite.core: Field: Edit Publication Specification"
 FieldEditRejectionReasons = "senaite.core: Field: Edit Rejection Reasons"
 FieldEditRemarks = "senaite.core: Field: Edit Remarks"
+# Manager-level override to delete/restore remarks (not granted to LabClerk)
+DeleteRemarks = "senaite.core: Delete Remarks"
 FieldEditResultsInterpretation = "senaite.core: Field: Edit Results Interpretation"
 FieldEditSampleCondition = "senaite.core: Field: Edit Sample Condition"
 FieldEditSamplePoint = "senaite.core: Field: Edit Sample Point"

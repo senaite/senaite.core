@@ -18,7 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import copy
+import json
 import six
 
 from Acquisition import aq_inner
@@ -26,13 +26,19 @@ from Acquisition import aq_parent
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from bika.lims import api
+from bika.lims.api.security import get_user_id
 from bika.lims.decorators import returns_json
+from senaite.core.api import remarks as remarks_api
 from senaite.core.api.dtime import to_localized_time
+from senaite.core.events.remarks import ACTION_ADDED
+from senaite.core.events.remarks import ACTION_DELETED
+from senaite.core.events.remarks import ACTION_EDITED
+from senaite.core.events.remarks import ACTION_RESTORED
+from senaite.core.events.remarks import RemarksChangedEvent
 from senaite.core.schema.interfaces import IRemarksField
 from senaite.core.schema.remarksfield import fill_remark_object
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.p3compat import cmp
-from senaite.core.permissions import FieldEditRemarks
 from senaite.core.z3cform.interfaces import IRemarksWidget
 from z3c.form.browser import widget
 from z3c.form.converter import BaseDataConverter
@@ -43,16 +49,28 @@ from z3c.form.interfaces import IFieldWidget
 from z3c.form.interfaces import IWidget
 from z3c.form.widget import FieldWidget
 from z3c.form.widget import Widget
+from zope import event
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
 from zope.component import adapter
 from zope.interface import implementer
 
 
-def check_permission_edit_remark(context):
-    """Check is can add remark
+def get_request_data(request, keys):
+    """Return the given keys from the request, accepting both form-encoded
+    values and a JSON request body (sent by the React widget)
     """
-    tool = api.get_tool("portal_membership")
-    return tool.checkPermission(FieldEditRemarks, context)
+    data = {}
+    body = request.get("BODY", None)
+    if body:
+        try:
+            data = json.loads(body)
+        except (ValueError, TypeError):
+            data = {}
+    for key in keys:
+        value = request.form.get(key)
+        if value is not None:
+            data[key] = value
+    return {key: data.get(key) for key in keys}
 
 
 @adapter(IRemarksField, IWidget)
@@ -172,91 +190,227 @@ class RemarksWidget(widget.HTMLFormElement, Widget):
 
     @property
     def can_add_remark(self):
-        """Check is can add remark
+        """Check if the current user can add a remark
         """
         modes = [INPUT_MODE, DISPLAY_MODE]
-        can_edit_field = check_permission_edit_remark(self.context)
-        return self.mode in modes and can_edit_field
+        return self.mode in modes and remarks_api.can_add_remark(self.context)
+
+    def get_input_widget_attributes(self):
+        """Return the JSON-encoded `data-*` attributes for the React widget
+        """
+        return remarks_api.get_widget_attributes(
+            self.context, self.field, self.request)
 
 
 @adapter(IRemarksField, ISenaiteFormLayer)
 @implementer(IFieldWidget)
 def RemarksWidgetFactory(field, request):
-    """Widget factory for Address Widget
+    """Widget factory for the Remarks Widget
     """
     return FieldWidget(field, RemarksWidget(request))
 
 
 class AjaxAddRemark(BrowserView):
-    """Endpoint for the add remark for object
+    """Endpoint to add a remark to an object. Works for both the AT and the
+    DX remarks field.
     """
 
     @returns_json
     def __call__(self):
-        """Returns a json with the result about of added remark for object
-        """
-        field_name = self.request.form.get("fieldName", None)
-        uid = self.request.form.get("uid", None)
-        value = self.request.form.get("value", None)
+        data = get_request_data(
+            self.request, ["fieldName", "uid", "value"])
+        field_name = data.get("fieldName")
+        uid = data.get("uid")
+        value = data.get("value")
         if not field_name or not uid or not value:
             return {"success": False}
+
         obj = api.get_object_by_uid(uid, None)
         if not obj:
             return {"success": False}
-        new_remark = self.add_remark_to_obj(obj, field_name, value)
-        if not new_remark:
-            return {"success": False}
-        return {"success": True}
 
-    def add_remark_to_obj(self, obj, field_name, value):
-        """Add new remark to `obj` by `field_name` with `value`
-        """
-        fields = api.get_fields(obj)
-        if field_name not in fields:
-            return False
-        field = fields.get(field_name)
-        if not IRemarksField.providedBy(field):
-            return False
-        if not check_permission_edit_remark(obj):
+        field = remarks_api.get_remarks_field(obj, field_name)
+        if field is None:
+            return {"success": False}
+
+        if not remarks_api.can_add_remark(obj):
             self.request.response.setStatus(403)
-            return False
-        field.add(obj, value)
-        return True
+            return {"success": False}
+
+        record = field.add(obj, value)
+        if not record:
+            return {"success": False}
+
+        actor = get_user_id()
+        event.notify(
+            RemarksChangedEvent(obj, dict(record), actor, ACTION_ADDED))
+
+        remark = remarks_api.localize_record(record, obj, self.request)
+        remarks_api.annotate_permissions(remark, obj, record, actor)
+        return {"success": True, "remark": remark}
+
+
+class AjaxEditRemark(BrowserView):
+    """Endpoint to edit an existing remark record. Users may only edit their
+    own remarks (not those of others, and not deleted ones).
+    """
+
+    @returns_json
+    def __call__(self):
+        data = get_request_data(
+            self.request, ["fieldName", "uid", "remark_id", "value"])
+        field_name = data.get("fieldName")
+        uid = data.get("uid")
+        remark_id = data.get("remark_id")
+        value = data.get("value")
+        if not field_name or not uid or not remark_id or not value:
+            return {"success": False}
+
+        obj = api.get_object_by_uid(uid, None)
+        if not obj:
+            return {"success": False}
+
+        field = remarks_api.get_remarks_field(obj, field_name)
+        if field is None:
+            return {"success": False}
+
+        records = remarks_api.get_records(obj, field)
+        index, record = remarks_api.find_record(records, remark_id)
+        if record is None:
+            return {"success": False}
+
+        if not remarks_api.can_edit_record(obj, record):
+            self.request.response.setStatus(403)
+            return {"success": False}
+
+        updated = field.edit(obj, remark_id, value)
+        if not updated:
+            return {"success": False}
+
+        actor = get_user_id()
+        event.notify(
+            RemarksChangedEvent(obj, dict(updated), actor, ACTION_EDITED))
+
+        remark = remarks_api.localize_record(updated, obj, self.request)
+        remarks_api.annotate_permissions(remark, obj, updated, actor)
+        return {"success": True, "remark": remark}
+
+
+class AjaxDeleteRemark(BrowserView):
+    """Endpoint to soft-delete an existing remark record. Managers may delete
+    any remark that is not already deleted; the record is kept for audit but
+    no longer displayed.
+    """
+
+    @returns_json
+    def __call__(self):
+        data = get_request_data(
+            self.request, ["fieldName", "uid", "remark_id"])
+        field_name = data.get("fieldName")
+        uid = data.get("uid")
+        remark_id = data.get("remark_id")
+        if not field_name or not uid or not remark_id:
+            return {"success": False}
+
+        obj = api.get_object_by_uid(uid, None)
+        if not obj:
+            return {"success": False}
+
+        field = remarks_api.get_remarks_field(obj, field_name)
+        if field is None:
+            return {"success": False}
+
+        records = remarks_api.get_records(obj, field)
+        index, record = remarks_api.find_record(records, remark_id)
+        if record is None:
+            return {"success": False}
+
+        if not remarks_api.can_delete_record(obj, record):
+            self.request.response.setStatus(403)
+            return {"success": False}
+
+        deleted = field.delete(obj, remark_id)
+        if not deleted:
+            return {"success": False}
+
+        actor = get_user_id()
+        event.notify(
+            RemarksChangedEvent(obj, dict(deleted), actor, ACTION_DELETED))
+
+        remark = remarks_api.localize_record(deleted, obj, self.request)
+        remarks_api.annotate_permissions(remark, obj, deleted, actor)
+        return {"success": True, "remark": remark}
+
+
+class AjaxRestoreRemark(BrowserView):
+    """Endpoint to restore a soft-deleted remark record. Managers may restore
+    any deleted remark; its content becomes visible again.
+    """
+
+    @returns_json
+    def __call__(self):
+        data = get_request_data(
+            self.request, ["fieldName", "uid", "remark_id"])
+        field_name = data.get("fieldName")
+        uid = data.get("uid")
+        remark_id = data.get("remark_id")
+        if not field_name or not uid or not remark_id:
+            return {"success": False}
+
+        obj = api.get_object_by_uid(uid, None)
+        if not obj:
+            return {"success": False}
+
+        field = remarks_api.get_remarks_field(obj, field_name)
+        if field is None:
+            return {"success": False}
+
+        records = remarks_api.get_records(obj, field)
+        index, record = remarks_api.find_record(records, remark_id)
+        if record is None:
+            return {"success": False}
+
+        if not remarks_api.can_restore_record(obj, record):
+            self.request.response.setStatus(403)
+            return {"success": False}
+
+        restored = field.restore(obj, remark_id)
+        if not restored:
+            return {"success": False}
+
+        actor = get_user_id()
+        event.notify(
+            RemarksChangedEvent(obj, dict(restored), actor, ACTION_RESTORED))
+
+        remark = remarks_api.localize_record(restored, obj, self.request)
+        remarks_api.annotate_permissions(remark, obj, restored, actor)
+        return {"success": True, "remark": remark}
 
 
 class AjaxFetchRemarks(BrowserView):
-    """Endpoint for fetching remarks for object
+    """Endpoint to fetch the remarks of an object, newest first, localized and
+    annotated with a per-record `can_edit` flag for the current user.
     """
+
     @returns_json
     def __call__(self):
-        uid = self.request.form.get("uid", None)
-        field_name = self.request.form.get("fieldName", None)
+        data = get_request_data(self.request, ["fieldName", "uid"])
+        field_name = data.get("fieldName")
+        uid = data.get("uid")
         if not uid or not field_name:
             return {"success": False}
+
         obj = api.get_object_by_uid(uid, None)
         if not obj:
             return {"success": False}
 
-        value = self.get_remarks_by_field(obj, field_name)
-        if not value:
+        if not remarks_api.can_view_remarks(obj):
+            self.request.response.setStatus(403)
             return {"success": False}
-        remarks = copy.deepcopy(value)
-        remarks.sort(lambda x, y: cmp(y["created"], x["created"]))
-        for r in remarks:
-            r["created"] = to_localized_time(r["created"],
-                                             long_format=True,
-                                             context=self.context,
-                                             request=self.request)
-        return {
-            "success": True,
-            "remarks": remarks,
-        }
 
-    def get_remarks_by_field(self, obj, field_name):
-        fields = api.get_fields(obj)
-        if field_name not in fields:
-            return False
-        field = fields.get(field_name)
-        if not IRemarksField.providedBy(field):
-            return False
-        return field.get(obj)
+        field = remarks_api.get_remarks_field(obj, field_name)
+        if field is None:
+            return {"success": False}
+
+        remarks = remarks_api.get_localized_records(obj, field, self.request)
+        return {"success": True, "remarks": remarks}
