@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2974 Do not offer all sticker templates to content types without a sticker adapter
 - #2967 Fix My Organization menu action hidden for client users
 - #2966 Fix UnicodeDecodeError when filtering samples by a non-ASCII client name
 - #2964 Improve dashboard panel links, tooltips, and workflow-ordered chart legends
