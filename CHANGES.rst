@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2975 Fix ExpressionError in edit-analysis modal
 - #2898 Add AllowManualEntry for select result options
 - #2967 Fix My Organization menu action hidden for client users
 - #2966 Fix UnicodeDecodeError when filtering samples by a non-ASCII client name

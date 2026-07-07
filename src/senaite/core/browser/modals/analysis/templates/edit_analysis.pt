@@ -150,7 +150,7 @@
                    tal:define="other view/get_result_other_text;
                                is_manual view/is_result_selected_option_manual"
                    tal:attributes="value other;
-                                   style python:is_manual and '' or 'display:none;'"/>
+                                   style python:is_manual and '' or 'display:none'"/>
 
             <!-- Multi-line result types (outside input-group) -->
 
