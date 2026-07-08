@@ -27,7 +27,6 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.security import get_roles
 from bika.lims.api.security import get_user_id
-from bika.lims.utils import t
 from bika.lims.interfaces import IAuditable
 from bika.lims.interfaces import IDoNotSupportSnapshots
 from DateTime import DateTime
@@ -35,6 +34,7 @@ from persistent.list import PersistentList
 from plone.memoize.ram import cache
 from senaite.app.supermodel import SuperModel
 from senaite.core.api import dtime
+from senaite.core.i18n import translate
 from zope.annotation.interfaces import IAnnotatable
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides
@@ -551,7 +551,8 @@ def _rows_diff_lines(before, after, cache, indent):
     for idx in range(max(len(before), len(after))):
         row_before = before[idx] if idx < len(before) else None
         row_after = after[idx] if idx < len(after) else None
-        label = t(_(u"Row ${num}", mapping={"num": idx + 1}))
+        label = translate(
+            _(u"Row ${num}", mapping={"num": idx + 1}), to_utf8=False)
         if row_before is None:
             lines.append(_diff_line(
                 "added", indent, label=label,
@@ -581,7 +582,7 @@ def _summarize_record(record, cache):
             continue
         parts.append(u"{}={}".format(
             _humanize_key(key), _format_value(value, cache)))
-    return u"; ".join(parts) or t(_("Empty"))
+    return u"; ".join(parts) or translate(_("Empty"), to_utf8=False)
 
 
 def _humanize_key(key):
@@ -599,17 +600,19 @@ def _format_value(value, cache):
     booleans as Yes/No and strips the portal path from physical paths.
     """
     if isinstance(value, bool):
-        return t(_("Yes")) if value else t(_("No"))
+        if value:
+            return translate(_("Yes"), to_utf8=False)
+        return translate(_("No"), to_utf8=False)
     if isinstance(value, dict):
         return _summarize_record(value, cache)
     if isinstance(value, (list, tuple)):
         return u"; ".join(_format_value(v, cache) for v in value)
     if value in (None, "", ()):
-        return t(_("Not set"))
+        return translate(_("Not set"), to_utf8=False)
     if isinstance(value, six.string_types):
         # XXX: bad data, e.g. in AS Method field
         if value == "None":
-            return t(_("Not set"))
+            return translate(_("Not set"), to_utf8=False)
         # 0 is detected as the portal UID
         if value == "0":
             return u"0"
