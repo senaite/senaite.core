@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2973 Add PublishTraverseView/JSONView base browser views for AJAX endpoints
 - #2974 Do not offer all sticker templates to content types without a sticker adapter
 - #2970 Add an optional Sample Dispose workflow
 - #2969 Speed up the getClientTitle reindex upgrade step with partial metadata refresh
