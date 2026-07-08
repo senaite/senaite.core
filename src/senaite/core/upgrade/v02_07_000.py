@@ -2315,6 +2315,39 @@ def add_sample_catalog_indexes(tool):
 
 
 @upgradestep(product, version)
+def add_sample_analyses_keywords_metadata(tool):
+    """Expose getAnalysesKeywords as metadata in senaite_catalog_sample
+
+    The getAnalysesKeywords KeywordIndex was added earlier. Storing the same
+    value as metadata lets the samples listing display the contained analysis
+    keywords (and host the keyword filter) without waking up each object.
+    Refresh the metadata of existing samples so the column is populated.
+    """
+    catalog = api.get_tool(SAMPLE_CATALOG)
+    if not add_catalog_column(catalog, "getAnalysesKeywords"):
+        return
+
+    brains = catalog(portal_type="AnalysisRequest")
+    total = len(brains)
+    logger.info("Refreshing getAnalysesKeywords metadata of %s samples ..."
+                % total)
+    for num, brain in enumerate(brains):
+        if num and num % 1000 == 0:
+            logger.info("Refreshed %s/%s samples ..." % (num, total))
+        obj = api.get_object(brain, default=None)
+        if obj is None:
+            continue
+        # Refresh only the getAnalysesKeywords metadata column via the partial
+        # update_metadata support in BaseCatalog, instead of recomputing the
+        # whole record (which re-runs expensive accessors like getProgress and
+        # getAnalysesNum). idxs=[] means "no index": the getAnalysesKeywords
+        # index already exists and its value is unchanged.
+        catalog.catalog_object(obj, api.get_path(obj), idxs=[],
+                               update_metadata=["getAnalysesKeywords"])
+    logger.info("Refreshing getAnalysesKeywords metadata [DONE]")
+
+
+@upgradestep(product, version)
 def strip_global_client_role(tool):
     """Remove directly-assigned global 'Client' role from users.
 

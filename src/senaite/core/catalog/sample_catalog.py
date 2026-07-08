@@ -61,6 +61,7 @@ INDEXES = BASE_INDEXES + [
 COLUMNS = BASE_COLUMNS + [
     # attribute name
     "assigned_state",
+    "getAnalysesKeywords",
     "getAnalysesNum",
     "getBatchID",
     "getBatchUID",
