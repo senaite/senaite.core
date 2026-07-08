@@ -424,6 +424,16 @@
       permission="zope2.View"
       layer="senaite.core.interfaces.ISenaiteCore" />
 
+  <!-- Sample disposed viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="sample_disposed"
+      class=".sample_disposed.SampleDisposedViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/sample_disposed_viewlet.pt"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore" />
+
   <!-- Auditlog viewlet -->
   <browser:viewlet
       for="bika.lims.interfaces.IAuditLog"

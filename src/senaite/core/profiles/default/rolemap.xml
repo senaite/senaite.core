@@ -906,6 +906,10 @@
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
+    <permission name="senaite.core: Transition: Dispose Sample" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
     <permission name="senaite.core: Transition: Restore Sample" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
