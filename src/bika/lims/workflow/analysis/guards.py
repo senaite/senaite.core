@@ -26,7 +26,7 @@ from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from plone.memoize.request import cache
-from senaite.core.interfaces import IDisposed
+from senaite.core.interfaces import ILockingState
 from senaite.core.interfaces import IWorksheet
 
 
@@ -58,7 +58,7 @@ def guard_lock(analysis):
     sample is restored.
     """
     sample = analysis.getRequest()
-    return IDisposed.providedBy(sample)
+    return ILockingState.providedBy(sample)
 
 
 def guard_initialize(analysis):
