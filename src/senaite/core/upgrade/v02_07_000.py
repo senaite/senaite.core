@@ -378,6 +378,25 @@ def setup_duplicate_sample_transition(tool):
 
 
 @upgradestep(product, version)
+def setup_dispose_transition(tool):
+    """Register the new 'dispose' workflow transition and 'disposed' state.
+
+    Re-imports the rolemap (new "Dispose Sample" permission, granted to
+    LabManager and Manager) and the workflows so existing instances pick up
+    the 'dispose' transition, the 'disposed' state and the matching
+    exit-transitions on the live sample states, plus the generic 'locked'
+    state and the 'lock'/'unlock' transitions of the analysis workflow. The
+    transition stays unavailable until the 'Dispose workflow' is enabled in
+    the setup.
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+
+    setup.runImportStepFromProfile(profile, "rolemap")
+    setup.runImportStepFromProfile(profile, "workflow")
+
+
+@upgradestep(product, version)
 def remove_dashboard_registry_visibility(tool):
     """Remove legacy registry-based dashboard panel visibility
 

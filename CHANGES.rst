@@ -6,6 +6,10 @@ Changelog
 
 - #2980 Migrate AuditLog to Dexterity and move audit log machinery to senaite.core
 - #2979 Show precise element-level audit log diffs for lists and record fields
+- #2978 Move front page and landing page fields to the Appearance fieldset
+- #2973 Add PublishTraverseView/JSONView base browser views for AJAX endpoints
+- #2974 Do not offer all sticker templates to content types without a sticker adapter
+- #2970 Add an optional Sample Dispose workflow
 - #2969 Speed up the getClientTitle reindex upgrade step with partial metadata refresh
 - #2977 Fix KeyError on AllowManualEntry when importing result options without the column
 - #2968 Support partial catalog metadata refresh and quiet per-object multiplex logging
