@@ -22,11 +22,11 @@ import collections
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.api.snapshot import compare_snapshots
-from bika.lims.api.snapshot import get_last_snapshot
-from bika.lims.api.snapshot import get_snapshot_by_version
-from bika.lims.api.snapshot import get_snapshot_metadata
-from bika.lims.api.snapshot import get_snapshot_version
+from senaite.core.api.snapshot import compare_snapshots
+from senaite.core.api.snapshot import get_last_snapshot
+from senaite.core.api.snapshot import get_snapshot_by_version
+from senaite.core.api.snapshot import get_snapshot_metadata
+from senaite.core.api.snapshot import get_snapshot_version
 from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IAuditLog
