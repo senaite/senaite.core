@@ -309,9 +309,9 @@ def lock_analyses(sample):
     do_action_to_analyses(sample, "lock")
 
 
-def restore_analyses(sample):
-    """Bring the locked analyses of the sample back to the status they had
-    before they were locked, by triggering the "unlock" transition. Only
+def unlock_analyses(sample):
+    """Transition the locked analyses of the sample back to the status they
+    had before they were locked, by triggering the "unlock" transition. Only
     analyses in "locked" state whose sample no longer provides ILockingState
     are unlocked (see `guard_unlock`); the rollback itself happens in the
     analysis' `after_unlock` event.
@@ -387,7 +387,7 @@ def after_restore(sample):
     sample.reindexObject()
 
     # Bring the locked analyses back to their previous status
-    restore_analyses(sample)
+    unlock_analyses(sample)
 
     # If the sample is a partition, try to promote to the primary
     primary = sample.getParentAnalysisRequest()
