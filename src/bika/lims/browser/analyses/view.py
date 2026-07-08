@@ -229,6 +229,7 @@ class AnalysesView(ListingView):
                         "to_be_verified",
                         "verified",
                         "published",
+                        "locked",
                     ]
                 },
                 "columns": self.columns.keys()

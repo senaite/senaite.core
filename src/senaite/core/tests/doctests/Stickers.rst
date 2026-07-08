@@ -172,6 +172,27 @@ The **large sticker** should also come from the sample type:
     True
 
 
+Fallback without an adapter
+...........................
+
+A Sample provides an `IGetStickerTemplates` adapter, so its available
+templates come from the sample type (and the setup default), never the whole
+catalog:
+
+    >>> request["filter_by_type"] = ""
+    >>> template_ids = [t["id"] for t in view.get_available_templates()]
+    >>> SAMPLE_TYPE_SMALL_STICKER in template_ids
+    True
+
+A context type with no sticker adapter (e.g. a Batch) is not offered the
+entire sticker catalog. Without a type filter, no templates are available:
+
+    >>> batch = api.create(portal.batches, "Batch", title="Sticker Batch")
+    >>> view = api.get_view("sticker", context=batch, request=request)
+    >>> view.get_available_templates()
+    []
+
+
 Type filters
 ............
 
