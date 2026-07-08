@@ -216,9 +216,13 @@ def after_detach(analysis_request):
     # And we mark the sample with IDetachedPartition
     alsoProvides(analysis_request, IDetachedPartition)
 
-    # Reindex both the parent and the detached one
+    # Reindex the detached sample and the ancestors it was detached from.
+    # Sample-level columns like getAnalysesNum and getAnalysesKeywords
+    # aggregate the analyses of the whole descendant tree, so every ancestor
+    # of the former parent must be refreshed too, not only the parent.
     analysis_request.reindexObject()
-    parent.reindexObject()
+    for ancestor in [parent] + parent.getAncestors(all_ancestors=True):
+        ancestor.reindexObject()
 
     # And the analyses too. aranalysesfield relies on a search against the
     # catalog to return the analyses: calling `getAnalyses` to the parent
@@ -244,9 +248,13 @@ def after_reattach(analysis_request):
     noLongerProvides(analysis_request, IDetachedPartition)
     alsoProvides(analysis_request, IAnalysisRequestPartition)
 
-    # Reindex both the parent and the reattached partition
+    # Reindex the reattached partition and the ancestors it is bound to.
+    # Sample-level columns like getAnalysesNum and getAnalysesKeywords
+    # aggregate the analyses of the whole descendant tree, so every ancestor
+    # must be refreshed too, not only the immediate parent.
     analysis_request.reindexObject()
-    parent.reindexObject()
+    for ancestor in [parent] + parent.getAncestors(all_ancestors=True):
+        ancestor.reindexObject()
 
     # The parent's aranalysesfield aggregates analyses via catalog search,
     # so reindex the partition's analyses to make them visible to the parent

@@ -1496,7 +1496,7 @@ class Analysis_Services(WorksheetImporter):
             sro = service.getResultOptions()
             sro.append({'ResultValue': row['ResultValue'],
                         'ResultText': row['ResultText'],
-                        'AllowManualEntry': row['AllowManualEntry']})
+                        'AllowManualEntry': row.get('AllowManualEntry', False)})
             service.setResultOptions(sro)
 
     def load_service_uncertainties(self):

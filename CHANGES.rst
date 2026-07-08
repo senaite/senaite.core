@@ -5,6 +5,10 @@ Changelog
 ------------------
 
 - #2974 Do not offer all sticker templates to content types without a sticker adapter
+- #2969 Speed up the getClientTitle reindex upgrade step with partial metadata refresh
+- #2977 Fix KeyError on AllowManualEntry when importing result options without the column
+- #2968 Support partial catalog metadata refresh and quiet per-object multiplex logging
+- #2965 Filter samples by their analyses in the samples listing
 - #2975 Fix ExpressionError in edit-analysis modal
 - #2898 Add AllowManualEntry for select result options
 - #2967 Fix My Organization menu action hidden for client users
