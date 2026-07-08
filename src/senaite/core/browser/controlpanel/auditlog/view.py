@@ -22,22 +22,14 @@ import collections
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import get_link
 from senaite.core.api.snapshot import compare_snapshots
 from senaite.core.api.snapshot import get_last_snapshot
 from senaite.core.api.snapshot import get_snapshot_by_version
 from senaite.core.api.snapshot import get_snapshot_metadata
 from senaite.core.api.snapshot import get_snapshot_version
 from senaite.core.browser.controlpanel.listing import ControlPanelListingView
-from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IAuditLog
-from bika.lims.utils import get_link
-from plone.app.folder.folder import ATFolder
-from plone.app.folder.folder import ATFolderSchema
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
 from senaite.core.catalog import AUDITLOG_CATALOG
-from senaite.core.interfaces import IHideActionsMenu
-from zope.interface.declarations import implements
 
 
 class AuditLogView(ControlPanelListingView):
@@ -58,7 +50,7 @@ class AuditLogView(ControlPanelListingView):
         self.title = self.context.translate(_("Audit Log"))
         self.icon = "{}/{}".format(
             self.portal_url,
-            "/++resource++bika.lims.images/auditlog_big.png"
+            "senaite_theme/icon/auditlog"
         )
 
         self.show_select_column = False
@@ -193,16 +185,3 @@ class AuditLogView(ControlPanelListingView):
             item["diff"] = logview.render_diff(diff)
 
         return item
-
-
-schema = ATFolderSchema.copy()
-
-
-class AuditLog(ATFolder):
-    implements(IAuditLog, IHideActionsMenu)
-    displayContentsTab = False
-    schema = schema
-
-
-schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
-atapi.registerType(AuditLog, PROJECTNAME)

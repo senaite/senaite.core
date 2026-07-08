@@ -64,6 +64,11 @@ class IHideActionsMenu(Interface):
     """
 
 
+class IAuditLog(Interface):
+    """Marker interface for Audit Log
+    """
+
+
 class IAjaxEditForm(Interface):
     """Ajax edit form adapter
     """

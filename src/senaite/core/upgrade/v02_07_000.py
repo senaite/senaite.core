@@ -119,6 +119,82 @@ def upgrade(tool):
     return True
 
 
+def migrate_auditlog_to_dx(tool):
+    """Migrates the AuditLog folder from Archetypes to Dexterity
+    """
+    logger.info("Convert AuditLog to Dexterity ...")
+
+    # remove the AT type and re-import the DX FTI
+    remove_at_portal_types(tool, ["AuditLog"])
+    tool.runImportStepFromProfile(profile, "typeinfo")
+
+    setup = api.get_setup()
+    src = setup._getOb("auditlog", None)
+    if src is None:
+        logger.info("No AuditLog folder found, skipping migration")
+        return
+
+    # Check if already migrated
+    if not api.is_at_content(src):
+        logger.info("AuditLog already migrated to Dexterity")
+        return
+
+    migrate_at_auditlog_to_dx(src, setup)
+
+    logger.info("Convert AuditLog to Dexterity [DONE]")
+
+
+def migrate_at_auditlog_to_dx(src, destination):
+    """Create a DX AuditLog in `destination` from the AT `src`, copy all data
+    over, remove the AT source and adopt its id. Returns the new DX AuditLog.
+    """
+    portal_type = "AuditLog"
+    src_id = api.get_id(src)
+    target_id = tmpID()
+
+    target = destination.get(src_id)
+    if not target:
+        # Don't use the api to skip the auto-id generation
+        target = createContent(portal_type, id=target_id)
+        destination._setObject(target_id, target)
+        target = destination._getOb(target_id)
+
+    # Migrate the contents from AT to DX. The AuditLog has no schema fields
+    # of its own, so only the object-level data has to be carried over.
+    migrator = getMultiAdapter(
+        (src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+    # copy the UID
+    migrator.copy_uid(src, target)
+    # copy auditlog snapshots
+    migrator.copy_snapshots(src, target)
+    # copy creators
+    migrator.copy_creators(src, target)
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+    # copy dates
+    migrator.copy_dates(src, target)
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+    # delete the old object
+    migrator.delete_object(src)
+
+    # Ensure AuditLog is allowed in its container before rename
+    permanently_allow_type_for(api.get_portal_type(destination), portal_type)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    target.reindexObject()
+
+    logger.info("Migrated AuditLog from %s -> %s" % (src, target))
+    return target
+
+
 def drop_client_ordering_annotations(tool):
     """Remove the legacy IOrdering annotations from every Client.
 

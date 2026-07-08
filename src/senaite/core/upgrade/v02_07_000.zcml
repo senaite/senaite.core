@@ -3,6 +3,18 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate AuditLog to Dexterity"
+      description="Convert the AuditLog setup folder from Archetypes to
+                   Dexterity in place, preserving its UID, workflow history,
+                   audit snapshots, creators, dates and marker interfaces. The
+                   snapshot machinery and audit log views now live in
+                   senaite.core instead of bika.lims."
+      source="2749"
+      destination="2750"
+      handler=".v02_07_000.migrate_auditlog_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Expose getAnalysesKeywords as sample metadata"
       description="Store the getAnalysesKeywords value as metadata in
                    senaite_catalog_sample so the samples listing can display
