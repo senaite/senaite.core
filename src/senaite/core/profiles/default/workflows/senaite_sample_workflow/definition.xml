@@ -1167,6 +1167,7 @@
 
     <!-- TRANSITIONS -->
     <exit-transition transition_id="reinstate" />
+    <exit-transition transition_id="dispose" />
     <!-- /TRANSITIONS -->
 
     <!-- PLONE PERMISSIONS -->
@@ -1177,6 +1178,7 @@
     <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Detach Sample Partition" acquired="False"/>
     <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Dispose Sample" acquired="True"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
