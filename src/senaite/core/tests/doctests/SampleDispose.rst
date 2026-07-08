@@ -163,6 +163,17 @@ the `cancelled` state:
     >>> api.get_workflow_status_of(cancelled)
     'disposed'
 
+Only active analyses are locked. The already-cancelled analyses are left
+untouched, so their catalog state (and `is_active`) is preserved instead of
+flipping to the active `locked` state:
+
+    >>> cancelled_analysis = cancelled.getAnalyses(full_objects=True)[0]
+    >>> api.get_workflow_status_of(cancelled_analysis)
+    'cancelled'
+
+    >>> api.is_active(cancelled_analysis)
+    False
+
     >>> succeeded, message = do_action_for(cancelled, "restore")
     >>> api.get_workflow_status_of(cancelled)
     'cancelled'
