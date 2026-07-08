@@ -1321,6 +1321,8 @@ class ISetupSchema(model.Schema):
         "appearance",
         label=_(u"Appearance"),
         fields=[
+            "dashboard_by_default",
+            "landing_page",
             "worksheet_layout",
             "show_partitions",
             "site_logo",
