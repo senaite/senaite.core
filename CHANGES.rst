@@ -5,6 +5,9 @@ Changelog
 ------------------
 
 - #2968 Support partial catalog metadata refresh and quiet per-object multiplex logging
+- #2965 Filter samples by their analyses in the samples listing
+- #2975 Fix ExpressionError in edit-analysis modal
+- #2898 Add AllowManualEntry for select result options
 - #2967 Fix My Organization menu action hidden for client users
 - #2966 Fix UnicodeDecodeError when filtering samples by a non-ASCII client name
 - #2964 Improve dashboard panel links, tooltips, and workflow-ordered chart legends
