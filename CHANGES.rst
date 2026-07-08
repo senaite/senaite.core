@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2979 Show precise element-level audit log diffs for lists and record fields
 - #2969 Speed up the getClientTitle reindex upgrade step with partial metadata refresh
 - #2977 Fix KeyError on AllowManualEntry when importing result options without the column
 - #2968 Support partial catalog metadata refresh and quiet per-object multiplex logging
