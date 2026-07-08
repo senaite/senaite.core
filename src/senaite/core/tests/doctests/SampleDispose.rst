@@ -143,6 +143,31 @@ removes the marker:
     False
 
 
+Cancelled samples can be disposed too
+.....................................
+
+Disposal is a physical-inventory event, independent of the analytical
+state: the specimen exists and eventually needs disposal tracking. A
+cancelled sample can therefore be disposed, and restoring it returns it to
+the `cancelled` state:
+
+    >>> cancelled = new_sample([service.UID()])
+    >>> succeeded, message = do_action_for(cancelled, "cancel")
+    >>> api.get_workflow_status_of(cancelled)
+    'cancelled'
+
+    >>> isTransitionAllowed(cancelled, "dispose")
+    True
+
+    >>> succeeded, message = do_action_for(cancelled, "dispose")
+    >>> api.get_workflow_status_of(cancelled)
+    'disposed'
+
+    >>> succeeded, message = do_action_for(cancelled, "restore")
+    >>> api.get_workflow_status_of(cancelled)
+    'cancelled'
+
+
 Disposing a sample locks its analyses
 ......................................
 
