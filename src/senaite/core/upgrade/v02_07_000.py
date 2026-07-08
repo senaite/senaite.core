@@ -73,6 +73,7 @@ from senaite.core.upgrade.utils import iter_senaite_catalogs
 from senaite.core.upgrade.utils import permanently_allow_type_for
 from senaite.core.upgrade.utils import rebuild_index
 from senaite.core.upgrade.utils import remove_at_portal_types
+from senaite.core.upgrade.utils import temporary_allow_type
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.v02_06_000 import get_setup_folder
 from zope.annotation.interfaces import IAnnotations
@@ -120,7 +121,21 @@ def upgrade(tool):
 
 
 def migrate_auditlog_to_dx(tool):
-    """Migrates the AuditLog folder from Archetypes to Dexterity
+    """Move the AuditLog folder to the SENAITE setup as a Dexterity folder
+
+    The AuditLog folder never holds content on its own: it only backs the
+    audit log listing view. The audit snapshots live as annotations on the
+    audited objects and are looked up through the auditlog catalog, not
+    through this folder. It is therefore recreated rather than migrated:
+    the legacy AT folder in `bika_setup` is removed and a fresh DX folder
+    is created in the new SENAITE setup. The legacy AT `AuditLog` class is
+    kept as a stub (`bika.lims.controlpanel.auditlog`) so the old folder
+    still loads as a regular object and deletes cleanly here.
+
+    Traversal to `setup/auditlog` returns this folder: BTreeFolder2 exposes
+    its children via `__getattr__`, so the contained object is resolved
+    before the per-object `auditlog` view. The per-object audit trail stays
+    reachable through the explicit `@@auditlog` form.
     """
     logger.info("Convert AuditLog to Dexterity ...")
 
@@ -128,71 +143,27 @@ def migrate_auditlog_to_dx(tool):
     remove_at_portal_types(tool, ["AuditLog"])
     tool.runImportStepFromProfile(profile, "typeinfo")
 
-    setup = api.get_setup()
-    src = setup._getOb("auditlog", None)
-    if src is None:
-        logger.info("No AuditLog folder found, skipping migration")
-        return
+    # the legacy AT folder lived in `bika_setup`; the DX one now lives in
+    # the new SENAITE setup
+    bika_setup = api.get_setup()
+    setup = api.get_senaite_setup()
 
-    # Check if already migrated
-    if not api.is_at_content(src):
-        logger.info("AuditLog already migrated to Dexterity")
-        return
+    # remove the old AT folder and any half-created DX folder
+    for container in [bika_setup, setup]:
+        if "auditlog" in container.objectIds():
+            auditlog = container._getOb("auditlog")
+            uncatalog_object(auditlog)
+            delete_object(auditlog)
 
-    migrate_at_auditlog_to_dx(src, setup)
+    # create the new DX folder in the SENAITE setup. The type is only
+    # allowed temporarily, so AuditLog does not show up in the setup's
+    # "add" menu afterwards.
+    with temporary_allow_type(setup, "AuditLog") as container:
+        auditlog = api.create(
+            container, "AuditLog", id="auditlog", title="Audit Log")
+    auditlog.reindexObject()
 
     logger.info("Convert AuditLog to Dexterity [DONE]")
-
-
-def migrate_at_auditlog_to_dx(src, destination):
-    """Create a DX AuditLog in `destination` from the AT `src`, copy all data
-    over, remove the AT source and adopt its id. Returns the new DX AuditLog.
-    """
-    portal_type = "AuditLog"
-    src_id = api.get_id(src)
-    target_id = tmpID()
-
-    target = destination.get(src_id)
-    if not target:
-        # Don't use the api to skip the auto-id generation
-        target = createContent(portal_type, id=target_id)
-        destination._setObject(target_id, target)
-        target = destination._getOb(target_id)
-
-    # Migrate the contents from AT to DX. The AuditLog has no schema fields
-    # of its own, so only the object-level data has to be carried over.
-    migrator = getMultiAdapter(
-        (src, target), interface=IContentMigrator)
-
-    # copy all (raw) attributes from the source object to the target
-    migrator.copy_attributes(src, target)
-    # copy the UID
-    migrator.copy_uid(src, target)
-    # copy auditlog snapshots
-    migrator.copy_snapshots(src, target)
-    # copy creators
-    migrator.copy_creators(src, target)
-    # copy workflow history
-    migrator.copy_workflow_history(src, target)
-    # copy marker interfaces
-    migrator.copy_marker_interfaces(src, target)
-    # copy dates
-    migrator.copy_dates(src, target)
-    # uncatalog the source object
-    migrator.uncatalog_object(src)
-    # delete the old object
-    migrator.delete_object(src)
-
-    # Ensure AuditLog is allowed in its container before rename
-    permanently_allow_type_for(api.get_portal_type(destination), portal_type)
-
-    # change the ID *after* the original object was removed
-    migrator.copy_id(src, target)
-
-    target.reindexObject()
-
-    logger.info("Migrated AuditLog from %s -> %s" % (src, target))
-    return target
 
 
 def drop_client_ordering_annotations(tool):
