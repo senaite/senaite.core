@@ -35,6 +35,7 @@ from bika.lims.workflow.analysisrequest import do_action_to_ancestors
 from bika.lims.workflow.analysisrequest import do_action_to_descendants
 from DateTime import DateTime
 from Products.CMFCore.WorkflowCore import WorkflowException
+from senaite.core.interfaces import IDisposed
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
@@ -302,21 +303,91 @@ def after_dispatch(sample):
         dispatch(primary, comment)
 
 
+def lock_analyses(sample):
+    """Transition the analyses of the sample to the read-only "locked" state
+    """
+    do_action_to_analyses(sample, "lock")
+
+
+def unlock_analyses(sample):
+    """Transition the locked analyses of the sample back to the status they
+    had before they were locked, by triggering the "unlock" transition. Only
+    analyses in "locked" state whose sample no longer provides ILockingState
+    are unlocked (see `guard_unlock`); the rollback itself happens in the
+    analysis' `after_unlock` event.
+    """
+    do_action_to_analyses(sample, "unlock")
+
+
+def after_dispose(sample):
+    """Event triggered after "dispose" transition takes place for a given
+    sample
+    """
+    # Mark the sample as disposed
+    alsoProvides(sample, IDisposed)
+
+    # Lock the analyses of the sample so they become read-only
+    lock_analyses(sample)
+
+    primary = sample.getParentAnalysisRequest()
+
+    def get_last_wf_comment(obj):
+        entry = api.get_review_history(obj)[0]
+        return entry.get("comments", "")
+
+    def dispose(obj, comment=""):
+        wf = api.get_tool("portal_workflow")
+        try:
+            wf.doActionFor(obj, "dispose", comment=comment)
+            return True
+        except WorkflowException:
+            return False
+
+    if not primary:
+        # propagate to transitions
+        partitions = sample.getDescendants(all_descendants=False)
+        for partition in partitions:
+            comment = get_last_wf_comment(sample)
+            dispose(partition, comment)
+        return
+
+    # Return when primary sample is already disposed
+    if IDisposed.providedBy(primary):
+        return
+
+    # Dispose primary sample when all partitions are disposed
+    parts = primary.getDescendants()
+    # Partitions in some statuses won't be considered
+    skip = ["disposed", "cancelled", "retracted", "rejected"]
+    parts = filter(lambda part: api.get_review_status(part) not in skip, parts)
+    if len(parts) == 0:
+        # There are no partitions left, transition the primary
+        comment = get_last_wf_comment(sample)
+        dispose(primary, comment)
+
+
 def after_restore(sample):
     """Event triggered after "restore" transition takes place for a sample
     """
 
     # Transition the sample to the state before it was stored
     previous_state = api.get_previous_worfklow_status_of(
-        sample, skip=["dispatched"], default="sample_due")
+        sample, skip=["dispatched", "disposed"], default="sample_due")
 
     # Note: we pause the snapshots here because events are fired next
     pause_snapshots_for(sample)
     changeWorkflowState(sample, SAMPLE_WORKFLOW, previous_state)
     resume_snapshots_for(sample)
 
+    # Unmark the sample: it is no longer disposed
+    if IDisposed.providedBy(sample):
+        noLongerProvides(sample, IDisposed)
+
     # Reindex the sample
     sample.reindexObject()
+
+    # Bring the locked analyses back to their previous status
+    unlock_analyses(sample)
 
     # If the sample is a partition, try to promote to the primary
     primary = sample.getParentAnalysisRequest()
@@ -327,12 +398,12 @@ def after_restore(sample):
             do_action_for(partition, "restore")
         return
 
-    # Return when primary sample is not dispatched
-    if api.get_workflow_status_of(primary) != "dispatched":
+    # Return when primary sample is not dispatched nor disposed
+    if api.get_workflow_status_of(primary) not in ["dispatched", "disposed"]:
         return
 
     # Restore primary sample if all its partitions have been restored
     parts = primary.getDescendants()
     states = map(api.get_workflow_status_of, parts)
-    if "dispatched" not in states:
+    if "dispatched" not in states and "disposed" not in states:
         do_action_for(primary, "restore")

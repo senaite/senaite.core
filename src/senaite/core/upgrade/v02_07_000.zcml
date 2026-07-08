@@ -3,6 +3,18 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Register the 'dispose' sample workflow transition"
+      description="Register the new `senaite.core: Transition: Dispose Sample`
+                   permission (granted to LabManager, Manager), the 'disposed'
+                   sample state and the 'dispose' transition. The transition
+                   stays unavailable until the Dispose workflow is enabled in
+                   the setup."
+      source="2749"
+      destination="2750"
+      handler=".v02_07_000.setup_dispose_transition"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Expose getAnalysesKeywords as sample metadata"
       description="Store the getAnalysesKeywords value as metadata in
                    senaite_catalog_sample so the samples listing can display
@@ -13,7 +25,7 @@
       destination="2749"
       handler=".v02_07_000.add_sample_analyses_keywords_metadata"
       profile="senaite.core:default"/>
-  
+
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Reindex getClientTitle with unicode keys"
       description="getClientTitle is now normalized to unicode by an indexer
