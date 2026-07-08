@@ -985,6 +985,16 @@ class ISetupSchema(model.Schema):
         default=False,
     )
 
+    dispose_workflow_enabled = schema.Bool(
+        title=_(u"Enable the Sample Dispose workflow"),
+        description=_(
+            u"Select this to allow disposing samples through the 'dispose' "
+            u"transition and to enable the additional 'disposed' status. "
+            u"Disabled by default."
+        ),
+        default=False,
+    )
+
     sampling_workflow_enabled = schema.Bool(
         title=_(u"Enable Sampling"),
         description=_(
@@ -1321,6 +1331,8 @@ class ISetupSchema(model.Schema):
         "appearance",
         label=_(u"Appearance"),
         fields=[
+            "dashboard_by_default",
+            "landing_page",
             "worksheet_layout",
             "show_partitions",
             "site_logo",
@@ -1338,6 +1350,7 @@ class ISetupSchema(model.Schema):
         fields=[
             "sample_duplicate_enabled",
             "printing_workflow_enabled",
+            "dispose_workflow_enabled",
             "sampling_workflow_enabled",
             "schedule_sampling_enabled",
             "date_sampled_required",
@@ -2214,6 +2227,20 @@ class Setup(Container):
         """Set printing workflow enabled setting
         """
         mutator = self.mutator("printing_workflow_enabled")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getDisposeWorkflowEnabled(self):
+        """Get dispose workflow enabled setting
+        """
+        accessor = self.accessor("dispose_workflow_enabled")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setDisposeWorkflowEnabled(self, value):
+        """Set dispose workflow enabled setting
+        """
+        mutator = self.mutator("dispose_workflow_enabled")
         return mutator(self, value)
 
     @security.protected(permissions.View)
