@@ -10,9 +10,21 @@
                    also clears any direct assignments), the group is removed
                    from portal_groups, and the role is dropped from the
                    portal's known roles."
+      source="2750"
+      destination="2751"
+      handler=".v02_07_000.remove_regulatory_inspector_role"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Register the 'dispose' sample workflow transition"
+      description="Register the new `senaite.core: Transition: Dispose Sample`
+                   permission (granted to LabManager, Manager), the 'disposed'
+                   sample state and the 'dispose' transition. The transition
+                   stays unavailable until the Dispose workflow is enabled in
+                   the setup."
       source="2749"
       destination="2750"
-      handler=".v02_07_000.remove_regulatory_inspector_role"
+      handler=".v02_07_000.setup_dispose_transition"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

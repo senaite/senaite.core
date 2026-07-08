@@ -344,6 +344,25 @@ def setup_duplicate_sample_transition(tool):
 
 
 @upgradestep(product, version)
+def setup_dispose_transition(tool):
+    """Register the new 'dispose' workflow transition and 'disposed' state.
+
+    Re-imports the rolemap (new "Dispose Sample" permission, granted to
+    LabManager and Manager) and the workflows so existing instances pick up
+    the 'dispose' transition, the 'disposed' state and the matching
+    exit-transitions on the live sample states, plus the generic 'locked'
+    state and the 'lock'/'unlock' transitions of the analysis workflow. The
+    transition stays unavailable until the 'Dispose workflow' is enabled in
+    the setup.
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+
+    setup.runImportStepFromProfile(profile, "rolemap")
+    setup.runImportStepFromProfile(profile, "workflow")
+
+
+@upgradestep(product, version)
 def remove_dashboard_registry_visibility(tool):
     """Remove legacy registry-based dashboard panel visibility
 
@@ -2303,9 +2322,13 @@ def reindex_client_title(tool):
     and a plain per-object reindex both only re-catalog each object, so a
     unicode key gets inserted into an index that still holds the old
     byte-string keys, and comparing the two key types raises a
-    UnicodeDecodeError. With the index emptied first, each `reindexObject`
-    repopulates it with unicode keys only and refreshes the getClientTitle
-    metadata (fed by the same indexer) in the same pass.
+    UnicodeDecodeError. With the index emptied first, each object repopulates
+    it with unicode keys only.
+
+    Only the getClientTitle metadata column is refreshed (via the partial
+    update_metadata support in BaseCatalog) instead of recomputing the whole
+    record, which would re-run expensive accessors like getProgress and
+    getAnalysesNum on every sample.
     """
     catalog = api.get_tool(SAMPLE_CATALOG)
 
@@ -2322,7 +2345,9 @@ def reindex_client_title(tool):
         obj = api.get_object(brain, default=None)
         if obj is None:
             continue
-        obj.reindexObject(idxs=["getClientTitle"])
+        catalog.catalog_object(obj, api.get_path(obj),
+                               idxs=["getClientTitle"],
+                               update_metadata=["getClientTitle"])
     logger.info("Reindexing getClientTitle [DONE]")
 
 

@@ -52,6 +52,7 @@
     <exit-transition transition_id="cancel" />
     <exit-transition transition_id="initialize" />
     <exit-transition transition_id="submit"/>
+    <exit-transition transition_id="lock" />
     <!-- /TRANSITIONS -->
 
     <!-- Only allow modification of fields explicitly granted
@@ -105,6 +106,7 @@
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="cancel" />
+    <exit-transition transition_id="lock" />
     <!-- /TRANSITIONS -->
 
     <!-- Only allow modification of fields explicitly granted
@@ -182,6 +184,7 @@
     <exit-transition transition_id="unassign" />
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="reject" />
+    <exit-transition transition_id="lock" />
     <!-- /TRANSITIONS -->
 
     <!-- Only allow modification of fields explicitly granted
@@ -309,6 +312,7 @@
     <exit-transition transition_id="retest" />
     <exit-transition transition_id="retract" />
     <exit-transition transition_id="reject" />
+    <exit-transition transition_id="lock" />
     <!-- /TRANSITIONS -->
 
     <!-- Only allow modification of fields explicitly granted
@@ -467,6 +471,7 @@
 
     <!-- TRANSITIONS -->
     <exit-transition transition_id="publish" />
+    <exit-transition transition_id="lock" />
     <!-- /TRANSITIONS -->
 
     <!-- Only allow modification of fields explicitly granted
@@ -516,6 +521,7 @@
 
     <!-- TRANSITIONS -->
     <exit-transition transition_id="" />
+    <exit-transition transition_id="lock" />
     <!-- /TRANSITIONS -->
 
     <!-- Only allow modification of fields explicitly granted
@@ -551,6 +557,54 @@
       <permission-role>Manager</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>Publisher</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
+  </state>
+
+  <!-- State: locked
+  Generic read-only state for analyses whose sample has been moved to a
+  locking state (e.g. disposed). The analysis cannot be edited while locked.
+  The only exit is the "unlock" transition, which cannot be triggered
+  manually: it takes place when the sample leaves its locking state (e.g. it
+  is restored) and rolls the analysis back to the status it had before it was
+  locked. -->
+  <state state_id="locked" title="Locked" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
+    <exit-transition transition_id="unlock" />
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+         N.B. Permissions are *only* checked in process_form and *not* if we set
+         the field directly via the generated mutator -->
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: Edit Field Results" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: Edit Results" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+
+    <!-- FIELD PERMISSIONS (locked, fully read-only) -->
+    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
     </permission-map>
     <permission-map name="senaite.core: Field: Edit Analysis Conditions" acquired="False">
     </permission-map>
@@ -612,6 +666,34 @@
       cancelled. Hence, this transition is governed by the permission
       "Cancel and reinstate" assigned to Analysis Request -->
       <guard-expression>python:here.guard_handler("cancel")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: lock
+  The lock cannot be done manually (see the guard), it takes place
+  automatically when the Analysis Request is moved to a locking state (e.g.
+  disposed). Hence, there is no guard-permission; the transition is governed
+  by the permission of the sample-level transition that triggers it. -->
+  <transition transition_id="lock" title="Lock" new_state="locked"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Lock</action>
+    <guard>
+      <guard-expression>python:here.guard_handler("lock")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: unlock
+  Counterpart of "lock". Cannot be done manually: it has no workflow action,
+  so it never shows up in the workflow menu, and it takes place automatically
+  when the sample leaves its locking state (see the guard). The empty
+  new_state keeps the analysis in place; the after_unlock event rolls it back
+  to the status it had before it was locked. -->
+  <transition transition_id="unlock" title="Unlock" new_state=""
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <guard>
+      <guard-expression>python:here.guard_handler("unlock")</guard-expression>
     </guard>
   </transition>
 
