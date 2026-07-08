@@ -3008,6 +3008,10 @@ msgstr ""
 msgid "Keywords"
 msgstr ""
 
+#: senaite/core/browser/samples/view.py:239
+msgid "Keywords of the analyses contained in the sample"
+msgstr ""
+
 #: bika/lims/browser/templates/analysisservice_info.pt:100
 #: bika/lims/config.py:52
 #: bika/lims/content/analysisspec.py:142
@@ -11869,6 +11873,20 @@ msgstr ""
 msgid "{} weeks and {} day(s)"
 msgstr ""
 
+#: senaite/core/browser/samples/view.py:507
+msgid "Filter samples by this analysis"
+msgstr ""
+
+#: senaite/core/browser/samples/view.py:537
+msgid "Remove this analysis from the filter"
+msgstr ""
+
+#: senaite/core/browser/samples/view.py:518
+msgid "Showing samples that contain:"
+msgstr ""
+
+#: senaite/core/browser/samples/view.py:519
+msgid "Clear filter"
 #: senaite/core/browser/dashboard/dashboard.py:368
 msgid "Samples awaiting collection of the sample"
 msgstr ""

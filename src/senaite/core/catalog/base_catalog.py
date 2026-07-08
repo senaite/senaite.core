@@ -27,12 +27,15 @@ from AccessControl.Permissions import \
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from App.class_init import InitializeClass
+from Missing import Value as MV
+from plone.indexer.interfaces import IIndexableObject
 from Products.CMFPlone.CatalogTool import CatalogTool
 from Products.CMFPlone.utils import base_hasattr
 from Products.CMFPlone.utils import safe_callable
 from Products.ZCatalog.ZCatalog import ZCatalog
 from senaite.core import logger
 from senaite.core.interfaces import ISenaiteCatalogObject
+from zope.component import queryMultiAdapter
 from zope.interface import implementer
 
 # NOTE: `bika.lims` is imported lazily inside functions to avoid a
@@ -96,6 +99,78 @@ class BaseCatalog(CatalogTool):
     @property
     def mapped_catalog_types(self):
         return TYPES
+
+    def catalog_object(self, object, uid=None, idxs=None, update_metadata=1,
+                       pghandler=None):
+        """Catalog the object, optionally refreshing only some metadata.
+
+        `update_metadata` keeps its usual boolean meaning, but may also be a
+        list/tuple/set of metadata column names. In that case ZCatalog's
+        wholesale metadata recompute is skipped: only the named columns are
+        recomputed and spliced into the stored record, which avoids re-running
+        every (potentially expensive) metadata accessor when a caller only
+        needs a few columns refreshed (e.g. a targeted reindex in an upgrade
+        step).
+
+        When a column list is given, an empty/None `idxs` means *do not touch
+        any index* (instead of ZCatalog's "all indexes"), so a caller can
+        refresh metadata columns without reindexing.
+        """
+        if not isinstance(update_metadata, (list, tuple, set)):
+            return CatalogTool.catalog_object(
+                self, object, uid=uid, idxs=idxs,
+                update_metadata=update_metadata, pghandler=pghandler)
+
+        columns = [col for col in update_metadata if col]
+        # Only reindex when specific indexes were requested.
+        if idxs:
+            CatalogTool.catalog_object(
+                self, object, uid=uid, idxs=idxs, update_metadata=0,
+                pghandler=pghandler)
+        if columns:
+            self.refresh_catalog_metadata(object, uid, columns)
+        return None
+
+    def refresh_catalog_metadata(self, object, uid, columns):
+        """Recompute only `columns` in the stored metadata record of `object`
+
+        Reads the existing record, recomputes the requested columns from the
+        object (wrapped so `plone.indexer` adapters provide the values, exactly
+        as `recordify` would) and writes the record back. Falls back to a full
+        record when the object has no metadata yet.
+        """
+        zcatalog = self._catalog
+        if uid is None:
+            uid = "/".join(object.getPhysicalPath())
+        rid = zcatalog.uids.get(uid)
+        if rid is None:
+            return
+
+        # Wrap so plone.indexer adapters provide the metadata values
+        wrapped = object
+        if not IIndexableObject.providedBy(object):
+            wrapper = queryMultiAdapter((object, self), IIndexableObject)
+            if wrapper is not None:
+                wrapped = wrapper
+
+        record = zcatalog.data.get(rid)
+        if record is None:
+            # Freshly indexed without metadata; build the full record so the
+            # object is not left without any metadata.
+            zcatalog.data[rid] = zcatalog.recordify(wrapped)
+            return
+
+        new_record = list(record)
+        schema = zcatalog.schema
+        for column in columns:
+            position = schema.get(column)
+            if position is None:
+                continue
+            value = getattr(wrapped, column, MV)
+            if value is not MV and safe_callable(value):
+                value = value()
+            new_record[position] = value
+        zcatalog.data[rid] = tuple(new_record)
 
     def _listAllowedRolesAndUsers(self, user):
         """Extend the base allowed-roles list with the asking user's
