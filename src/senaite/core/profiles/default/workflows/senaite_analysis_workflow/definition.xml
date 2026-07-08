@@ -268,7 +268,6 @@
     <!-- TRANSITIONS -->
     <exit-transition transition_id="reinstate" />
     <exit-transition transition_id="unassign" />
-    <exit-transition transition_id="lock" />
     <!-- /TRANSITIONS -->
 
     <!-- Only allow modification of fields explicitly granted
@@ -383,7 +382,6 @@
 
     <!-- TRANSITIONS -->
     <exit-transition transition_id="unassign" />
-    <exit-transition transition_id="lock" />
     <!-- /TRANSITIONS -->
 
     <!-- Only allow modification of fields explicitly granted
@@ -428,7 +426,6 @@
 
     <!-- TRANSITIONS -->
     <exit-transition transition_id="unassign" />
-    <exit-transition transition_id="lock" />
     <!-- /TRANSITIONS -->
 
     <!-- Only allow modification of fields explicitly granted
