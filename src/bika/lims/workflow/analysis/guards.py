@@ -61,6 +61,18 @@ def guard_lock(analysis):
     return ILockingState.providedBy(sample)
 
 
+def guard_unlock(analysis):
+    """Return whether the transition "unlock" can be performed or not.
+
+    Counterpart of "lock". It cannot be performed manually either: an analysis
+    is only unlocked when the sample it belongs to leaves its locking state
+    (e.g. it is restored). Hence, it is only allowed once the sample no longer
+    provides ILockingState.
+    """
+    sample = analysis.getRequest()
+    return not ILockingState.providedBy(sample)
+
+
 def guard_initialize(analysis):
     """Return whether the transition "initialize" can be performed or not
     """
