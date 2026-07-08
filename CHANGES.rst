@@ -4,7 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
-- #XXXX Surface orphaned sample partitions as top-level rows in listings
+- #2976 Surface orphaned sample partitions as top-level rows in listings
 - #2975 Fix ExpressionError in edit-analysis modal
 - #2898 Add AllowManualEntry for select result options
 - #2967 Fix My Organization menu action hidden for client users
