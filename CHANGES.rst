@@ -6,6 +6,12 @@ Changelog
 
 - #2971 Make the Sample Dispatch workflow optional and lock analyses on dispatch
 - #2970 Add an optional Sample Dispose workflow
+- #2969 Speed up the getClientTitle reindex upgrade step with partial metadata refresh
+- #2977 Fix KeyError on AllowManualEntry when importing result options without the column
+- #2968 Support partial catalog metadata refresh and quiet per-object multiplex logging
+- #2965 Filter samples by their analyses in the samples listing
+- #2975 Fix ExpressionError in edit-analysis modal
+- #2898 Add AllowManualEntry for select result options
 - #2967 Fix My Organization menu action hidden for client users
 - #2966 Fix UnicodeDecodeError when filtering samples by a non-ASCII client name
 - #2964 Improve dashboard panel links, tooltips, and workflow-ordered chart legends

@@ -3020,6 +3020,10 @@ msgstr "Schlüsselwort benötigt"
 msgid "Keywords"
 msgstr "Schlüsselwörter"
 
+#: senaite/core/browser/samples/view.py:239
+msgid "Keywords of the analyses contained in the sample"
+msgstr "Schlüsselwörter der in der Probe enthaltenen Analysen"
+
 #: bika/lims/browser/templates/analysisservice_info.pt:100
 #: bika/lims/config.py:52
 #: bika/lims/content/analysisspec.py:142
@@ -12384,6 +12388,17 @@ msgstr "Alle Spalten sind ausgeblendet."
 msgid "No matches in hidden columns."
 msgstr "Keine Treffer in ausgeblendeten Spalten."
 
+#: senaite/core/browser/samples/view.py:507
+msgid "Filter samples by this analysis"
+msgstr "Proben nach dieser Analyse filtern"
+
+#: senaite/core/browser/samples/view.py:537
+msgid "Remove this analysis from the filter"
+msgstr "Diese Analyse aus dem Filter entfernen"
+
+#: senaite/core/browser/samples/view.py:518
+msgid "Showing samples that contain:"
+msgstr "Angezeigt werden Proben, die Folgendes enthalten:"
 #: senaite/core/browser/dashboard/dashboard.py:368
 msgid "Samples awaiting collection of the sample"
 msgstr "Proben, die auf die Probenahme warten"

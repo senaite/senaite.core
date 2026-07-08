@@ -173,6 +173,13 @@ Disposing the sample locks the analysis:
     >>> check_permission(EditResults, analysis)
     False
 
+While the sample stays disposed, its locked analyses cannot be unlocked
+manually. The `unlock` transition is automatic and hidden: it only happens
+when the sample leaves its locking state (e.g. on `restore`):
+
+    >>> isTransitionAllowed(analysis, "unlock")
+    False
+
 Locked analyses are still listed together with the active ones (the
 "Valid" review state), so they do not disappear from the sample view:
 

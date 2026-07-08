@@ -37,7 +37,6 @@ from DateTime import DateTime
 from Products.CMFCore.WorkflowCore import WorkflowException
 from senaite.core.interfaces import IDispatched
 from senaite.core.interfaces import IDisposed
-from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
@@ -219,9 +218,13 @@ def after_detach(analysis_request):
     # And we mark the sample with IDetachedPartition
     alsoProvides(analysis_request, IDetachedPartition)
 
-    # Reindex both the parent and the detached one
+    # Reindex the detached sample and the ancestors it was detached from.
+    # Sample-level columns like getAnalysesNum and getAnalysesKeywords
+    # aggregate the analyses of the whole descendant tree, so every ancestor
+    # of the former parent must be refreshed too, not only the parent.
     analysis_request.reindexObject()
-    parent.reindexObject()
+    for ancestor in [parent] + parent.getAncestors(all_ancestors=True):
+        ancestor.reindexObject()
 
     # And the analyses too. aranalysesfield relies on a search against the
     # catalog to return the analyses: calling `getAnalyses` to the parent
@@ -247,9 +250,13 @@ def after_reattach(analysis_request):
     noLongerProvides(analysis_request, IDetachedPartition)
     alsoProvides(analysis_request, IAnalysisRequestPartition)
 
-    # Reindex both the parent and the reattached partition
+    # Reindex the reattached partition and the ancestors it is bound to.
+    # Sample-level columns like getAnalysesNum and getAnalysesKeywords
+    # aggregate the analyses of the whole descendant tree, so every ancestor
+    # must be refreshed too, not only the immediate parent.
     analysis_request.reindexObject()
-    parent.reindexObject()
+    for ancestor in [parent] + parent.getAncestors(all_ancestors=True):
+        ancestor.reindexObject()
 
     # The parent's aranalysesfield aggregates analyses via catalog search,
     # so reindex the partition's analyses to make them visible to the parent
@@ -311,18 +318,12 @@ def lock_analyses(sample):
 
 def restore_analyses(sample):
     """Bring the locked analyses of the sample back to the status they had
-    before they were locked
+    before they were locked, by triggering the "unlock" transition. Only
+    analyses in "locked" state whose sample no longer provides ILockingState
+    are unlocked (see `guard_unlock`); the rollback itself happens in the
+    analysis' `after_unlock` event.
     """
-    for analysis in sample.objectValues("Analysis"):
-        if api.get_review_status(analysis) != "locked":
-            continue
-        previous_state = api.get_previous_worfklow_status_of(
-            analysis, skip=["locked"], default="unassigned")
-        # Note: we pause the snapshots here because events are fired next
-        pause_snapshots_for(analysis)
-        changeWorkflowState(analysis, ANALYSIS_WORKFLOW, previous_state)
-        resume_snapshots_for(analysis)
-        analysis.reindexObject()
+    do_action_to_analyses(sample, "unlock")
 
 
 def after_dispose(sample):
