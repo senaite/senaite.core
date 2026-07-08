@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2962 Remove the obsolete RegulatoryInspector role
+- #2965 Filter samples by their analyses in the samples listing
 - #2975 Fix ExpressionError in edit-analysis modal
 - #2898 Add AllowManualEntry for select result options
 - #2967 Fix My Organization menu action hidden for client users

@@ -10,9 +10,21 @@
                    also clears any direct assignments), the group is removed
                    from portal_groups, and the role is dropped from the
                    portal's known roles."
+      source="2749"
+      destination="2750"
+      handler=".v02_07_000.remove_regulatory_inspector_role"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Expose getAnalysesKeywords as sample metadata"
+      description="Store the getAnalysesKeywords value as metadata in
+                   senaite_catalog_sample so the samples listing can display
+                   the contained analysis keywords and host the keyword
+                   filter. Existing samples are refreshed so the metadata is
+                   populated."
       source="2748"
       destination="2749"
-      handler=".v02_07_000.remove_regulatory_inspector_role"
+      handler=".v02_07_000.add_sample_analyses_keywords_metadata"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
