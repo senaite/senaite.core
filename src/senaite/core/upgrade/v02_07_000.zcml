@@ -9,9 +9,21 @@
                    sample state and the 'dispose' transition. The transition
                    stays unavailable until the Dispose workflow is enabled in
                    the setup."
+      source="2749"
+      destination="2750"
+      handler=".v02_07_000.setup_dispose_transition"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Expose getAnalysesKeywords as sample metadata"
+      description="Store the getAnalysesKeywords value as metadata in
+                   senaite_catalog_sample so the samples listing can display
+                   the contained analysis keywords and host the keyword
+                   filter. Existing samples are refreshed so the metadata is
+                   populated."
       source="2748"
       destination="2749"
-      handler=".v02_07_000.setup_dispose_transition"
+      handler=".v02_07_000.add_sample_analyses_keywords_metadata"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
