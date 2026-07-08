@@ -298,6 +298,23 @@ def guard_dispose(sample):
     return True
 
 
+def guard_dispose(sample):
+    """Checks if the dispose transition is allowed
+
+    The transition is only available when the dispose workflow is enabled in
+    the setup. We prevent disposing when one analysis is assigned to a
+    worksheet.
+    """
+    setup = api.get_senaite_setup()
+    if not setup or not setup.getDisposeWorkflowEnabled():
+        return False
+
+    for analysis in sample.getAnalyses():
+        if api.get_workflow_status_of(analysis) == "assigned":
+            return False
+    return True
+
+
 def guard_restore(sample):
     """Checks if the restore transition is allowed
     """

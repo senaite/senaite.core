@@ -6,6 +6,7 @@ Changelog
 
 - #2971 Make the Sample Dispatch workflow optional and lock analyses on dispatch
 - #2970 Add an optional Sample Dispose workflow
+- #2970 Add an optional Sample Dispose workflow
 - #2969 Speed up the getClientTitle reindex upgrade step with partial metadata refresh
 - #2977 Fix KeyError on AllowManualEntry when importing result options without the column
 - #2968 Support partial catalog metadata refresh and quiet per-object multiplex logging
