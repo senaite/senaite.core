@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2977 Fix KeyError on AllowManualEntry when importing result options without the column
 - #2965 Filter samples by their analyses in the samples listing
 - #2975 Fix ExpressionError in edit-analysis modal
 - #2898 Add AllowManualEntry for select result options
