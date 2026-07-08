@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2968 Support partial catalog metadata refresh and quiet per-object multiplex logging
 - #2965 Filter samples by their analyses in the samples listing
 - #2975 Fix ExpressionError in edit-analysis modal
 - #2898 Add AllowManualEntry for select result options
