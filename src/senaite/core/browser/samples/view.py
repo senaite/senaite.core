@@ -377,6 +377,7 @@ class SamplesView(ListingView):
             }, {
                 "id": "dispatched",
                 "title": _("Dispatched"),
+                "flat_listing": True,
                 "confirm_transitions": ["restore"],
                 "contentFilter": {
                     "review_state": ("dispatched"),
@@ -507,12 +508,19 @@ class SamplesView(ListingView):
         """Before template render hook
         """
         super(SamplesView, self).before_render()
+        # A flat listing (e.g. the dispatched/disposed pools, or add-ons such
+        # as senaite.storage for stored samples) shows every matching sample
+        # as its own row, partitions included and without nesting. Include the
+        # partitions in the query and leave the orphan handling disabled (see
+        # `show_partitions` and `search`).
+        if self.flat_listing:
+            self.contentFilter.pop("isRootAncestor", None)
         # When partitions must not be shown at all (e.g. a client contact
         # with the "Show Partitions" setting disabled), restrict the query to
         # root samples. Otherwise include partitions in the query: nested ones
         # are filtered out in `search`, leaving root samples and orphaned
         # partitions (those whose primary is not part of the result).
-        if not self.show_partitions:
+        elif not self.show_partitions:
             self.contentFilter["isRootAncestor"] = True
         else:
             self.contentFilter.pop("isRootAncestor", None)
@@ -528,6 +536,9 @@ class SamplesView(ListingView):
         """
         brains = super(SamplesView, self).search(
             searchterm=searchterm, ignorecase=ignorecase)
+        if self.flat_listing:
+            # Flat pool: show every matching sample on its own, no nesting
+            return brains
         return self.hide_nested_partitions(brains)
 
     def hide_nested_partitions(self, brains):
@@ -958,7 +969,22 @@ class SamplesView(ListingView):
 
     @property
     def show_partitions(self):
+        if self.flat_listing:
+            # Flat listing: every sample (partitions included) is rendered as
+            # a top-level row, so no parent/children nesting is wired up
+            return False
         if api.get_current_client():
             # If current user is a client contact, delegate to ShowPartitions
             return api.get_senaite_setup().getShowPartitions()
         return True
+
+    @property
+    def flat_listing(self):
+        """Whether the current review state renders as a flat pool of samples
+
+        A flat listing shows every matching sample on its own row, partitions
+        included and without nesting or orphan-hiding. Used by the
+        dispatched/disposed states and by add-ons such as senaite.storage
+        (stored samples).
+        """
+        return self.review_state.get("flat_listing", False)

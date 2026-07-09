@@ -124,3 +124,33 @@ listed row, so a nested partition does not carry a parent reference:
     True
     >>> api.get_uid(part1) in view._listed_uids
     False
+
+
+Flat listings render every sample on its own, without nesting
+.............................................................
+
+Some review states (e.g. the dispatched/disposed pools, or the stored
+samples added by senaite.storage) are flat pools: every matching sample,
+partitions included, is shown as a top-level row. Such a state carries a
+`flat_listing` flag:
+
+    >>> view = SamplesView(portal, request)
+    >>> state_key = "%s_review_state" % view.form_id
+
+    >>> request.form[state_key] = "dispatched"
+    >>> view.flat_listing
+    True
+
+A flat listing disables the partition nesting, so `folderitem` wires up no
+parent/children references:
+
+    >>> view.show_partitions
+    False
+
+A regular review state keeps the orphan-nesting behavior:
+
+    >>> request.form[state_key] = "default"
+    >>> view.flat_listing
+    False
+    >>> view.show_partitions
+    True
