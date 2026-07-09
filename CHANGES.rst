@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2981 Forward results override flags to custom auto-import adapters
 - #2978 Move front page and landing page fields to the Appearance fieldset
 - #2973 Add PublishTraverseView/JSONView base browser views for AJAX endpoints
 - #2974 Do not offer all sticker templates to content types without a sticker adapter
