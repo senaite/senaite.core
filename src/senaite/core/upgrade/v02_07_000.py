@@ -101,6 +101,27 @@ PORTAL_FOLDER_ITEMS = {
 
 
 @upgradestep(product, version)
+def reindex_organisation_title(tool):
+    """Rebuild the `title` index in the setup and client catalogs with
+    unicode keys.
+
+    The organisation `title` indexer returned the raw `Name`, so a non-ASCII
+    organisation name (Client, Supplier, Manufacturer, Laboratory) ended up as
+    a byte-string key in the shared `title` FieldIndex. Any query on `title`
+    then raised a UnicodeDecodeError when comparing the unicode query value
+    against those keys. The indexer now normalizes to unicode; the index BTree
+    must be cleared before reindexing (a plain per-object reindex would insert
+    a unicode key next to the old byte-string keys and hit the same error), so
+    `rebuild_index` clears and repopulates it with unicode keys only.
+    """
+    for catalog_id in [SETUP_CATALOG, CLIENT_CATALOG]:
+        catalog = api.get_tool(catalog_id)
+        logger.info("Rebuilding 'title' index on %s ..." % catalog_id)
+        rebuild_index(catalog, "title")
+    logger.info("Rebuilding 'title' index [DONE]")
+
+
+@upgradestep(product, version)
 def upgrade(tool):
     portal = tool.aq_inner.aq_parent
     ut = UpgradeUtils(portal)
