@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2985 Add a SENAITE-specific Manage Viewlets view
 - #2982 Fix auto log-off logging out active users (session refresh interval)
 - #2978 Move front page and landing page fields to the Appearance fieldset
 - #2973 Add PublishTraverseView/JSONView base browser views for AJAX endpoints

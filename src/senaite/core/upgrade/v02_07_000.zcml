@@ -3,6 +3,16 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Hide unused viewlets"
+      description="Hide the analytics, keywords, next/previous navigation and
+                   related items viewlets, which are not used in SENAITE, by
+                   reimporting the viewlets step."
+      source="2750"
+      destination="2751"
+      handler=".v02_07_000.hide_legacy_viewlets"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Register the 'dispose' sample workflow transition"
       description="Register the new `senaite.core: Transition: Dispose Sample`
                    permission (granted to LabManager, Manager), the 'disposed'

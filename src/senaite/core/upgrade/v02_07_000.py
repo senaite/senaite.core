@@ -101,6 +101,19 @@ PORTAL_FOLDER_ITEMS = {
 
 
 @upgradestep(product, version)
+def hide_legacy_viewlets(tool):
+    """Hide the analytics, keywords, next/previous navigation and related
+    items viewlets, which are not used in SENAITE, by reimporting the
+    viewlets step.
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    logger.info("Hiding unused viewlets ...")
+    setup.runImportStepFromProfile(profile, "viewlets")
+    logger.info("Hiding unused viewlets [DONE]")
+
+
+@upgradestep(product, version)
 def upgrade(tool):
     portal = tool.aq_inner.aq_parent
     ut = UpgradeUtils(portal)
