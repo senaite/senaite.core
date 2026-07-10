@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2986 Fix UnicodeDecodeError from non-ASCII organisation titles in the title index
+- #2976 Surface orphaned sample partitions as top-level rows in listings
 - #2982 Fix auto log-off logging out active users (session refresh interval)
 - #2978 Move front page and landing page fields to the Appearance fieldset
 - #2973 Add PublishTraverseView/JSONView base browser views for AJAX endpoints
