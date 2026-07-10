@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2984 Hide the Manage Portlets menu from the toolbar
+- #2976 Surface orphaned sample partitions as top-level rows in listings
 - #2982 Fix auto log-off logging out active users (session refresh interval)
 - #2978 Move front page and landing page fields to the Appearance fieldset
 - #2973 Add PublishTraverseView/JSONView base browser views for AJAX endpoints
