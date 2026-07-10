@@ -178,16 +178,26 @@ class StickerView(BrowserView):
         """
         templates = []
 
-        adapters = self.get_sticker_template_adapters()
-        if adapters is not None:
-            # Gather all templates
-            for name, adapter in adapters:
-                templates += adapter(self.request)
+        # `getAdapters` yields a generator, so materialize it to tell "no
+        # adapter registered" apart from "adapter returned no templates".
+        adapters = list(self.get_sticker_template_adapters())
+        has_adapter = len(adapters) > 0
+        # Gather all templates offered by the registered adapters
+        for name, adapter in adapters:
+            templates += adapter(self.request)
 
         if templates:
             return templates
 
-        # If there are no adapters, get all sticker templates available
+        # A context with no sticker adapter at all must not be offered the
+        # whole catalog: return nothing unless an explicit type filter narrows
+        # the templates down to a subfolder. Contexts that do have an adapter
+        # (even one returning no templates) keep falling back below.
+        if not has_adapter and not self.filter_by_type:
+            return templates
+
+        # No adapter templates: fall back to the on-disk sticker templates,
+        # scoped by the type filter when given.
         selected_template = self.get_selected_template()
         for temp in get_sticker_templates(filter_by_type=self.filter_by_type):
             out = temp

@@ -19,21 +19,18 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.api.security import check_permission
-from bika.lims.decorators import returns_json
-from Products.Five.browser import BrowserView
 from senaite.core.api import label as label_api
+from senaite.core.browser.views import JSONView
 from senaite.core.config.labels import SAMPLE_LABEL_REINDEX
+from senaite.core.decorators import json_require_permission
+from senaite.core.decorators import returns_json
 from senaite.core.permissions import ManageLabels
-from zope.interface import implementer
-from zope.publisher.interfaces import IPublishTraverse
 
 
-@implementer(IPublishTraverse)
-class LabelsAPI(BrowserView):
+class LabelsAPI(JSONView):
     """JSON endpoint for label management.
 
-    Routes are dispatched via subpath traversal:
+    Routes are dispatched via subpath traversal (see `JSONView`):
 
     - `<context>/@@labels/add` — POST: add one or more labels to
       the context object. Auto-creates the corresponding `Label`
@@ -63,31 +60,21 @@ class LabelsAPI(BrowserView):
     `senaite.core.api.label.parse_label_csv`.
     """
 
-    def __init__(self, context, request):
-        super(LabelsAPI, self).__init__(context, request)
-        self.traverse_subpath = []
-
-    def publishTraverse(self, request, name):
-        self.traverse_subpath.append(name)
-        return self
-
-    def __call__(self):
-        if len(self.traverse_subpath) != 1:
-            return self._not_found()
-        route = self.traverse_subpath[0]
-        handler = getattr(self, "_route_{}".format(route), None)
-        if handler is None:
-            return self._not_found()
-        return handler()
+    @returns_json
+    def handle_not_found(self):
+        self.request.response.setStatus(404)
+        return {
+            "success": False,
+            "error": "Unknown route. Use one of: add, remove, available",
+        }
 
     # ------------------------------------------------------------------
     # Routes
     # ------------------------------------------------------------------
 
     @returns_json
-    def _route_add(self):
-        if not check_permission(ManageLabels, self.context):
-            return self._forbidden()
+    @json_require_permission(ManageLabels)
+    def ajax_add(self):
         labels = self._read_submitted_labels()
         if not labels:
             return self._empty_input()
@@ -99,9 +86,8 @@ class LabelsAPI(BrowserView):
         return {"success": True, "labels": list(new_labels)}
 
     @returns_json
-    def _route_remove(self):
-        if not check_permission(ManageLabels, self.context):
-            return self._forbidden()
+    @json_require_permission(ManageLabels)
+    def ajax_remove(self):
         labels = self._read_submitted_labels()
         if not labels:
             return self._empty_input()
@@ -110,7 +96,7 @@ class LabelsAPI(BrowserView):
         return {"success": True, "labels": list(new_labels)}
 
     @returns_json
-    def _route_available(self):
+    def ajax_available(self):
         brains = label_api.query_labels()
         labels = []
         for brain in brains:
@@ -153,24 +139,11 @@ class LabelsAPI(BrowserView):
             values.append(multi)
         return label_api.parse_label_csv(values)
 
-    @returns_json
     def _empty_input(self):
+        # Returns a payload; the calling `returns_json` route serializes it
         self.request.response.setStatus(400)
         return {
             "success": False,
             "error": "No labels submitted",
             "labels": list(label_api.get_obj_labels(self.context)),
-        }
-
-    @returns_json
-    def _forbidden(self):
-        self.request.response.setStatus(403)
-        return {"success": False, "error": "Forbidden"}
-
-    @returns_json
-    def _not_found(self):
-        self.request.response.setStatus(404)
-        return {
-            "success": False,
-            "error": "Unknown route. Use one of: add, remove, available",
         }

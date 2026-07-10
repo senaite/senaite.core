@@ -100,8 +100,11 @@ class SamplesView(ListingView):
         self.contentFilter = {
             "sort_on": "created",
             "sort_order": "descending",
-            "isRootAncestor": True,  # only root ancestors
         }
+        # UIDs of the samples displayed as top-level rows in the current
+        # result set. Populated in `search`, used to decide whether a
+        # partition nests under a listed primary or shows up on its own.
+        self._listed_uids = set()
         # Per-request cache for SampleType brain lookups; shared
         # across all folderitem calls within a single render.
         self._hazard_cache = {}
@@ -505,10 +508,55 @@ class SamplesView(ListingView):
         """Before template render hook
         """
         super(SamplesView, self).before_render()
-        # remove query filter for root samples when listing is flat
+        # A flat listing (e.g. the dispatched/disposed pools, or add-ons such
+        # as senaite.storage for stored samples) shows every matching sample
+        # as its own row, partitions included and without nesting. Include the
+        # partitions in the query and leave the orphan handling disabled (see
+        # `show_partitions` and `search`).
         if self.flat_listing:
             self.contentFilter.pop("isRootAncestor", None)
+        # When partitions must not be shown at all (e.g. a client contact
+        # with the "Show Partitions" setting disabled), restrict the query to
+        # root samples. Otherwise include partitions in the query: nested ones
+        # are filtered out in `search`, leaving root samples and orphaned
+        # partitions (those whose primary is not part of the result).
+        elif not self.show_partitions:
+            self.contentFilter["isRootAncestor"] = True
+        else:
+            self.contentFilter.pop("isRootAncestor", None)
 
+    def search(self, searchterm="", ignorecase=True):
+        """Search the catalog and hide partitions that nest under a primary
+        sample present in the same result set.
+
+        A partition is only listed as a top-level row when its primary is not
+        part of the result (e.g. a single disposed partition of an otherwise
+        active sample). This keeps pagination correct because the filtering
+        happens here, before the total is counted and the page is sliced.
+        """
+        brains = super(SamplesView, self).search(
+            searchterm=searchterm, ignorecase=ignorecase)
+        if self.flat_listing:
+            # Flat pool: show every matching sample on its own, no nesting
+            return brains
+        return self.hide_nested_partitions(brains)
+
+    def hide_nested_partitions(self, brains):
+        """Drop partitions whose primary sample is present in the result set
+        """
+        # Record the UIDs of all matching samples so folderitem can tell
+        # whether a partition nests under a listed primary
+        listed_uids = set(map(api.get_uid, brains))
+
+        def is_listed(brain):
+            # A sample is listed on its own when it is a root sample or when
+            # its primary is not part of the current result set
+            parent_uid = brain.getRawParentAnalysisRequest
+            return not parent_uid or parent_uid not in listed_uids
+
+        brains = filter(is_listed, brains)
+        self._listed_uids = set(map(api.get_uid, brains))
+        return brains
     @view.memoize
     def get_current_column_filters(self):
         """Return the active column filters for this listing render
@@ -744,7 +792,13 @@ class SamplesView(ListingView):
 
         # Parent and children partitions
         if self.show_partitions:
-            item["parent"] = obj.getRawParentAnalysisRequest
+            # Only nest under the primary when it is listed as well. An
+            # orphaned partition surfaced as a top-level row must not carry a
+            # parent, otherwise it would be rendered (and hidden) as a child.
+            parent_uid = obj.getRawParentAnalysisRequest
+            if parent_uid not in self._listed_uids:
+                parent_uid = ""
+            item["parent"] = parent_uid
             item["children"] = obj.getDescendantsUIDs or []
 
         return item
@@ -918,6 +972,8 @@ class SamplesView(ListingView):
     @property
     def show_partitions(self):
         if self.flat_listing:
+            # Flat listing: every sample (partitions included) is rendered as
+            # a top-level row, so no parent/children nesting is wired up
             return False
         if api.get_current_client():
             # If current user is a client contact, delegate to ShowPartitions
@@ -926,4 +982,11 @@ class SamplesView(ListingView):
 
     @property
     def flat_listing(self):
+        """Whether the current review state renders as a flat pool of samples
+
+        A flat listing shows every matching sample on its own row, partitions
+        included and without nesting or orphan-hiding. Used by the
+        dispatched/disposed states and by add-ons such as senaite.storage
+        (stored samples).
+        """
         return self.review_state.get("flat_listing", False)

@@ -25,6 +25,7 @@ import six
 from AccessControl import ClassSecurityInfo
 from bika.lims import _
 from bika.lims import api
+from bika.lims import logger
 from plone.app.textfield import IRichTextValue
 from plone.app.textfield.widget import RichTextFieldWidget  # TBD: port to core
 from plone.autoform import directives
@@ -1343,6 +1344,8 @@ class ISetupSchema(model.Schema):
         "appearance",
         label=_(u"Appearance"),
         fields=[
+            "dashboard_by_default",
+            "landing_page",
             "worksheet_layout",
             "show_partitions",
             "site_logo",
@@ -1708,6 +1711,15 @@ class Setup(Container):
     @security.protected(permissions.ModifyPortalContent)
     def setAutoLogOff(self, value):
         """Set session lifetime in minutes
+
+        Writes the plone.session cookie `timeout` (in seconds) and keeps the
+        plugin's `refresh_interval` strictly below `timeout`, so that an
+        *active* user's session cookie is renewed by the refresh beacon before
+        it expires. plone.session does not refresh the ticket on regular
+        requests, so it treats `timeout` as an absolute lifetime from login;
+        without this a short auto log-off would log out users while they are
+        actively working, not only when idle. A value of 0 disables auto
+        log-off (the cookie never expires).
         """
         value = api.to_int(value, default=0)
         if value < 0:
@@ -1715,8 +1727,18 @@ class Setup(Container):
         value = value * 60
         acl = api.get_tool("acl_users")
         session = acl.get("session")
-        if session:
+        if session is None:
+            logger.warn(
+                "No 'session' plugin found in acl_users. Cannot set the "
+                "auto log-off timeout (%s seconds)" % value)
+        else:
             session.timeout = value
+            # Keep the refresh beacon ahead of expiry. Only adjust when the
+            # current interval would defeat the timeout (disabled, or >=
+            # timeout), so a manually-tuned lower interval is preserved.
+            if value and (session.refresh_interval < 0
+                          or session.refresh_interval >= value):
+                session.refresh_interval = max(60, value // 2)
         mutator = self.mutator("auto_log_off")
         return mutator(self, value // 60)
 
