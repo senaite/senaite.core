@@ -8,6 +8,7 @@ import QuerySelectWidgetController from "./queryselect/widget.js";
 import AddressWidgetController from "./addresswidget/widget.js";
 import SelectOtherWidgetController from "./selectother/widget.js";
 import MultiUploadWidgetController from "./multiupload/widget.js";
+import RemarksWidgetController from "./remarks/widget.js";
 
 // Helper to render React components safely using createRoot
 const safeRender = (Component, el, props = {}) => {
@@ -131,6 +132,14 @@ export const render_selectother_widget = (el) => {
 export const render_multiupload_widget = (el) => {
   const ref = safeRender(MultiUploadWidgetController, el, {
     root_class: "multiuploadfield",
+  });
+  return ref;
+};
+
+// Remarks Widget
+export const render_remarks_widget = (el) => {
+  const ref = safeRender(RemarksWidgetController, el, {
+    root_class: "remarksfield",
   });
   return ref;
 };

@@ -80,7 +80,7 @@ class CatalogMultiplexProcessor(object):
         url = api.get_path(obj)
 
         for catalog in catalogs:
-            logger.info(
+            logger.debug(
                 "CatalogMultiplexProcessor::indexObject:catalog={} url={}"
                 .format(catalog.id, url))
             catalog._indexObject(obj)
@@ -96,7 +96,7 @@ class CatalogMultiplexProcessor(object):
         url = api.get_path(obj)
 
         for catalog in catalogs:
-            logger.info(
+            logger.debug(
                 "CatalogMultiplexProcessor::reindexObject:catalog={} url={}"
                 .format(catalog.id, url))
             # Intersection of the catalogs indexes and the incoming attributes
@@ -119,7 +119,7 @@ class CatalogMultiplexProcessor(object):
 
         for catalog in catalogs:
             if catalog._catalog.uids.get(url, None) is not None:
-                logger.info(
+                logger.debug(
                     "CatalogMultiplexProcessor::unindex:catalog={} url={}"
                     .format(catalog.id, url))
                 catalog._unindexObject(wrapped_obj)

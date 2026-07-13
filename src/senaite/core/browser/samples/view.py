@@ -19,7 +19,11 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
+import json
+from cgi import escape as html_escape
 from string import Template
+
+from six.moves.urllib.parse import quote
 
 from bika.lims import _
 from bika.lims import api
@@ -45,6 +49,9 @@ from senaite.core.permissions import AddAnalysisRequest
 from senaite.core.permissions import TransitionSampleSample
 from senaite.core.permissions.worksheet import can_add_worksheet
 from zope.interface import implementer
+
+# Catalog index / metadata column holding the analysis keywords of a sample
+ANALYSES_KEYWORDS_INDEX = "getAnalysesKeywords"
 
 ANALYSES_NUM_TPL = Template("$not_submitted/$to_be_verified/$verified/$total")
 ANALYSES_NUM_TPL_HTML = Template("""<div class="d-flex flex-row">
@@ -83,6 +90,8 @@ class SamplesView(ListingView):
     edit_icon_column = "getId"
     # Open the SENAITE sample view (not the generic /edit form)
     edit_view = ""
+    # Pin label chips under the Sample ID column
+    label_target_column = "getId"
 
     def __init__(self, context, request):
         super(SamplesView, self).__init__(context, request)
@@ -91,8 +100,11 @@ class SamplesView(ListingView):
         self.contentFilter = {
             "sort_on": "created",
             "sort_order": "descending",
-            "isRootAncestor": True,  # only root ancestors
         }
+        # UIDs of the samples displayed as top-level rows in the current
+        # result set. Populated in `search`, used to decide whether a
+        # partition nests under a listed primary or shows up on its own.
+        self._listed_uids = set()
         # Per-request cache for SampleType brain lookups; shared
         # across all folderitem calls within a single render.
         self._hazard_cache = {}
@@ -232,6 +244,12 @@ class SamplesView(ListingView):
                 "sortable": True,
                 "index": "getAnalysesNum",
                 "toggle": False}),
+            ("getAnalysesKeywords", {
+                "title": _("Analyses"),
+                "alt": _("Keywords of the analyses contained in the sample"),
+                "index": "getAnalysesKeywords",
+                "sortable": False,
+                "toggle": False}),
             ("getTemplateTitle", {
                 "title": _("Template"),
                 "sortable": True,
@@ -369,6 +387,18 @@ class SamplesView(ListingView):
                 "custom_transitions": [],
                 "columns": self.columns.keys(),
             }, {
+                "id": "disposed",
+                "title": _("Disposed"),
+                "flat_listing": True,
+                "confirm_transitions": ["restore"],
+                "contentFilter": {
+                    "review_state": ("disposed"),
+                    "sort_on": "created",
+                    "sort_order": "descending",
+                },
+                "custom_transitions": [],
+                "columns": self.columns.keys(),
+            }, {
                 "id": "cancelled",
                 "title": _("Cancelled"),
                 "contentFilter": {
@@ -478,9 +508,106 @@ class SamplesView(ListingView):
         """Before template render hook
         """
         super(SamplesView, self).before_render()
-        # remove query filter for root samples when listing is flat
+        # A flat listing (e.g. the dispatched/disposed pools, or add-ons such
+        # as senaite.storage for stored samples) shows every matching sample
+        # as its own row, partitions included and without nesting. Include the
+        # partitions in the query and leave the orphan handling disabled (see
+        # `show_partitions` and `search`).
         if self.flat_listing:
             self.contentFilter.pop("isRootAncestor", None)
+        # When partitions must not be shown at all (e.g. a client contact
+        # with the "Show Partitions" setting disabled), restrict the query to
+        # root samples. Otherwise include partitions in the query: nested ones
+        # are filtered out in `search`, leaving root samples and orphaned
+        # partitions (those whose primary is not part of the result).
+        elif not self.show_partitions:
+            self.contentFilter["isRootAncestor"] = True
+        else:
+            self.contentFilter.pop("isRootAncestor", None)
+
+    def search(self, searchterm="", ignorecase=True):
+        """Search the catalog and hide partitions that nest under a primary
+        sample present in the same result set.
+
+        A partition is only listed as a top-level row when its primary is not
+        part of the result (e.g. a single disposed partition of an otherwise
+        active sample). This keeps pagination correct because the filtering
+        happens here, before the total is counted and the page is sliced.
+        """
+        brains = super(SamplesView, self).search(
+            searchterm=searchterm, ignorecase=ignorecase)
+        if self.flat_listing:
+            # Flat pool: show every matching sample on its own, no nesting
+            return brains
+        return self.hide_nested_partitions(brains)
+
+    def hide_nested_partitions(self, brains):
+        """Drop partitions whose primary sample is present in the result set
+        """
+        # Record the UIDs of all matching samples so folderitem can tell
+        # whether a partition nests under a listed primary
+        listed_uids = set(map(api.get_uid, brains))
+
+        def is_listed(brain):
+            # A sample is listed on its own when it is a root sample or when
+            # its primary is not part of the current result set
+            parent_uid = brain.getRawParentAnalysisRequest
+            return not parent_uid or parent_uid not in listed_uids
+
+        brains = filter(is_listed, brains)
+        self._listed_uids = set(map(api.get_uid, brains))
+        return brains
+    @view.memoize
+    def get_current_column_filters(self):
+        """Return the active column filters for this listing render
+        """
+        return dict(self.get_column_filters() or {})
+
+    def get_active_keywords(self):
+        """Return the analysis keywords the listing is filtered by
+        """
+        raw = self.get_current_column_filters().get(
+            ANALYSES_KEYWORDS_INDEX, "")
+        return [kw.strip() for kw in raw.split(",") if kw.strip()]
+
+    def get_keyword_filter_url(self, keyword):
+        """Return a URL that toggles the keyword in the analyses filter
+
+        The keyword is added when not yet active and removed when already
+        active, so chips accumulate into an AND filter across keywords.
+        """
+        active = self.get_active_keywords()
+        if keyword in active:
+            active = [kw for kw in active if kw != keyword]
+        else:
+            active = active + [keyword]
+        column_filters = dict(self.get_current_column_filters())
+        if active:
+            column_filters[ANALYSES_KEYWORDS_INDEX] = ",".join(sorted(active))
+        else:
+            column_filters.pop(ANALYSES_KEYWORDS_INDEX, None)
+        query = json.dumps(column_filters)
+        return "?{}_column_filters={}".format(self.form_id, quote(query))
+
+    def render_keyword_filter_chip(self, keyword, active_keywords):
+        """Render an analysis keyword as a clickable, toggleable filter chip
+        """
+        href = html_escape(self.get_keyword_filter_url(keyword), quote=True)
+        if keyword in active_keywords:
+            title = t(_("Remove this analysis from the filter"))
+            css = "analysis-keyword-filter active"
+            style = "text-decoration:none;font-weight:bold"
+        else:
+            title = t(_("Filter samples by this analysis"))
+            css = "analysis-keyword-filter"
+            style = "text-decoration:none"
+        title = html_escape(title, quote=True)
+        return (
+            u'<a href="{href}" class="{css}" '
+            u'title="{title}" style="{style}">'
+            u'<code>{keyword}</code></a>'
+        ).format(href=href, css=css, title=title, style=style,
+                 keyword=html_escape(keyword))
 
     def folderitem(self, obj, item, index):
         # Read everything from brain metadata; only wake the sample
@@ -531,6 +658,17 @@ class SamplesView(ListingView):
                 ANALYSES_NUM_TPL_HTML.safe_substitute(numbers)
         else:
             item["getAnalysesNum"] = ""
+
+        # Analyses keywords (read from brain metadata, list of keywords)
+        keywords = obj.getAnalysesKeywords
+        if not isinstance(keywords, (list, tuple)):
+            keywords = []
+        keywords = sorted(keywords)
+        item["getAnalysesKeywords"] = ", ".join(keywords)
+        active_keywords = self.get_active_keywords()
+        item["replace"]["getAnalysesKeywords"] = " ".join(
+            [self.render_keyword_filter_chip(kw, active_keywords)
+             for kw in keywords])
 
         # Progress
         progress_perc = obj.getProgress
@@ -654,7 +792,13 @@ class SamplesView(ListingView):
 
         # Parent and children partitions
         if self.show_partitions:
-            item["parent"] = obj.getRawParentAnalysisRequest
+            # Only nest under the primary when it is listed as well. An
+            # orphaned partition surfaced as a top-level row must not carry a
+            # parent, otherwise it would be rendered (and hidden) as a child.
+            parent_uid = obj.getRawParentAnalysisRequest
+            if parent_uid not in self._listed_uids:
+                parent_uid = ""
+            item["parent"] = parent_uid
             item["children"] = obj.getDescendantsUIDs or []
 
         return item
@@ -678,6 +822,8 @@ class SamplesView(ListingView):
             remove_filters.append("to_be_preserved")
         if not setup.getRejectionReasons():
             remove_filters.append("rejected")
+        if not setup.getDisposeWorkflowEnabled():
+            remove_filters.append("disposed")
 
         self.review_states = filter(lambda r: r.get("id") not in remove_filters,
                                     self.review_states)
@@ -718,6 +864,17 @@ class SamplesView(ListingView):
                     api.get_url(self.context)),
                 "css_class": "btn btn-outline-secondary",
                 "help": _("Create a new worksheet for the selected samples")
+            })
+
+        # Allow to add labels to the selected samples
+        if self.can_manage_labels():
+            custom_transitions.append({
+                "id": "modal_manage_labels",
+                "title": _("Labels"),
+                "url": "{}/manage_labels_modal".format(
+                    api.get_url(self.context)),
+                "css_class": "btn btn-outline-secondary",
+                "help": _("Add or remove labels on the selected samples"),
             })
 
         for rv in self.review_states:
@@ -813,6 +970,8 @@ class SamplesView(ListingView):
     @property
     def show_partitions(self):
         if self.flat_listing:
+            # Flat listing: every sample (partitions included) is rendered as
+            # a top-level row, so no parent/children nesting is wired up
             return False
         if api.get_current_client():
             # If current user is a client contact, delegate to ShowPartitions
@@ -821,4 +980,11 @@ class SamplesView(ListingView):
 
     @property
     def flat_listing(self):
+        """Whether the current review state renders as a flat pool of samples
+
+        A flat listing shows every matching sample on its own row, partitions
+        included and without nesting or orphan-hiding. Used by the
+        dispatched/disposed states and by add-ons such as senaite.storage
+        (stored samples).
+        """
         return self.review_state.get("flat_listing", False)

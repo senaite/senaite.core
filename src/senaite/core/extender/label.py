@@ -23,13 +23,14 @@ from archetypes.schemaextender.interfaces import IOrderableSchemaExtender
 from archetypes.schemaextender.interfaces import ISchemaExtender
 from archetypes.schemaextender.interfaces import ISchemaModifier
 from bika.lims import senaiteMessageFactory as _
-from Products.CMFCore import permissions
 from senaite.core.browser.widgets.queryselect import QuerySelectWidget
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.config.fields import AT_LABEL_FIELD
 from senaite.core.extender import ExtLabelField
 from senaite.core.interfaces import ICanHaveLabels
 from senaite.core.interfaces import ISenaiteCore
+from senaite.core.permissions import ManageLabels
+from senaite.core.permissions import ViewLabels
 from zope.component import adapts
 from zope.interface import implements
 
@@ -51,8 +52,11 @@ class LabelSchemaExtender(object):
             required=False,
             mode="rw",
             schemata="Labels",
-            read_permission=permissions.View,
-            write_permission=permissions.ModifyPortalContent,
+            # Same gating as the listing chips and the modal:
+            # client users (no ViewLabels) see neither the field nor
+            # the chooser; only ManageLabels can write.
+            read_permission=ViewLabels,
+            write_permission=ManageLabels,
             widget=QuerySelectWidget(
                 label=_("Labels"),
                 description=_("Attached labels"),

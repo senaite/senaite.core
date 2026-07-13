@@ -5,6 +5,28 @@ Changelog
 ------------------
 
 - #2931 Fix Laboratory address widget labels for countries with mixed subdivision types
+- #2976 Surface orphaned sample partitions as top-level rows in listings
+- #2982 Fix auto log-off logging out active users (session refresh interval)
+- #2978 Move front page and landing page fields to the Appearance fieldset
+- #2973 Add PublishTraverseView/JSONView base browser views for AJAX endpoints
+- #2974 Do not offer all sticker templates to content types without a sticker adapter
+- #2970 Add an optional Sample Dispose workflow
+- #2969 Speed up the getClientTitle reindex upgrade step with partial metadata refresh
+- #2977 Fix KeyError on AllowManualEntry when importing result options without the column
+- #2968 Support partial catalog metadata refresh and quiet per-object multiplex logging
+- #2965 Filter samples by their analyses in the samples listing
+- #2975 Fix ExpressionError in edit-analysis modal
+- #2898 Add AllowManualEntry for select result options
+- #2967 Fix My Organization menu action hidden for client users
+- #2966 Fix UnicodeDecodeError when filtering samples by a non-ASCII client name
+- #2964 Improve dashboard panel links, tooltips, and workflow-ordered chart legends
+- #2963 Show analysis service keyword as code across service listings
+- #2959 Refactor Remarks into a reusable React widget with edit and version history
+- #2961 Expose React and ReactDOM globally for SENAITE add-ons
+- #2960 Set multipart enctype on the sample header form so file uploads persist
+- #2957 Harmonize form input widths via tunable CSS variables
+- #2956 Restrict client discount fields to lab staff
+- #2958 Add labels with colors, filtering, and bulk-manage modal for samples
 - #2953 Fix IClientAwareMixin interface mismatch breaking client access on DX content
 - #2955 Defer workflow transition lookup with a React content-menu component
 - #2954 Declare i18n:domain on duration widget templates

@@ -65,6 +65,11 @@ class IPhoneWidget(IWidget):
     """
 
 
+class IColorWidget(IWidget):
+    """Input type "color" widget — renders the native HTML5 picker.
+    """
+
+
 class IQuerySelectWidget(IWidget):
     """Allows to search and select a value
     """

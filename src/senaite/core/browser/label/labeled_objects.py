@@ -23,6 +23,7 @@ import collections
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import get_link_for
+from plone.memoize import view
 from senaite.core.i18n import translate as t
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.browser.listing.base import ListingView
@@ -77,13 +78,6 @@ class LabeledObjectsView(ListingView):
         ]
 
     def folderitem(self, obj, item, index):
-        """Service triggered each time an item is iterated in folderitems.
-        The use of this service prevents the extra-loops in child objects.
-        :obj: the instance of the class to be foldered
-        :item: dict containing the properties of the object to be used by
-            the template
-        :index: current index of the item
-        """
         obj = api.get_object(obj)
         labels = label_api.get_obj_labels(obj)
         portal_type = api.get_portal_type(obj)
@@ -98,9 +92,15 @@ class LabeledObjectsView(ListingView):
 
         return item
 
+    @view.memoize
+    def _label_colors(self):
+        return label_api.get_label_colors()
+
     def render_labels(self, labels):
+        colors = self._label_colors()
         template = ViewPageTemplateFile("templates/object_labels.pt")
-        return template(self, labels=labels)
+        return template(self, labels=labels, colors=colors,
+                        chip_style=label_api.chip_style)
 
     def folderitems(self):
         items = super(LabeledObjectsView, self).folderitems()
