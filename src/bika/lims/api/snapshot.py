@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
+from collections import Counter
 
 import six
 from bika.lims import _
@@ -33,6 +34,7 @@ from persistent.list import PersistentList
 from plone.memoize.ram import cache
 from senaite.app.supermodel import SuperModel
 from senaite.core.api import dtime
+from senaite.core.i18n import translate
 from zope.annotation.interfaces import IAnnotatable
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides
@@ -361,8 +363,11 @@ def resume_snapshots_for(obj):
 def compare_snapshots(snapshot_a, snapshot_b, raw=False):
     """Returns a diff of two given snapshots (dictionaries)
 
-    :param snapshot_a: First snapshot
-    :param snapshot_b: Second snapshot
+    `snapshot_a` holds the values *before* and `snapshot_b` the values *after*
+    the change.
+
+    :param snapshot_a: Snapshot with the values before the change
+    :param snapshot_b: Snapshot with the values after the change
     :param raw: True to compare the raw values, e.g. UIDs
     :returns: Dictionary of field/value pairs that differ
     """
@@ -370,17 +375,21 @@ def compare_snapshots(snapshot_a, snapshot_b, raw=False):
                    [snapshot_a, snapshot_b])):
         return {}
 
+    # shared cache to memoize UID -> title lookups across all fields
+    cache = {}
     diffs = {}
-    for key_a, value_a in six.iteritems(snapshot_a):
-        # skip fieds starting with _ or __
-        if key_a.startswith("_"):
+    # iterate the union of keys so fields added or removed between the two
+    # snapshots are reported as well
+    for key in set(snapshot_a) | set(snapshot_b):
+        # skip fields starting with _ or __
+        if key.startswith("_"):
             continue
-        # get the value of the second snapshot
-        value_b = snapshot_b.get(key_a)
+        value_a = snapshot_a.get(key)
+        value_b = snapshot_b.get(key)
         # get the diff between the two values
-        diff = diff_values(value_a, value_b, raw=raw)
+        diff = diff_values(value_a, value_b, raw=raw, cache=cache)
         if diff is not None:
-            diffs[key_a] = diff
+            diffs[key] = diff
     return diffs
 
 
@@ -399,64 +408,230 @@ def compare_last_two_snapshots(obj, raw=False):
     return compare_snapshots(snap1, snap2, raw=raw)
 
 
-def diff_values(value_a, value_b, raw=False):
-    """Returns a human-readable diff between two values
+def diff_values(value_a, value_b, raw=False, cache=None):
+    """Returns a diff between two values (`value_a` before, `value_b` after)
 
-    TODO: Provide an adapter per content type for this task to enable a more
-          specific diff between the values
+    With `raw=True` a list with a single `(value_a, value_b)` tuple is returned
+    when the values differ (`None` otherwise), keeping the raw values for
+    programmatic use.
 
-    :param value_a: First value to compare
-    :param value_b: Second value to compare
+    With `raw=False` (default) a structured, human readable diff is returned: a
+    flat list of "diff line" dicts that describe element-level changes for
+    sequences (added/removed), key-level and row-level changes for records and
+    DataGrids, and localized before/after values for scalars. UID references
+    are resolved to their title/ID. Returns `None` when the values are equal.
+
+    :param value_a: The value before the change
+    :param value_b: The value after the change
     :param raw: True to compare the raw values, e.g. UIDs
-    :returns a list of diff tuples
+    :param cache: Optional dict to memoize UID -> title lookups across fields
+    :returns: A list of diff lines, a raw tuple list or None
     """
+    if raw:
+        if value_a == value_b:
+            return None
+        return [(value_a, value_b)]
 
-    if not raw:
-        value_a = _process_value(value_a)
-        value_b = _process_value(value_b)
-
-    # No changes
-    if value_a == value_b:
-        return None
-
-    diffs = []
-    # N.B.: the choice for the tuple data structure is to enable in the future
-    # more granular diffs, e.g. the changed values within a dictionary etc.
-    diffs.append((value_a, value_b))
-    return diffs
+    if cache is None:
+        cache = {}
+    lines = _diff_lines(value_a, value_b, cache)
+    return lines or None
 
 
-def _process_value(value):
-    """Convert the value into a human readable diff string
+def _diff_line(kind, indent, label=None, before=None, after=None, value=None):
+    """Build a single diff line dict consumed by the audit log template
     """
-    if not value:
-        value = _("Not set")
-    # handle strings
-    elif isinstance(value, six.string_types):
+    return {
+        "kind": kind,
+        "indent": indent,
+        "label": label,
+        "before": before,
+        "after": after,
+        "value": value,
+    }
+
+
+def _diff_lines(before, after, cache, indent=0):
+    """Return a flat list of diff lines describing the change from `before` to
+    `after`: records diffed key by key, sequences element by element and
+    scalars as localized before/after values.
+    """
+    # both sides are records (dicts)
+    before_rec = _as_record(before)
+    after_rec = _as_record(after)
+    if before_rec is not None and after_rec is not None:
+        return _record_diff_lines(before_rec, after_rec, cache, indent)
+
+    # both sides are sequences (lists/tuples)
+    before_seq = _as_sequence(before)
+    after_seq = _as_sequence(after)
+    if before_seq is not None and after_seq is not None:
+        return _sequence_diff_lines(before_seq, after_seq, cache, indent)
+
+    # scalars (or a type change between a container and a scalar)
+    before_str = _format_value(before, cache)
+    after_str = _format_value(after, cache)
+    if before_str == after_str:
+        return []
+    return [_diff_line("scalar", indent, before=before_str, after=after_str)]
+
+
+def _as_record(value):
+    """Coerce the value to a record (dict) for diffing, or None if it is a
+    non-empty, non-dict value (i.e. not comparable as a record).
+    """
+    if isinstance(value, dict):
+        return value
+    if value in (None, "", ()):
+        return {}
+    return None
+
+
+def _as_sequence(value):
+    """Coerce the value to a sequence (list) for diffing, or None if it is a
+    non-empty, non-sequence value (i.e. not comparable as a sequence).
+    """
+    if isinstance(value, (list, tuple)):
+        return list(value)
+    if value in (None, "", ()):
+        return []
+    return None
+
+
+def _record_diff_lines(before, after, cache, indent):
+    """Return the diff lines for two records, listing only the keys whose
+    value changed. A single scalar change is collapsed into one labeled line.
+    """
+    lines = []
+    for key in sorted(set(before) | set(after)):
+        child = _diff_lines(before.get(key), after.get(key), cache, indent + 1)
+        if not child:
+            continue
+        label = _humanize_key(key)
+        if len(child) == 1 and child[0]["label"] is None:
+            child[0]["label"] = label
+            child[0]["indent"] = indent
+            lines.extend(child)
+        else:
+            lines.append(_diff_line("group", indent, label=label))
+            lines.extend(child)
+    return lines
+
+
+def _sequence_diff_lines(before, after, cache, indent):
+    """Return the diff lines for two sequences. Sequences of records (e.g.
+    DataGrid rows) are aligned by position and diffed row by row; plain value
+    sequences (e.g. UID references) are diffed element by element.
+    """
+    has_records = any(isinstance(x, dict) for x in before + after)
+    if has_records:
+        return _rows_diff_lines(before, after, cache, indent)
+    return _values_diff_lines(before, after, cache, indent)
+
+
+def _values_diff_lines(before, after, cache, indent):
+    """Return added/removed lines for two plain value sequences
+    """
+    before_vals = [_format_value(x, cache) for x in before]
+    after_vals = [_format_value(x, cache) for x in after]
+    removed = list((Counter(before_vals) - Counter(after_vals)).elements())
+    added = list((Counter(after_vals) - Counter(before_vals)).elements())
+    lines = []
+    for value in sorted(removed):
+        lines.append(_diff_line("removed", indent, value=value))
+    for value in sorted(added):
+        lines.append(_diff_line("added", indent, value=value))
+    return lines
+
+
+def _rows_diff_lines(before, after, cache, indent):
+    """Return the diff lines for two sequences of records, aligned by position
+    """
+    lines = []
+    for idx in range(max(len(before), len(after))):
+        row_before = before[idx] if idx < len(before) else None
+        row_after = after[idx] if idx < len(after) else None
+        label = translate(
+            _(u"Row ${num}", mapping={"num": idx + 1}), to_utf8=False)
+        if row_before is None:
+            lines.append(_diff_line(
+                "added", indent, label=label,
+                value=_summarize_record(row_after, cache)))
+        elif row_after is None:
+            lines.append(_diff_line(
+                "removed", indent, label=label,
+                value=_summarize_record(row_before, cache)))
+        else:
+            child = _diff_lines(row_before, row_after, cache, indent + 1)
+            if child:
+                lines.append(_diff_line("group", indent, label=label))
+                lines.extend(child)
+    return lines
+
+
+def _summarize_record(record, cache):
+    """Return a compact `key=value; ...` summary of a record's non-empty
+    values, used when a whole row was added or removed.
+    """
+    if not isinstance(record, dict):
+        return _format_value(record, cache)
+    parts = []
+    for key in sorted(record):
+        value = record.get(key)
+        if not value:
+            continue
+        parts.append(u"{}={}".format(
+            _humanize_key(key), _format_value(value, cache)))
+    return u"; ".join(parts) or translate(_("Empty"), to_utf8=False)
+
+
+def _humanize_key(key):
+    """Return a human readable label for a record key
+    """
+    if not isinstance(key, six.string_types):
+        return key
+    return api.safe_unicode(key)
+
+
+def _format_value(value, cache):
+    """Convert a single value into a human readable, localized string.
+
+    Resolves UID references to their title/ID (memoized in `cache`), formats
+    booleans as Yes/No and strips the portal path from physical paths.
+    """
+    if isinstance(value, bool):
+        if value:
+            return translate(_("Yes"), to_utf8=False)
+        return translate(_("No"), to_utf8=False)
+    if isinstance(value, dict):
+        return _summarize_record(value, cache)
+    if isinstance(value, (list, tuple)):
+        return u"; ".join(_format_value(v, cache) for v in value)
+    if value in (None, "", ()):
+        return translate(_("Not set"), to_utf8=False)
+    if isinstance(value, six.string_types):
         # XXX: bad data, e.g. in AS Method field
         if value == "None":
-            value = _("Not set")
+            return translate(_("Not set"), to_utf8=False)
         # 0 is detected as the portal UID
-        elif value == "0":
-            value = "0"
-        # handle physical paths
-        elif value.startswith("/"):
-            # remove the portal path to reduce noise in virtual hostings
+        if value == "0":
+            return u"0"
+        # remove the portal path to reduce noise in virtual hostings
+        if value.startswith("/"):
             portal_path = api.get_path(api.get_portal())
-            value = value.replace(portal_path, "", 1)
-        elif api.is_uid(value):
-            value = _get_title_or_id_from_uid(value)
-    # handle dictionaries
-    elif isinstance(value, (dict)):
-        value = json.dumps(sorted(value.items()), indent=1)
-    # handle lists and tuples
-    elif isinstance(value, (list, tuple)):
-        value = sorted(map(_process_value, value))
-        value = "; ".join(value)
-    # handle unicodes
-    if isinstance(value, unicode):
-        value = api.safe_unicode(value).encode("utf8")
-    return str(value)
+            return api.safe_unicode(value.replace(portal_path, "", 1))
+        if api.is_uid(value):
+            return _resolve_uid(value, cache)
+        return api.safe_unicode(value)
+    return api.safe_unicode(str(value))
+
+
+def _resolve_uid(uid, cache):
+    """Resolve a UID to a title/ID, memoized via the given cache dict
+    """
+    if uid not in cache:
+        cache[uid] = _get_title_or_id_from_uid(uid)
+    return cache[uid]
 
 
 def _get_title_or_id_from_uid(uid):
@@ -467,9 +642,9 @@ def _get_title_or_id_from_uid(uid):
     except api.APIError:
         obj = None
     if not obj:
-        return "<Deleted {}>".format(uid)
+        return u"<Deleted {}>".format(uid)
     title_or_id = api.get_title(obj) or api.get_id(obj)
-    return title_or_id
+    return api.safe_unicode(title_or_id)
 
 
 def disable_snapshots(obj):

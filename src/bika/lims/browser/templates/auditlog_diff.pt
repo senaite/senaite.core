@@ -11,17 +11,41 @@
   <table tal:condition="nocall:diff"
          class="table table-condensed table-borderless diff-table">
     <tr tal:repeat="field python:diff.keys()">
-      <td>
+      <td class="align-top">
         <strong class="field" i18n:translate="" tal:content="python:view.get_widget_label_for(field, default=field)"/>:
       </td>
       <td>
-        <div tal:repeat="d python:diff[field]"
-             class="diffline">
-          <code class="value">
-            <span tal:content="python:d[1]"/>
-          </code>
-          <span style="padding: 0 1em;"> &rarr; </span>
-          <code class="value text-success" tal:content="python:d[0]"/>
+        <div tal:repeat="line python:diff[field]"
+             class="diffline"
+             tal:attributes="style python:'padding-left: %.1fem' % (line['indent'] * 1.2)">
+
+          <!-- optional label (record key or row) -->
+          <span tal:condition="line/label"
+                class="diff-label font-weight-bold"
+                tal:content="string:${line/label}: "/>
+
+          <!-- scalar change: before -> after -->
+          <tal:scalar tal:condition="python:line['kind'] == 'scalar'">
+            <code class="value text-muted"><del tal:content="line/before"/></code>
+            <span class="diff-arrow" style="padding: 0 .5em;"> &rarr; </span>
+            <code class="value text-success" tal:content="line/after"/>
+          </tal:scalar>
+
+          <!-- added element/row -->
+          <tal:added tal:condition="python:line['kind'] == 'added'">
+            <span class="text-success">+</span>
+            <code class="value text-success" tal:content="line/value"/>
+          </tal:added>
+
+          <!-- removed element/row -->
+          <tal:removed tal:condition="python:line['kind'] == 'removed'">
+            <span class="text-danger">&minus;</span>
+            <code class="value text-danger"><del tal:content="line/value"/></code>
+          </tal:removed>
+
+          <!-- group header (record key or row with nested changes below) -->
+          <tal:group tal:condition="python:line['kind'] == 'group'"/>
+
         </div>
       </td>
     </tr>
