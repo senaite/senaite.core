@@ -1501,7 +1501,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             restrict = 'Manager' not in roles \
                 and 'LabManager' not in roles \
                 and 'LabClerk' not in roles \
-                and 'RegulatoryInspector' not in roles \
                 and self.bika_setup.getRestrictWorksheetUsersAccess()
             allowed = not restrict
 
