@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2990 Vendor the datagrid widget and drop collective.z3cform.datagridfield
 - #2985 Add a SENAITE-specific Manage Viewlets view
 - #2971 Make the Sample Dispatch workflow optional and lock analyses on dispatch
 - #2970 Add an optional Sample Dispose workflow
