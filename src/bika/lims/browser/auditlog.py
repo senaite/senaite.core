@@ -259,7 +259,7 @@ class AuditLogView(ListingView):
                         self.translate_state(review_state))
 
                 # Rendered Diff
-                diff = compare_snapshots(snapshot, prev_snapshot)
+                diff = compare_snapshots(prev_snapshot, snapshot)
                 item["diff"] = self.render_diff(diff)
 
             # append the item

@@ -189,7 +189,7 @@ class AuditLogView(ControlPanelListingView):
                     logview.translate_state(review_state))
 
             # Rendered Diff
-            diff = compare_snapshots(snapshot, prev_snapshot)
+            diff = compare_snapshots(prev_snapshot, snapshot)
             item["diff"] = logview.render_diff(diff)
 
         return item
