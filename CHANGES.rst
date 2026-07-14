@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2989 Reset newly added datagrid rows to avoid inheriting stale values
 - #2985 Add a SENAITE-specific Manage Viewlets view
 - #2971 Make the Sample Dispatch workflow optional and lock analyses on dispatch
 - #2970 Add an optional Sample Dispose workflow

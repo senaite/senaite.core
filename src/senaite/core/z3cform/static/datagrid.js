@@ -220,8 +220,51 @@ document.addEventListener("DOMContentLoaded", () => {
       new_row.dataset.oldIndex = new_row.dataset.index; // store for replacing.
       delete new_row.dataset.index; // fresh row.
       new_row.classList.remove("datagridwidget-empty-row");
+      // The template row markup may carry a stale `selected` option or a
+      // pre-filled value. Clear native form controls so the new row always
+      // starts empty. React sub-widgets are remounted on `datagrid:row_added`.
+      this.reset_row_values(new_row);
       this.init_row(new_row);
       return new_row;
+    }
+
+    reset_row_values(row) {
+      // Reset selects: deselect everything, then prefer an empty-valued
+      // option (blank choice); fall back to the first option for single
+      // selects so we never inherit the template's stale selection.
+      row.querySelectorAll("select").forEach(function (select) {
+        let options = Array.prototype.slice.call(select.options);
+        options.forEach(function (option) {
+          option.selected = false;
+        });
+        if (select.multiple) {
+          return;
+        }
+        let blank = options.filter(function (option) {
+          return option.value === "";
+        })[0];
+        if (blank) {
+          blank.selected = true;
+        } else if (options.length > 0) {
+          select.selectedIndex = 0;
+        }
+      });
+      // Reset inputs: clear text-like values, uncheck checkboxes/radios.
+      // Skip hidden inputs (structural markers like `-empty-marker`).
+      row.querySelectorAll("input").forEach(function (input) {
+        let type = (input.getAttribute("type") || "text").toLowerCase();
+        if (type === "hidden") {
+          return;
+        }
+        if (type === "checkbox" || type === "radio") {
+          input.checked = false;
+        } else {
+          input.value = "";
+        }
+      });
+      row.querySelectorAll("textarea").forEach(function (textarea) {
+        textarea.value = "";
+      });
     }
 
     update_order_index(datagrid) {
