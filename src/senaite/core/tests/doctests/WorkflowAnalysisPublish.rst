@@ -137,7 +137,7 @@ In published state, exactly these roles can view results:
     >>> api.get_workflow_status_of(analysis)
     'published'
     >>> get_roles_for_permission("senaite.core: View Results", analysis)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Publisher', 'RegulatoryInspector', 'Sampler', 'Verifier']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Publisher', 'Sampler', 'Verifier']
 
 And no transition can be done from this state:
 
