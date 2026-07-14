@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2981 Forward results override flags to custom auto-import adapters
+- #2962 Remove the obsolete RegulatoryInspector role
 - #2976 Surface orphaned sample partitions as top-level rows in listings
 - #2982 Fix auto log-off logging out active users (session refresh interval)
 - #2978 Move front page and landing page fields to the Appearance fieldset
