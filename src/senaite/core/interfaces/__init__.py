@@ -171,9 +171,14 @@ class ISamplesView(Interface):
 
 class ILockingState(Interface):
     """Marker interface for samples in a state that requires their analyses
-    to be locked (read-only), e.g. disposed. Add-ons can mark their own
-    sample states with an interface that inherits from this one so the
-    analyses get locked without adding a new guard in senaite.core.
+    to be locked (read-only), e.g. disposed or dispatched. Add-ons can mark
+    their own sample states with an interface that inherits from this one so
+    the analyses get locked without adding a new guard in senaite.core.
+    """
+
+
+class IDispatched(ILockingState):
+    """Marker interface for dispatched samples
     """
 
 

@@ -52,10 +52,10 @@ def guard_lock(analysis):
     """Return whether the transition "lock" can be performed or not.
 
     The lock takes place automatically when the sample the analysis belongs to
-    is moved to a locking state (e.g. disposed). It cannot be performed
-    manually: this prevents locking an analysis of an active sample, which
-    could not be unlocked afterwards because unlocking only happens when the
-    sample is restored.
+    is moved to a locking state (e.g. disposed or dispatched). It cannot be
+    performed manually: this prevents locking an analysis of an active sample,
+    which could not be unlocked afterwards because unlocking only happens when
+    the sample is restored.
     """
     sample = analysis.getRequest()
     return ILockingState.providedBy(sample)

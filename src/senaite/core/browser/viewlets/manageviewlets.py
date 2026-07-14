@@ -18,23 +18,17 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import api
-from bika.lims.interfaces import IOrganisation
-from plone.indexer import indexer
+from plone.app.viewletmanager.manager import ManageViewlets as Base
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
-@indexer(IOrganisation)
-def title(instance):
-    """Organisation objects does not use the built-in title, rather it uses
-    Name schema field. We need this type-specific index to simulate the default
-    behavior for index `title`.
+class ManageViewlets(Base):
+    """SENAITE-specific `@@manage-viewlets` view.
 
-    The `Name` is coerced to unicode (like the generic `title` indexer) so the
-    shared `title` FieldIndex holds a single, consistent unicode key type. A
-    non-ASCII byte-string key would otherwise raise a `UnicodeDecodeError` on
-    Python 2 when compared against a unicode query value.
+    Behaves like the stock view (each viewlet manager renders its own
+    show/hide/reorder box in place, so the managers appear nested and
+    positioned exactly as they are on the site), but renders through the
+    SENAITE main template and styles the manager/viewlet boxes into clean
+    nested boxes (see the accompanying `manage-viewlets.pt`).
     """
-    name = getattr(instance, "Name", None)
-    if not name:
-        return u""
-    return api.safe_unicode(name)
+    index = ViewPageTemplateFile("templates/manage-viewlets.pt")

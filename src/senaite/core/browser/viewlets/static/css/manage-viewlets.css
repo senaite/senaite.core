@@ -1,0 +1,103 @@
+/* Styles for the SENAITE `@@manage-viewlets` view.
+ *
+ * Each viewlet manager emits a `.managedViewlets` wrapper in place, so the
+ * boxes appear nested and positioned exactly as on the site. */
+.managedViewlets { margin: .35rem 0; }
+.managedViewlets dl { margin: 0; }
+
+/* Outer box: a viewlet manager */
+.managedViewlets dl.viewletmanager {
+  border: 1px solid #ced4da;
+  border-radius: .375rem;
+  margin: .5rem 0;
+  background: #f8f9fa;
+}
+.managedViewlets dl.viewletmanager > dt {
+  font-family: monospace;
+  font-size: .78rem;
+  padding: .4rem .6rem;
+  background: #e9ecef;
+  border-bottom: 1px solid #ced4da;
+  border-radius: .375rem .375rem 0 0;
+  color: #343a40;
+}
+.managedViewlets dl.viewletmanager > dd {
+  margin: 0;
+  padding: .4rem .6rem;
+}
+
+/* Inner box: a viewlet */
+.managedViewlets dl.viewlet {
+  border: 1px solid #dee2e6;
+  border-radius: .3rem;
+  margin: .35rem 0;
+  background: #fff;
+}
+/* Reserve space on the right for the up | down | hide/show columns, so the
+ * controls line up regardless of which ones are present. */
+.managedViewlets dl.viewlet > dt {
+  position: relative;
+  min-height: 1.7rem;
+  font-size: .8rem;
+  padding: .4rem 8rem .4rem .55rem;
+  border-bottom: 1px solid #eef0f2;
+}
+.managedViewlets dl.viewlet > dd {
+  margin: 0;
+  padding: .45rem .55rem;
+  font-size: .85rem;
+  overflow-x: auto;
+}
+.managedViewlets dl.viewlet.hiddenViewlet { opacity: .55; }
+
+/* Control links rendered as small, fixed-width buttons, each pinned to its
+ * own column measured from the right edge of the row. */
+.managedViewlets dl.viewlet > dt > a {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: .05rem 0;
+  border: 1px solid #ced4da;
+  border-radius: .25rem;
+  background: #fff;
+  color: #495057;
+  text-align: center;
+  text-decoration: none;
+  font-size: .72rem;
+  line-height: 1.5;
+}
+.managedViewlets dl.viewlet > dt > a:hover { background: #e9ecef; }
+.managedViewlets dl.viewlet > dt > a.up,
+.managedViewlets dl.viewlet > dt > a.down { width: 1.6rem; }
+.managedViewlets dl.viewlet > dt > a.hide,
+.managedViewlets dl.viewlet > dt > a.show { width: 3.2rem; }
+.managedViewlets dl.viewlet > dt > a.up { right: 5.7rem; }
+.managedViewlets dl.viewlet > dt > a.down { right: 3.9rem; }
+.managedViewlets dl.viewlet > dt > a.hide,
+.managedViewlets dl.viewlet > dt > a.show { right: .55rem; }
+.managedViewlets dl.viewlet > dt > a.hide {
+  border-color: #f1aeb5; color: #b02a37;
+}
+.managedViewlets dl.viewlet > dt > a.show {
+  border-color: #a3cfbb; color: #146c43;
+}
+
+/* Toggle which action link is visible per viewlet state */
+.managedViewlets dl.viewlet > dt > a.show { display: none; }
+.managedViewlets dl.viewlet > dt > a.hide { display: inline-block; }
+.managedViewlets dl.viewlet.hiddenViewlet > dt > a.hide { display: none; }
+.managedViewlets dl.viewlet.hiddenViewlet > dt > a.show {
+  display: inline-block;
+}
+
+/* Keep the page chrome clean: suppress the in-place management boxes of the
+ * toolbar, portal-top header, main navigation and status message managers,
+ * which only hold hidden/legacy or navigational viewlets and otherwise
+ * clutter the top of the page. */
+#senaite-toolbar .managedViewlets,
+#portal-top .managedViewlets,
+#portal-mainnavigation .managedViewlets,
+#global_statusmessage .managedViewlets { display: none; }
+
+/* Page heading, pinned above the content-region management boxes */
+.senaite-manage-viewlets-header { margin: .5rem 0 1rem; }

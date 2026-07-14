@@ -73,16 +73,20 @@
   <!-- Hidden viewlets in plone.belowcontent -->
   <hidden manager="plone.belowcontent" skinname="*" purge="True">
     <viewlet name="plone.manage_portlets_fallback" />
+    <viewlet name="plone.belowcontenttitle.keywords" />
+    <viewlet name="plone.nextprevious" />
   </hidden>
 
   <!-- Hidden viewlets in plone.belowcontentbody -->
   <hidden manager="plone.belowcontentbody" skinname="*" purge="True">
     <viewlet name="plone.abovecontenttitle.documentactions" />
+    <viewlet name="plone.belowcontentbody.relateditems" />
   </hidden>
 
   <!-- Hidden viewlets in plone.portalfooter -->
   <hidden manager="plone.portalfooter" skinname="*" purge="True">
     <viewlet name="plone.site_actions"/>
+    <viewlet name="plone.analytics" />
   </hidden>
 
 </object>
