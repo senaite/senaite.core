@@ -30,6 +30,8 @@ from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.interfaces import IAuditable
 from bika.lims.interfaces import IDetachedPartition
 from bika.lims.interfaces import IInvalidated
+from bika.lims.workflow.analysisrequest import do_action_to_analyses
+from senaite.core.interfaces import IDispatched
 from bika.lims.utils import tmpID
 from persistent.list import PersistentList
 from plone.app.blob.field import BlobWrapper
@@ -381,6 +383,49 @@ def setup_dispose_transition(tool):
 
     setup.runImportStepFromProfile(profile, "rolemap")
     setup.runImportStepFromProfile(profile, "workflow")
+
+
+@upgradestep(product, version)
+def setup_dispatch_workflow(tool):
+    """Set up the now-optional dispatch workflow for existing installations.
+
+    Dispatch used to be always available. The workflow is now optional and
+    disabled by default. Only if the installation already has dispatched
+    samples we enable the workflow (to preserve the current behavior), mark
+    those samples with the IDispatched marker interface (the dispatched
+    viewlet and the analysis lock guard rely on it instead of the sample
+    review_state) and lock their analyses, as a fresh dispatch would.
+    """
+    query = {
+        "portal_type": "AnalysisRequest",
+        "review_state": "dispatched",
+    }
+    brains = api.search(query, SAMPLE_CATALOG)
+    total = len(brains)
+    if not total:
+        # No dispatched samples: leave the workflow disabled (opt-in)
+        logger.info("No dispatched samples found, dispatch workflow stays "
+                    "disabled")
+        return
+
+    # Enable the dispatch workflow to preserve the current behavior
+    setup = api.get_senaite_setup()
+    if setup:
+        setup.setDispatchWorkflowEnabled(True)
+
+    # Mark the dispatched samples and lock their analyses
+    logger.info("Processing dispatched samples: {} to process".format(total))
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processing dispatched samples {}/{}"
+                        .format(num, total))
+        sample = api.get_object(brain)
+        # Mark the sample first so the analysis lock guard allows the lock
+        if not IDispatched.providedBy(sample):
+            alsoProvides(sample, IDispatched)
+        # Lock the analyses of the sample (as a fresh dispatch would)
+        do_action_to_analyses(sample, "lock")
+    logger.info("Processing dispatched samples [DONE]")
 
 
 @upgradestep(product, version)

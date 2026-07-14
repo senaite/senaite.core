@@ -4,6 +4,8 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2971 Make the Sample Dispatch workflow optional and lock analyses on dispatch
+- #2970 Add an optional Sample Dispose workflow
 - #2986 Fix UnicodeDecodeError from non-ASCII organisation titles in the title index
 - #2979 Show precise element-level audit log diffs for lists and record fields
 - #2984 Hide the Manage Portlets menu from the toolbar
