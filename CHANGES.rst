@@ -5,6 +5,11 @@ Changelog
 ------------------
 
 - #2986 Fix UnicodeDecodeError from non-ASCII organisation titles in the title index
+- #2979 Show precise element-level audit log diffs for lists and record fields
+- #2984 Hide the Manage Portlets menu from the toolbar
+- #2983 Fix HiddenProfiles list to actually hide bundled add-on profiles
+- #2981 Forward results override flags to custom auto-import adapters
+- #2962 Remove the obsolete RegulatoryInspector role
 - #2976 Surface orphaned sample partitions as top-level rows in listings
 - #2982 Fix auto log-off logging out active users (session refresh interval)
 - #2978 Move front page and landing page fields to the Appearance fieldset

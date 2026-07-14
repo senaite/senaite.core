@@ -10,9 +10,22 @@
                    non-ASCII organisation names (Client, Supplier, ...) become
                    unicode keys and title queries stop raising a
                    UnicodeDecodeError."
+      source="2751"
+      destination="2752"
+      handler=".v02_07_000.reindex_organisation_title"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove the obsolete 'RegulatoryInspector' role"
+      description="Remove the unused RegulatoryInspector role and the
+                   RegulatoryInspectors group from existing installations.
+                   The role is dropped from the portal_role_manager (which
+                   also clears any direct assignments), the group is removed
+                   from portal_groups, and the role is dropped from the
+                   portal's known roles."
       source="2750"
       destination="2751"
-      handler=".v02_07_000.reindex_organisation_title"
+      handler=".v02_07_000.remove_regulatory_inspector_role"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
