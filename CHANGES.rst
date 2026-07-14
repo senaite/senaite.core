@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2986 Fix UnicodeDecodeError from non-ASCII organisation titles in the title index
 - #2979 Show precise element-level audit log diffs for lists and record fields
 - #2984 Hide the Manage Portlets menu from the toolbar
 - #2983 Fix HiddenProfiles list to actually hide bundled add-on profiles
