@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2983 Fix HiddenProfiles list to actually hide bundled add-on profiles
 - #2981 Forward results override flags to custom auto-import adapters
 - #2962 Remove the obsolete RegulatoryInspector role
 - #2976 Surface orphaned sample partitions as top-level rows in listings
