@@ -3,6 +3,16 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Hide unused viewlets"
+      description="Hide the analytics, keywords, next/previous navigation and
+                   related items viewlets, which are not used in SENAITE, by
+                   reimporting the viewlets step."
+      source="2753"
+      destination="2754"
+      handler=".v02_07_000.hide_legacy_viewlets"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Set up the optional dispatch workflow"
       description="The dispatch workflow is now optional and disabled by
                    default. Only if the installation already has dispatched

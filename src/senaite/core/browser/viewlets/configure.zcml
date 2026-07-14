@@ -1,9 +1,27 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:plone="http://namespaces.plone.org/plone"
            i18n_domain="senaite.core">
 
   <!-- package includes -->
   <include package=".sample" />
+
+  <!-- Static resources for the viewlets (css, js, images), served at
+       ++plone++senaite.core.viewlets -->
+  <plone:static
+      directory="static"
+      type="plone"
+      name="senaite.core.viewlets"
+      />
+
+  <!-- SENAITE-specific @@manage-viewlets view -->
+  <browser:page
+      for="*"
+      name="manage-viewlets"
+      class=".manageviewlets.ManageViewlets"
+      permission="cmf.ManagePortal"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
 
   <!-- Favicon Viewlet -->
   <browser:viewlet
