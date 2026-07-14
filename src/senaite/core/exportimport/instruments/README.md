@@ -46,10 +46,12 @@ In `my_instrument.py`:
         def get_automatic_importer(self, instrument, parser, **kw):
             """Called during automated results import
             """
+            # honor the override flags forwarded by the auto-import view
+            override = kw.get("override", self.override)
             # initialize the base class with the required parameters
             super(MyInstrumentImporter, self).__init__(
                 parser, self.context,
-                override=self.override,
+                override=override,
                 allowed_sample_states=self.allowed_sample_states,
                 allowed_analysis_states=self.allowed_analysis_states,
                 instrument_uid=api.get_uid(instrument))
