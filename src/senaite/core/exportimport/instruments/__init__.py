@@ -266,7 +266,11 @@ def get_automatic_importer(exim_id, instrument, parser, override=None):
 
     if IInstrumentAutoImportInterface.providedBy(adapter):
         try:
-            return adapter.get_automatic_importer(instrument, parser)
+            # Forward the override flags so custom auto-import adapters can
+            # honor them. The adapter contract accepts ``**kw``, so passing
+            # the override is backward compatible.
+            return adapter.get_automatic_importer(
+                instrument, parser, override=override)
         except (NotImplementedError, AttributeError, TypeError, ValueError):
             # BBB: Fallback to default analysis results importer
             pass

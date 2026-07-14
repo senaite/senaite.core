@@ -767,7 +767,7 @@ Exactly these roles can submit:
 And these roles can view results:
 
     >>> get_roles_for_permission("senaite.core: View Results", analysis)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Publisher', 'RegulatoryInspector', 'Sampler', 'Verifier']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Publisher', 'Sampler', 'Verifier']
 
 Current user can submit because has the `LabManager` role:
 
@@ -776,7 +776,7 @@ Current user can submit because has the `LabManager` role:
 
 But cannot for other roles:
 
-    >>> setRoles(portal, TEST_USER_ID, ['Authenticated', 'LabClerk', 'RegulatoryInspector'])
+    >>> setRoles(portal, TEST_USER_ID, ['Authenticated', 'LabClerk'])
     >>> isTransitionAllowed(analysis, "submit")
     False
 
