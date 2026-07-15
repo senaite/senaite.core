@@ -39,7 +39,6 @@ from zope.schema.interfaces import ValidationError
 from . import _
 
 import logging
-import lxml
 import pkg_resources
 
 
@@ -288,9 +287,6 @@ def datagrid_field_set(self, value):
                 self.applyValue(self.subform.widgets[name], v)
 
 
-PAT_XPATH = "//*[contains(concat(' ', normalize-space(@class), ' '), ' pat-')]"
-
-
 class DataGridFieldObject(ObjectWidget):
 
     def isInsertEnabled(self):
@@ -324,26 +320,6 @@ class DataGridFieldObject(ObjectWidget):
             self.subform.widgets[
                 column_info['name']
             ].mode = column_info['mode']
-
-    def render(self):
-        """See z3c.form.interfaces.IWidget."""
-        html = super(DataGridFieldObject, self).render()
-        if (
-            'datagridwidget-empty-row' in self.klass or
-            'auto-append' in self.klass
-        ):
-            # deactivate patterns
-            fragments = lxml.html.fragments_fromstring(html)
-            html = ''
-            for tree in fragments:
-                for el in tree.xpath(PAT_XPATH):
-                    if '.TT.' in el.attrib.get('name', ''):
-                        el.attrib['class'] = el.attrib['class'].replace(
-                            'pat-',
-                            'dgw-disabled-pat-'
-                        )
-                html += lxml.html.tostring(tree, encoding='unicode') + '\n'
-        return html
 
     def label_add_record(self):
         return _(
