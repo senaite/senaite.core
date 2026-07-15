@@ -8,6 +8,6 @@
 # consumed by senaite.core are kept; the block widget, demo, GenericSetup
 # profiles and transmogrify/supermodel helpers were dropped.
 
-from zope.i18nmessageid import MessageFactory
-
-_ = MessageFactory("senaite.core")
+# The vendored modules use `_` for their message ids; reuse the existing
+# senaite.core message factory instead of registering another one.
+from bika.lims import senaiteMessageFactory as _  # noqa: F401
