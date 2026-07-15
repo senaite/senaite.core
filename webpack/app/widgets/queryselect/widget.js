@@ -90,6 +90,7 @@ class QuerySelectWidgetController extends React.Component {
     this.focus_row = this.focus_row.bind(this);
     this.on_flush = this.on_flush.bind(this);
     this.on_sync = this.on_sync.bind(this);
+    this.on_reindex = this.on_reindex.bind(this);
     this.fix_dropdown_position = this.fix_dropdown_position.bind(this);
 
     return this
@@ -101,6 +102,8 @@ class QuerySelectWidgetController extends React.Component {
     document.addEventListener("click", this.on_click, false)
     this.root_el.addEventListener("flush", this.on_flush, false);
     this.root_el.addEventListener("sync", this.on_sync, false);
+    this.root_el.addEventListener(
+      "datagrid:cell_reindexed", this.on_reindex, false);
     document.addEventListener("scroll", this.fix_dropdown_position, false);
   }
 
@@ -114,7 +117,22 @@ class QuerySelectWidgetController extends React.Component {
     document.removeEventListener("click", this.on_click, false);
     this.root_el.removeEventListener("flush", this.on_flush, false);
     this.root_el.removeEventListener("sync", this.on_sync, false);
+    this.root_el.removeEventListener(
+      "datagrid:cell_reindexed", this.on_reindex, false);
     document.removeEventListener("scroll", this.fix_dropdown_position, false);
+  }
+
+  /*
+   * Update the submit `name`/`id` after the hosting datagrid row was reindexed
+   *
+   * The datagrid rewrites `data-name`/`data-id` on this mount element when rows
+   * are added, removed, reordered or the trailing auto-append row is promoted.
+   * Re-read them here so the submitted `<textarea>` uses the correct row index.
+   */
+  on_reindex() {
+    const name = this.root_el.dataset.name;
+    const id = this.root_el.dataset.id;
+    this.setState({ name: name, id: id });
   }
 
   /*
