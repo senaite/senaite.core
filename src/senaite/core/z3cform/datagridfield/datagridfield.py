@@ -213,6 +213,9 @@ class DataGridField(MultiWidget):
                 return self.auto_append or self.allow_insert
         else:
             return not name.endswith('AA') and not name.endswith('TT')
+        # In INPUT_MODE the checks above are exhaustive; be explicit for any
+        # unexpected suffix instead of implicitly returning None.
+        return False
 
     def portal_url(self):
         return api.portal.get_tool('portal_url')()
