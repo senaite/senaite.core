@@ -11,10 +11,10 @@
        as before, so the submit contract stays intact. -->
   <div class="senaite-datagrid-widget-input"
        tal:attributes="id view/id_prefix;
-                       data-allow_insert view/allow_insert;
-                       data-allow_delete view/allow_delete;
-                       data-allow_reorder view/allow_reorder;
-                       data-auto_append view/auto_append;">
+                       data-allow_insert python:'true' if view.allow_insert else 'false';
+                       data-allow_delete python:'true' if view.allow_delete else 'false';
+                       data-allow_reorder python:'true' if view.allow_reorder else 'false';
+                       data-auto_append python:'true' if view.auto_append else 'false';">
 
     <table class="table table-hover table-responsive table-sm table-borderless datagridwidget-table-view"
            data-mode="row"
@@ -34,6 +34,7 @@
           </tal:block>
           <th class="header" tal:condition="view/allow_insert"></th>
           <th class="header" tal:condition="view/allow_delete"></th>
+          <th class="header" tal:condition="view/allow_reorder"></th>
           <th class="header" tal:condition="view/allow_reorder"></th>
           <th class="header" tal:condition="view/allow_reorder"></th>
         </tr>

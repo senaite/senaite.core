@@ -74,9 +74,25 @@ const DataGridRow = (props) => {
     </td>
   );
 
+  const handle = (
+    <td className="datagridwidget-manipulator drag-handle">
+      <button type="button"
+              className="btn btn-sm btn-outline-secondary dgf--row-drag"
+              title="Drag to reorder"
+              draggable={!row.is_aa}
+              disabled={row.is_aa}
+              onDragStart={(e) => callbacks.drag_start(e, row)}
+              onDragEnd={callbacks.drag_end}>
+        <i className="fas fa-grip-vertical" />
+      </button>
+    </td>
+  );
+
   return (
     <tr className={klass}
         data-index={row.index}
+        onDragOver={callbacks.drag_over}
+        onDrop={(e) => callbacks.drop(e, row)}
         ref={(el) => callbacks.ref(row, el)}>
       {row.cells.map((cell, i) => (
         <Adopt key={i} className={cell.className} node={cell.node} />
@@ -84,6 +100,7 @@ const DataGridRow = (props) => {
       {config.allow_insert && button("add", "plus", "Add row", flags.add)}
       {config.allow_delete &&
         button("delete", "trash", "Delete row", flags.del)}
+      {config.allow_reorder && handle}
       {config.allow_reorder &&
         button("moveup", "arrow-up", "Move up", flags.up)}
       {config.allow_reorder &&
@@ -120,12 +137,17 @@ class DataGridWidgetController extends React.Component {
 
     this.tbody = null;
     this.promoting = false;
+    this.drag_row = null;
 
     this.on_add = this.on_add.bind(this);
     this.on_delete = this.on_delete.bind(this);
     this.on_moveup = this.on_moveup.bind(this);
     this.on_movedown = this.on_movedown.bind(this);
-    this.on_input = this.on_input.bind(this);
+    this.on_row_activity = this.on_row_activity.bind(this);
+    this.on_drag_start = this.on_drag_start.bind(this);
+    this.on_drag_over = this.on_drag_over.bind(this);
+    this.on_drop = this.on_drop.bind(this);
+    this.on_drag_end = this.on_drag_end.bind(this);
     this.set_row_ref = this.set_row_ref.bind(this);
   }
 
@@ -141,6 +163,15 @@ class DataGridWidgetController extends React.Component {
     for (const row of this.rows) {
       row.mounted = true;
     }
+    // Native listeners for the auto-append trigger. React synthetic events are
+    // unreliable here because the cells are adopted DOM (and queryselect lives
+    // in its own React root), so we listen on the real `<tbody>` node instead.
+    // `select` is the bubbling custom event fired by queryselect on selection.
+    if (this.tbody && this.config.auto_append) {
+      for (const type of ["input", "change", "select"]) {
+        this.tbody.addEventListener(type, this.on_row_activity, false);
+      }
+    }
     if (!LOADED_FIRED) {
       LOADED_FIRED = true;
       trigger_custom_event("datagrid:loaded");
@@ -151,6 +182,11 @@ class DataGridWidgetController extends React.Component {
     const idx = REGISTRY.indexOf(this);
     if (idx > -1) {
       REGISTRY.splice(idx, 1);
+    }
+    if (this.tbody && this.config.auto_append) {
+      for (const type of ["input", "change", "select"]) {
+        this.tbody.removeEventListener(type, this.on_row_activity, false);
+      }
     }
   }
 
@@ -347,6 +383,23 @@ class DataGridWidgetController extends React.Component {
     }
     reals.splice(at, 1);
     reals.splice(target, 0, row);
+    this.apply_reorder(reals);
+  }
+
+  /* Move `row` to the slot occupied by `target` (drag & drop) */
+  reorder(row, target) {
+    const reals = this.rows.filter((r) => !r.is_aa);
+    const from = reals.indexOf(row);
+    if (from < 0 || reals.indexOf(target) < 0 || row === target) {
+      return;
+    }
+    reals.splice(from, 1);
+    reals.splice(reals.indexOf(target), 0, row);
+    this.apply_reorder(reals);
+  }
+
+  /* Commit a reordered list of real rows, keeping the trailing AA row last */
+  apply_reorder(reals) {
     const aa = this.rows.filter((r) => r.is_aa);
     // mark every real row for reindexing (order changed)
     for (const r of reals) {
@@ -380,7 +433,8 @@ class DataGridWidgetController extends React.Component {
     this.move_row(row, "down");
   }
 
-  on_input(e) {
+  /* Promote the trailing auto-append row as soon as the user edits it */
+  on_row_activity(e) {
     if (!this.config.auto_append || this.promoting) {
       return;
     }
@@ -391,6 +445,63 @@ class DataGridWidgetController extends React.Component {
     this.promoting = true;
     this.auto_append_row();
     this.promoting = false;
+  }
+
+  /* -- drag & drop reorder --------------------------------------------- */
+
+  on_drag_start(e, row) {
+    if (row.is_aa) {
+      return;
+    }
+    this.drag_row = row;
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = "move";
+      try {
+        e.dataTransfer.setData("text/plain", String(row.key));
+      } catch (err) {
+        // some browsers require setData in a try/catch
+      }
+      if (row.dom) {
+        e.dataTransfer.setDragImage(row.dom, 0, 0);
+      }
+    }
+    if (row.dom) {
+      row.dom.classList.add("datagridwidget-dragging");
+    }
+  }
+
+  on_drag_over(e) {
+    if (!this.drag_row) {
+      return;
+    }
+    // required so the row becomes a valid drop target
+    e.preventDefault();
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = "move";
+    }
+  }
+
+  on_drop(e, row) {
+    if (!this.drag_row) {
+      return;
+    }
+    e.preventDefault();
+    const dragged = this.drag_row;
+    this.clear_drag();
+    if (row !== dragged && !row.is_aa) {
+      this.reorder(dragged, row);
+    }
+  }
+
+  on_drag_end() {
+    this.clear_drag();
+  }
+
+  clear_drag() {
+    if (this.drag_row && this.drag_row.dom) {
+      this.drag_row.dom.classList.remove("datagridwidget-dragging");
+    }
+    this.drag_row = null;
   }
 
   set_row_ref(row, el) {
@@ -439,6 +550,10 @@ class DataGridWidgetController extends React.Component {
       delete: this.on_delete,
       moveup: this.on_moveup,
       movedown: this.on_movedown,
+      drag_start: this.on_drag_start,
+      drag_over: this.on_drag_over,
+      drop: this.on_drop,
+      drag_end: this.on_drag_end,
       ref: this.set_row_ref,
     };
     const count_name = this.config.name_prefix + ".count";
@@ -451,8 +566,7 @@ class DataGridWidgetController extends React.Component {
           <tbody className="datagridwidget-body"
                  data-name_prefix={this.config.name_prefix}
                  data-id_prefix={this.config.id_prefix}
-                 ref={(el) => { this.tbody = el || this.tbody; }}
-                 onInput={this.on_input}>
+                 ref={(el) => { this.tbody = el || this.tbody; }}>
             {this.rows.map((row, i) => (
               <DataGridRow key={row.key}
                            row={row}
