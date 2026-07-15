@@ -70,12 +70,6 @@ Ensure the "Publisher" role exists::
     >>> role in acl_users.validRoles()
     True
 
-Ensure the "RegulatoryInspector" role exists::
-
-    >>> role = "RegulatoryInspector"
-    >>> role in acl_users.validRoles()
-    True
-
 Ensure the "Reviewer" role exists::
 
     >>> role = "Reviewer"

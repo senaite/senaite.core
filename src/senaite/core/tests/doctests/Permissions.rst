@@ -379,7 +379,7 @@ Test Permissions
 Exactly these roles have should have a `View` permission for clients folder::
 
     >>> get_roles_for_permission("View", clients)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Publisher', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
 Exactly these roles should have a `View` permission for client object. Note that
 permissions for Client role are not granted, but for Owner. Lab Contacts are
@@ -387,7 +387,7 @@ Owners of the Client they belong to, so client contacts only have access to the
 Client they belong to:
 
     >>> get_roles_for_permission("View", client)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Publisher', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
 Exactly these roles should have a `View` permission for client contact object:
 
@@ -397,21 +397,21 @@ Exactly these roles should have a `View` permission for client contact object:
 Exactly these roles have should have the `Access contents information` permission::
 
     >>> get_roles_for_permission("Access contents information", clients)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Publisher', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
     >>> get_roles_for_permission("Access contents information", client)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Publisher', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
     >>> get_roles_for_permission("Access contents information", contact)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Publisher', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
 Exactly these roles have should have the `List folder contents` permission::
 
     >>> get_roles_for_permission("List folder contents", clients)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Publisher', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
     >>> get_roles_for_permission("List folder contents", client)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Publisher', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
     >>> get_roles_for_permission("List folder contents", contact)
     []
@@ -650,26 +650,26 @@ Test Permissions
 Exactly these roles have should have a `View` permission::
 
     >>> get_roles_for_permission("View", instruments)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Preserver', 'Publisher', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
     >>> get_roles_for_permission("View", instrument)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Preserver', 'Publisher', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
 Exactly these roles have should have the `Access contents information` permission::
 
     >>> get_roles_for_permission("Access contents information", instruments)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Preserver', 'Publisher', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
     >>> get_roles_for_permission("Access contents information", instrument)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Preserver', 'Publisher', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
 Exactly these roles have should have the `List folder contents` permission::
 
     >>> get_roles_for_permission("List folder contents", instruments)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Preserver', 'Publisher', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
     >>> get_roles_for_permission("List folder contents", instrument)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Preserver', 'Publisher', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
 Exactly these roles have should have the `Modify portal content` permission::
 

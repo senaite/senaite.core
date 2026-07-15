@@ -5,6 +5,15 @@ Changelog
 ------------------
 
 - #2988 Fix worksheet template analysis filtering for selected samples
+- #2985 Add a SENAITE-specific Manage Viewlets view
+- #2971 Make the Sample Dispatch workflow optional and lock analyses on dispatch
+- #2970 Add an optional Sample Dispose workflow
+- #2986 Fix UnicodeDecodeError from non-ASCII organisation titles in the title index
+- #2979 Show precise element-level audit log diffs for lists and record fields
+- #2984 Hide the Manage Portlets menu from the toolbar
+- #2983 Fix HiddenProfiles list to actually hide bundled add-on profiles
+- #2981 Forward results override flags to custom auto-import adapters
+- #2962 Remove the obsolete RegulatoryInspector role
 - #2976 Surface orphaned sample partitions as top-level rows in listings
 - #2982 Fix auto log-off logging out active users (session refresh interval)
 - #2978 Move front page and landing page fields to the Appearance fieldset
