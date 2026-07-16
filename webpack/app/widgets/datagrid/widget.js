@@ -13,16 +13,41 @@ import { read_model } from "./model.js";
  * preserved and `extract()`/the form adapters do not change.
  */
 
-// Registry of live controllers, keyed by their `<tbody>` element. Used by the
-// global `window.widgets.datagrid` facade to route DOM-based API calls.
+// -- constants ---------------------------------------------------------
+
+// Row index sentinels used in the `form.widgets.<name>.<idx>...` submit keys.
+const IDX_AUTO_APPEND = "AA";  // trailing blank "type to add" row (not counted)
+const IDX_TEMPLATE = "TT";     // hidden template row, cloned to build new rows
+
+// Custom events dispatched on `document.body`, kept for backwards compatibility
+// with the former jQuery handler and the form adapters that listen for them.
+const EVENT_LOADED = "datagrid:loaded";
+const EVENT_ROW_ADDED = "datagrid:row_added";
+const EVENT_ROW_REMOVED = "datagrid:row_removed";
+
+// Dispatched on a cell mount node after its row was reindexed, so that an
+// already-mounted queryselect/uidreference re-reads its submit name/id.
+const EVENT_CELL_REINDEXED = "datagrid:cell_reindexed";
+
+// `<tbody>` events that signal the user started editing the auto-append row.
+// Bound as *native* listeners because the cells are adopted DOM living in a
+// separate React root, where React's synthetic events are unreliable.
+const ACTIVITY_EVENTS = ["input", "change", "select"];
+
+const BODY_SELECTOR = ".datagridwidget-body";
+
+// Registry of live controllers. The global `window.widgets.datagrid` facade
+// uses it to route DOM-based API calls to the owning controller.
 const REGISTRY = [];
 
-// Guard so the one-time `datagrid:loaded` event is only fired once.
+// Fire the one-time `datagrid:loaded` event only once across all grids.
 let LOADED_FIRED = false;
 
-// Monotonic counter for stable React keys across structural changes.
+// Source for stable, unique React row keys that survive structural changes.
 let ROW_SEQ = 0;
 
+
+// -- helper components -------------------------------------------------
 
 /* Move the children of a captured server node into a React-owned element.
  *
@@ -93,6 +118,20 @@ const DataGridRow = (props) => {
 };
 
 
+// -- controller --------------------------------------------------------
+
+/* A row in `this.rows` (the controller's source of truth):
+ *
+ *   key        stable unique id, used as the React key (survives reorder)
+ *   index      current logical index: "0".."n" for real rows, "AA" for the
+ *              trailing auto-append row
+ *   old_index  the index the adopted DOM still carries while a reindex is
+ *              pending; null once the DOM has been reindexed to `index`
+ *   is_aa      true for the trailing auto-append row (never submitted)
+ *   mounted    true once the row's per-cell widgets have been mounted
+ *   dom        the rendered `<tr>` element (set via ref)
+ *   cells      [{className, node}] adopted server `<td>` children
+ */
 class DataGridWidgetController extends React.Component {
 
   constructor(props) {
@@ -103,11 +142,8 @@ class DataGridWidgetController extends React.Component {
     this.config = model.config;
     this.template = model.template;
 
-    // Internal source of truth. Each row: {key, index, is_aa, old_index,
-    // cells:[{className, node}], dom}
-    this.rows = model.rows.map((row) => this.make_row(row.cells, {
-      index: row.index,
-    }));
+    this.rows = model.rows.map(
+      (row) => this.make_row(row.cells, { index: row.index }));
 
     // trailing blank auto-append row
     if (this.config.auto_append) {
@@ -138,21 +174,11 @@ class DataGridWidgetController extends React.Component {
     this.reindex_pending();
     // adopted cells are now in the document -> mount their per-cell widgets
     this.mount_cell_widgets(this.tbody);
-    for (const row of this.rows) {
-      row.mounted = true;
-    }
-    // Native listeners for the auto-append trigger. React synthetic events are
-    // unreliable here because the cells are adopted DOM (and queryselect lives
-    // in its own React root), so we listen on the real `<tbody>` node instead.
-    // `select` is the bubbling custom event fired by queryselect on selection.
-    if (this.tbody && this.config.auto_append) {
-      for (const type of ["input", "change", "select"]) {
-        this.tbody.addEventListener(type, this.on_row_activity, false);
-      }
-    }
+    this.rows.forEach((row) => { row.mounted = true; });
+    this.bind_activity_listeners(true);
     if (!LOADED_FIRED) {
       LOADED_FIRED = true;
-      trigger_custom_event("datagrid:loaded");
+      trigger_custom_event(EVENT_LOADED);
     }
   }
 
@@ -161,11 +187,7 @@ class DataGridWidgetController extends React.Component {
     if (idx > -1) {
       REGISTRY.splice(idx, 1);
     }
-    if (this.tbody && this.config.auto_append) {
-      for (const type of ["input", "change", "select"]) {
-        this.tbody.removeEventListener(type, this.on_row_activity, false);
-      }
-    }
+    this.bind_activity_listeners(false);
   }
 
   componentDidUpdate() {
@@ -176,7 +198,7 @@ class DataGridWidgetController extends React.Component {
     for (const row of this.rows) {
       if (!row.mounted && row.dom) {
         row.mounted = true;
-        trigger_custom_event("datagrid:row_added", {
+        trigger_custom_event(EVENT_ROW_ADDED, {
           datagrid: this.tbody,
           row: row.dom,
         });
@@ -184,27 +206,22 @@ class DataGridWidgetController extends React.Component {
     }
   }
 
-  /* Reindex the adopted DOM of every row whose logical index changed.
-   *
-   * Plain inputs are reindexed in place. Already-mounted per-cell React widgets
-   * (queryselect/uidreference) keep their submit name in state, so `reindex_row`
-   * additionally dispatches a `datagrid:cell_reindexed` event they listen for to
-   * re-read the new `data-name`/`data-id`.
-   */
-  reindex_pending() {
-    for (const row of this.rows) {
-      if (row.old_index != null) {
-        this.reindex_row(row, row.index, row.old_index);
-        row.old_index = null;
-      }
+  /* Add/remove the native auto-append listeners on the `<tbody>` */
+  bind_activity_listeners(bind) {
+    if (!this.tbody || !this.config.auto_append) {
+      return;
+    }
+    const method = bind ? "addEventListener" : "removeEventListener";
+    for (const type of ACTIVITY_EVENTS) {
+      this.tbody[method](type, this.on_row_activity, false);
     }
   }
 
   /* -- row model helpers ----------------------------------------------- */
 
-  make_row(cells, extra) {
+  make_row(cells, extra = {}) {
     ROW_SEQ += 1;
-    return Object.assign({
+    return {
       key: ROW_SEQ,
       index: null,
       is_aa: false,
@@ -212,7 +229,8 @@ class DataGridWidgetController extends React.Component {
       dom: null,
       mounted: true,
       cells: cells,
-    }, extra || {});
+      ...extra,
+    };
   }
 
   /* Build a fresh row by cloning the hidden template row cells */
@@ -221,28 +239,35 @@ class DataGridWidgetController extends React.Component {
       className: cell.className,
       node: cell.node.cloneNode(true),
     }));
-    const row = this.make_row(cells, { is_aa: !!is_aa, old_index: "TT" });
-    row.mounted = false;
-    return row;
+    // cloned cells still carry the template index (TT) and are not yet mounted
+    return this.make_row(cells, {
+      is_aa: !!is_aa,
+      old_index: IDX_TEMPLATE,
+      mounted: false,
+    });
   }
 
+  /* All rows the facade treats as "visible" - excludes the hidden template
+   * (TT) but includes the auto-append row (AA), matching the former handler. */
   get_visible_rows() {
-    // rows excludes the hidden template (TT); AA is included (matches the
-    // former `get_visible_rows`)
     return this.rows;
   }
-
-  /* -- index / count bookkeeping --------------------------------------- */
 
   count_real_rows() {
     return this.rows.filter((row) => !row.is_aa).length;
   }
 
-  /* Assign sequential numeric indices to real rows, "AA" to the append row */
+  /* -- index / reindex bookkeeping ------------------------------------- */
+
+  /* Assign sequential numeric indices to real rows, "AA" to the append row.
+   *
+   * When a row's index changes, its current index is remembered in `old_index`
+   * so the next `reindex_pending()` can rewrite the adopted DOM from the old to
+   * the new index. `old_index` is only set if not already pending. */
   commit_indices() {
     let cnt = 0;
     for (const row of this.rows) {
-      const target = row.is_aa ? "AA" : String(cnt);
+      const target = row.is_aa ? IDX_AUTO_APPEND : String(cnt);
       if (!row.is_aa) {
         cnt += 1;
       }
@@ -255,6 +280,22 @@ class DataGridWidgetController extends React.Component {
     }
   }
 
+  /* Reindex the adopted DOM of every row with a pending index change */
+  reindex_pending() {
+    for (const row of this.rows) {
+      if (row.old_index != null) {
+        this.reindex_row(row, row.index, row.old_index);
+        row.old_index = null;
+      }
+    }
+  }
+
+  /* Rewrite the row index embedded in the adopted DOM of a single row.
+   *
+   * Plain inputs are rewritten in place. queryselect/uidreference cells keep
+   * their submit name in React state, so their (JSON-encoded) `data-name`/
+   * `data-id` are rewritten *and* a `datagrid:cell_reindexed` event is fired
+   * for the mounted widget to re-read them. */
   reindex_row(row, new_index, old_index) {
     const tr = row.dom;
     if (!tr || new_index === old_index) {
@@ -263,67 +304,21 @@ class DataGridWidgetController extends React.Component {
     const name_prefix = this.config.name_prefix + ".";
     const id_prefix = this.config.id_prefix + "-";
 
-    const replace = (el, attr, prefix) => {
-      const val = el.getAttribute(attr);
-      if (!val) {
-        return;
-      }
-      const pattern = new RegExp("^" + escape_re(prefix + old_index));
-      el.setAttribute(attr, val.replace(pattern, prefix + new_index));
-    };
+    reindex_attr(tr, "name", name_prefix, old_index, new_index);
+    reindex_attr(tr, "data-fieldname", name_prefix, old_index, new_index);
+    reindex_attr(tr, "id", "formfield-" + id_prefix, old_index, new_index);
+    reindex_attr(tr, "id", id_prefix, old_index, new_index);
+    reindex_attr(tr, "for", id_prefix, old_index, new_index);
+    reindex_attr(tr, "href", "#" + id_prefix, old_index, new_index);
 
-    reindex_attr(tr, '[id^="formfield-' + id_prefix + '"]',
-      (el) => replace(el, "id", "formfield-" + id_prefix));
-    reindex_attr(tr, '[name^="' + name_prefix + '"]',
-      (el) => replace(el, "name", name_prefix));
-    reindex_attr(tr, '[id^="' + id_prefix + '"]',
-      (el) => replace(el, "id", id_prefix));
-    reindex_attr(tr, '[for^="' + id_prefix + '"]',
-      (el) => replace(el, "for", id_prefix));
-    reindex_attr(tr, '[href*="#' + id_prefix + '"]',
-      (el) => replace(el, "href", "#" + id_prefix));
-    reindex_attr(tr, '[data-fieldname^="' + name_prefix + '"]',
-      (el) => replace(el, "data-fieldname", name_prefix));
-
-    // The queryselect/uidreference mount `<div>`s carry the submit name/id in
-    // `data-name`/`data-id`, JSON-encoded (i.e. wrapped in quotes). Decode,
-    // reindex, re-encode, then notify the cell to re-read them.
-    this.reindex_json_attr(tr, "data-name", name_prefix, old_index, new_index);
-    this.reindex_json_attr(tr, "data-id", id_prefix, old_index, new_index);
-  }
-
-  /* Reindex a JSON-encoded attribute (`data-name`/`data-id`) on cell widgets */
-  reindex_json_attr(tr, attr, prefix, old_index, new_index) {
-    const pattern = new RegExp("^" + escape_re(prefix + old_index));
-    tr.querySelectorAll("[" + attr + "]").forEach((el) => {
-      const raw = el.getAttribute(attr);
-      if (!raw) {
-        return;
-      }
-      // value may be JSON-encoded (quoted) - operate on the decoded string
-      const quoted = raw.charAt(0) === "\"";
-      let val = raw;
-      if (quoted) {
-        try {
-          val = JSON.parse(raw);
-        } catch (err) {
-          return;
-        }
-      }
-      if (!pattern.test(val)) {
-        return;
-      }
-      val = val.replace(pattern, prefix + new_index);
-      el.setAttribute(attr, quoted ? JSON.stringify(val) : val);
-      // notify an already-mounted cell widget to re-read its submit name/id
-      el.dispatchEvent(new CustomEvent("datagrid:cell_reindexed", {
-        bubbles: false,
-      }));
-    });
+    // JSON-encoded name/id on the per-cell React widget mount nodes
+    reindex_attr(tr, "data-name", name_prefix, old_index, new_index, true);
+    reindex_attr(tr, "data-id", id_prefix, old_index, new_index, true);
   }
 
   /* -- structural operations ------------------------------------------- */
 
+  /* Recompute indices and re-render */
   refresh() {
     this.commit_indices();
     this.forceUpdate();
@@ -343,13 +338,10 @@ class DataGridWidgetController extends React.Component {
     if (at < 0) {
       return;
     }
-    this.rows.splice(at, 1);
     const dom = row.dom;
+    this.rows.splice(at, 1);
     this.refresh();
-    trigger_custom_event("datagrid:row_removed", {
-      datagrid: this.tbody,
-      row: dom,
-    });
+    trigger_custom_event(EVENT_ROW_REMOVED, { datagrid: this.tbody, row: dom });
   }
 
   /* Promote the trailing AA row to a real row and append a fresh AA row */
@@ -366,6 +358,7 @@ class DataGridWidgetController extends React.Component {
     this.refresh();
   }
 
+  /* Move a real row up/down by one, wrapping around at the ends */
   move_row(row, direction) {
     const reals = this.rows.filter((r) => !r.is_aa);
     const at = reals.indexOf(row);
@@ -373,7 +366,6 @@ class DataGridWidgetController extends React.Component {
       return;
     }
     let target = direction === "up" ? at - 1 : at + 1;
-    // wrap around, matching the former behaviour
     if (target < 0) {
       target = reals.length - 1;
     } else if (target >= reals.length) {
@@ -387,10 +379,10 @@ class DataGridWidgetController extends React.Component {
   /* Commit a reordered list of real rows, keeping the trailing AA row last */
   apply_reorder(reals) {
     const aa = this.rows.filter((r) => r.is_aa);
-    // mark every real row for reindexing (order changed)
-    for (const r of reals) {
-      if (r.old_index == null) {
-        r.old_index = r.index;
+    // the order changed -> mark every real row for reindexing
+    for (const row of reals) {
+      if (row.old_index == null) {
+        row.old_index = row.index;
       }
     }
     this.rows = reals.concat(aa);
@@ -426,8 +418,7 @@ class DataGridWidgetController extends React.Component {
    * `add_update_field` - must NOT promote it, otherwise every adapter write
    * spawns a spurious row. Real DOM events carry `isTrusted === true`; the
    * queryselect `select` custom event is dispatched (untrusted) but represents
-   * a real selection, so it is gated on its payload instead.
-   */
+   * a real selection, so it is gated on its payload instead. */
   on_row_activity(e) {
     if (!this.config.auto_append || this.promoting) {
       return;
@@ -456,9 +447,7 @@ class DataGridWidgetController extends React.Component {
 
   /* Mount the per-cell React widgets within the given root element */
   mount_cell_widgets(root) {
-    const mount = window.senaite &&
-      window.senaite.core &&
-      window.senaite.core.render_all_widgets;
+    const mount = window.senaite?.core?.render_all_widgets;
     if (mount && root) {
       mount(root);
     }
@@ -466,24 +455,16 @@ class DataGridWidgetController extends React.Component {
 
   /* -- rendering ------------------------------------------------------- */
 
+  /* Per-row disabled flags for the manipulator buttons (port of the former
+   * `set_ui_state`): the auto-append row disables all buttons, and up/down are
+   * disabled at the first/last real row. */
   button_flags() {
-    // port of the former `set_ui_state`: compute per-row disabled flags
-    const rows = this.rows;
-    const enabled = { add: false, del: false, up: false, down: false };
-    return rows.map((row, cnt) => {
+    const last = this.rows.length - 1;
+    return this.rows.map((row, i) => {
       if (row.is_aa) {
-        return { add: true, del: true, up: true, down: true, prev_down: true };
+        return { add: true, del: true, up: true, down: true };
       }
-      if (cnt === 0) {
-        return Object.assign({}, enabled, {
-          up: true,
-          down: rows.length === 1,
-        });
-      }
-      if (cnt === rows.length - 1) {
-        return Object.assign({}, enabled, { down: true });
-      }
-      return Object.assign({}, enabled);
+      return { add: false, del: false, up: i === 0, down: i === last };
     });
   }
 
@@ -496,7 +477,6 @@ class DataGridWidgetController extends React.Component {
       movedown: this.on_movedown,
       ref: this.set_row_ref,
     };
-    const count_name = this.config.name_prefix + ".count";
 
     return (
       <div>
@@ -518,7 +498,7 @@ class DataGridWidgetController extends React.Component {
           </tbody>
         </table>
         <input type="hidden"
-               name={count_name}
+               name={this.config.name_prefix + ".count"}
                value={this.count_real_rows()}
                readOnly />
       </div>
@@ -527,17 +507,50 @@ class DataGridWidgetController extends React.Component {
 }
 
 
-/* -- module helpers ---------------------------------------------------- */
+// -- module helpers ----------------------------------------------------
 
 const escape_re = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-const reindex_attr = (root, selector, fn) => {
-  root.querySelectorAll(selector).forEach(fn);
+const trigger_custom_event = (name, data) => {
+  document.body.dispatchEvent(new CustomEvent(name, { detail: data }));
 };
 
-const trigger_custom_event = (name, data) => {
-  const event = new CustomEvent(name, { detail: data });
-  document.body.dispatchEvent(event);
+/* Rewrite the row index embedded in an attribute value across a `<tr>`.
+ *
+ * Every element whose `attr` value starts with `prefix + old_index` (or
+ * contains it, for `href` fragments) is rewritten to `prefix + new_index`.
+ * When `json` is set the value is JSON-encoded (as the queryselect mount nodes
+ * store `data-name`/`data-id`): it is decoded, rewritten, re-encoded, and the
+ * mounted cell widget is notified to re-read it. */
+const reindex_attr = (tr, attr, prefix, old_index, new_index, json = false) => {
+  const from = prefix + old_index;
+  const pattern = new RegExp("^" + escape_re(from));
+  // `href` embeds the id as a `#fragment`, so match it anywhere in the value
+  const selector = attr === "href" ? `[href*="${from}"]` : `[${attr}]`;
+
+  tr.querySelectorAll(selector).forEach((el) => {
+    const raw = el.getAttribute(attr);
+    if (!raw) {
+      return;
+    }
+    const quoted = json && raw.charAt(0) === "\"";
+    let value = raw;
+    if (quoted) {
+      try {
+        value = JSON.parse(raw);
+      } catch (err) {
+        return;
+      }
+    }
+    if (!pattern.test(value)) {
+      return;
+    }
+    value = value.replace(pattern, prefix + new_index);
+    el.setAttribute(attr, quoted ? JSON.stringify(value) : value);
+    if (json) {
+      el.dispatchEvent(new CustomEvent(EVENT_CELL_REINDEXED, { bubbles: false }));
+    }
+  });
 };
 
 /* Locate the controller responsible for the given tbody/row element */
@@ -545,16 +558,18 @@ const find_controller = (el) => {
   if (!el) {
     return null;
   }
-  const tbody = el.matches && el.matches(".datagridwidget-body")
+  const tbody = el.matches && el.matches(BODY_SELECTOR)
     ? el
-    : (el.closest ? el.closest(".datagridwidget-body") : null);
+    : (el.closest ? el.closest(BODY_SELECTOR) : null);
   return REGISTRY.find((ctrl) => ctrl.tbody === tbody) || null;
 };
 
-/* Global facade preserving the former `window.widgets.datagrid` API.
- *
- * Consumers (e.g. the calculation edit form) call these with DOM elements.
- */
+
+// -- global facade -----------------------------------------------------
+
+/* Preserves the former `window.widgets.datagrid` API. Consumers (e.g. the
+ * calculation edit form) call these with DOM elements, which we route to the
+ * owning controller via the registry. */
 window.widgets = window.widgets || {};
 if (!window.widgets.datagrid) {
   window.widgets.datagrid = {
@@ -564,10 +579,7 @@ if (!window.widgets.datagrid) {
     },
     remove_row(row) {
       const ctrl = find_controller(row);
-      if (!ctrl) {
-        return;
-      }
-      const model = ctrl.rows.find((r) => r.dom === row);
+      const model = ctrl && ctrl.rows.find((r) => r.dom === row);
       if (model) {
         ctrl.remove_row(model);
       }
