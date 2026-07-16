@@ -130,8 +130,9 @@ class QuerySelectWidgetController extends React.Component {
    * Re-read them here so the submitted `<textarea>` uses the correct row index.
    */
   on_reindex() {
-    const name = this.root_el.dataset.name;
-    const id = this.root_el.dataset.id;
+    // `data-name`/`data-id` are JSON-encoded, same as in the constructor
+    const name = this.parse_json(this.root_el.dataset.name);
+    const id = this.parse_json(this.root_el.dataset.id);
     this.setState({ name: name, id: id });
   }
 

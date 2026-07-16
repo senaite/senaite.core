@@ -306,20 +306,40 @@ class DataGridWidgetController extends React.Component {
       (el) => replace(el, "href", "#" + id_prefix));
     reindex_attr(tr, '[data-fieldname^="' + name_prefix + '"]',
       (el) => replace(el, "data-fieldname", name_prefix));
-    // mount `<div>`s of the per-cell React widgets carry the submit name/id in
-    // `data-name`/`data-id` - reindex them so freshly mounted cells submit
-    // under the correct row index
-    reindex_attr(tr, '[data-name^="' + name_prefix + '"]',
-      (el) => replace(el, "data-name", name_prefix));
-    reindex_attr(tr, '[data-id^="' + id_prefix + '"]',
-      (el) => replace(el, "data-id", id_prefix));
 
-    // notify already-mounted per-cell React widgets (which keep their submit
-    // name in state) to re-read the reindexed `data-name`/`data-id`
-    reindex_attr(tr, "[data-name]", (el) => {
+    // The queryselect/uidreference mount `<div>`s carry the submit name/id in
+    // `data-name`/`data-id`, JSON-encoded (i.e. wrapped in quotes). Decode,
+    // reindex, re-encode, then notify the cell to re-read them.
+    this.reindex_json_attr(tr, "data-name", name_prefix, old_index, new_index);
+    this.reindex_json_attr(tr, "data-id", id_prefix, old_index, new_index);
+  }
+
+  /* Reindex a JSON-encoded attribute (`data-name`/`data-id`) on cell widgets */
+  reindex_json_attr(tr, attr, prefix, old_index, new_index) {
+    const pattern = new RegExp("^" + escape_re(prefix + old_index));
+    tr.querySelectorAll("[" + attr + "]").forEach((el) => {
+      const raw = el.getAttribute(attr);
+      if (!raw) {
+        return;
+      }
+      // value may be JSON-encoded (quoted) - operate on the decoded string
+      const quoted = raw.charAt(0) === "\"";
+      let val = raw;
+      if (quoted) {
+        try {
+          val = JSON.parse(raw);
+        } catch (err) {
+          return;
+        }
+      }
+      if (!pattern.test(val)) {
+        return;
+      }
+      val = val.replace(pattern, prefix + new_index);
+      el.setAttribute(attr, quoted ? JSON.stringify(val) : val);
+      // notify an already-mounted cell widget to re-read its submit name/id
       el.dispatchEvent(new CustomEvent("datagrid:cell_reindexed", {
         bubbles: false,
-        detail: { name: el.dataset.name, id: el.dataset.id },
       }));
     });
   }
@@ -387,14 +407,18 @@ class DataGridWidgetController extends React.Component {
   }
 
   /* Move `row` to the slot occupied by `target` (drag & drop) */
-  reorder(row, target) {
+  reorder(row, target, after) {
     const reals = this.rows.filter((r) => !r.is_aa);
     const from = reals.indexOf(row);
     if (from < 0 || reals.indexOf(target) < 0 || row === target) {
       return;
     }
     reals.splice(from, 1);
-    reals.splice(reals.indexOf(target), 0, row);
+    let to = reals.indexOf(target);
+    if (after) {
+      to += 1;
+    }
+    reals.splice(to, 0, row);
     this.apply_reorder(reals);
   }
 
@@ -433,9 +457,24 @@ class DataGridWidgetController extends React.Component {
     this.move_row(row, "down");
   }
 
-  /* Promote the trailing auto-append row as soon as the user edits it */
+  /* Promote the trailing auto-append row as soon as the user edits it.
+   *
+   * Only genuine user edits promote the row. Programmatic value changes - e.g.
+   * a form adapter pre-filling the auto-append row's part_id via
+   * `add_update_field` - must NOT promote it, otherwise every adapter write
+   * spawns a spurious row. Real DOM events carry `isTrusted === true`; the
+   * queryselect `select` custom event is dispatched (untrusted) but represents
+   * a real selection, so it is gated on its payload instead.
+   */
   on_row_activity(e) {
     if (!this.config.auto_append || this.promoting) {
+      return;
+    }
+    if (e.type === "select") {
+      if (!(e.detail && e.detail.value)) {
+        return;
+      }
+    } else if (!e.isTrusted) {
       return;
     }
     const aa = this.rows.find((row) => row.is_aa);
@@ -462,7 +501,11 @@ class DataGridWidgetController extends React.Component {
         // some browsers require setData in a try/catch
       }
       if (row.dom) {
-        e.dataTransfer.setDragImage(row.dom, 0, 0);
+        // align the drag image with the row under the cursor (the handle sits
+        // on the right, so a (0, 0) offset would push the ghost off-screen)
+        const rect = row.dom.getBoundingClientRect();
+        e.dataTransfer.setDragImage(
+          row.dom, e.clientX - rect.left, e.clientY - rect.top);
       }
     }
     if (row.dom) {
@@ -488,9 +531,13 @@ class DataGridWidgetController extends React.Component {
     e.preventDefault();
     const dragged = this.drag_row;
     this.clear_drag();
-    if (row !== dragged && !row.is_aa) {
-      this.reorder(dragged, row);
+    if (row === dragged || row.is_aa || !row.dom) {
+      return;
     }
+    // drop after the target when the cursor is on its lower half
+    const rect = row.dom.getBoundingClientRect();
+    const after = e.clientY > rect.top + rect.height / 2;
+    this.reorder(dragged, row, after);
   }
 
   on_drag_end() {
