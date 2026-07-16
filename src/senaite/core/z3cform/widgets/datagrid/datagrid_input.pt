@@ -36,7 +36,6 @@
           <th class="header" tal:condition="view/allow_delete"></th>
           <th class="header" tal:condition="view/allow_reorder"></th>
           <th class="header" tal:condition="view/allow_reorder"></th>
-          <th class="header" tal:condition="view/allow_reorder"></th>
         </tr>
       </thead>
       <tbody class="datagridwidget-body" tal:attributes="data-name_prefix view/name_prefix; data-id_prefix view/id_prefix">

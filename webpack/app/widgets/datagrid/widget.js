@@ -74,25 +74,9 @@ const DataGridRow = (props) => {
     </td>
   );
 
-  const handle = (
-    <td className="datagridwidget-manipulator drag-handle">
-      <button type="button"
-              className="btn btn-sm btn-outline-secondary dgf--row-drag"
-              title="Drag to reorder"
-              draggable={!row.is_aa}
-              disabled={row.is_aa}
-              onDragStart={(e) => callbacks.drag_start(e, row)}
-              onDragEnd={callbacks.drag_end}>
-        <i className="fas fa-grip-vertical" />
-      </button>
-    </td>
-  );
-
   return (
     <tr className={klass}
         data-index={row.index}
-        onDragOver={callbacks.drag_over}
-        onDrop={(e) => callbacks.drop(e, row)}
         ref={(el) => callbacks.ref(row, el)}>
       {row.cells.map((cell, i) => (
         <Adopt key={i} className={cell.className} node={cell.node} />
@@ -100,7 +84,6 @@ const DataGridRow = (props) => {
       {config.allow_insert && button("add", "plus", "Add row", flags.add)}
       {config.allow_delete &&
         button("delete", "trash", "Delete row", flags.del)}
-      {config.allow_reorder && handle}
       {config.allow_reorder &&
         button("moveup", "arrow-up", "Move up", flags.up)}
       {config.allow_reorder &&
@@ -137,17 +120,12 @@ class DataGridWidgetController extends React.Component {
 
     this.tbody = null;
     this.promoting = false;
-    this.drag_row = null;
 
     this.on_add = this.on_add.bind(this);
     this.on_delete = this.on_delete.bind(this);
     this.on_moveup = this.on_moveup.bind(this);
     this.on_movedown = this.on_movedown.bind(this);
     this.on_row_activity = this.on_row_activity.bind(this);
-    this.on_drag_start = this.on_drag_start.bind(this);
-    this.on_drag_over = this.on_drag_over.bind(this);
-    this.on_drop = this.on_drop.bind(this);
-    this.on_drag_end = this.on_drag_end.bind(this);
     this.set_row_ref = this.set_row_ref.bind(this);
   }
 
@@ -406,22 +384,6 @@ class DataGridWidgetController extends React.Component {
     this.apply_reorder(reals);
   }
 
-  /* Move `row` to the slot occupied by `target` (drag & drop) */
-  reorder(row, target, after) {
-    const reals = this.rows.filter((r) => !r.is_aa);
-    const from = reals.indexOf(row);
-    if (from < 0 || reals.indexOf(target) < 0 || row === target) {
-      return;
-    }
-    reals.splice(from, 1);
-    let to = reals.indexOf(target);
-    if (after) {
-      to += 1;
-    }
-    reals.splice(to, 0, row);
-    this.apply_reorder(reals);
-  }
-
   /* Commit a reordered list of real rows, keeping the trailing AA row last */
   apply_reorder(reals) {
     const aa = this.rows.filter((r) => r.is_aa);
@@ -486,71 +448,6 @@ class DataGridWidgetController extends React.Component {
     this.promoting = false;
   }
 
-  /* -- drag & drop reorder --------------------------------------------- */
-
-  on_drag_start(e, row) {
-    if (row.is_aa) {
-      return;
-    }
-    this.drag_row = row;
-    if (e.dataTransfer) {
-      e.dataTransfer.effectAllowed = "move";
-      try {
-        e.dataTransfer.setData("text/plain", String(row.key));
-      } catch (err) {
-        // some browsers require setData in a try/catch
-      }
-      if (row.dom) {
-        // align the drag image with the row under the cursor (the handle sits
-        // on the right, so a (0, 0) offset would push the ghost off-screen)
-        const rect = row.dom.getBoundingClientRect();
-        e.dataTransfer.setDragImage(
-          row.dom, e.clientX - rect.left, e.clientY - rect.top);
-      }
-    }
-    if (row.dom) {
-      row.dom.classList.add("datagridwidget-dragging");
-    }
-  }
-
-  on_drag_over(e) {
-    if (!this.drag_row) {
-      return;
-    }
-    // required so the row becomes a valid drop target
-    e.preventDefault();
-    if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = "move";
-    }
-  }
-
-  on_drop(e, row) {
-    if (!this.drag_row) {
-      return;
-    }
-    e.preventDefault();
-    const dragged = this.drag_row;
-    this.clear_drag();
-    if (row === dragged || row.is_aa || !row.dom) {
-      return;
-    }
-    // drop after the target when the cursor is on its lower half
-    const rect = row.dom.getBoundingClientRect();
-    const after = e.clientY > rect.top + rect.height / 2;
-    this.reorder(dragged, row, after);
-  }
-
-  on_drag_end() {
-    this.clear_drag();
-  }
-
-  clear_drag() {
-    if (this.drag_row && this.drag_row.dom) {
-      this.drag_row.dom.classList.remove("datagridwidget-dragging");
-    }
-    this.drag_row = null;
-  }
-
   set_row_ref(row, el) {
     if (el) {
       row.dom = el;
@@ -597,10 +494,6 @@ class DataGridWidgetController extends React.Component {
       delete: this.on_delete,
       moveup: this.on_moveup,
       movedown: this.on_movedown,
-      drag_start: this.on_drag_start,
-      drag_over: this.on_drag_over,
-      drop: this.on_drop,
-      drag_end: this.on_drag_end,
       ref: this.set_row_ref,
     };
     const count_name = this.config.name_prefix + ".count";

@@ -22,18 +22,6 @@
 .auto-append  > .datagridwidget-manipulator .dgf--row-delete,
 .auto-append  > .datagridwidget-manipulator .dgf--row-moveup,
 .auto-append  > .datagridwidget-manipulator .dgf--row-movedown,
-.auto-append  > .datagridwidget-manipulator .dgf--row-drag,
 .auto-append  > .datagridwidget-manipulator .dgf--row-add {
     display: none;
-}
-/* Drag handle to reorder rows */
-.datagridwidget-manipulator .dgf--row-drag {
-    cursor: grab;
-}
-.datagridwidget-manipulator .dgf--row-drag:active {
-    cursor: grabbing;
-}
-/* Row currently being dragged */
-.datagridwidget-row.datagridwidget-dragging {
-    opacity: 0.4;
 }
