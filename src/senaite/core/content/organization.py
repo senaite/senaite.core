@@ -407,8 +407,8 @@ class Organization(Container):
             country = address.get("country", "")
             address_lines = [
                 address.get("address", "").strip(),
-                "{} {}".format(city, zip_).strip(),
-                "{} {}".format(state, country).strip(),
+                u"{} {}".format(city, zip_).strip(),
+                u"{} {}".format(state, country).strip(),
             ]
             break
         return address_lines

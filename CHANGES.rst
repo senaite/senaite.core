@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2992 Fix UnicodeEncodeError in Organization.getPrintAddress with non-ASCII address
 - #2988 Fix worksheet template analysis filtering for selected samples
 - #2985 Add a SENAITE-specific Manage Viewlets view
 - #2971 Make the Sample Dispatch workflow optional and lock analyses on dispatch
