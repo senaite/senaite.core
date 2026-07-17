@@ -314,11 +314,20 @@ and after adding 2 analyses, 2 UID more references:
    >>> diff_raw["Analyses"]
    [([u'...', u'...', u'...'], ['...', '...', '...', '...', '...'])]
 
-It is also possible to process the values to get a more human readable diff:
+Passing `raw=False` (the default) returns a structured, human readable diff.
+The first snapshot is the value *before* and the second the value *after* the
+change. For a sequence field like `Analyses` the diff is element-level: only
+the added (or removed) items are reported, with UIDs resolved to their titles:
 
    >>> diff = compare_snapshots(snap1, snap2, raw=False)
-   >>> diff["Analyses"]
-   [('Aurum; Copper; Iron', 'Aurum; Calcium; Copper; Iron; Magnesium')]
+   >>> [(line["kind"], line["value"]) for line in diff["Analyses"]]
+   [('added', u'Calcium'), ('added', u'Magnesium')]
+
+Removing an item is reported as a `removed` line:
+
+   >>> snap3 = compare_snapshots(snap2, snap1, raw=False)
+   >>> [(line["kind"], line["value"]) for line in snap3["Analyses"]]
+   [('removed', u'Calcium'), ('removed', u'Magnesium')]
 
 
 To directly compare the last two snapshots taken, we can call
@@ -329,9 +338,43 @@ First we edit the sample to get a new snapshot:
    >>> sample.edit(CCEmails="rb@ridingbytes.com")
    >>> snapshot = take_snapshot(sample)
 
+A scalar change is reported as a single `scalar` line with `before`/`after`:
+
    >>> last_diff = compare_last_two_snapshots(sample, raw=False)
-   >>> last_diff["CCEmails"]
-   [('Not set', 'rb@ridingbytes.com')]
+   >>> line = last_diff["CCEmails"][0]
+   >>> line["kind"], str(line["before"]), str(line["after"])
+   ('scalar', 'Not set', 'rb@ridingbytes.com')
+
+
+Record and DataGrid fields
+..........................
+
+Record (dict) and DataGrid (list of dicts) fields are diffed key by key and
+row by row instead of being dumped as opaque JSON. We can feed crafted
+snapshots directly to `compare_snapshots` to illustrate this:
+
+   >>> before = {"Interims": [
+   ...     {"keyword": "F1", "value": "1"},
+   ...     {"keyword": "F2", "value": "2"}]}
+   >>> after = {"Interims": [
+   ...     {"keyword": "F1", "value": "9"},
+   ...     {"keyword": "F2", "value": "2"},
+   ...     {"keyword": "F3", "value": "3"}]}
+
+   >>> rec = compare_snapshots(before, after, raw=False)
+
+The first row changed its `value` from 1 to 9, reported as a labeled row group
+with a nested scalar change (the unchanged second row is omitted):
+
+   >>> [(l["kind"], l["indent"], str(l["label"]) if l["label"] else None,
+   ...   str(l["before"]) if l["before"] else None,
+   ...   str(l["after"]) if l["after"] else None) for l in rec["Interims"]]
+   [('group', 0, 'Row 1', None, None), ('scalar', 1, 'value', '1', '9'), ('added', 0, 'Row 3', None, None)]
+
+The added third row carries a compact summary of its values:
+
+   >>> str([l for l in rec["Interims"] if l["kind"] == "added"][0]["value"])
+   'keyword=F3; value=3'
 
 
 Pause and Resume Snapshots

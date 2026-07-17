@@ -3,6 +3,56 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Hide unused viewlets"
+      description="Hide the analytics, keywords, next/previous navigation and
+                   related items viewlets, which are not used in SENAITE, by
+                   reimporting the viewlets step."
+      source="2753"
+      destination="2754"
+      handler=".v02_07_000.hide_legacy_viewlets"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Set up the optional dispatch workflow"
+      description="The dispatch workflow is now optional and disabled by
+                   default. Only if the installation already has dispatched
+                   samples, enable the workflow to preserve the current
+                   behavior, mark those samples with the IDispatched marker
+                   interface (the dispatched viewlet and the analysis lock
+                   guard now rely on it instead of the sample review_state)
+                   and lock their analyses."
+      source="2752"
+      destination="2753"
+      handler=".v02_07_000.setup_dispatch_workflow"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Reindex organisation titles with unicode keys"
+      description="The organisation `title` indexer now normalizes the Name to
+                   unicode, matching the generic title indexer. Rebuild the
+                   `title` index in the setup and client catalogs so existing
+                   non-ASCII organisation names (Client, Supplier, ...) become
+                   unicode keys and title queries stop raising a
+                   UnicodeDecodeError."
+      source="2751"
+      destination="2752"
+      handler=".v02_07_000.reindex_organisation_title"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove the obsolete 'RegulatoryInspector' role"
+      description="Remove the unused RegulatoryInspector role and the
+                   RegulatoryInspectors group from existing installations.
+                   The role is dropped from the portal_role_manager (which
+                   also clears any direct assignments), the group is removed
+                   from portal_groups, and the role is dropped from the
+                   portal's known roles."
+      source="2750"
+      destination="2751"
+      handler=".v02_07_000.remove_regulatory_inspector_role"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Register the 'dispose' sample workflow transition"
       description="Register the new `senaite.core: Transition: Dispose Sample`
                    permission (granted to LabManager, Manager), the 'disposed'

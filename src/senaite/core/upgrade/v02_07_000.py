@@ -30,6 +30,8 @@ from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.interfaces import IAuditable
 from bika.lims.interfaces import IDetachedPartition
 from bika.lims.interfaces import IInvalidated
+from bika.lims.workflow.analysisrequest import do_action_to_analyses
+from senaite.core.interfaces import IDispatched
 from bika.lims.utils import tmpID
 from persistent.list import PersistentList
 from plone.app.blob.field import BlobWrapper
@@ -98,6 +100,82 @@ PORTAL_FOLDER_ITEMS = {
     # ID: ID, Title, FTI
     "worksheets": ("worksheets", "Worksheets", "Worksheets"),
 }
+
+
+@upgradestep(product, version)
+def hide_legacy_viewlets(tool):
+    """Hide the analytics, keywords, next/previous navigation and related
+    items viewlets, which are not used in SENAITE, by reimporting the
+    viewlets step.
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    logger.info("Hiding unused viewlets ...")
+    setup.runImportStepFromProfile(profile, "viewlets")
+    logger.info("Hiding unused viewlets [DONE]")
+
+
+@upgradestep(product, version)
+def remove_regulatory_inspector_role(tool):
+    """Remove the obsolete 'RegulatoryInspector' role and group.
+
+    The RegulatoryInspector role and the RegulatoryInspectors group are
+    no longer used by SENAITE. This step removes them from existing
+    installations:
+
+    1. Drop the role from the portal_role_manager, which also clears
+       every direct assignment of the role to a principal.
+    2. Remove the RegulatoryInspectors group from portal_groups.
+    3. Drop the role from the portal's known roles (`__ac_roles__`).
+
+    Stale references left behind in workflow definitions or permission
+    maps are inert once the role no longer exists.
+    """
+    role = "RegulatoryInspector"
+    group_id = "RegulatoryInspectors"
+    logger.info("Removing obsolete '%s' role ..." % role)
+
+    # 1. drop the role + its assignments from the role manager
+    acl = api.get_tool("acl_users")
+    prm = getattr(acl, "portal_role_manager", None)
+    if prm is not None and role in prm.listRoleIds():
+        prm.removeRole(role)
+        logger.info("Removed role '%s' from portal_role_manager" % role)
+
+    # 2. remove the group
+    portal_groups = api.get_tool("portal_groups")
+    if portal_groups.getGroupById(group_id) is not None:
+        portal_groups.removeGroup(group_id)
+        logger.info("Removed group '%s'" % group_id)
+
+    # 3. drop the role from the portal's known roles
+    portal = api.get_portal()
+    roles = list(portal.__ac_roles__)
+    if role in roles:
+        roles.remove(role)
+        portal.__ac_roles__ = tuple(roles)
+        logger.info("Removed role '%s' from portal roles" % role)
+
+
+@upgradestep(product, version)
+def reindex_organisation_title(tool):
+    """Rebuild the `title` index in the setup and client catalogs with
+    unicode keys.
+
+    The organisation `title` indexer returned the raw `Name`, so a non-ASCII
+    organisation name (Client, Supplier, Manufacturer, Laboratory) ended up as
+    a byte-string key in the shared `title` FieldIndex. Any query on `title`
+    then raised a UnicodeDecodeError when comparing the unicode query value
+    against those keys. The indexer now normalizes to unicode; the index BTree
+    must be cleared before reindexing (a plain per-object reindex would insert
+    a unicode key next to the old byte-string keys and hit the same error), so
+    `rebuild_index` clears and repopulates it with unicode keys only.
+    """
+    for catalog_id in [SETUP_CATALOG, CLIENT_CATALOG]:
+        catalog = api.get_tool(catalog_id)
+        logger.info("Rebuilding 'title' index on %s ..." % catalog_id)
+        rebuild_index(catalog, "title")
+    logger.info("Rebuilding 'title' index [DONE]")
 
 
 @upgradestep(product, version)
@@ -318,6 +396,49 @@ def setup_dispose_transition(tool):
 
     setup.runImportStepFromProfile(profile, "rolemap")
     setup.runImportStepFromProfile(profile, "workflow")
+
+
+@upgradestep(product, version)
+def setup_dispatch_workflow(tool):
+    """Set up the now-optional dispatch workflow for existing installations.
+
+    Dispatch used to be always available. The workflow is now optional and
+    disabled by default. Only if the installation already has dispatched
+    samples we enable the workflow (to preserve the current behavior), mark
+    those samples with the IDispatched marker interface (the dispatched
+    viewlet and the analysis lock guard rely on it instead of the sample
+    review_state) and lock their analyses, as a fresh dispatch would.
+    """
+    query = {
+        "portal_type": "AnalysisRequest",
+        "review_state": "dispatched",
+    }
+    brains = api.search(query, SAMPLE_CATALOG)
+    total = len(brains)
+    if not total:
+        # No dispatched samples: leave the workflow disabled (opt-in)
+        logger.info("No dispatched samples found, dispatch workflow stays "
+                    "disabled")
+        return
+
+    # Enable the dispatch workflow to preserve the current behavior
+    setup = api.get_senaite_setup()
+    if setup:
+        setup.setDispatchWorkflowEnabled(True)
+
+    # Mark the dispatched samples and lock their analyses
+    logger.info("Processing dispatched samples: {} to process".format(total))
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processing dispatched samples {}/{}"
+                        .format(num, total))
+        sample = api.get_object(brain)
+        # Mark the sample first so the analysis lock guard allows the lock
+        if not IDispatched.providedBy(sample):
+            alsoProvides(sample, IDispatched)
+        # Lock the analyses of the sample (as a fresh dispatch would)
+        do_action_to_analyses(sample, "lock")
+    logger.info("Processing dispatched samples [DONE]")
 
 
 @upgradestep(product, version)
