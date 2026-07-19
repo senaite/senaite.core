@@ -144,7 +144,7 @@ msgstr "Server:"
 #: senaite/core/browser/controlpanel/templates/overview.pt:16
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:13
 msgid "Site Setup"
-msgstr "Systemkonfiguration"
+msgstr "Setup"
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Site title"
