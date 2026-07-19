@@ -928,7 +928,7 @@ msgstr "Keine Datei"
 #. Default: "No image"
 #: senaite/core/z3cform/widgets/namedimage/display.pt:17
 msgid "no_image"
-msgstr ""
+msgstr "Kein Bild"
 
 #. Default: "Plain Text"
 #: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:82
