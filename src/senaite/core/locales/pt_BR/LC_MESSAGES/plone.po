@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-06-19 06:37+0000\n"
+"POT-Creation-Date: 2026-07-19 09:17+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Fabiano Solari, 2022\n"
 "Language-Team: Portuguese (Brazil) (https://app.transifex.com/senaite/teams/87045/pt_BR/)\n"
@@ -912,6 +912,11 @@ msgstr "precisa_uma_conta"
 #. Default: "No file"
 #: senaite/core/z3cform/widgets/datagrid/datagridrow_file_display.pt:27
 msgid "no_file"
+msgstr ""
+
+#. Default: "No image"
+#: senaite/core/z3cform/widgets/namedimage/display.pt:17
+msgid "no_image"
 msgstr ""
 
 #. Default: "Plain Text"

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-06-19 06:37+0000\n"
+"POT-Creation-Date: 2026-07-19 09:17+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2026\n"
 "Language-Team: German (https://app.transifex.com/senaite/teams/87045/de/)\n"
@@ -924,6 +924,11 @@ msgstr "Brauchen Sie einen Account?"
 #: senaite/core/z3cform/widgets/datagrid/datagridrow_file_display.pt:27
 msgid "no_file"
 msgstr "Keine Datei"
+
+#. Default: "No image"
+#: senaite/core/z3cform/widgets/namedimage/display.pt:17
+msgid "no_image"
+msgstr "Kein Bild"
 
 #. Default: "Plain Text"
 #: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:82
