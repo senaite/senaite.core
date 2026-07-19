@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-06-19 06:37+0000\n"
+"POT-Creation-Date: 2026-07-19 12:29+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2026\n"
 "Language-Team: Bulgarian (Bulgaria) (https://app.transifex.com/senaite/teams/87045/bg_BG/)\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Domain: DOMAIN\n"
 "Language: bg_BG\n"
 
-#: bika/lims/content/bikasetup.py:1134
+#: bika/lims/content/bikasetup.py:1135
 msgid " <p>The ID Server provides unique sequential IDs for objects such as Samples and Worksheets etc, based on a format specified for each content type.</p><p>The format is constructed similarly to the Python format syntax, using predefined variables per content type, and advancing the IDs through a sequence number, 'seq' and its padding as a number of digits, e.g. '03d' for a sequence of IDs from 001 to 999.</p><p>Alphanumeric prefixes for IDs are included as is in the formats, e.g. WS for Worksheet in WS-{seq:03d} produces sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p><p>For dynamic generation of alphanumeric and sequential IDs, the wildcard {alpha} can be used. E.g WS-{alpha:2a3d} produces WS-AA001, WS-AA002, WS-AB034, etc.</p><p>Variables that can be used include:<table><tr><th style='width:150px'>Content Type</th><th>Variables</th></tr><tr><td>Client ID</td><td>{clientId}</td></tr><tr><td>Year</td><td>{year}</td></tr><tr><td>Sample ID</td><td>{sampleId}</td></tr><tr><td>Sample Type</td><td>{sampleType}</td></tr><tr><td>Sampling Date</td><td>{samplingDate}</td></tr><tr><td>Date Sampled</td><td>{dateSampled}</td></tr></table></p><p>Configuration Settings:<ul><li>format:<ul><li>a python format string constructed from predefined variables like sampleId, clientId, sampleType.</li><li>special variable 'seq' must be positioned last in theformat string</li></ul></li><li>sequence type: [generated|counter]</li><li>context: if type counter, provides context the counting function</li><li>counter type: [backreference|contained]</li><li>counter reference: a parameter to the counting function</li><li>prefix: default prefix if none provided in format string</li><li>split length: the number of parts to be included in the prefix</li></ul></p>"
 msgstr "<p>Сървърът за идентификатори (ID Server) предоставя уникални последователни идентификатори за обекти като Проби (Samples), Работни листове (Worksheets) и др., въз основа на формат, зададен за всеки тип съдържание.</p><p>Форматът е конструиран подобно на синтаксиса за форматиране в Python, като използва предварително дефинирани променливи за всеки тип съдържание и генерира идентификаторите чрез пореден номер „seq“ и неговото запълване като брой цифри, напр. „03d“ за последователност от идентификатори от 001 до 999.</p><p>Алфанумеричните префикси за идентификаторите се включват директно във форматите, напр. WS за Работен лист в WS-{seq:03d} генерира последователни идентификатори: WS-001, WS-002, WS-003 и т.н.</p><p>За динамично генериране на алфанумерични и последователни идентификатори може да се използва символът за заместване {alpha}. Напр. WS-{alpha:2a3d} генерира WS-AA001, WS-AA002, WS-AB034 и т.н.</p><p>Променливите, които могат да бъдат използвани, включват:<table><tr><th style='width:150px'>Тип съдържание</th><th>Променливи</th></tr><tr><td>Идентификатор на клиент</td><td>{clientId}</td></tr><tr><td>Година</td><td>{year}</td></tr><tr><td>Идентификатор на проба</td><td>{sampleId}</td></tr><tr><td>Тип проба</td><td>{sampleType}</td></tr><tr><td>Дата на вземане на проба</td><td>{samplingDate}</td></tr><tr><td>Дата на пробовземане</td><td>{dateSampled}</td></tr></table></p><p>Настройки на конфигурацията:<ul><li>формат:<ul><li>низ за форматиране на Python, конструиран от предварително дефинирани променливи като sampleId, clientId, sampleType.</li><li>специалната променлива „seq“ трябва да бъде разположена последна в низа за форматиране</li></ul></li><li>тип последователност: [generated|counter]</li><li>контекст: ако типът е брояч (counter), предоставя контекст на функцията за броене</li><li>тип брояч: [backreference|contained]</li><li>референция на брояча: параметър към функцията за броене</li><li>префикс: префикс по подразбиране, ако не е предоставен такъв в низа за форматиране</li><li>дължина на разделяне: броят на частите, които да бъдат включени в префикса</li></ul></p>"
 
@@ -28,6 +28,7 @@ msgid "${amount} attachments with a total size of ${total_size}"
 msgstr "${amount} прикачени файлове с общ размер: ${total_size}"
 
 #: senaite/core/browser/samples/templates/dispatch_samples.pt:23
+#: senaite/core/browser/samples/templates/dispose_samples.pt:23
 #: senaite/core/browser/samples/templates/partition_magic.pt:29
 msgid "${back_link}"
 msgstr "${back_link}"
@@ -55,6 +56,7 @@ msgid "%s has no '%s' column."
 msgstr "%s няма колона '%s'."
 
 #: senaite/core/browser/samples/templates/dispatch_samples.pt:23
+#: senaite/core/browser/samples/templates/dispose_samples.pt:23
 #: senaite/core/browser/samples/templates/partition_magic.pt:29
 msgid "&larr; Back"
 msgstr "&larr; Назад"
@@ -124,6 +126,10 @@ msgstr "*** Това е автоматично генериран имейл, м
 msgid "+-"
 msgstr "+-"
 
+# senaite.app.listing: Column-filter row — boolean select placeholder
+msgid "-- Select --"
+msgstr ""
+
 #: senaite/core/exportimport/dataimport.py:139
 msgid "... Choose an Instrument ..."
 msgstr "... Изберете инструмент ..."
@@ -141,7 +147,7 @@ msgstr "<i class=\"fas fa-link\" aria-hidden=\"true\" /> Отиди в наст�
 msgid "<img src=\"${DYNAMIC_CONTENT}\" /> Welcome to SENAITE"
 msgstr "<img src=\"${DYNAMIC_CONTENT}\" /> Добре дошли в SENAITE"
 
-#: senaite/core/content/senaitesetup.py:1181
+#: senaite/core/content/senaitesetup.py:1204
 msgid "<p>The ID Server provides unique sequential IDs for objects such as Samples and Worksheets etc, based on a format specified for each content type. The format is constructed similarly to the Python format syntax, e.g. <code>WS-{seq:03d}</code> produces <code>WS-001</code>, <code>WS-002</code>, <code>WS-003</code> etc.</p><p>The current persistent counter values are managed in the <a href='ng'>Number Generator view</a>.</p><details class='id-server-cheatsheet'><summary>Available variables</summary><table class='table table-sm'><thead><tr><th style='width:30%'>Variable</th><th>Description</th></tr></thead><tbody><tr><td><code>{seq}</code> / <code>{seq:04d}</code></td><td>Numeric sequence number, optionally zero-padded.</td></tr><tr><td><code>{alpha:NaNd}</code></td><td>Alphanumeric counter, e.g. <code>{alpha:2a3d}</code> yields AA001, AA002, ..., AB001, ...</td></tr><tr><td><code>{year}</code></td><td>Two-digit current year (e.g. <code>26</code>).</td></tr><tr><td><code>{yymmdd}</code></td><td>Current date as <code>yymmdd</code>.</td></tr><tr><td><code>{clientId}</code></td><td>Client ID (samples only).</td></tr><tr><td><code>{sampleType}</code></td><td>Sample type prefix.</td></tr><tr><td><code>{samplingDate}</code> / <code>{dateSampled}</code></td><td>Sample dates (Python <code>strftime</code> specs apply).</td></tr><tr><td><code>{parent_ar_id}</code> / <code>{parent_base_id}</code></td><td>For partitions/retests/secondaries: the parent sample ID.</td></tr><tr><td><code>{partition_count}</code></td><td>Per-parent partition counter.</td></tr><tr><td><code>{retest_count}</code> / <code>{secondary_count}</code> / <code>{test_count}</code></td><td>Counters for retests, secondaries, and total tests.</td></tr></tbody></table></details><details class='id-server-cheatsheet'><summary>Configuration fields</summary><ul><li><strong>Format</strong>: the ID template.</li><li><strong>Seq Type</strong>: <code>generated</code> uses the persistent number counter; <code>counter</code> uses the count of related objects.</li><li><strong>Context</strong>: only used by <code>counter</code> type; the named context the counter applies to.</li><li><strong>Counter Type</strong>: <code>backreference</code> (deprecated) or <code>contained</code>.</li><li><strong>Counter Ref</strong>: relationship name (backreference) or meta type (contained).</li><li><strong>Prefix</strong>: default prefix if none in the format.</li><li><strong>Split Length</strong>: how many segments of the format become the storage key prefix. Determines how the counter is partitioned (e.g. per year, per sample type).</li></ul></details><style>.id-server-cheatsheet { margin: 0.5em 0; }.id-server-cheatsheet > summary { cursor: pointer; font-weight: 600; padding: 0.25em 0; }.id-server-cheatsheet table { margin-top: 0.5em; }</style>"
 msgstr ""
 
@@ -199,7 +205,7 @@ msgid "Account Type"
 msgstr "Тип сметка"
 
 #: senaite/core/content/analysisprofile.py:64
-#: senaite/core/content/senaitesetup.py:1273
+#: senaite/core/content/senaitesetup.py:1296
 msgid "Accounting"
 msgstr "Счетоводство"
 
@@ -244,21 +250,21 @@ msgstr "Активиране"
 
 #: senaite/core/browser/clients/client/contacts/view.py:85
 #: senaite/core/browser/controlpanel/departments/view.py:88
-#: senaite/core/browser/controlpanel/labels/view.py:70
+#: senaite/core/browser/controlpanel/labels/view.py:71
 msgid "Active"
 msgstr "Активен"
 
-#: senaite/core/content/resultsreport.py:51
+#: senaite/core/content/resultsreport.py:52
 msgid "Actor"
 msgstr "Извършител"
 
-#: senaite/core/content/resultsreport.py:56
+#: senaite/core/content/resultsreport.py:57
 msgid "Actor Fullname"
 msgstr ""
 
 #: senaite/core/browser/clients/client/contacts/view.py:53
 #: senaite/core/browser/controlpanel/departments/view.py:51
-#: senaite/core/browser/controlpanel/labels/view.py:45
+#: senaite/core/browser/controlpanel/labels/view.py:46
 msgid "Add"
 msgstr "Добави"
 
@@ -286,15 +292,19 @@ msgstr "Добави дубликат"
 msgid "Add Samples"
 msgstr "Добави проби"
 
-#: bika/lims/content/bikasetup.py:460
+#: senaite/core/api/remarks.py:492
+msgid "Add a remark..."
+msgstr ""
+
+#: bika/lims/content/bikasetup.py:461
 msgid "Add a remarks field to all analyses"
 msgstr "Добавяне на поле за забележки към всички анализи"
 
-#: senaite/core/content/senaitesetup.py:320
+#: senaite/core/content/senaitesetup.py:321
 msgid "Add custom CSS rules for the Logo, e.g. height:15px; width:150px;"
 msgstr "Добавете персонализирани CSS правила за логото, напр. height:15px; width:150px;"
 
-#: senaite/core/browser/controlpanel/labels/view.py:52
+#: senaite/core/browser/controlpanel/labels/view.py:53
 msgid "Add default selectable labels"
 msgstr "Добави етикети за избиране по подразбиране"
 
@@ -307,8 +317,11 @@ msgstr "Добави нов прикачен файл"
 msgid "Add one or more attachments to describe the sample in this sample, or to specify your request."
 msgstr "Добавете един или повече прикачени файлове, за да опишете пробата в тази заявка или да уточните искането си."
 
-#: senaite/core/skins/senaite_templates/senaite_widgets/remarkswidget.pt:50
-#: senaite/core/z3cform/widgets/remarks/display-input.pt:51
+#: senaite/core/browser/samples/view.py:879
+msgid "Add or remove labels on the selected samples"
+msgstr ""
+
+#: senaite/core/api/remarks.py:477
 msgid "Add remarks"
 msgstr "Добави забележки"
 
@@ -372,13 +385,21 @@ msgstr "Тук са изброени всички акредитирани ус�
 msgid "All Analyses of Service"
 msgstr "Всички анализи на услугата"
 
-#: senaite/core/browser/samples/view.py:585
+#: senaite/core/browser/samples/view.py:723
 msgid "All analyses assigned"
 msgstr "Всички анализи са възложени"
+
+# senaite.app.listing: Column config — empty state when no columns are visible
+msgid "All columns are hidden."
+msgstr ""
 
 #: bika/lims/content/abstractbaseanalysis.py:335
 msgid "Allow Manual Detection Limit input"
 msgstr "Разреши ръчно въвеждане на граница на откриване"
+
+#: bika/lims/content/abstractbaseanalysis.py:728
+msgid "Allow Manual Entry"
+msgstr ""
 
 #: bika/lims/browser/fields/interimfieldsfield.py:57
 msgid "Allow empty"
@@ -396,11 +417,11 @@ msgstr "Разреши на един и същ потребител да вер�
 msgid "Allow same user to verify multiple times, but not consecutively"
 msgstr "Разреши на един и същ потребител да верифицира многократно, но не последователно"
 
-#: bika/lims/content/bikasetup.py:492
+#: bika/lims/content/bikasetup.py:493
 msgid "Allow self-verification of results"
 msgstr "Разреши самоверификация на резултати"
 
-#: bika/lims/content/bikasetup.py:189
+#: bika/lims/content/bikasetup.py:190
 msgid "Allow submission of results for unassigned analyses"
 msgstr ""
 
@@ -429,15 +450,31 @@ msgstr ""
 msgid "Analysed by"
 msgstr "Анализирано от"
 
-#: senaite/core/browser/dashboard/dashboard.py:459
+#: senaite/core/browser/dashboard/dashboard.py:506
+#: senaite/core/browser/samples/view.py:248
 #: senaite/core/browser/viewlets/sampleanalyses.py:33
-#: senaite/core/browser/worksheets/worksheet/templates/print/sample_by_column.pt:118
 msgid "Analyses"
 msgstr "Анализи"
+
+#: senaite/core/browser/dashboard/dashboard.py:485
+msgid "Analyses assigned to a worksheet, awaiting results"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:498
+msgid "Analyses included in a published report"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:480
+msgid "Analyses not yet assigned to a worksheet"
+msgstr ""
 
 #: senaite/core/browser/samples/rejection/templates/rejection_report.pt:132
 msgid "Analyses requested"
 msgstr "Заявени анализи"
+
+#: senaite/core/browser/dashboard/dashboard.py:494
+msgid "Analyses that have been verified"
+msgstr ""
 
 #: senaite/core/browser/viewlets/templates/attachments.pt:66
 #: senaite/core/browser/viewlets/templates/worksheet_attachments.pt:40
@@ -506,7 +543,7 @@ msgstr "Условия на анализ"
 msgid "Analysis conditions updated: {}"
 msgstr "Условията на анализа са обновени: {}"
 
-#: bika/lims/content/bikasetup.py:411
+#: bika/lims/content/bikasetup.py:412
 msgid "Analysis specifications which are edited directly on the Sample."
 msgstr "Спецификации на анализ, които се редактират директно в Пробата."
 
@@ -543,7 +580,7 @@ msgstr "Трябва да бъде посочен анализатор."
 msgid "Any"
 msgstr "Всякакъв"
 
-#: senaite/core/content/senaitesetup.py:1322
+#: senaite/core/content/senaitesetup.py:1345
 msgid "Appearance"
 msgstr "Външен вид"
 
@@ -554,6 +591,10 @@ msgstr "Приложи"
 #: senaite/core/browser/worksheets/worksheet/templates/add_analyses.pt:52
 msgid "Apply template"
 msgstr "Приложи шаблон"
+
+# senaite.app.listing: Saved filter presets — apply button tooltip
+msgid "Apply this filter"
+msgstr ""
 
 #: bika/lims/browser/fields/interimfieldsfield.py:61
 msgid "Apply wide"
@@ -567,19 +608,15 @@ msgstr "Инвентарен номер"
 msgid "Assign"
 msgstr "Възложи"
 
-#: senaite/core/browser/samples/view.py:413
+#: senaite/core/browser/dashboard/dashboard.py:147
+#: senaite/core/browser/samples/view.py:443
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
-#: senaite/core/profiles/default/workflows/senaite_duplicateanalysis_workflow/definition.xml
 msgid "Assigned"
 msgstr "Възложен"
 
-#: bika/lims/browser/analyses/view.py:1665
+#: bika/lims/browser/analyses/view.py:1666
 msgid "Assigned to: ${worksheet_id}"
 msgstr "Възложено на: ${worksheet_id}"
-
-#: senaite/core/browser/dashboard/dashboard.py:122
-msgid "Assignment pending"
-msgstr "Чакащо възлагане"
 
 #: bika/lims/validators.py:465
 msgid "At least, two options for choices field are required"
@@ -593,7 +630,7 @@ msgstr "Прикачи към проба"
 msgid "Attached file '{filename}' to worksheet {worksheet}"
 msgstr ""
 
-#: senaite/core/extender/label.py:58
+#: senaite/core/extender/label.py:62
 msgid "Attached labels"
 msgstr "Прикачени етикети"
 
@@ -681,11 +718,15 @@ msgstr "Поведение за автоматично генериране на
 msgid "Auto-Import Logs"
 msgstr "Автоматично импортиране на логове"
 
+# senaite.app.listing: Saved filter presets — star action tooltip
+msgid "Auto-apply on open"
+msgstr ""
+
 #: bika/lims/content/artemplate.py:241
 msgid "Auto-partition on receive"
 msgstr "Автоматично разделяне при получаване"
 
-#: senaite/core/content/senaitesetup.py:1007
+#: senaite/core/content/senaitesetup.py:1030
 msgid "Auto-receive samples"
 msgstr "Автоматично получаване на проби"
 
@@ -693,15 +734,15 @@ msgstr "Автоматично получаване на проби"
 msgid "Autofill"
 msgstr "Автоматично попълване"
 
-#: senaite/core/content/senaitesetup.py:1107
+#: senaite/core/content/senaitesetup.py:1130
 msgid "Automatic Sticker Printing"
 msgstr "Автоматично разпечатване на етикети"
 
-#: bika/lims/content/bikasetup.py:161
+#: bika/lims/content/bikasetup.py:162
 msgid "Automatic log-off"
 msgstr "Автоматично излизане"
 
-#: bika/lims/content/bikasetup.py:475
+#: bika/lims/content/bikasetup.py:476
 msgid "Automatic verification of samples"
 msgstr "Автоматична верификация на проби"
 
@@ -752,7 +793,7 @@ msgstr "Партида"
 msgid "Batch Book"
 msgstr "Книга за партиди"
 
-#: senaite/core/browser/samples/view.py:174
+#: senaite/core/browser/samples/view.py:186
 msgid "Batch ID"
 msgstr "ID на партида"
 
@@ -782,6 +823,10 @@ msgstr "Имайте предвид, че диапазоните, предост
 msgid "Bearing"
 msgstr "Посока"
 
+#: senaite/core/browser/dashboard/dashboard.py:139
+msgid "Biannual"
+msgstr ""
+
 #: senaite/core/z3cform/widgets/address.py:122
 msgid "Billing address"
 msgstr "Адрес за фактуриране"
@@ -802,7 +847,7 @@ msgstr "Марка"
 msgid "Bulk Discount"
 msgstr "Отстъпка за количество"
 
-#: bika/lims/content/client.py:75
+#: bika/lims/content/client.py:77
 #: bika/lims/content/pricelist.py:59
 msgid "Bulk discount applies"
 msgstr "Важи отстъпка за количество"
@@ -820,19 +865,19 @@ msgstr "Служебен телефон"
 msgid "Business address"
 msgstr "Служебен адрес"
 
-#: bika/lims/content/abstractbaseanalysis.py:756
+#: bika/lims/content/abstractbaseanalysis.py:759
 msgid "By 'Display Value' ascending"
 msgstr "По 'Показана стойност' възходящо"
 
-#: bika/lims/content/abstractbaseanalysis.py:757
+#: bika/lims/content/abstractbaseanalysis.py:760
 msgid "By 'Display Value' descending"
 msgstr "По 'Показана стойност' низходящо"
 
-#: bika/lims/content/abstractbaseanalysis.py:754
+#: bika/lims/content/abstractbaseanalysis.py:757
 msgid "By 'Result Value' ascending"
 msgstr "По 'Стойност на резултата' възходящо"
 
-#: bika/lims/content/abstractbaseanalysis.py:755
+#: bika/lims/content/abstractbaseanalysis.py:758
 msgid "By 'Result Value' descending"
 msgstr "По 'Стойност на резултата' низходящо"
 
@@ -840,12 +885,12 @@ msgstr "По 'Стойност на резултата' низходящо"
 msgid "CBID"
 msgstr "CBID"
 
-#: bika/lims/content/client.py:129
+#: bika/lims/content/client.py:133
 msgid "CC Contacts"
 msgstr ""
 
 #: bika/lims/content/analysisrequest.py:236
-#: bika/lims/content/client.py:162
+#: bika/lims/content/client.py:166
 msgid "CC Emails"
 msgstr "Имейли за копие (CC)"
 
@@ -901,23 +946,23 @@ msgstr "Калибрирания"
 msgid "Calibrator"
 msgstr "Калибратор"
 
-#: bika/lims/browser/analyses/view.py:1613
+#: bika/lims/browser/analyses/view.py:1614
 msgid "Can verify, but submitted by current user"
 msgstr "Може да верифицира, но е подадено от текущия потребител"
 
-#: bika/lims/browser/analyses/view.py:1637
+#: bika/lims/browser/analyses/view.py:1638
 msgid "Can verify, but was already verified by current user"
 msgstr "Може да верифицира, но вече е верифицирано от текущия потребител"
 
+#: senaite/core/api/remarks.py:479
 #: senaite/core/browser/samples/rejection/templates/reject_samples.pt:155
 #: senaite/core/browser/samples/templates/dispatch_samples.pt:83
-#: senaite/core/browser/samples/templates/invalidate_samples.pt:158
 msgid "Cancel"
 msgstr "Отказ"
 
 #: senaite/core/browser/samples/dispatch_samples.py:70
-#: senaite/core/browser/samples/view.py:373
-#: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
+#: senaite/core/browser/samples/dispose_samples.py:70
+#: senaite/core/browser/samples/view.py:403
 msgid "Cancelled"
 msgstr "Отказан"
 
@@ -937,15 +982,15 @@ msgstr ""
 msgid "Cannot send email for ${sample_id}: ${error}"
 msgstr "Не може да се изпрати имейл за ${sample_id}: ${error}"
 
-#: bika/lims/browser/analyses/view.py:1643
+#: bika/lims/browser/analyses/view.py:1644
 msgid "Cannot verify, last verified by current user"
 msgstr "Не може да се верифицира, последно верифицирано от текущия потребител"
 
-#: bika/lims/browser/analyses/view.py:1619
+#: bika/lims/browser/analyses/view.py:1620
 msgid "Cannot verify, submitted by current user"
 msgstr "Не може да се верифицира, подадено от текущия потребител"
 
-#: bika/lims/browser/analyses/view.py:1628
+#: bika/lims/browser/analyses/view.py:1629
 msgid "Cannot verify, was verified by current user"
 msgstr "Не може да се верифицира, беше верифицирано от текущия потребител"
 
@@ -971,7 +1016,7 @@ msgstr "Каталогизиране на Dexterity съдържание в мн
 msgid "Catalogue Number"
 msgstr "Каталожен номер"
 
-#: bika/lims/content/bikasetup.py:354
+#: bika/lims/content/bikasetup.py:355
 msgid "Categorise analysis services"
 msgstr "Категоризиране на услуги за анализ"
 
@@ -1003,11 +1048,11 @@ msgid "Changes Saved"
 msgstr "Промените са запазени"
 
 #: senaite/core/browser/samples/manage_sample_fields.py:104
-#: senaite/core/browser/viewlets/sampleheader.py:114
+#: senaite/core/browser/viewlets/sampleheader.py:125
 msgid "Changes saved."
 msgstr "Промените са запазени."
 
-#: senaite/core/browser/viewlets/templates/sampleheader.pt:99
+#: senaite/core/browser/viewlets/templates/sampleheader.pt:100
 msgid "Changes will be propagated to partitions"
 msgstr "Промените ще бъдат разпространени към частите"
 
@@ -1044,31 +1089,31 @@ msgstr "Поле за отметка"
 msgid "Choices"
 msgstr "Избори"
 
-#: senaite/core/content/senaitesetup.py:1151
+#: senaite/core/content/senaitesetup.py:1174
 msgid "Choose the default template for 'large' stickers. Note: Sample-specific 'large' stickers are configured based on their sample type."
 msgstr ""
 
-#: bika/lims/content/bikasetup.py:1037
+#: bika/lims/content/bikasetup.py:1038
 msgid "Choose the default template for 'large' stickers.<br/><strong>Note:</strong> Sample-specific 'large' stickers are configured based on their sample type."
 msgstr "Изберете шаблона по подразбиране за 'големи' етикети.<br/><strong>Забележка:</strong> Специфичните за пробата 'големи' етикети се конфигурират въз основа на нейния тип проба."
 
-#: senaite/core/content/senaitesetup.py:1139
+#: senaite/core/content/senaitesetup.py:1162
 msgid "Choose the default template for 'small' stickers. Note: Sample-specific 'small' stickers are configured based on their sample type."
 msgstr ""
 
-#: bika/lims/content/bikasetup.py:1018
+#: bika/lims/content/bikasetup.py:1019
 msgid "Choose the default template for 'small' stickers.<br/><strong>Note:</strong> Sample-specific 'small' stickers are configured based on their sample type."
 msgstr "Изберете шаблона по подразбиране за 'малки' етикети.<br/><strong>Забележка:</strong> Специфичните за пробата 'малки' етикети се конфигурират въз основа на нейния тип проба."
 
-#: bika/lims/content/bikasetup.py:529
+#: bika/lims/content/bikasetup.py:530
 msgid "Choose type of multiple verification for the same user.This setting can enable/disable verifying/consecutively verifyingmore than once for the same user."
 msgstr "Изберете тип на многократна верификация за един и същ потребител. Тази настройка може да активира/деактивира верифицирането/последователното верифициране повече от веднъж за един и същ потребител."
 
-#: bika/lims/content/bikasetup.py:976
+#: bika/lims/content/bikasetup.py:977
 msgid "Choose when stickers should be automatically printed:<br/><ul><li><strong>Register:</strong> Stickers are printed  automatically when new samples are created.</li><li><strong>Receive:</strong> Stickers are printed  automatically when samples are received.</li><li><strong>None:</strong> Disables automatic sticker printing.</li></ul>"
 msgstr "Изберете кога етикетите да се отпечатват автоматично:<br/><ul><li><strong>Регистрация:</strong> Етикетите се отпечатват автоматично при създаване на нови проби.</li><li><strong>Получаване:</strong> Етикетите се отпечатват автоматично при получаване на проби.</li><li><strong>Никога:</strong> Деактивира автоматичното отпечатване на етикети.</li></ul>"
 
-#: senaite/core/content/senaitesetup.py:1108
+#: senaite/core/content/senaitesetup.py:1131
 msgid "Choose when stickers should be automatically printed:<br/><ul><li><strong>Register:</strong> Stickers are printed automatically when new samples are created.</li><li><strong>Receive:</strong> Stickers are printed automatically when samples are received.</li><li><strong>None:</strong> Disables automatic sticker printing.</li></ul>"
 msgstr ""
 
@@ -1081,20 +1126,34 @@ msgstr "Град"
 msgid "Classic"
 msgstr "Класически"
 
+# senaite.app.listing: Column-filter row — clear button tooltip
+msgid "Clear filter"
+msgstr ""
+
+# senaite.app.listing: Search box — undo button tooltip when only clearing
+# search
+msgid "Clear search"
+msgstr ""
+
 # senaite.app.listing: ButtonBar
 msgid "Clear selection"
 msgstr "Изчисти селекцията"
 
-#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:533
+#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:542
 msgid "Click to expand this category"
 msgstr "Кликнете, за да разгънете тази категория"
+
+# senaite.app.listing: Saved filter presets — release button tooltip on the
+# applied preset
+msgid "Click to release this filter"
+msgstr ""
 
 # senaite.app.listing: TableColumnConfig
 msgid "Click to toggle the visibility or drag&drop to change the order"
 msgstr "Кликнете, за да превключите видимостта или плъзнете и пуснете, за да промените реда"
 
 #: senaite/core/browser/samples/rejection/templates/rejection_report.pt:79
-#: senaite/core/browser/samples/view.py:179
+#: senaite/core/browser/samples/view.py:191
 #: senaite/core/browser/worksheets/worksheet/analyses_listing.py:566
 msgid "Client"
 msgstr "Клиент"
@@ -1106,7 +1165,7 @@ msgstr "Клиентско ID на партида"
 
 #: senaite/core/behaviors/clientshareable.py:90
 #: senaite/core/browser/samples/rejection/templates/rejection_report.pt:83
-#: senaite/core/browser/samples/view.py:184
+#: senaite/core/browser/samples/view.py:196
 msgid "Client ID"
 msgstr "Идентификатор на клиент"
 
@@ -1118,7 +1177,7 @@ msgstr "Начална страница на клиент"
 msgid "Client Name"
 msgstr "Име на клиент"
 
-#: senaite/core/browser/samples/view.py:132
+#: senaite/core/browser/samples/view.py:144
 msgid "Client Order"
 msgstr "Клиентска поръчка"
 
@@ -1128,7 +1187,7 @@ msgstr "Клиентска поръчка"
 msgid "Client Order Number"
 msgstr "Номер на клиентска поръчка"
 
-#: senaite/core/browser/samples/view.py:189
+#: senaite/core/browser/samples/view.py:201
 msgid "Client Ref"
 msgstr "Клиентска реф."
 
@@ -1137,7 +1196,7 @@ msgstr "Клиентска реф."
 msgid "Client Reference"
 msgstr "Клиентска референция"
 
-#: senaite/core/browser/samples/view.py:194
+#: senaite/core/browser/samples/view.py:206
 msgid "Client SID"
 msgstr "Клиентски SID"
 
@@ -1230,7 +1289,7 @@ msgstr "Коментари"
 msgid "Comments or results interpretation"
 msgstr "Коментари или интерпретация на резултати"
 
-#: bika/lims/content/abstractbaseanalysis.py:853
+#: bika/lims/content/abstractbaseanalysis.py:856
 #: bika/lims/content/analysisprofile.py:91
 msgid "Commercial ID"
 msgstr "Търговско ID"
@@ -1268,6 +1327,10 @@ msgstr "Конфигурация за информацията в заглавк
 msgid "Configuration restored to default values."
 msgstr "Конфигурацията е възстановена до стойностите по подразбиране."
 
+# senaite.app.listing: Column config — trigger button label
+msgid "Configure"
+msgstr ""
+
 # senaite.app.listing: TableColumnConfig
 msgid "Configure Table Columns"
 msgstr "Конфигуриране на колоните в таблицата"
@@ -1286,7 +1349,7 @@ msgstr "Потвърди парола"
 msgid "Considerations"
 msgstr "Съображения"
 
-#: senaite/core/browser/samples/view.py:197
+#: senaite/core/browser/samples/view.py:209
 #: senaite/core/profiles/default/types/Contact.xml
 msgid "Contact"
 msgstr "Контакт"
@@ -1330,7 +1393,7 @@ msgstr "Контейнери"
 msgid "Contents of the file {}"
 msgstr "Съдържание на файла {}"
 
-#: senaite/core/content/senaitesetup.py:223
+#: senaite/core/content/senaitesetup.py:224
 msgid "Context"
 msgstr ""
 
@@ -1363,15 +1426,15 @@ msgstr "Копирай услуги за анализ"
 msgid "Copy from"
 msgstr "Копирай от"
 
-#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:575
+#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:585
 msgid "Copy the currently displayed column value to the other columns on the right"
 msgstr "Копирайте стойността на текущо показаната колона към другите колони отдясно"
 
-#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:434
+#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:443
 msgid "Copy the value of the first sample to the others"
 msgstr "Копирай стойността на първата проба към другите"
 
-#: senaite/core/browser/samples/view.py:742
+#: senaite/core/browser/samples/view.py:901
 msgid "Copy to new"
 msgstr "Копирай в нов"
 
@@ -1381,6 +1444,10 @@ msgstr ""
 
 #: bika/lims/browser/analysisrequest/add2.py:2368
 msgid "Could not create the following sample(s) due to transaction conflicts, please retry them: ${rows}"
+msgstr ""
+
+#: senaite/core/browser/clients/client/contacts/login_details.py:228
+msgid "Could not link User: ${error}"
 msgstr ""
 
 #: bika/lims/browser/workflow/client.py:52
@@ -1399,11 +1466,11 @@ msgstr "Пробите не можаха да преминат в състоян
 msgid "Counter <span class=\"sort-indicator\" />"
 msgstr ""
 
-#: senaite/core/content/senaitesetup.py:235
+#: senaite/core/content/senaitesetup.py:236
 msgid "Counter Ref"
 msgstr ""
 
-#: senaite/core/content/senaitesetup.py:228
+#: senaite/core/content/senaitesetup.py:229
 msgid "Counter Type"
 msgstr ""
 
@@ -1416,7 +1483,7 @@ msgstr "Държава"
 msgid "Create Invoice PDF"
 msgstr "Създай фактура PDF"
 
-#: senaite/core/browser/samples/templates/partition_magic.pt:256
+#: senaite/core/browser/samples/templates/partition_magic.pt:264
 msgid "Create Partitions"
 msgstr "Създай части"
 
@@ -1424,7 +1491,7 @@ msgstr "Създай части"
 msgid "Create SENAITE Site"
 msgstr "Създай SENAITE сайт"
 
-#: senaite/core/browser/samples/view.py:716
+#: senaite/core/browser/samples/view.py:864
 msgid "Create Worksheet"
 msgstr "Създай работен лист"
 
@@ -1436,7 +1503,7 @@ msgstr "Създаване на нов SENAITE сайт"
 msgid "Create a new User"
 msgstr "Създаване на нов потребител"
 
-#: senaite/core/browser/samples/view.py:720
+#: senaite/core/browser/samples/view.py:868
 msgid "Create a new worksheet for the selected samples"
 msgstr "Създаване на нов работен лист за избраните проби"
 
@@ -1466,7 +1533,7 @@ msgid "Created {} partitions: {}"
 msgstr "Създадени {} части: {}"
 
 #: senaite/core/browser/clients/client/attachments/view.py:75
-#: senaite/core/browser/samples/view.py:136
+#: senaite/core/browser/samples/view.py:148
 msgid "Creator"
 msgstr "Създател"
 
@@ -1475,7 +1542,7 @@ msgstr "Създател"
 msgid "Criteria"
 msgstr "Критерии"
 
-#: bika/lims/content/bikasetup.py:253
+#: bika/lims/content/bikasetup.py:254
 msgid "Currency"
 msgstr "Валута"
 
@@ -1483,13 +1550,21 @@ msgstr "Валута"
 msgid "Current"
 msgstr "Текущ"
 
-#: bika/lims/content/client.py:237
+# senaite.app.listing: Saved filter presets — dirty tag hover tooltip
+msgid "Current view differs from saved"
+msgstr ""
+
+#: bika/lims/content/client.py:241
 msgid "Custom decimal mark"
 msgstr "Персонализиран десетичен знак"
 
 #: senaite/core/browser/worksheets/worksheet/analyses_listing.py:80
 msgid "DL"
 msgstr "GO"
+
+#: senaite/core/browser/dashboard/dashboard.py:135
+msgid "Daily"
+msgstr ""
 
 #: bika/lims/content/instrument.py:222
 msgid "Data Interface"
@@ -1536,23 +1611,23 @@ msgstr "Дата на промяна"
 msgid "Date Opened"
 msgstr "Дата на отваряне"
 
-#: senaite/core/browser/samples/view.py:155
+#: senaite/core/browser/samples/view.py:167
 msgid "Date Preserved"
 msgstr "Дата на консервация"
 
-#: senaite/core/content/resultsreport.py:208
+#: senaite/core/content/resultsreport.py:209
 msgid "Date Printed"
 msgstr "Дата на отпечатване"
 
-#: senaite/core/browser/samples/view.py:171
+#: senaite/core/browser/samples/view.py:183
 msgid "Date Published"
 msgstr "Дата на публикуване"
 
-#: senaite/core/browser/samples/view.py:161
+#: senaite/core/browser/samples/view.py:173
 msgid "Date Received"
 msgstr "Дата на получаване"
 
-#: senaite/core/browser/samples/view.py:141
+#: senaite/core/browser/samples/view.py:153
 msgid "Date Registered"
 msgstr "Дата на регистрация"
 
@@ -1564,11 +1639,11 @@ msgstr "Дата на заявяване"
 msgid "Date Sample Received"
 msgstr "Дата на получаване на пробата"
 
-#: senaite/core/browser/samples/view.py:149
+#: senaite/core/browser/samples/view.py:161
 msgid "Date Sampled"
 msgstr "Дата на пробовземане"
 
-#: senaite/core/browser/samples/view.py:167
+#: senaite/core/browser/samples/view.py:179
 msgid "Date Verified"
 msgstr "Дата на верификация"
 
@@ -1610,7 +1685,7 @@ msgstr "Дата, на която е издаден сертификатът з�
 msgid "Date when the certificate is valid"
 msgstr "Дата, на която сертификатът е валиден"
 
-#: senaite/core/content/resultsreport.py:209
+#: senaite/core/content/resultsreport.py:210
 msgid "Date when the report was printed"
 msgstr ""
 
@@ -1633,11 +1708,11 @@ msgstr "Деактивиране до следващия тест за кали�
 msgid "Deactivate"
 msgstr "Деактивиране"
 
-#: bika/lims/content/client.py:238
+#: bika/lims/content/client.py:242
 msgid "Decimal mark to use in the reports from this Client."
 msgstr "Десетичен знак за използване в докладите от този Клиент."
 
-#: bika/lims/content/client.py:130
+#: bika/lims/content/client.py:134
 msgid "Default CC contacts for new samples. If set, these contacts are automatically selected in the sample add form."
 msgstr ""
 
@@ -1649,7 +1724,7 @@ msgstr "Контейнер по подразбиране"
 msgid "Default Department"
 msgstr "Отдел по подразбиране"
 
-#: bika/lims/content/client.py:163
+#: bika/lims/content/client.py:167
 msgid "Default Emails to CC all published Samples for this client"
 msgstr "Имейли по подразбиране за копие на всички публикувани проби за този клиент"
 
@@ -1661,7 +1736,7 @@ msgstr "Инструмент по подразбиране"
 msgid "Default Method"
 msgstr "Метод по подразбиране"
 
-#: senaite/core/content/senaitesetup.py:1162
+#: senaite/core/content/senaitesetup.py:1185
 msgid "Default Number of Copies"
 msgstr "Брой копия по подразбиране"
 
@@ -1669,20 +1744,20 @@ msgstr "Брой копия по подразбиране"
 msgid "Default Preservation"
 msgstr "Консервация по подразбиране"
 
-#: senaite/core/content/senaitesetup.py:1128
+#: senaite/core/content/senaitesetup.py:1151
 msgid "Default Sticker Template"
 msgstr "Шаблон за етикет по подразбиране"
 
-#: bika/lims/content/client.py:95
+#: bika/lims/content/client.py:99
 msgid "Default contact for new samples. If set, this contact is automatically selected in the sample add form."
 msgstr ""
 
-#: bika/lims/content/bikasetup.py:1215
+#: bika/lims/content/bikasetup.py:1216
 msgid "Default count of Sample to add."
 msgstr "Брой проби за добавяне по подразбиране."
 
-#: bika/lims/content/bikasetup.py:311
-#: bika/lims/content/client.py:225
+#: bika/lims/content/bikasetup.py:312
+#: bika/lims/content/client.py:229
 msgid "Default decimal mark"
 msgstr "Десетичен знак по подразбиране"
 
@@ -1694,7 +1769,7 @@ msgstr "Инструмент по подразбиране, използван �
 msgid "Default large sticker"
 msgstr "Голям етикет по подразбиране"
 
-#: bika/lims/content/bikasetup.py:573
+#: bika/lims/content/bikasetup.py:574
 msgid "Default layout in worksheet view"
 msgstr "Оформление по подразбиране в изгледа на работния лист"
 
@@ -1726,15 +1801,15 @@ msgstr "Резултатът по подразбиране трябва да б�
 msgid "Default result to display on result entry"
 msgstr "Резултат по подразбиране за показване при въвеждане на резултат"
 
-#: senaite/core/content/senaitesetup.py:1050
+#: senaite/core/content/senaitesetup.py:1073
 msgid "Default sample retention period"
 msgstr "Период на съхранение на проби по подразбиране"
 
-#: bika/lims/content/bikasetup.py:325
+#: bika/lims/content/bikasetup.py:326
 msgid "Default scientific notation format for reports"
 msgstr "Формат за научно записване по подразбиране за доклади"
 
-#: bika/lims/content/bikasetup.py:559
+#: bika/lims/content/bikasetup.py:560
 msgid "Default scientific notation format for results"
 msgstr "Формат за научно записване по подразбиране за резултати"
 
@@ -1746,7 +1821,7 @@ msgstr "Малък етикет по подразбиране"
 msgid "Default timezone"
 msgstr "Часова зона по подразбиране"
 
-#: senaite/core/content/senaitesetup.py:1037
+#: senaite/core/content/senaitesetup.py:1060
 msgid "Default turnaround time for analyses."
 msgstr "Време за изпълнение на анализи по подразбиране."
 
@@ -1755,7 +1830,7 @@ msgstr "Време за изпълнение на анализи по подра
 msgid "Default value"
 msgstr "Стойност по подразбиране"
 
-#: bika/lims/content/bikasetup.py:1216
+#: bika/lims/content/bikasetup.py:1217
 msgid "Default value of the 'Sample count' when users click 'ADD' button to create new Samples"
 msgstr "Стойност по подразбиране на 'Брой проби', когато потребителите кликнат върху бутона 'ДОБАВИ' за създаване на нови проби"
 
@@ -1779,7 +1854,7 @@ msgstr "Дефинирайте точността при преобразува�
 msgid "Define the sampler supposed to do the sample in the scheduled date"
 msgstr "Определете пробовземащия, който трябва да вземе пробата на планираната дата"
 
-#: senaite/core/content/senaitesetup.py:1089
+#: senaite/core/content/senaitesetup.py:1112
 msgid "Define the template for the email body that will be automatically sent to primary contacts and laboratory managers when a sample is invalidated. The following placeholders are supported: $sample_id, $retest_id, $retest_link, $reason, $lab_address."
 msgstr ""
 
@@ -1791,8 +1866,17 @@ msgstr "Определя етикетите, които да се използв
 msgid "Degrees"
 msgstr "Градуси"
 
+#: senaite/core/api/remarks.py:482
 #: senaite/core/browser/clients/client/attachments/view.py:94
 msgid "Delete"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — row action tooltip
+msgid "Delete filter"
+msgstr ""
+
+#: senaite/core/api/remarks.py:484
+msgid "Delete this remark?"
 msgstr ""
 
 #: senaite/core/browser/controlpanel/departments/view.py:65
@@ -1821,9 +1905,9 @@ msgstr "Отдели"
 msgid "Dependent Analyses"
 msgstr "Зависими анализи"
 
-#: senaite/core/behaviors/label.py:111
+#: senaite/core/behaviors/label.py:119
 #: senaite/core/browser/controlpanel/departments/view.py:72
-#: senaite/core/browser/controlpanel/labels/view.py:62
+#: senaite/core/browser/controlpanel/labels/view.py:63
 msgid "Description"
 msgstr "Описание"
 
@@ -1870,7 +1954,11 @@ msgstr "Изключи автоматично извличане на прехо
 msgid "Disable multi-verification for the same user"
 msgstr "Забрани многократна верификация за един и същ потребител"
 
-#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:663
+# senaite.app.listing: Saved filter presets — Revert action tooltip
+msgid "Discard edits and restore preset"
+msgstr ""
+
+#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:673
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:207
 msgid "Discount"
 msgstr "Отстъпка"
@@ -1888,7 +1976,7 @@ msgstr "Изпрати"
 msgid "Dispatch samples"
 msgstr "Изпрати проби"
 
-#: senaite/core/browser/samples/view.py:361
+#: senaite/core/browser/samples/view.py:379
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Dispatched"
 msgstr "Изпратен"
@@ -1913,15 +2001,23 @@ msgstr "Показваната стойност трябва да е уника�
 msgid "Display a Detection Limit selector"
 msgstr "Покажи селектор за граница на откриване"
 
-#: bika/lims/content/bikasetup.py:721
+#: bika/lims/content/bikasetup.py:722
 msgid "Display sample partitions to clients"
 msgstr "Показвай частите на пробите на клиентите"
 
+#: senaite/core/browser/samples/templates/dispose_samples.pt:80
 #: senaite/core/profiles/default/workflows/senaite_referencesample_workflow/definition.xml
+#: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Dispose"
 msgstr "Унищожи"
 
+#: senaite/core/browser/samples/templates/dispose_samples.pt:15
+msgid "Dispose samples"
+msgstr ""
+
+#: senaite/core/browser/samples/view.py:391
 #: senaite/core/profiles/default/workflows/senaite_referencesample_workflow/definition.xml
+#: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Disposed"
 msgstr "Унищожен"
 
@@ -1991,11 +2087,15 @@ msgstr "Изтегли PDF"
 msgid "Download selected reports"
 msgstr "Изтегли избраните доклади"
 
-#: senaite/core/browser/samples/view.py:309
+# senaite.app.listing: Column config — drag handle tooltip / aria-label
+msgid "Drag to reorder"
+msgstr ""
+
+#: senaite/core/browser/samples/view.py:327
 msgid "Due"
 msgstr "Краен срок"
 
-#: senaite/core/browser/samples/view.py:164
+#: senaite/core/browser/samples/view.py:176
 #: senaite/core/browser/worksheets/worksheet/analyses_listing.py:120
 msgid "Due Date"
 msgstr "Крайна дата"
@@ -2012,7 +2112,7 @@ msgstr "Дубликат"
 msgid "Duplicate Analysis"
 msgstr "Дублиран анализ"
 
-#: senaite/core/content/senaitesetup.py:1406
+#: senaite/core/content/senaitesetup.py:1433
 msgid "Duplicate ID format for portal type '${pt}' (rows ${a} and ${b}). Only the first row is used; remove or merge the duplicate."
 msgstr ""
 
@@ -2060,6 +2160,7 @@ msgstr "Напр. SANAS, APLAC и т.н."
 msgid "Each import interface can define a folder, where the system looks for the results files while automatically importing results when calling the <code>auto_import_results</code> view."
 msgstr "Всеки интерфейс за импортиране може да дефинира папка, където системата търси файловете с резултати при автоматично импортиране на резултати при извикване на изгледа <code>auto_import_results</code>."
 
+#: senaite/core/api/remarks.py:480
 #: senaite/core/profiles/default/types/Laboratory.xml
 msgid "Edit"
 msgstr "Редактирай"
@@ -2074,21 +2175,21 @@ msgstr "Надморска височина"
 
 #: senaite/core/browser/clients/client/contacts/templates/login_details.pt:87
 #: senaite/core/config/widgets.py:55
-#: senaite/core/content/contact.py:115
+#: senaite/core/content/contact.py:147
 msgid "Email"
 msgstr "Имейл"
 
 #: senaite/core/browser/clients/client/contacts/view.py:76
 #: senaite/core/browser/controlpanel/contacts/view.py:64
-#: senaite/core/content/resultsreport.py:114
+#: senaite/core/content/resultsreport.py:115
 msgid "Email Address"
 msgstr "Имейл адрес"
 
-#: senaite/core/content/resultsreport.py:88
+#: senaite/core/content/resultsreport.py:89
 msgid "Email Attachments"
 msgstr ""
 
-#: senaite/core/content/resultsreport.py:83
+#: senaite/core/content/resultsreport.py:84
 msgid "Email Body"
 msgstr ""
 
@@ -2096,27 +2197,27 @@ msgstr ""
 msgid "Email Log"
 msgstr "Имейл лог"
 
-#: senaite/core/content/resultsreport.py:66
+#: senaite/core/content/resultsreport.py:67
 msgid "Email Recipients"
 msgstr ""
 
-#: senaite/core/content/resultsreport.py:72
+#: senaite/core/content/resultsreport.py:73
 msgid "Email Responsibles"
 msgstr ""
 
-#: senaite/core/content/resultsreport.py:61
+#: senaite/core/content/resultsreport.py:62
 msgid "Email Send Date"
 msgstr ""
 
-#: senaite/core/content/resultsreport.py:78
+#: senaite/core/content/resultsreport.py:79
 msgid "Email Subject"
 msgstr ""
 
-#: senaite/core/content/senaitesetup.py:1088
+#: senaite/core/content/senaitesetup.py:1111
 msgid "Email body for Sample Invalidation notifications"
 msgstr "Тяло на имейла за уведомления за анулиране на проба"
 
-#: senaite/core/content/senaitesetup.py:1072
+#: senaite/core/content/senaitesetup.py:1095
 msgid "Email body for Sample Rejection notifications"
 msgstr "Тяло на имейла за уведомления за отхвърляне на проба"
 
@@ -2129,17 +2230,21 @@ msgstr "Имейлът е отказан"
 msgid "Email notification"
 msgstr "Имейл уведомление"
 
-#: senaite/core/content/senaitesetup.py:1062
+#: senaite/core/content/senaitesetup.py:1085
 msgid "Email notification on Sample rejection"
 msgstr "Имейл уведомление при отхвърляне на проба"
 
-#: senaite/core/content/resultsreport.py:257
+#: senaite/core/content/resultsreport.py:258
 msgid "Email send log"
 msgstr ""
 
 #: bika/lims/browser/publish/reports_listing.py:88
 msgid "Email sent"
 msgstr "Имейлът е изпратен"
+
+#: bika/lims/api/snapshot.py:585
+msgid "Empty"
+msgstr ""
 
 #: bika/lims/validators.py:456
 msgid "Empty keys are not supported"
@@ -2149,27 +2254,27 @@ msgstr "Празни ключове не се поддържат"
 msgid "Enable Multiple Use of Instrument in Worksheets."
 msgstr "Активирай многократно използване на инструмент в работни листове."
 
-#: senaite/core/content/senaitesetup.py:1017
+#: senaite/core/content/senaitesetup.py:1040
 msgid "Enable Sample Preservation"
 msgstr "Активирай консервация на проби"
 
-#: bika/lims/content/bikasetup.py:410
+#: bika/lims/content/bikasetup.py:411
 msgid "Enable Sample Specifications"
 msgstr "Активирай спецификации на проби"
 
-#: senaite/core/content/senaitesetup.py:989
+#: senaite/core/content/senaitesetup.py:1012
 msgid "Enable Sampling"
 msgstr "Активирай пробовземане"
 
-#: senaite/core/content/senaitesetup.py:997
+#: senaite/core/content/senaitesetup.py:1020
 msgid "Enable Sampling Scheduling"
 msgstr "Активирай планиране на пробовземане"
 
-#: bika/lims/content/bikasetup.py:223
+#: bika/lims/content/bikasetup.py:224
 msgid "Enable global Audit Log"
 msgstr "Активирай глобален одитен журнал"
 
-#: senaite/core/content/senaitesetup.py:297
+#: senaite/core/content/senaitesetup.py:298
 msgid "Enable global Auditlog"
 msgstr "Активирай глобален одитен журнал"
 
@@ -2177,9 +2282,17 @@ msgstr "Активирай глобален одитен журнал"
 msgid "Enable sampling workflow for the created sample"
 msgstr "Активирай работен процес за пробовземане за създадената проба"
 
-#: senaite/core/content/senaitesetup.py:979
+#: senaite/core/content/senaitesetup.py:980
 msgid "Enable the Results Report Printing workflow"
 msgstr "Активирай работния процес за печат на доклади с резултати"
+
+#: senaite/core/content/senaitesetup.py:1000
+msgid "Enable the Sample Dispatch workflow"
+msgstr ""
+
+#: senaite/core/content/senaitesetup.py:990
+msgid "Enable the Sample Dispose workflow"
+msgstr ""
 
 #: bika/lims/browser/pricelist.py:68
 msgid "End Date"
@@ -2202,7 +2315,7 @@ msgstr "Въведете имейл адрес. Това е необходимо
 msgid "Enter discount percentage value"
 msgstr "Въведете процентна стойност на отстъпката"
 
-#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:444
+#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:453
 msgid "Enter individual values for this field per sample"
 msgstr "Въведете индивидуални стойности за това поле за всяка проба"
 
@@ -2215,7 +2328,7 @@ msgstr "Въведете процентна стойност, напр. 14.0"
 msgid "Enter percentage value eg. 14.0. This percentage is applied on the Analysis Profile only, overriding the systems VAT"
 msgstr "Въведете процентна стойност, напр. 14.0. Този процент се прилага само към Профила за анализ, като отменя системния ДДС"
 
-#: bika/lims/content/bikasetup.py:297
+#: bika/lims/content/bikasetup.py:298
 msgid "Enter percentage value eg. 14.0. This percentage is applied system wide but can be overwrittem on individual items"
 msgstr "Въведете процентна стойност, напр. 14.0. Този процент се прилага за цялата система, но може да бъде презаписан за отделни елементи"
 
@@ -2239,7 +2352,7 @@ msgstr "Въведете детайлите за всяка от услугит�
 msgid "Enter the details of your lab's service accreditations here. The following fields are available:  lab_is_accredited, lab_name, lab_country, confidence, accreditation_body_name, accreditation_standard, accreditation_reference<br/>"
 msgstr "Въведете детайлите за акредитациите на вашата лаборатория тук. Налични са следните полета: lab_is_accredited, lab_name, lab_country, confidence, accreditation_body_name, accreditation_standard, accreditation_reference<br/>"
 
-#: bika/lims/browser/analyses/view.py:1096
+#: bika/lims/browser/analyses/view.py:1097
 msgid "Enter the result either in decimal or scientific notation, e.g. 0.00005 or 1e-5, 10000 or 1e5"
 msgstr "Въведете резултата в десетично или научно записване, напр. 0.00005 или 1e-5, 10000 или 1e5"
 
@@ -2251,15 +2364,15 @@ msgstr "Условия на околната среда"
 msgid "Erroneous result publication: ${sample_id}"
 msgstr "Публикуване на грешен резултат: ${sample_id}"
 
-#: senaite/core/browser/dashboard/dashboard.py:455
+#: senaite/core/browser/dashboard/dashboard.py:502
 msgid "Evolution of Analyses"
 msgstr "Еволюция на анализите"
 
-#: senaite/core/browser/dashboard/dashboard.py:407
+#: senaite/core/browser/dashboard/dashboard.py:453
 msgid "Evolution of Samples"
 msgstr "Еволюция на пробите"
 
-#: senaite/core/browser/dashboard/dashboard.py:484
+#: senaite/core/browser/dashboard/dashboard.py:535
 msgid "Evolution of Worksheets"
 msgstr "Еволюция на работните листове"
 
@@ -2271,7 +2384,7 @@ msgstr "Примерен Cronjob за изпълнение на автомати
 msgid "Example content"
 msgstr "Примерно съдържание"
 
-#: senaite/core/browser/samples/view.py:601
+#: senaite/core/browser/samples/view.py:739
 msgid "Exclude from invoice"
 msgstr "Изключи от фактура"
 
@@ -2281,7 +2394,7 @@ msgstr "Изключи от фактура"
 msgid "Expected Result"
 msgstr "Очакван резултат"
 
-#: senaite/core/browser/samples/view.py:145
+#: senaite/core/browser/samples/view.py:157
 msgid "Expected Sampling Date"
 msgstr "Очаквана дата на пробовземане"
 
@@ -2307,7 +2420,7 @@ msgstr "Дата на изтичане"
 msgid "Exponential format precision"
 msgstr "Точност на експоненциален формат"
 
-#: bika/lims/content/bikasetup.py:425
+#: bika/lims/content/bikasetup.py:426
 msgid "Exponential format threshold"
 msgstr "Праг на експоненциален формат"
 
@@ -2315,7 +2428,7 @@ msgstr "Праг на експоненциален формат"
 msgid "Export"
 msgstr "Експортиране"
 
-#: senaite/core/browser/stickers/view.py:273
+#: senaite/core/browser/stickers/view.py:283
 msgid "Failed to load sticker"
 msgstr "Неуспешно зареждане на етикет"
 
@@ -2402,7 +2515,7 @@ msgstr ""
 msgid "Filesize"
 msgstr "Размер на файла"
 
-#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:516
+#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:525
 msgid "Filter analyses by name..."
 msgstr "Филтриране на анализи по име..."
 
@@ -2416,6 +2529,18 @@ msgstr "Филтриране по услуги от шаблон"
 
 #: senaite/core/browser/idserver/templates/numbergenerator.pt:49
 msgid "Filter keys (regex supported)"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — inline editor placeholder
+msgid "Filter name"
+msgstr ""
+
+#: senaite/core/browser/samples/view.py:601
+msgid "Filter samples by this analysis"
+msgstr ""
+
+# senaite.app.listing: Column-filter row — text-input placeholder
+msgid "Filter..."
 msgstr ""
 
 #: senaite/core/content/dynamicanalysisspec.py:75
@@ -2432,11 +2557,11 @@ msgstr "Име"
 msgid "Float value from 0.0 - 1000.0 indicating the sort order. Duplicate values are ordered alphabetically."
 msgstr "Стойност с плаваща запетая от 0.0 до 1000.0, указваща реда на сортиране. Дублираните стойности се подреждат по азбучен ред."
 
-#: senaite/core/content/senaitesetup.py:211
+#: senaite/core/content/senaitesetup.py:212
 msgid "Format"
 msgstr ""
 
-#: senaite/core/content/senaitesetup.py:1180
+#: senaite/core/content/senaitesetup.py:1203
 msgid "Formatting Configuration"
 msgstr "Конфигурация на форматирането"
 
@@ -2459,13 +2584,17 @@ msgstr "Петък"
 msgid "From"
 msgstr "От"
 
+#: senaite/core/browser/dashboard/dashboard.py:134
+msgid "From ${from} to ${to} (updated every 2 hours)"
+msgstr ""
+
 #: senaite/core/browser/clients/client/contacts/templates/login_details.pt:63
 #: senaite/core/browser/clients/client/contacts/view.py:70
 #: senaite/core/browser/controlpanel/contacts/view.py:58
 msgid "Full Name"
 msgstr "Пълно име"
 
-#: senaite/core/content/resultsreport.py:109
+#: senaite/core/content/resultsreport.py:110
 msgid "Fullname"
 msgstr "Пълно име"
 
@@ -2473,7 +2602,7 @@ msgstr "Пълно име"
 msgid "Function"
 msgstr "Функция"
 
-#: senaite/core/browser/samples/view.py:598
+#: senaite/core/browser/samples/view.py:736
 msgid "Future dated sample"
 msgstr "Проба с бъдеща дата"
 
@@ -2506,7 +2635,7 @@ msgstr "Към вашата инстанция"
 msgid "Greeting title eg. Mr, Mrs, Dr"
 msgstr "Обръщение, напр. г-н, г-жа, д-р"
 
-#: bika/lims/content/bikasetup.py:355
+#: bika/lims/content/bikasetup.py:356
 msgid "Group analysis services by category in the LIMS tables, helpful when the list is long"
 msgstr "Групиране на услугите за анализ по категория в таблиците на LIMS, полезно, когато списъкът е дълъг"
 
@@ -2520,7 +2649,7 @@ msgid "Hazardous"
 msgstr "Опасен"
 
 #: bika/lims/browser/analyses/view.py:203
-#: bika/lims/browser/analysisrequest/manage_analyses.py:81
+#: bika/lims/browser/analysisrequest/manage_analyses.py:84
 #: bika/lims/browser/widgets/analysisprofileanalyseswidget.py:90
 msgid "Hidden"
 msgstr "Скрит"
@@ -2533,8 +2662,20 @@ msgstr "Скрито поле"
 msgid "Hidden from report"
 msgstr ""
 
-#: senaite/core/browser/viewlets/templates/sampleheader.pt:54
+#: senaite/core/browser/viewlets/templates/sampleheader.pt:55
 msgid "Hide additional fields"
+msgstr ""
+
+# senaite.app.listing: Column config — bulk action button
+msgid "Hide all"
+msgstr ""
+
+#: senaite/core/api/remarks.py:487
+msgid "Hide history"
+msgstr ""
+
+# senaite.app.listing: Column config — eye-slash button tooltip / aria-label
+msgid "Hide this column"
 msgstr ""
 
 #: bika/lims/config.py:140
@@ -2558,7 +2699,7 @@ msgstr "IBN"
 msgid "ID"
 msgstr "ID"
 
-#: senaite/core/content/senaitesetup.py:1380
+#: senaite/core/content/senaitesetup.py:1407
 msgid "ID Server"
 msgstr ""
 
@@ -2566,7 +2707,7 @@ msgstr ""
 msgid "ID Server Settings"
 msgstr ""
 
-#: bika/lims/content/bikasetup.py:1188
+#: bika/lims/content/bikasetup.py:1189
 msgid "ID Server Values"
 msgstr "Стойности на сървъра за ID"
 
@@ -2586,15 +2727,15 @@ msgstr "Ако е избрано, ще се показва списък за и�
 msgid "If checked, the instrument will be unavailable until the next valid calibration was performed. This checkbox will automatically be unchecked."
 msgstr "Ако е избрано, инструментът няма да бъде наличен, докато не бъде извършено следващото валидно калибриране. Тази отметка автоматично ще бъде премахната."
 
-#: bika/lims/content/bikasetup.py:461
+#: bika/lims/content/bikasetup.py:462
 msgid "If enabled, a free text field will be displayed close to each analysis in results entry view"
 msgstr "Ако е активирано, ще се показва поле за свободен текст до всеки анализ в изгледа за въвеждане на резултати"
 
-#: bika/lims/content/abstractbaseanalysis.py:818
+#: bika/lims/content/abstractbaseanalysis.py:821
 msgid "If enabled, a user who submitted a result for this analysis will also be able to verify it. This setting take effect for those users with a role assigned that allows them to verify results (by default, managers, labmanagers and verifiers). The option set here has priority over the option set in Bika Setup"
 msgstr "Ако е активирано, потребител, който е подал резултат за този анализ, също ще може да го верифицира. Тази настройка важи за потребители с назначена роля, която им позволява да верифицират резултати (по подразбиране мениджъри, лабораторни мениджъри и верификатори). Зададената тук опция има приоритет пред опцията, зададена в настройките на Bika"
 
-#: bika/lims/content/bikasetup.py:493
+#: bika/lims/content/bikasetup.py:494
 msgid "If enabled, a user who submitted a result will also be able to verify it. This setting only take effect for those users with a role assigned that allows them to verify results (by default, managers, labmanagers and verifiers).This setting can be overrided for a given Analysis in Analysis Service edit view. By default, disabled."
 msgstr "Ако е активирано, потребител, който е подал резултат, също ще може да го верифицира. Тази настройка важи само за потребители с назначена роля, която им позволява да верифицират резултати (по подразбиране мениджъри, лабораторни мениджъри и верификатори). Тази настройка може да бъде презаписана за даден анализ в изгледа за редакция на Услуга за анализ. По подразбиране е деактивирано."
 
@@ -2602,7 +2743,7 @@ msgstr "Ако е активирано, потребител, който е по
 msgid "If enabled, the name of the analysis will be written in italics."
 msgstr "Ако е активирано, името на анализа ще бъде изписано с курсив."
 
-#: bika/lims/content/abstractbaseanalysis.py:802
+#: bika/lims/content/abstractbaseanalysis.py:805
 msgid "If enabled, this analysis and its results will not be displayed by default in reports. This setting can be overrided in Analysis Profile and/or Sample"
 msgstr "Ако е активирано, този анализ и неговите резултати няма да се показват по подразбиране в докладите. Тази настройка може да бъде презаписана в Профила за анализ и/или Пробата"
 
@@ -2642,7 +2783,7 @@ msgstr "Ако не е избрано, лабораторните мениджъ
 msgid "If your formula needs a special function from an external Python library, you can import it here. E.g. if you want to use the 'floor' function from the Python 'math' module, you add 'math' to the Module field and 'floor' to the function field. The equivalent in Python would be 'from math import floor'. In your calculation you could use then 'floor([Ca] + [Mg])'. "
 msgstr "Ако формулата ви се нуждае от специална функция от външна Python библиотека, можете да я импортирате тук. Напр. ако искате да използвате функцията 'floor' от Python модула 'math', добавяте 'math' в полето Модул и 'floor' в полето Функция. Еквивалентът в Python би бил 'from math import floor'. След това във вашето изчисление можете да използвате 'floor([Ca] + [Mg])'. "
 
-#: senaite/core/content/senaitesetup.py:328
+#: senaite/core/content/senaitesetup.py:329
 msgid "Immediate results entry"
 msgstr "Незабавно въвеждане на резултати"
 
@@ -2673,11 +2814,11 @@ msgstr "Процедура за вътрешнолабораторно кали�
 
 #: senaite/core/browser/clients/client/contacts/view.py:90
 #: senaite/core/browser/controlpanel/departments/view.py:93
-#: senaite/core/browser/controlpanel/labels/view.py:75
+#: senaite/core/browser/controlpanel/labels/view.py:76
 msgid "Inactive"
 msgstr "Неактивен"
 
-#: bika/lims/content/bikasetup.py:240
+#: bika/lims/content/bikasetup.py:241
 msgid "Include and display pricing information"
 msgstr "Включване и показване на информация за ценообразуване"
 
@@ -2874,7 +3015,7 @@ msgid "Internal Certificate"
 msgstr "Вътрешен сертификат"
 
 #: senaite/core/browser/samples/templates/partition_magic.pt:145
-#: senaite/core/browser/samples/view.py:608
+#: senaite/core/browser/samples/view.py:746
 msgid "Internal use"
 msgstr "Вътрешна употреба"
 
@@ -2895,13 +3036,13 @@ msgstr "Шаблони за интерпретация"
 msgid "Interval"
 msgstr "Интервал"
 
-#: senaite/core/browser/dashboard/dashboard.py:137
-#: senaite/core/browser/samples/view.py:383
+#: senaite/core/browser/dashboard/dashboard.py:168
+#: senaite/core/browser/samples/view.py:413
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Invalid"
 msgstr "Невалиден"
 
-#: senaite/core/content/senaitesetup.py:1417
+#: senaite/core/content/senaitesetup.py:1444
 msgid "Invalid ID format on row ${i} ('${pt}'): ${err}"
 msgstr ""
 
@@ -2964,15 +3105,15 @@ msgstr "Фактуриране на"
 msgid "Invoice {} created"
 msgstr "Фактура {} е създадена"
 
-#: senaite/core/exportimport/setupdata/__init__.py:2426
+#: senaite/core/exportimport/setupdata/__init__.py:2427
 msgid "InvoiceBatch has no End Date"
 msgstr "InvoiceBatch няма крайна дата"
 
-#: senaite/core/exportimport/setupdata/__init__.py:2423
+#: senaite/core/exportimport/setupdata/__init__.py:2424
 msgid "InvoiceBatch has no Start Date"
 msgstr "InvoiceBatch няма начална дата"
 
-#: senaite/core/exportimport/setupdata/__init__.py:2420
+#: senaite/core/exportimport/setupdata/__init__.py:2421
 msgid "InvoiceBatch has no Title"
 msgstr "InvoiceBatch няма заглавие"
 
@@ -2984,7 +3125,7 @@ msgstr "Длъжност"
 msgid "Job title"
 msgstr "Длъжност"
 
-#: bika/lims/content/abstractbaseanalysis.py:753
+#: bika/lims/content/abstractbaseanalysis.py:756
 msgid "Keep order above"
 msgstr "Запази реда по-горе"
 
@@ -2996,9 +3137,9 @@ msgstr "Ключ"
 msgid "Key <span class=\"sort-indicator\" />"
 msgstr ""
 
+#: bika/lims/browser/analysisrequest/manage_analyses.py:78
 #: bika/lims/browser/fields/interimfieldsfield.py:52
 #: bika/lims/browser/templates/analysisservice_info.pt:80
-#: bika/lims/browser/widgets/analysisprofileanalyseswidget.py:77
 msgid "Keyword"
 msgstr "Ключова дума"
 
@@ -3014,6 +3155,10 @@ msgstr "Изисква се ключова дума"
 #: senaite/core/browser/viewlets/templates/worksheet_attachments.pt:42
 msgid "Keywords"
 msgstr "Ключови думи"
+
+#: senaite/core/browser/samples/view.py:249
+msgid "Keywords of the analyses contained in the sample"
+msgstr ""
 
 #: bika/lims/browser/templates/analysisservice_info.pt:100
 #: bika/lims/config.py:52
@@ -3058,8 +3203,8 @@ msgstr "Лабораторни продукти"
 msgid "Lab URL"
 msgstr "URL на лабораторията"
 
-#: senaite/core/behaviors/label.py:107
-#: senaite/core/extender/label.py:76
+#: senaite/core/behaviors/label.py:115
+#: senaite/core/extender/label.py:80
 #: senaite/core/profiles/default/types/Label.xml
 msgid "Label"
 msgstr "Етикет"
@@ -3068,7 +3213,7 @@ msgstr "Етикет"
 msgid "Label configuration"
 msgstr "Конфигурация на етикет"
 
-#: senaite/core/content/label.py:65
+#: senaite/core/content/label.py:93
 msgid "Label names must be unique"
 msgstr "Имената на етикетите трябва да са уникални"
 
@@ -3076,13 +3221,13 @@ msgstr "Имената на етикетите трябва да са уника
 msgid "Label schema extender"
 msgstr "Разширение на схема за етикети"
 
-#: senaite/core/browser/label/labeled_objects.py:50
+#: senaite/core/browser/label/labeled_objects.py:51
 msgid "Labeled Objects"
 msgstr "Обекти с етикети"
 
-#: senaite/core/browser/controlpanel/labels/view.py:51
-#: senaite/core/browser/label/labeled_objects.py:65
-#: senaite/core/extender/label.py:57
+#: senaite/core/browser/controlpanel/labels/view.py:52
+#: senaite/core/browser/label/labeled_objects.py:66
+#: senaite/core/browser/samples/view.py:875
 msgid "Labels"
 msgstr "Етикети"
 
@@ -3095,7 +3240,7 @@ msgstr "Лаборатория"
 msgid "Laboratory Accredited"
 msgstr "Лабораторията е акредитирана"
 
-#: senaite/core/content/senaitesetup.py:1023
+#: senaite/core/content/senaitesetup.py:1046
 msgid "Laboratory Workdays"
 msgstr "Лабораторни работни дни"
 
@@ -3107,7 +3252,7 @@ msgstr "Език"
 msgid "Large Sticker"
 msgstr "Голям етикет"
 
-#: senaite/core/content/senaitesetup.py:1150
+#: senaite/core/content/senaitesetup.py:1173
 msgid "Large Sticker Template"
 msgstr "Шаблон за голям етикет"
 
@@ -3119,11 +3264,11 @@ msgstr "Логове от последното авто-импортиране"
 msgid "Last Login Time"
 msgstr "Време на последно влизане"
 
-#: senaite/core/browser/samples/view.py:439
+#: senaite/core/browser/samples/view.py:469
 msgid "Late"
 msgstr "Закъснял"
 
-#: senaite/core/browser/samples/view.py:593
+#: senaite/core/browser/samples/view.py:731
 msgid "Late Analyses"
 msgstr "Закъснели анализи"
 
@@ -3169,15 +3314,15 @@ msgstr "Свързване на потребител"
 msgid "Link an existing User"
 msgstr "Свързване на съществуващ потребител"
 
-#: senaite/core/browser/label/labeled_objects.py:51
+#: senaite/core/browser/label/labeled_objects.py:52
 msgid "List all objects with labels"
 msgstr "Списък на всички обекти с етикети"
 
-#: bika/lims/content/abstractbaseanalysis.py:736
+#: bika/lims/content/abstractbaseanalysis.py:739
 msgid "List of possible final results. When set, no custom result is allowed on results entry and user has to choose from these values"
 msgstr "Списък с възможни крайни резултати. Когато е зададено, не се допуска персонализиран резултат при въвеждане и потребителят трябва да избере от тези стойности"
 
-#: bika/lims/content/bikasetup.py:1202
+#: bika/lims/content/bikasetup.py:1203
 msgid "List of predefined rejection reasons. Enter one reason per line."
 msgstr ""
 
@@ -3201,7 +3346,7 @@ msgstr "Заредете документа за сертификат тук"
 msgid "Loading navigation..."
 msgstr ""
 
-#: senaite/core/browser/dashboard/templates/dashboard.pt:40
+#: senaite/core/browser/dashboard/templates/dashboard.pt:41
 msgid "Loading..."
 msgstr ""
 
@@ -3229,6 +3374,14 @@ msgstr "Тип местоположение"
 #: bika/lims/content/multifile.py:64
 msgid "Location where the document set is shelved"
 msgstr "Местоположение, където е архивиран наборът от документи"
+
+#: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
+msgid "Lock"
+msgstr ""
+
+#: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
+msgid "Locked"
+msgstr ""
 
 #: bika/lims/browser/templates/analysisservice_info.pt:252
 msgid "Log"
@@ -3292,7 +3445,7 @@ msgstr "Мъжки"
 msgid "Manage Analyses"
 msgstr "Управление на анализи"
 
-#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:389
+#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:398
 msgid "Manage Form Fields"
 msgstr "Управление на полета във формата"
 
@@ -3316,7 +3469,7 @@ msgstr "Управление на полета във формата за про
 msgid "Manage linked User"
 msgstr "Управление на свързан потребител"
 
-#: senaite/core/browser/viewlets/templates/sampleheader.pt:40
+#: senaite/core/browser/viewlets/templates/sampleheader.pt:41
 msgid "Manage sample fields"
 msgstr ""
 
@@ -3340,7 +3493,7 @@ msgstr "Имейл на мениджър"
 msgid "Manager Phone"
 msgstr "Телефон на мениджър"
 
-#: bika/lims/browser/analyses/view.py:1162
+#: bika/lims/browser/analyses/view.py:1163
 msgid "Manual"
 msgstr "Ръчно"
 
@@ -3369,7 +3522,7 @@ msgstr "Производители"
 msgid "Mark the sample for internal use only. This means it is only accessible to lab personnel and not to clients."
 msgstr "Маркирайте пробата само за вътрешна употреба. Това означава, че тя е достъпна само за лабораторния персонал, а не за клиенти."
 
-#: bika/lims/browser/analysisrequest/manage_analyses.py:94
+#: bika/lims/browser/analysisrequest/manage_analyses.py:97
 #: bika/lims/browser/fields/referenceresultsfield.py:38
 #: bika/lims/browser/fields/resultrangefield.py:37
 msgid "Max"
@@ -3384,7 +3537,7 @@ msgstr "Макс време"
 msgid "Max operator"
 msgstr "Макс оператор"
 
-#: bika/lims/browser/analysisrequest/manage_analyses.py:92
+#: bika/lims/browser/analysisrequest/manage_analyses.py:95
 #: bika/lims/browser/fields/resultrangefield.py:39
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:116
 msgid "Max warn"
@@ -3419,15 +3572,15 @@ msgid "Member Discount"
 msgstr "Отстъпка за член"
 
 #: bika/lims/content/analysisrequest.py:1119
-#: bika/lims/content/bikasetup.py:281
+#: bika/lims/content/bikasetup.py:282
 msgid "Member discount %"
 msgstr "Отстъпка за член %"
 
-#: bika/lims/content/client.py:83
+#: bika/lims/content/client.py:87
 msgid "Member discount applies"
 msgstr "Важи отстъпка за член"
 
-#: senaite/core/browser/clients/client/contacts/login_details.py:318
+#: senaite/core/browser/clients/client/contacts/login_details.py:329
 msgid "Member registered and linked to the current Contact."
 msgstr "Членът е регистриран и свързан с текущия Контакт."
 
@@ -3435,7 +3588,7 @@ msgstr "Членът е регистриран и свързан с текущи
 msgid "Message sent to {}, "
 msgstr "Съобщението е изпратено до {}, "
 
-#: senaite/core/content/resultsreport.py:217
+#: senaite/core/content/resultsreport.py:218
 msgid "Metadata"
 msgstr ""
 
@@ -3466,7 +3619,7 @@ msgstr "Инициал на презиме"
 msgid "Middle name"
 msgstr "Презиме"
 
-#: bika/lims/browser/analysisrequest/manage_analyses.py:90
+#: bika/lims/browser/analysisrequest/manage_analyses.py:93
 #: bika/lims/browser/fields/referenceresultsfield.py:37
 #: bika/lims/browser/fields/resultrangefield.py:35
 msgid "Min"
@@ -3477,7 +3630,7 @@ msgstr "Мин"
 msgid "Min operator"
 msgstr "Мин оператор"
 
-#: bika/lims/browser/analysisrequest/manage_analyses.py:88
+#: bika/lims/browser/analysisrequest/manage_analyses.py:91
 #: bika/lims/browser/fields/resultrangefield.py:38
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:96
 msgid "Min warn"
@@ -3495,7 +3648,7 @@ msgstr "Минимум 5 знака."
 msgid "Minimum Volume"
 msgstr "Минимален обем"
 
-#: bika/lims/content/bikasetup.py:339
+#: bika/lims/content/bikasetup.py:340
 msgid "Minimum number of results for QC stats calculations"
 msgstr "Минимален брой резултати за изчисляване на QC статистика"
 
@@ -3526,6 +3679,10 @@ msgstr "Модул"
 msgid "Monday"
 msgstr "Понеделник"
 
+#: senaite/core/browser/dashboard/dashboard.py:137
+msgid "Monthly"
+msgstr ""
+
 #: senaite/core/exportimport/instruments/importer.py:464
 msgid "More than one analysis found for {sid} and keyword '{keyword}'"
 msgstr ""
@@ -3539,11 +3696,11 @@ msgstr "Multi Catalog поведение за Dexterity съдържание"
 msgid "Multi Results"
 msgstr "Множество резултати"
 
-#: bika/lims/content/bikasetup.py:528
+#: bika/lims/content/bikasetup.py:529
 msgid "Multi Verification type"
 msgstr "Тип мулти-верификация"
 
-#: bika/lims/browser/analyses/view.py:1585
+#: bika/lims/browser/analyses/view.py:1586
 msgid "Multi-verification required"
 msgstr "Изисква се мулти-верификация"
 
@@ -3579,13 +3736,17 @@ msgstr "Моята организация"
 msgid "My Profile"
 msgstr "Моят профил"
 
+# senaite.app.listing: Saved filter presets — default name when saving
+msgid "My filter"
+msgstr ""
+
 #: bika/lims/content/supplier.py:63
 msgid "NIB"
 msgstr "NIB"
 
 #: senaite/core/browser/viewlets/templates/attachments.pt:63
 #: senaite/core/config/widgets.py:32
-#: senaite/core/content/contact.py:114
+#: senaite/core/content/contact.py:146
 msgid "Name"
 msgstr "Име"
 
@@ -3596,6 +3757,10 @@ msgstr ""
 #: bika/lims/browser/viewlets/templates/resultsranges_out_of_date_viewlet.pt:23
 msgid "New ranges won't be applied to neither new nor current analyses. Re-assign the Specification if you want to apply latest changes."
 msgstr "Новите диапазони няма да бъдат приложени нито към нови, нито към текущи анализи. Назначете отново Спецификацията, ако искате да приложите последните промени."
+
+#: senaite/core/api/remarks.py:490
+msgid "Newest first"
+msgstr ""
 
 #: senaite/core/browser/idserver/templates/numbergenerator.pt:108
 msgid "Next ID <span class=\"sort-indicator\" />"
@@ -3638,6 +3803,10 @@ msgstr "Няма подгрупа"
 #: bika/lims/browser/workflow/__init__.py:124
 msgid "No action defined."
 msgstr "Няма дефинирано действие."
+
+#: senaite/core/browser/dashboard/dashboard.py:131
+msgid "No actions available. Please contact your laboratory manager to get permissions assigned."
+msgstr ""
 
 #: senaite/core/exportimport/instruments/importer.py:458
 msgid "No analyses found for {sid} and keyword '{keyword}'"
@@ -3685,6 +3854,10 @@ msgstr "Не са направени промени"
 msgid "No changes made."
 msgstr "Не са направени промени."
 
+#: senaite/core/browser/dashboard/dashboard.py:130
+msgid "No data for the selected period"
+msgstr ""
+
 #: bika/lims/controlpanel/bika_instruments.py:164
 msgid "No date set"
 msgstr "Няма зададена дата"
@@ -3729,6 +3902,16 @@ msgstr "Няма избрани елементи"
 msgid "No items selected."
 msgstr "Няма избрани елементи."
 
+# senaite.app.listing: Column config — empty state for hidden section with
+# search
+msgid "No matches in hidden columns."
+msgstr ""
+
+# senaite.app.listing: Column config — empty state for visible section with
+# search
+msgid "No matches in visible columns."
+msgstr ""
+
 #: bika/lims/controlpanel/bika_analysisservices.py:114
 msgid "No new items were created."
 msgstr "Не бяха създадени нови елементи."
@@ -3736,6 +3919,10 @@ msgstr "Не бяха създадени нови елементи."
 #: senaite/core/browser/samples/partition_magic.py:111
 msgid "No partitions were created"
 msgstr "Не бяха създадени части"
+
+#: senaite/core/api/remarks.py:493
+msgid "No remarks yet"
+msgstr ""
 
 #: bika/lims/browser/publish/emailview.py:176
 msgid "No reports found"
@@ -3752,6 +3939,10 @@ msgstr "Няма отхвърлени проби"
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "No sampling workflow"
 msgstr "Няма работен процес за пробовземане"
+
+# senaite.app.listing: Saved filter presets — empty state
+msgid "No saved filters yet."
+msgstr ""
 
 #: senaite/core/exportimport/instruments/importer.py:322
 msgid "No services could be found for parsed keywords"
@@ -3779,7 +3970,7 @@ msgstr "Няма видими анализи за тази проба"
 
 #: senaite/core/browser/form/adapters/analysisservice.py:70
 #: senaite/core/browser/modals/analysis/vocabularies.py:53
-#: senaite/core/content/senaitesetup.py:1118
+#: senaite/core/content/senaitesetup.py:1141
 msgid "None"
 msgstr "Няма"
 
@@ -3795,11 +3986,11 @@ msgstr "Не е разрешено обновяването на условия:
 msgid "Not defined"
 msgstr "Не е дефинирано"
 
-#: senaite/core/browser/samples/view.py:565
+#: senaite/core/browser/samples/view.py:703
 msgid "Not printed"
 msgstr ""
 
-#: bika/lims/api/snapshot.py:433
+#: bika/lims/api/snapshot.py:611
 #: bika/lims/content/instrumentcertification.py:249
 msgid "Not set"
 msgstr "Не е зададено"
@@ -3820,7 +4011,7 @@ msgstr "Бележка: Настройките са глобални и се п�
 msgid "Note: You can also drag and drop the attachment rows to change the order they appear in the report."
 msgstr "Бележка: Можете също да влачите и пускате редовете с прикачени файлове, за да промените реда, в който се появяват в доклада."
 
-#: senaite/core/content/senaitesetup.py:1354
+#: senaite/core/content/senaitesetup.py:1381
 msgid "Notifications"
 msgstr "Уведомления"
 
@@ -3832,7 +4023,7 @@ msgstr "Брой колони"
 msgid "Number"
 msgstr "Число"
 
-#: senaite/core/browser/samples/view.py:230
+#: senaite/core/browser/samples/view.py:242
 msgid "Number of Analyses"
 msgstr "Брой анализи"
 
@@ -3848,16 +4039,16 @@ msgstr "Брой копия"
 msgid "Number of prominent columns"
 msgstr "Брой основни колони"
 
-#: bika/lims/content/abstractbaseanalysis.py:836
-#: bika/lims/content/bikasetup.py:512
+#: bika/lims/content/abstractbaseanalysis.py:839
+#: bika/lims/content/bikasetup.py:513
 msgid "Number of required verifications"
 msgstr "Брой изисквани верификации"
 
-#: bika/lims/content/bikasetup.py:513
+#: bika/lims/content/bikasetup.py:514
 msgid "Number of required verifications before a given result being considered as 'verified'. This setting can be overrided for any Analysis in Analysis Service edit view. By default, 1"
 msgstr "Брой изисквани верификации, преди даден резултат да се счита за 'верифициран'. Тази настройка може да бъде презаписана за всеки анализ в изгледа за редакция на Услуга за анализ. По подразбиране е 1"
 
-#: bika/lims/content/abstractbaseanalysis.py:837
+#: bika/lims/content/abstractbaseanalysis.py:840
 msgid "Number of required verifications from different users with enough privileges before a given result for this analysis being considered as 'verified'. The option set here has priority over the option set in Bika Setup"
 msgstr "Брой изисквани верификации от различни потребители с достатъчно привилегии, преди даден резултат за този анализ да се счита за 'верифициран'. Зададената тук опция има приоритет пред опцията, зададена в настройките на Bika"
 
@@ -3868,6 +4059,10 @@ msgstr "Брой стандартни колони"
 #: senaite/core/config/vocabularies.py:54
 msgid "Numeric"
 msgstr "Числово"
+
+#: senaite/core/api/remarks.py:491
+msgid "Oldest first"
+msgstr ""
 
 #: bika/lims/content/preservation.py:53
 msgid "Once preserved, the sample must be disposed of within this time period.  If not specified, the sample type retention period will be used."
@@ -3885,11 +4080,11 @@ msgstr "Само изображения могат да се рендират д
 msgid "Only instruments that have an import interface configured are displayed"
 msgstr "Показват се само инструменти, които имат конфигуриран интерфейс за импортиране"
 
-#: senaite/core/content/senaitesetup.py:1024
+#: senaite/core/content/senaitesetup.py:1047
 msgid "Only laboratory workdays are considered for the analysis turnaround time calculation."
 msgstr ""
 
-#: bika/lims/content/bikasetup.py:753
+#: bika/lims/content/bikasetup.py:754
 msgid "Only laboratory workdays are considered for the analysis turnaround time calculation. "
 msgstr "За изчисляване на времето за изпълнение на анализа се вземат предвид само лабораторните работни дни. "
 
@@ -3897,13 +4092,13 @@ msgstr "За изчисляване на времето за изпълнени�
 msgid "Only to empty or zero fields"
 msgstr "Само за празни или нулеви полета"
 
-#: senaite/core/browser/samples/view.py:525
+#: senaite/core/browser/samples/view.py:652
 #: senaite/core/profiles/default/workflows/senaite_batch_workflow/definition.xml
 #: senaite/core/profiles/default/workflows/senaite_worksheet_workflow/definition.xml
 msgid "Open"
 msgstr "Отворен"
 
-#: senaite/core/browser/samples/view.py:231
+#: senaite/core/browser/samples/view.py:243
 msgid "Open / To be verified / Verified / Total"
 msgstr "Отворени / За верификация / Верифицирани / Общо"
 
@@ -3911,9 +4106,17 @@ msgstr "Отворени / За верификация / Верифициран�
 msgid "Open Source Web based Laboratory Information Management System"
 msgstr "Уеб базирана лабораторна информационна система с отворен код"
 
+#: senaite/core/browser/dashboard/dashboard.py:97
+msgid "Open Worksheets"
+msgstr ""
+
 #: bika/lims/browser/publish/reports_listing.py:128
 msgid "Open email form to send the selected reports to the recipients. This will also publish the contained samples of the reports after the email was successfully sent."
 msgstr "Отворете имейл форма за изпращане на избраните доклади до получателите. Това също ще публикува съдържащите се проби от докладите, след като имейлът бъде успешно изпратен."
+
+#: senaite/core/browser/dashboard/dashboard.py:522
+msgid "Open worksheets with analyses awaiting results"
+msgstr ""
 
 #: bika/lims/browser/worksheet/views/add_analyses.py:98
 msgid "Order"
@@ -3940,7 +4143,7 @@ msgstr "Други причини"
 msgid "Other reasons:"
 msgstr "Други причини:"
 
-#: senaite/core/browser/dashboard/dashboard.py:157
+#: senaite/core/browser/dashboard/dashboard.py:183
 msgid "Other status"
 msgstr "Друг статус"
 
@@ -3962,11 +4165,11 @@ msgstr "Презаписване на непразни резултати от �
 msgid "Override non-empty analysis results, also with empty"
 msgstr "Презаписване на непразни резултати от анализ, също и с празни"
 
-#: senaite/core/content/resultsreport.py:197
+#: senaite/core/content/resultsreport.py:198
 msgid "PDF"
 msgstr ""
 
-#: senaite/core/content/resultsreport.py:198
+#: senaite/core/content/resultsreport.py:199
 msgid "PDF file of the report"
 msgstr ""
 
@@ -4063,11 +4266,11 @@ msgstr ""
 msgid "Please provide the reason for invalidating the sample."
 msgstr ""
 
-#: senaite/core/browser/clients/client/contacts/login_details.py:222
+#: senaite/core/browser/clients/client/contacts/login_details.py:213
 msgid "Please select a User from the list"
 msgstr "Моля, изберете потребител от списъка"
 
-#: senaite/core/browser/stickers/view.py:257
+#: senaite/core/browser/stickers/view.py:267
 msgid "Please select a sticker template"
 msgstr ""
 
@@ -4080,6 +4283,7 @@ msgid "Please select number of partitions to create and press the preview button
 msgstr "Моля, изберете броя на частите за създаване и натиснете бутона за преглед"
 
 #: senaite/core/browser/samples/dispatch_samples.py:61
+#: senaite/core/browser/samples/dispose_samples.py:61
 msgid "Please specify a reason"
 msgstr "Моля, посочете причина"
 
@@ -4099,12 +4303,16 @@ msgstr "Моля, използвайте следния формат за опц
 msgid "Please write a comment where the listed sample(s) are dispatched"
 msgstr "Моля, напишете коментар къде са изпратени изброените проби"
 
+#: senaite/core/browser/samples/templates/dispose_samples.pt:73
+msgid "Please write a comment where the listed sample(s) are disposed"
+msgstr ""
+
 #: bika/lims/browser/templates/analysisservice_info.pt:96
 #: bika/lims/content/abstractbaseanalysis.py:513
 msgid "Point of Capture"
 msgstr "Място на отчитане"
 
-#: senaite/core/content/senaitesetup.py:206
+#: senaite/core/content/senaitesetup.py:207
 msgid "Portal Type"
 msgstr ""
 
@@ -4143,31 +4351,31 @@ msgstr "Точност като брой десетични знаци"
 msgid "Precision as the number of significant digits according to the uncertainty. The decimal position will be given by the first number different from zero in the uncertainty, at that position the system will round up the uncertainty and results. For example, with a result of 5.243 and an uncertainty of 0.22, the system will display correctly as 5.2+-0.2. If no uncertainty range is set for the result, the system will use the fixed precision set."
 msgstr "Точност като брой на значимите цифри според неопределеността. Десетичната позиция се определя от първото число, различно от нула в неопределеността, като на тази позиция системата ще закръгли неопределеността и резултатите. Например, при резултат 5.243 и неопределеност 0.22, системата ще покаже правилно 5.2+-0.2. Ако няма зададен диапазон на неопределеност за резултата, системата ще използва зададената фиксирана точност."
 
-#: bika/lims/content/abstractbaseanalysis.py:735
+#: bika/lims/content/abstractbaseanalysis.py:738
 msgid "Predefined results"
 msgstr "Предварително дефинирани резултати"
 
-#: bika/lims/content/bikasetup.py:312
+#: bika/lims/content/bikasetup.py:313
 msgid "Preferred decimal mark for reports."
 msgstr "Предпочитан десетичен знак за доклади."
 
-#: bika/lims/content/bikasetup.py:546
+#: bika/lims/content/bikasetup.py:547
 msgid "Preferred decimal mark for results"
 msgstr "Предпочитан десетичен знак за резултати"
 
-#: bika/lims/content/bikasetup.py:574
+#: bika/lims/content/bikasetup.py:575
 msgid "Preferred layout of the results entry table in the Worksheet view. Classic layout displays the Samples in rows and the analyses in columns. Transposed layout displays the Samples in columns and the analyses in rows."
 msgstr "Предпочитано оформление на таблицата за въвеждане на резултати в изгледа на Работния лист. Класическото оформление показва Пробите в редове, а анализите в колони. Транспонираното оформление показва Пробите в колони, а анализите в редове."
 
-#: bika/lims/content/bikasetup.py:326
+#: bika/lims/content/bikasetup.py:327
 msgid "Preferred scientific notation format for reports"
 msgstr "Предпочитан формат за научно записване за доклади"
 
-#: bika/lims/content/bikasetup.py:560
+#: bika/lims/content/bikasetup.py:561
 msgid "Preferred scientific notation format for results"
 msgstr "Предпочитан формат за научно записване за резултати"
 
-#: senaite/core/content/senaitesetup.py:240
+#: senaite/core/content/senaitesetup.py:241
 msgid "Prefix"
 msgstr ""
 
@@ -4200,7 +4408,7 @@ msgstr "Консервация според типа проба"
 msgid "Preserve"
 msgstr "Консервирай"
 
-#: senaite/core/browser/samples/view.py:222
+#: senaite/core/browser/samples/view.py:234
 msgid "Preserver"
 msgstr "Консервиращ"
 
@@ -4217,11 +4425,11 @@ msgstr "Превантивна"
 msgid "Preventive maintenance procedure"
 msgstr "Процедура за превантивна поддръжка"
 
-#: senaite/core/browser/samples/templates/partition_magic.pt:250
+#: senaite/core/browser/samples/templates/partition_magic.pt:258
 msgid "Preview"
 msgstr "Преглед"
 
-#: bika/lims/browser/analysisrequest/manage_analyses.py:85
+#: bika/lims/browser/analysisrequest/manage_analyses.py:88
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:168
 #: bika/lims/browser/templates/analysisservice_info.pt:71
 msgid "Price"
@@ -4249,7 +4457,7 @@ msgstr "Ценоразпис за"
 msgid "Pricelists"
 msgstr "Ценоразписи"
 
-#: bika/lims/content/client.py:94
+#: bika/lims/content/client.py:98
 msgid "Primary Contact"
 msgstr ""
 
@@ -4258,7 +4466,7 @@ msgstr ""
 msgid "Primary Sample"
 msgstr "Първична проба"
 
-#: senaite/core/browser/samples/view.py:703
+#: senaite/core/browser/samples/view.py:851
 #: senaite/core/browser/stickers/templates/stickers_preview.pt:51
 #: senaite/core/browser/worksheets/worksheet/templates/manage_results.pt:140
 msgid "Print"
@@ -4280,11 +4488,11 @@ msgstr "Дата на печат:"
 msgid "Print pricelist"
 msgstr "Печат на ценоразпис"
 
-#: senaite/core/browser/samples/view.py:254
+#: senaite/core/browser/samples/view.py:272
 msgid "Print stickers"
 msgstr "Печат на етикети"
 
-#: senaite/core/browser/samples/view.py:241
+#: senaite/core/browser/samples/view.py:259
 msgid "Printed"
 msgstr "Отпечатан"
 
@@ -4297,7 +4505,7 @@ msgstr "Отпечатан на"
 msgid "Priority"
 msgstr "Приоритет"
 
-#: senaite/core/browser/samples/view.py:226
+#: senaite/core/browser/samples/view.py:238
 msgid "Profile"
 msgstr "Профил"
 
@@ -4321,7 +4529,7 @@ msgstr "Име на профил"
 msgid "Profile keyword must be unique"
 msgstr "Ключовата дума на профила трябва да е уникална"
 
-#: senaite/core/browser/samples/view.py:122
+#: senaite/core/browser/samples/view.py:134
 msgid "Progress"
 msgstr "Напредък"
 
@@ -4330,7 +4538,7 @@ msgstr "Напредък"
 msgid "Prominent fields"
 msgstr "Основни полета"
 
-#: bika/lims/content/abstractbaseanalysis.py:865
+#: bika/lims/content/abstractbaseanalysis.py:868
 msgid "Protocol ID"
 msgstr "ID на протокол"
 
@@ -4338,7 +4546,7 @@ msgstr "ID на протокол"
 msgid "Province"
 msgstr "Област"
 
-#: senaite/core/content/resultsreport.py:119
+#: senaite/core/content/resultsreport.py:120
 msgid "Publication Modes"
 msgstr ""
 
@@ -4347,8 +4555,12 @@ msgstr ""
 msgid "Publish"
 msgstr "Публикувай"
 
-#: senaite/core/browser/dashboard/dashboard.py:128
-#: senaite/core/browser/samples/view.py:351
+#: senaite/core/browser/dashboard/dashboard.py:112
+msgid "Publish Reports"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:150
+#: senaite/core/browser/samples/view.py:369
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 msgid "Published"
 msgstr "Публикуван"
@@ -4364,6 +4576,10 @@ msgstr "Дата на публикуване"
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Published results"
 msgstr "Публикувани резултати"
+
+#: senaite/core/browser/dashboard/dashboard.py:448
+msgid "Published samples whose reports have not been printed yet"
+msgstr ""
 
 #: bika/lims/browser/workflow/client.py:122
 msgid "Published {}, "
@@ -4385,6 +4601,14 @@ msgstr "QC резултати"
 #: bika/lims/browser/instrument.py:554
 msgid "QC Sample ID"
 msgstr "QC ID на проба"
+
+#: senaite/core/browser/dashboard/dashboard.py:138
+msgid "Quarterly"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:128
+msgid "Quick Actions"
+msgstr ""
 
 #: bika/lims/content/abstractbaseanalysis.py:621
 msgid "Range max"
@@ -4410,7 +4634,7 @@ msgstr "Въведете паролата отново. Уверете се, ч�
 msgid "Reasons for rejection"
 msgstr "Причини за отхвърляне"
 
-#: senaite/core/browser/worksheets/view.py:344
+#: senaite/core/browser/worksheets/view.py:348
 msgid "Reassign"
 msgstr "Преназначи"
 
@@ -4422,30 +4646,34 @@ msgstr "Слот за преназначаване"
 msgid "Reattach"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:1170
+#: bika/lims/browser/analyses/view.py:1171
 msgid "Recalculate"
 msgstr "Преизчисли"
 
-#: senaite/core/content/senaitesetup.py:1121
+#: senaite/core/content/senaitesetup.py:1144
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Receive"
 msgstr "Получаване"
 
 #: senaite/core/browser/samples/rejection/templates/rejection_report.pt:119
-#: senaite/core/browser/samples/view.py:321
+#: senaite/core/browser/samples/view.py:339
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Received"
 msgstr "Получен"
 
-#: senaite/core/browser/dashboard/dashboard.py:135
+#: senaite/core/browser/dashboard/dashboard.py:420
+msgid "Received samples with analyses awaiting results"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:160
 msgid "Reception pending"
 msgstr "Чакащо приемане"
 
-#: senaite/core/content/resultsreport.py:244
+#: senaite/core/content/resultsreport.py:245
 msgid "Recipient"
 msgstr ""
 
-#: senaite/core/content/resultsreport.py:241
+#: senaite/core/content/resultsreport.py:242
 msgid "Recipients"
 msgstr "Получатели"
 
@@ -4496,11 +4724,15 @@ msgstr "Референтни стойности"
 msgid "Reference sample values are zero or 'blank'"
 msgstr "Стойностите на референтната проба са нула или 'празни'"
 
-#: senaite/core/content/senaitesetup.py:1120
+#: senaite/core/content/senaitesetup.py:1143
 msgid "Register"
 msgstr "Регистрирай"
 
-#: senaite/core/browser/dashboard/dashboard.py:121
+#: senaite/core/browser/dashboard/dashboard.py:105
+msgid "Register Samples"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:145
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Registered"
@@ -4526,9 +4758,9 @@ msgstr "Отхвърли анализ"
 msgid "Reject samples"
 msgstr "Отхвърли проби"
 
-#: senaite/core/browser/dashboard/dashboard.py:125
+#: senaite/core/browser/dashboard/dashboard.py:153
 #: senaite/core/browser/samples/rejection/templates/rejection_report.pt:121
-#: senaite/core/browser/samples/view.py:402
+#: senaite/core/browser/samples/view.py:432
 msgid "Rejected"
 msgstr "Отхвърлен"
 
@@ -4544,7 +4776,7 @@ msgstr "Отхвърлена проба"
 msgid "Rejected {} samples: {}"
 msgstr "Отхвърлени {} проби: {}"
 
-#: bika/lims/content/bikasetup.py:1201
+#: bika/lims/content/bikasetup.py:1202
 msgid "Rejection Reasons"
 msgstr ""
 
@@ -4605,8 +4837,16 @@ msgstr "Отдалечен IP"
 msgid "Remove"
 msgstr "Премахни"
 
+#: senaite/core/browser/samples/view.py:597
+msgid "Remove this analysis from the filter"
+msgstr ""
+
 #: senaite/core/browser/idserver/view.py:126
 msgid "Removed {} key(s): {}"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — row action tooltip
+msgid "Rename filter"
 msgstr ""
 
 #: bika/lims/content/attachment.py:80
@@ -4642,11 +4882,11 @@ msgstr "ID на доклад"
 msgid "Report identification number"
 msgstr "Идентификационен номер на доклад"
 
-#: senaite/core/content/resultsreport.py:229
+#: senaite/core/content/resultsreport.py:230
 msgid "Report metadata"
 msgstr ""
 
-#: senaite/core/content/resultsreport.py:242
+#: senaite/core/content/resultsreport.py:243
 msgid "Report recipients"
 msgstr ""
 
@@ -4658,7 +4898,7 @@ msgstr "Качване на доклад"
 msgid "Republish"
 msgstr "Препубликувай"
 
-#: senaite/core/browser/samples/view.py:574
+#: senaite/core/browser/samples/view.py:712
 msgid "Republished after last print"
 msgstr "Препубликуван след последния печат"
 
@@ -4667,7 +4907,7 @@ msgstr "Препубликуван след последния печат"
 msgid "Request ID"
 msgstr "ID на заявка"
 
-#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:302
+#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:311
 msgid "Request new analyses"
 msgstr "Заяви нови анализи"
 
@@ -4683,24 +4923,37 @@ msgstr "Изискван обем"
 msgid "Reset"
 msgstr "Нулиране"
 
+# senaite.app.listing: Reset-columns button tooltip
+msgid "Reset column visibility and order to the defaults"
+msgstr ""
+
 # senaite.app.listing: Reset columns
 msgid "Reset columns"
 msgstr "Нулиране на колони"
+
+# senaite.app.listing: Column config — reset link tooltip
+msgid "Reset to default columns and order"
+msgstr ""
+
+# senaite.app.listing: Search box — undo / reset-view button tooltip
+msgid "Reset view"
+msgstr ""
 
 #: bika/lims/browser/publish/templates/email.pt:83
 #: bika/lims/browser/templates/analysisreport_info.pt:154
 msgid "Responsibles"
 msgstr "Отговорни лица"
 
+#: senaite/core/api/remarks.py:483
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Restore"
 msgstr "Възстанови"
 
-#: bika/lims/content/bikasetup.py:175
+#: bika/lims/content/bikasetup.py:176
 msgid "Restrict worksheet access to assigned analysts"
 msgstr ""
 
-#: bika/lims/content/bikasetup.py:206
+#: bika/lims/content/bikasetup.py:207
 msgid "Restrict worksheet management to lab managers"
 msgstr ""
 
@@ -4725,15 +4978,15 @@ msgstr "Стойността на резултата трябва да е чис
 msgid "Result Value must be unique"
 msgstr "Стойността на резултата трябва да е уникална"
 
-#: bika/lims/browser/analyses/view.py:1526
+#: bika/lims/browser/analyses/view.py:1527
 msgid "Result in shoulder range"
 msgstr "Резултат в допустимия обхват"
 
-#: bika/lims/browser/analyses/view.py:1523
+#: bika/lims/browser/analyses/view.py:1524
 msgid "Result out of range"
 msgstr "Резултат извън обхвата"
 
-#: bika/lims/browser/analyses/view.py:1545
+#: bika/lims/browser/analyses/view.py:1546
 msgid "Result range is different from Specification: {}"
 msgstr "Диапазонът на резултата е различен от Спецификацията: {}"
 
@@ -4741,7 +4994,7 @@ msgstr "Диапазонът на резултата е различен от С
 msgid "Result type"
 msgstr "Тип резултат"
 
-#: bika/lims/content/bikasetup.py:426
+#: bika/lims/content/bikasetup.py:427
 msgid "Result values with at least this number of significant digits are displayed in scientific notation using the letter 'e' to indicate the exponent.  The precision can be configured in individual Analysis Services."
 msgstr "Стойностите на резултатите с поне този брой значими цифри се показват в научно записване, използвайки буквата 'e' за обозначаване на експонентата. Точността може да се конфигурира в индивидуалните Услуги за анализ."
 
@@ -4757,16 +5010,20 @@ msgstr "Резултати"
 msgid "Results Interpretation"
 msgstr "Интерпретация на резултати"
 
-#: senaite/core/content/resultsreport.py:132
+#: senaite/core/browser/dashboard/dashboard.py:85
+msgid "Results Pending"
+msgstr ""
+
+#: senaite/core/content/resultsreport.py:133
 #: senaite/core/profiles/default/types/ResultsReport.xml
 msgid "Results Report"
 msgstr ""
 
-#: senaite/core/content/senaitesetup.py:1285
+#: senaite/core/content/senaitesetup.py:1308
 msgid "Results Reports"
 msgstr ""
 
-#: senaite/core/browser/samples/view.py:588
+#: senaite/core/browser/samples/view.py:726
 msgid "Results have been withdrawn"
 msgstr "Резултатите са оттеглени"
 
@@ -4774,7 +5031,7 @@ msgstr "Резултатите са оттеглени"
 msgid "Results interpretation"
 msgstr "Интерпретация на резултати"
 
-#: senaite/core/browser/dashboard/dashboard.py:123
+#: senaite/core/browser/dashboard/dashboard.py:161
 msgid "Results pending"
 msgstr "Чакащи резултати"
 
@@ -4798,7 +5055,7 @@ msgstr "Повторно тестван"
 msgid "Retract"
 msgstr "Оттегли"
 
-#: senaite/core/browser/dashboard/dashboard.py:126
+#: senaite/core/browser/dashboard/dashboard.py:152
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 #: senaite/core/profiles/default/workflows/senaite_duplicateanalysis_workflow/definition.xml
 msgid "Retracted"
@@ -4834,6 +5091,10 @@ msgstr "Връщане назад"
 msgid "Routine Analyses"
 msgstr "Рутинни анализи"
 
+#: bika/lims/api/snapshot.py:555
+msgid "Row ${num}"
+msgstr ""
+
 #: senaite/core/configure.zcml:56
 msgid "SENAITE CORE"
 msgstr "SENAITE CORE"
@@ -4859,6 +5120,7 @@ msgstr "SENAITE LIMS начална страница"
 msgid "SENAITE Registry"
 msgstr "SENAITE Регистър"
 
+#: senaite/core/browser/dashboard/dashboard.py:115
 #: senaite/core/browser/setup/edit.py:38
 #: senaite/core/profiles/default/types/Setup.xml
 msgid "SENAITE Setup"
@@ -4868,7 +5130,7 @@ msgstr "SENAITE Настройки"
 msgid "SENAITE front-page"
 msgstr "SENAITE начална страница"
 
-#: senaite/core/browser/clients/client/contacts/login_details.py:315
+#: senaite/core/browser/clients/client/contacts/login_details.py:326
 msgid "SMTP server disconnected. User creation aborted."
 msgstr "SMTP сървърът прекъсна връзката. Създаването на потребител е прекратено."
 
@@ -4882,7 +5144,7 @@ msgstr "Поздрав"
 
 #: senaite/core/browser/worksheets/worksheet/analyses_listing.py:609
 #: senaite/core/browser/worksheets/worksheet/templates/print/sample_by_column.pt:99
-#: senaite/core/content/resultsreport.py:150
+#: senaite/core/content/resultsreport.py:151
 msgid "Sample"
 msgstr "Проба"
 
@@ -4919,7 +5181,7 @@ msgid "Sample Header"
 msgstr "Заглавка на проба"
 
 #: senaite/core/browser/samples/rejection/templates/rejection_report.pt:105
-#: senaite/core/browser/samples/view.py:127
+#: senaite/core/browser/samples/view.py:139
 msgid "Sample ID"
 msgstr "ID на проба"
 
@@ -4939,7 +5201,7 @@ msgstr "Матрица на проба"
 msgid "Sample Partitions"
 msgstr "Части на проба"
 
-#: senaite/core/browser/samples/view.py:205
+#: senaite/core/browser/samples/view.py:217
 #: senaite/core/browser/worksheets/worksheet/analyses_listing.py:579
 #: senaite/core/profiles/default/types/SamplePoint.xml
 msgid "Sample Point"
@@ -4966,7 +5228,7 @@ msgid "Sample Templates"
 msgstr "Шаблони за проби"
 
 #: senaite/core/browser/samples/templates/partition_magic.pt:155
-#: senaite/core/browser/samples/view.py:201
+#: senaite/core/browser/samples/view.py:213
 #: senaite/core/browser/worksheets/worksheet/analyses_listing.py:572
 msgid "Sample Type"
 msgstr "Тип проба"
@@ -5027,7 +5289,7 @@ msgstr "Тип проба"
 msgid "SampleTypes"
 msgstr "Типове проби"
 
-#: senaite/core/browser/samples/view.py:219
+#: senaite/core/browser/samples/view.py:231
 msgid "Sampler"
 msgstr "Пробовземащ"
 
@@ -5039,8 +5301,8 @@ msgstr "Пробовземащ за планирано пробовземане"
 msgid "Sampler required for sample %s"
 msgstr "Изисква се пробовземащ за проба %s"
 
-#: senaite/core/browser/dashboard/dashboard.py:411
-#: senaite/core/browser/samples/view.py:100
+#: senaite/core/browser/dashboard/dashboard.py:457
+#: senaite/core/browser/samples/view.py:112
 #: senaite/core/profiles/default/types/Samples.xml
 msgid "Samples"
 msgstr "Проби"
@@ -5057,6 +5319,18 @@ msgstr ""
 msgid "Samples ${sample_ids} were successfully invalidated."
 msgstr ""
 
+#: senaite/core/browser/dashboard/dashboard.py:400
+msgid "Samples awaiting collection of the sample"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:404
+msgid "Samples awaiting preservation"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:416
+msgid "Samples awaiting reception at the laboratory"
+msgstr ""
+
 #: bika/lims/content/referencesample.py:106
 #: bika/lims/content/sampletype.py:128
 msgid "Samples of this type should be treated as hazardous"
@@ -5066,7 +5340,23 @@ msgstr "Пробите от този тип трябва да се третир�
 msgid "Samples rejection reporting form"
 msgstr "Формуляр за докладване на отхвърляне на проби"
 
-#: senaite/core/content/senaitesetup.py:1337
+#: senaite/core/browser/dashboard/dashboard.py:81
+msgid "Samples to Receive"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:432
+msgid "Samples whose reports have been published"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:424
+msgid "Samples whose results are awaiting verification"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:409
+msgid "Samples with a scheduled sampling date"
+msgstr ""
+
+#: senaite/core/content/senaitesetup.py:1362
 msgid "Sampling"
 msgstr ""
 
@@ -5074,7 +5364,7 @@ msgstr ""
 msgid "Sampling Date"
 msgstr "Дата на пробовземане"
 
-#: senaite/core/browser/samples/view.py:214
+#: senaite/core/browser/samples/view.py:226
 #: senaite/core/profiles/default/types/SamplingDeviation.xml
 msgid "Sampling Deviation"
 msgstr "Отклонение при пробовземане"
@@ -5087,7 +5377,7 @@ msgstr "Отклонения при пробовземане"
 msgid "Sampling Frequency"
 msgstr "Честота на пробовземане"
 
-#: senaite/core/browser/dashboard/dashboard.py:134
+#: senaite/core/browser/dashboard/dashboard.py:159
 msgid "Sampling scheduled"
 msgstr "Планирано пробовземане"
 
@@ -5095,15 +5385,24 @@ msgstr "Планирано пробовземане"
 msgid "Saturday"
 msgstr "Събота"
 
+#: senaite/core/api/remarks.py:478
 #: senaite/core/browser/clients/client/contacts/templates/login_details.pt:288
 #: senaite/core/browser/idserver/templates/numbergenerator.pt:148
-#: senaite/core/browser/samples/templates/manage_sample_fields.pt:191
 msgid "Save"
 msgstr "Запази"
 
-#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:728
+#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:738
 msgid "Save and Copy"
 msgstr "Запази и копирай"
+
+# senaite.app.listing: Saved filter presets — footer button to save the
+# current view
+msgid "Save current view"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — toggle title + menu header
+msgid "Saved filters"
+msgstr ""
 
 #: bika/lims/browser/workflow/__init__.py:206
 msgid "Saved items: {}"
@@ -5117,7 +5416,7 @@ msgstr "График"
 msgid "Schedule sampling"
 msgstr "Планирай пробовземане"
 
-#: senaite/core/browser/samples/view.py:299
+#: senaite/core/browser/samples/view.py:317
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Scheduled sampling"
 msgstr "Планирано пробовземане"
@@ -5134,6 +5433,10 @@ msgstr "Научно име"
 msgid "Search"
 msgstr "Търсене"
 
+# senaite.app.listing: Column config — search input placeholder
+msgid "Search columns…"
+msgstr ""
+
 # senaite.core: Sidebar search input placeholder
 msgid "Search..."
 msgstr ""
@@ -5142,7 +5445,7 @@ msgstr ""
 msgid "Seconds"
 msgstr "Секунди"
 
-#: senaite/core/content/senaitesetup.py:1261
+#: senaite/core/content/senaitesetup.py:1284
 msgid "Security"
 msgstr ""
 
@@ -5232,11 +5535,11 @@ msgstr ""
 msgid "Select template"
 msgstr "Избери шаблон"
 
-#: bika/lims/content/bikasetup.py:269
+#: bika/lims/content/bikasetup.py:270
 msgid "Select the country the site will show by default"
 msgstr "Изберете държавата, която сайтът ще показва по подразбиране"
 
-#: bika/lims/content/bikasetup.py:254
+#: bika/lims/content/bikasetup.py:255
 msgid "Select the currency the site will use to display prices."
 msgstr "Изберете валутата, която сайтът ще използва за показване на цени."
 
@@ -5248,11 +5551,11 @@ msgstr "Изберете контейнера по подразбиране, к�
 msgid "Select the default landing page. This is used when a Client user logs into the system, or when a client is selected from the client folder listing."
 msgstr "Изберете началната страница по подразбиране. Тя се използва, когато Клиентски потребител влезе в системата или когато клиент е избран от списъка с клиентски папки."
 
-#: senaite/core/content/senaitesetup.py:1129
+#: senaite/core/content/senaitesetup.py:1152
 msgid "Select the default sticker template used for automatic printing."
 msgstr ""
 
-#: bika/lims/content/bikasetup.py:1000
+#: bika/lims/content/bikasetup.py:1001
 msgid "Select the default sticker template used for automatic printing.<br/>"
 msgstr "Изберете шаблона за етикет по подразбиране, използван за автоматично отпечатване.<br/>"
 
@@ -5260,31 +5563,39 @@ msgstr "Изберете шаблона за етикет по подразби�
 msgid "Select the types that this ID is used to identify."
 msgstr "Изберете типовете, които това ID идентифицира."
 
-#: senaite/core/content/senaitesetup.py:1063
+#: senaite/core/content/senaitesetup.py:1086
 msgid "Select this to activate automatic notifications via email to the Client when a Sample is rejected."
 msgstr "Изберете това, за да активирате автоматични уведомления по имейл до Клиента, когато Проба бъде отхвърлена."
 
-#: bika/lims/content/bikasetup.py:592
+#: bika/lims/content/bikasetup.py:593
 msgid "Select this to activate the dashboard as a default front page."
 msgstr "Изберете това, за да активирате таблото за управление като начална страница по подразбиране."
 
-#: senaite/core/content/senaitesetup.py:990
+#: senaite/core/content/senaitesetup.py:1013
 msgid "Select this to activate the sample collection workflow steps."
 msgstr "Изберете това, за да активирате стъпките на работния процес за събиране на проби."
 
-#: senaite/core/content/senaitesetup.py:998
+#: senaite/core/content/senaitesetup.py:1021
 msgid "Select this to allow a Sampling Coordinator to schedule a sampling. This functionality only takes effect when 'Sampling workflow' is active"
 msgstr "Изберете това, за да позволите на Координатор по пробовземане да планира пробовземане. Тази функционалност влиза в сила само когато 'Работен процес за пробовземане' е активен"
 
-#: senaite/core/content/senaitesetup.py:980
+#: senaite/core/content/senaitesetup.py:1001
+msgid "Select this to allow dispatching samples through the 'dispatch' transition and to enable the additional 'dispatched' status. The analyses of a dispatched sample become read-only and are brought back to their previous status when the sample is restored. Disabled by default."
+msgstr ""
+
+#: senaite/core/content/senaitesetup.py:991
+msgid "Select this to allow disposing samples through the 'dispose' transition and to enable the additional 'disposed' status. Disabled by default."
+msgstr ""
+
+#: senaite/core/content/senaitesetup.py:981
 msgid "Select this to allow the user to set an additional 'Printed' status to those Analysis Requests that have been Published. Disabled by default."
 msgstr "Изберете това, за да позволите на потребителя да зададе допълнителен статус 'Отпечатан' за тези Заявки за анализ, които са били Публикувани. Деактивирано по подразбиране."
 
-#: senaite/core/content/senaitesetup.py:1008
+#: senaite/core/content/senaitesetup.py:1031
 msgid "Select to receive the samples automatically when created by lab personnel and sampling workflow is disabled. Samples created by client contacts won't be received automatically"
 msgstr "Изберете, за да получавате пробите автоматично, когато са създадени от лабораторния персонал и работният процес за пробовземане е деактивиран. Пробите, създадени от клиентски контакти, няма да бъдат получавани автоматично"
 
-#: bika/lims/content/bikasetup.py:722
+#: bika/lims/content/bikasetup.py:723
 msgid "Select to show sample partitions to client contacts. If deactivated, partitions won't be included in listings and no info message with links to the primary sample will be displayed to client contacts."
 msgstr "Изберете, за да показвате частите на пробите на клиентските контакти. Ако е деактивирано, частите няма да бъдат включени в списъците и няма да се показва информационно съобщение с връзки към първичната проба за клиентските контакти."
 
@@ -5296,7 +5607,7 @@ msgstr "Изберете кои анализи да бъдат включени 
 msgid "Selection list"
 msgstr "Списък за избор"
 
-#: bika/lims/content/abstractbaseanalysis.py:817
+#: bika/lims/content/abstractbaseanalysis.py:820
 msgid "Self-verification of results"
 msgstr "Самоверификация на резултати"
 
@@ -5308,11 +5619,11 @@ msgstr "Изпрати"
 msgid "Send Analysis Reports via Email"
 msgstr "Изпрати доклади от анализи по имейл"
 
-#: senaite/core/content/resultsreport.py:256
+#: senaite/core/content/resultsreport.py:257
 msgid "Send Log"
 msgstr ""
 
-#: senaite/core/content/resultsreport.py:259
+#: senaite/core/content/resultsreport.py:260
 msgid "Send Log Entry"
 msgstr ""
 
@@ -5334,7 +5645,7 @@ msgstr "Изпратено до"
 msgid "Separate Container"
 msgstr "Отделен контейнер"
 
-#: senaite/core/content/senaitesetup.py:216
+#: senaite/core/content/senaitesetup.py:217
 msgid "Seq Type"
 msgstr ""
 
@@ -5348,7 +5659,7 @@ msgstr "Сериен №"
 msgid "Service"
 msgstr "Услуга"
 
-#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:598
+#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:608
 msgid "Service cannot be deselected. Please click the info button for further details"
 msgstr "Услугата не може да бъде деселектирана. Моля, кликнете върху бутона за информация за повече подробности"
 
@@ -5376,7 +5687,7 @@ msgstr "Задай работния процес за отхвърляне на 
 msgid "Set the maintenance task as closed."
 msgstr "Задай задачата за поддръжка като затворена."
 
-#: senaite/core/content/senaitesetup.py:1073
+#: senaite/core/content/senaitesetup.py:1096
 msgid "Set the text for the body of the email to be sent to the Sample's client contact if the option 'Email notification on Sample rejection' is enabled. You can use reserved keywords: $sample_id, $sample_link, $reasons, $lab_address"
 msgstr "Задайте текста за тялото на имейла, който ще бъде изпратен до клиентския контакт на Пробата, ако опцията 'Имейл уведомление при отхвърляне на проба' е активирана. Можете да използвате запазени ключови думи: $sample_id, $sample_link, $reasons, $lab_address"
 
@@ -5424,29 +5735,41 @@ msgstr "Трябва ли анализите да бъдат изключени 
 msgid "Should the default example content be added to the site?"
 msgstr "Трябва ли да се добави примерното съдържание по подразбиране към сайта?"
 
-#: senaite/core/browser/viewlets/templates/sampleheader.pt:58
+#: senaite/core/browser/viewlets/templates/sampleheader.pt:59
 msgid "Show additional fields"
 msgstr ""
 
-#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:385
+#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:394
 msgid "Show all"
 msgstr "Покажи всички"
+
+#: senaite/core/api/remarks.py:486
+msgid "Show history"
+msgstr ""
 
 #: senaite/core/exportimport/import.pt:186
 msgid "Show last auto import logs"
 msgstr "Покажи логовете от последното автоматично импортиране"
 
-#: senaite/core/skins/senaite_templates/senaite_widgets/remarkswidget.pt:80
+#: senaite/core/api/remarks.py:489
 msgid "Show less"
 msgstr ""
 
-#: senaite/core/skins/senaite_templates/senaite_widgets/remarkswidget.pt:79
+#: senaite/core/api/remarks.py:488
 msgid "Show more"
 msgstr "Покажи повече"
 
 #: senaite/core/registry/schema.py:173
 msgid "Show standard fields"
 msgstr "Покажи стандартни полета"
+
+# senaite.app.listing: Column config — plus button tooltip / aria-label
+msgid "Show this column"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:129
+msgid "Show/hide timeline"
+msgstr ""
 
 #: bika/lims/content/labcontact.py:46
 msgid "Signature"
@@ -5468,11 +5791,11 @@ msgstr "Код на обекта"
 msgid "Site Description"
 msgstr "Описание на обекта"
 
-#: senaite/core/content/senaitesetup.py:313
+#: senaite/core/content/senaitesetup.py:314
 msgid "Site Logo"
 msgstr "Лого на сайта"
 
-#: senaite/core/content/senaitesetup.py:319
+#: senaite/core/content/senaitesetup.py:320
 msgid "Site Logo CSS"
 msgstr "CSS за лого на сайта"
 
@@ -5493,7 +5816,7 @@ msgstr ""
 msgid "Small Sticker"
 msgstr "Малък етикет"
 
-#: senaite/core/content/senaitesetup.py:1138
+#: senaite/core/content/senaitesetup.py:1161
 msgid "Small Sticker Template"
 msgstr "Шаблон за малък етикет"
 
@@ -5510,6 +5833,14 @@ msgstr "Някои анализи използват остарели или н�
 #: bika/lims/content/subgroup.py:38
 msgid "Sort Key"
 msgstr "Ключ за сортиране"
+
+# senaite.app.listing: Column header — sort arrow tooltip / aria-label
+msgid "Sort ascending"
+msgstr ""
+
+# senaite.app.listing: Column header — sort arrow tooltip / aria-label
+msgid "Sort descending"
+msgstr ""
 
 #: bika/lims/browser/analyses/qc.py:59
 msgid "Source"
@@ -5535,7 +5866,7 @@ msgstr "Диапазоните на спецификацията са проме
 msgid "Specifications"
 msgstr "Спецификации"
 
-#: senaite/core/content/senaitesetup.py:1163
+#: senaite/core/content/senaitesetup.py:1186
 msgid "Specify how many copies of each sticker should be printed by default."
 msgstr "Посочете колко копия на всеки етикет да се отпечатват по подразбиране."
 
@@ -5543,7 +5874,7 @@ msgstr "Посочете колко копия на всеки етикет да
 msgid "Specify the size of the Worksheet, e.g. corresponding to a specific instrument's tray size. Then select an Analysis 'type' per Worksheet position.Where QC samples are selected, also select which Reference Sample should be used.If a duplicate analysis is selected, indicate which sample position it should be a duplicate of"
 msgstr "Посочете размера на Работния лист, напр. отговарящ на размера на таблата на конкретен инструмент. След това изберете 'тип' Анализ за всяка позиция в Работния лист. Когато са избрани QC проби, изберете и коя Референтна проба трябва да се използва. Ако е избран дублиращ анализ, посочете на коя позиция на пробата той трябва да бъде дубликат"
 
-#: senaite/core/content/senaitesetup.py:245
+#: senaite/core/content/senaitesetup.py:246
 msgid "Split Length"
 msgstr ""
 
@@ -5560,17 +5891,17 @@ msgstr "Начална дата"
 msgid "Start date must be before End Date"
 msgstr "Началната дата трябва да е преди крайната дата"
 
-#: senaite/core/browser/samples/view.py:246
+#: senaite/core/browser/samples/view.py:264
 #: senaite/core/browser/worksheets/worksheet/analyses_listing.py:123
 #: senaite/core/skins/senaite_templates/senaite_widgets/addresswidget.pt:67
 msgid "State"
 msgstr "Щат/Провинция"
 
-#: bika/lims/browser/analyses/view.py:200
+#: senaite/core/browser/dashboard/dashboard.py:127
 msgid "Status"
 msgstr "Статус"
 
-#: senaite/core/content/senaitesetup.py:1368
+#: senaite/core/content/senaitesetup.py:1395
 #: senaite/core/profiles/default/types/Worksheet.xml
 msgid "Sticker"
 msgstr "Етикет"
@@ -5579,7 +5910,11 @@ msgstr "Етикет"
 msgid "Stickers preview"
 msgstr "Преглед на етикети"
 
-#: senaite/core/browser/samples/view.py:209
+# senaite.app.listing: Saved filter presets — star action tooltip when active
+msgid "Stop auto-applying"
+msgstr ""
+
+#: senaite/core/browser/samples/view.py:221
 #: senaite/core/profiles/default/types/StorageLocation.xml
 msgid "Storage Location"
 msgstr "Място за съхранение"
@@ -5619,7 +5954,11 @@ msgstr "Подай"
 msgid "Submit a valid Open XML (.XLSX) file containing setup records to continue."
 msgstr "Подайте валиден Open XML (.XLSX) файл, съдържащ записи за настройка, за да продължите."
 
-#: bika/lims/browser/analyses/view.py:1570
+#: senaite/core/browser/dashboard/dashboard.py:490
+msgid "Submitted analyses awaiting verification"
+msgstr ""
+
+#: bika/lims/browser/analyses/view.py:1571
 msgid "Submitted and verified by the same user: {}"
 msgstr "Подадено и верифицирано от същия потребител: {}"
 
@@ -5627,7 +5966,7 @@ msgstr "Подадено и верифицирано от същия потре�
 msgid "Submitter"
 msgstr "Подател"
 
-#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:678
+#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:688
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:198
 msgid "Subtotal"
 msgstr "Междинна сума"
@@ -5669,7 +6008,7 @@ msgstr "Превключи към табло за управление"
 msgid "Switch to transposed view"
 msgstr "Превключи към транспониран изглед"
 
-#: bika/lims/content/abstractbaseanalysis.py:1086
+#: bika/lims/content/abstractbaseanalysis.py:1089
 msgid "System default"
 msgstr "Системно по подразбиране"
 
@@ -5695,7 +6034,7 @@ msgstr "Данъци"
 msgid "Technical description and instructions intended for analysts"
 msgstr "Техническо описание и инструкции, предназначени за анализатори"
 
-#: senaite/core/browser/samples/view.py:236
+#: senaite/core/browser/samples/view.py:254
 #: senaite/core/browser/stickers/templates/stickers_preview.pt:26
 #: senaite/core/browser/viewlets/templates/resultsinterpretation.pt:69
 msgid "Template"
@@ -5777,7 +6116,7 @@ msgstr "Датата, когато пробата е консервирана"
 msgid "The date when the sample was received"
 msgstr "Датата, когато пробата е получена"
 
-#: bika/lims/content/client.py:226
+#: bika/lims/content/client.py:230
 msgid "The decimal mark selected in Bika Setup will be used."
 msgstr "Ще бъде използван десетичният знак, избран в Настройките на Bika."
 
@@ -5785,7 +6124,7 @@ msgstr "Ще бъде използван десетичният знак, изб
 msgid "The default timezone setting of the portal. Users will be able to set their own timezone, if available timezones are defined in the date and time settings."
 msgstr "Настройката за часова зона по подразбиране на портала. Потребителите ще могат да задават своя собствена часова зона, ако са дефинирани налични часови зони в настройките за дата и час."
 
-#: bika/lims/content/bikasetup.py:282
+#: bika/lims/content/bikasetup.py:283
 msgid "The discount percentage entered here, is applied to the prices for clients flagged as 'members', normally co-operative members or associates deserving of this discount"
 msgstr "Въведеният тук процент на отстъпка се прилага към цените за клиенти, отбелязани като 'членове', обикновено членове на кооперации или сътрудници, заслужаващи тази отстъпка"
 
@@ -5813,7 +6152,11 @@ msgstr "Следните части са създадени от тази Про
 msgid "The following sample(s) will be dispatched"
 msgstr "Следните проби ще бъдат изпратени"
 
-#: senaite/core/content/senaitesetup.py:298
+#: senaite/core/browser/samples/templates/dispose_samples.pt:47
+msgid "The following sample(s) will be disposed"
+msgstr ""
+
+#: senaite/core/content/senaitesetup.py:299
 msgid "The global Auditlog shows all modifications of the system. When enabled, all entities will be indexed in a separate catalog. This will increase the time when objects are created or modified."
 msgstr "Глобалният одитен журнал показва всички модификации на системата. Когато е активиран, всички обекти ще бъдат индексирани в отделен каталог. Това ще увеличи времето при създаване или модифициране на обекти."
 
@@ -5821,11 +6164,11 @@ msgstr "Глобалният одитен журнал показва всичк
 msgid "The height or depth at which the sample has to be taken"
 msgstr "Височината или дълбочината, на която трябва да се вземе пробата"
 
-#: bika/lims/browser/analyses/view.py:1845
+#: bika/lims/browser/analyses/view.py:1846
 msgid "The holding time for this sample and analysis has expired. Proceeding with the analysis may compromise the reliability of the results."
 msgstr "Срокът за съхранение за тази проба и анализ е изтекъл. Продължаването с анализа може да компрометира надеждността на резултатите."
 
-#: bika/lims/browser/analyses/view.py:1857
+#: bika/lims/browser/analyses/view.py:1858
 msgid "The holding time for this sample and analysis is about to expire. Please complete the analysis as soon as possible to ensure data accuracy and reliability."
 msgstr "Срокът за съхранение за тази проба и анализ е на път да изтече. Моля, завършете анализа възможно най-скоро, за да гарантирате точността и надеждността на данните."
 
@@ -5862,11 +6205,11 @@ msgstr "Минималният обем на пробата, необходим 
 msgid "The number generator storage is empty. Counters are seeded on the first ID generation for each prefix."
 msgstr ""
 
-#: senaite/core/content/senaitesetup.py:1051
+#: senaite/core/content/senaitesetup.py:1074
 msgid "The number of days before a sample expires and cannot be analysed any more. This setting can be overwritten per individual sample type in the sample types setup"
 msgstr "Броят дни преди пробата да изтече и да не може да бъде анализирана повече. Тази настройка може да бъде презаписана за всеки отделен тип проба в настройките на типовете проби"
 
-#: bika/lims/content/bikasetup.py:162
+#: bika/lims/content/bikasetup.py:163
 msgid "The number of minutes before a user is automatically logged off. 0 disables automatic log-off"
 msgstr "Броят минути преди потребителят да бъде автоматично изписан. 0 деактивира автоматичното изписване"
 
@@ -5906,7 +6249,7 @@ msgstr "Референтният код, издаден на лаборатор�
 msgid "The result after the calculation has taken place with test values.  You will need to save the calculation before this value will be calculated."
 msgstr "Резултатът след извършване на изчислението с тестови стойности. Трябва да запазите изчислението, преди тази стойност да бъде изчислена."
 
-#: bika/lims/browser/analyses/view.py:1835
+#: bika/lims/browser/analyses/view.py:1836
 msgid "The result was captured past the holding time limit."
 msgstr "Резултатът е въведен след изтичане на срока за съхранение."
 
@@ -5930,11 +6273,11 @@ msgstr "Пробата е смес от подпроби"
 msgid "The serial number that uniquely identifies the instrument"
 msgstr "Серийният номер, който уникално идентифицира инструмента"
 
-#: bika/lims/content/abstractbaseanalysis.py:866
+#: bika/lims/content/abstractbaseanalysis.py:869
 msgid "The service's analytical protocol ID"
 msgstr "ID на аналитичния протокол на услугата"
 
-#: bika/lims/content/abstractbaseanalysis.py:854
+#: bika/lims/content/abstractbaseanalysis.py:857
 msgid "The service's commercial ID for accounting purposes"
 msgstr "Търговското ID на услугата за счетоводни цели"
 
@@ -5986,11 +6329,11 @@ msgstr "Това е Вторична проба на"
 msgid "This is a detached partition from Sample"
 msgstr "Това е отделена част от Проба"
 
-#: bika/lims/content/bikasetup.py:768
+#: bika/lims/content/bikasetup.py:769
 msgid "This is the default maximum time allowed for performing analyses.  It is only used for analyses where the analysis service does not specify a turnaround time. Only laboratory workdays are considered."
 msgstr "Това е максималното допустимо време по подразбиране за извършване на анализи. Използва се само за анализи, където услугата за анализ не посочва време за изпълнение. Вземат се предвид само лабораторните работни дни."
 
-#: senaite/core/content/senaitesetup.py:1038
+#: senaite/core/content/senaitesetup.py:1061
 msgid "This is the default maximum time allowed for performing analyses. It is only used for analyses where the analysis service does not specify a turnaround time. Only laboratory workdays are considered."
 msgstr ""
 
@@ -6014,11 +6357,11 @@ msgstr ""
 msgid "This sample was invalidated by ${actor_fullname} (${actor_id}) on ${date}."
 msgstr ""
 
-#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:608
+#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:618
 msgid "This service cannot be selected to prevent the analysis from being conducted beyond the analytical holding time."
 msgstr "Тази услуга не може да бъде избрана, за да се предотврати извършването на анализа след изтичане на аналитичното време за съхранение."
 
-#: senaite/core/content/senaitesetup.py:314
+#: senaite/core/content/senaitesetup.py:315
 msgid "This shows a custom logo on your SENAITE site."
 msgstr "Това показва персонализирано лого на вашия SENAITE сайт."
 
@@ -6050,8 +6393,8 @@ msgstr "Време"
 msgid "Tip. Attached documents will not be loaded unless they are present in the instance."
 msgstr "Съвет. Прикачените документи няма да бъдат заредени, освен ако не присъстват в инстанцията."
 
-#: senaite/core/browser/controlpanel/labels/view.py:59
-#: senaite/core/browser/label/labeled_objects.py:58
+#: senaite/core/browser/controlpanel/labels/view.py:60
+#: senaite/core/browser/label/labeled_objects.py:59
 #: senaite/core/browser/widgets/referencewidget.py:55
 msgid "Title"
 msgstr "Заглавие"
@@ -6078,34 +6421,42 @@ msgstr "Заглавие на сайта"
 msgid "To"
 msgstr "До"
 
-#: senaite/core/browser/samples/view.py:289
+#: senaite/core/browser/samples/view.py:307
 msgid "To Be Preserved"
 msgstr "За консервация"
 
-#: senaite/core/browser/samples/view.py:280
+#: senaite/core/browser/samples/view.py:298
 msgid "To Be Sampled"
 msgstr "За пробовземане"
+
+#: senaite/core/browser/dashboard/dashboard.py:93
+msgid "To be Published"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:89
+msgid "To be Verified"
+msgstr ""
 
 #: bika/lims/content/analysiscategory.py:48
 msgid "To be displayed below each Analysis Category section on results reports."
 msgstr "Да се показва под всеки раздел Категория на анализ в докладите за резултати."
 
-#: senaite/core/browser/dashboard/dashboard.py:133
+#: senaite/core/browser/dashboard/dashboard.py:158
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "To be preserved"
 msgstr "За консервация"
 
-#: senaite/core/browser/dashboard/dashboard.py:398
+#: senaite/core/browser/dashboard/dashboard.py:441
 msgid "To be printed"
 msgstr "За печат"
 
-#: senaite/core/browser/dashboard/dashboard.py:132
+#: senaite/core/browser/dashboard/dashboard.py:157
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "To be sampled"
 msgstr "За пробовземане"
 
-#: senaite/core/browser/dashboard/dashboard.py:124
-#: senaite/core/browser/samples/view.py:331
+#: senaite/core/browser/dashboard/dashboard.py:148
+#: senaite/core/browser/samples/view.py:349
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 msgid "To be verified"
 msgstr "За верификация"
@@ -6118,7 +6469,7 @@ msgstr "За да тествате изчислението, въведете с
 msgid "Toggle visibility of standard sample header fields"
 msgstr "Превключване на видимостта на стандартните полета в заглавката на пробата"
 
-#: senaite/core/browser/samples/view.py:523
+#: senaite/core/browser/samples/view.py:650
 msgid "Total"
 msgstr "Общо"
 
@@ -6140,7 +6491,7 @@ msgid "Tuesday"
 msgstr "Вторник"
 
 #: senaite/core/browser/clients/client/attachments/view.py:63
-#: senaite/core/browser/label/labeled_objects.py:61
+#: senaite/core/browser/label/labeled_objects.py:62
 #: senaite/core/browser/viewlets/templates/attachments.pt:64
 msgid "Type"
 msgstr "Тип"
@@ -6165,6 +6516,10 @@ msgstr "Тип на контейнера"
 msgid "Type to filter ..."
 msgstr "Въведете за филтриране ..."
 
+# senaite.app.listing: Column-filter row — searchable-select placeholder
+msgid "Type to filter..."
+msgstr ""
+
 #: senaite/core/registry/schema.py:78
 msgid "Types that support labels directly.<br/>NOTE: In cluster setups, other instances need to be restarted manually for the changes to take place!"
 msgstr "Типове, които поддържат етикети директно.<br/>ЗАБЕЛЕЖКА: В клъстерни конфигурации, другите инстанции трябва да бъдат рестартирани ръчно, за да влязат промените в сила!"
@@ -6173,7 +6528,7 @@ msgstr "Типове, които поддържат етикети директ�
 msgid "Types with labels"
 msgstr "Типове с етикети"
 
-#: senaite/core/content/resultsreport.py:99
+#: senaite/core/content/resultsreport.py:100
 msgid "UID"
 msgstr ""
 
@@ -6185,6 +6540,7 @@ msgstr "Неуспешно зареждане на шаблона"
 msgid "Unassign"
 msgstr "Отмени назначаване"
 
+#: senaite/core/browser/dashboard/dashboard.py:146
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 msgid "Unassigned"
 msgstr "Невъзложени"
@@ -6217,9 +6573,13 @@ msgstr "Непозната IBAN държава %s"
 msgid "Unlink User"
 msgstr "Разкачи потребител"
 
-#: senaite/core/browser/clients/client/contacts/login_details.py:228
+#: senaite/core/browser/clients/client/contacts/login_details.py:239
 msgid "Unlinked User"
 msgstr "Разкачен потребител"
+
+#: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
+msgid "Unlock"
+msgstr ""
 
 #: senaite/core/exportimport/instruments/panalytical/omnia/axios_xrf.py:53
 msgid "Unrecognized file format ${file_format}"
@@ -6235,13 +6595,17 @@ msgstr "Неразпознат файлов формат ${fileformat}"
 msgid "Unrecognized file format ${format}"
 msgstr "Неразпознат файлов формат ${format}"
 
-#: senaite/core/browser/samples/view.py:425
+#: senaite/core/browser/samples/view.py:455
 msgid "Unsassigned"
 msgstr "Невъзложени"
 
 #: senaite/core/browser/viewlets/templates/attachments.pt:175
 msgid "Update Attachments"
 msgstr "Обнови прикачените файлове"
+
+# senaite.app.listing: Saved filter presets — Update preset action tooltip
+msgid "Update preset with current view"
+msgstr ""
 
 #: senaite/core/browser/idserver/view.py:122
 msgid "Updated {} key(s): {}"
@@ -6251,7 +6615,7 @@ msgstr ""
 msgid "Upload a scanned signature to be used on printed analysis results reports. Ideal size is 250 pixels wide by 150 high"
 msgstr "Качете сканиран подпис, който да се използва в отпечатаните доклади за резултати от анализ. Идеалният размер е 250 пиксела ширина на 150 височина"
 
-#: bika/lims/content/client.py:250
+#: bika/lims/content/client.py:254
 msgid "Upload files and images for this client. Files will be stored in the client folder and can be downloaded later."
 msgstr ""
 
@@ -6259,7 +6623,7 @@ msgstr ""
 msgid "Use Analysis Profile Price"
 msgstr "Използвай цена от профил за анализ"
 
-#: bika/lims/content/bikasetup.py:591
+#: bika/lims/content/bikasetup.py:592
 msgid "Use Dashboard as default front page"
 msgstr "Използвай таблото за управление като начална страница по подразбиране"
 
@@ -6297,7 +6661,7 @@ msgstr ""
 msgid "User is linked to the global contact '${fullname}'"
 msgstr ""
 
-#: senaite/core/browser/clients/client/contacts/login_details.py:217
+#: senaite/core/browser/clients/client/contacts/login_details.py:233
 msgid "User linked to this Contact"
 msgstr "Потребител, свързан с този Контакт"
 
@@ -6305,15 +6669,15 @@ msgstr "Потребител, свързан с този Контакт"
 msgid "User name"
 msgstr "Потребителско име"
 
-#: senaite/core/content/resultsreport.py:104
+#: senaite/core/content/resultsreport.py:105
 msgid "Username"
 msgstr ""
 
-#: bika/lims/content/bikasetup.py:340
+#: bika/lims/content/bikasetup.py:341
 msgid "Using too few data points does not make statistical sense. Set an acceptable minimum number of results before QC statistics will be calculated and plotted"
 msgstr "Използването на твърде малко точки от данни няма статистически смисъл. Задайте приемлив минимален брой резултати, преди да се изчисляват и чертаят QC статистики"
 
-#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:692
+#: bika/lims/browser/analysisrequest/templates/ar_add2.pt:702
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:167
 #: bika/lims/content/analysisprofile.py:134
 msgid "VAT"
@@ -6321,7 +6685,7 @@ msgstr "ДДС"
 
 #: bika/lims/content/abstractbaseanalysis.py:575
 #: bika/lims/content/analysisprofile.py:122
-#: bika/lims/content/bikasetup.py:296
+#: bika/lims/content/bikasetup.py:297
 msgid "VAT %"
 msgstr "ДДС %"
 
@@ -6568,8 +6932,8 @@ msgstr "Стойността за секунди трябва да е между
 msgid "Values can be entered here which will override the defaults specified in the Calculation Interim Fields."
 msgstr "Тук могат да бъдат въведени стойности, които ще заменят стойностите по подразбиране, посочени в Междинните полета за изчисление."
 
-#: senaite/core/browser/dashboard/dashboard.py:127
-#: senaite/core/browser/samples/view.py:341
+#: senaite/core/browser/dashboard/dashboard.py:149
+#: senaite/core/browser/samples/view.py:359
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 msgid "Verified"
 msgstr "Верифициран"
@@ -6578,11 +6942,19 @@ msgstr "Верифициран"
 msgid "Verified By"
 msgstr "Верифициран от"
 
+#: senaite/core/browser/dashboard/dashboard.py:428
+msgid "Verified samples ready to be published"
+msgstr ""
+
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 #: senaite/core/profiles/default/workflows/senaite_duplicateanalysis_workflow/definition.xml
 #: senaite/core/profiles/default/workflows/senaite_referenceanalysis_workflow/definition.xml
 msgid "Verify"
 msgstr "Верифицирай"
+
+#: senaite/core/browser/dashboard/dashboard.py:109
+msgid "Verify Results"
+msgstr ""
 
 #: bika/lims/browser/auditlog.py:80
 #: bika/lims/browser/templates/analysisservice_info.pt:174
@@ -6597,6 +6969,14 @@ msgstr "Преглед"
 #: senaite/core/browser/install/templates/senaite-overview.pt:52
 msgid "View your SENAITE site"
 msgstr "Прегледайте вашия SENAITE сайт"
+
+# senaite.app.listing: Column config — visible-section header
+msgid "Visible"
+msgstr ""
+
+# senaite.app.listing: Column config — counter title attribute
+msgid "Visible / total columns"
+msgstr ""
 
 #: senaite/core/registry/schema.py:213
 msgid "Visible fields"
@@ -6631,6 +7011,10 @@ msgstr "Уебсайт"
 msgid "Wednesday"
 msgstr "Сряда"
 
+#: senaite/core/browser/dashboard/dashboard.py:136
+msgid "Weekly"
+msgstr ""
+
 #: bika/lims/controlpanel/bika_instruments.py:91
 msgid "Weeks To Expire"
 msgstr "Седмици до изтичане"
@@ -6643,19 +7027,19 @@ msgstr ""
 msgid "Welcome to SENAITE"
 msgstr "Добре дошли в SENAITE"
 
-#: bika/lims/content/bikasetup.py:176
+#: bika/lims/content/bikasetup.py:177
 msgid "When enabled, analysts can only access worksheets to which they are assigned. When disabled, analysts have access to all worksheets."
 msgstr ""
 
-#: bika/lims/content/bikasetup.py:207
+#: bika/lims/content/bikasetup.py:208
 msgid "When enabled, only lab managers can create and manage worksheets. When disabled, analysts and lab clerks can also manage worksheets. Note: This setting is automatically enabled and locked when worksheet access is restricted to assigned analysts."
 msgstr ""
 
-#: bika/lims/content/bikasetup.py:476
+#: bika/lims/content/bikasetup.py:477
 msgid "When enabled, the sample is automatically verified as soon as all results are verified. Otherwise, users with enough privileges have to manually verify the sample afterwards. Default: enabled"
 msgstr "Когато е активирано, пробата се верифицира автоматично веднага щом всички резултати бъдат верифицирани. В противен случай потребителите с достатъчно права трябва да верифицират пробата ръчно след това. По подразбиране: активирано"
 
-#: bika/lims/content/bikasetup.py:190
+#: bika/lims/content/bikasetup.py:191
 msgid "When enabled, users can submit results for analyses not assigned to them or for unassigned analyses. When disabled, users can only submit results for analyses assigned to themselves. This setting does not apply to users with role Lab Manager."
 msgstr ""
 
@@ -6706,10 +7090,18 @@ msgstr "Шаблони за работни листове"
 msgid "Worksheet printing templates order"
 msgstr "Ред на шаблоните за печат на работен лист"
 
-#: senaite/core/browser/dashboard/dashboard.py:489
+#: senaite/core/browser/dashboard/dashboard.py:107
 #: senaite/core/profiles/default/types/Worksheets.xml
 msgid "Worksheets"
 msgstr "Работни листове"
+
+#: senaite/core/browser/dashboard/dashboard.py:531
+msgid "Worksheets that have been verified"
+msgstr ""
+
+#: senaite/core/browser/dashboard/dashboard.py:526
+msgid "Worksheets whose results are awaiting verification"
+msgstr ""
 
 #: senaite/core/content/supplier.py:166
 msgid "Wrong IBAN length by %s: %s"
@@ -6718,6 +7110,10 @@ msgstr "Грешна дължина на IBAN за %s: %s"
 #: bika/lims/validators.py:1139
 msgid "Wrong IBAN length by %s: %sshort by %i"
 msgstr "Грешна дължина на IBAN за %s: %sпо-къс с %i"
+
+#: senaite/core/browser/dashboard/dashboard.py:140
+msgid "Yearly"
+msgstr ""
 
 #: senaite/core/browser/controlpanel/samplecontainers/view.py:166
 #: senaite/core/browser/widgets/services_widget.py:305
@@ -6801,6 +7197,10 @@ msgstr "Дубликат"
 #. Default: "Analyst must be specified."
 #: senaite/core/browser/worksheets/worksheet/add_worksheet.py:45
 msgid "analyst_must_be_specified_message"
+msgstr ""
+
+# senaite.app.listing: Saved filter presets — micro-tag on the default preset
+msgid "auto"
 msgstr ""
 
 #: bika/lims/content/instrumentcertification.py:254
@@ -6905,8 +7305,17 @@ msgstr "дни"
 msgid "deactivate"
 msgstr "деактивиране"
 
+#. Default: "Sample disposed after the retention period."
+#: senaite/core/browser/samples/templates/dispose_samples.pt:66
+msgid "default_dispose_reason"
+msgstr ""
+
+#: senaite/core/api/remarks.py:485
+msgid "deleted by {user} at {time}"
+msgstr ""
+
 #. Default: "Attached labels"
-#: senaite/core/behaviors/label.py:118
+#: senaite/core/behaviors/label.py:126
 msgid "description_Labels"
 msgstr "Прикачени етикети"
 
@@ -6972,7 +7381,7 @@ msgstr "Тази услуга няма да се появява за избор 
 #. in the selection list. It does not have any effect to the order in which
 #. results are displayed after being submitted"
 #. Default: "Criteria to use when result options are displayed for selection in results entry listings. Note this only applies to the options displayed in the selection list. It does not have any effect to the order in which results are displayed after being submitted"
-#: bika/lims/content/abstractbaseanalysis.py:770
+#: bika/lims/content/abstractbaseanalysis.py:773
 #, fuzzy
 msgid "description_analysis_results_options_sorting"
 msgstr "Критерии, които да се използват, когато опциите за резултати се показват за избор в списъците за въвеждане на резултати. Имайте предвид, че това се отнася само за опциите, показани в списъка за избор. Това не оказва влияние върху реда, в който се показват резултатите след подаването им"
@@ -7148,27 +7557,27 @@ msgstr "Изберете клиента на тази партида"
 
 #. entered manually for analyses"
 #. Default: "If this option is activated, the result capture date can be entered manually for analyses"
-#: bika/lims/content/bikasetup.py:396
+#: bika/lims/content/bikasetup.py:397
 #, fuzzy
 msgid "description_bikasetup_allow_manual_result_capture_date"
 msgstr "Ако тази опция е активирана, датата на въвеждане на резултата може да бъде въведена ръчно за анализи"
 
 #. departments will receive publication emails."
 #. Default: "When selected, the responsible persons of all involved lab departments will receive publication emails."
-#: bika/lims/content/bikasetup.py:853
+#: bika/lims/content/bikasetup.py:854
 #, fuzzy
 msgid "description_bikasetup_always_cc_responsibles_in_report_emails"
 msgstr "Когато е избрано, отговорните лица от всички участващи лабораторни отдели ще получават имейли за публикуване."
 
 #. Default: "Group analyses by category for samples"
-#: bika/lims/content/bikasetup.py:368
+#: bika/lims/content/bikasetup.py:369
 msgid "description_bikasetup_categorizesampleanalyses"
 msgstr "Групиране на анализи по категория за проби"
 
 #. creation. This functionality only takes effect when 'Sampling workflow' is
 #. not active"
 #. Default: "Select this to make DateSampled field required on sample creation. This functionality only takes effect when 'Sampling workflow' is not active"
-#: bika/lims/content/bikasetup.py:689
+#: bika/lims/content/bikasetup.py:690
 #, fuzzy
 msgid "description_bikasetup_date_sampled_required"
 msgstr "Изберете това, за да направите полето Дата на пробовземане задължително при създаване на проба. Тази функционалност влиза в сила само когато 'Работен процес за пробовземане' не е активен"
@@ -7176,7 +7585,7 @@ msgstr "Изберете това, за да направите полето Д�
 #. result reports to the selected recipients. You can use reserved keywords:
 #. $client_name, $recipients, $lab_name, $lab_address"
 #. Default: "Set the email body text to be used by default when sending out result reports to the selected recipients. You can use reserved keywords: $client_name, $recipients, $lab_name, $lab_address"
-#: bika/lims/content/bikasetup.py:829
+#: bika/lims/content/bikasetup.py:830
 #, fuzzy
 msgid "description_bikasetup_email_body_sample_publication"
 msgstr "Задайте текста на тялото на имейла, който да се използва по подразбиране при изпращане на доклади за резултати до избраните получатели. Можете да използвате запазени ключови думи: $client_name, $recipients, $lab_name, $lab_address"
@@ -7184,7 +7593,7 @@ msgstr "Задайте текста на тялото на имейла, кой�
 #. publishing results reports. This address overrides the value set at
 #. portal's 'Mail settings'."
 #. Default: "E-mail to use as the 'From' address for outgoing e-mails when publishing results reports. This address overrides the value set at portal's 'Mail settings'."
-#: bika/lims/content/bikasetup.py:805
+#: bika/lims/content/bikasetup.py:806
 #, fuzzy
 msgid "description_bikasetup_email_from_sample_publication"
 msgstr "Имейл, който да се използва като адрес 'От' за изходящи имейли при публикуване на доклади за резултати. Този адрес отменя стойността, зададена в 'Настройки за поща' на портала."
@@ -7192,7 +7601,7 @@ msgstr "Имейл, който да се използва като адрес '�
 #. e.g. to enter field results immediately, or lab results, when the automatic
 #. sample reception is activated."
 #. Default: "Allow the user to directly enter results after sample creation, e.g. to enter field results immediately, or lab results, when the automatic sample reception is activated."
-#: bika/lims/content/bikasetup.py:443
+#: bika/lims/content/bikasetup.py:444
 #, fuzzy
 msgid "description_bikasetup_immediateresultsentry"
 msgstr "Разрешаване на потребителя директно да въвежда резултати след създаване на проба, напр. за незабавно въвеждане на полеви резултати или лабораторни резултати, когато е активирано автоматичното получаване на проби."
@@ -7205,19 +7614,19 @@ msgstr "Разрешаване на потребителя директно да
 #. invalidation'>$reason</code>, <code title='The address of the
 #. lab'>$lab_address</code>."
 #. Default: "Define the template for the email body that will be automatically sent to primary contacts and laboratory managers when a sample is invalidated. The following placeholders are supported: <code title='The ID of the sample'>$sample_id</code>, <code title='The ID of the sample retest'>$retest_id</code>, <code title='The link to the retest'>$retest_link</code>, <code title='The reason(s) for invalidation'>$reason</code>, <code title='The address of the lab'>$lab_address</code>."
-#: bika/lims/content/bikasetup.py:946
+#: bika/lims/content/bikasetup.py:947
 msgid "description_bikasetup_invalidation_email_body"
 msgstr ""
 
 #. a sample. If enabled, the '$reason' placeholder in the sample invalidation
 #. notification email body will be replaced with the entered reason."
 #. Default: "Specify whether providing a reason is mandatory when invalidating a sample. If enabled, the '$reason' placeholder in the sample invalidation notification email body will be replaced with the entered reason."
-#: bika/lims/content/bikasetup.py:913
+#: bika/lims/content/bikasetup.py:914
 msgid "description_bikasetup_invalidation_reason_required"
 msgstr ""
 
 #. Default: "Analyses are required for sample registration"
-#: bika/lims/content/bikasetup.py:382
+#: bika/lims/content/bikasetup.py:383
 msgid "description_bikasetup_sampleanalysesrequired"
 msgstr "Изискват се анализи за регистрация на проба"
 
@@ -7238,16 +7647,21 @@ msgstr "Зависими услуги на това изчисление"
 msgid "description_calculation_formula"
 msgstr ""
 
-#. should your calculation require them. The field title specified here will
-#. be used as column headers and field descriptors where the interim fields
-#. are displayed. If 'Apply wide' is enabled the field will be shown in a
-#. selection box on the top of the worksheet, allowing to apply a specific
-#. value to all the corresponding fields on the sheet."
+#. library, you can import it here. E.g. if you want to use the 'floor'
+#. function from the Python 'math' module, you add 'math' to the Module field
+#. and 'floor' to the function field. The equivalent in Python would be 'from
+#. math import floor'. In your calculation you could use then 'floor([Ca] +
+#. [Mg])'."
 #. Default: "If your formula needs a special function from an external Python library, you can import it here. E.g. if you want to use the 'floor' function from the Python 'math' module, you add 'math' to the Module field and 'floor' to the function field. The equivalent in Python would be 'from math import floor'. In your calculation you could use then 'floor([Ca] + [Mg])'."
 #: senaite/core/content/calculation.py:268
 msgid "description_calculation_imports"
 msgstr ""
 
+#. should your calculation require them. The field title specified here will
+#. be used as column headers and field descriptors where the interim fields
+#. are displayed. If 'Apply wide' is enabled the field will be shown in a
+#. selection box on the top of the worksheet, allowing to apply a specific
+#. value to all the corresponding fields on the sheet."
 #. Default: "Define interim fields such as vessel mass, dilution factors, should your calculation require them. The field title specified here will be used as column headers and field descriptors where the interim fields are displayed. If 'Apply wide' is enabled the field will be shown in a selection box on the top of the worksheet, allowing to apply a specific value to all the corresponding fields on the sheet."
 #: senaite/core/content/calculation.py:245
 msgid "description_calculation_interims"
@@ -7272,12 +7686,12 @@ msgid "description_category_department"
 msgstr "Изберете отговорния отдел"
 
 #. Default: "Always expand the selected categories"
-#: bika/lims/content/client.py:184
+#: bika/lims/content/client.py:188
 msgid "description_client_defaultcategories"
 msgstr "Винаги разгъвай избраните категории"
 
 #. Default: "Show only selected categories"
-#: bika/lims/content/client.py:208
+#: bika/lims/content/client.py:212
 msgid "description_client_restrictcategories"
 msgstr "Показвай само избраните категории"
 
@@ -7287,7 +7701,7 @@ msgid "description_confidence_level"
 msgstr ""
 
 #. Default: "Contacts in CC for new samples"
-#: senaite/core/content/contact.py:123
+#: senaite/core/content/contact.py:155
 msgid "description_contact_cccontact"
 msgstr "Контакти в копие (CC) за нови проби"
 
@@ -7394,6 +7808,19 @@ msgstr "Изберете отдел по подразбиране за този 
 msgid "description_labcontact_departments"
 msgstr "Назначени лабораторни отдели"
 
+#. the default style."
+#. Default: "Hex color code used for the chip (e.g. #0d6efd). Leave empty for the default style."
+#: senaite/core/content/label.py:72
+msgid "description_label_color"
+msgstr ""
+
+#. labeled content. The cascade runs in the same transaction as the save and
+#. may take a moment on large datasets."
+#. Default: "Renaming this label rewrites the stored name on every currently labeled content. The cascade runs in the same transaction as the save and may take a moment on large datasets."
+#: senaite/core/content/label.py:45
+msgid "description_label_title"
+msgstr ""
+
 #. Default: "Check this box if your laboratory is accredited"
 #: senaite/core/content/laboratory.py:140
 msgid "description_laboratory_accredited"
@@ -7425,6 +7852,13 @@ msgstr "Моля, предоставете цената без ДДС"
 #, fuzzy
 msgid "description_labproduct_vat"
 msgstr "Моля, предоставете ДДС в проценти, който се добавя към цената на лабораторния продукт"
+
+#. nested and positioned as they appear on the site. Use the controls to hide,
+#. show or reorder each viewlet."
+#. Default: "The viewlet managers and their viewlets are shown in place, nested and positioned as they appear on the site. Use the controls to hide, show or reorder each viewlet."
+#: senaite/core/browser/viewlets/templates/manage-viewlets.pt:22
+msgid "description_manage_viewlets"
+msgstr ""
 
 #. Default: "Location where the document set is shelved"
 #: senaite/core/content/multifile.py:71
@@ -7575,12 +8009,12 @@ msgid "description_registry_worksheet_settings"
 msgstr ""
 
 #. Default: "Contained samples in the PDF"
-#: senaite/core/content/resultsreport.py:186
+#: senaite/core/content/resultsreport.py:187
 msgid "description_resultsreport_contained_samples"
 msgstr ""
 
 #. Default: "The primary sample of the PDF"
-#: senaite/core/content/resultsreport.py:158
+#: senaite/core/content/resultsreport.py:159
 msgid "description_resultsreport_sample"
 msgstr ""
 
@@ -7844,7 +8278,7 @@ msgstr "Изберете матрицата на пробата за този т
 
 #. entered manually for analyses"
 #. Default: "If this option is activated, the result capture date can be entered manually for analyses"
-#: senaite/core/content/senaitesetup.py:361
+#: senaite/core/content/senaitesetup.py:362
 #, fuzzy
 msgid "description_senaitesetup_allow_manual_result_capture_date"
 msgstr "Ако тази опция е активирана, датата на въвеждане на резултата може да бъде въведена ръчно за анализи"
@@ -7853,111 +8287,111 @@ msgstr "Ако тази опция е активирана, датата на в
 #. results for analyses assigned to themselves. This setting does not apply to
 #. users with role Lab Manager."
 #. Default: "When enabled, users can submit results for analyses not assigned to them or for unassigned analyses. When disabled, users can only submit results for analyses assigned to themselves. This setting does not apply to users with role Lab Manager."
-#: senaite/core/content/senaitesetup.py:455
+#: senaite/core/content/senaitesetup.py:456
 msgid "description_senaitesetup_allow_to_submit_not_assigned"
 msgstr ""
 
 #. departments will receive publication emails."
 #. Default: "When selected, the responsible persons of all involved lab departments will receive publication emails."
-#: senaite/core/content/senaitesetup.py:288
+#: senaite/core/content/senaitesetup.py:289
 #, fuzzy
 msgid "description_senaitesetup_always_cc_responsibles_in_report_emails"
 msgstr "Когато е избрано, отговорните лица от всички участващи лабораторни отдели ще получават имейли за публикуване."
 
 #. 0 disables automatic log-off"
 #. Default: "The number of minutes before a user is automatically logged off. 0 disables automatic log-off"
-#: senaite/core/content/senaitesetup.py:427
+#: senaite/core/content/senaitesetup.py:428
 msgid "description_senaitesetup_auto_log_off"
 msgstr ""
 
 #. results are verified. Otherwise, users with enough privileges have to
 #. manually verify the sample afterwards. Default: enabled"
 #. Default: "When enabled, the sample is automatically verified as soon as all results are verified. Otherwise, users with enough privileges have to manually verify the sample afterwards. Default: enabled"
-#: senaite/core/content/senaitesetup.py:654
+#: senaite/core/content/senaitesetup.py:655
 msgid "description_senaitesetup_auto_verify_samples"
 msgstr ""
 
 #. when the list is long"
 #. Default: "Group analysis services by category in the LIMS tables, helpful when the list is long"
-#: senaite/core/content/senaitesetup.py:599
+#: senaite/core/content/senaitesetup.py:600
 msgid "description_senaitesetup_categorise_analysis_services"
 msgstr ""
 
 #. Default: "Group analyses by category for samples"
-#: senaite/core/content/senaitesetup.py:340
+#: senaite/core/content/senaitesetup.py:341
 msgid "description_senaitesetup_categorizesampleanalyses"
 msgstr "Групиране на анализи по категория за проби"
 
 #. Default: "Select the currency the site will use to display prices."
-#: senaite/core/content/senaitesetup.py:496
+#: senaite/core/content/senaitesetup.py:497
 msgid "description_senaitesetup_currency"
 msgstr ""
 
 #. Default: "Select this to activate the dashboard as a default front page."
-#: senaite/core/content/senaitesetup.py:861
+#: senaite/core/content/senaitesetup.py:862
 msgid "description_senaitesetup_dashboard_by_default"
 msgstr ""
 
 #. creation. This functionality only takes effect when 'Sampling workflow' is
 #. not active"
 #. Default: "Select this to make DateSampled field required on sample creation. This functionality only takes effect when 'Sampling workflow' is not active"
-#: senaite/core/content/senaitesetup.py:386
+#: senaite/core/content/senaitesetup.py:387
 #, fuzzy
 msgid "description_senaitesetup_date_sampled_required"
 msgstr "Изберете това, за да направите полето Дата на пробовземане задължително при създаване на проба. Тази функционалност влиза в сила само когато 'Работен процес за пробовземане' не е активен"
 
 #. Default: "Preferred decimal mark for reports."
-#: senaite/core/content/senaitesetup.py:557
+#: senaite/core/content/senaitesetup.py:558
 msgid "description_senaitesetup_decimal_mark"
 msgstr ""
 
 #. Default: "Select the country the site will show by default"
-#: senaite/core/content/senaitesetup.py:510
+#: senaite/core/content/senaitesetup.py:511
 msgid "description_senaitesetup_default_country"
 msgstr ""
 
 #. to create new Samples"
 #. Default: "Default value of the 'Sample count' when users click 'ADD' button to create new Samples"
-#: senaite/core/content/senaitesetup.py:744
+#: senaite/core/content/senaitesetup.py:745
 msgid "description_senaitesetup_default_number_of_ars_to_add"
 msgstr ""
 
 #. publishing results reports. This address overrides the value set at
 #. portal's 'Mail settings'."
 #. Default: "E-mail to use as the 'From' address for outgoing e-mails when publishing results reports. This address overrides the value set at portal's 'Mail settings'."
-#: senaite/core/content/senaitesetup.py:260
+#: senaite/core/content/senaitesetup.py:261
 #, fuzzy
 msgid "description_senaitesetup_email_from_sample_publication"
 msgstr "Имейл, който да се използва като адрес 'От' за изходящи имейли при публикуване на доклади за резултати. Този адрес отменя стойността, зададена в 'Настройки за поща' на портала."
 
 #. analysis in results entry view"
 #. Default: "If enabled, a free text field will be displayed close to each analysis in results entry view"
-#: senaite/core/content/senaitesetup.py:641
+#: senaite/core/content/senaitesetup.py:642
 msgid "description_senaitesetup_enable_analysis_remarks"
 msgstr ""
 
 #. Default: "Analysis specifications which are edited directly on the Sample."
-#: senaite/core/content/senaitesetup.py:612
+#: senaite/core/content/senaitesetup.py:613
 msgid "description_senaitesetup_enable_ar_specs"
 msgstr ""
 
 #. 'Reject' option will be displayed in the actions menu."
 #. Default: "Select this to activate the rejection workflow for Samples. A 'Reject' option will be displayed in the actions menu."
-#: senaite/core/content/senaitesetup.py:758
+#: senaite/core/content/senaitesetup.py:759
 msgid "description_senaitesetup_enable_rejection_workflow"
 msgstr ""
 
 #. displayed in scientific notation using the letter 'e' to indicate the
 #. exponent. The precision can be configured in individual Analysis Services."
 #. Default: "Result values with at least this number of significant digits are displayed in scientific notation using the letter 'e' to indicate the exponent. The precision can be configured in individual Analysis Services."
-#: senaite/core/content/senaitesetup.py:625
+#: senaite/core/content/senaitesetup.py:626
 msgid "description_senaitesetup_exponential_format_threshold"
 msgstr ""
 
 #. e.g. to enter field results immediately, or lab results, when the automatic
 #. sample reception is activated."
 #. Default: "Allow the user to directly enter results after sample creation, e.g. to enter field results immediately, or lab results, when the automatic sample reception is activated."
-#: senaite/core/content/senaitesetup.py:329
+#: senaite/core/content/senaitesetup.py:330
 #, fuzzy
 msgid "description_senaitesetup_immediateresultsentry"
 msgstr "Разрешаване на потребителя директно да въвежда резултати след създаване на проба, напр. за незабавно въвеждане на полеви резултати или лабораторни резултати, когато е активирано автоматичното получаване на проби."
@@ -7965,21 +8399,21 @@ msgstr "Разрешаване на потребителя директно да
 #. a sample. If enabled, the '$reason' placeholder in the sample invalidation
 #. notification email body will be replaced with the entered reason."
 #. Default: "Specify whether providing a reason is mandatory when invalidating a sample. If enabled, the '$reason' placeholder in the sample invalidation notification email body will be replaced with the entered reason."
-#: senaite/core/content/senaitesetup.py:411
+#: senaite/core/content/senaitesetup.py:412
 msgid "description_senaitesetup_invalidation_reason_required"
 msgstr ""
 
 #. Dashboard is not selected as the default front page. If no landing page is
 #. selected, the default frontpage is displayed."
 #. Default: "The landing page is shown for non-authenticated users if the Dashboard is not selected as the default front page. If no landing page is selected, the default frontpage is displayed."
-#: senaite/core/content/senaitesetup.py:874
+#: senaite/core/content/senaitesetup.py:875
 msgid "description_senaitesetup_landing_page"
 msgstr ""
 
 #. the value set for the field 'Number of samples' on the sample registration
 #. form"
 #. Default: "Maximum number of samples that can be created in accordance with the value set for the field 'Number of samples' on the sample registration form"
-#: senaite/core/content/senaitesetup.py:373
+#: senaite/core/content/senaitesetup.py:374
 #, fuzzy
 msgid "description_senaitesetup_maxnumberofsamplesadd"
 msgstr "Максимален брой проби, които могат да бъдат създадени в съответствие със стойността, зададена за полето 'Брой проби' във формата за регистрация на проба"
@@ -7987,35 +8421,35 @@ msgstr "Максимален брой проби, които могат да б�
 #. for clients flagged as 'members', normally co-operative members or
 #. associates deserving of this discount"
 #. Default: "The discount percentage entered here, is applied to the prices for clients flagged as 'members', normally co-operative members or associates deserving of this discount"
-#: senaite/core/content/senaitesetup.py:524
+#: senaite/core/content/senaitesetup.py:525
 msgid "description_senaitesetup_member_discount"
 msgstr ""
 
 #. acceptable minimum number of results before QC statistics will be
 #. calculated and plotted"
 #. Default: "Using too few data points does not make statistical sense. Set an acceptable minimum number of results before QC statistics will be calculated and plotted"
-#: senaite/core/content/senaitesetup.py:583
+#: senaite/core/content/senaitesetup.py:584
 msgid "description_senaitesetup_minimum_results"
 msgstr ""
 
 #. considered as 'verified'. This setting can be overrided for any Analysis in
 #. Analysis Service edit view. By default, 1"
 #. Default: "Number of required verifications before a given result being considered as 'verified'. This setting can be overrided for any Analysis in Analysis Service edit view. By default, 1"
-#: senaite/core/content/senaitesetup.py:687
+#: senaite/core/content/senaitesetup.py:688
 msgid "description_senaitesetup_number_of_required_verifications"
 msgstr ""
 
 #. result reports to the selected recipients. You can use reserved keywords:
 #. $client_name, $recipients, $lab_name, $lab_address"
 #. Default: "Set the email body text to be used by default when sending out result reports to the selected recipients. You can use reserved keywords: $client_name, $recipients, $lab_name, $lab_address"
-#: senaite/core/content/senaitesetup.py:274
+#: senaite/core/content/senaitesetup.py:275
 #, fuzzy
 msgid "description_senaitesetup_publication_email_text"
 msgstr "Задайте текста на тялото на имейла, който да се използва по подразбиране при изпращане на доклади за резултати до избраните получатели. Можете да използвате запазени ключови думи: $client_name, $recipients, $lab_name, $lab_address"
 
 #. rejecting a sample."
 #. Default: "Enter the predefined rejection reasons that users can select when rejecting a sample."
-#: senaite/core/content/senaitesetup.py:773
+#: senaite/core/content/senaitesetup.py:774
 msgid "description_senaitesetup_rejection_reasons"
 msgstr ""
 
@@ -8023,47 +8457,47 @@ msgstr ""
 #. This setting is automatically enabled and locked when worksheet access is
 #. restricted to assigned analysts."
 #. Default: "When enabled, only lab managers can create and manage worksheets. When disabled, analysts and lab clerks can also manage worksheets. Note: This setting is automatically enabled and locked when worksheet access is restricted to assigned analysts."
-#: senaite/core/content/senaitesetup.py:471
+#: senaite/core/content/senaitesetup.py:472
 msgid "description_senaitesetup_restrict_worksheet_management"
 msgstr ""
 
 #. are assigned. When disabled, analysts have access to all worksheets."
 #. Default: "When enabled, analysts can only access worksheets to which they are assigned. When disabled, analysts have access to all worksheets."
-#: senaite/core/content/senaitesetup.py:441
+#: senaite/core/content/senaitesetup.py:442
 msgid "description_senaitesetup_restrict_worksheet_users_access"
 msgstr ""
 
 #. Default: "Preferred decimal mark for results"
-#: senaite/core/content/senaitesetup.py:718
+#: senaite/core/content/senaitesetup.py:719
 msgid "description_senaitesetup_results_decimal_mark"
 msgstr ""
 
 #. sample directly from an existing one via the 'Duplicate' action in the
 #. samples listing. Enabled by default."
 #. Default: "If enabled, users with sufficient privileges can create a sibling sample directly from an existing one via the 'Duplicate' action in the samples listing. Enabled by default."
-#: senaite/core/content/senaitesetup.py:968
+#: senaite/core/content/senaitesetup.py:969
 msgid "description_senaitesetup_sample_duplicate_enabled"
 msgstr ""
 
 #. Default: "Analyses are required for sample registration"
-#: senaite/core/content/senaitesetup.py:350
+#: senaite/core/content/senaitesetup.py:351
 msgid "description_senaitesetup_sampleanalysesrequired"
 msgstr "Изискват се анализи за регистрация на проба"
 
 #. order of selection determines the display order. Unselected columns are
 #. hidden. Leave empty to show all columns in default order."
 #. Default: "Select which columns to display in sample analysis listings. The order of selection determines the display order. Unselected columns are hidden. Leave empty to show all columns in default order."
-#: senaite/core/content/senaitesetup.py:804
+#: senaite/core/content/senaitesetup.py:805
 msgid "description_senaitesetup_sampleview_columns_order"
 msgstr ""
 
 #. Default: "Preferred scientific notation format for reports"
-#: senaite/core/content/senaitesetup.py:570
+#: senaite/core/content/senaitesetup.py:571
 msgid "description_senaitesetup_scientific_notation_report"
 msgstr ""
 
 #. Default: "Preferred scientific notation format for results"
-#: senaite/core/content/senaitesetup.py:731
+#: senaite/core/content/senaitesetup.py:732
 msgid "description_senaitesetup_scientific_notation_results"
 msgstr ""
 
@@ -8072,13 +8506,13 @@ msgstr ""
 #. labmanagers and verifiers). This setting can be overrided for a given
 #. Analysis in Analysis Service edit view. By default, disabled."
 #. Default: "If enabled, a user who submitted a result will also be able to verify it. This setting only take effect for those users with a role assigned that allows them to verify results (by default, managers, labmanagers and verifiers). This setting can be overrided for a given Analysis in Analysis Service edit view. By default, disabled."
-#: senaite/core/content/senaitesetup.py:669
+#: senaite/core/content/senaitesetup.py:670
 msgid "description_senaitesetup_self_verification_enabled"
 msgstr ""
 
 #. page, above the access credentials."
 #. Default: "When selected, the laboratory name will be displayedin the login page, above the access credentials."
-#: senaite/core/content/senaitesetup.py:399
+#: senaite/core/content/senaitesetup.py:400
 #, fuzzy
 msgid "description_senaitesetup_show_lab_name_in_login"
 msgstr "Когато е избрано, името на лабораторията ще се показва на страницата за вход, над данните за достъп."
@@ -8086,7 +8520,7 @@ msgstr "Когато е избрано, името на лабораторият
 #. deactivated, partitions won't be included in listings and no info message
 #. with links to the primary sample will be displayed to client contacts."
 #. Default: "Select to show sample partitions to client contacts. If deactivated, partitions won't be included in listings and no info message with links to the primary sample will be displayed to client contacts."
-#: senaite/core/content/senaitesetup.py:898
+#: senaite/core/content/senaitesetup.py:899
 msgid "description_senaitesetup_show_partitions"
 msgstr ""
 
@@ -8094,32 +8528,32 @@ msgstr ""
 #. sidebar. If none are selected, all folders will be shown in the default
 #. order."
 #. Default: "Select which top-level folders should be displayed in the sidebar navigation. The order of selection determines the display order in the sidebar. If none are selected, all folders will be shown in the default order."
-#: senaite/core/content/senaitesetup.py:913
+#: senaite/core/content/senaitesetup.py:914
 msgid "description_senaitesetup_sidebar_folders"
 msgstr ""
 
 #. top-level folders, level 2 includes their children, and so on."
 #. Default: "Maximum depth of the sidebar navigation tree. Level 1 shows only top-level folders, level 2 includes their children, and so on."
-#: senaite/core/content/senaitesetup.py:932
+#: senaite/core/content/senaitesetup.py:933
 msgid "description_senaitesetup_sidebar_navigation_depth"
 msgstr ""
 
 #. navigation. If none are selected, all content types will be shown."
 #. Default: "Select which content types should be excluded from the sidebar navigation. If none are selected, all content types will be shown."
-#: senaite/core/content/senaitesetup.py:949
+#: senaite/core/content/senaitesetup.py:950
 msgid "description_senaitesetup_sidebar_skip_types"
 msgstr ""
 
 #. setting can enable/disable verifying/consecutively verifying more than once
 #. for the same user."
 #. Default: "Choose type of multiple verification for the same user. This setting can enable/disable verifying/consecutively verifying more than once for the same user."
-#: senaite/core/content/senaitesetup.py:703
+#: senaite/core/content/senaitesetup.py:704
 msgid "description_senaitesetup_type_of_multi_verification"
 msgstr ""
 
 #. system wide but can be overwritten on individual items"
 #. Default: "Enter percentage value eg. 14.0. This percentage is applied system wide but can be overwritten on individual items"
-#: senaite/core/content/senaitesetup.py:541
+#: senaite/core/content/senaitesetup.py:542
 msgid "description_senaitesetup_vat"
 msgstr ""
 
@@ -8127,21 +8561,21 @@ msgstr ""
 #. columns. Transposed layout displays the Samples in columns and the analyses
 #. in rows."
 #. Default: "Preferred layout of the results entry table in the Worksheet view. Classic layout displays the Samples in rows and the analyses in columns. Transposed layout displays the Samples in columns and the analyses in rows."
-#: senaite/core/content/senaitesetup.py:845
+#: senaite/core/content/senaitesetup.py:846
 msgid "description_senaitesetup_worksheet_layout"
 msgstr ""
 
 #. The order of selection determines the display order. Unselected columns are
 #. hidden. Leave empty to show all columns in default order."
 #. Default: "Select which columns to display in worksheet analysis listings. The order of selection determines the display order. Unselected columns are hidden. Leave empty to show all columns in default order."
-#: senaite/core/content/senaitesetup.py:824
+#: senaite/core/content/senaitesetup.py:825
 msgid "description_senaitesetup_wsview_columns_order"
 msgstr ""
 
 #. Dashboard is not selected as the default front page. If no landing page is
 #. selected, the default frontpage is displayed."
 #. Default: "The landing page is shown for non-authenticated users if the Dashboard is not selected as the default front page. If no landing page is selected, the default frontpage is displayed."
-#: bika/lims/content/bikasetup.py:616
+#: bika/lims/content/bikasetup.py:617
 #, fuzzy
 msgid "description_setup_landingpage"
 msgstr "Началната страница се показва за неаутентифицирани потребители, ако Таблото за управление не е избрано като начална страница по подразбиране. Ако не е избрана начална страница, се показва началната страница по подразбиране."
@@ -8304,6 +8738,10 @@ msgstr ""
 #: senaite/core/browser/controlpanel/dynamicanalysisspecs/dynamicanalysisspec.py:44
 msgid "dynamic_analysisspec_description"
 msgstr "Съдържание на файла"
+
+#: senaite/core/api/remarks.py:481
+msgid "edited"
+msgstr ""
 
 #. ${record_index}' (${num_samples}) is above ${max_num_samples}"
 #. Default: "The number of samples to create for the record 'Sample ${record_index}' (${num_samples}) is above ${max_num_samples}"
@@ -8616,7 +9054,7 @@ msgid "invalid_wildcards_check_error"
 msgstr ""
 
 #. Default: "Labels"
-#: senaite/core/behaviors/label.py:117
+#: senaite/core/behaviors/label.py:125
 msgid "label_Labels"
 msgstr "Етикети"
 
@@ -8679,7 +9117,7 @@ msgid "label_analysis_maxholdingtime"
 msgstr "Максимален срок за съхранение"
 
 #. Default: "Sorting criteria"
-#: bika/lims/content/abstractbaseanalysis.py:766
+#: bika/lims/content/abstractbaseanalysis.py:769
 msgid "label_analysis_results_options_sorting"
 msgstr "Критерии за сортиране"
 
@@ -8797,52 +9235,52 @@ msgid "label_batch_client"
 msgstr "Клиент"
 
 #. Default: "Allow to set the result capture date"
-#: bika/lims/content/bikasetup.py:394
+#: bika/lims/content/bikasetup.py:395
 msgid "label_bikasetup_allow_manual_result_capture_date"
 msgstr "Разреши задаване на дата на въвеждане на резултат"
 
 #. Default: "Always send publication email to responsibles"
-#: bika/lims/content/bikasetup.py:850
+#: bika/lims/content/bikasetup.py:851
 msgid "label_bikasetup_always_cc_responsibles_in_report_emails"
 msgstr "Винаги изпращай имейл за публикуване до отговорните лица"
 
 #. Default: "Categorize sample analyses"
-#: bika/lims/content/bikasetup.py:366
+#: bika/lims/content/bikasetup.py:367
 msgid "label_bikasetup_categorizesampleanalyses"
 msgstr "Категоризиране на анализи на проби"
 
 #. Default: "Date sampled required"
-#: bika/lims/content/bikasetup.py:685
+#: bika/lims/content/bikasetup.py:686
 msgid "label_bikasetup_date_sampled_required"
 msgstr "Изисква се дата на пробовземане"
 
 #. Default: "Email body for Sample publication notifications"
-#: bika/lims/content/bikasetup.py:826
+#: bika/lims/content/bikasetup.py:827
 msgid "label_bikasetup_email_body_sample_publication"
 msgstr "Тяло на имейла за уведомления за публикуване на проба"
 
 #. Default: "Publication 'From' address"
-#: bika/lims/content/bikasetup.py:801
+#: bika/lims/content/bikasetup.py:802
 msgid "label_bikasetup_email_from_sample_publication"
 msgstr "Адрес 'От' за публикуване"
 
 #. Default: "Immediate results entry"
-#: bika/lims/content/bikasetup.py:441
+#: bika/lims/content/bikasetup.py:442
 msgid "label_bikasetup_immediateresultsentry"
 msgstr "Незабавно въвеждане на резултати"
 
 #. Default: "Email body for Sample Invalidation notifications"
-#: bika/lims/content/bikasetup.py:942
+#: bika/lims/content/bikasetup.py:943
 msgid "label_bikasetup_invalidation_email_body"
 msgstr ""
 
 #. Default: "Invalidation reason required"
-#: bika/lims/content/bikasetup.py:909
+#: bika/lims/content/bikasetup.py:910
 msgid "label_bikasetup_invalidation_reason_required"
 msgstr ""
 
 #. Default: "Require sample analyses"
-#: bika/lims/content/bikasetup.py:380
+#: bika/lims/content/bikasetup.py:381
 msgid "label_bikasetup_sampleanalysesrequired"
 msgstr "Изискват се анализи на проба"
 
@@ -8912,12 +9350,12 @@ msgid "label_category_department"
 msgstr "Отдел"
 
 #. Default: "Default categories"
-#: bika/lims/content/client.py:181
+#: bika/lims/content/client.py:185
 msgid "label_client_defaultcategories"
 msgstr "Категории по подразбиране"
 
 #. Default: "Restrict categories"
-#: bika/lims/content/client.py:205
+#: bika/lims/content/client.py:209
 msgid "label_client_restrictcategories"
 msgstr "Ограничи категории"
 
@@ -8927,7 +9365,7 @@ msgid "label_confirm_password"
 msgstr "Потвърди парола"
 
 #. Default: "Contacts to CC"
-#: senaite/core/content/contact.py:119
+#: senaite/core/content/contact.py:151
 msgid "label_contact_cccontact"
 msgstr "Контакти за копие (CC)"
 
@@ -9223,7 +9661,7 @@ msgid "label_powered_by_plone"
 msgstr "Plone & Python"
 
 #. Default: "Publication preference"
-#: senaite/core/content/contact.py:99
+#: senaite/core/content/contact.py:131
 msgid "label_publication_preference"
 msgstr ""
 
@@ -9348,12 +9786,12 @@ msgid "label_registry_worksheet_settings"
 msgstr ""
 
 #. Default: "Contained Samples"
-#: senaite/core/content/resultsreport.py:183
+#: senaite/core/content/resultsreport.py:184
 msgid "label_resultsreport_contained_samples"
 msgstr ""
 
 #. Default: "Primary Sample"
-#: senaite/core/content/resultsreport.py:155
+#: senaite/core/content/resultsreport.py:156
 msgid "label_resultsreport_sample"
 msgstr ""
 
@@ -9563,7 +10001,7 @@ msgid "label_sampletype_title"
 msgstr "Име"
 
 #. Default: "Save"
-#: senaite/core/browser/viewlets/templates/sampleheader.pt:186
+#: senaite/core/browser/viewlets/templates/sampleheader.pt:187
 msgid "label_save"
 msgstr "Запази"
 
@@ -9573,12 +10011,12 @@ msgid "label_senaite"
 msgstr "SENAITE LIMS"
 
 #. Default: "Maximum value for 'Number of samples' field on registration"
-#: senaite/core/content/senaitesetup.py:368
+#: senaite/core/content/senaitesetup.py:369
 msgid "label_senaitesetup_maxnumberofsamplesadd"
 msgstr "Максимална стойност за полето 'Брой проби' при регистрация"
 
 #. Default: "Landing Page"
-#: bika/lims/content/bikasetup.py:613
+#: bika/lims/content/bikasetup.py:614
 msgid "label_setup_landingpage"
 msgstr "Начална страница"
 
@@ -9637,6 +10075,22 @@ msgstr "Предпочитан инструмент"
 #: senaite/core/content/worksheettemplate.py:236
 msgid "label_worksheettemplate_restrict_to_method"
 msgstr "Ограничи до метод"
+
+#. Default: "Added ${count} label(s) to ${affected} sample(s)"
+#: senaite/core/browser/modals/manage_labels.py:185
+msgid "labels_added"
+msgstr ""
+
+#. sample(s)"
+#. Default: "Applied ${added} added and ${removed} removed across ${affected} sample(s)"
+#: senaite/core/browser/modals/manage_labels.py:174
+msgid "labels_changed"
+msgstr ""
+
+#. Default: "Removed ${count} label(s) from ${affected} sample(s)"
+#: senaite/core/browser/modals/manage_labels.py:194
+msgid "labels_removed"
+msgstr ""
 
 #. Default: "Category"
 #: senaite/core/browser/worksheets/worksheet/add_analyses.py:119
@@ -10812,87 +11266,87 @@ msgid "listing_suppliers_title"
 msgstr "Доставчици"
 
 #. Default: "Add"
-#: senaite/core/browser/worksheets/view.py:63
+#: senaite/core/browser/worksheets/view.py:67
 msgid "listing_worksheets_action_add"
 msgstr ""
 
 #. Default: "Analyst"
-#: senaite/core/browser/worksheets/view.py:114
+#: senaite/core/browser/worksheets/view.py:118
 msgid "listing_worksheets_column_analyst"
 msgstr ""
 
 #. Default: "Created"
-#: senaite/core/browser/worksheets/view.py:146
+#: senaite/core/browser/worksheets/view.py:150
 msgid "listing_worksheets_column_created"
 msgstr ""
 
 #. Default: "Routine Analyses"
-#: senaite/core/browser/worksheets/view.py:140
+#: senaite/core/browser/worksheets/view.py:144
 msgid "listing_worksheets_column_number_analyses"
 msgstr ""
 
 #. Default: "QC Analyses"
-#: senaite/core/browser/worksheets/view.py:134
+#: senaite/core/browser/worksheets/view.py:138
 msgid "listing_worksheets_column_number_qc_analyses"
 msgstr ""
 
 #. Default: "Samples"
-#: senaite/core/browser/worksheets/view.py:128
+#: senaite/core/browser/worksheets/view.py:132
 msgid "listing_worksheets_column_number_samples"
 msgstr ""
 
 #. Default: "Progress"
-#: senaite/core/browser/worksheets/view.py:101
+#: senaite/core/browser/worksheets/view.py:105
 msgid "listing_worksheets_column_progress"
 msgstr ""
 
 #. Default: "State"
-#: senaite/core/browser/worksheets/view.py:153
+#: senaite/core/browser/worksheets/view.py:157
 msgid "listing_worksheets_column_state_title"
 msgstr ""
 
 #. Default: "Template"
-#: senaite/core/browser/worksheets/view.py:121
+#: senaite/core/browser/worksheets/view.py:125
 msgid "listing_worksheets_column_template_title"
 msgstr ""
 
 #. Default: "Worksheet"
-#: senaite/core/browser/worksheets/view.py:107
+#: senaite/core/browser/worksheets/view.py:111
 msgid "listing_worksheets_column_title"
 msgstr ""
 
 #. Default: "Active"
-#: senaite/core/browser/worksheets/view.py:164
+#: senaite/core/browser/worksheets/view.py:168
 msgid "listing_worksheets_state_active"
 msgstr ""
 
 #. Default: "All"
-#: senaite/core/browser/worksheets/view.py:223
+#: senaite/core/browser/worksheets/view.py:227
 msgid "listing_worksheets_state_all"
 msgstr ""
 
 #. Default: "Mine"
-#: senaite/core/browser/worksheets/view.py:244
+#: senaite/core/browser/worksheets/view.py:248
 msgid "listing_worksheets_state_mine"
 msgstr ""
 
 #. Default: "Open"
-#: senaite/core/browser/worksheets/view.py:181
+#: senaite/core/browser/worksheets/view.py:185
 msgid "listing_worksheets_state_open"
 msgstr ""
 
 #. Default: "To be verified"
-#: senaite/core/browser/worksheets/view.py:195
+#: senaite/core/browser/worksheets/view.py:199
 msgid "listing_worksheets_state_to_be_verified"
 msgstr ""
 
 #. Default: "Verified"
-#: senaite/core/browser/worksheets/view.py:209
+#: senaite/core/browser/worksheets/view.py:213
 msgid "listing_worksheets_state_verified"
 msgstr ""
 
 #. Default: "Worksheets"
-#: senaite/core/browser/worksheets/view.py:71
+#: senaite/core/browser/worksheets/view.py:75
 msgid "listing_worksheets_title"
 msgstr ""
 
@@ -10945,6 +11399,11 @@ msgstr "Шаблони за работни листове"
 msgid "minutes"
 msgstr "минути"
 
+# senaite.app.listing: Saved filter presets — dirty indicator on the applied
+# preset
+msgid "modified"
+msgstr ""
+
 #: bika/lims/content/instrumentcertification.py:252
 msgid "monthly"
 msgstr "месечно"
@@ -10995,13 +11454,21 @@ msgstr ""
 msgid "num_of_positions_button_title"
 msgstr "Задай"
 
-#: senaite/core/browser/dashboard/dashboard.py:544
+#: senaite/core/browser/dashboard/dashboard.py:607
 msgid "of"
 msgstr "от"
+
+#: senaite/core/api/remarks.py:494
+msgid "original"
+msgstr ""
 
 #: bika/lims/browser/publish/templates/email.pt:30
 msgid "overview"
 msgstr "преглед"
+
+# senaite.app.listing: Saved filter presets — menu subtitle
+msgid "per listing"
+msgstr ""
 
 #: bika/lims/content/instrumentcertification.py:253
 msgid "quarterly"
@@ -11079,6 +11546,11 @@ msgstr "Код на интерфейс"
 #: senaite/core/browser/viewlets/templates/sample_dispatched_viewlet.pt:14
 msgid "this_sample_has_been_dispatched_by"
 msgstr "Тази проба е изпратена от ${actor} на ${date}"
+
+#. Default: "This sample has been disposed by ${actor} on ${date}"
+#: senaite/core/browser/viewlets/templates/sample_disposed_viewlet.pt:14
+msgid "this_sample_has_been_disposed_by"
+msgstr ""
 
 #. Default: "${I}:${M} ${p}"
 #. The variables used here are the same as used in the strftime formating.
@@ -11312,13 +11784,18 @@ msgstr "Лабораторен служител"
 msgid "title_lab_manager_role"
 msgstr "Лабораторен мениджър"
 
+#. Default: "Color"
+#: senaite/core/content/label.py:68
+msgid "title_label_color"
+msgstr ""
+
 #. Default: "Description"
-#: senaite/core/content/label.py:46
+#: senaite/core/content/label.py:56
 msgid "title_label_description"
 msgstr "Описание"
 
 #. Default: "Name"
-#: senaite/core/content/label.py:38
+#: senaite/core/content/label.py:41
 msgid "title_label_title"
 msgstr "Име"
 
@@ -11406,6 +11883,11 @@ msgstr "Референция"
 #: senaite/core/content/worksheettemplate.py:106
 msgid "title_layout_record_type"
 msgstr "Тип анализ"
+
+#. Default: "Manage Viewlets"
+#: senaite/core/browser/viewlets/templates/manage-viewlets.pt:18
+msgid "title_manage_viewlets"
+msgstr ""
 
 #. Default: "Manager"
 #: senaite/core/permissions/localroles.py:86
@@ -11650,222 +12132,222 @@ msgid "title_samplingdeviation_title"
 msgstr "Име"
 
 #. Default: "Allow to set the result capture date"
-#: senaite/core/content/senaitesetup.py:359
+#: senaite/core/content/senaitesetup.py:360
 msgid "title_senaitesetup_allow_manual_result_capture_date"
 msgstr "Разреши задаване на дата на въвеждане на резултат"
 
 #. Default: "Allow submission of results for unassigned analyses"
-#: senaite/core/content/senaitesetup.py:451
+#: senaite/core/content/senaitesetup.py:452
 msgid "title_senaitesetup_allow_to_submit_not_assigned"
 msgstr ""
 
 #. Default: "Always send publication email to responsibles"
-#: senaite/core/content/senaitesetup.py:285
+#: senaite/core/content/senaitesetup.py:286
 msgid "title_senaitesetup_always_cc_responsibles_in_report_emails"
 msgstr "Винаги изпращай имейл за публикуване до отговорните лица"
 
 #. Default: "Automatic log-off"
-#: senaite/core/content/senaitesetup.py:423
+#: senaite/core/content/senaitesetup.py:424
 msgid "title_senaitesetup_auto_log_off"
 msgstr ""
 
 #. Default: "Automatic verification of samples"
-#: senaite/core/content/senaitesetup.py:650
+#: senaite/core/content/senaitesetup.py:651
 msgid "title_senaitesetup_auto_verify_samples"
 msgstr ""
 
 #. Default: "Categorise analysis services"
-#: senaite/core/content/senaitesetup.py:595
+#: senaite/core/content/senaitesetup.py:596
 msgid "title_senaitesetup_categorise_analysis_services"
 msgstr ""
 
 #. Default: "Categorize sample analyses"
-#: senaite/core/content/senaitesetup.py:338
+#: senaite/core/content/senaitesetup.py:339
 msgid "title_senaitesetup_categorizesampleanalyses"
 msgstr "Категоризиране на анализи на проби"
 
 #. Default: "Currency"
-#: senaite/core/content/senaitesetup.py:492
+#: senaite/core/content/senaitesetup.py:493
 msgid "title_senaitesetup_currency"
 msgstr ""
 
 #. Default: "Use Dashboard as default front page"
-#: senaite/core/content/senaitesetup.py:857
+#: senaite/core/content/senaitesetup.py:858
 msgid "title_senaitesetup_dashboard_by_default"
 msgstr ""
 
 #. Default: "Date sampled required"
-#: senaite/core/content/senaitesetup.py:383
+#: senaite/core/content/senaitesetup.py:384
 msgid "title_senaitesetup_date_sampled_required"
 msgstr "Изисква се дата на пробовземане"
 
 #. Default: "Default decimal mark"
-#: senaite/core/content/senaitesetup.py:553
+#: senaite/core/content/senaitesetup.py:554
 msgid "title_senaitesetup_decimal_mark"
 msgstr ""
 
 #. Default: "Country"
-#: senaite/core/content/senaitesetup.py:506
+#: senaite/core/content/senaitesetup.py:507
 msgid "title_senaitesetup_default_country"
 msgstr ""
 
 #. Default: "Default count of Sample to add."
-#: senaite/core/content/senaitesetup.py:740
+#: senaite/core/content/senaitesetup.py:741
 msgid "title_senaitesetup_default_number_of_ars_to_add"
 msgstr ""
 
 #. Default: "Publication 'From' address"
-#: senaite/core/content/senaitesetup.py:256
+#: senaite/core/content/senaitesetup.py:257
 msgid "title_senaitesetup_email_from_sample_publication"
 msgstr "Адрес 'От' за публикуване"
 
 #. Default: "Add a remarks field to all analyses"
-#: senaite/core/content/senaitesetup.py:637
+#: senaite/core/content/senaitesetup.py:638
 msgid "title_senaitesetup_enable_analysis_remarks"
 msgstr ""
 
 #. Default: "Enable Sample Specifications"
-#: senaite/core/content/senaitesetup.py:608
+#: senaite/core/content/senaitesetup.py:609
 msgid "title_senaitesetup_enable_ar_specs"
 msgstr ""
 
 #. Default: "Enable the rejection workflow"
-#: senaite/core/content/senaitesetup.py:754
+#: senaite/core/content/senaitesetup.py:755
 msgid "title_senaitesetup_enable_rejection_workflow"
 msgstr ""
 
 #. Default: "Exponential format threshold"
-#: senaite/core/content/senaitesetup.py:621
+#: senaite/core/content/senaitesetup.py:622
 msgid "title_senaitesetup_exponential_format_threshold"
 msgstr ""
 
 #. Default: "Invalidation reason required"
-#: senaite/core/content/senaitesetup.py:408
+#: senaite/core/content/senaitesetup.py:409
 msgid "title_senaitesetup_invalidation_reason_required"
 msgstr ""
 
 #. Default: "Landing Page"
-#: senaite/core/content/senaitesetup.py:870
+#: senaite/core/content/senaitesetup.py:871
 msgid "title_senaitesetup_landing_page"
 msgstr ""
 
 #. Default: "Member discount %"
-#: senaite/core/content/senaitesetup.py:520
+#: senaite/core/content/senaitesetup.py:521
 msgid "title_senaitesetup_member_discount"
 msgstr ""
 
 #. Default: "Minimum number of results for QC stats calculations"
-#: senaite/core/content/senaitesetup.py:579
+#: senaite/core/content/senaitesetup.py:580
 msgid "title_senaitesetup_minimum_results"
 msgstr ""
 
 #. Default: "Number of required verifications"
-#: senaite/core/content/senaitesetup.py:683
+#: senaite/core/content/senaitesetup.py:684
 msgid "title_senaitesetup_number_of_required_verifications"
 msgstr ""
 
 #. Default: "Publication Email Text"
-#: senaite/core/content/senaitesetup.py:272
+#: senaite/core/content/senaitesetup.py:273
 msgid "title_senaitesetup_publication_email_text"
 msgstr "Текст на имейла за публикуване"
 
 #. Default: "Rejection reasons"
-#: senaite/core/content/senaitesetup.py:769
+#: senaite/core/content/senaitesetup.py:770
 msgid "title_senaitesetup_rejection_reasons"
 msgstr ""
 
 #. Default: "Restrict worksheet management to lab managers"
-#: senaite/core/content/senaitesetup.py:467
+#: senaite/core/content/senaitesetup.py:468
 msgid "title_senaitesetup_restrict_worksheet_management"
 msgstr ""
 
 #. Default: "Restrict worksheet access to assigned analysts"
-#: senaite/core/content/senaitesetup.py:437
+#: senaite/core/content/senaitesetup.py:438
 msgid "title_senaitesetup_restrict_worksheet_users_access"
 msgstr ""
 
 #. Default: "Default decimal mark"
-#: senaite/core/content/senaitesetup.py:714
+#: senaite/core/content/senaitesetup.py:715
 msgid "title_senaitesetup_results_decimal_mark"
 msgstr ""
 
 #. Default: "Allow sample duplication"
-#: senaite/core/content/senaitesetup.py:964
+#: senaite/core/content/senaitesetup.py:965
 msgid "title_senaitesetup_sample_duplicate_enabled"
 msgstr ""
 
 #. Default: "Require sample analyses"
-#: senaite/core/content/senaitesetup.py:348
+#: senaite/core/content/senaitesetup.py:349
 msgid "title_senaitesetup_sampleanalysesrequired"
 msgstr "Изискват се анализи на проба"
 
 #. Default: "Sample view analysis columns"
-#: senaite/core/content/senaitesetup.py:800
+#: senaite/core/content/senaitesetup.py:801
 msgid "title_senaitesetup_sampleview_columns_order"
 msgstr ""
 
 #. Default: "Default scientific notation format for reports"
-#: senaite/core/content/senaitesetup.py:566
+#: senaite/core/content/senaitesetup.py:567
 msgid "title_senaitesetup_scientific_notation_report"
 msgstr ""
 
 #. Default: "Default scientific notation format for results"
-#: senaite/core/content/senaitesetup.py:727
+#: senaite/core/content/senaitesetup.py:728
 msgid "title_senaitesetup_scientific_notation_results"
 msgstr ""
 
 #. Default: "Allow self-verification of results"
-#: senaite/core/content/senaitesetup.py:665
+#: senaite/core/content/senaitesetup.py:666
 msgid "title_senaitesetup_self_verification_enabled"
 msgstr ""
 
 #. Default: "Display laboratory name in the login page"
-#: senaite/core/content/senaitesetup.py:396
+#: senaite/core/content/senaitesetup.py:397
 msgid "title_senaitesetup_show_lab_name_in_login"
 msgstr "Показвай името на лабораторията на страницата за вход"
 
 #. Default: "Display sample partitions to clients"
-#: senaite/core/content/senaitesetup.py:894
+#: senaite/core/content/senaitesetup.py:895
 msgid "title_senaitesetup_show_partitions"
 msgstr ""
 
 #. Default: "Include and display pricing information"
-#: senaite/core/content/senaitesetup.py:484
+#: senaite/core/content/senaitesetup.py:485
 msgid "title_senaitesetup_show_prices"
 msgstr ""
 
 #. Default: "Sidebar navigation folders"
-#: senaite/core/content/senaitesetup.py:909
+#: senaite/core/content/senaitesetup.py:910
 msgid "title_senaitesetup_sidebar_folders"
 msgstr ""
 
 #. Default: "Sidebar navigation depth"
-#: senaite/core/content/senaitesetup.py:928
+#: senaite/core/content/senaitesetup.py:929
 msgid "title_senaitesetup_sidebar_navigation_depth"
 msgstr ""
 
 #. Default: "Sidebar skipped portal types"
-#: senaite/core/content/senaitesetup.py:945
+#: senaite/core/content/senaitesetup.py:946
 msgid "title_senaitesetup_sidebar_skip_types"
 msgstr ""
 
 #. Default: "Multi Verification type"
-#: senaite/core/content/senaitesetup.py:699
+#: senaite/core/content/senaitesetup.py:700
 msgid "title_senaitesetup_type_of_multi_verification"
 msgstr ""
 
 #. Default: "VAT %"
-#: senaite/core/content/senaitesetup.py:537
+#: senaite/core/content/senaitesetup.py:538
 msgid "title_senaitesetup_vat"
 msgstr ""
 
 #. Default: "Default layout in worksheet view"
-#: senaite/core/content/senaitesetup.py:841
+#: senaite/core/content/senaitesetup.py:842
 msgid "title_senaitesetup_worksheet_layout"
 msgstr ""
 
 #. Default: "Worksheet view analysis columns"
-#: senaite/core/content/senaitesetup.py:820
+#: senaite/core/content/senaitesetup.py:821
 msgid "title_senaitesetup_wsview_columns_order"
 msgstr ""
 
@@ -12122,7 +12604,7 @@ msgstr ""
 msgid "validator_uloq_above_ulod"
 msgstr "Горната граница на количествено определяне (ULOQ) не може да бъде по-голяма от Горната граница на откриване (ULOD)."
 
-#: bika/lims/browser/analyses/view.py:1587
+#: bika/lims/browser/analyses/view.py:1588
 msgid "verification(s) pending"
 msgstr "чакащи верификация"
 
@@ -12165,7 +12647,7 @@ msgstr ""
 msgid "{sid} result for '{keyword}': '{result}'"
 msgstr ""
 
-#: bika/lims/browser/analyses/view.py:627
+#: bika/lims/browser/analyses/view.py:628
 msgid "{} (Out of date)"
 msgstr "{} (С изтекъл срок)"
 
