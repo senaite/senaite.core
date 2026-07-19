@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-07-19 09:17+0000\n"
+"POT-Creation-Date: 2026-07-19 12:29+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2026\n"
 "Language-Team: German (https://app.transifex.com/senaite/teams/87045/de/)\n"
@@ -128,7 +128,7 @@ msgstr "±"
 
 # senaite.app.listing: Column-filter row — boolean select placeholder
 msgid "-- Select --"
-msgstr "-- Auswählen --"
+msgstr ""
 
 #: senaite/core/exportimport/dataimport.py:139
 msgid "... Choose an Instrument ..."
@@ -299,7 +299,7 @@ msgstr "Proben hinzufügen"
 
 #: senaite/core/api/remarks.py:492
 msgid "Add a remark..."
-msgstr "Bemerkung hinzufügen..."
+msgstr ""
 
 #: bika/lims/content/bikasetup.py:461
 msgid "Add a remarks field to all analyses"
@@ -324,7 +324,7 @@ msgstr "Fügen Sie einen oder mehrere Anhänge zu diesem Analysenauftrag hinzu, 
 
 #: senaite/core/browser/samples/view.py:879
 msgid "Add or remove labels on the selected samples"
-msgstr "Etiketten der ausgewählten Proben hinzufügen oder entfernen"
+msgstr ""
 
 #: senaite/core/api/remarks.py:477
 msgid "Add remarks"
@@ -396,7 +396,7 @@ msgstr "Alle zugeordneten Analysen"
 
 # senaite.app.listing: Column config — empty state when no columns are visible
 msgid "All columns are hidden."
-msgstr "Alle Spalten sind ausgeblendet."
+msgstr ""
 
 #: bika/lims/content/abstractbaseanalysis.py:335
 msgid "Allow Manual Detection Limit input"
@@ -404,7 +404,7 @@ msgstr "Manuelle Eingabe der Erfassungsgrenze erlauben."
 
 #: bika/lims/content/abstractbaseanalysis.py:728
 msgid "Allow Manual Entry"
-msgstr "Manuelle Eingabe erlauben"
+msgstr ""
 
 #: bika/lims/browser/fields/interimfieldsfield.py:57
 msgid "Allow empty"
@@ -463,15 +463,15 @@ msgstr "Analysen"
 
 #: senaite/core/browser/dashboard/dashboard.py:485
 msgid "Analyses assigned to a worksheet, awaiting results"
-msgstr "Analysen, die einem Arbeitsblatt zugewiesen sind und auf Ergebnisse warten"
+msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:498
 msgid "Analyses included in a published report"
-msgstr "Analysen, die in einem veröffentlichten Bericht enthalten sind"
+msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:480
 msgid "Analyses not yet assigned to a worksheet"
-msgstr "Analysen, die noch keinem Arbeitsblatt zugewiesen sind"
+msgstr ""
 
 #: senaite/core/browser/samples/rejection/templates/rejection_report.pt:132
 msgid "Analyses requested"
@@ -479,7 +479,7 @@ msgstr "Analysen angefragt"
 
 #: senaite/core/browser/dashboard/dashboard.py:494
 msgid "Analyses that have been verified"
-msgstr "Analysen, die verifiziert wurden"
+msgstr ""
 
 #: senaite/core/browser/viewlets/templates/attachments.pt:66
 #: senaite/core/browser/viewlets/templates/worksheet_attachments.pt:40
@@ -599,7 +599,7 @@ msgstr "Vorlage anwenden"
 
 # senaite.app.listing: Saved filter presets — apply button tooltip
 msgid "Apply this filter"
-msgstr "Diesen Filter anwenden"
+msgstr ""
 
 #: bika/lims/browser/fields/interimfieldsfield.py:61
 msgid "Apply wide"
@@ -725,7 +725,7 @@ msgstr "Auto-Import Logs"
 
 # senaite.app.listing: Saved filter presets — star action tooltip
 msgid "Auto-apply on open"
-msgstr "Beim Öffnen automatisch anwenden"
+msgstr ""
 
 #: bika/lims/content/artemplate.py:241
 msgid "Auto-partition on receive"
@@ -830,7 +830,7 @@ msgstr "Lager"
 
 #: senaite/core/browser/dashboard/dashboard.py:139
 msgid "Biannual"
-msgstr "Halbjährlich"
+msgstr ""
 
 #: senaite/core/z3cform/widgets/address.py:122
 msgid "Billing address"
@@ -1133,12 +1133,12 @@ msgstr "Klassisch"
 
 # senaite.app.listing: Column-filter row — clear button tooltip
 msgid "Clear filter"
-msgstr "Filter zurücksetzen"
+msgstr ""
 
 # senaite.app.listing: Search box — undo button tooltip when only clearing
 # search
 msgid "Clear search"
-msgstr "Suche zurücksetzen"
+msgstr ""
 
 # senaite.app.listing: ButtonBar
 msgid "Clear selection"
@@ -1151,7 +1151,7 @@ msgstr "Klicken um diese Kategorie zu erweitern"
 # senaite.app.listing: Saved filter presets — release button tooltip on the
 # applied preset
 msgid "Click to release this filter"
-msgstr "Klicken, um diesen Filter zu lösen"
+msgstr ""
 
 # senaite.app.listing: TableColumnConfig
 msgid "Click to toggle the visibility or drag&drop to change the order"
@@ -1280,7 +1280,7 @@ msgstr "Spalte '{}' fehlt"
 
 #: senaite/core/content/dynamicanalysisspec.py:88
 msgid "Column {} of the header row has no name. Please remove empty columns from the spreadsheet and upload it again."
-msgstr "Spalte {} der Kopfzeile hat keinen Namen. Bitte entfernen Sie leere Spalten aus der Tabelle und laden Sie sie erneut hoch."
+msgstr ""
 
 #: senaite/core/vocabularies/setup.py:114
 msgid "Comma (,)"
@@ -1334,7 +1334,7 @@ msgstr "Konfiguration auf Standardwerte zurückgesetzt"
 
 # senaite.app.listing: Column config — trigger button label
 msgid "Configure"
-msgstr "Konfigurieren"
+msgstr ""
 
 # senaite.app.listing: TableColumnConfig
 msgid "Configure Table Columns"
@@ -1453,7 +1453,7 @@ msgstr "Folgende Probe(n) konnten aufgrund von Transaktionskonflikten nicht ange
 
 #: senaite/core/browser/clients/client/contacts/login_details.py:228
 msgid "Could not link User: ${error}"
-msgstr "Benutzer konnte nicht verknüpft werden: ${error}"
+msgstr ""
 
 #: bika/lims/browser/workflow/client.py:52
 msgid "Could not load PDF for sample {}"
@@ -1557,7 +1557,7 @@ msgstr "Aktuell"
 
 # senaite.app.listing: Saved filter presets — dirty tag hover tooltip
 msgid "Current view differs from saved"
-msgstr "Aktuelle Ansicht weicht von der gespeicherten ab"
+msgstr ""
 
 #: bika/lims/content/client.py:241
 msgid "Custom decimal mark"
@@ -1569,7 +1569,7 @@ msgstr "DL"
 
 #: senaite/core/browser/dashboard/dashboard.py:135
 msgid "Daily"
-msgstr "Täglich"
+msgstr ""
 
 #: bika/lims/content/instrument.py:222
 msgid "Data Interface"
@@ -1878,11 +1878,11 @@ msgstr "Löschen"
 
 # senaite.app.listing: Saved filter presets — row action tooltip
 msgid "Delete filter"
-msgstr "Filter löschen"
+msgstr ""
 
 #: senaite/core/api/remarks.py:484
 msgid "Delete this remark?"
-msgstr "Diese Bemerkung löschen?"
+msgstr ""
 
 #: senaite/core/browser/controlpanel/departments/view.py:65
 #: senaite/core/profiles/default/types/Department.xml
@@ -1961,7 +1961,7 @@ msgstr "Deaktiviere mehrfaches Verifizieren durch den gleichen Benutzer"
 
 # senaite.app.listing: Saved filter presets — Revert action tooltip
 msgid "Discard edits and restore preset"
-msgstr "Änderungen verwerfen und Voreinstellung wiederherstellen"
+msgstr ""
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:673
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:207
@@ -2018,7 +2018,7 @@ msgstr "Entsorgen"
 
 #: senaite/core/browser/samples/templates/dispose_samples.pt:15
 msgid "Dispose samples"
-msgstr "Proben entsorgen"
+msgstr ""
 
 #: senaite/core/browser/samples/view.py:391
 #: senaite/core/profiles/default/workflows/senaite_referencesample_workflow/definition.xml
@@ -2094,7 +2094,7 @@ msgstr "Ausgewählte Berichte herunterladen"
 
 # senaite.app.listing: Column config — drag handle tooltip / aria-label
 msgid "Drag to reorder"
-msgstr "Zum Umsortieren ziehen"
+msgstr ""
 
 #: senaite/core/browser/samples/view.py:327
 msgid "Due"
@@ -2131,7 +2131,7 @@ msgstr "Doppelte QC-Analyse"
 
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Duplicate Sample"
-msgstr "Probe duplizieren"
+msgstr ""
 
 #: bika/lims/content/abstractbaseanalysis.py:479
 msgid "Duplicate Variation %"
@@ -2249,7 +2249,7 @@ msgstr "E-Mail gesendet"
 
 #: bika/lims/api/snapshot.py:585
 msgid "Empty"
-msgstr "Leer"
+msgstr ""
 
 #: bika/lims/validators.py:456
 msgid "Empty keys are not supported"
@@ -2293,11 +2293,11 @@ msgstr "Ablauf für Ergebnisberichtsdruck aktivieren"
 
 #: senaite/core/content/senaitesetup.py:1000
 msgid "Enable the Sample Dispatch workflow"
-msgstr "Workflow zur Probenauslieferung aktivieren"
+msgstr ""
 
 #: senaite/core/content/senaitesetup.py:990
 msgid "Enable the Sample Dispose workflow"
-msgstr "Workflow zur Probenentsorgung aktivieren"
+msgstr ""
 
 #: bika/lims/browser/pricelist.py:68
 msgid "End Date"
@@ -2538,15 +2538,15 @@ msgstr "Schlüssel filtern (Regex unterstützt)"
 
 # senaite.app.listing: Saved filter presets — inline editor placeholder
 msgid "Filter name"
-msgstr "Filtername"
+msgstr ""
 
 #: senaite/core/browser/samples/view.py:601
 msgid "Filter samples by this analysis"
-msgstr "Proben nach dieser Analyse filtern"
+msgstr ""
 
 # senaite.app.listing: Column-filter row — text-input placeholder
 msgid "Filter..."
-msgstr "Filtern..."
+msgstr ""
 
 #: senaite/core/content/dynamicanalysisspec.py:75
 msgid "First sheet does not contain a valid column definition"
@@ -2591,7 +2591,7 @@ msgstr "Von"
 
 #: senaite/core/browser/dashboard/dashboard.py:134
 msgid "From ${from} to ${to} (updated every 2 hours)"
-msgstr "Von ${from} bis ${to} (alle 2 Stunden aktualisiert)"
+msgstr ""
 
 #: senaite/core/browser/clients/client/contacts/templates/login_details.pt:63
 #: senaite/core/browser/clients/client/contacts/view.py:70
@@ -2673,15 +2673,15 @@ msgstr "Zusätzliche Felder ausblenden"
 
 # senaite.app.listing: Column config — bulk action button
 msgid "Hide all"
-msgstr "Alle ausblenden"
+msgstr ""
 
 #: senaite/core/api/remarks.py:487
 msgid "Hide history"
-msgstr "Verlauf ausblenden"
+msgstr ""
 
 # senaite.app.listing: Column config — eye-slash button tooltip / aria-label
 msgid "Hide this column"
-msgstr "Diese Spalte ausblenden"
+msgstr ""
 
 #: bika/lims/config.py:140
 msgid "High"
@@ -3163,7 +3163,7 @@ msgstr "Schlüsselwörter"
 
 #: senaite/core/browser/samples/view.py:249
 msgid "Keywords of the analyses contained in the sample"
-msgstr "Schlüsselwörter der in der Probe enthaltenen Analysen"
+msgstr ""
 
 #: bika/lims/browser/templates/analysisservice_info.pt:100
 #: bika/lims/config.py:52
@@ -3382,11 +3382,11 @@ msgstr "Ort an dem das Dokument eingeordnet wurde"
 
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 msgid "Lock"
-msgstr "Sperren"
+msgstr ""
 
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 msgid "Locked"
-msgstr "Gesperrt"
+msgstr ""
 
 #: bika/lims/browser/templates/analysisservice_info.pt:252
 msgid "Log"
@@ -3686,7 +3686,7 @@ msgstr "Montag"
 
 #: senaite/core/browser/dashboard/dashboard.py:137
 msgid "Monthly"
-msgstr "Monatlich"
+msgstr ""
 
 #: senaite/core/exportimport/instruments/importer.py:464
 msgid "More than one analysis found for {sid} and keyword '{keyword}'"
@@ -3743,7 +3743,7 @@ msgstr "Mein Profil"
 
 # senaite.app.listing: Saved filter presets — default name when saving
 msgid "My filter"
-msgstr "Mein Filter"
+msgstr ""
 
 #: bika/lims/content/supplier.py:63
 msgid "NIB"
@@ -3765,7 +3765,7 @@ msgstr "Neue Bereiche werden weder auf neue noch auf aktuelle Analysen angewende
 
 #: senaite/core/api/remarks.py:490
 msgid "Newest first"
-msgstr "Neueste zuerst"
+msgstr ""
 
 #: senaite/core/browser/idserver/templates/numbergenerator.pt:108
 msgid "Next ID <span class=\"sort-indicator\" />"
@@ -3811,7 +3811,7 @@ msgstr "Keine Aktion definiert."
 
 #: senaite/core/browser/dashboard/dashboard.py:131
 msgid "No actions available. Please contact your laboratory manager to get permissions assigned."
-msgstr "Keine Aktionen verfügbar. Bitte wenden Sie sich an Ihren Laborleiter, um Berechtigungen zugewiesen zu bekommen."
+msgstr ""
 
 #: senaite/core/exportimport/instruments/importer.py:458
 msgid "No analyses found for {sid} and keyword '{keyword}'"
@@ -3861,7 +3861,7 @@ msgstr "Keine Änderungen vorgenommen."
 
 #: senaite/core/browser/dashboard/dashboard.py:130
 msgid "No data for the selected period"
-msgstr "Keine Daten für den gewählten Zeitraum"
+msgstr ""
 
 #: bika/lims/controlpanel/bika_instruments.py:164
 msgid "No date set"
@@ -3910,12 +3910,12 @@ msgstr "Keine Objekte ausgewählt"
 # senaite.app.listing: Column config — empty state for hidden section with
 # search
 msgid "No matches in hidden columns."
-msgstr "Keine Treffer in ausgeblendeten Spalten."
+msgstr ""
 
 # senaite.app.listing: Column config — empty state for visible section with
 # search
 msgid "No matches in visible columns."
-msgstr "Keine Treffer in sichtbaren Spalten."
+msgstr ""
 
 #: bika/lims/controlpanel/bika_analysisservices.py:114
 msgid "No new items were created."
@@ -3927,7 +3927,7 @@ msgstr "Keine Partitionen wurden erzeugt"
 
 #: senaite/core/api/remarks.py:493
 msgid "No remarks yet"
-msgstr "Noch keine Bemerkungen"
+msgstr ""
 
 #: bika/lims/browser/publish/emailview.py:176
 msgid "No reports found"
@@ -3947,7 +3947,7 @@ msgstr "Kein Probenahme Worfkflow"
 
 # senaite.app.listing: Saved filter presets — empty state
 msgid "No saved filters yet."
-msgstr "Noch keine gespeicherten Filter."
+msgstr ""
 
 #: senaite/core/exportimport/instruments/importer.py:322
 msgid "No services could be found for parsed keywords"
@@ -4067,7 +4067,7 @@ msgstr "Numerisch"
 
 #: senaite/core/api/remarks.py:491
 msgid "Oldest first"
-msgstr "Älteste zuerst"
+msgstr ""
 
 #: bika/lims/content/preservation.py:53
 msgid "Once preserved, the sample must be disposed of within this time period.  If not specified, the sample type retention period will be used."
@@ -4113,7 +4113,7 @@ msgstr "Open Source Web-basiertes Labor-Information-Management-System"
 
 #: senaite/core/browser/dashboard/dashboard.py:97
 msgid "Open Worksheets"
-msgstr "Offene Arbeitsblätter"
+msgstr ""
 
 #: bika/lims/browser/publish/reports_listing.py:128
 msgid "Open email form to send the selected reports to the recipients. This will also publish the contained samples of the reports after the email was successfully sent."
@@ -4121,7 +4121,7 @@ msgstr "E-Mail-Formular öffnen, um die ausgewählten Berichte an die Empfänger
 
 #: senaite/core/browser/dashboard/dashboard.py:522
 msgid "Open worksheets with analyses awaiting results"
-msgstr "Offene Arbeitsblätter mit Analysen, die auf Ergebnisse warten"
+msgstr ""
 
 #: bika/lims/browser/worksheet/views/add_analyses.py:98
 msgid "Order"
@@ -4312,7 +4312,7 @@ msgstr "Bitte kommentieren Sie wohin die ausgewählte(n) Probe(n) ausgeliefert w
 
 #: senaite/core/browser/samples/templates/dispose_samples.pt:73
 msgid "Please write a comment where the listed sample(s) are disposed"
-msgstr "Bitte geben Sie einen Kommentar ein, wo die aufgeführten Proben entsorgt werden"
+msgstr ""
 
 #: bika/lims/browser/templates/analysisservice_info.pt:96
 #: bika/lims/content/abstractbaseanalysis.py:513
@@ -4564,7 +4564,7 @@ msgstr "Veröffentlichen"
 
 #: senaite/core/browser/dashboard/dashboard.py:112
 msgid "Publish Reports"
-msgstr "Berichte veröffentlichen"
+msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:150
 #: senaite/core/browser/samples/view.py:369
@@ -4586,7 +4586,7 @@ msgstr "Veröffentlichte Ergebnisse"
 
 #: senaite/core/browser/dashboard/dashboard.py:448
 msgid "Published samples whose reports have not been printed yet"
-msgstr "Veröffentlichte Proben, deren Berichte noch nicht gedruckt wurden"
+msgstr ""
 
 #: bika/lims/browser/workflow/client.py:122
 msgid "Published {}, "
@@ -4611,11 +4611,11 @@ msgstr "QC Proben-ID"
 
 #: senaite/core/browser/dashboard/dashboard.py:138
 msgid "Quarterly"
-msgstr "Vierteljährlich"
+msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:128
 msgid "Quick Actions"
-msgstr "Schnellaktionen"
+msgstr ""
 
 #: bika/lims/content/abstractbaseanalysis.py:621
 msgid "Range max"
@@ -4651,7 +4651,7 @@ msgstr "Wiederzuweisbarer Platz"
 
 #: senaite/core/profiles/default/workflows/senaite_sample_workflow/definition.xml
 msgid "Reattach"
-msgstr "Wieder anhängen"
+msgstr ""
 
 #: bika/lims/browser/analyses/view.py:1171
 msgid "Recalculate"
@@ -4670,7 +4670,7 @@ msgstr "Empfangen"
 
 #: senaite/core/browser/dashboard/dashboard.py:420
 msgid "Received samples with analyses awaiting results"
-msgstr "Angenommene Proben mit Analysen, die auf Ergebnisse warten"
+msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:160
 msgid "Reception pending"
@@ -4737,7 +4737,7 @@ msgstr "Registrieren"
 
 #: senaite/core/browser/dashboard/dashboard.py:105
 msgid "Register Samples"
-msgstr "Proben registrieren"
+msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:145
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
@@ -4846,7 +4846,7 @@ msgstr "Entfernen"
 
 #: senaite/core/browser/samples/view.py:597
 msgid "Remove this analysis from the filter"
-msgstr "Diese Analyse aus dem Filter entfernen"
+msgstr ""
 
 #: senaite/core/browser/idserver/view.py:126
 msgid "Removed {} key(s): {}"
@@ -4854,7 +4854,7 @@ msgstr "{} Schlüssel entfernt: {}"
 
 # senaite.app.listing: Saved filter presets — row action tooltip
 msgid "Rename filter"
-msgstr "Filter umbenennen"
+msgstr ""
 
 #: bika/lims/content/attachment.py:80
 msgid "Render attachment in report"
@@ -4932,7 +4932,7 @@ msgstr "Zurücksetzen"
 
 # senaite.app.listing: Reset-columns button tooltip
 msgid "Reset column visibility and order to the defaults"
-msgstr "Spaltensichtbarkeit und -reihenfolge auf die Standardwerte zurücksetzen"
+msgstr ""
 
 # senaite.app.listing: Reset columns
 msgid "Reset columns"
@@ -4940,11 +4940,11 @@ msgstr "Spalten zurücksetzen"
 
 # senaite.app.listing: Column config — reset link tooltip
 msgid "Reset to default columns and order"
-msgstr "Auf Standardspalten und -reihenfolge zurücksetzen"
+msgstr ""
 
 # senaite.app.listing: Search box — undo / reset-view button tooltip
 msgid "Reset view"
-msgstr "Ansicht zurücksetzen"
+msgstr ""
 
 #: bika/lims/browser/publish/templates/email.pt:83
 #: bika/lims/browser/templates/analysisreport_info.pt:154
@@ -5019,7 +5019,7 @@ msgstr "Ergebnisinterpretation"
 
 #: senaite/core/browser/dashboard/dashboard.py:85
 msgid "Results Pending"
-msgstr "Ausstehende Ergebnisse"
+msgstr ""
 
 #: senaite/core/content/resultsreport.py:133
 #: senaite/core/profiles/default/types/ResultsReport.xml
@@ -5100,7 +5100,7 @@ msgstr "Routineanalysen"
 
 #: bika/lims/api/snapshot.py:555
 msgid "Row ${num}"
-msgstr "Zeile ${num}"
+msgstr ""
 
 #: senaite/core/configure.zcml:56
 msgid "SENAITE CORE"
@@ -5328,15 +5328,15 @@ msgstr "Proben ${sample_ids} wurden erfolgreich ungültig gesetzt."
 
 #: senaite/core/browser/dashboard/dashboard.py:400
 msgid "Samples awaiting collection of the sample"
-msgstr "Proben, die auf die Entnahme der Probe warten"
+msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:404
 msgid "Samples awaiting preservation"
-msgstr "Proben, die auf die Konservierung warten"
+msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:416
 msgid "Samples awaiting reception at the laboratory"
-msgstr "Proben, die auf die Annahme im Labor warten"
+msgstr ""
 
 #: bika/lims/content/referencesample.py:106
 #: bika/lims/content/sampletype.py:128
@@ -5349,19 +5349,19 @@ msgstr "Mitteilungsformular zur Ablehnung der Proben"
 
 #: senaite/core/browser/dashboard/dashboard.py:81
 msgid "Samples to Receive"
-msgstr "Anzunehmende Proben"
+msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:432
 msgid "Samples whose reports have been published"
-msgstr "Proben, deren Berichte veröffentlicht wurden"
+msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:424
 msgid "Samples whose results are awaiting verification"
-msgstr "Proben, deren Ergebnisse auf die Verifizierung warten"
+msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:409
 msgid "Samples with a scheduled sampling date"
-msgstr "Proben mit einem geplanten Probenahmedatum"
+msgstr ""
 
 #: senaite/core/content/senaitesetup.py:1362
 msgid "Sampling"
@@ -5405,11 +5405,11 @@ msgstr "Speichern und Kopieren"
 # senaite.app.listing: Saved filter presets — footer button to save the
 # current view
 msgid "Save current view"
-msgstr "Aktuelle Ansicht speichern"
+msgstr ""
 
 # senaite.app.listing: Saved filter presets — toggle title + menu header
 msgid "Saved filters"
-msgstr "Gespeicherte Filter"
+msgstr ""
 
 #: bika/lims/browser/workflow/__init__.py:206
 msgid "Saved items: {}"
@@ -5442,7 +5442,7 @@ msgstr "Suchen"
 
 # senaite.app.listing: Column config — search input placeholder
 msgid "Search columns…"
-msgstr "Spalten durchsuchen…"
+msgstr ""
 
 # senaite.core: Sidebar search input placeholder
 msgid "Search..."
@@ -5588,11 +5588,11 @@ msgstr "Auswählen um dem Probenahme-Koordinator zu erlauben, eine Probe zeitlic
 
 #: senaite/core/content/senaitesetup.py:1001
 msgid "Select this to allow dispatching samples through the 'dispatch' transition and to enable the additional 'dispatched' status. The analyses of a dispatched sample become read-only and are brought back to their previous status when the sample is restored. Disabled by default."
-msgstr "Aktivieren Sie diese Option, um das Ausliefern von Proben über den Übergang 'dispatch' zu erlauben und den zusätzlichen Status 'ausgeliefert' zu aktivieren. Die Analysen einer ausgelieferten Probe werden schreibgeschützt und in ihren vorherigen Status zurückversetzt, wenn die Probe wiederhergestellt wird. Standardmäßig deaktiviert."
+msgstr ""
 
 #: senaite/core/content/senaitesetup.py:991
 msgid "Select this to allow disposing samples through the 'dispose' transition and to enable the additional 'disposed' status. Disabled by default."
-msgstr "Aktivieren Sie diese Option, um das Entsorgen von Proben über den Übergang 'dispose' zu erlauben und den zusätzlichen Status 'entsorgt' zu aktivieren. Standardmäßig deaktiviert."
+msgstr ""
 
 #: senaite/core/content/senaitesetup.py:981
 msgid "Select this to allow the user to set an additional 'Printed' status to those Analysis Requests that have been Published. Disabled by default."
@@ -5752,7 +5752,7 @@ msgstr "Alle anzeigen"
 
 #: senaite/core/api/remarks.py:486
 msgid "Show history"
-msgstr "Verlauf anzeigen"
+msgstr ""
 
 #: senaite/core/exportimport/import.pt:186
 msgid "Show last auto import logs"
@@ -5772,11 +5772,11 @@ msgstr "Zeige Standardfelder"
 
 # senaite.app.listing: Column config — plus button tooltip / aria-label
 msgid "Show this column"
-msgstr "Diese Spalte anzeigen"
+msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:129
 msgid "Show/hide timeline"
-msgstr "Zeitverlauf ein-/ausblenden"
+msgstr ""
 
 #: bika/lims/content/labcontact.py:46
 msgid "Signature"
@@ -5843,11 +5843,11 @@ msgstr "Sortierschlüssel"
 
 # senaite.app.listing: Column header — sort arrow tooltip / aria-label
 msgid "Sort ascending"
-msgstr "Aufsteigend sortieren"
+msgstr ""
 
 # senaite.app.listing: Column header — sort arrow tooltip / aria-label
 msgid "Sort descending"
-msgstr "Absteigend sortieren"
+msgstr ""
 
 #: bika/lims/browser/analyses/qc.py:59
 msgid "Source"
@@ -5919,7 +5919,7 @@ msgstr "Etikettenvorschau"
 
 # senaite.app.listing: Saved filter presets — star action tooltip when active
 msgid "Stop auto-applying"
-msgstr "Automatisches Anwenden beenden"
+msgstr ""
 
 #: senaite/core/browser/samples/view.py:221
 #: senaite/core/profiles/default/types/StorageLocation.xml
@@ -5963,7 +5963,7 @@ msgstr "Senden Sie eine gültige Open XML-Datei (.XLSX) mit Setup-Datensätzen, 
 
 #: senaite/core/browser/dashboard/dashboard.py:490
 msgid "Submitted analyses awaiting verification"
-msgstr "Übermittelte Analysen, die auf die Verifizierung warten"
+msgstr ""
 
 #: bika/lims/browser/analyses/view.py:1571
 msgid "Submitted and verified by the same user: {}"
@@ -6161,7 +6161,7 @@ msgstr "Die folgende(n) Probe(n) werden versendet"
 
 #: senaite/core/browser/samples/templates/dispose_samples.pt:47
 msgid "The following sample(s) will be disposed"
-msgstr "Die folgenden Proben werden entsorgt"
+msgstr ""
 
 #: senaite/core/content/senaitesetup.py:299
 msgid "The global Auditlog shows all modifications of the system. When enabled, all entities will be indexed in a separate catalog. This will increase the time when objects are created or modified."
@@ -6438,11 +6438,11 @@ msgstr "Zu beproben"
 
 #: senaite/core/browser/dashboard/dashboard.py:93
 msgid "To be Published"
-msgstr "Zu veröffentlichen"
+msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:89
 msgid "To be Verified"
-msgstr "Zu verifizieren"
+msgstr ""
 
 #: bika/lims/content/analysiscategory.py:48
 msgid "To be displayed below each Analysis Category section on results reports."
@@ -6525,7 +6525,7 @@ msgstr "Tippen um zu filtern ..."
 
 # senaite.app.listing: Column-filter row — searchable-select placeholder
 msgid "Type to filter..."
-msgstr "Zum Filtern tippen..."
+msgstr ""
 
 #: senaite/core/registry/schema.py:78
 msgid "Types that support labels directly.<br/>NOTE: In cluster setups, other instances need to be restarted manually for the changes to take place!"
@@ -6586,7 +6586,7 @@ msgstr "Benutzerverknüpfung aufgehoben"
 
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 msgid "Unlock"
-msgstr "Entsperren"
+msgstr ""
 
 #: senaite/core/exportimport/instruments/panalytical/omnia/axios_xrf.py:53
 msgid "Unrecognized file format ${file_format}"
@@ -6612,7 +6612,7 @@ msgstr "Anhänge Aktualisieren"
 
 # senaite.app.listing: Saved filter presets — Update preset action tooltip
 msgid "Update preset with current view"
-msgstr "Voreinstellung mit aktueller Ansicht aktualisieren"
+msgstr ""
 
 #: senaite/core/browser/idserver/view.py:122
 msgid "Updated {} key(s): {}"
@@ -6951,7 +6951,7 @@ msgstr "Verifiziert von"
 
 #: senaite/core/browser/dashboard/dashboard.py:428
 msgid "Verified samples ready to be published"
-msgstr "Verifizierte Proben, die zur Veröffentlichung bereit sind"
+msgstr ""
 
 #: senaite/core/profiles/default/workflows/senaite_analysis_workflow/definition.xml
 #: senaite/core/profiles/default/workflows/senaite_duplicateanalysis_workflow/definition.xml
@@ -6961,7 +6961,7 @@ msgstr "Verifizieren"
 
 #: senaite/core/browser/dashboard/dashboard.py:109
 msgid "Verify Results"
-msgstr "Ergebnisse verifizieren"
+msgstr ""
 
 #: bika/lims/browser/auditlog.py:80
 #: bika/lims/browser/templates/analysisservice_info.pt:174
@@ -6979,11 +6979,11 @@ msgstr "SENAITE Seite ansehen"
 
 # senaite.app.listing: Column config — visible-section header
 msgid "Visible"
-msgstr "Sichtbar"
+msgstr ""
 
 # senaite.app.listing: Column config — counter title attribute
 msgid "Visible / total columns"
-msgstr "Sichtbare / gesamte Spalten"
+msgstr ""
 
 #: senaite/core/registry/schema.py:213
 msgid "Visible fields"
@@ -7020,7 +7020,7 @@ msgstr "Mittwoch"
 
 #: senaite/core/browser/dashboard/dashboard.py:136
 msgid "Weekly"
-msgstr "Wöchentlich"
+msgstr ""
 
 #: bika/lims/controlpanel/bika_instruments.py:91
 msgid "Weeks To Expire"
@@ -7104,11 +7104,11 @@ msgstr "Arbeitsblätter"
 
 #: senaite/core/browser/dashboard/dashboard.py:531
 msgid "Worksheets that have been verified"
-msgstr "Arbeitsblätter, die verifiziert wurden"
+msgstr ""
 
 #: senaite/core/browser/dashboard/dashboard.py:526
 msgid "Worksheets whose results are awaiting verification"
-msgstr "Arbeitsblätter, deren Ergebnisse auf die Verifizierung warten"
+msgstr ""
 
 #: senaite/core/content/supplier.py:166
 msgid "Wrong IBAN length by %s: %s"
@@ -7120,7 +7120,7 @@ msgstr "Falsche IBAN Länge von %s: %s ist %i zu kurz"
 
 #: senaite/core/browser/dashboard/dashboard.py:140
 msgid "Yearly"
-msgstr "Jährlich"
+msgstr ""
 
 #: senaite/core/browser/controlpanel/samplecontainers/view.py:166
 #: senaite/core/browser/widgets/services_widget.py:305
@@ -7208,7 +7208,7 @@ msgstr "Analytiker muss angegeben werden."
 
 # senaite.app.listing: Saved filter presets — micro-tag on the default preset
 msgid "auto"
-msgstr "auto"
+msgstr ""
 
 #: bika/lims/content/instrumentcertification.py:254
 msgid "biannually"
@@ -7303,7 +7303,7 @@ msgstr "${d}.${m}.${y}"
 
 #. Date format used with the datepicker jqueryui plugin.
 #. Please only use 'dd', 'mm', 'yy', '-', '/', '.' in this string.
-#. Default: "yy-mm-dd"
+#. Default: "mm/dd/yy"
 #, fuzzy
 msgid "date_format_short_datepicker"
 msgstr "tt.mm.jj"
@@ -7319,11 +7319,11 @@ msgstr "deaktivieren"
 #. Default: "Sample disposed after the retention period."
 #: senaite/core/browser/samples/templates/dispose_samples.pt:66
 msgid "default_dispose_reason"
-msgstr "Probe nach Ablauf der Aufbewahrungsfrist entsorgt."
+msgstr ""
 
 #: senaite/core/api/remarks.py:485
 msgid "deleted by {user} at {time}"
-msgstr "gelöscht von {user} am {time}"
+msgstr ""
 
 #. Default: "Attached labels"
 #: senaite/core/behaviors/label.py:126
@@ -7681,9 +7681,8 @@ msgstr "Interim-Felder wie Gefäßmasse, Verdünnungsfaktoren etc. festlegen, so
 #. value to all the corresponding fields on the sheet."
 #. Default: "Define interim fields such as vessel mass, dilution factors, should your calculation require them. The field title specified here will be used as column headers and field descriptors where the interim fields are displayed. If 'Apply wide' is enabled the field will be shown in a selection box on the top of the worksheet, allowing to apply a specific value to all the corresponding fields on the sheet."
 #: senaite/core/content/calculation.py:245
-#, fuzzy
 msgid "description_calculation_interims"
-msgstr "Definieren Sie Zwischenfelder wie Gefäßmasse oder Verdünnungsfaktoren, falls Ihre Berechnung diese benötigt. Der hier angegebene Feldtitel wird als Spaltenüberschrift und Feldbeschreibung verwendet, wo die Zwischenfelder angezeigt werden. Wenn 'Breit anwenden' aktiviert ist, wird das Feld in einem Auswahlfeld oben im Arbeitsblatt angezeigt, sodass ein bestimmter Wert auf alle entsprechenden Felder des Blattes angewendet werden kann."
+msgstr ""
 
 #. parameters.  This includes Interim fields defined above, as well as any
 #. services that this calculation depends on to calculate results."
@@ -7831,17 +7830,15 @@ msgstr "Zugeordnete Laborabteilungen"
 #. the default style."
 #. Default: "Hex color code used for the chip (e.g. #0d6efd). Leave empty for the default style."
 #: senaite/core/content/label.py:72
-#, fuzzy
 msgid "description_label_color"
-msgstr "Hex-Farbcode für den Chip (z. B. #0d6efd). Leer lassen für den Standardstil."
+msgstr ""
 
 #. labeled content. The cascade runs in the same transaction as the save and
 #. may take a moment on large datasets."
 #. Default: "Renaming this label rewrites the stored name on every currently labeled content. The cascade runs in the same transaction as the save and may take a moment on large datasets."
 #: senaite/core/content/label.py:45
-#, fuzzy
 msgid "description_label_title"
-msgstr "Das Umbenennen dieses Etiketts überschreibt den gespeicherten Namen bei allen aktuell etikettierten Inhalten. Der Kaskadenvorgang läuft in derselben Transaktion wie das Speichern und kann bei großen Datenmengen einen Moment dauern."
+msgstr ""
 
 #. Default: "Check this box if your laboratory is accredited"
 #: senaite/core/content/laboratory.py:140
@@ -7879,9 +7876,8 @@ msgstr "Bitte den Mehrwertsteuersatz in Prozent angeben, der zum Laborproduktpre
 #. show or reorder each viewlet."
 #. Default: "The viewlet managers and their viewlets are shown in place, nested and positioned as they appear on the site. Use the controls to hide, show or reorder each viewlet."
 #: senaite/core/browser/viewlets/templates/manage-viewlets.pt:22
-#, fuzzy
 msgid "description_manage_viewlets"
-msgstr "Die Viewlet-Manager und ihre Viewlets werden an Ort und Stelle angezeigt, verschachtelt und so positioniert, wie sie auf der Website erscheinen. Verwenden Sie die Steuerelemente, um jedes Viewlet auszublenden, anzuzeigen oder neu anzuordnen."
+msgstr ""
 
 #. Default: "Location where the document set is shelved"
 #: senaite/core/content/multifile.py:71
@@ -8756,42 +8752,42 @@ msgstr "Doppelbestimmung in Position ${dup} referenziert diese, daher muss es si
 #. Default: "${days} days"
 #: senaite/core/z3cform/widgets/duration/display.pt:19
 msgid "duration_widget_days_number"
-msgstr "${days} Tage"
+msgstr ""
 
 #. Default: "${hours} hours"
 #: senaite/core/z3cform/widgets/duration/display.pt:24
 msgid "duration_widget_hours_number"
-msgstr "${hours} Stunden"
+msgstr ""
 
 #. Default: "Days"
 #: senaite/core/z3cform/widgets/duration/input.pt:20
 msgid "duration_widget_label_days"
-msgstr "Tage"
+msgstr ""
 
 #. Default: "Hours"
 #: senaite/core/z3cform/widgets/duration/input.pt:30
 msgid "duration_widget_label_hours"
-msgstr "Stunden"
+msgstr ""
 
 #. Default: "Minutes"
 #: senaite/core/z3cform/widgets/duration/input.pt:40
 msgid "duration_widget_label_minutes"
-msgstr "Minuten"
+msgstr ""
 
 #. Default: "Seconds"
 #: senaite/core/z3cform/widgets/duration/input.pt:50
 msgid "duration_widget_label_seconds"
-msgstr "Sekunden"
+msgstr ""
 
 #. Default: "${minutes} minutes"
 #: senaite/core/z3cform/widgets/duration/display.pt:29
 msgid "duration_widget_minutes_number"
-msgstr "${minutes} Minuten"
+msgstr ""
 
 #. Default: "${seconds} seconds"
 #: senaite/core/z3cform/widgets/duration/display.pt:34
 msgid "duration_widget_seconds_number"
-msgstr "${seconds} Sekunden"
+msgstr ""
 
 #. Default: "Contents of the file"
 #: senaite/core/browser/controlpanel/dynamicanalysisspecs/dynamicanalysisspec.py:44
@@ -8800,7 +8796,7 @@ msgstr "Inhalt der Datei"
 
 #: senaite/core/api/remarks.py:481
 msgid "edited"
-msgstr "bearbeitet"
+msgstr ""
 
 #. ${record_index}' (${num_samples}) is above ${max_num_samples}"
 #. Default: "The number of samples to create for the record 'Sample ${record_index}' (${num_samples}) is above ${max_num_samples}"
@@ -10139,19 +10135,18 @@ msgstr "Auf Methode beschränken"
 #. Default: "Added ${count} label(s) to ${affected} sample(s)"
 #: senaite/core/browser/modals/manage_labels.py:185
 msgid "labels_added"
-msgstr "${count} Etikett(en) zu ${affected} Probe(n) hinzugefügt"
+msgstr ""
 
 #. sample(s)"
 #. Default: "Applied ${added} added and ${removed} removed across ${affected} sample(s)"
 #: senaite/core/browser/modals/manage_labels.py:174
-#, fuzzy
 msgid "labels_changed"
-msgstr "${added} hinzugefügt und ${removed} entfernt bei ${affected} Probe(n) angewendet"
+msgstr ""
 
 #. Default: "Removed ${count} label(s) from ${affected} sample(s)"
 #: senaite/core/browser/modals/manage_labels.py:194
 msgid "labels_removed"
-msgstr "${count} Etikett(en) von ${affected} Probe(n) entfernt"
+msgstr ""
 
 #. Default: "Category"
 #: senaite/core/browser/worksheets/worksheet/add_analyses.py:119
@@ -11463,7 +11458,7 @@ msgstr "Minuten"
 # senaite.app.listing: Saved filter presets — dirty indicator on the applied
 # preset
 msgid "modified"
-msgstr "geändert"
+msgstr ""
 
 #: bika/lims/content/instrumentcertification.py:252
 msgid "monthly"
@@ -11522,7 +11517,7 @@ msgstr "von"
 
 #: senaite/core/api/remarks.py:494
 msgid "original"
-msgstr "Original"
+msgstr ""
 
 #: bika/lims/browser/publish/templates/email.pt:30
 msgid "overview"
@@ -11530,7 +11525,7 @@ msgstr "Übersicht"
 
 # senaite.app.listing: Saved filter presets — menu subtitle
 msgid "per listing"
-msgstr "pro Liste"
+msgstr ""
 
 #: bika/lims/content/instrumentcertification.py:253
 msgid "quarterly"
@@ -11612,7 +11607,7 @@ msgstr "Diese Probe wurde von ${actor} am ${date} versandt."
 #. Default: "This sample has been disposed by ${actor} on ${date}"
 #: senaite/core/browser/viewlets/templates/sample_disposed_viewlet.pt:14
 msgid "this_sample_has_been_disposed_by"
-msgstr "Diese Probe wurde von ${actor} am ${date} entsorgt"
+msgstr ""
 
 #. Default: "${I}:${M} ${p}"
 #. The variables used here are the same as used in the strftime formating.
@@ -11849,7 +11844,7 @@ msgstr "Laborleiter"
 #. Default: "Color"
 #: senaite/core/content/label.py:68
 msgid "title_label_color"
-msgstr "Farbe"
+msgstr ""
 
 #. Default: "Description"
 #: senaite/core/content/label.py:56
@@ -11949,7 +11944,7 @@ msgstr "Analysentyp"
 #. Default: "Manage Viewlets"
 #: senaite/core/browser/viewlets/templates/manage-viewlets.pt:18
 msgid "title_manage_viewlets"
-msgstr "Viewlets verwalten"
+msgstr ""
 
 #. Default: "Manager"
 #: senaite/core/permissions/localroles.py:86
