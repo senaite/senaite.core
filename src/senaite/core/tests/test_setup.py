@@ -32,10 +32,10 @@ class TestSetup(BaseTestCase):
 
     def test_content_structure_exists(self):
         existing = self.portal.objectIds()
-        self.assertTrue("clients" in existing)
-        self.assertTrue("samples" in existing)
+        self.assertIn("clients", existing)
+        self.assertIn("samples", existing)
         # methods live in the setup folder
-        self.assertTrue("methods" in self.portal.setup.objectIds())
+        self.assertIn("methods", self.portal.setup.objectIds())
 
 
 def test_suite():

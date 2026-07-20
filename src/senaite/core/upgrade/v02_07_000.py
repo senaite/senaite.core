@@ -3024,4 +3024,3 @@ def migrate_method_to_dx(src, destination):
     target.reindexObject()
 
     logger.info("Migrated Method from %s -> %s" % (src, target))
-    return target
