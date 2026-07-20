@@ -783,7 +783,7 @@ performed with that same method are added in the worksheet.
 
 Create a new Method:
 
-    >>> method = api.create(portal.methods, "Method", title="Temp method")
+    >>> method = api.create(setup.methods, "Method", title="Temp method")
 
 Create a Worksheet Template and assign the method:
 

@@ -266,6 +266,7 @@ def add_senaite_setup_items(portal):
         ("worksheettemplates", "Worksheet Templates", "WorksheetTemplates"),
         ("laboratory", "Laboratory", "Laboratory"),
         ("calculations", "Calculations", "Calculations"),
+        ("methods", "Methods", "Methods"),
     ]
     setup = api.get_senaite_setup()
     add_dexterity_items(setup, items)

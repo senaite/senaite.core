@@ -117,6 +117,9 @@
   <!-- Calculations -->
   <object name="Calculation" meta_type="Dexterity FTI" />
   <object name="Calculations" meta_type="Dexterity FTI" />
+  <!-- Methods -->
+  <object name="Method" meta_type="Dexterity FTI" />
+  <object name="Methods" meta_type="Dexterity FTI" />
 
   <!-- Results Report -->
   <object name="ResultsReport" meta_type="Dexterity FTI" />
