@@ -395,7 +395,7 @@ class UsersConsole(BaseConsole):
         if kind == "group":
             return uapi.get_group(sid) is not None
         if kind == "plugin":
-            return getattr(self._acl(), sid, None) is not None
+            return sid in self._plugin_ids()
         return False
 
     def _add_row(self, num, row_kind, payload, label, active):
@@ -446,22 +446,36 @@ class UsersConsole(BaseConsole):
                 self._add_row(num, "interface", iface, iname, active)
 
     def do_select(self, arg):
-        """select <user|group|plugin> <id> -- drill into a subject and list
-        its toggleable items with [X] active / [ ] inactive, numbered for
+        """select [<kind>] <id> -- drill into a subject and list its
+        toggleable items with [X] active / [ ] inactive, numbered for
         'toggle': roles and group membership for a user, roles for a group,
-        interfaces for a plugin
+        interfaces for a plugin. <kind> is user, group or plugin; omit it to
+        auto-detect from the id (e.g. 'select pasldap').
         """
-        parts = arg.split(None, 1)
-        if len(parts) != 2:
-            print("Usage: select <user|group|plugin> <id>")
+        parts = arg.split()
+        if not parts or len(parts) > 2:
+            print("Usage: select [<user|group|plugin>] <id>")
             return
-        kind, sid = parts[0].lower(), parts[1].strip()
-        if kind not in ("user", "group", "plugin"):
-            print("Kind must be one of: user, group, plugin")
-            return
-        if not self._subject_exists(kind, sid):
-            print("No such %s: %s" % (kind, sid))
-            return
+        if len(parts) == 2:
+            kind, sid = parts[0].lower(), parts[1]
+            if kind not in ("user", "group", "plugin"):
+                print("Kind must be one of: user, group, plugin")
+                return
+            if not self._subject_exists(kind, sid):
+                print("No such %s: %s" % (kind, sid))
+                return
+        else:
+            sid = parts[0]
+            matches = [k for k in ("user", "group", "plugin")
+                       if self._subject_exists(k, sid)]
+            if not matches:
+                print("No user, group or plugin with id '%s'." % sid)
+                return
+            if len(matches) > 1:
+                print("'%s' matches %s. Disambiguate: select <kind> %s"
+                      % (sid, " and ".join(matches), sid))
+                return
+            kind = matches[0]
         self.subject_kind = kind
         self.subject_id = sid
         self._show_subject()

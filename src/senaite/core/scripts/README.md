@@ -339,16 +339,18 @@ deactivate <plugin> <iface>   # disable a plugin for an interface (explicit)
 Select and toggle (works across users, groups and plugins):
 
 ```
-select <user|group|plugin> <id>   # drill into a subject, numbered [X]/[ ] list
-toggle <n>                        # flip row <n> and re-show the list
+select [<kind>] <id>          # drill in; <kind> (user/group/plugin) optional
+toggle <n>                    # flip row <n> and re-show the list
 ```
 
+`<kind>` is auto-detected from the id when omitted (e.g. `select pasldap`);
+pass it explicitly only to disambiguate a name shared by two kinds.
 `select` lists what you can toggle as a numbered `[X]` (active) / `[ ]`
 (inactive) list: global roles and group membership for a user, global roles
 for a group, interfaces (connectors) for a plugin. `toggle <n>` flips a row.
 
 ```
-(users) select plugin pasldap
+(users) select pasldap
 plugin pasldap (LDAP Plugin)
   [X]   1  IAuthenticationPlugin
   [X]   2  IGroupEnumerationPlugin
@@ -357,7 +359,7 @@ plugin pasldap (LDAP Plugin)
 (users plugin:pasldap) toggle 3
 OK   deactivate pasldap for IGroupIntrospection  (0.00s, 0 log lines)
 
-(users) select user bob
+(users) select bob
 user bob (Bob <bob@lab.com>)
   roles:
     [ ]   7  LabManager
@@ -374,11 +376,11 @@ toggles are handy on headless deployments, for example temporarily taking an
 LDAP plugin out of group introspection during a maintenance operation:
 
 ```
-select plugin pasldap    # note the row of IGroupIntrospection
+select pasldap    # note the row of IGroupIntrospection
 toggle 3
 commit
 # ... run the maintenance ...
-select plugin pasldap
+select pasldap
 toggle 3
 commit
 ```

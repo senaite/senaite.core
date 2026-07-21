@@ -35,11 +35,12 @@ Commands
    grouproles <group> [+R -R]    Show, grant or revoke group roles.
    plugins                       List plugins with their active-interface
                                  count.
-   select <kind> <id>            Drill into a subject (kind is user, group
-                                 or plugin) and list its toggleable items as
-                                 a numbered [X] active / [ ] inactive list:
-                                 roles and group membership for a user, roles
-                                 for a group, interfaces for a plugin.
+   select [<kind>] <id>          Drill into a subject and list its toggleable
+                                 items as a numbered [X] active / [ ] inactive
+                                 list: roles and group membership for a user,
+                                 roles for a group, interfaces for a plugin.
+                                 <kind> (user/group/plugin) is auto-detected
+                                 from the id when omitted.
    toggle <n>                    Flip row <n> of the selected subject and
                                  re-show the list.
    activate <plugin> <iface>     Enable a plugin for a PAS interface.
@@ -57,10 +58,10 @@ number:
 
 .. code-block:: text
 
-   select plugin pasldap   # note the row of IGroupIntrospection
+   select pasldap   # note the row of IGroupIntrospection
    toggle 3
    commit
    # ... run the maintenance ...
-   select plugin pasldap
+   select pasldap
    toggle 3
    commit

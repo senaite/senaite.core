@@ -61,7 +61,7 @@ class TestUsersConsole(BaseTestCase):
         c = self.console
         c.do_adduser("bob bob@example.com secret123")
         c.do_addgroup("analysts Analysts")
-        c.do_select("user bob")
+        c.do_select("bob")  # auto-detect the kind from the id
         self.assertEqual((c.subject_kind, c.subject_id), ("user", "bob"))
         c.do_toggle(str(self._row(c, "role", "Manager")))
         self.assertIn("Manager", sapi.get_roles("bob"))
@@ -86,7 +86,8 @@ class TestUsersConsole(BaseTestCase):
                 pid = p
                 break
         self.assertIsNotNone(pid)
-        c.do_select("plugin %s" % pid)
+        c.do_select(pid)  # auto-detect: a plugin id
+        self.assertEqual((c.subject_kind, c.subject_id), ("plugin", pid))
         n = iface = None
         for i, (rk, payload, lb) in enumerate(c.subject_rows, start=1):
             if rk == "interface" and pid in acl.plugins.listPluginIds(payload):
