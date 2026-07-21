@@ -299,22 +299,24 @@ class BaseConsole(cmd.Cmd, object):
     # -- shells ----------------------------------------------------------
 
     def do_pdb(self, arg):
-        """pdb -- drop into a pdb/pdbpp prompt with app and site bound"""
-        app = self.app          # noqa: F841 bound for the debugger
-        site = self.site        # noqa: F841
+        """pdb -- drop into a pdb/pdbpp prompt with app and site in scope"""
+        app = self.app
+        site = self.site
+        print("Entering pdb. In scope: app=%r, site=%r" % (app, site))
         get_debugger().set_trace()
 
     def do_ipython(self, arg):
-        """ipython -- open an IPython shell with app, site and portal"""
+        """ipython -- open an IPython shell with app, site and portal bound"""
         try:
             from IPython import embed
         except ImportError:
             print("IPython is not available in this environment.")
             return
-        app = self.app          # noqa: F841 exposed in the shell namespace
-        site = self.site        # noqa: F841
-        portal = self.site      # noqa: F841
-        embed()
+        embed(user_ns={
+            "app": self.app,
+            "site": self.site,
+            "portal": self.site,
+        })
 
     # -- site selection --------------------------------------------------
 
