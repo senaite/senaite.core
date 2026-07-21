@@ -310,30 +310,30 @@ Users:
 
 ```
 users [<search>]              # list users (optionally matching a term)
-user <id>                     # show fullname, email, roles and groups
+user [<id>]                   # show fullname, email, roles and groups
 adduser <id> <email> [<pw>]   # create a local user (prompts for pw if omitted)
-deluser <id>                  # remove a user
-passwd <id> [<pw>]            # set a local user's password
-roles <id> [+Role -Role ...]  # show / grant / revoke global roles
+deluser [<id>]                # remove a user
+passwd [<id>] [<pw>]          # set a local user's password
+roles [<id>] [+Role -Role]    # show / grant / revoke global roles
 ```
 
 Groups:
 
 ```
 groups                        # list groups with their roles
-group <id>                    # show title, roles and members
+group [<id>]                  # show title, roles and members
 addgroup <id> [<title>]       # create a group
-delgroup <id>                 # remove a group
-members <group> [+u -u ...]   # show / add / remove members
-grouproles <group> [+R -R]    # show / grant / revoke group roles
+delgroup [<id>]               # remove a group
+members [<group>] [+u -u]     # show / add / remove members
+grouproles [<group>] [+R -R]  # show / grant / revoke group roles
 ```
 
 Plugins (the same registry the ZMI "Plugins" tab manages):
 
 ```
 plugins                       # list plugins with their active-interface count
-activate <plugin> <iface>     # enable a plugin for an interface (explicit)
-deactivate <plugin> <iface>   # disable a plugin for an interface (explicit)
+activate [<plugin>] <iface>   # enable a plugin for an interface
+deactivate [<plugin>] <iface> # disable a plugin for an interface
 ```
 
 Select and toggle (works across users, groups and plugins):
@@ -349,6 +349,13 @@ pass it explicitly only to disambiguate a name shared by two kinds.
 `select` lists what you can toggle as a numbered `[X]` (active) / `[ ]`
 (inactive) list: global roles and group membership for a user, global roles
 for a group, interfaces (connectors) for a plugin. `toggle <n>` flips a row.
+
+While a subject is selected the id-taking commands act on it without
+repeating the id (`roles +LabManager` targets the selected user,
+`deactivate IGroupIntrospection` the selected plugin), and a bare `help`
+lists just the commands scoped to the selection (`help all` shows every
+command). The same scoped `help` applies to the catalog and upgrade
+consoles once a catalog or profile is selected.
 
 ```
 (users) select pasldap

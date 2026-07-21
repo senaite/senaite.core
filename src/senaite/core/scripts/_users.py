@@ -50,6 +50,15 @@ SEARCH_LIMIT = 100
 # directory, not from this console.
 LOCAL_USERS_PLUGIN = "source_users"
 
+# Commands offered for each selected subject kind, in display order. When a
+# subject is selected these operate on it without repeating its id, and
+# 'help' lists them. 'toggle' and 'deselect' are common to any selection.
+SCOPED_COMMANDS = {
+    "user": ["user", "roles", "passwd", "deluser"],
+    "group": ["group", "members", "grouproles", "delgroup"],
+    "plugin": ["activate", "deactivate"],
+}
+
 INTRO = """
 SENAITE interactive user console
 Type 'help' or '?' for the list of commands, 'help <cmd>' for details.
@@ -83,6 +92,12 @@ class UsersConsole(BaseConsole):
     def on_site_changed(self):
         self._clear_selection()
 
+    def scoped_help(self):
+        if not self.subject_kind:
+            return None
+        names = ["toggle"] + SCOPED_COMMANDS[self.subject_kind] + ["deselect"]
+        return ("%s '%s'" % (self.subject_kind, self.subject_id), names)
+
     def _clear_selection(self):
         self.subject_kind = None
         self.subject_id = None
@@ -113,6 +128,25 @@ class UsersConsole(BaseConsole):
         removed = [t[1:] for t in tokens if t.startswith("-") and t[1:]]
         return added, removed
 
+    def _selected_id(self, kind):
+        """Id of the current selection when it is of `kind`, else None"""
+        if self.subject_kind == kind:
+            return self.subject_id
+        return None
+
+    def _resolve_target(self, parts, kind):
+        """Resolve the (id, change_tokens) a command operates on.
+
+        When a subject of `kind` is selected the id may be omitted: an empty
+        argument, or a first token that is a change (`+x`/`-x`), targets the
+        selection so 'roles' or 'roles +LabManager' work without repeating
+        the id. Otherwise the first token is the explicit id.
+        """
+        selected = self._selected_id(kind)
+        if parts and not (selected and parts[0][:1] in ("+", "-")):
+            return parts[0], parts[1:]
+        return selected, parts
+
     def _user_properties(self, uid):
         """(fullname, email) for a user, empty strings when unset"""
         member = self._membership().getMemberById(uid)
@@ -120,6 +154,12 @@ class UsersConsole(BaseConsole):
             return "", ""
         return (member.getProperty("fullname", "") or "",
                 member.getProperty("email", "") or "")
+
+    def _print_user_properties(self, uid):
+        """Print the fullname and email lines of a user"""
+        fullname, email = self._user_properties(uid)
+        print("  fullname: %s" % fullname)
+        print("  email:    %s" % email)
 
     # -- atomic mutations (single source of truth for both the explicit --
     # -- commands and the select/toggle model) ---------------------------
@@ -156,8 +196,8 @@ class UsersConsole(BaseConsole):
 
     def do_users(self, arg):
         """users [<search>] -- list users (optionally matching <search> in
-        the id or login), capped at %d rows
-        """ % SEARCH_LIMIT
+        the id or login), capped at 100 rows
+        """
         term = arg.strip()
         acl = self._acl()
         if term:
@@ -174,8 +214,10 @@ class UsersConsole(BaseConsole):
         print("%d user(s)" % len(ids))
 
     def do_user(self, arg):
-        """user <id> -- show a user's fullname, email, roles and groups"""
-        uid = arg.strip()
+        """user [<id>] -- show a user's fullname, email, roles and groups
+        (defaults to the selected user)
+        """
+        uid = arg.strip() or self._selected_id("user")
         if not uid:
             print("Usage: user <id>")
             return
@@ -183,10 +225,8 @@ class UsersConsole(BaseConsole):
         if user is None:
             print("No such user: %s" % uid)
             return
-        fullname, email = self._user_properties(uid)
         print("  id:       %s" % uapi.get_user_id(user))
-        print("  fullname: %s" % fullname)
-        print("  email:    %s" % email)
+        self._print_user_properties(uid)
         print("  roles:    %s" % ", ".join(sapi.get_roles(user)))
         print("  groups:   %s" % ", ".join(sorted(uapi.get_groups(user))))
 
@@ -213,8 +253,8 @@ class UsersConsole(BaseConsole):
         self._execute("adduser %s" % uid, op)
 
     def do_deluser(self, arg):
-        """deluser <id> -- remove a user"""
-        uid = arg.strip()
+        """deluser [<id>] -- remove a user (defaults to the selected user)"""
+        uid = arg.strip() or self._selected_id("user")
         if not uid:
             print("Usage: deluser <id>")
             return
@@ -227,20 +267,25 @@ class UsersConsole(BaseConsole):
                       lambda: self._acl().userFolderDelUsers([uid]))
 
     def do_passwd(self, arg):
-        """passwd <id> [<password>] -- set a local user's password. Prompts
-        for the password when omitted.
+        """passwd [<id>] [<password>] -- set a local user's password (id
+        defaults to the selected user). Prompts for the password when omitted.
         """
         parts = arg.split()
-        if not parts:
+        selected = self._selected_id("user")
+        # with a user selected, all args are password material; otherwise the
+        # first arg is the target id
+        if selected:
+            uid, password = selected, (parts[0] if parts else None)
+        elif parts:
+            uid, password = parts[0], (parts[1] if len(parts) > 1 else None)
+        else:
             print("Usage: passwd <id> [<password>]")
             return
-        uid = parts[0]
         source = self._local_source()
         if source is None or uid not in source.getUserIds():
             print("'%s' is not a local user (source_users); its password is "
                   "managed elsewhere (e.g. LDAP)." % uid)
             return
-        password = parts[1] if len(parts) > 1 else None
         if password is None:
             password = getpass.getpass("New password for %s: " % uid)
         if not password:
@@ -250,18 +295,18 @@ class UsersConsole(BaseConsole):
                       lambda: source.updateUserPassword(uid, password))
 
     def do_roles(self, arg):
-        """roles <id> [+Role -Role ...] -- show, grant or revoke a user's
-        global roles (e.g. roles bob +LabManager -LabClerk)
+        """roles [<id>] [+Role -Role ...] -- show, grant or revoke a user's
+        global roles (e.g. roles bob +LabManager -LabClerk). The id defaults
+        to the selected user.
         """
-        parts = arg.split()
-        if not parts:
+        uid, changes = self._resolve_target(arg.split(), "user")
+        if not uid:
             print("Usage: roles <id> [+Role -Role ...]")
             return
-        uid = parts[0]
         if uapi.get_user(uid) is None:
             print("No such user: %s" % uid)
             return
-        added, removed = self._split_changes(parts[1:])
+        added, removed = self._split_changes(changes)
         if not added and not removed:
             print("  roles: %s" % ", ".join(sapi.get_roles(uid)))
             return
@@ -271,7 +316,7 @@ class UsersConsole(BaseConsole):
                 self._set_user_role(uid, role, True)
             for role in removed:
                 self._set_user_role(uid, role, False)
-        self._execute("roles %s %s" % (uid, " ".join(parts[1:])), op)
+        self._execute("roles %s %s" % (uid, " ".join(changes)), op)
 
     # -- group commands --------------------------------------------------
 
@@ -283,8 +328,10 @@ class UsersConsole(BaseConsole):
             print("  %-24s %s" % (gid, ", ".join(sorted(group.getRoles()))))
 
     def do_group(self, arg):
-        """group <id> -- show a group's title, roles and members"""
-        gid = arg.strip()
+        """group [<id>] -- show a group's title, roles and members (defaults
+        to the selected group)
+        """
+        gid = arg.strip() or self._selected_id("group")
         if not gid:
             print("Usage: group <id>")
             return
@@ -312,8 +359,9 @@ class UsersConsole(BaseConsole):
                       lambda: self._groups_tool().addGroup(gid, title=title))
 
     def do_delgroup(self, arg):
-        """delgroup <id> -- remove a group"""
-        gid = arg.strip()
+        """delgroup [<id>] -- remove a group (defaults to the selected group)
+        """
+        gid = arg.strip() or self._selected_id("group")
         if not gid:
             print("Usage: delgroup <id>")
             return
@@ -326,19 +374,19 @@ class UsersConsole(BaseConsole):
                       lambda: self._groups_tool().removeGroups([gid]))
 
     def do_members(self, arg):
-        """members <group> [+user -user ...] -- show or change group members
-        (e.g. members analysts +bob -alice)
+        """members [<group>] [+user -user ...] -- show or change group members
+        (e.g. members analysts +bob -alice). The group defaults to the
+        selected group.
         """
-        parts = arg.split()
-        if not parts:
+        gid, changes = self._resolve_target(arg.split(), "group")
+        if not gid:
             print("Usage: members <group> [+user -user ...]")
             return
-        gid = parts[0]
         group = uapi.get_group(gid)
         if group is None:
             print("No such group: %s" % gid)
             return
-        added, removed = self._split_changes(parts[1:])
+        added, removed = self._split_changes(changes)
         if not added and not removed:
             print("  members: %s" % ", ".join(sorted(group.getMemberIds())))
             return
@@ -348,22 +396,21 @@ class UsersConsole(BaseConsole):
                 self._set_group_member(gid, uid, True)
             for uid in removed:
                 self._set_group_member(gid, uid, False)
-        self._execute("members %s %s" % (gid, " ".join(parts[1:])), op)
+        self._execute("members %s %s" % (gid, " ".join(changes)), op)
 
     def do_grouproles(self, arg):
-        """grouproles <group> [+Role -Role ...] -- show, grant or revoke a
-        group's global roles
+        """grouproles [<group>] [+Role -Role ...] -- show, grant or revoke a
+        group's global roles (group defaults to the selected group)
         """
-        parts = arg.split()
-        if not parts:
+        gid, changes = self._resolve_target(arg.split(), "group")
+        if not gid:
             print("Usage: grouproles <group> [+Role -Role ...]")
             return
-        gid = parts[0]
         group = uapi.get_group(gid)
         if group is None:
             print("No such group: %s" % gid)
             return
-        added, removed = self._split_changes(parts[1:])
+        added, removed = self._split_changes(changes)
         if not added and not removed:
             print("  roles: %s" % ", ".join(sorted(group.getRoles())))
             return
@@ -373,7 +420,7 @@ class UsersConsole(BaseConsole):
                 self._set_group_role(gid, role, True)
             for role in removed:
                 self._set_group_role(gid, role, False)
-        self._execute("grouproles %s %s" % (gid, " ".join(parts[1:])), op)
+        self._execute("grouproles %s %s" % (gid, " ".join(changes)), op)
 
     # -- plugin commands -------------------------------------------------
 
@@ -448,8 +495,8 @@ class UsersConsole(BaseConsole):
     def _show_user(self):
         sid = self.subject_id
         user = uapi.get_user(sid)
-        fullname, email = self._user_properties(sid)
-        print("user %s (%s <%s>)" % (sid, fullname, email))
+        print("user %s" % sid)
+        self._print_user_properties(sid)
         self._add_role_rows(sapi.get_roles(user))
         in_groups = set(uapi.get_groups(user))
         print("  groups:")
@@ -492,7 +539,8 @@ class UsersConsole(BaseConsole):
         """
         parts = arg.split()
         if not parts:
-            return self.do_deselect("")
+            self.do_deselect("")
+            return
         if len(parts) > 2:
             print("Usage: select [<user|group|plugin>] <id>")
             return
@@ -519,6 +567,7 @@ class UsersConsole(BaseConsole):
         self.subject_kind = kind
         self.subject_id = sid
         self._show_subject()
+        print("Type 'help' for the commands on this %s." % kind)
         self._update_prompt()
 
     def do_deselect(self, arg):
@@ -582,10 +631,15 @@ class UsersConsole(BaseConsole):
     def _toggle_plugin(self, arg, activate):
         verb = "activate" if activate else "deactivate"
         parts = arg.split()
-        if len(parts) != 2:
-            print("Usage: %s <plugin_id> <interface>" % verb)
+        selected = self._selected_id("plugin")
+        # with a plugin selected, only the interface is required
+        if selected and len(parts) == 1:
+            pid, iname = selected, parts[0]
+        elif len(parts) == 2:
+            pid, iname = parts
+        else:
+            print("Usage: %s [<plugin_id>] <interface>" % verb)
             return
-        pid, iname = parts
         acl = self._acl()
         iface = self._plugin_type_map().get(iname)
         if iface is None:
@@ -604,14 +658,16 @@ class UsersConsole(BaseConsole):
             lambda: self._set_plugin_interface(pid, iface, activate))
 
     def do_activate(self, arg):
-        """activate <plugin_id> <interface> -- enable a plugin for a PAS
-        interface (e.g. activate pasldap IGroupIntrospection)
+        """activate [<plugin_id>] <interface> -- enable a plugin for a PAS
+        interface (e.g. activate pasldap IGroupIntrospection). The plugin_id
+        defaults to the selected plugin.
         """
         self._toggle_plugin(arg, True)
 
     def do_deactivate(self, arg):
-        """deactivate <plugin_id> <interface> -- disable a plugin for a PAS
-        interface (e.g. deactivate pasldap IGroupIntrospection)
+        """deactivate [<plugin_id>] <interface> -- disable a plugin for a PAS
+        interface (e.g. deactivate pasldap IGroupIntrospection). The plugin_id
+        defaults to the selected plugin.
         """
         self._toggle_plugin(arg, False)
 

@@ -68,6 +68,57 @@ class TestUsersConsole(BaseTestCase):
         c.do_toggle(str(self._row(c, "group", "analysts")))
         self.assertIn("bob", uapi.get_group("analysts").getMemberIds())
 
+    def test_selected_user_defaults_commands(self):
+        c = self.console
+        c.do_adduser("bob bob@example.com secret123")
+        c.do_addgroup("analysts Analysts")
+        c.do_select("bob")
+        # 'roles' with no id targets the selected user
+        c.do_roles("+LabManager")
+        self.assertIn("LabManager", sapi.get_roles("bob"))
+        # scoped_help lists the user commands for the selection
+        label, names = c.scoped_help()
+        self.assertEqual(label, "user 'bob'")
+        self.assertIn("roles", names)
+        self.assertIn("deluser", names)
+
+    def test_selected_group_defaults_commands(self):
+        c = self.console
+        c.do_adduser("bob bob@example.com secret123")
+        c.do_addgroup("analysts Analysts")
+        c.do_select("group analysts")
+        # 'members'/'grouproles' with no id target the selected group
+        c.do_members("+bob")
+        self.assertIn("bob", uapi.get_group("analysts").getMemberIds())
+        c.do_grouproles("+LabClerk")
+        self.assertIn("LabClerk", uapi.get_group("analysts").getRoles())
+        label, names = c.scoped_help()
+        self.assertEqual(label, "group 'analysts'")
+        self.assertIn("members", names)
+
+    def test_selected_plugin_defaults_activate(self):
+        c = self.console
+        acl = self.portal.acl_users
+        pid = iname = iface = None
+        for info in acl.plugins.listPluginTypeInfo():
+            ids = acl.plugins.listPluginIds(info["interface"])
+            if ids:
+                pid, iname, iface = ids[0], info["id"], info["interface"]
+                break
+        self.assertIsNotNone(pid)
+        c.do_select("plugin %s" % pid)
+        # 'deactivate'/'activate' with only the interface target the plugin
+        c.do_deactivate(iname)
+        self.assertNotIn(pid, acl.plugins.listPluginIds(iface))
+        c.do_activate(iname)
+        self.assertIn(pid, acl.plugins.listPluginIds(iface))
+        label, names = c.scoped_help()
+        self.assertEqual(label, "plugin '%s'" % pid)
+        self.assertIn("activate", names)
+
+    def test_scoped_help_none_without_selection(self):
+        self.assertIsNone(self.console.scoped_help())
+
     def test_deselect(self):
         c = self.console
         c.do_addgroup("g1 G1")

@@ -103,6 +103,12 @@ class CatalogConsole(BaseConsole):
         self.catalog_id = None
         self.catalog = None
 
+    def scoped_help(self):
+        if self.catalog is None:
+            return None
+        return ("catalog '%s'" % self.catalog_id,
+                ["indexes", "reindex", "rebuild"])
+
     # -- helpers ---------------------------------------------------------
 
     def _require_catalog(self):

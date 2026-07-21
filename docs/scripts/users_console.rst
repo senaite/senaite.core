@@ -21,18 +21,18 @@ Commands
 
    users [<search>]              List users, optionally matching a term in
                                  the id or login (capped at 100 rows).
-   user <id>                     Show fullname, email, roles and groups.
+   user [<id>]                   Show fullname, email, roles and groups.
    adduser <id> <email> [<pw>]   Create a local user; prompts for the
                                  password when omitted.
-   deluser <id>                  Remove a user.
-   passwd <id> [<pw>]            Set a local user's password.
-   roles <id> [+Role -Role ...]  Show, grant or revoke global roles.
+   deluser [<id>]                Remove a user.
+   passwd [<id>] [<pw>]          Set a local user's password.
+   roles [<id>] [+Role -Role]    Show, grant or revoke global roles.
    groups                        List groups with their roles.
-   group <id>                    Show title, roles and members.
+   group [<id>]                  Show title, roles and members.
    addgroup <id> [<title>]       Create a group.
-   delgroup <id>                 Remove a group.
-   members <group> [+u -u ...]   Show, add or remove group members.
-   grouproles <group> [+R -R]    Show, grant or revoke group roles.
+   delgroup [<id>]               Remove a group.
+   members [<group>] [+u -u]     Show, add or remove group members.
+   grouproles [<group>] [+R -R]  Show, grant or revoke group roles.
    plugins                       List plugins with their active-interface
                                  count.
    select [<kind>] <id>          Drill into a subject and list its toggleable
@@ -45,8 +45,21 @@ Commands
                                  re-show the list.
    deselect                      Clear the current selection (a bare `select`
                                  with no id does the same).
-   activate <plugin> <iface>     Enable a plugin for a PAS interface.
-   deactivate <plugin> <iface>   Disable a plugin for a PAS interface.
+   activate [<plugin>] <iface>   Enable a plugin for a PAS interface.
+   deactivate [<plugin>] <iface> Disable a plugin for a PAS interface.
+
+Once a subject is selected the id-taking commands act on it without
+repeating the id: with a user selected `roles`, `user`, `passwd` and
+`deluser` target that user; with a group selected `members`, `grouproles`,
+`group` and `delgroup` target the group; with a plugin selected `activate`
+and `deactivate` take only the interface. A bare `help` then lists just the
+commands scoped to the selection (`help all` shows everything).
+
+.. code-block:: text
+
+   select bob            # select the user
+   roles +LabManager     # grant a role to bob without repeating the id
+   help                  # list the commands scoped to bob
 
 `adduser` and `passwd` operate on the local ZODB user manager
 (`source_users`); directory-backed users (e.g. LDAP) are managed in the

@@ -136,6 +136,12 @@ class UpgradeConsole(BaseConsole):
         self.profile_id = None
         self.listing = []
 
+    def scoped_help(self):
+        if not self.profile_id:
+            return None
+        return ("profile '%s'" % self.profile_id,
+                ["list", "run", "all", "debug", "version"])
+
     # -- helpers ---------------------------------------------------------
 
     def _require_profile(self):

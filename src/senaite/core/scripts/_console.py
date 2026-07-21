@@ -241,6 +241,44 @@ class BaseConsole(cmd.Cmd, object):
         """Called after 'site' switches the active site"""
         pass
 
+    def scoped_help(self):
+        """Return (label, [command names]) for context-scoped help, or None.
+
+        Subclasses override this so a bare 'help' with a selection active
+        lists just the commands that act on it, in the given order. Returning
+        None (the default) keeps the standard, full help.
+        """
+        return None
+
+    # -- help ------------------------------------------------------------
+
+    def do_help(self, arg):
+        """help [<command>] -- list commands or show help for one. With a
+        selection active a bare 'help' lists the scoped commands; 'help all'
+        always shows every command.
+        """
+        if arg == "all":
+            arg = ""
+        else:
+            scope = self.scoped_help()
+            if not arg and scope is not None:
+                self._print_scoped_help(scope)
+                return
+        cmd.Cmd.do_help(self, arg)
+
+    def _print_scoped_help(self, scope):
+        """Print the scoped command list with each command's summary line"""
+        label, names = scope
+        print("Commands for the selected %s:" % label)
+        for name in names:
+            method = getattr(self, "do_" + name, None)
+            doc = (method.__doc__ or "").strip() if method else ""
+            summary = doc.splitlines()[0].strip() if doc else ""
+            print("  %-12s %s" % (name, summary))
+        print("")
+        print("'help all' lists every command; 'help <command>' shows "
+              "details.")
+
     # -- shared helpers --------------------------------------------------
 
     def _update_prompt(self):
