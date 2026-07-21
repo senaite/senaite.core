@@ -32,9 +32,23 @@ to inspect a failure.
 
 ### Requirements
 
-The instance must not be running, otherwise opening the database fails with
-`zc.lockfile.LockError`. Stop it first (`bin/instance stop`, or the ZEO
-client) and start the console against a free storage.
+With a standalone `FileStorage` the instance must not be running, otherwise
+opening the database fails with `zc.lockfile.LockError`. Stop it first
+(`bin/instance stop`) and start the console against the free storage.
+
+With a ZEO setup you do not stop the server: point `-c` at a ZEO client
+`zope.conf` (e.g. `parts/client_reserved/etc/zope.conf`) so the console
+connects through the running ZEO server as another client. The auto-lookup
+already prefers `client_reserved`, then `client1`, then `instance`.
+
+Buildout injects some `zope.conf` values as environment variables (via a
+part's `environment-vars`, e.g. `ZEO_TMP` for a ZEO client's cache dir) that
+are only exported by the generated runner, not by a plain shell. The console
+detects such `$(NAME)` references and, for any that are unset, seeds a
+throwaway temporary directory so the config parses (and the client gets its
+own cache, avoiding a lock clash with a running reserved client). To use a
+specific path instead, export the variable before running, e.g.
+`ZEO_TMP=/path bin/senaite-upgrade`.
 
 pdbpp and IPython are already available in the buildout, so `import pdb`
 yields the enhanced prompt and the `ipython` command works.

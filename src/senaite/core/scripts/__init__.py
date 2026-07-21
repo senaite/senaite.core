@@ -19,12 +19,24 @@
 # Some rights reserved, see README and LICENSE.
 
 import argparse
+import atexit
 import logging
 import os
+import re
+import shutil
+import tempfile
 import time
 import types
 
 from senaite.core import logger
+
+# ZConfig resolves `$(NAME)` substitutions from the OS environment (the
+# `${NAME}`/`$NAME` forms come from `%define` in the file instead). Buildout
+# injects such environment variables (e.g. `ZEO_TMP` for a ZEO client cache
+# directory) when it starts an instance, but a bare console run does not have
+# them, so parsing the client `zope.conf` fails with
+# `no replacement for '<NAME>'`. This pattern detects those references.
+ENV_SUBSTITUTION_RE = re.compile(r"\$\(([a-zA-Z_][a-zA-Z0-9_]*)\)")
 
 parser = argparse.ArgumentParser(
     description="Run a SENAITE script")
@@ -37,6 +49,31 @@ parser.add_argument("-v", "--verbose", dest="verbose",
                     help="Verbose logging")
 
 this_dir = os.path.dirname(os.path.realpath(__file__))
+
+
+def seed_missing_config_env(conf_path):
+    """Seed `os.environ` for `$(NAME)` substitutions missing from the shell.
+
+    The generated instance/client runner exports buildout `environment-vars`
+    (e.g. `ZEO_TMP`) before Zope reads the config. A bare console run does not,
+    so any `$(NAME)` referring to an unset variable makes ZConfig fail. For
+    those we set a writable temporary directory (removed on exit); such
+    variables are local cache/var paths that a one-shot maintenance run can
+    keep to itself.
+    """
+    with open(conf_path) as f:
+        names = set(ENV_SUBSTITUTION_RE.findall(f.read()))
+    missing = sorted(name for name in names if name not in os.environ)
+    if not missing:
+        return
+    tmp = tempfile.mkdtemp(prefix="senaite-console-")
+    atexit.register(shutil.rmtree, tmp, True)
+    for name in missing:
+        os.environ[name] = tmp
+    logger.warning(
+        "Seeded missing config environment variable(s) %s -> %s "
+        "(not set in this shell; using a temporary directory)",
+        ", ".join(missing), tmp)
 
 
 def resolve_module(module):
@@ -66,6 +103,9 @@ def run_it(module):
             break
     if conf_path is None:
         raise Exception("Could not find zope.conf in {}".format(lookup_paths))
+
+    # ensure buildout-injected `$(NAME)` env vars (e.g. ZEO_TMP) are present
+    seed_missing_config_env(conf_path)
 
     from Zope2 import configure
     configure(conf_path)
