@@ -103,3 +103,11 @@ def upgrade_sites():
 
 def reindex():
     return run_it("_reindex")
+
+
+def upgrade():
+    return run_it("_upgrade")
+
+
+def catalog():
+    return run_it("_catalog")

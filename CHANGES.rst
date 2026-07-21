@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2995 Add interactive upgrade and catalog console scripts
 - #2993 Sync translations and add complete German, Dutch and Spanish translations
 - #2993 Make the dashboard fully translatable
 - #2992 Fix UnicodeEncodeError in Organization.getPrintAddress with non-ASCII address

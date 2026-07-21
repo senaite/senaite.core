@@ -107,6 +107,8 @@ setup(
 
           [console_scripts]
           reindex = senaite.core.scripts:reindex
+          senaite-catalog = senaite.core.scripts:catalog
+          senaite-upgrade = senaite.core.scripts:upgrade
           upgrade-sites = senaite.core.scripts:upgrade_sites
           zope-passwd = senaite.core.scripts:zope_passwd
           """,
