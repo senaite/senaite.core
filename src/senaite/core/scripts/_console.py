@@ -34,7 +34,10 @@ import time
 import traceback
 
 import transaction
+from AccessControl.SecurityManagement import newSecurityManager
 from bika.lims import api
+from senaite.core import logger
+from senaite.core.scripts.utils import setup_site
 
 LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s: %(message)s"
 
@@ -181,6 +184,36 @@ def resolve_site(app, site_id):
     return app[sids[0]]
 
 
+def bootstrap(app, args):
+    """Set up the admin security context and return the resolved site.
+
+    Shared by every console `run(app)`: authenticate as `admin`, resolve the
+    target site (honouring `-s`) and make it the active local site.
+
+    :param app: the Zope application root
+    :param args: parsed command line arguments (needs `site_id`)
+    :returns: the resolved SENAITE site
+    """
+    user = app.acl_users.getUser("admin")
+    newSecurityManager(None, user.__of__(app.acl_users))
+    site = resolve_site(app, args.site_id)
+    setup_site(site)
+    logger.info("Using SENAITE site '%s'" % api.get_id(site))
+    return site
+
+
+def finish_noninteractive(console, do_commit):
+    """Commit or warn at the end of a one-shot (non-interactive) run.
+
+    :param console: the console that ran the operation
+    :param do_commit: whether `--commit` was passed
+    """
+    if do_commit:
+        console.do_commit("")
+    elif console.dirty:
+        print("Not committed. Re-run with --commit to persist.")
+
+
 class BaseConsole(cmd.Cmd, object):
     """Common interactive console: capture, timing, transaction control and
     debugging shells. Subclasses add their own domain commands and provide
@@ -215,6 +248,17 @@ class BaseConsole(cmd.Cmd, object):
         label = self.context_label()
         suffix = " %s" % label if label else ""
         self.prompt = "(%s%s%s) " % (self.tool_name, flag, suffix)
+
+    def _require_selection(self, value, message):
+        """Return True if `value` is set, otherwise print `message`.
+
+        A guard for commands that need a prior selection (a catalog, a
+        profile, ...).
+        """
+        if value:
+            return True
+        print(message)
+        return False
 
     def _execute(self, desc, func):
         """Run func inside a savepoint, timed and captured. Report a one

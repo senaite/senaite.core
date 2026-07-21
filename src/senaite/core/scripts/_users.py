@@ -20,16 +20,13 @@
 
 import getpass
 
-from AccessControl.SecurityManagement import newSecurityManager
 from bika.lims import api
 from bika.lims.api import security as sapi
 from bika.lims.api import user as uapi
-from senaite.core import logger
 from senaite.core.scripts import parser
 from senaite.core.scripts._console import ask
 from senaite.core.scripts._console import BaseConsole
-from senaite.core.scripts._console import resolve_site
-from senaite.core.scripts.utils import setup_site
+from senaite.core.scripts._console import bootstrap
 
 __doc__ = """Manage acl_users users, groups and PAS plugins interactively.
 
@@ -84,6 +81,9 @@ class UsersConsole(BaseConsole):
         return "%s:%s" % (self.subject_kind, self.subject_id)
 
     def on_site_changed(self):
+        self._clear_selection()
+
+    def _clear_selection(self):
         self.subject_kind = None
         self.subject_id = None
         self.subject_rows = []
@@ -112,6 +112,45 @@ class UsersConsole(BaseConsole):
         added = [t[1:] for t in tokens if t.startswith("+") and t[1:]]
         removed = [t[1:] for t in tokens if t.startswith("-") and t[1:]]
         return added, removed
+
+    def _user_properties(self, uid):
+        """(fullname, email) for a user, empty strings when unset"""
+        member = self._membership().getMemberById(uid)
+        if member is None:
+            return "", ""
+        return (member.getProperty("fullname", "") or "",
+                member.getProperty("email", "") or "")
+
+    # -- atomic mutations (single source of truth for both the explicit --
+    # -- commands and the select/toggle model) ---------------------------
+
+    def _set_user_role(self, uid, role, granted):
+        prm = self._acl().portal_role_manager
+        if granted:
+            prm.assignRoleToPrincipal(role, uid)
+        else:
+            prm.removeRoleFromPrincipal(role, uid)
+
+    def _set_group_member(self, gid, uid, member):
+        if member:
+            uapi.add_group(gid, uid)
+        else:
+            uapi.del_group(gid, uid)
+
+    def _set_group_role(self, gid, role, granted):
+        roles = set(uapi.get_group(gid).getRoles())
+        if granted:
+            roles.add(role)
+        else:
+            roles.discard(role)
+        self._groups_tool().setRolesForGroup(gid, sorted(roles))
+
+    def _set_plugin_interface(self, pid, iface, active):
+        plugins = self._acl().plugins
+        if active:
+            plugins.activatePlugin(iface, pid)
+        else:
+            plugins.deactivatePlugin(iface, pid)
 
     # -- user commands ---------------------------------------------------
 
@@ -144,15 +183,12 @@ class UsersConsole(BaseConsole):
         if user is None:
             print("No such user: %s" % uid)
             return
-        member = self._membership().getMemberById(uid)
-        groups = uapi.get_groups(user)
+        fullname, email = self._user_properties(uid)
         print("  id:       %s" % uapi.get_user_id(user))
-        print("  fullname: %s" % (member and member.getProperty(
-            "fullname", "") or ""))
-        print("  email:    %s" % (member and member.getProperty(
-            "email", "") or ""))
+        print("  fullname: %s" % fullname)
+        print("  email:    %s" % email)
         print("  roles:    %s" % ", ".join(sapi.get_roles(user)))
-        print("  groups:   %s" % ", ".join(sorted(groups)))
+        print("  groups:   %s" % ", ".join(sorted(uapi.get_groups(user))))
 
     def do_adduser(self, arg):
         """adduser <id> <email> [<password>] -- create a local user. Prompts
@@ -229,13 +265,12 @@ class UsersConsole(BaseConsole):
         if not added and not removed:
             print("  roles: %s" % ", ".join(sapi.get_roles(uid)))
             return
-        prm = self._acl().portal_role_manager
 
         def op():
             for role in added:
-                prm.assignRoleToPrincipal(role, uid)
+                self._set_user_role(uid, role, True)
             for role in removed:
-                prm.removeRoleFromPrincipal(role, uid)
+                self._set_user_role(uid, role, False)
         self._execute("roles %s %s" % (uid, " ".join(parts[1:])), op)
 
     # -- group commands --------------------------------------------------
@@ -310,9 +345,9 @@ class UsersConsole(BaseConsole):
 
         def op():
             for uid in added:
-                uapi.add_group(gid, uid)
+                self._set_group_member(gid, uid, True)
             for uid in removed:
-                uapi.del_group(gid, uid)
+                self._set_group_member(gid, uid, False)
         self._execute("members %s %s" % (gid, " ".join(parts[1:])), op)
 
     def do_grouproles(self, arg):
@@ -332,13 +367,12 @@ class UsersConsole(BaseConsole):
         if not added and not removed:
             print("  roles: %s" % ", ".join(sorted(group.getRoles())))
             return
-        gtool = self._groups_tool()
 
         def op():
-            roles = set(group.getRoles())
-            roles.update(added)
-            roles.difference_update(removed)
-            gtool.setRolesForGroup(gid, sorted(roles))
+            for role in added:
+                self._set_group_role(gid, role, True)
+            for role in removed:
+                self._set_group_role(gid, role, False)
         self._execute("grouproles %s %s" % (gid, " ".join(parts[1:])), op)
 
     # -- plugin commands -------------------------------------------------
@@ -398,52 +432,56 @@ class UsersConsole(BaseConsole):
             return sid in self._plugin_ids()
         return False
 
-    def _add_row(self, num, row_kind, payload, label, active):
+    def _add_row(self, row_kind, payload, label, active):
+        """Append a numbered [X]/[ ] toggle row and print it"""
+        num = len(self.subject_rows) + 1
         self.subject_rows.append((row_kind, payload, label))
         print("    [%s] %3d  %s" % ("X" if active else " ", num, label))
+
+    def _add_role_rows(self, current_roles):
+        """Add a numbered row per assignable role, marking the ones held"""
+        held = set(current_roles)
+        print("  roles:")
+        for role in self._valid_roles():
+            self._add_row("role", role, role, role in held)
+
+    def _show_user(self):
+        sid = self.subject_id
+        user = uapi.get_user(sid)
+        fullname, email = self._user_properties(sid)
+        print("user %s (%s <%s>)" % (sid, fullname, email))
+        self._add_role_rows(sapi.get_roles(user))
+        in_groups = set(uapi.get_groups(user))
+        print("  groups:")
+        for gid in sorted(self._groups_tool().getGroupIds()):
+            self._add_row("group", gid, gid, gid in in_groups)
+
+    def _show_group(self):
+        sid = self.subject_id
+        group = uapi.get_group(sid)
+        title = group.getProperty("title", "") or ""
+        print("group %s (%s)" % (sid, title))
+        print("  members: %s" % ", ".join(sorted(group.getMemberIds())))
+        self._add_role_rows(group.getRoles())
+
+    def _show_plugin(self):
+        sid = self.subject_id
+        acl = self._acl()
+        meta = getattr(getattr(acl, sid, None), "meta_type", "?")
+        print("plugin %s (%s)" % (sid, meta))
+        ifaces = self._plugin_interfaces(sid)
+        if not ifaces:
+            print("  (implements no PAS plugin interfaces)")
+        for iname, iface in ifaces:
+            active = sid in acl.plugins.listPluginIds(iface)
+            self._add_row("interface", iface, iname, active)
 
     def _show_subject(self):
         """Show the selected subject and its numbered [X]/[ ] toggle rows"""
         self.subject_rows = []
-        kind, sid = self.subject_kind, self.subject_id
-        num = 0
-        if kind == "user":
-            user = uapi.get_user(sid)
-            member = self._membership().getMemberById(sid)
-            fullname = member and member.getProperty("fullname", "") or ""
-            email = member and member.getProperty("email", "") or ""
-            print("user %s (%s <%s>)" % (sid, fullname, email))
-            has_roles = set(sapi.get_roles(user))
-            print("  roles:")
-            for role in self._valid_roles():
-                num += 1
-                self._add_row(num, "role", role, role, role in has_roles)
-            in_groups = set(uapi.get_groups(user))
-            print("  groups:")
-            for gid in sorted(self._groups_tool().getGroupIds()):
-                num += 1
-                self._add_row(num, "group", gid, gid, gid in in_groups)
-        elif kind == "group":
-            group = uapi.get_group(sid)
-            title = group.getProperty("title", "") or ""
-            print("group %s (%s)" % (sid, title))
-            print("  members: %s" % ", ".join(sorted(group.getMemberIds())))
-            has_roles = set(group.getRoles())
-            print("  roles:")
-            for role in self._valid_roles():
-                num += 1
-                self._add_row(num, "role", role, role, role in has_roles)
-        elif kind == "plugin":
-            acl = self._acl()
-            meta = getattr(getattr(acl, sid, None), "meta_type", "?")
-            print("plugin %s (%s)" % (sid, meta))
-            ifaces = self._plugin_interfaces(sid)
-            if not ifaces:
-                print("  (implements no PAS plugin interfaces)")
-            for iname, iface in ifaces:
-                num += 1
-                active = sid in acl.plugins.listPluginIds(iface)
-                self._add_row(num, "interface", iface, iname, active)
+        {"user": self._show_user,
+         "group": self._show_group,
+         "plugin": self._show_plugin}[self.subject_kind]()
 
     def do_select(self, arg):
         """select [<kind>] <id> -- drill into a subject and list its
@@ -453,7 +491,9 @@ class UsersConsole(BaseConsole):
         auto-detect from the id (e.g. 'select pasldap').
         """
         parts = arg.split()
-        if not parts or len(parts) > 2:
+        if not parts:
+            return self.do_deselect("")
+        if len(parts) > 2:
             print("Usage: select [<user|group|plugin>] <id>")
             return
         if len(parts) == 2:
@@ -481,57 +521,45 @@ class UsersConsole(BaseConsole):
         self._show_subject()
         self._update_prompt()
 
+    def do_deselect(self, arg):
+        """deselect -- clear the current selection (also 'select' with no id)
+        """
+        if not self.subject_kind:
+            print("Nothing selected.")
+            return
+        print("Deselected %s %s." % (self.subject_kind, self.subject_id))
+        self._clear_selection()
+        self._update_prompt()
+
     def _toggle_op(self, row_kind, payload, label):
         """Return (description, callable) that flips the given row for the
-        current subject.
+        current subject, delegating the write to an atomic setter.
         """
-        acl = self._acl()
         sid = self.subject_id
         if row_kind == "interface":
             iface = payload
-            active = sid in acl.plugins.listPluginIds(iface)
+            active = sid in self._acl().plugins.listPluginIds(iface)
             verb = "deactivate" if active else "activate"
-
-            def op():
-                if active:
-                    acl.plugins.deactivatePlugin(iface, sid)
-                else:
-                    acl.plugins.activatePlugin(iface, sid)
-            return "%s %s for %s" % (verb, sid, label), op
+            return ("%s %s for %s" % (verb, sid, label),
+                    lambda: self._set_plugin_interface(sid, iface, not active))
         if row_kind == "group":
             gid = payload
             member = gid in set(uapi.get_groups(uapi.get_user(sid)))
             if member:
-                return "remove %s from group %s" % (sid, gid), \
-                    lambda: uapi.del_group(gid, sid)
-            return "add %s to group %s" % (sid, gid), \
-                lambda: uapi.add_group(gid, sid)
-        # row_kind == "role"
+                desc = "remove %s from group %s" % (sid, gid)
+            else:
+                desc = "add %s to group %s" % (sid, gid)
+            return desc, lambda: self._set_group_member(gid, sid, not member)
+        # row_kind == "role", on a user or a group
         if self.subject_kind == "user":
             has = label in set(sapi.get_roles(uapi.get_user(sid)))
-            prm = acl.portal_role_manager
             verb = "revoke" if has else "grant"
-
-            def op():
-                if has:
-                    prm.removeRoleFromPrincipal(label, sid)
-                else:
-                    prm.assignRoleToPrincipal(label, sid)
-            return "%s role %s for %s" % (verb, label, sid), op
-        # group role
-        group = uapi.get_group(sid)
-        has = label in set(group.getRoles())
-        gtool = self._groups_tool()
+            return ("%s role %s for %s" % (verb, label, sid),
+                    lambda: self._set_user_role(sid, label, not has))
+        has = label in set(uapi.get_group(sid).getRoles())
         verb = "revoke" if has else "grant"
-
-        def op():
-            roles = set(group.getRoles())
-            if has:
-                roles.discard(label)
-            else:
-                roles.add(label)
-            gtool.setRolesForGroup(sid, sorted(roles))
-        return "%s role %s for group %s" % (verb, label, sid), op
+        return ("%s role %s for group %s" % (verb, label, sid),
+                lambda: self._set_group_role(sid, label, not has))
 
     def do_toggle(self, arg):
         """toggle <n> -- flip item <n> of the selected subject (see 'select'):
@@ -552,9 +580,9 @@ class UsersConsole(BaseConsole):
             self._show_subject()
 
     def _toggle_plugin(self, arg, activate):
+        verb = "activate" if activate else "deactivate"
         parts = arg.split()
         if len(parts) != 2:
-            verb = "activate" if activate else "deactivate"
             print("Usage: %s <plugin_id> <interface>" % verb)
             return
         pid, iname = parts
@@ -567,21 +595,13 @@ class UsersConsole(BaseConsole):
         if getattr(acl, pid, None) is None:
             print("Unknown plugin '%s'. See 'plugins'." % pid)
             return
-        active = pid in acl.plugins.listPluginIds(iface)
-        if activate and active:
-            print("%s is already active for %s." % (pid, iname))
+        if activate == (pid in acl.plugins.listPluginIds(iface)):
+            state = "active" if activate else "inactive"
+            print("%s is already %s for %s." % (pid, state, iname))
             return
-        if not activate and not active:
-            print("%s is not active for %s." % (pid, iname))
-            return
-        verb = "activate" if activate else "deactivate"
-
-        def op():
-            if activate:
-                acl.plugins.activatePlugin(iface, pid)
-            else:
-                acl.plugins.deactivatePlugin(iface, pid)
-        self._execute("%s %s for %s" % (verb, pid, iname), op)
+        self._execute(
+            "%s %s for %s" % (verb, pid, iname),
+            lambda: self._set_plugin_interface(pid, iface, activate))
 
     def do_activate(self, arg):
         """activate <plugin_id> <interface> -- enable a plugin for a PAS
@@ -598,13 +618,7 @@ class UsersConsole(BaseConsole):
 
 def run(app):
     args, _ = parser.parse_known_args()
-    user = app.acl_users.getUser("admin")
-    newSecurityManager(None, user.__of__(app.acl_users))
-
-    site = resolve_site(app, args.site_id)
-    setup_site(site)
-    logger.info("Using SENAITE site '%s'" % api.get_id(site))
-
+    site = bootstrap(app, args)
     console = UsersConsole(app, site, verbose=args.verbose)
     console.cmdloop()
 

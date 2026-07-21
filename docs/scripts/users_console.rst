@@ -43,6 +43,8 @@ Commands
                                  from the id when omitted.
    toggle <n>                    Flip row <n> of the selected subject and
                                  re-show the list.
+   deselect                      Clear the current selection (a bare `select`
+                                 with no id does the same).
    activate <plugin> <iface>     Enable a plugin for a PAS interface.
    deactivate <plugin> <iface>   Disable a plugin for a PAS interface.
 

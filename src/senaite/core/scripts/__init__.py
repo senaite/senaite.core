@@ -29,6 +29,7 @@ import time
 import types
 
 from senaite.core import logger
+from zope.dottedname.resolve import resolve
 
 # ZConfig resolves `$(NAME)` substitutions from the OS environment (the
 # `${NAME}`/`$NAME` forms come from `%define` in the file instead). Buildout
@@ -38,6 +39,9 @@ from senaite.core import logger
 # `no replacement for '<NAME>'`. This pattern detects those references.
 ENV_SUBSTITUTION_RE = re.compile(r"\$\(([a-zA-Z_][a-zA-Z0-9_]*)\)")
 
+# Shared argument parser. Each console module imports it and adds its own
+# arguments at import time, so this assumes exactly ONE console module is
+# imported per entry-point process (which is how the console_scripts run).
 parser = argparse.ArgumentParser(
     description="Run a SENAITE script")
 parser.add_argument("-s", "--site-id", dest="site_id", default=None,
@@ -81,7 +85,6 @@ def resolve_module(module):
     """
     if isinstance(module, types.ModuleType):
         return module
-    from zope.dottedname.resolve import resolve
     return resolve("senaite.core.scripts." + module)
 
 
@@ -102,7 +105,8 @@ def run_it(module):
             conf_path = path
             break
     if conf_path is None:
-        raise Exception("Could not find zope.conf in {}".format(lookup_paths))
+        raise RuntimeError(
+            "Could not find zope.conf in {}".format(lookup_paths))
 
     # ensure buildout-injected `$(NAME)` env vars (e.g. ZEO_TMP) are present
     seed_missing_config_env(conf_path)

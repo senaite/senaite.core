@@ -68,6 +68,20 @@ class TestUsersConsole(BaseTestCase):
         c.do_toggle(str(self._row(c, "group", "analysts")))
         self.assertIn("bob", uapi.get_group("analysts").getMemberIds())
 
+    def test_deselect(self):
+        c = self.console
+        c.do_addgroup("g1 G1")
+        c.do_select("g1")
+        self.assertEqual(c.subject_kind, "group")
+        c.do_deselect("")
+        self.assertIsNone(c.subject_kind)
+        self.assertIsNone(c.subject_id)
+        self.assertEqual(c.subject_rows, [])
+        # bare 'select' with no id also clears the selection
+        c.do_select("g1")
+        c.do_select("")
+        self.assertIsNone(c.subject_kind)
+
     def test_select_group_toggle_role(self):
         c = self.console
         c.do_addgroup("reviewers Reviewers")

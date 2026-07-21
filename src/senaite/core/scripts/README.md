@@ -341,6 +341,7 @@ Select and toggle (works across users, groups and plugins):
 ```
 select [<kind>] <id>          # drill in; <kind> (user/group/plugin) optional
 toggle <n>                    # flip row <n> and re-show the list
+deselect                      # clear the selection (also 'select' with no id)
 ```
 
 `<kind>` is auto-detected from the id when omitted (e.g. `select pasldap`);

@@ -18,16 +18,13 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from AccessControl.SecurityManagement import newSecurityManager
-from bika.lims import api
 from Products.ZCatalog.interfaces import IZCatalog
 from Products.ZCatalog.ProgressHandler import ZLogHandler
-from senaite.core import logger
 from senaite.core.scripts import parser
 from senaite.core.scripts._console import ask
 from senaite.core.scripts._console import BaseConsole
-from senaite.core.scripts._console import resolve_site
-from senaite.core.scripts.utils import setup_site
+from senaite.core.scripts._console import bootstrap
+from senaite.core.scripts._console import finish_noninteractive
 
 __doc__ = """Reindex and rebuild SENAITE catalogs interactively.
 
@@ -39,7 +36,7 @@ transaction explicitly when you are done.
 
 parser.description = __doc__
 parser.add_argument("--catalog", dest="catalog", default=None, type=str,
-                    help="Preselect a catalog id (e.g. senaite_catalog_sample)")
+                    help="Preselect a catalog id, e.g. senaite_catalog_sample")
 parser.add_argument("--indexes", dest="do_indexes", action="store_true",
                     help="List the indexes of the catalog and exit")
 parser.add_argument("--reindex", dest="do_reindex", default=None, type=str,
@@ -109,11 +106,9 @@ class CatalogConsole(BaseConsole):
     # -- helpers ---------------------------------------------------------
 
     def _require_catalog(self):
-        if self.catalog is None:
-            print("No catalog selected. Use 'select <catalog_id>' "
-                  "(see 'catalogs').")
-            return False
-        return True
+        return self._require_selection(
+            self.catalog,
+            "No catalog selected. Use 'select <catalog_id>' (see 'catalogs').")
 
     def _known_indexes(self):
         return list(self.catalog.indexes())
@@ -233,21 +228,12 @@ def run_noninteractive(console, args):
         console._execute(desc, console._rebuild)
     else:
         return
-    if args.do_commit:
-        console.do_commit("")
-    elif console.dirty:
-        print("Not committed. Re-run with --commit to persist.")
+    finish_noninteractive(console, args.do_commit)
 
 
 def run(app):
     args, _ = parser.parse_known_args()
-    user = app.acl_users.getUser("admin")
-    newSecurityManager(None, user.__of__(app.acl_users))
-
-    site = resolve_site(app, args.site_id)
-    setup_site(site)
-    logger.info("Using SENAITE site '%s'" % api.get_id(site))
-
+    site = bootstrap(app, args)
     console = CatalogConsole(app, site, verbose=args.verbose)
 
     if args.do_indexes or args.do_reindex is not None or args.do_rebuild:

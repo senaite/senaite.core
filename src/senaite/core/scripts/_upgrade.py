@@ -18,15 +18,12 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from AccessControl.SecurityManagement import newSecurityManager
-from bika.lims import api
-from senaite.core import logger
 from senaite.core.scripts import parser
 from senaite.core.scripts._console import ask
 from senaite.core.scripts._console import BaseConsole
+from senaite.core.scripts._console import bootstrap
+from senaite.core.scripts._console import finish_noninteractive
 from senaite.core.scripts._console import get_debugger
-from senaite.core.scripts._console import resolve_site
-from senaite.core.scripts.utils import setup_site
 
 __doc__ = """Run SENAITE profile upgrade steps interactively and one by one.
 
@@ -142,11 +139,9 @@ class UpgradeConsole(BaseConsole):
     # -- helpers ---------------------------------------------------------
 
     def _require_profile(self):
-        if not self.profile_id:
-            print("No profile selected. Use 'select <profile_id>' "
-                  "(see 'profiles').")
-            return False
-        return True
+        return self._require_selection(
+            self.profile_id,
+            "No profile selected. Use 'select <profile_id>' (see 'profiles').")
 
     def _refresh_listing(self, show_old=False):
         self.listing = get_steps(self.setup, self.profile_id, show_old)
@@ -350,21 +345,12 @@ def run_noninteractive(console, args):
         return
     if args.do_run:
         console.do_run(args.do_run)
-        if args.do_commit:
-            console.do_commit("")
-        elif console.dirty:
-            print("Not committed. Re-run with --commit to persist.")
+        finish_noninteractive(console, args.do_commit)
 
 
 def run(app):
     args, _ = parser.parse_known_args()
-    user = app.acl_users.getUser("admin")
-    newSecurityManager(None, user.__of__(app.acl_users))
-
-    site = resolve_site(app, args.site_id)
-    setup_site(site)
-    logger.info("Using SENAITE site '%s'" % api.get_id(site))
-
+    site = bootstrap(app, args)
     console = UpgradeConsole(app, site, verbose=args.verbose)
 
     if args.do_list or args.do_run:
