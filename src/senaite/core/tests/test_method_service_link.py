@@ -29,7 +29,7 @@ class TestMethodServiceLink(DataTestCase):
 
     def test_methods_are_dexterity_and_in_setup(self):
         methods = self.portal.setup.methods.objectValues()
-        self.assertTrue(len(methods) > 0)
+        self.assertGreater(len(methods), 0)
         for method in methods:
             self.assertEqual(api.get_portal_type(method), "Method")
             self.assertTrue(api.is_dexterity_content(method))
@@ -38,8 +38,8 @@ class TestMethodServiceLink(DataTestCase):
         catalog = api.get_tool(SETUP_CATALOG)
         services = catalog(portal_type="AnalysisService")
         with_methods = [b for b in services if api.get_object(b).getMethods()]
-        self.assertTrue(
-            len(with_methods) > 0,
+        self.assertGreater(
+            len(with_methods), 0,
             "no analysis service has a method assigned")
 
 
