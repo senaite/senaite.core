@@ -1,7 +1,7 @@
 Users console
 -------------
 
-`senaite-users` manages the site's ``acl_users``: it lists, adds, updates
+`senaite-users` manages the site's `acl_users`: it lists, adds, updates
 and removes users and groups, manages roles and group membership, and
 activates or deactivates PAS plugins for their interfaces. It is meant for
 a plain SSH terminal where the management interface is not reachable.
@@ -37,10 +37,10 @@ Commands
    activate <plugin> <iface>     Enable a plugin for a PAS interface.
    deactivate <plugin> <iface>   Disable a plugin for a PAS interface.
 
-``adduser`` and ``passwd`` operate on the local ZODB user manager
-(``source_users``); directory-backed users (e.g. LDAP) are managed in the
+`adduser` and `passwd` operate on the local ZODB user manager
+(`source_users`); directory-backed users (e.g. LDAP) are managed in the
 directory. Every change runs in a savepoint and is timed; nothing is
-committed until you type ``commit``.
+committed until you type `commit`.
 
 The plugin commands are useful on headless deployments. For example, to
 temporarily take an LDAP plugin out of group introspection during a
