@@ -37,7 +37,6 @@ from senaite.core.interfaces import IDispatched
 from bika.lims.utils import tmpID
 from persistent.list import PersistentList
 from plone.app.blob.field import BlobWrapper
-from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContent
 from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.interfaces import INamed
@@ -2965,11 +2964,11 @@ def migrate_method_to_dx(src, destination):
     target.setCalculations(src.getRawCalculations() or [])
     target.setCalculation(src.getRawCalculation())
 
-    # instructions (AT html text -> DX rich text)
+    # instructions (AT html text -> DX rich text). The DX setter wraps plain
+    # (html) strings into a rich text value.
     instructions = src.getInstructions()
     if instructions:
-        target.setInstructions(RichTextValue(
-            api.safe_unicode(instructions), "text/html", "text/x-html-safe"))
+        target.setInstructions(api.safe_unicode(instructions))
 
     # method document (AT blob file -> DX named blob file)
     method_document = src.getMethodDocument()

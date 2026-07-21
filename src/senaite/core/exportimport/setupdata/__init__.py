@@ -34,7 +34,6 @@ from bika.lims.utils import to_unicode
 from bika.lims.utils import to_utf8
 from bika.lims.utils.analysis import create_analysis
 from pkg_resources import resource_filename
-from plone.app.textfield.value import RichTextValue
 from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.file import NamedBlobImage
 from Products.Archetypes.event import ObjectInitializedEvent
@@ -1365,9 +1364,7 @@ class Methods(WorksheetImporter):
 
             instructions = row.get("Instructions", "")
             if instructions:
-                obj.setInstructions(RichTextValue(
-                    api.safe_unicode(instructions),
-                    "text/html", "text/x-html-safe"))
+                obj.setInstructions(api.safe_unicode(instructions))
 
             if row.get("MethodDocument"):
                 path = resource_filename(
