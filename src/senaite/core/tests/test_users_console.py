@@ -50,11 +50,26 @@ class TestUsersConsole(BaseTestCase):
         c.do_grouproles("reviewers +LabClerk")
         self.assertIn("LabClerk", uapi.get_group("reviewers").getRoles())
 
-    def test_plugins_list_and_toggle(self):
+    def test_plugins_grid_and_toggle(self):
         c = self.console
-        c.do_plugins("")  # must not raise
+        c.do_plugins("")  # populates the numbered [X]/[ ] rows
+        self.assertTrue(len(c._plugin_rows) > 0)
         acl = self.portal.acl_users
-        # find an active (plugin, interface) pair to round-trip
+        # find the first row that is currently active and toggle it off/on
+        n = pid = iface = None
+        for i, (p, iname, ifc) in enumerate(c._plugin_rows, start=1):
+            if p in acl.plugins.listPluginIds(ifc):
+                n, pid, iface = i, p, ifc
+                break
+        self.assertIsNotNone(n)
+        c.do_toggle(str(n))  # deactivate
+        self.assertNotIn(pid, acl.plugins.listPluginIds(iface))
+        c.do_toggle(str(n))  # activate again
+        self.assertIn(pid, acl.plugins.listPluginIds(iface))
+
+    def test_plugins_named_activate_deactivate(self):
+        c = self.console
+        acl = self.portal.acl_users
         pid = iname = None
         for info in acl.plugins.listPluginTypeInfo():
             ids = acl.plugins.listPluginIds(info["interface"])

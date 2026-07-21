@@ -67,6 +67,12 @@ class UsersConsole(BaseConsole):
     intro = INTRO
     tool_name = "users"
 
+    def __init__(self, app, site, verbose=False):
+        # numbered (plugin_id, interface_name, interface) rows from the last
+        # 'plugins' listing, used by 'toggle <n>'
+        self._plugin_rows = []
+        BaseConsole.__init__(self, app, site, verbose=verbose)
+
     # -- tool helpers ----------------------------------------------------
 
     def _acl(self):
@@ -328,20 +334,60 @@ class UsersConsole(BaseConsole):
         return dict((info["id"], info["interface"])
                     for info in acl.plugins.listPluginTypeInfo())
 
-    def do_plugins(self, arg):
-        """plugins -- list acl_users plugins and the interfaces they are
-        active for
+    def _implementing_plugins(self, iface):
+        """Ids of the acl_users plugins that implement the given interface
+        (i.e. that can be activated for it), sorted.
         """
         acl = self._acl()
-        active = {}
-        for info in acl.plugins.listPluginTypeInfo():
-            for pid in acl.plugins.listPluginIds(info["interface"]):
-                active.setdefault(pid, []).append(info["id"])
-        for pid in sorted(active):
-            plugin = getattr(acl, pid, None)
-            meta = getattr(plugin, "meta_type", "?")
-            print("  %-20s %-30s %s"
-                  % (pid, meta, ", ".join(sorted(active[pid]))))
+        return sorted(pid for pid in acl.objectIds()
+                      if iface.providedBy(getattr(acl, pid, None)))
+
+    def do_plugins(self, arg):
+        """plugins -- show plugins grouped by interface, with [X] for active
+        and [ ] for available-but-inactive. Use 'toggle <n>' to flip a row.
+        """
+        acl = self._acl()
+        self._plugin_rows = []
+        index = 0
+        for info in sorted(acl.plugins.listPluginTypeInfo(),
+                           key=lambda i: i["id"]):
+            iface = info["interface"]
+            iname = info["id"]
+            active_ids = list(acl.plugins.listPluginIds(iface))
+            available = self._implementing_plugins(iface)
+            ordered = active_ids + [p for p in available
+                                    if p not in active_ids]
+            if not ordered:
+                continue
+            print("%s" % iname)
+            for pid in ordered:
+                index += 1
+                mark = "X" if pid in active_ids else " "
+                self._plugin_rows.append((pid, iname, iface))
+                print("  [%s] %3d  %s" % (mark, index, pid))
+
+    def do_toggle(self, arg):
+        """toggle <n> -- activate or deactivate the plugin at row <n> of the
+        last 'plugins' listing
+        """
+        if not self._plugin_rows:
+            print("Run 'plugins' first to list the numbered targets.")
+            return
+        try:
+            pid, iname, iface = self._plugin_rows[int(arg.strip()) - 1]
+        except (ValueError, IndexError):
+            print("No such row. Run 'plugins' to see the numbers.")
+            return
+        acl = self._acl()
+        active = pid in acl.plugins.listPluginIds(iface)
+        verb = "deactivate" if active else "activate"
+
+        def op():
+            if active:
+                acl.plugins.deactivatePlugin(iface, pid)
+            else:
+                acl.plugins.activatePlugin(iface, pid)
+        self._execute("%s %s for %s" % (verb, pid, iname), op)
 
     def _toggle_plugin(self, arg, activate):
         parts = arg.split()

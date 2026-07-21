@@ -33,7 +33,9 @@ Commands
    delgroup <id>                 Remove a group.
    members <group> [+u -u ...]   Show, add or remove group members.
    grouproles <group> [+R -R]    Show, grant or revoke group roles.
-   plugins                       List plugins and the interfaces they serve.
+   plugins                       Show plugins grouped by interface, with
+                                 [X] for active and [ ] for available.
+   toggle <n>                    Flip the plugin at row <n> of 'plugins'.
    activate <plugin> <iface>     Enable a plugin for a PAS interface.
    deactivate <plugin> <iface>   Disable a plugin for a PAS interface.
 

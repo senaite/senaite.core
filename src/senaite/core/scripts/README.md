@@ -331,9 +331,21 @@ grouproles <group> [+R -R]    # show / grant / revoke group roles
 Plugins (the same registry the ZMI "Plugins" tab manages):
 
 ```
-plugins                       # list plugins and the interfaces they serve
-activate <plugin> <iface>     # enable a plugin for an interface
-deactivate <plugin> <iface>   # disable a plugin for an interface
+plugins                       # grid by interface: [X] active, [ ] available
+toggle <n>                    # flip the plugin at row <n> from 'plugins'
+activate <plugin> <iface>     # enable a plugin for an interface (explicit)
+deactivate <plugin> <iface>   # disable a plugin for an interface (explicit)
+```
+
+`plugins` groups every plugin under each interface it can serve, marking
+the active ones with `[X]` and the available-but-inactive ones with `[ ]`,
+and numbers each row so you can flip it with `toggle <n>`:
+
+```
+IGroupIntrospection
+  [X]   7  auto_group
+  [X]   8  source_groups
+  [ ]   9  pasldap
 ```
 
 `adduser`/`passwd` operate on the local ZODB user manager (`source_users`);
