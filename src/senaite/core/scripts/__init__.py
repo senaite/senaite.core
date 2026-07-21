@@ -151,3 +151,7 @@ def upgrade():
 
 def catalog():
     return run_it("_catalog")
+
+
+def users():
+    return run_it("_users")

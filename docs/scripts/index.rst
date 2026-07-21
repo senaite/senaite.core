@@ -7,14 +7,14 @@ the ZODB, sets up an administrative security context and runs against the
 site. Because they open the database directly, the instance must be stopped
 first: the file storage lock is exclusive.
 
-Two of them, `senaite-upgrade` and `senaite-catalog`, are interactive
-consoles for controlled maintenance from a plain SSH terminal, where the
-management interface is not reachable. They share the same model: pick a
-target, run an operation that is timed and whose log output is captured,
-decide whether it succeeded, and commit or abort the transaction by hand.
-Nothing is committed automatically.
+Three of them, `senaite-upgrade`, `senaite-catalog` and `senaite-users`,
+are interactive consoles for controlled maintenance from a plain SSH
+terminal, where the management interface is not reachable. They share the
+same model: pick a target, run an operation that is timed and whose log
+output is captured, decide whether it succeeded, and commit or abort the
+transaction by hand. Nothing is committed automatically.
 
-Both consoles share these commands:
+These consoles share these commands:
 
 .. code-block:: text
 
@@ -36,3 +36,5 @@ command list and `help <command>` for the details of a single command.
 .. include:: upgrade_console.rst
 
 .. include:: catalog_console.rst
+
+.. include:: users_console.rst

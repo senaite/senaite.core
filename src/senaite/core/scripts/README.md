@@ -10,6 +10,8 @@ must be stopped (the storage lock is exclusive).
 |-------------------|----------------------------------------------------|
 | `senaite-upgrade` | Interactive runner for GenericSetup upgrade steps  |
 | `senaite-catalog` | Interactive reindex and rebuild of catalogs        |
+| `senaite-users`   | Interactive manager for acl_users users, groups    |
+|                   | and PAS plugins                                    |
 | `upgrade-sites`   | Run the last upgrade step of every senaite profile |
 | `reindex`         | Reindex an object path in the catalog              |
 | `zope-passwd`     | Set or create a Zope emergency user                |
@@ -292,3 +294,57 @@ bin/senaite-catalog --catalog senaite_catalog_sample --rebuild --commit
 
 Without `--commit` the transaction is left uncommitted and you are
 reminded to re-run with `--commit` to persist it.
+
+## senaite-users
+
+An interactive console to manage `acl_users`: list, add, update and remove
+users and groups, manage roles and group membership, and activate or
+deactivate PAS plugins for their interfaces. It shares the same machinery as
+the other consoles, so nothing is committed until you type `commit`.
+
+```
+bin/senaite-users -c parts/client_reserved/etc/zope.conf -s <site-id>
+```
+
+Users:
+
+```
+users [<search>]              # list users (optionally matching a term)
+user <id>                     # show fullname, email, roles and groups
+adduser <id> <email> [<pw>]   # create a local user (prompts for pw if omitted)
+deluser <id>                  # remove a user
+passwd <id> [<pw>]            # set a local user's password
+roles <id> [+Role -Role ...]  # show / grant / revoke global roles
+```
+
+Groups:
+
+```
+groups                        # list groups with their roles
+group <id>                    # show title, roles and members
+addgroup <id> [<title>]       # create a group
+delgroup <id>                 # remove a group
+members <group> [+u -u ...]   # show / add / remove members
+grouproles <group> [+R -R]    # show / grant / revoke group roles
+```
+
+Plugins (the same registry the ZMI "Plugins" tab manages):
+
+```
+plugins                       # list plugins and the interfaces they serve
+activate <plugin> <iface>     # enable a plugin for an interface
+deactivate <plugin> <iface>   # disable a plugin for an interface
+```
+
+`adduser`/`passwd` operate on the local ZODB user manager (`source_users`);
+directory-backed users (e.g. LDAP) are managed in the directory. The plugin
+commands are handy on headless deployments — for example, temporarily taking
+an LDAP plugin out of group introspection during a maintenance operation:
+
+```
+deactivate pasldap IGroupIntrospection
+commit
+# ... run the maintenance ...
+activate pasldap IGroupIntrospection
+commit
+```
