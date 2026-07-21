@@ -33,9 +33,15 @@ Commands
    delgroup <id>                 Remove a group.
    members <group> [+u -u ...]   Show, add or remove group members.
    grouproles <group> [+R -R]    Show, grant or revoke group roles.
-   plugins                       Show plugins grouped by interface, with
-                                 [X] for active and [ ] for available.
-   toggle <n>                    Flip the plugin at row <n> of 'plugins'.
+   plugins                       List plugins with their active-interface
+                                 count.
+   select <kind> <id>            Drill into a subject (kind is user, group
+                                 or plugin) and list its toggleable items as
+                                 a numbered [X] active / [ ] inactive list:
+                                 roles and group membership for a user, roles
+                                 for a group, interfaces for a plugin.
+   toggle <n>                    Flip row <n> of the selected subject and
+                                 re-show the list.
    activate <plugin> <iface>     Enable a plugin for a PAS interface.
    deactivate <plugin> <iface>   Disable a plugin for a PAS interface.
 
@@ -46,12 +52,15 @@ committed until you type `commit`.
 
 The plugin commands are useful on headless deployments. For example, to
 temporarily take an LDAP plugin out of group introspection during a
-maintenance operation:
+maintenance operation, `select` it and `toggle` the interface by its row
+number:
 
 .. code-block:: text
 
-   deactivate pasldap IGroupIntrospection
+   select plugin pasldap   # note the row of IGroupIntrospection
+   toggle 3
    commit
    # ... run the maintenance ...
-   activate pasldap IGroupIntrospection
+   select plugin pasldap
+   toggle 3
    commit

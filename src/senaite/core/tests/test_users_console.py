@@ -50,21 +50,52 @@ class TestUsersConsole(BaseTestCase):
         c.do_grouproles("reviewers +LabClerk")
         self.assertIn("LabClerk", uapi.get_group("reviewers").getRoles())
 
-    def test_plugins_grid_and_toggle(self):
+    @staticmethod
+    def _row(console, row_kind, label):
+        for i, (rk, payload, lb) in enumerate(console.subject_rows, start=1):
+            if rk == row_kind and lb == label:
+                return i
+        raise AssertionError("no %s row for %r" % (row_kind, label))
+
+    def test_select_user_toggle_role_and_group(self):
         c = self.console
-        c.do_plugins("")  # populates the numbered [X]/[ ] rows
-        self.assertTrue(len(c._plugin_rows) > 0)
+        c.do_adduser("bob bob@example.com secret123")
+        c.do_addgroup("analysts Analysts")
+        c.do_select("user bob")
+        self.assertEqual((c.subject_kind, c.subject_id), ("user", "bob"))
+        c.do_toggle(str(self._row(c, "role", "Manager")))
+        self.assertIn("Manager", sapi.get_roles("bob"))
+        c.do_toggle(str(self._row(c, "group", "analysts")))
+        self.assertIn("bob", uapi.get_group("analysts").getMemberIds())
+
+    def test_select_group_toggle_role(self):
+        c = self.console
+        c.do_addgroup("reviewers Reviewers")
+        c.do_select("group reviewers")
+        self.assertEqual(c.subject_kind, "group")
+        self.assertEqual(c.subject_id, "reviewers")
+        c.do_toggle(str(self._row(c, "role", "Manager")))
+        self.assertIn("Manager", uapi.get_group("reviewers").getRoles())
+
+    def test_select_plugin_toggle_interface(self):
+        c = self.console
         acl = self.portal.acl_users
-        # find the first row that is currently active and toggle it off/on
-        n = pid = iface = None
-        for i, (p, iname, ifc) in enumerate(c._plugin_rows, start=1):
-            if p in acl.plugins.listPluginIds(ifc):
-                n, pid, iface = i, p, ifc
+        pid = None
+        for p in c._plugin_ids():
+            if c._active_count(p) > 0:
+                pid = p
+                break
+        self.assertIsNotNone(pid)
+        c.do_select("plugin %s" % pid)
+        n = iface = None
+        for i, (rk, payload, lb) in enumerate(c.subject_rows, start=1):
+            if rk == "interface" and pid in acl.plugins.listPluginIds(payload):
+                n, iface = i, payload
                 break
         self.assertIsNotNone(n)
-        c.do_toggle(str(n))  # deactivate
+        c.do_toggle(str(n))
         self.assertNotIn(pid, acl.plugins.listPluginIds(iface))
-        c.do_toggle(str(n))  # activate again
+        c.do_toggle(str(n))
         self.assertIn(pid, acl.plugins.listPluginIds(iface))
 
     def test_plugins_named_activate_deactivate(self):

@@ -331,32 +331,54 @@ grouproles <group> [+R -R]    # show / grant / revoke group roles
 Plugins (the same registry the ZMI "Plugins" tab manages):
 
 ```
-plugins                       # grid by interface: [X] active, [ ] available
-toggle <n>                    # flip the plugin at row <n> from 'plugins'
+plugins                       # list plugins with their active-interface count
 activate <plugin> <iface>     # enable a plugin for an interface (explicit)
 deactivate <plugin> <iface>   # disable a plugin for an interface (explicit)
 ```
 
-`plugins` groups every plugin under each interface it can serve, marking
-the active ones with `[X]` and the available-but-inactive ones with `[ ]`,
-and numbers each row so you can flip it with `toggle <n>`:
+Select and toggle (works across users, groups and plugins):
 
 ```
-IGroupIntrospection
-  [X]   7  auto_group
-  [X]   8  source_groups
-  [ ]   9  pasldap
+select <user|group|plugin> <id>   # drill into a subject, numbered [X]/[ ] list
+toggle <n>                        # flip row <n> and re-show the list
+```
+
+`select` lists what you can toggle as a numbered `[X]` (active) / `[ ]`
+(inactive) list: global roles and group membership for a user, global roles
+for a group, interfaces (connectors) for a plugin. `toggle <n>` flips a row.
+
+```
+(users) select plugin pasldap
+plugin pasldap (LDAP Plugin)
+  [X]   1  IAuthenticationPlugin
+  [X]   2  IGroupEnumerationPlugin
+  [X]   3  IGroupIntrospection
+  [X]   4  IGroupsPlugin
+(users plugin:pasldap) toggle 3
+OK   deactivate pasldap for IGroupIntrospection  (0.00s, 0 log lines)
+
+(users) select user bob
+user bob (Bob <bob@lab.com>)
+  roles:
+    [ ]   7  LabManager
+    [X]   8  Member
+  groups:
+    [ ]  20  Analysts
+(users user:bob) toggle 7     # grant the LabManager role
+(users user:bob) toggle 20    # add bob to the Analysts group
 ```
 
 `adduser`/`passwd` operate on the local ZODB user manager (`source_users`);
 directory-backed users (e.g. LDAP) are managed in the directory. The plugin
-commands are handy on headless deployments — for example, temporarily taking
-an LDAP plugin out of group introspection during a maintenance operation:
+toggles are handy on headless deployments, for example temporarily taking an
+LDAP plugin out of group introspection during a maintenance operation:
 
 ```
-deactivate pasldap IGroupIntrospection
+select plugin pasldap    # note the row of IGroupIntrospection
+toggle 3
 commit
 # ... run the maintenance ...
-activate pasldap IGroupIntrospection
+select plugin pasldap
+toggle 3
 commit
 ```

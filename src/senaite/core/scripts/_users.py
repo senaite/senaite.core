@@ -68,10 +68,25 @@ class UsersConsole(BaseConsole):
     tool_name = "users"
 
     def __init__(self, app, site, verbose=False):
-        # numbered (plugin_id, interface_name, interface) rows from the last
-        # 'plugins' listing, used by 'toggle <n>'
-        self._plugin_rows = []
+        # the subject selected with 'select': its kind ("user"/"group"/
+        # "plugin"), its id, and its numbered toggle rows. Each row is a
+        # (row_kind, payload, label) tuple that 'toggle <n>' knows how to flip.
+        self.subject_kind = None
+        self.subject_id = None
+        self.subject_rows = []
         BaseConsole.__init__(self, app, site, verbose=verbose)
+
+    # -- hooks -----------------------------------------------------------
+
+    def context_label(self):
+        if not self.subject_kind:
+            return ""
+        return "%s:%s" % (self.subject_kind, self.subject_id)
+
+    def on_site_changed(self):
+        self.subject_kind = None
+        self.subject_id = None
+        self.subject_rows = []
 
     # -- tool helpers ----------------------------------------------------
 
@@ -130,7 +145,7 @@ class UsersConsole(BaseConsole):
             print("No such user: %s" % uid)
             return
         member = self._membership().getMemberById(uid)
-        groups = [g.getId() for g in uapi.get_groups(user)]
+        groups = uapi.get_groups(user)
         print("  id:       %s" % uapi.get_user_id(user))
         print("  fullname: %s" % (member and member.getProperty(
             "fullname", "") or ""))
@@ -334,60 +349,193 @@ class UsersConsole(BaseConsole):
         return dict((info["id"], info["interface"])
                     for info in acl.plugins.listPluginTypeInfo())
 
-    def _implementing_plugins(self, iface):
-        """Ids of the acl_users plugins that implement the given interface
-        (i.e. that can be activated for it), sorted.
-        """
+    def _plugin_ids(self):
+        """Ids of the acl_users children that are PAS plugins, sorted"""
         acl = self._acl()
         return sorted(pid for pid in acl.objectIds()
-                      if iface.providedBy(getattr(acl, pid, None)))
+                      if self._plugin_interfaces(pid))
+
+    def _plugin_interfaces(self, pid):
+        """(interface_name, interface) pairs the plugin implements, sorted"""
+        acl = self._acl()
+        plugin = getattr(acl, pid, None)
+        pairs = [(info["id"], info["interface"])
+                 for info in acl.plugins.listPluginTypeInfo()
+                 if info["interface"].providedBy(plugin)]
+        return sorted(pairs, key=lambda pair: pair[0])
+
+    def _active_count(self, pid):
+        """Number of interfaces the plugin is currently active for"""
+        acl = self._acl()
+        return sum(1 for _, iface in self._plugin_interfaces(pid)
+                   if pid in acl.plugins.listPluginIds(iface))
 
     def do_plugins(self, arg):
-        """plugins -- show plugins grouped by interface, with [X] for active
-        and [ ] for available-but-inactive. Use 'toggle <n>' to flip a row.
+        """plugins -- list acl_users plugins with their active interface
+        count. Use 'select plugin <id>' to manage one.
         """
         acl = self._acl()
-        self._plugin_rows = []
-        index = 0
-        for info in sorted(acl.plugins.listPluginTypeInfo(),
-                           key=lambda i: i["id"]):
-            iface = info["interface"]
-            iname = info["id"]
-            active_ids = list(acl.plugins.listPluginIds(iface))
-            available = self._implementing_plugins(iface)
-            ordered = active_ids + [p for p in available
-                                    if p not in active_ids]
-            if not ordered:
-                continue
-            print("%s" % iname)
-            for pid in ordered:
-                index += 1
-                mark = "X" if pid in active_ids else " "
-                self._plugin_rows.append((pid, iname, iface))
-                print("  [%s] %3d  %s" % (mark, index, pid))
+        for pid in self._plugin_ids():
+            marker = "*" if (self.subject_kind == "plugin"
+                             and pid == self.subject_id) else " "
+            meta = getattr(getattr(acl, pid, None), "meta_type", "?")
+            print(" %s %-22s %-28s %d active interface(s)"
+                  % (marker, pid, meta, self._active_count(pid)))
 
-    def do_toggle(self, arg):
-        """toggle <n> -- activate or deactivate the plugin at row <n> of the
-        last 'plugins' listing
+    # -- unified subject selection ---------------------------------------
+
+    def _valid_roles(self):
+        """Assignable global roles, sorted (excludes the dynamic ones)"""
+        skip = ("Anonymous", "Authenticated")
+        return sorted(r for r in self.site.valid_roles() if r not in skip)
+
+    def _subject_exists(self, kind, sid):
+        if kind == "user":
+            return uapi.get_user(sid) is not None
+        if kind == "group":
+            return uapi.get_group(sid) is not None
+        if kind == "plugin":
+            return getattr(self._acl(), sid, None) is not None
+        return False
+
+    def _add_row(self, num, row_kind, payload, label, active):
+        self.subject_rows.append((row_kind, payload, label))
+        print("    [%s] %3d  %s" % ("X" if active else " ", num, label))
+
+    def _show_subject(self):
+        """Show the selected subject and its numbered [X]/[ ] toggle rows"""
+        self.subject_rows = []
+        kind, sid = self.subject_kind, self.subject_id
+        num = 0
+        if kind == "user":
+            user = uapi.get_user(sid)
+            member = self._membership().getMemberById(sid)
+            fullname = member and member.getProperty("fullname", "") or ""
+            email = member and member.getProperty("email", "") or ""
+            print("user %s (%s <%s>)" % (sid, fullname, email))
+            has_roles = set(sapi.get_roles(user))
+            print("  roles:")
+            for role in self._valid_roles():
+                num += 1
+                self._add_row(num, "role", role, role, role in has_roles)
+            in_groups = set(uapi.get_groups(user))
+            print("  groups:")
+            for gid in sorted(self._groups_tool().getGroupIds()):
+                num += 1
+                self._add_row(num, "group", gid, gid, gid in in_groups)
+        elif kind == "group":
+            group = uapi.get_group(sid)
+            title = group.getProperty("title", "") or ""
+            print("group %s (%s)" % (sid, title))
+            print("  members: %s" % ", ".join(sorted(group.getMemberIds())))
+            has_roles = set(group.getRoles())
+            print("  roles:")
+            for role in self._valid_roles():
+                num += 1
+                self._add_row(num, "role", role, role, role in has_roles)
+        elif kind == "plugin":
+            acl = self._acl()
+            meta = getattr(getattr(acl, sid, None), "meta_type", "?")
+            print("plugin %s (%s)" % (sid, meta))
+            ifaces = self._plugin_interfaces(sid)
+            if not ifaces:
+                print("  (implements no PAS plugin interfaces)")
+            for iname, iface in ifaces:
+                num += 1
+                active = sid in acl.plugins.listPluginIds(iface)
+                self._add_row(num, "interface", iface, iname, active)
+
+    def do_select(self, arg):
+        """select <user|group|plugin> <id> -- drill into a subject and list
+        its toggleable items with [X] active / [ ] inactive, numbered for
+        'toggle': roles and group membership for a user, roles for a group,
+        interfaces for a plugin
         """
-        if not self._plugin_rows:
-            print("Run 'plugins' first to list the numbered targets.")
+        parts = arg.split(None, 1)
+        if len(parts) != 2:
+            print("Usage: select <user|group|plugin> <id>")
             return
-        try:
-            pid, iname, iface = self._plugin_rows[int(arg.strip()) - 1]
-        except (ValueError, IndexError):
-            print("No such row. Run 'plugins' to see the numbers.")
+        kind, sid = parts[0].lower(), parts[1].strip()
+        if kind not in ("user", "group", "plugin"):
+            print("Kind must be one of: user, group, plugin")
             return
+        if not self._subject_exists(kind, sid):
+            print("No such %s: %s" % (kind, sid))
+            return
+        self.subject_kind = kind
+        self.subject_id = sid
+        self._show_subject()
+        self._update_prompt()
+
+    def _toggle_op(self, row_kind, payload, label):
+        """Return (description, callable) that flips the given row for the
+        current subject.
+        """
         acl = self._acl()
-        active = pid in acl.plugins.listPluginIds(iface)
-        verb = "deactivate" if active else "activate"
+        sid = self.subject_id
+        if row_kind == "interface":
+            iface = payload
+            active = sid in acl.plugins.listPluginIds(iface)
+            verb = "deactivate" if active else "activate"
+
+            def op():
+                if active:
+                    acl.plugins.deactivatePlugin(iface, sid)
+                else:
+                    acl.plugins.activatePlugin(iface, sid)
+            return "%s %s for %s" % (verb, sid, label), op
+        if row_kind == "group":
+            gid = payload
+            member = gid in set(uapi.get_groups(uapi.get_user(sid)))
+            if member:
+                return "remove %s from group %s" % (sid, gid), \
+                    lambda: uapi.del_group(gid, sid)
+            return "add %s to group %s" % (sid, gid), \
+                lambda: uapi.add_group(gid, sid)
+        # row_kind == "role"
+        if self.subject_kind == "user":
+            has = label in set(sapi.get_roles(uapi.get_user(sid)))
+            prm = acl.portal_role_manager
+            verb = "revoke" if has else "grant"
+
+            def op():
+                if has:
+                    prm.removeRoleFromPrincipal(label, sid)
+                else:
+                    prm.assignRoleToPrincipal(label, sid)
+            return "%s role %s for %s" % (verb, label, sid), op
+        # group role
+        group = uapi.get_group(sid)
+        has = label in set(group.getRoles())
+        gtool = self._groups_tool()
+        verb = "revoke" if has else "grant"
 
         def op():
-            if active:
-                acl.plugins.deactivatePlugin(iface, pid)
+            roles = set(group.getRoles())
+            if has:
+                roles.discard(label)
             else:
-                acl.plugins.activatePlugin(iface, pid)
-        self._execute("%s %s for %s" % (verb, pid, iname), op)
+                roles.add(label)
+            gtool.setRolesForGroup(sid, sorted(roles))
+        return "%s role %s for group %s" % (verb, label, sid), op
+
+    def do_toggle(self, arg):
+        """toggle <n> -- flip item <n> of the selected subject (see 'select'):
+        a role, a group membership or a plugin interface
+        """
+        if not self.subject_kind:
+            print("No subject selected. "
+                  "Use 'select <user|group|plugin> <id>'.")
+            return
+        try:
+            row_kind, payload, label = self.subject_rows[int(arg.strip()) - 1]
+        except (ValueError, IndexError):
+            print("No such row. Re-run 'select %s %s' to see the numbers."
+                  % (self.subject_kind, self.subject_id))
+            return
+        desc, op = self._toggle_op(row_kind, payload, label)
+        if self._execute(desc, op)["ok"]:
+            self._show_subject()
 
     def _toggle_plugin(self, arg, activate):
         parts = arg.split()
