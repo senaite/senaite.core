@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2994 Re-register missing Dexterity FTI utilities on typeinfo import in upgrades
 - #2993 Sync translations and add complete German, Dutch and Spanish translations
 - #2993 Make the dashboard fully translatable
 - #2992 Fix UnicodeEncodeError in Organization.getPrintAddress with non-ASCII address
