@@ -71,6 +71,7 @@ from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import blob_to_named_file
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
+from senaite.core.upgrade.utils import import_typeinfo
 from senaite.core.upgrade.utils import iter_senaite_catalogs
 from senaite.core.upgrade.utils import permanently_allow_type_for
 from senaite.core.upgrade.utils import rebuild_index
@@ -597,7 +598,7 @@ def migrate_calculations_to_dx(tool):
     remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
     tool.runImportStepFromProfile(profile, "workflow")
 
     # get the old container
@@ -959,7 +960,7 @@ def migrate_contacts_to_dx(tool):
     remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
 
     # Find all Contact objects (excluding LabContact and SupplierContact)
     query = {
@@ -1105,7 +1106,7 @@ def migrate_multifiles_to_dx(tool):
     remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
 
     # Find all Multifile objects
     query = {
@@ -1245,7 +1246,7 @@ def migrate_laboratory_to_dx(tool):
     remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
 
     portal_type = "Laboratory"
     query = {
@@ -1491,7 +1492,7 @@ def repair_laboratory_migration(tool):
     logger.info("Repair laboratory migration ...")
 
     # Re-import typeinfo so the FTI picks up IMultiCatalogBehavior
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
 
     setup = api.get_senaite_setup()
     laboratory = setup.get("laboratory") if setup else None
@@ -1549,7 +1550,7 @@ def create_setup_contacts_folder(tool):
     remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
     tool.runImportStepFromProfile(profile, "actions")
 
     setup = api.get_senaite_setup()
@@ -1580,7 +1581,7 @@ def setup_custom_image_and_file_types(tool):
     # Ensure old AT types are flushed first
     remove_at_portal_types(tool, REMOVE_AT_TYPES)
     portal = tool.aq_inner.aq_parent
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
     tool.runImportStepFromProfile(profile, "workflow")
     # Needed for the updated Client.xml action
     _run_import_step(portal, "typeinfo", "profile-bika.lims:default")
@@ -1806,7 +1807,7 @@ def migrate_arreport_to_resultsreport(tool):
 
     # Remove AT portal type and install DX portal type
     remove_at_portal_types(tool, REMOVE_AT_TYPES)
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
     tool.runImportStepFromProfile(profile, "workflow")
 
     # Update AnalysisRequest to allow ResultsReport as subobject
@@ -2036,7 +2037,7 @@ def migrate_worksheets_to_dx(tool):
     remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
     tool.runImportStepFromProfile(profile, "workflow")
     tool.runImportStepFromProfile(profile, "rolemap")
     tool.runImportStepFromProfile(profile, "plone.app.registry")

@@ -41,6 +41,7 @@ Needed Imports:
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
     >>> from plone.app.testing import setRoles
+    >>> from senaite.core.api.worksheet import create_worksheet
 
 Functional Helpers:
 
@@ -729,6 +730,49 @@ Reject any remaining analyses awaiting for assignment:
     >>> query = {"portal_type": "Analysis", "review_state": "unassigned"}
     >>> objs = map(api.get_object, api.search(query, "senaite_catalog_analysis"))
     >>> success = map(lambda obj: doActionFor(obj, "reject"), objs)
+
+
+Create Worksheet from Samples with a Template
+..............................................
+
+When analyses from selected samples are passed while creating a worksheet,
+the worksheet template must restrict which services are assigned.
+
+Create and receive a sample with `Cu` and `Fe` analyses:
+
+    >>> service_uids = [Cu.UID(), Fe.UID()]
+    >>> sample = create_analysisrequest(client, request, values, service_uids)
+    >>> success = doActionFor(sample, "receive")
+    >>> analyses = sample.getAnalyses(full_objects=True)
+
+Create a worksheet template that only contains `Cu`:
+
+    >>> layout = [
+    ...     {'pos': '1', 'type': 'a',
+    ...      'blank_ref': '',
+    ...      'control_ref': '',
+    ...      'dup': ''},
+    ... ]
+    >>> cu_template = api.create(setup.worksheettemplates,
+    ...                          "WorksheetTemplate",
+    ...                          title="Cu only WS Template",
+    ...                          Layout=layout,
+    ...                          Services=[Cu.UID()])
+
+Create the worksheet from all analyses of the selected sample:
+
+    >>> worksheet = create_worksheet(TEST_USER_ID,
+    ...                              template=cu_template,
+    ...                              analyses=analyses)
+
+Only the analysis listed in the worksheet template is assigned:
+
+    >>> [analysis.getServiceUID() for analysis in worksheet.getAnalyses()] == \
+    ... [Cu.UID()]
+    True
+    >>> [analysis.getServiceUID() for analysis in analyses
+    ...  if not analysis.getWorksheetUID()] == [Fe.UID()]
+    True
 
 
 Assignment of Worksheet Template with Method

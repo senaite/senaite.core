@@ -6,6 +6,11 @@ Changelog
 
 - #2980 Migrate AuditLog to Dexterity and move audit log machinery to senaite.core
 - #2979 Show precise element-level audit log diffs for lists and record fields
+- #2996 Fix missing Dexterity FTI utility registration on typeinfo import
+- #2993 Sync translations and add complete German, Dutch and Spanish translations
+- #2993 Make the dashboard fully translatable
+- #2992 Fix UnicodeEncodeError in Organization.getPrintAddress with non-ASCII address
+- #2988 Fix worksheet template analysis filtering for selected samples
 - #2985 Add a SENAITE-specific Manage Viewlets view
 - #2971 Make the Sample Dispatch workflow optional and lock analyses on dispatch
 - #2970 Add an optional Sample Dispose workflow
