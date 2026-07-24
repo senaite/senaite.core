@@ -32,6 +32,8 @@ from bika.lims.api import safe_unicode as u
 from bika.lims.interfaces import IAuditable
 from Persistence import PersistentMapping
 from plone.dexterity.fti import DexterityFTI
+from plone.dexterity.fti import register as register_dx_fti
+from plone.dexterity.interfaces import IDexterityFTI
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import get_installer
 from Products.ZCatalog.ProgressHandler import ZLogHandler
@@ -43,6 +45,7 @@ from plone.namedfile.file import NamedBlobImage
 from senaite.core import logger
 from senaite.core.api.catalog import add_zc_text_index
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
+from zope.component import queryUtility
 from zope.interface import alsoProvides
 from zope.lifecycleevent import modified
 
@@ -454,6 +457,48 @@ def uncatalog_brain(brain):
     logger.warn(80*"*")
     catalog.uncatalog_object(path)
     return True
+
+
+def register_missing_dx_ftis():
+    """Register the local IDexterityFTI utility for any Dexterity FTI in
+    portal_types that is missing it.
+
+    GenericSetup's `typeinfo` import fires an ObjectAddedEvent (which
+    triggers `plone.dexterity.fti.ftiAdded` -> `register`, registering
+    the local IDexterityFTI utility) only when the FTI is *created*.
+    Re-importing a type that already exists updates it in place without
+    re-registering. As a result, a DX FTI left behind by an interrupted
+    migration ends up with a valid portal_types entry whose
+    `createContent` lookup raises
+    `ComponentLookupError(IDexterityFTI, <type>)`, and re-running the
+    upgrade never recovers because the object still "exists".
+
+    This reconciles that state: it is idempotent (only registers the
+    utility when missing) and cheap (one queryUtility per DX type).
+    """
+    pt = api.get_tool("portal_types")
+    for fti in pt.objectValues():
+        if not IDexterityFTI.providedBy(fti):
+            continue
+        type_id = fti.getId()
+        if queryUtility(IDexterityFTI, name=type_id) is None:
+            logger.info("Registering missing DX FTI utility: %s" % type_id)
+            register_dx_fti(fti)
+
+
+def import_typeinfo(tool, profile):
+    """Run the `typeinfo` import step for the given profile and ensure
+    every Dexterity FTI has its local utility registered.
+
+    Migration steps that create Dexterity content right after importing
+    the type information must use this instead of calling
+    `runImportStepFromProfile(profile, "typeinfo")` directly, so that an
+    FTI left over from a partially-completed upgrade does not break
+    content creation with a ComponentLookupError.
+    See `register_missing_dx_ftis`.
+    """
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    register_missing_dx_ftis()
 
 
 def remove_at_portal_types(tool, types_to_remove=[]):

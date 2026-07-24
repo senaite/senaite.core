@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2994 Migrate Method content type to Dexterity
+- #2996 Fix missing Dexterity FTI utility registration on typeinfo import
 - #2993 Sync translations and add complete German, Dutch and Spanish translations
 - #2993 Make the dashboard fully translatable
 - #2992 Fix UnicodeEncodeError in Organization.getPrintAddress with non-ASCII address
