@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #2990 Vendor the datagrid widget and drop collective.z3cform.datagridfield
+- #2997 Fix listing widget doctest for the new data-catalog table attribute
 - #2996 Fix missing Dexterity FTI utility registration on typeinfo import
 - #2993 Sync translations and add complete German, Dutch and Spanish translations
 - #2993 Make the dashboard fully translatable
