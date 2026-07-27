@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #2998 Stop leaking exception tracebacks in JSON API error responses
+- #3000 Validate inter-field limits from the instance when there is no form
+- #2999 Pin plone.jsonapi.core to 0.8.0 and add find-links for its sdist
 - #2997 Fix listing widget doctest for the new data-catalog table attribute
 - #2996 Fix missing Dexterity FTI utility registration on typeinfo import
 - #2993 Sync translations and add complete German, Dutch and Spanish translations
