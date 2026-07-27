@@ -2356,6 +2356,14 @@ def validate(obj):
         # update obj_data for later use with invariants
         obj_data[field_name] = value
 
+        # Skip read-only fields. They cannot be set through the API, so
+        # validating submitted data against them is out of scope. Their
+        # value is often computed -- e.g. a display-only TextLine backed by
+        # a ComputedAttribute that returns a Decimal -- which would raise a
+        # spurious WrongType here and block the whole create/update.
+        if getattr(field, "readonly", False):
+            continue
+
         if field_name in SKIP_VALIDATION_FIELDS:
             continue
 

@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3001 Skip read-only fields when validating objects on create/update
 - #3000 Validate inter-field limits from the instance when there is no form
 - #2999 Pin plone.jsonapi.core to 0.8.0 and add find-links for its sdist
 - #2997 Fix listing widget doctest for the new data-catalog table attribute
