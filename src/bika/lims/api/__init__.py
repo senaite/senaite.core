@@ -2307,15 +2307,33 @@ def to_list(value):
     return list(value)
 
 
-def validate(obj):
-    """Validates the full object
+def validate(obj, fields=None):
+    """Validates the object, optionally restricted to the given fields
 
     :param obj: the object to validate the data against
     :type obj: ATContentType/DexterityContentType
+    :param fields: optional iterable of field names to restrict validation
+        to. When provided, only those fields are validated and cross-field
+        (schema and behavior) invariants are skipped. This is meant for
+        partial updates, where re-validating untouched fields can raise
+        spurious errors -- e.g. a stored legacy value that no longer passes
+        its own field validator, or a behavior default lookup that fails.
+    :type fields: list/tuple/set/None
     :returns: a dict with field names as keys and errors as values
     """
     if is_at_content(obj):
-        return obj.validate(data=True)
+        if fields is None:
+            return obj.validate(data=True)
+        # Partial validation: check only the requested AT fields.
+        errors = {}
+        for field_name in fields:
+            field = obj.getField(field_name)
+            if field is None:
+                continue
+            error = field.validate(field.get(obj), obj)
+            if error:
+                errors[field_name] = error
+        return errors
 
     if not is_dexterity_content(obj):
         raise TypeError("%r is not supported" % type(obj))
@@ -2330,8 +2348,13 @@ def validate(obj):
     obj_data = {}
 
     # iterate through object fields and validate each
-    fields = get_fields(obj)
-    for field_name, field in fields.items():
+    obj_fields = get_fields(obj)
+    if fields is None:
+        field_names = list(obj_fields.keys())
+    else:
+        field_names = [name for name in fields if name in obj_fields]
+    for field_name in field_names:
+        field = obj_fields[field_name]
 
         # extract the field value
         value = getattr(obj, field_name, None)
@@ -2369,6 +2392,11 @@ def validate(obj):
                 errors[field_name] = "wrong type"
         except Invalid as ex:
             errors[field_name] = translate(ex.message) or type(ex).__name__
+
+    # Cross-field invariants only make sense for a full-object validation;
+    # skip them when validating a subset of fields (partial update).
+    if fields is not None:
+        return errors
 
     # validate invariants from schema
     sch = get_schema(obj)

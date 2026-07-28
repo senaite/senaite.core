@@ -20,6 +20,7 @@
 
 import unittest
 
+from bika.lims import api
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import login
@@ -272,6 +273,43 @@ class Tests(DataTestCase):
                 None,
                 ICalculationSchema,
                 None).validate(self.portal.REQUEST.form))
+
+
+    def test_validate_only_selected_fields(self):
+        login(self.portal, TEST_USER_NAME)
+
+        # AT content: this fixture service does not fully validate (it has a
+        # required field left unset), which is exactly the partial-update
+        # scenario -- an untouched field that would fail a full validation.
+        services = self.portal.bika_setup.bika_analysisservices
+        service = services["analysisservice-1"]
+
+        full = api.validate(service)
+        self.assertTrue(full, "expected the fixture service to have errors")
+
+        # pick a real (non-invariant) field that fails the full validation
+        offending = None
+        for name in sorted(full):
+            if service.getField(name) is not None:
+                offending = name
+                break
+        self.assertIsNotNone(offending)
+
+        # scoping to the offending field still reports it
+        self.assertIn(offending, api.validate(service, fields=[offending]))
+
+        # scoping to a valid field skips the offending (untouched) ones
+        self.assertEqual({}, api.validate(service, fields=["title"]))
+
+        # unknown field names are ignored, not raised
+        self.assertEqual({}, api.validate(service, fields=["NoSuchField"]))
+
+        # DX content: a subset of valid fields validates without errors and
+        # without triggering cross-field / behavior invariants
+        sampletypes = self.portal.setup.sampletypes
+        sampletype = sampletypes.objectValues()[0]
+        self.assertEqual({}, api.validate(sampletype, fields=["title"]))
+        self.assertEqual({}, api.validate(sampletype, fields=["NoSuchField"]))
 
 
 def test_suite():
