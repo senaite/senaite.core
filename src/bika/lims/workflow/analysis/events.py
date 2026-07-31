@@ -41,7 +41,10 @@ def after_assign(analysis):
     """Function triggered after an 'assign' transition for the analysis passed
     in is performed.
     """
-    reindex_request(analysis)
+    # `assigned_state` is the only value of the sample that depends on whether
+    # its analyses are assigned to a worksheet or not, so there is no need to
+    # recompute the whole catalog record of the sample (and of its ancestors)
+    reindex_request(analysis, idxs=["assigned_state"])
 
 
 def before_unassign(analysis):
@@ -312,6 +315,9 @@ def after_publish(analysis):
 def reindex_request(analysis, idxs=None):
     """Reindex the Analysis Request the analysis belongs to, as well as the
     ancestors recursively
+
+    When `idxs` is set, only the indexes and metadata columns with those names
+    are updated, instead of recomputing the whole catalog record of the sample
     """
     if not IRequestAnalysis.providedBy(analysis) or \
             IDuplicateAnalysis.providedBy(analysis):
@@ -321,7 +327,7 @@ def reindex_request(analysis, idxs=None):
     request = analysis.getRequest()
     ancestors = [request] + request.getAncestors(all_ancestors=True)
     for ancestor in ancestors:
-        ancestor.reindexObject()
+        api.reindex(ancestor, idxs_cols=idxs)
 
 
 def remove_analysis_from_worksheet(analysis):

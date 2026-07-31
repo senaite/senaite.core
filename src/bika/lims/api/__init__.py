@@ -571,6 +571,57 @@ def catalog_object(obj, recursive=False):
             catalog_object(child, recursive=recursive)
 
 
+def reindex(obj, idxs_cols=None):
+    """Reindex the object in all the catalogs it is registered to
+
+    When `idxs_cols` is set, only the indexes and metadata columns with those
+    names are updated, instead of recomputing the whole metadata record of the
+    object. This is way cheaper for objects with expensive metadata (e.g.
+    samples), as long as the caller knows which indexes and columns are
+    affected by the change. The `uid_catalog` is taken into account as well,
+    but only when it has indexes or columns with those names.
+
+    Note that when no `idxs_cols` are passed-in, the object is reindexed with
+    `reindexObject`, that only refreshes the record of the `uid_catalog` for AT
+    contents. Use `catalog_object` when the record of a DX content has to be
+    refreshed in the `uid_catalog` too.
+
+    :param obj: object to reindex
+    :type obj: ATContentType/DexterityContentType
+    :param idxs_cols: names of the indexes and metadata columns to update.
+        Everything is reindexed when None or empty
+    """
+    if not idxs_cols:
+        obj.reindexObject()
+        return
+
+    # the uid_catalog is not amongst the catalogs the object is registered to,
+    # but it keeps a record of the object as well
+    catalogs = get_catalogs_for(obj) + [get_tool(UID_CATALOG)]
+
+    for catalog in catalogs:
+        indexes = [name for name in idxs_cols if name in catalog.indexes()]
+        columns = [name for name in idxs_cols if name in catalog.schema()]
+        if not indexes and not columns:
+            # this catalog has no such indexes or columns
+            continue
+
+        uid = None
+        if catalog.id == UID_CATALOG:
+            # the uid_catalog keeps the records of AT contents with a path
+            # relative to the portal root, while those of DX contents are kept
+            # with the absolute path, same as `catalog_object` does
+            path = obj.getPhysicalPath()
+            uid = "/".join(path)
+            if is_at_content(obj):
+                uid = getRelURL(catalog, path)
+
+        # Note we do not pass the uid for the rest of catalogs on purpose, so
+        # each one resolves it from the physical path of the object, exactly as
+        # it does when the object is reindexed
+        catalog.catalog_object(obj, uid, idxs=indexes, update_metadata=columns)
+
+
 def delete(obj, check_permissions=True, suppress_events=False):
     """Deletes the given object
 

@@ -2554,6 +2554,110 @@ by its absolute path:
     True
 
 
+
+Reindexing an object
+....................
+
+This function reindexes an object in **all** the catalogs it is registered to.
+Objects from any content type are supported, no matter the catalogs they are
+mapped to:
+
+    >>> from senaite.core.catalog import CONTACT_CATALOG
+    >>> from senaite.core.catalog import SETUP_CATALOG
+
+    >>> water = api.create(portal.setup.sampletypes, "SampleType",
+    ...                    title="Pure Water", Prefix="PW")
+    >>> api.is_dexterity_content(water)
+    True
+
+    >>> api.get_catalogs_for(water)
+    [<SetupCatalog at /plone/senaite_catalog_setup>]
+
+    >>> contact = api.create(labcontacts, "LabContact", Firstname="Rita",
+    ...                      Surname="Mohale")
+    >>> api.is_at_content(contact)
+    True
+
+    >>> api.get_catalogs_for(contact)
+    [<ContactCatalog at /plone/senaite_catalog_contact>]
+
+A helper to look at the record a catalog keeps of an object:
+
+    >>> def get_brain(obj, catalog):
+    ...     brains = api.get_tool(catalog)(UID=api.get_uid(obj))
+    ...     return brains[0] if brains else None
+
+When no indexes are specified, the whole record is updated. Let's create an
+Archetypes content that is catalogued in the setup catalog and change both its
+title and its keyword:
+
+    >>> copper = api.create(services, "AnalysisService", title="Copper",
+    ...                     Keyword="Cu")
+    >>> copper.setTitle("Gold")
+    >>> copper.setKeyword("Au")
+    >>> api.reindex(copper)
+
+    >>> brain = get_brain(copper, SETUP_CATALOG)
+    >>> brain.Title, brain.getKeyword
+    ('Gold', 'Au')
+
+The update can also be restricted to some indexes and metadata columns, that is
+way cheaper for objects with expensive metadata:
+
+    >>> copper.setTitle("Silver")
+    >>> copper.setKeyword("Ag")
+    >>> api.reindex(copper, idxs_cols=["getKeyword"])
+
+The keyword index is up-to-date:
+
+    >>> len(api.get_tool(SETUP_CATALOG)(getKeyword="Ag"))
+    1
+
+And so is the keyword metadata column, while the title has not been touched:
+
+    >>> brain = get_brain(copper, SETUP_CATALOG)
+    >>> brain.Title, brain.getKeyword
+    ('Gold', 'Ag')
+
+Indexes and columns that the catalogs of the object do not have are skipped:
+
+    >>> contact.setFirstname("Super")
+    >>> api.reindex(contact, idxs_cols=["getFullname", "getKeyword"])
+    >>> get_brain(contact, CONTACT_CATALOG).getFullname
+    'Super Mohale'
+
+The `uid_catalog` is taken into account as well, but only when the names
+passed-in match its indexes or columns. Note it keeps the records of AT contents
+with a path relative to the portal root, while those of DX contents are kept
+with the absolute path, so no duplicate record is left behind:
+
+    >>> uc = api.get_tool(api.UID_CATALOG)
+
+    >>> copper.setTitle("Bronze")
+    >>> api.reindex(copper, idxs_cols=["Title"])
+    >>> len(uc(UID=api.get_uid(copper))) == 1
+    True
+
+    >>> get_brain(copper, api.UID_CATALOG).Title
+    'Bronze'
+
+    >>> "/".join(copper.getPhysicalPath()[2:]) in uc._catalog.uids
+    True
+
+The same applies to Dexterity contents:
+
+    >>> water.setTitle("Sea Water")
+    >>> api.reindex(water, idxs_cols=["Title"])
+    >>> len(uc(UID=api.get_uid(water))) == 1
+    True
+
+    >>> get_brain(water, api.UID_CATALOG).Title
+    'Sea Water'
+
+    >>> "/".join(water.getPhysicalPath()) in uc._catalog.uids
+    True
+
+
 Recursive (un)cataloging
 ........................
 

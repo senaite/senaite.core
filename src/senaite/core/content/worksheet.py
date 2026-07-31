@@ -41,6 +41,7 @@ from plone.autoform import directives
 from plone.supermodel import model
 from senaite.core import logger
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SENAITE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
@@ -61,6 +62,29 @@ from zope.interface import implementer
 
 ALL_ANALYSES_TYPES = "all"
 ALLOWED_ANALYSES_TYPES = ["a", "b", "c", "d"]
+
+
+def get_sample_id(analysis):
+    """Returns the ID of the sample the analysis passed-in belongs to
+
+    Supports both catalog brains and objects, so the sample can be resolved
+    without waking up the analysis object when a brain is passed-in.
+
+    Note `getRequestID` is only available for analyses that belong to a sample,
+    those that implement `IRequestAnalysis` (routine analyses and duplicates),
+    but not for reference analyses. Returns None when the sample cannot be
+    resolved, so this function is safe for any type of analysis.
+
+    :param analysis: analysis object or catalog brain
+    :returns: the ID of the sample the analysis belongs to, or None
+    """
+    sample_id = getattr(analysis, "getRequestID", None)
+    if callable(sample_id):
+        # an object was passed-in, not a catalog brain
+        sample_id = sample_id()
+    # might be Missing.Value when the brain of an analysis without sample is
+    # passed-in, cause the metadata column is shared by all analysis types
+    return sample_id or None
 
 
 def get_worksheet_layouts():
@@ -425,28 +449,41 @@ class Worksheet(Container):
         """Adds a collection of analyses to the Worksheet at once
         """
         for analysis in analyses:
-            self.addAnalysis(api.get_object(analysis))
+            self.addAnalysis(api.get_object(analysis), reindex=False)
 
-    def addAnalysis(self, analysis, position=None):
+        # reindex this worksheet once, after all the analyses are added
+        self.reindexObject()
+
+    def addAnalysis(self, analysis, position=None, reindex=True):
         """- add the analysis to self.Analyses().
            - position is overruled if a slot for this analysis' parent exists
            - if position is None, next available pos is used.
+
+        :param analysis: the analysis to add
+        :param position: the slot where the analysis has to be added
+        :param reindex: whether to reindex this worksheet after the analysis is
+            added. Set it to False when adding analyses in bulk and reindex the
+            worksheet once, after all of them are added
         """
+        uid = api.get_uid(analysis)
+
         # Cannot add an analysis if not open, unless a retest
         if api.get_review_status(self) not in ["open", "to_be_verified"]:
             retracted = analysis.getRetestOf()
-            if retracted not in self.getAnalyses():
+            retracted_uid = retracted and api.get_uid(retracted) or None
+            if retracted_uid not in self.getRawAnalyses():
                 return
 
         # Cannot add an analysis that is assigned already
         if analysis.getWorksheet():
             return
 
-        # Just in case
-        analyses = self.getAnalyses()
-        if analysis in analyses:
-            analyses = filter(lambda an: an != analysis, analyses)
-            self.setAnalyses(analyses)
+        # Just in case. Note we deal with UIDs here, so we do not need to wake
+        # up all the analyses assigned to this worksheet
+        uids = self.getRawAnalyses()
+        if uid in uids:
+            uids = filter(lambda u: u != uid, uids)
+            self.setAnalyses(uids)
             # ???
             # self.updateLayout()
 
@@ -476,8 +513,10 @@ class Worksheet(Container):
         analysis.setAnalyst(self.getAnalyst())
 
         # Transition analysis to "assigned"
+        # Note the sample the analysis belongs to (and its ancestors) are
+        # reindexed by the `after_assign` event of the analysis
         doActionFor(analysis, "assign")
-        self.setAnalyses(analyses + [analysis])
+        self.setAnalyses(uids + [uid])
         self.addToLayout(analysis, position)
 
         if api.get_review_status(self) != "open":
@@ -488,11 +527,8 @@ class Worksheet(Container):
         analysis.reindexObject()
 
         # Reindex Worksheet
-        self.reindexObject()
-
-        # Reindex Analysis Request, if any
-        if IRequestAnalysis.providedBy(analysis):
-            analysis.getRequest().reindexObject()
+        if reindex:
+            self.reindexObject()
 
     def removeAnalysis(self, analysis):
         """Unassigns the analysis passed in from the worksheet.
@@ -1089,10 +1125,23 @@ class Worksheet(Container):
 
         # Map existing sample uids with slots
         samples_slots = dict(self.get_containers_slots())
-        new_sample_uids = []
+
+        # Sample IDs that have a slot assigned in this worksheet. This allows
+        # us to discard analyses that cannot be assigned (no slot left for
+        # their sample) without waking up the object first
+        slotted_ids = self.get_slotted_sample_ids(samples_slots.keys())
+
         new_analyses = []
 
         for analysis in analyses:
+            sample_id = get_sample_id(analysis)
+
+            if not available_slots and sample_id not in slotted_ids:
+                # No slot left and this sample has no slot assigned. Maybe next
+                # analysis is from a sample with a slot assigned, but there is
+                # no need to wake this analysis up
+                continue
+
             analysis = api.get_object(analysis)
 
             if instrument and not analysis.isInstrumentAllowed(instrument):
@@ -1116,21 +1165,33 @@ class Worksheet(Container):
 
                 # Feed the samples_slots
                 samples_slots[sample_uid] = slot
-                new_sample_uids.append(sample_uid)
+                slotted_ids.add(sample_id)
 
             # Keep track of the analyses to add
             new_analyses.append((analysis, sample_uid))
 
-        # Re-sort slots for new samples to display them in natural order
-        new_slots = map(lambda s: samples_slots.get(s), new_sample_uids)
-        sorted_slots = zip(sorted(new_sample_uids), sorted(new_slots))
-        for sample_id, slot in sorted_slots:
-            samples_slots[sample_uid] = slot
-
-        # Add analyses to the worksheet
+        # Add analyses to the worksheet. Reindexing of the worksheet is done
+        # once, after the whole template is applied
         for analysis, sample_uid in new_analyses:
             slot = samples_slots[sample_uid]
-            self.addAnalysis(analysis, slot)
+            self.addAnalysis(analysis, slot, reindex=False)
+
+    def get_slotted_sample_ids(self, container_uids):
+        """Returns the IDs of the containers (samples) passed-in that have a
+        slot assigned in this worksheet
+
+        Resolution is done via catalog to avoid waking up objects.
+
+        :param container_uids: UIDs of the containers from the layout
+        :returns: set of container ids
+        """
+        uids = filter(api.is_uid, container_uids)
+        if not uids:
+            return set()
+
+        query = {"UID": list(uids)}
+        brains = api.search(query, SAMPLE_CATALOG)
+        return set([api.get_id(brain) for brain in brains])
 
     def _resolve_reference_sample(self, reference_samples=None,
                                   service_uids=None):
@@ -1195,6 +1256,15 @@ class Worksheet(Container):
         sc = api.get_tool(SENAITE_CATALOG)
         wst_type = type == "b" and "blank_ref" or "control_ref"
 
+        # We only want the reference samples that fit better with the type and
+        # with the analyses defined in the Template. Note the services are the
+        # same for all the slots, so they are resolved only once
+        services = wst.getRawServices()
+
+        # Cache of candidate reference samples per reference definition, cause
+        # the same definition is often used in more than one slot
+        candidates_by_definition = {}
+
         slots_sample = list()
         available_slots = self.resolve_available_slots(wst, type)
         wst_layout = wst.getTemplateLayout()
@@ -1209,21 +1279,21 @@ class Worksheet(Container):
                 # in worksheet templates
                 continue
 
-            samples = sc(portal_type="ReferenceSample",
-                         review_state="current",
-                         is_active=True,
-                         getReferenceDefinitionUID=ref_definition_uid)
+            candidates = candidates_by_definition.get(ref_definition_uid)
+            if candidates is None:
+                samples = sc(portal_type="ReferenceSample",
+                             review_state="current",
+                             is_active=True,
+                             getReferenceDefinitionUID=ref_definition_uid)
 
-            # We only want the reference samples that fit better with the type
-            # and with the analyses defined in the Template
-            services = wst.getServices()
-            services = [s.UID() for s in services]
-            candidates = list()
-            for sample in samples:
-                obj = api.get_object(sample)
-                if (type == "b" and obj.getBlank()) or \
-                        (type == "c" and not obj.getBlank()):
-                    candidates.append(obj)
+                candidates = list()
+                for sample in samples:
+                    obj = api.get_object(sample)
+                    if (type == "b" and obj.getBlank()) or \
+                            (type == "c" and not obj.getBlank()):
+                        candidates.append(obj)
+
+                candidates_by_definition[ref_definition_uid] = candidates
 
             sample, uids = self._resolve_reference_sample(candidates, services)
             if not sample:
@@ -1267,31 +1337,49 @@ class Worksheet(Container):
         """
         wst = api.get_object(wst, default=None)
 
-        # Store the Worksheet Template field and reindex it
+        # Store the Worksheet Template field
         self.setWorksheetTemplate(wst)
-        self.reindexObject(idxs=["getWorksheetTemplateTitle"])
 
         if not wst:
+            # Only the values that depend on the template are affected. Note we
+            # do not rely on `reindexObject` here, cause it recomputes all the
+            # metadata of this worksheet, and some of the columns are resolved
+            # by waking up all the analyses assigned
+            api.reindex(self, idxs_cols=[
+                "getWorksheetTemplateTitle",
+                "getWorksheetTemplateUID",
+                "getWorksheetTemplateURL",
+            ])
             return
 
-        # Apply the template for routine analyses
-        self._apply_worksheet_template_routine_analyses(wst, analyses=analyses)
+        try:
+            # Apply the template for routine analyses
+            self._apply_worksheet_template_routine_analyses(
+                wst, analyses=analyses)
 
-        # Apply the template for duplicate analyses
-        self._apply_worksheet_template_duplicate_analyses(wst)
+            # Apply the template for duplicate analyses
+            self._apply_worksheet_template_duplicate_analyses(wst)
 
-        # Apply the template for reference analyses (blanks and controls)
-        self._apply_worksheet_template_reference_analyses(wst)
+            # Apply the template for reference analyses (blanks and controls)
+            self._apply_worksheet_template_reference_analyses(wst)
 
-        # Assign the instrument
-        instrument = wst.getInstrument()
-        if instrument:
-            self.setInstrument(instrument, True)
+            # Assign the instrument
+            instrument = wst.getInstrument()
+            if instrument:
+                self.setInstrument(instrument, True)
 
-        # Assign the method
-        method = wst.getRestrictToMethod()
-        if method:
-            self.setMethod(method, True)
+            # Assign the method
+            method = wst.getRestrictToMethod()
+            if method:
+                self.setMethod(method, True)
+
+        finally:
+            # Reindex the worksheet once, instead of once per analysis added.
+            # Some of the metadata of this worksheet (e.g. the number of
+            # analyses and samples it contains) is resolved by waking up all
+            # the analyses assigned, so reindexing on every single analysis
+            # added makes the application of the template quadratic
+            self.reindexObject()
 
     def _apply_worksheet_template_duplicate_analyses(self, wst):
         """Add duplicate analyses to worksheet according to
