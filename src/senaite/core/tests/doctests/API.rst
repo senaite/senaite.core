@@ -2601,28 +2601,48 @@ title and its keyword:
     >>> brain.Title, brain.getKeyword
     ('Gold', 'Au')
 
-The update can also be restricted to some indexes and metadata columns, that is
-way cheaper for objects with expensive metadata:
+The reindexing can be restricted to some indexes, and the metadata can be left
+untouched by passing an empty list of columns:
 
     >>> copper.setTitle("Silver")
     >>> copper.setKeyword("Ag")
-    >>> api.reindex(copper, idxs_cols=["getKeyword"])
+    >>> api.reindex(copper, idxs=["getKeyword"], cols=[])
 
 The keyword index is up-to-date:
 
     >>> len(api.get_tool(SETUP_CATALOG)(getKeyword="Ag"))
     1
 
-And so is the keyword metadata column, while the title has not been touched:
+But no column was recomputed, so the metadata of the record is stale:
+
+    >>> brain = get_brain(copper, SETUP_CATALOG)
+    >>> brain.Title, brain.getKeyword
+    ('Gold', 'Au')
+
+Passing a list of columns recomputes only those, which is way cheaper for
+objects with expensive metadata:
+
+    >>> api.reindex(copper, idxs=["getKeyword"], cols=["getKeyword"])
 
     >>> brain = get_brain(copper, SETUP_CATALOG)
     >>> brain.Title, brain.getKeyword
     ('Gold', 'Ag')
 
-Indexes and columns that the catalogs of the object do not have are skipped:
+The title of the record is still stale, cause only the keyword column was
+recomputed. Reindexing without restrictions refreshes the whole record:
+
+    >>> api.reindex(copper)
+
+    >>> brain = get_brain(copper, SETUP_CATALOG)
+    >>> brain.Title, brain.getKeyword
+    ('Silver', 'Ag')
+
+Catalogs without any of the indexes passed-in are skipped, as well as the
+columns they do not have:
 
     >>> contact.setFirstname("Super")
-    >>> api.reindex(contact, idxs_cols=["getFullname", "getKeyword"])
+    >>> api.reindex(contact, idxs=["getFullname", "getKeyword"],
+    ...             cols=["getFullname", "getKeyword"])
     >>> get_brain(contact, CONTACT_CATALOG).getFullname
     'Super Mohale'
 
@@ -2634,7 +2654,7 @@ with the absolute path, so no duplicate record is left behind:
     >>> uc = api.get_tool(api.UID_CATALOG)
 
     >>> copper.setTitle("Bronze")
-    >>> api.reindex(copper, idxs_cols=["Title"])
+    >>> api.reindex(copper, idxs=["Title"], cols=["Title"])
     >>> len(uc(UID=api.get_uid(copper))) == 1
     True
 
@@ -2647,7 +2667,7 @@ with the absolute path, so no duplicate record is left behind:
 The same applies to Dexterity contents:
 
     >>> water.setTitle("Sea Water")
-    >>> api.reindex(water, idxs_cols=["Title"])
+    >>> api.reindex(water, idxs=["Title"], cols=["Title"])
     >>> len(uc(UID=api.get_uid(water))) == 1
     True
 

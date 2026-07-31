@@ -571,27 +571,32 @@ def catalog_object(obj, recursive=False):
             catalog_object(child, recursive=recursive)
 
 
-def reindex(obj, idxs_cols=None):
+def reindex(obj, idxs=None, cols=None):
     """Reindex the object in all the catalogs it is registered to
 
-    When `idxs_cols` is set, only the indexes and metadata columns with those
-    names are updated, instead of recomputing the whole metadata record of the
-    object. This is way cheaper for objects with expensive metadata (e.g.
-    samples), as long as the caller knows which indexes and columns are
-    affected by the change. The `uid_catalog` is taken into account as well,
-    but only when it has indexes or columns with those names.
+    Only the indexes with the names passed-in through `idxs` are reindexed, or
+    all of them when `idxs` is None. Catalogs that do not have any of these
+    indexes are skipped. The `uid_catalog` is taken into account as well,
+    although the object is not registered to it.
 
-    Note that when no `idxs_cols` are passed-in, the object is reindexed with
-    `reindexObject`, that only refreshes the record of the `uid_catalog` for AT
-    contents. Use `catalog_object` when the record of a DX content has to be
-    refreshed in the `uid_catalog` too.
+    The same applies to the metadata: all the columns of the object are
+    recomputed when `cols` is None, and only those with the names passed-in
+    otherwise. Recomputing only some columns is way cheaper for objects with
+    expensive metadata (e.g. samples), as long as the caller knows which ones
+    are affected by the change. Pass an empty list to not touch the metadata.
+
+    Note that when neither `idxs` nor `cols` are passed-in, the object is
+    reindexed with `reindexObject`, that only refreshes the record of the
+    `uid_catalog` for AT contents. Use `catalog_object` when the record of a DX
+    content has to be refreshed in the `uid_catalog` too.
 
     :param obj: object to reindex
     :type obj: ATContentType/DexterityContentType
-    :param idxs_cols: names of the indexes and metadata columns to update.
-        Everything is reindexed when None or empty
+    :param idxs: names of the indexes to reindex. All of them when None
+    :param cols: names of the metadata columns to recompute. All of them when
+        None, none of them when empty
     """
-    if not idxs_cols:
+    if idxs is None and cols is None:
         obj.reindexObject()
         return
 
@@ -600,10 +605,21 @@ def reindex(obj, idxs_cols=None):
     catalogs = get_catalogs_for(obj) + [get_tool(UID_CATALOG)]
 
     for catalog in catalogs:
-        indexes = [name for name in idxs_cols if name in catalog.indexes()]
-        columns = [name for name in idxs_cols if name in catalog.schema()]
-        if not indexes and not columns:
-            # this catalog has no such indexes or columns
+        indexes = idxs
+        if idxs is not None:
+            indexes = [name for name in idxs if name in catalog.indexes()]
+            if not indexes:
+                # this catalog has none of these indexes
+                continue
+
+        # `update_metadata` of senaite's catalogs takes a list of columns, or
+        # the usual boolean meaning when all of them have to be recomputed
+        metadata = 1
+        if cols is not None:
+            metadata = [name for name in cols if name in catalog.schema()]
+
+        if not indexes and not metadata:
+            # nothing to reindex or to recompute in this catalog
             continue
 
         uid = None
@@ -619,7 +635,7 @@ def reindex(obj, idxs_cols=None):
         # Note we do not pass the uid for the rest of catalogs on purpose, so
         # each one resolves it from the physical path of the object, exactly as
         # it does when the object is reindexed
-        catalog.catalog_object(obj, uid, idxs=indexes, update_metadata=columns)
+        catalog.catalog_object(obj, uid, idxs=indexes, update_metadata=metadata)
 
 
 def delete(obj, check_permissions=True, suppress_events=False):
