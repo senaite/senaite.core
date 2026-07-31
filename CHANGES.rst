@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3004 Speed up the creation of worksheets with a worksheet template
 - #3003 Fix colliding reference analyses group IDs within the same transaction
 - #3000 Validate inter-field limits from the instance when there is no form
 - #2999 Pin plone.jsonapi.core to 0.8.0 and add find-links for its sdist
