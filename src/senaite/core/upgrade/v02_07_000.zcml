@@ -3,6 +3,16 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove unused worksheet template columns"
+      description="Drop the getWorksheetTemplateUID and getWorksheetTemplateURL
+                   metadata columns from the worksheet catalog, that are not
+                   used anymore"
+      source="2754"
+      destination="2755"
+      handler=".v02_07_000.remove_worksheet_template_columns"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Hide unused viewlets"
       description="Hide the analytics, keywords, next/previous navigation and
                    related items viewlets, which are not used in SENAITE, by

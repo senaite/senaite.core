@@ -1403,9 +1403,7 @@ class Worksheet(Container):
             # by waking up all the analyses assigned
             api.reindex(self,
                         idxs=["getWorksheetTemplateTitle"],
-                        cols=["getWorksheetTemplateTitle",
-                              "getWorksheetTemplateUID",
-                              "getWorksheetTemplateURL"])
+                        cols=["getWorksheetTemplateTitle"])
             return
 
         try:
@@ -1627,14 +1625,4 @@ class Worksheet(Container):
         wst = self.getWorksheetTemplate()
         if wst:
             return wst.Title()
-        return ""
-
-    def getWorksheetTemplateURL(self):
-        """Returns the template's URL assigned to this worksheet
-        :returns: worksheet's URL
-        :rtype: string
-        """
-        wst = self.getWorksheetTemplate()
-        if wst:
-            return wst.absolute_url_path()
         return ""

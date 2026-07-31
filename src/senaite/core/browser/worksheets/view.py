@@ -126,7 +126,6 @@ class WorksheetsView(ListingView):
                     u"listing_worksheets_column_template_title",
                     default=u"Template"
                 ),
-                "replace_url": "getWorksheetTemplateURL",
             }),
             ("getNumberOfRegularSamples", {
                 "title": _(
