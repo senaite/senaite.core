@@ -469,8 +469,7 @@ class Worksheet(Container):
 
         # Cannot add an analysis if not open, unless a retest
         if api.get_review_status(self) not in ["open", "to_be_verified"]:
-            retracted = analysis.getRetestOf()
-            retracted_uid = retracted and api.get_uid(retracted) or None
+            retracted_uid = analysis.getRawRetestOf()
             if retracted_uid not in self.getRawAnalyses():
                 return
 
@@ -539,7 +538,8 @@ class Worksheet(Container):
         if analysis.getWorksheet() == self:
             doActionFor(analysis, "unassign")
 
-    def addReferenceAnalyses(self, reference, services, slot=None):
+    def addReferenceAnalyses(self, reference, services, slot=None,
+                             reindex=True):
         """ Creates and add reference analyses to the slot by using the
         reference sample and service uids passed in.
         If no destination slot is defined, the most suitable slot will be used,
@@ -547,6 +547,9 @@ class Worksheet(Container):
         :param reference: reference sample to which ref analyses belong
         :param service_uids: he uid of the services to create analyses from
         :param slot: slot where reference analyses must be stored
+        :param reindex: whether to reindex this worksheet once the reference
+            analyses are added. Set it to False when the caller reindexes the
+            worksheet afterwards
         :return: the list of reference analyses added
         """
         service_uids = list()
@@ -568,7 +571,8 @@ class Worksheet(Container):
         if not slot_to:
             # Find the suitable slot to add these references
             slot_to = self.get_suitable_slot_for_reference(reference)
-            return self.addReferenceAnalyses(reference, service_uids, slot_to)
+            return self.addReferenceAnalyses(reference, service_uids, slot_to,
+                                             reindex=reindex)
 
         processed = list()
         for analysis in self.get_analyses_at(slot_to):
@@ -585,14 +589,20 @@ class Worksheet(Container):
         ref_analyses = list()
         for service in services:
             service_obj = api.get_object(service)
-            ref_analysis = self.add_reference_analysis(reference, service_obj,
-                                                       slot_to, ref_gid)
+            ref_analysis = self.add_reference_analysis(
+                reference, service_obj, slot_to, ref_gid, reindex=False)
             if not ref_analysis:
                 continue
             ref_analyses.append(ref_analysis)
+
+        if reindex and ref_analyses:
+            # reindex this worksheet once, after all the analyses are added
+            self.reindexObject()
+
         return ref_analyses
 
-    def add_reference_analysis(self, reference, service, slot, ref_gid=None):
+    def add_reference_analysis(self, reference, service, slot, ref_gid=None,
+                               reindex=True):
         """
         Creates a reference analysis in the destination slot (dest_slot) passed
         in, by using the reference and service_uid. If the analysis
@@ -603,6 +613,10 @@ class Worksheet(Container):
         :param service: the service object to create an analysis from
         :param slot: slot where the reference analysis must be stored
         :param ref_gid: the reference analyses group id to be set
+        :param reindex: whether to refresh all the metadata of this worksheet
+            after the reference analysis is added. Set it to False when adding
+            reference analyses in bulk and reindex the worksheet once, after
+            all of them are added
         :return: the reference analysis or None
         """
         if not reference or not service:
@@ -624,8 +638,9 @@ class Worksheet(Container):
         values = {"ReferenceAnalysesGroupID": gid, "Worksheet": self}
         ref_analysis = create_reference_analysis(reference, service, **values)
 
-        # Add the reference analysis into the worksheet
-        self.setAnalyses(self.getAnalyses() + [ref_analysis, ])
+        # Add the reference analysis into the worksheet. Note we deal with UIDs
+        # here, so we do not need to wake up all the analyses assigned
+        self.setAnalyses(self.getRawAnalyses() + [api.get_uid(ref_analysis)])
         self.addToLayout(ref_analysis, slot)
 
         # TODO This shuldn't be necessary, but `getWorksheetUID` relies on
@@ -639,7 +654,17 @@ class Worksheet(Container):
         ])
 
         # Reindex
-        self.reindexObject(idxs=["getAnalysesUIDs"])
+        if reindex:
+            # Note this refreshes all the metadata of this worksheet as well,
+            # cause `reindexObject` restricts the indexes, but not the columns
+            self.reindexObject(idxs=["getAnalysesUIDs"])
+        else:
+            # Keep the analyses UIDs in sync only. The rest of the metadata is
+            # refreshed when the caller reindexes this worksheet, once all the
+            # analyses are added
+            api.reindex(self, idxs=["getAnalysesUIDs"],
+                        cols=["getAnalysesUIDs"])
+
         return ref_analysis
 
     def nextRefAnalysesGroupID(self, reference):
@@ -678,13 +703,16 @@ class Worksheet(Container):
             suffix = str(_id + 1).zfill(2)
         return "%s%s" % (prefix, suffix)
 
-    def addDuplicateAnalyses(self, src_slot, dest_slot=None):
+    def addDuplicateAnalyses(self, src_slot, dest_slot=None, reindex=True):
         """ Creates and add duplicate analyses from the src_slot to
         the dest_slot. If no destination slot is defined, the most suitable
         slot will be used, typically a new slot at the end of
         the worksheet will be added.
         :param src_slot: slot that contains the analyses to duplicate
         :param dest_slot: slot where the duplicate analyses must be stored
+        :param reindex: whether to reindex this worksheet once the duplicate
+            analyses are added. Set it to False when the caller reindexes the
+            worksheet afterwards
         :return: the list of duplicate analyses added
         """
         # Duplicate analyses can only be added if the state of the ws is open
@@ -703,7 +731,8 @@ class Worksheet(Container):
         if not slot_to:
             # Find the suitable slot to add these duplicates
             slot_to = self.get_suitable_slot_for_duplicate(slot_from)
-            return self.addDuplicateAnalyses(src_slot, slot_to)
+            return self.addDuplicateAnalyses(src_slot, slot_to,
+                                             reindex=reindex)
 
         processed = map(lambda an: api.get_uid(an.getAnalysis()),
                         self.get_analyses_at(slot_to))
@@ -716,15 +745,27 @@ class Worksheet(Container):
         ref_gid = None
         duplicates = list()
         for analysis in src_analyses:
-            duplicate = self.add_duplicate_analysis(analysis, slot_to)
+            duplicate = self.add_duplicate_analysis(analysis, slot_to,
+                                                    reindex=False)
             if not duplicate:
                 continue
             # All duplicates from the same slot must have the same group id
             ref_gid = ref_gid or duplicate.getReferenceAnalysesGroupID()
             duplicates.append(duplicate)
+
+        if reindex and duplicates:
+            # reindex this worksheet once, after all the analyses are added
+            # Note duplicates are created inside this worksheet, so Dexterity's
+            # `reindexOnModify` subscriber reindexes it on every duplicate
+            # created, making this call redundant at the moment. We keep it
+            # anyway, so the record of this worksheet does not depend on an
+            # event fired somewhere else
+            self.reindexObject()
+
         return duplicates
 
-    def add_duplicate_analysis(self, src_analysis, destination_slot):
+    def add_duplicate_analysis(self, src_analysis, destination_slot,
+                               reindex=True):
         """
         Creates a duplicate of the src_analysis passed in. If the analysis
         passed in is not an IRoutineAnalysis, is retracted or has dependent
@@ -732,6 +773,10 @@ class Worksheet(Container):
         set, the value will be generated automatically.
         :param src_analysis: analysis to create a duplicate from
         :param destination_slot: slot where duplicate analysis must be stored
+        :param reindex: whether to refresh all the metadata of this worksheet
+            after the duplicate is added. Set it to False when adding duplicate
+            analyses in bulk and reindex the worksheet once, after all of them
+            are added
         :return: the duplicate analysis or None
         """
         if not src_analysis:
@@ -762,9 +807,10 @@ class Worksheet(Container):
         # Create the duplicate
         duplicate = create_duplicate(src_analysis)
 
-        # Add the duplicate into the worksheet
+        # Add the duplicate into the worksheet. Note we deal with UIDs here,
+        # so we do not need to wake up all the analyses assigned
         self.addToLayout(duplicate, destination_slot)
-        self.setAnalyses(self.getAnalyses() + [duplicate, ])
+        self.setAnalyses(self.getRawAnalyses() + [api.get_uid(duplicate)])
 
         # TODO This shuldn't be necessary, but `getWorksheetUID` relies on
         #      backreference, while it should be the other way round.
@@ -773,7 +819,17 @@ class Worksheet(Container):
         duplicate.reindexObject(idxs=["getWorksheetUID", "getAnalyst"])
 
         # Reindex
-        self.reindexObject(idxs=["getAnalysesUIDs"])
+        if reindex:
+            # Note this refreshes all the metadata of this worksheet as well,
+            # cause `reindexObject` restricts the indexes, but not the columns
+            self.reindexObject(idxs=["getAnalysesUIDs"])
+        else:
+            # Keep the analyses UIDs in sync only. The rest of the metadata is
+            # refreshed when the caller reindexes this worksheet, once all the
+            # analyses are added
+            api.reindex(self, idxs=["getAnalysesUIDs"],
+                        cols=["getAnalysesUIDs"])
+
         return duplicate
 
     def get_suitable_slot_for_duplicate(self, src_slot):
@@ -1324,7 +1380,7 @@ class Worksheet(Container):
             slot = reference["slot"]
             sample = reference["sample"]
             services = reference["supported_services"]
-            self.addReferenceAnalyses(sample, services, slot)
+            self.addReferenceAnalyses(sample, services, slot, reindex=False)
 
     def applyWorksheetTemplate(self, wst, analyses=None):
         """ Add analyses to worksheet according to wst's layout.
@@ -1345,11 +1401,11 @@ class Worksheet(Container):
             # do not rely on `reindexObject` here, cause it recomputes all the
             # metadata of this worksheet, and some of the columns are resolved
             # by waking up all the analyses assigned
-            api.reindex(self, idxs_cols=[
-                "getWorksheetTemplateTitle",
-                "getWorksheetTemplateUID",
-                "getWorksheetTemplateURL",
-            ])
+            api.reindex(self,
+                        idxs=["getWorksheetTemplateTitle"],
+                        cols=["getWorksheetTemplateTitle",
+                              "getWorksheetTemplateUID",
+                              "getWorksheetTemplateURL"])
             return
 
         try:
@@ -1402,7 +1458,7 @@ class Worksheet(Container):
             src_pos = to_int(row["dup"])
             dest_pos = to_int(row["pos"])
 
-            self.addDuplicateAnalyses(src_pos, dest_pos)
+            self.addDuplicateAnalyses(src_pos, dest_pos, reindex=False)
 
     def getAnalystName(self):
         """Returns the name of the currently assigned analyst
