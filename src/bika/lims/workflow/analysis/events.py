@@ -327,7 +327,8 @@ def reindex_request(analysis, idxs=None):
     request = analysis.getRequest()
     ancestors = [request] + request.getAncestors(all_ancestors=True)
     for ancestor in ancestors:
-        api.reindex(ancestor, idxs_cols=idxs)
+        # note `assigned_state` is both an index and a metadata column
+        api.reindex(ancestor, idxs=idxs, cols=idxs)
 
 
 def remove_analysis_from_worksheet(analysis):
