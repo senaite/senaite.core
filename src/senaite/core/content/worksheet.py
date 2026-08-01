@@ -57,6 +57,7 @@ from senaite.core.interfaces import IWorksheet
 from senaite.core.interfaces import IWorksheetLayouts
 from zope import schema
 from zope.component import getUtilitiesFor
+from zope.deprecation.deprecation import deprecate
 from zope.interface import Interface
 from zope.interface import implementer
 
@@ -270,6 +271,11 @@ class Worksheet(Container):
     @security.protected(permissions.View)
     def getWorksheetTemplate(self):
         accessor = self.accessor("worksheet_template")
+        return accessor(self)
+
+    @security.protected(permissions.View)
+    def getRawWorksheetTemplate(self):
+        accessor = self.accessor("worksheet_template", raw=True)
         return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
@@ -1607,15 +1613,13 @@ class Worksheet(Container):
         """
         return self.getRawAnalyses()
 
+    @deprecate("Use getRawWorksheetTemplate instead")
     def getWorksheetTemplateUID(self):
         """Returns the template's UID assigned to this worksheet
         :returns: worksheet's UID
         :rtype: string
         """
-        wst = self.getWorksheetTemplate()
-        if wst:
-            return wst.UID()
-        return None
+        return self.getRawWorksheetTemplate()
 
     def getWorksheetTemplateTitle(self):
         """Returns the template's Title assigned to this worksheet
