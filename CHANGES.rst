@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3008 Filter sidebar root folders by permission instead of by catalog
 - #3007 Fix empty sticker template selection when printing stickers from a listing
 - #3003 Fix colliding reference analyses group IDs within the same transaction
 - #3000 Validate inter-field limits from the instance when there is no form
