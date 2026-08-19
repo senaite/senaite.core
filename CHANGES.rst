@@ -6,6 +6,8 @@ Changelog
 
 - #3005 Remove unused getWorksheetTemplateUID/URL worksheet catalog columns
 - #3004 Speed up the creation of worksheets with a worksheet template
+- #3008 Filter sidebar root folders by permission instead of by catalog
+- #3007 Fix empty sticker template selection when printing stickers from a listing
 - #3003 Fix colliding reference analyses group IDs within the same transaction
 - #3000 Validate inter-field limits from the instance when there is no form
 - #2999 Pin plone.jsonapi.core to 0.8.0 and add find-links for its sdist
