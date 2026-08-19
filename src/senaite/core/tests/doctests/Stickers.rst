@@ -193,6 +193,38 @@ entire sticker catalog. Without a type filter, no templates are available:
     []
 
 
+Stickers printed from a listing
+...............................
+
+When stickers are printed from a listing, the view is rendered on the
+container, that has no sticker adapter, and the items to print come in the
+`items` parameter. The templates of the items are offered nevertheless:
+
+    >>> request["items"] = api.get_uid(sample)
+    >>> view = api.get_view("sticker", context=portal.samples, request=request)
+    >>> template_ids = [t["id"] for t in view.get_available_templates()]
+    >>> SAMPLE_TYPE_SMALL_STICKER in template_ids
+    True
+
+Items sharing the same templates are not listed twice:
+
+    >>> other = new_sample([Cu], client, contact, sampletype)
+    >>> request["items"] = ",".join([api.get_uid(sample), api.get_uid(other)])
+    >>> view = api.get_view("sticker", context=portal.samples, request=request)
+    >>> template_ids = [t["id"] for t in view.get_available_templates()]
+    >>> len(template_ids) == len(set(template_ids))
+    True
+
+Items without a sticker adapter do not add any template:
+
+    >>> request["items"] = api.get_uid(batch)
+    >>> view = api.get_view("sticker", context=portal.samples, request=request)
+    >>> view.get_available_templates()
+    []
+
+    >>> request["items"] = ""
+
+
 Type filters
 ............
 
