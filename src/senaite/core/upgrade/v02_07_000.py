@@ -104,6 +104,25 @@ PORTAL_FOLDER_ITEMS = {
 
 
 @upgradestep(product, version)
+def remove_worksheet_template_columns(tool):
+    """Drop the `getWorksheetTemplateUID` and `getWorksheetTemplateURL`
+    metadata columns from `senaite_catalog_worksheet`
+
+    None of them is used anymore: the worksheets listing displayed the title of
+    the template with a link to it, resolved from the URL column, but the title
+    is displayed as plain text now, same as the samples listing does with the
+    title of the sample template.
+    """
+    catalog = api.get_tool(WORKSHEET_CATALOG, default=None)
+    if catalog is None:
+        return
+    for column in ["getWorksheetTemplateUID", "getWorksheetTemplateURL"]:
+        if del_column(catalog, column):
+            logger.info("Dropped '%s' column from %s"
+                        % (column, WORKSHEET_CATALOG))
+
+
+@upgradestep(product, version)
 def hide_legacy_viewlets(tool):
     """Hide the analytics, keywords, next/previous navigation and related
     items viewlets, which are not used in SENAITE, by reimporting the
