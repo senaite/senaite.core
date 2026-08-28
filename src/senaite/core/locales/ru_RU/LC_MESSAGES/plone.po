@@ -2,1041 +2,1195 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-07-19 12:29+0000\n"
+"POT-Creation-Date: 2026-06-19 06:37+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Russian (Russia) (https://app.transifex.com/senaite/teams/87045/ru_RU/)\n"
+"Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
+"Domain: DOMAIN\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: DOMAIN\n"
-"Language: ru_RU\n"
 
 #: senaite/core/browser/user/templates/account-panel.pt:16
 msgid "${action/title}"
-msgstr ""
+msgstr "${action/title}"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:167
 msgid "Activated add-ons"
-msgstr ""
+msgstr "Активированные дополнения"
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Alternative formats"
-msgstr ""
+msgstr "Альтернативные форматы"
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:229
 msgid "Apply rule on the whole site"
-msgstr ""
+msgstr "Применить правило для всего участка"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:123
 msgid "Available add-ons"
-msgstr ""
+msgstr "Доступные дополнения"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:212
 msgid "Broken add-ons"
-msgstr ""
+msgstr "Неработающие дополнения"
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:256
 msgid "Configure rule"
-msgstr ""
+msgstr "Настроить содержимое "
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:35
 msgid "Content rule settings updated."
-msgstr ""
+msgstr "Обновлены настройки содержимого."
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:52
 msgid "Disable globally"
-msgstr ""
+msgstr "Выключить глобально"
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:314
 msgid "Enabled"
-msgstr ""
+msgstr "Включено"
 
 #: senaite/core/browser/dexterity/templates/macros.pt:20
 #: senaite/core/browser/login/templates/login.pt:17
 msgid "Error"
-msgstr ""
+msgstr "Ошибка"
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:78
 msgid "Filter:"
-msgstr ""
+msgstr "Фильтр:"
 
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:28
 msgid "Go to parent folder"
-msgstr ""
+msgstr "Перейти в родительскую папку"
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:222
-msgid "Go to the folder where you want the rule to apply, or at the site root, click on 'rule' tab, and then locally setup the rules."
+msgid ""
+"Go to the folder where you want the rule to apply, or at the site root, "
+"click on 'rule' tab, and then locally setup the rules."
 msgstr ""
+"Перейдите в папку, к которой вы хотите применить правило, или в корень "
+"участка, перейдите на вкладку \"правила\", а затем локально настройте "
+"правила."
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:32
 msgid "Go to the upgrade page"
-msgstr ""
+msgstr "Перейдите на страницу обновления"
 
 #: senaite/core/browser/viewlets/templates/path_bar.pt:9
 msgid "Home"
-msgstr ""
+msgstr "Главная страница"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:132
 msgid "Install"
-msgstr ""
+msgstr "Установить"
 
 #: senaite/core/profiles/default/actions.xml
 msgid "Log in"
-msgstr ""
+msgstr "Войти"
 
 #: senaite/core/profiles/default/actions.xml
 msgid "Log out"
-msgstr ""
+msgstr "Выйти"
 
 #: senaite/core/skins/senaite_templates/senaite_widgets/recordswidget.pt:275
 msgid "More"
-msgstr ""
+msgstr "Ещё"
 
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:79
 msgid "Move down"
-msgstr ""
+msgstr "Переместиться вниз"
 
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:67
 msgid "Move up"
-msgstr ""
+msgstr "Двигайтесь вверх"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:39
 msgid "No upgrades in this corner"
-msgstr ""
+msgstr "Обновление в этом углу не предусмотрено"
 
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:56
 msgid "Note"
-msgstr ""
+msgstr "Примечание"
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:145
 msgid "Off"
-msgstr ""
+msgstr "Выкл."
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:144
 msgid "On"
-msgstr ""
+msgstr "Вкл."
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Relative URL for the SENAITE toolbar logo"
-msgstr ""
+msgstr "Относительный URL-адрес для логотипа панели инструментов SENAITE"
 
 #: senaite/core/browser/sharing/templates/client_sharing.pt:67
 msgid "Search for user or group"
-msgstr ""
+msgstr "Поиск пользователя или группы"
 
 #: senaite/core/profiles/default/registry.xml
-msgid "Select which formats are available for users as alternative to the default format. Note that if new formats are installed, they will be enabled for text fields by default unless explicitly turned off here or by the relevant installer."
+msgid ""
+"Select which formats are available for users as alternative to the default "
+"format. Note that if new formats are installed, they will be enabled for "
+"text fields by default unless explicitly turned off here or by the relevant "
+"installer."
 msgstr ""
+"Выберите, какие форматы доступны пользователям в качестве альтернативы "
+"формату по умолчанию. Обратите внимание, что если установлены новые форматы,"
+" они будут включены для текстовых полей по умолчанию, если они явно не "
+"отключены здесь или соответствующей программой установки."
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:148
 msgid "Server:"
-msgstr ""
+msgstr "Сервер:"
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:15
 #: senaite/core/browser/controlpanel/templates/overview.pt:16
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:13
 msgid "Site Setup"
-msgstr ""
+msgstr "Настройка сайта"
 
 #: senaite/core/profiles/default/registry.xml
 msgid "Site title"
-msgstr ""
+msgstr "Заголовок сайта"
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:218
-msgid "The rule is enabled but will perform nothing since it is not assigned anywhere."
+msgid ""
+"The rule is enabled but will perform nothing since it is not assigned "
+"anywhere."
 msgstr ""
+"Правило включено, но оно ничего не будет выполнять, не будучи нигде "
+"назначенным."
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:32
-msgid "The site configuration is outdated and needs to be upgraded. Please ${link_continue_with_the_upgrade}."
+msgid ""
+"The site configuration is outdated and needs to be upgraded. Please "
+"${link_continue_with_the_upgrade}."
 msgstr ""
+"Конфигурация сайта устарела и нуждается в обновлении. Перейдите по ссылке "
+"${link_continue_with_the_upgrade}."
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:87
-msgid "There is no upgrade procedure defined for this addon. Please consult the addon documentation for upgrade information, or contact the addon author."
+msgid ""
+"There is no upgrade procedure defined for this addon. Please consult the "
+"addon documentation for upgrade information, or contact the addon author."
 msgstr ""
+"Для этого дополнения не определена процедура обновления. Пожалуйста, "
+"обратитесь к документации дополнения для получения информации об обновлении "
+"или свяжитесь с автором дополнения."
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:124
-msgid "There is not any action performed by this rule. Click on Add button to setup an action."
+msgid ""
+"There is not any action performed by this rule. Click on Add button to setup"
+" an action."
 msgstr ""
+"Это правило не выполняет никаких действий. Нажмите кнопку Добавить, чтобы "
+"установить действие."
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:39
 msgid "There is not any additional condition checked on this rule."
-msgstr ""
+msgstr "В этом правиле не проверяется никакое дополнительное условие."
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:32
 msgid "There was an error saving content rules."
-msgstr ""
+msgstr "Произошла ошибка при сохранении правил содержимого."
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:69
 msgid "This addon has been upgraded."
-msgstr ""
+msgstr "Это дополнение было обновлено."
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:23
-msgid "This is the Add-on configuration section, you can activate and deactivate add-ons in the lists below."
+msgid ""
+"This is the Add-on configuration section, you can activate and deactivate "
+"add-ons in the lists below."
 msgstr ""
+"Это раздел настройки дополнений, вы можете активировать и деактивировать "
+"дополнения в списках ниже."
 
 #: senaite/core/profiles/default/registry.xml
 msgid "This must be a URL relative to the site root."
-msgstr ""
+msgstr "Это должен быть URL относительно корня сайта."
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:154
 msgid "This product cannot be uninstalled!"
-msgstr ""
+msgstr "Этот продукт не может быть деинсталлирован!"
 
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:215
 msgid "This rule is not assigned to any location"
-msgstr ""
+msgstr "Это правило не назначено ни одному объекту"
 
 #: senaite/core/profiles/default/registry.xml
 msgid "This shows up in the title bar of browsers and in syndication feeds."
-msgstr ""
+msgstr "Это отображается в строке заголовка браузеров и в лентах синдикации."
 
 #: senaite/core/browser/portlets/templates/navigation.pt:5
 msgid "Toggle sidebar visibility"
-msgstr ""
+msgstr "Переключение видимости боковой панели"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:176
 msgid "Uninstall"
-msgstr ""
+msgstr "Удалить"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:105
 msgid "Upgrade them ALL!"
-msgstr ""
+msgstr "Обновите их ВСЕ!"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:36
 msgid "Upgrades"
-msgstr ""
+msgstr "Обновления"
 
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:32
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:28
 msgid "Users and Groups"
-msgstr ""
+msgstr "Пользователи и группы"
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:143
 msgid "WSGI:"
-msgstr ""
+msgstr "WSGI:"
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:53
-msgid "Whether or not content rules should be disabled globally. If this is selected, no rules will be executed anywhere in the portal."
+msgid ""
+"Whether or not content rules should be disabled globally. If this is "
+"selected, no rules will be executed anywhere in the portal."
 msgstr ""
+"Отключать ли правила содержания глобально или нет. Если этот параметр "
+"выбран, никакие правила не будут выполняться нигде в пределах портала."
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:40
 msgid "You are up to date. High fives."
-msgstr ""
+msgstr "Вы в курсе всех событий. Дай пять."
 
 #. convert them to new-style portlets."
-#. Default: "There are legacy portlets defined here. Click the button to convert them to new-style portlets."
+#. Default: "There are legacy portlets defined here. Click the button to
+#. convert them to new-style portlets."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:69
 msgid "action_convert_legacy_portlets"
 msgstr ""
+"Здесь определены устаревшие портлеты. Нажмите кнопку, чтобы преобразовать их"
+" в портлеты нового типа."
 
 #. Default: "Next ${number} items"
 #: senaite/core/browser/batching/templates/batchnavigation.pt:85
 msgid "batch_next_x_items"
-msgstr ""
+msgstr "Следующие ${number} элементов"
 
 #. Default: "Previous ${number} items"
 #: senaite/core/browser/batching/templates/batchnavigation.pt:19
 msgid "batch_previous_x_items"
-msgstr ""
+msgstr "Предыдущие ${number} элементов"
 
 #. Default: "Add action"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:183
 msgid "contentrules_add_action"
-msgstr ""
+msgstr "Добавить действие"
 
 #. Default: "Add condition"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:91
 msgid "contentrules_add_condition"
-msgstr ""
+msgstr "Добавить условие"
 
 #. Default: "Shortcuts:"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:228
 msgid "contentrules_assignments_shortcuts"
-msgstr ""
+msgstr "Быстрые ссылки:"
 
 #. Default: "The actions executed by this rule can trigger other rules"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:305
 msgid "contentrules_description_cascading"
-msgstr ""
+msgstr "Действия, выполняемые этим правилом, могут запускать другие правила"
 
 #. Default: "Enter a short description of the rule and its purpose."
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:278
 msgid "contentrules_description_description"
-msgstr ""
+msgstr "Введите краткое описание правила и его назначения."
 
 #. only be invoked if all the rule's conditions are met. You can add new
 #. actions and conditions using the buttons below."
-#. Default: "Rules execute when a triggering event occurs. Rule actions will only be invoked if all the rule's conditions are met. You can add new actions and conditions using the buttons below."
+#. Default: "Rules execute when a triggering event occurs. Rule actions will
+#. only be invoked if all the rule's conditions are met. You can add new
+#. actions and conditions using the buttons below."
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:23
 msgid "contentrules_description_execution"
 msgstr ""
+"Правила выполняются при возникновении события-триггера. Действия правила "
+"выполняются только при соблюдении всех его условий. Новые действия и условия"
+" можно добавить с помощью кнопок ниже."
 
 #. Default: "Stop evaluating content rules after this rule completes"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:296
 msgid "contentrules_description_stop"
-msgstr ""
+msgstr "Прекратить обработку правил контента после выполнения этого правила"
 
 #. Default: "The rule will execute when the following event occurs."
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:287
 msgid "contentrules_description_trigger"
-msgstr ""
+msgstr "Правило будет выполнено при возникновении следующего события."
 
 #. Default: "Perform the following actions:"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:117
 msgid "contentrules_perform_actions"
-msgstr ""
+msgstr "Выполнить следующие действия:"
 
 #: senaite/core/browser/controlpanel/templates/overview.pt:32
 msgid "continue with the upgrade"
-msgstr ""
+msgstr "продолжить обновление"
 
 #. Default: "There is no group or user attached to this group."
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:171
 msgid "decription_no_members_assigned"
-msgstr ""
+msgstr "К этой группе не привязаны группы или пользователи."
 
 #. Rules will automatically perform actions on content when certain triggers
 #. take place. After defining rules, you may want to go to a folder to assign
 #. them, using the \"rules\" item in the actions menu."
-#. Default: "Use the form below to define, change or remove content rules. Rules will automatically perform actions on content when certain triggers take place. After defining rules, you may want to go to a folder to assign them, using the \"rules\" item in the actions menu."
+#. Default: "Use the form below to define, change or remove content rules.
+#. Rules will automatically perform actions on content when certain triggers
+#. take place. After defining rules, you may want to go to a folder to assign
+#. them, using the \"rules\" item in the actions menu."
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:24
 msgid "description-contentrules-controlpanel"
 msgstr ""
+"Используйте форму ниже, чтобы определить, изменить или удалить правила "
+"контента. Правила автоматически выполняют действия над содержимым при "
+"определённых событиях. После определения правил перейдите в папку, чтобы "
+"назначить их, используя пункт \\\"правила\\\" в меню действий."
 
 #. Default: "The languages in which the site should be translatable."
 #: senaite/core/profiles/default/registry.xml
 msgid "description_available_languages"
-msgstr ""
+msgstr "Языки, на которые должен переводиться сайт."
 
 #. Default: "Please set a descriptive title for the rule."
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:266
 msgid "description_contentrule_title"
-msgstr ""
+msgstr "Задайте информативное название для правила."
 
 #. Default: "This rule is assigned to the following locations:"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:242
 msgid "description_contentrules_rule_assignments"
-msgstr ""
+msgstr "Это правило назначено следующим расположениям:"
 
 #. Default: "Configuration area for Plone and add-on Products."
 #: senaite/core/browser/controlpanel/templates/overview.pt:19
 msgid "description_control_panel"
-msgstr ""
+msgstr "Область настройки Plone и дополнительных продуктов."
 
 #. Default: "Required for the language selector viewlet to be rendered."
 #: senaite/core/profiles/default/registry.xml
 msgid "description_cookie_manual_override"
-msgstr ""
+msgstr "Требуется для отображения виджета выбора языка."
 
 #. sites that are under development. This allows many configuration changes to
 #. be immediately visible, but will make your site run more slowly. To turn
 #. off debug mode, stop the server, set 'debug-mode=off' in your buildout.cfg,
 #. re-run bin/buildout and then restart the server process."
-#. Default: "You are running in \"debug mode\". This mode is intended for sites that are under development. This allows many configuration changes to be immediately visible, but will make your site run more slowly. To turn off debug mode, stop the server, set 'debug-mode=off' in your buildout.cfg, re-run bin/buildout and then restart the server process."
+#. Default: "You are running in \"debug mode\". This mode is intended for
+#. sites that are under development. This allows many configuration changes to
+#. be immediately visible, but will make your site run more slowly. To turn
+#. off debug mode, stop the server, set 'debug-mode=off' in your buildout.cfg,
+#. re-run bin/buildout and then restart the server process."
 #: senaite/core/browser/controlpanel/templates/overview.pt:167
 msgid "description_debug_mode"
 msgstr ""
+"Вы работаете в режиме \\\"отладки\\\". Этот режим предназначен для сайтов в "
+"разработке. Он позволяет сразу видеть многие изменения конфигурации, но "
+"замедляет работу сайта. Чтобы отключить режим отладки, остановите сервер, "
+"установите 'debug-mode=off' в buildout.cfg, повторно запустите bin/buildout "
+"и перезапустите сервер."
 
 #. here. Note that this doesn't actually delete the group or user, it is only
 #. removed from this group."
-#. Default: "You can add or remove groups and users from this particular group here. Note that this doesn't actually delete the group or user, it is only removed from this group."
+#. Default: "You can add or remove groups and users from this particular group
+#. here. Note that this doesn't actually delete the group or user, it is only
+#. removed from this group."
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:78
 msgid "description_group_members_of"
 msgstr ""
+"Здесь можно добавлять или удалять группы и пользователей в этой группе. "
+"Обратите внимание: это не удаляет саму группу или пользователя, а только "
+"исключает их из этой группы."
 
 #. business units. Groups are not directly related to permissions on a global
 #. level, you normally use Roles for that - and let certain Groups have a
 #. particular role."
-#. Default: "Groups are logical collections of users, such as departments and business units. Groups are not directly related to permissions on a global level, you normally use Roles for that - and let certain Groups have a particular role."
+#. Default: "Groups are logical collections of users, such as departments and
+#. business units. Groups are not directly related to permissions on a global
+#. level, you normally use Roles for that - and let certain Groups have a
+#. particular role."
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:55
 msgid "description_groups_management"
 msgstr ""
+"Группы — это логические объединения пользователей, например подразделения "
+"или бизнес-единицы. Группы напрямую не связаны с правами на глобальном "
+"уровне — для этого обычно используются роли, которые назначаются "
+"определённым группам."
 
 #. membership in another group."
-#. Default: "The symbol ${image_link_icon} indicates a role inherited from membership in another group."
+#. Default: "The symbol ${image_link_icon} indicates a role inherited from
+#. membership in another group."
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:66
 msgid "description_groups_management2"
 msgstr ""
+"Символ ${image_link_icon} обозначает роль, унаследованную от участия в "
+"другой группе."
 
 #. assigned in this context. Use the buttons on each portlet to move them up
 #. or down, delete or edit them. To add a new portlet, use the drop-down list
 #. at the top of the column."
-#. Default: "The portlet columns will first display portlets explicitly assigned in this context. Use the buttons on each portlet to move them up or down, delete or edit them. To add a new portlet, use the drop-down list at the top of the column."
+#. Default: "The portlet columns will first display portlets explicitly
+#. assigned in this context. Use the buttons on each portlet to move them up
+#. or down, delete or edit them. To add a new portlet, use the drop-down list
+#. at the top of the column."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:52
 msgid "description_manage_contextual_portlets"
 msgstr ""
+"Столбцы портлетов сначала отображают портлеты, явно назначенные в этом "
+"контексте. Используйте кнопки на каждом портлете, чтобы переместить его "
+"вверх/вниз, удалить или отредактировать. Чтобы добавить новый портлет, "
+"используйте выпадающий список вверху столбца."
 
 #. listing of groups, so you may not see the groups defined by those plugins
 #. unless doing a specific search."
-#. Default: "Note: Some or all of your PAS groups source plugins do not allow listing of groups, so you may not see the groups defined by those plugins unless doing a specific search."
+#. Default: "Note: Some or all of your PAS groups source plugins do not allow
+#. listing of groups, so you may not see the groups defined by those plugins
+#. unless doing a specific search."
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:72
 msgid "description_pas_group_listing"
 msgstr ""
+"Примечание: некоторые или все источники групп PAS не позволяют выводить "
+"список групп, поэтому группы из этих источников могут быть не видны без "
+"конкретного поискового запроса."
 
 #. Default: "Show all search results"
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:332
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:250
 #: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:189
 msgid "description_pas_show_all_search_results"
-msgstr ""
+msgstr "Показать все результаты поиска"
 
 #. of users, so you may not see the users defined by those plugins unless
 #. doing a specific search."
-#. Default: "Some or all of your PAS user source plugins do not allow listing of users, so you may not see the users defined by those plugins unless doing a specific search."
+#. Default: "Some or all of your PAS user source plugins do not allow listing
+#. of users, so you may not see the users defined by those plugins unless
+#. doing a specific search."
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:57
 msgid "description_pas_users_listing"
 msgstr ""
+"Некоторые или все источники пользователей PAS не позволяют выводить список "
+"пользователей, поэтому пользователи из этих источников могут быть не видны "
+"без конкретного поискового запроса."
 
 #. you can do so using the drop-down boxes. Portlets that are included by
 #. these categories are shown below the selection box."
-#. Default: "If you wish to block or unblock certain categories of portlets, you can do so using the drop-down boxes. Portlets that are included by these categories are shown below the selection box."
+#. Default: "If you wish to block or unblock certain categories of portlets,
+#. you can do so using the drop-down boxes. Portlets that are included by
+#. these categories are shown below the selection box."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:59
 msgid "description_portlets_block_unblock"
 msgstr ""
+"Чтобы заблокировать или разблокировать определённые категории портлетов, "
+"используйте выпадающие списки. Портлеты, входящие в эти категории, показаны "
+"ниже блока выбора."
 
 #. mode of operation for a live Plone site, but means that some configuration
 #. changes will not take effect until your server is restarted or a product
 #. refreshed. If this is a development instance, and you want to enable debug
 #. mode, stop the server, set 'debug-mode=on' in your buildout.cfg, re-run
 #. bin/buildout and then restart the server process."
-#. Default: "You are running in \"production mode\". This is the preferred mode of operation for a live Plone site, but means that some configuration changes will not take effect until your server is restarted or a product refreshed. If this is a development instance, and you want to enable debug mode, stop the server, set 'debug-mode=on' in your buildout.cfg, re-run bin/buildout and then restart the server process."
+#. Default: "You are running in \"production mode\". This is the preferred
+#. mode of operation for a live Plone site, but means that some configuration
+#. changes will not take effect until your server is restarted or a product
+#. refreshed. If this is a development instance, and you want to enable debug
+#. mode, stop the server, set 'debug-mode=on' in your buildout.cfg, re-run
+#. bin/buildout and then restart the server process."
 #: senaite/core/browser/controlpanel/templates/overview.pt:155
 msgid "description_production_mode"
 msgstr ""
+"Вы работаете в режиме \\\"production\\\". Это предпочтительный режим для "
+"рабочего сайта Plone, однако некоторые изменения конфигурации вступят в силу"
+" только после перезапуска сервера или обновления продукта. Если это среда "
+"разработки и нужен режим отладки, остановите сервер, установите 'debug-"
+"mode=on' в buildout.cfg, повторно запустите bin/buildout и перезапустите "
+"сервер."
 
 #. Access should be granted only to the client group below. <br /> Client
 #. contacts which are linked to a user account will be automatically added to
 #. this group and have therefore the same roles granted immediately. <br />
 #. Other granted access to users or groups will only affect new created
 #. contents. </div>"
-#. Default: "Grant access for users or groups <div class=\"font-italic\"> Access should be granted only to the client group below. <br /> Client contacts which are linked to a user account will be automatically added to this group and have therefore the same roles granted immediately. <br /> Other granted access to users or groups will only affect new created contents. </div>"
+#. Default: "Grant access for users or groups <div class=\"font-italic\">
+#. Access should be granted only to the client group below. <br /> Client
+#. contacts which are linked to a user account will be automatically added to
+#. this group and have therefore the same roles granted immediately. <br />
+#. Other granted access to users or groups will only affect new created
+#. contents. </div>"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:43
 msgid "description_sharing_control"
 msgstr ""
+"Предоставить доступ пользователям или группам <div class=\\\"font-"
+"italic\\\"> Доступ следует предоставлять только группе клиента ниже. <br /> "
+"Контакты клиента, связанные с учётной записью пользователя, будут "
+"автоматически добавлены в эту группу и сразу получат те же роли. <br /> "
+"Прочий предоставленный доступ пользователям или группам повлияет только на "
+"вновь создаваемое содержимое. </div>"
 
 #. log in."
-#. Default: "Cookies are not enabled. You must enable cookies before you can log in."
+#. Default: "Cookies are not enabled. You must enable cookies before you can
+#. log in."
 #: senaite/core/browser/login/templates/login.pt:20
 msgid "enable_cookies_message_before_login"
-msgstr ""
+msgstr "Cookie не включены. Для входа в систему необходимо включить cookie."
 
 #. Default: "File already uploaded:"
 #: senaite/core/z3cform/widgets/datagrid/datagridrow_file_input.pt:19
 msgid "file_already_uploaded"
-msgstr ""
+msgstr "Файл уже загружен:"
 
 #. Default: "Get help"
 #: senaite/core/browser/login/templates/login.pt:105
 msgid "footer_login_link_get_help"
-msgstr ""
+msgstr "Получить помощь"
 
 #. Default: "Sign up here"
 #: senaite/core/browser/login/templates/login.pt:110
 msgid "footer_login_link_signup"
-msgstr ""
+msgstr "Зарегистрироваться здесь"
 
 #. Default: "Up to rule management"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:16
 msgid "go_to_contentrules_management"
-msgstr ""
+msgstr "К управлению правилами"
 
 #. Default: "Add ${itemtype}"
 #: senaite/core/skins/senaite_templates/edit_macros.pt:24
 msgid "heading_add_item"
-msgstr ""
+msgstr "Добавить ${itemtype}"
 
 #. Default: "Assign to groups"
 #: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:111
 msgid "heading_assign_to_groups"
-msgstr ""
+msgstr "Назначить в группы"
 
 #. Default: "Available languages"
 #: senaite/core/profiles/default/registry.xml
 msgid "heading_available_languages"
-msgstr ""
+msgstr "Доступные языки"
 
 #. Default: "Use cookie for manual override"
 #: senaite/core/profiles/default/registry.xml
 msgid "heading_cookie_manual_override"
-msgstr ""
+msgstr "Использовать cookie для ручного переопределения"
 
 #. Default: "Create a Group"
 #: senaite/core/browser/usergroup/templates/usergroups_groupdetails.pt:22
 msgid "heading_create_group"
-msgstr ""
+msgstr "Создать группу"
 
 #. Default: "Manage access for ${folder}"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:37
 msgid "heading_currently_assigned_shares"
-msgstr ""
+msgstr "Управление доступом для ${folder}"
 
 #. Default: "Group: ${groupname}"
 #: senaite/core/browser/usergroup/templates/usergroups_groupdetails.pt:58
 msgid "heading_edit_groupproperties"
-msgstr ""
+msgstr "Группа: ${groupname}"
 
 #. Default: "Edit ${itemtype}"
 #: senaite/core/skins/senaite_templates/edit_macros.pt:34
 msgid "heading_edit_item"
-msgstr ""
+msgstr "Редактировать ${itemtype}"
 
 #. Default: "Group Members"
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:27
 msgid "heading_group_members"
-msgstr ""
+msgstr "Участники группы"
 
 #. Default: "Group: ${groupname}"
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:55
 msgid "heading_group_members_of"
-msgstr ""
+msgstr "Группа: ${groupname}"
 
 #. Default: "Current group members"
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:91
 msgid "heading_groupmembers_current"
-msgstr ""
+msgstr "Текущие участники группы"
 
 #. Default: "Current group memberships"
 #: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:70
 msgid "heading_memberships_current"
-msgstr ""
+msgstr "Текущие членства в группах"
 
 #. Default: "Portlets assigned here"
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:40
 msgid "heading_portlets_assigned_here"
-msgstr ""
+msgstr "Портлеты, назначенные здесь"
 
 #. Default: "Search for groups"
 #: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:110
 msgid "heading_search_groups"
-msgstr ""
+msgstr "Поиск групп"
 
 #. Default: "Search for new group members"
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:184
 msgid "heading_search_newmembers"
-msgstr ""
+msgstr "Поиск новых участников группы"
 
 #. Default: "Version Overview"
 #: senaite/core/browser/controlpanel/templates/overview.pt:135
 msgid "heading_version_overview"
-msgstr ""
+msgstr "Обзор версий"
 
 #. and type the document as you usually do."
-#. Default: "If you are unsure of which format to use, just select Plain Text and type the document as you usually do."
+#. Default: "If you are unsure of which format to use, just select Plain Text
+#. and type the document as you usually do."
 #: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:52
 msgid "help_format_wysiwyg"
 msgstr ""
+"Если не уверены, какой формат использовать, выберите обычный текст и вводите"
+" документ как обычно."
 
 #. creation."
-#. Default: "A unique identifier for the group. Can not be changed after creation."
+#. Default: "A unique identifier for the group. Can not be changed after
+#. creation."
 #: senaite/core/browser/usergroup/templates/usergroups_groupdetails.pt:34
 msgid "help_groupname"
 msgstr ""
+"Уникальный идентификатор группы. Не может быть изменён после создания."
 
 #. inherited. If you disable this, only the explicitly defined sharing
 #. permissions will be valid. In the overview, the symbol
 #. ${image_confirm_icon} indicates an inherited value. Similarly, the symbol
 #. ${image_link_icon} indicates a global role, which is managed by the site
 #. administrator."
-#. Default: "By default, permissions from the container of this item are inherited. If you disable this, only the explicitly defined sharing permissions will be valid. In the overview, the symbol ${image_confirm_icon} indicates an inherited value. Similarly, the symbol ${image_link_icon} indicates a global role, which is managed by the site administrator."
+#. Default: "By default, permissions from the container of this item are
+#. inherited. If you disable this, only the explicitly defined sharing
+#. permissions will be valid. In the overview, the symbol
+#. ${image_confirm_icon} indicates an inherited value. Similarly, the symbol
+#. ${image_link_icon} indicates a global role, which is managed by the site
+#. administrator."
 #: senaite/core/browser/sharing/templates/client_sharing.pt:191
 msgid "help_inherit_local_roles"
 msgstr ""
+"По умолчанию права наследуются от контейнера этого элемента. Если отключить "
+"это, будут действовать только явно заданные права общего доступа. В обзоре "
+"символ ${image_confirm_icon} обозначает унаследованное значение, а символ "
+"${image_link_icon} — глобальную роль, управляемую администратором сайта."
 
 #. Default: "go here"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:28
 msgid "help_sharing_go_here"
-msgstr ""
+msgstr "перейдите сюда"
 
 #. container. To adjust them for the entire container, ${go_here}."
-#. Default: "You are adjusting the sharing privileges for a default view in a container. To adjust them for the entire container, ${go_here}."
+#. Default: "You are adjusting the sharing privileges for a default view in a
+#. container. To adjust them for the entire container, ${go_here}."
 #: senaite/core/browser/sharing/templates/client_sharing.pt:28
 msgid "help_sharing_page_default_page"
 msgstr ""
+"Вы настраиваете права общего доступа для стандартного просмотра контейнера. "
+"Чтобы настроить их для всего контейнера, ${go_here}."
 
 #. Default: "HTML"
 #: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:73
 msgid "html"
-msgstr ""
+msgstr "HTML"
 
 #. Default: "If all of the following conditions are met:"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:31
 msgid "if_all_conditions_met"
-msgstr ""
+msgstr "Если выполнены все следующие условия:"
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:148
 msgid "inactive"
-msgstr ""
+msgstr "неактивен"
 
 #. Default: "Add"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:105
 msgid "label_add"
-msgstr ""
+msgstr "Добавить"
 
 #. Default: "Add New Group"
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:83
 msgid "label_add_new_group"
-msgstr ""
+msgstr "Добавить новую группу"
 
 #. Default: "Add New User"
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:66
 msgid "label_add_new_user"
-msgstr ""
+msgstr "Добавить нового пользователя"
 
 #. Default: "Add portlet"
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:10
 msgid "label_add_portlet"
-msgstr ""
+msgstr "Добавить портлет"
 
 #. Default: "Add portlet…"
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:17
 msgid "label_add_portlet_ellipsis"
-msgstr ""
+msgstr "Добавить портлет…"
 
 #. Default: "Add user to selected groups"
 #: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:204
 msgid "label_add_user_to_group"
-msgstr ""
+msgstr "Добавить пользователя в выбранные группы"
 
 #. Default: "Add selected groups and users to this group"
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:339
 msgid "label_add_users_to_group"
-msgstr ""
+msgstr "Добавить выбранные группы и пользователей в эту группу"
 
 #. Default: "Cancel"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:198
 #: senaite/core/skins/senaite_templates/edit_macros.pt:262
 msgid "label_cancel"
-msgstr ""
+msgstr "Отмена"
 
 #. Default: "Add content rule"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:189
 msgid "label_contentrule_add"
-msgstr ""
+msgstr "Добавить правило контента"
 
 #. Default: "Assignments"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:209
 msgid "label_contentrules_rule_assignments"
-msgstr ""
+msgstr "Назначения"
 
 #. Default: "enabled"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:114
 msgid "label_contentrules_rule_enabled"
-msgstr ""
+msgstr "включено"
 
 #. Default: "event"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:113
 msgid "label_contentrules_rule_event"
-msgstr ""
+msgstr "событие"
 
 #. Default: "content rule"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:112
 msgid "label_contentrules_rule_listing"
-msgstr ""
+msgstr "правило контента"
 
 #. Default: "Convert portlets"
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:77
 msgid "label_convert_portlets"
-msgstr ""
+msgstr "Преобразовать портлеты"
 
 #. Default: "Delete"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:175
 msgid "label_delete"
-msgstr ""
+msgstr "Удалить"
 
 #. Default: "Description"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:272
 msgid "label_description"
-msgstr ""
+msgstr "Описание"
 
 #. Default: "Disable"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:170
 msgid "label_disable"
-msgstr ""
+msgstr "Отключить"
 
 #. Default: "Edit"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:52
 msgid "label_edit"
-msgstr ""
+msgstr "Редактировать"
 
 #. Default: "Enable"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:165
 msgid "label_enable"
-msgstr ""
+msgstr "Включить"
 
 #. Default: "Find a group here"
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:37
 msgid "label_find_group"
-msgstr ""
+msgstr "Найдите группу здесь"
 
 #. Default: "Format"
 #: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:50
 msgid "label_format"
-msgstr ""
+msgstr "Формат"
 
 #. Default: "Group Members"
 #: senaite/core/browser/usergroup/templates/usergroups_groupdetails.pt:69
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:67
 msgid "label_group_members"
-msgstr ""
+msgstr "Участники группы"
 
 #. Default: "Group Memberships"
 #: senaite/core/browser/user/templates/account-configlet.pt:41
 #: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:62
 msgid "label_group_memberships"
-msgstr ""
+msgstr "Членства в группах"
 
 #. Default: "Group Properties"
 #: senaite/core/browser/usergroup/templates/usergroups_groupdetails.pt:71
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:70
 msgid "label_group_properties"
-msgstr ""
+msgstr "Свойства группы"
 
 #. Default: "Group Search"
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:106
 msgid "label_group_search"
-msgstr ""
+msgstr "Поиск группы"
 
 #. Default: "Groups"
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:45
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:42
 msgid "label_groups"
-msgstr ""
+msgstr "Группы"
 
 #. Default: "Hide"
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:103
 msgid "label_hide_item"
-msgstr ""
+msgstr "Скрыть"
 
 #. Default: "Inherit permissions from higher levels"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:180
 msgid "label_inherit_local_roles"
-msgstr ""
+msgstr "Наследовать права с более высоких уровней"
 
 #. If you wanted to manage the portlets of the container itself, ${go_here}."
-#. Default: "You are managing the portlets of the default view of a container. If you wanted to manage the portlets of the container itself, ${go_here}."
+#. Default: "You are managing the portlets of the default view of a container.
+#. If you wanted to manage the portlets of the container itself, ${go_here}."
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:45
 msgid "label_manage_portlets_default_view_container"
 msgstr ""
+"Вы управляете портлетами стандартного просмотра контейнера. Если хотите "
+"управлять портлетами самого контейнера, ${go_here}."
 
 #. Default: "go here"
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:45
 msgid "label_manage_portlets_default_view_container_go_here"
-msgstr ""
+msgstr "перейдите сюда"
 
 #. Default: "Name"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:102
 #: senaite/core/browser/usergroup/templates/usergroups_groupdetails.pt:28
 msgid "label_name"
-msgstr ""
+msgstr "Имя"
 
 #. Default: "Next"
 #: senaite/core/skins/senaite_templates/edit_macros.pt:247
 msgid "label_next"
-msgstr ""
+msgstr "Далее"
 
 #. Default: "No group was specified."
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:35
 msgid "label_no_group_specified"
-msgstr ""
+msgstr "Группа не указана."
 
 #. Default: "No preference panels available."
 #: senaite/core/browser/controlpanel/templates/overview.pt:123
 msgid "label_no_prefs_panels_available"
-msgstr ""
+msgstr "Доступные панели настроек отсутствуют."
 
 #. Default: "Previous"
 #: senaite/core/skins/senaite_templates/edit_macros.pt:239
 msgid "label_previous"
-msgstr ""
+msgstr "Назад"
 
 #. Default: "This can be risky, are you sure you want to do this?"
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:104
 msgid "label_product_upgrade_all_action"
-msgstr ""
+msgstr "Это может быть рискованно, вы уверены, что хотите продолжить?"
 
 #. Default: "New profile version is ${version}."
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:81
 msgid "label_product_upgrade_new_profile_version"
-msgstr ""
+msgstr "Новая версия профиля: ${version}."
 
 #. Default: "Old profile version was ${version}."
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:78
 msgid "label_product_upgrade_old_profile_version"
-msgstr ""
+msgstr "Старая версия профиля была: ${version}."
 
 #. Default: "Old version was ${version}."
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:74
 msgid "label_product_upgrade_old_version"
-msgstr ""
+msgstr "Старая версия была: ${version}."
 
 #. Default: "Quick search"
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:200
 #: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:120
 msgid "label_quick_search"
-msgstr ""
+msgstr "Быстрый поиск"
 
 #. Default: "Remove"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:55
 msgid "label_remove"
-msgstr ""
+msgstr "Удалить"
 
 #. Default: "Remove from selected groups"
 #: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:103
 msgid "label_remove_selected_groups"
-msgstr ""
+msgstr "Удалить из выбранных групп"
 
 #. Default: "Remove selected groups / users"
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:175
 msgid "label_remove_selected_users"
-msgstr ""
+msgstr "Удалить выбранные группы/пользователей"
 
 #. Default: "(Required)"
 #: senaite/core/browser/usergroup/templates/usergroups_groupdetails.pt:30
 msgid "label_required"
-msgstr ""
+msgstr "(Обязательно)"
 
 #. Default: "Event trigger: ${trigger}"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:285
 msgid "label_rule_event_trigger"
-msgstr ""
+msgstr "Событие-триггер: ${trigger}"
 
 #. Default: "Search"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:78
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:214
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:120
 msgid "label_search"
-msgstr ""
+msgstr "Поиск"
 
 #. Default: "Show all"
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:219
 msgid "label_search_large"
-msgstr ""
+msgstr "Показать все"
 
 #. Default: "Show"
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:91
 msgid "label_show_item"
-msgstr ""
+msgstr "Показать"
 
 #. Default: "Show all"
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:127
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:106
 msgid "label_showall"
-msgstr ""
+msgstr "Показать все"
 
 #. Default: "Up to Groups Overview"
 #: senaite/core/browser/usergroup/templates/usergroups_groupdetails.pt:49
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:18
 msgid "label_up_to_groups_overview"
-msgstr ""
+msgstr "К обзору групп"
 
 #. Default: "Up to Users Overview"
 #: senaite/core/browser/user/templates/account-configlet.pt:13
 #: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:36
 msgid "label_up_to_usersoverview"
-msgstr ""
+msgstr "К обзору пользователей"
 
 #. Default: "User Search"
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:85
 msgid "label_user_search"
-msgstr ""
+msgstr "Поиск пользователя"
 
 #. Default: "Users"
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:43
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:39
 msgid "label_users"
-msgstr ""
+msgstr "Пользователи"
 
 #. Default: "Content rules"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:73
 msgid "legend-contentrules"
-msgstr ""
+msgstr "правила содержания легенд"
 
 #. Default: "E-mail Address"
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:114
 msgid "listingheader_email_address"
-msgstr ""
+msgstr "Email адрес"
 
 #. Default: "Group Name"
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:146
 #: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:79
 msgid "listingheader_group_name"
-msgstr ""
+msgstr "Название группы"
 
 #: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:78
 msgid "listingheader_group_remove"
-msgstr ""
+msgstr "Удалить"
 
 #. Default: "Group/User name"
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:242
 msgid "listingheader_group_user_name"
-msgstr ""
+msgstr "Имя группы/пользователя"
 
 #. Default: "Remove"
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:159
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:123
 msgid "listingheader_remove"
-msgstr ""
+msgstr "Удалить"
 
 #. Default: "Reset Password"
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:122
 msgid "listingheader_reset_password"
-msgstr ""
+msgstr "Сбросить пароль"
 
 #. Default: "User name"
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:113
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:120
 msgid "listingheader_user_name"
-msgstr ""
+msgstr "Имя пользователя"
 
 #. Default: "Need an account?"
 #: senaite/core/browser/login/templates/login.pt:109
 msgid "need_an_account"
-msgstr ""
+msgstr "Нет учётной записи?"
 
 #. Default: "No file"
 #: senaite/core/z3cform/widgets/datagrid/datagridrow_file_display.pt:27
 msgid "no_file"
-msgstr ""
-
-#. Default: "No image"
-#: senaite/core/z3cform/widgets/namedimage/display.pt:17
-msgid "no_image"
-msgstr ""
+msgstr "Нет файла"
 
 #. Default: "Plain Text"
 #: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:82
 msgid "plain_text"
-msgstr ""
+msgstr "Обычный текст"
 
 #. Default: "Return"
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:22
 msgid "return_to_view"
-msgstr ""
+msgstr "Вернуться"
 
 #. Default: "Structured Text"
 #: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:64
 msgid "structured_text"
-msgstr ""
+msgstr "Структурированный текст"
 
 #. Default: "Current sharing permissions"
 #: senaite/core/browser/sharing/templates/client_sharing.pt:92
 msgid "summary_assigned_roles"
-msgstr ""
+msgstr "Текущие права общего доступа"
 
 #. Default: "Select roles for each group"
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:139
 msgid "summary_roles_for_groups"
-msgstr ""
+msgstr "Выберите роли для каждой группы"
 
 #. various features including contact forms, email notification and password
 #. reset will not work. Go to the ${label_mail_control_panel_link} to fix
 #. this."
-#. Default: "You have not configured a mail host or a site 'From' address, various features including contact forms, email notification and password reset will not work. Go to the ${label_mail_control_panel_link} to fix this."
+#. Default: "You have not configured a mail host or a site 'From' address,
+#. various features including contact forms, email notification and password
+#. reset will not work. Go to the ${label_mail_control_panel_link} to fix
+#. this."
 #: senaite/core/browser/controlpanel/templates/overview.pt:53
 msgid "text_no_mailhost_configured"
 msgstr ""
+"Вы не настроили почтовый сервер или адрес отправителя сайта — контактные "
+"формы, email-уведомления и сброс пароля работать не будут. Перейдите в "
+"${label_mail_control_panel_link}, чтобы это исправить."
 
 #. Default: "Mail control panel"
 #: senaite/core/browser/controlpanel/templates/overview.pt:54
 msgid "text_no_mailhost_configured_control_panel_link"
-msgstr ""
+msgstr "Панель управления почтой"
 
 #. Default: "PIL is not installed properly, image scaling will not work."
 #: senaite/core/browser/controlpanel/templates/overview.pt:90
 msgid "text_no_pil_installed"
 msgstr ""
+"PIL не установлена корректно, масштабирование изображений работать не будет."
 
 #. Default: "Enter a group or user name to search for or click 'Show All'."
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:308
 msgid "text_no_searchstring"
 msgstr ""
+"Введите имя группы или пользователя для поиска либо нажмите 'Показать все'."
 
 #. Default: "Enter a group or user name to search for."
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:302
 msgid "text_no_searchstring_large"
-msgstr ""
+msgstr "Введите имя группы или пользователя для поиска."
 
 #. work properly for timezone aware date/time values. Go to the
 #. ${label_mail_event_settings_link} to fix this."
-#. Default: "You have not set the portal timezone. Date/Time handling will not work properly for timezone aware date/time values. Go to the ${label_mail_event_settings_link} to fix this."
+#. Default: "You have not set the portal timezone. Date/Time handling will not
+#. work properly for timezone aware date/time values. Go to the
+#. ${label_mail_event_settings_link} to fix this."
 #: senaite/core/browser/controlpanel/templates/overview.pt:74
 msgid "text_no_timezone_configured"
 msgstr ""
+"Вы не задали часовой пояс портала. Обработка даты/времени будет работать "
+"некорректно для значений с учётом часового пояса. Перейдите в "
+"${label_mail_event_settings_link}, чтобы это исправить."
 
 #. Default: "Date and Time Settings control panel"
 #: senaite/core/browser/controlpanel/templates/overview.pt:75
 msgid "text_no_timezone_configured_control_panel_link"
-msgstr ""
+msgstr "Панель управления настройками даты и времени"
 
 #. Default: "Enter a username to search for"
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:195
 msgid "text_no_user_searchstring"
-msgstr ""
+msgstr "Введите имя пользователя для поиска"
 
 #. Default: "Enter a username to search for, or click 'Show All'"
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:201
 msgid "text_no_user_searchstring_largesite"
-msgstr ""
+msgstr "Введите имя пользователя для поиска либо нажмите 'Показать все'"
 
 #. Default: "No matches"
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:297
 #: senaite/core/browser/usergroup/templates/usergroups_groupsoverview.pt:231
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:191
 msgid "text_nomatches"
-msgstr ""
+msgstr "Совпадений не найдено"
 
 #. Default: "This user does not belong to any group."
 #: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:102
 msgid "text_user_not_in_any_group"
-msgstr ""
+msgstr "Этот пользователь не состоит ни в одной группе."
 
 #. Default: "Edit content rule"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:13
 msgid "title_edit_contentrule"
-msgstr ""
+msgstr "Редактировать правило контента"
 
 #. Default: "Legacy portlets"
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:67
 msgid "title_legacy_portlets"
-msgstr ""
+msgstr "Устаревшие портлеты"
 
 #. Default: "Content Rules"
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:21
 msgid "title_manage_contentrules"
-msgstr ""
+msgstr "Правила контента"
 
 #. Default: "Manage portlets for ${context_title}"
 #: senaite/core/browser/portlets/templates/manage-contextual.pt:14
 msgid "title_manage_contextual_portlets"
-msgstr ""
+msgstr "Управление портлетами для ${context_title}"
 
 #. Default: "Personal Information"
 #: senaite/core/browser/user/templates/account-configlet.pt:33
 #: senaite/core/browser/usergroup/templates/usergroups_usermembership.pt:58
 msgid "title_personal_information_form"
-msgstr ""
+msgstr "Личная информация"
 
 #. Default: "Send a mail to this user"
 #: senaite/core/browser/usergroup/templates/usergroups_groupmembership.pt:158
 msgid "title_send_mail_to_user"
-msgstr ""
+msgstr "Отправить письмо этому пользователю"
 
 #. Default: "Trouble logging in?"
 #: senaite/core/browser/login/templates/login.pt:104
 msgid "trouble_logging_in"
-msgstr ""
+msgstr "Проблемы со входом?"
 
 #: senaite/core/browser/contentrules/templates/controlpanel.pt:153
 msgid "unassigned"
-msgstr ""
+msgstr "неназначенный"
 
 #. ${image_link_icon} indicates a role inherited from membership in a group."
-#. Default: "Note that roles set here apply directly to a user. The symbol ${image_link_icon} indicates a role inherited from membership in a group."
+#. Default: "Note that roles set here apply directly to a user. The symbol
+#. ${image_link_icon} indicates a role inherited from membership in a group."
 #: senaite/core/browser/usergroup/templates/usergroups_usersoverview.pt:52
 msgid "user_roles_note"
 msgstr ""
+"Обратите внимание: роли, заданные здесь, применяются непосредственно к "
+"пользователю. Символ ${image_link_icon} обозначает роль, унаследованную от "
+"участия в группе."
