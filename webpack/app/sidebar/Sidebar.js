@@ -130,7 +130,7 @@ export const Sidebar = () => {
       {isLoading && (
         <div className="sidebar-loading">
           <div className="spinner" />
-          <span>Loading navigation...</span>
+          <span>{window._t ? window._t("Loading navigation...") : "Loading navigation..."}</span>
         </div>
       )}
 

@@ -21,7 +21,7 @@ const staticPath = path.resolve(__dirname, "../src/senaite/core/browser/static")
 console.log(`RUNNING WEBPACK IN '${mode}' MODE`);
 
 
-module.exports = {
+const coreConfig = {
   // https://webpack.js.org/configuration/devtool
   devtool: isDev ? "eval" : "source-map",
   // https://webpack.js.org/configuration/mode/#usage
@@ -84,7 +84,15 @@ module.exports = {
           {
             // https://webpack.js.org/loaders/css-loader/
             loader: "css-loader",
-            options: { sourceMap: isDev },
+            options: {
+              sourceMap: isDev,
+              // Skip URLs that point at Plone-served resources;
+              // they should pass through verbatim and be resolved
+              // by the browser at runtime.
+              url: {
+                filter: (url) => !url.startsWith("/"),
+              },
+            },
           },
           {
             // https://webpack.js.org/loaders/sass-loader/
@@ -279,6 +287,59 @@ module.exports = {
     $: "jQuery",
     jquery: "jQuery",
     bootstrap: "bootstrap",
-    tinyMCE: "tinymce"
+    tinyMCE: "tinymce",
+    // Consume the shared React instance from the vendor-react bundle (see
+    // vendor-react.js / resources.pt) instead of bundling our own copy.
+    react: "React",
+    "react-dom": "ReactDOM",
+    "react-dom/client": "ReactDOM"
   }
 };
+
+
+// Standalone vendor bundle that provides the shared React instance on the
+// global scope. It MUST NOT externalize react, since its whole purpose is to
+// bundle React once and publish it (window.React / window.ReactDOM).
+const vendorReactConfig = {
+  devtool: isDev ? "eval" : "source-map",
+  mode: mode,
+  context: path.resolve(__dirname, "app"),
+  entry: {
+    "vendor-react": "./vendor-react.js",
+  },
+  output: {
+    // stable filename so any view can reference it via a <script> tag
+    filename: "vendor-react.js",
+    path: path.resolve(staticPath, "modules/react"),
+    publicPath: "/++plone++senaite.core.static/modules/react/",
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: [/node_modules/],
+        use: [
+          {
+            loader: "babel-loader",
+            options: { cacheDirectory: true },
+          },
+        ],
+      },
+    ],
+  },
+  optimization: {
+    minimize: isProd,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          sourceMap: false,
+          format: { comments: false },
+          compress: { drop_console: true, passes: 2 },
+        },
+      }),
+    ],
+  },
+};
+
+
+module.exports = [coreConfig, vendorReactConfig];

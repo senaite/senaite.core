@@ -329,6 +329,8 @@ class AnalysisServicesView(ControlPanelListingView):
         # Methods
         methods = obj.getMethods()
         if methods:
+            titles = [api.get_title(method) for method in methods]
+            item["Methods"] = ", ".join(titles)
             links = map(
                 lambda m: get_link(
                     m.absolute_url(), value=m.Title(), css_class="link"),
@@ -354,7 +356,13 @@ class AnalysisServicesView(ControlPanelListingView):
         if department:
             title = api.get_title(department)
             url = api.get_url(department)
+            item["Department"] = title
             item["replace"]["Department"] = get_link(url, title)
+
+        # Keyword
+        keyword = obj.getKeyword()
+        if keyword:
+            item["replace"]["Keyword"] = "<code>{}</code>".format(keyword)
 
         # Unit
         unit = obj.getUnit()

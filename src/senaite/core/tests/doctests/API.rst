@@ -2479,6 +2479,46 @@ Even from `uid_catalog`:
     >>> any(uc(UID=uid))
     False
 
+The `uid_catalog` keys AT and DX content with different path conventions:
+AT content is keyed by the path **relative** to the portal root, while
+DX content is keyed by the **absolute** path. The function takes care of
+both variants so that no stale path is left behind.
+
+The AT relative path key for the client is gone after un-cataloging:
+
+    >>> at_rel_path = "/".join(client.getPhysicalPath()[2:])
+    >>> at_rel_path in uc._catalog.uids
+    False
+
+The same function works for Dexterity content. Create a fresh DX object
+to verify:
+
+    >>> dx_obj = api.create(
+    ...     portal.setup.sampletypes, "SampleType",
+    ...     title="Catalog Test SampleType", Prefix="CTS")
+    >>> dx_uid = api.get_uid(dx_obj)
+    >>> dx_catalogs = api.get_catalogs_for(dx_obj)
+    >>> all(cat(UID=dx_uid) for cat in dx_catalogs)
+    True
+    >>> any(uc(UID=dx_uid))
+    True
+
+Un-cataloging removes it from the registered catalogs and from
+`uid_catalog`:
+
+    >>> api.uncatalog_object(dx_obj)
+    >>> any(cat(UID=dx_uid) for cat in dx_catalogs)
+    False
+    >>> any(uc(UID=dx_uid))
+    False
+
+The DX absolute path key in `uid_catalog` is also gone:
+
+    >>> dx_abs_path = "/".join(dx_obj.getPhysicalPath())
+    >>> dx_abs_path in uc._catalog.uids
+    False
+
+
 Catalog an object
 .................
 
@@ -2495,6 +2535,50 @@ Even in `uid_catalog`:
 
     >>> uc = api.get_tool("uid_catalog")
     >>> len(uc(UID=uid)) == 1
+    True
+
+The AT content is keyed in `uid_catalog` by its relative path:
+
+    >>> at_rel_path in uc._catalog.uids
+    True
+
+It works for Dexterity content too, which is keyed in `uid_catalog`
+by its absolute path:
+
+    >>> api.catalog_object(dx_obj)
+    >>> all(cat(UID=dx_uid) for cat in dx_catalogs)
+    True
+    >>> len(uc(UID=dx_uid)) == 1
+    True
+    >>> dx_abs_path in uc._catalog.uids
+    True
+
+
+Recursive (un)cataloging
+........................
+
+Both functions accept a `recursive` argument to walk children. The
+`client` already holds children created in earlier sections of this
+test, so we can reuse them:
+
+    >>> child_uids = [api.get_uid(c) for c in client.objectValues()]
+    >>> child_uids and all(any(uc(UID=cuid)) for cuid in child_uids)
+    True
+
+Un-cataloging the parent recursively also un-catalogs the children:
+
+    >>> api.uncatalog_object(client, recursive=True)
+    >>> any(uc(UID=uid))
+    False
+    >>> any(any(uc(UID=cuid)) for cuid in child_uids)
+    False
+
+Re-cataloging the parent recursively brings the children back:
+
+    >>> api.catalog_object(client, recursive=True)
+    >>> any(uc(UID=uid))
+    True
+    >>> all(any(uc(UID=cuid)) for cuid in child_uids)
     True
 
 
@@ -2528,6 +2612,43 @@ Unless we explicitly tell the system to bypass security check:
     False
 
 
+Deletion and intid bookkeeping
+..............................
+
+``api.delete`` keeps the ``IIntIds`` utility in sync regardless of whether
+removal events are fired. By default, deletion fires ``IObjectRemovedEvent``
+and the ``five.intid`` subscriber drops the object's intid registration:
+
+    >>> from zope.component import queryUtility
+    >>> from zope.intid.interfaces import IIntIds
+    >>> intids = queryUtility(IIntIds)
+
+    >>> events_client = api.copy_object(
+    ...     client, title="Client to delete (events)")
+    >>> intids.queryId(events_client) is not None
+    True
+
+    >>> api.delete(events_client, check_permissions=False)
+    >>> intids.queryId(events_client) is None
+    True
+
+When ``suppress_events=True`` is passed — the path used by migrations and
+upgrade steps — ``IObjectRemovedEvent`` is *not* fired, so the ``five.intid``
+subscriber never runs. To avoid orphan intid entries pinning the dead oid in
+storage, ``api.delete`` delegates to ``senaite.core.api.delete_intid`` before
+calling ``_delObject``:
+
+    >>> silent_client = api.copy_object(
+    ...     client, title="Client to delete (no events)")
+    >>> intids.queryId(silent_client) is not None
+    True
+
+    >>> api.delete(
+    ...     silent_client, check_permissions=False, suppress_events=True)
+    >>> intids.queryId(silent_client) is None
+    True
+
+
 Move an object
 ..............
 
@@ -2550,7 +2671,7 @@ Move the contact to the destination client:
     >>> dest.hasObject(id)
     False
     >>> contact
-    <Contact at /plone/clients/client-5/contact-4>
+    <Contact at /plone/clients/client-7/contact-4>
     >>> contact = api.move_object(contact, dest, check_constraints=False)
     >>> api.get_parent(contact) == dest
     True
@@ -2559,7 +2680,7 @@ Move the contact to the destination client:
     >>> orig.hasObject(id)
     False
     >>> contact
-    <Contact at /plone/clients/client-6/contact-4>
+    <Contact at /plone/clients/client-8/contact-4>
 
 It does nothing if destination is the same as the origin:
 
@@ -2591,7 +2712,7 @@ Unless we grant enough permissions to remove the object from origin:
     >>> dest.hasObject(id)
     False
     >>> contact
-    <Contact at /plone/clients/client-5/contact-4>
+    <Contact at /plone/clients/client-7/contact-4>
 
 Still, destination container must allow the object's type:
 

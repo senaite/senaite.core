@@ -26,6 +26,7 @@ from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from plone.memoize.request import cache
+from senaite.core.interfaces import ILockingState
 from senaite.core.interfaces import IWorksheet
 
 
@@ -45,6 +46,31 @@ def is_worksheet_context():
         return True
 
     return False
+
+
+def guard_lock(analysis):
+    """Return whether the transition "lock" can be performed or not.
+
+    The lock takes place automatically when the sample the analysis belongs to
+    is moved to a locking state (e.g. disposed or dispatched). It cannot be
+    performed manually: this prevents locking an analysis of an active sample,
+    which could not be unlocked afterwards because unlocking only happens when
+    the sample is restored.
+    """
+    sample = analysis.getRequest()
+    return ILockingState.providedBy(sample)
+
+
+def guard_unlock(analysis):
+    """Return whether the transition "unlock" can be performed or not.
+
+    Counterpart of "lock". It cannot be performed manually either: an analysis
+    is only unlocked when the sample it belongs to leaves its locking state
+    (e.g. it is restored). Hence, it is only allowed once the sample no longer
+    provides ILockingState.
+    """
+    sample = analysis.getRequest()
+    return not ILockingState.providedBy(sample)
 
 
 def guard_initialize(analysis):

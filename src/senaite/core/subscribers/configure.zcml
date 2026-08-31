@@ -57,4 +57,35 @@
          zope.lifecycleevent.interfaces.IObjectModifiedEvent"
     handler=".senaite_setup.on_senaite_setup_modified"/>
 
+  <!-- Drop intids registered by five.intid for transient
+       portal_factory children. Must run after the upstream
+       five.intid IObjectAddedEvent subscriber; ZCML order
+       guarantees that since this package is loaded after
+       five.intid. See drop_intid_for_temporary_object docstring
+       for details. -->
+  <subscriber
+      for="*
+           zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler=".intid.drop_intid_for_temporary_object"/>
+
+  <!-- Legacy logging handler for added remarks (AT field) -->
+  <subscriber
+      for="senaite.core.events.remarks.IRemarksAddedEvent"
+      handler=".remarks.RemarksAddedEventHandler"/>
+
+  <!-- Label rename cascade: the persistent annotation on the Label
+       records the last-known title; the modified handler compares
+       against it and rewrites the stored name on every labeled
+       content if the title changed. Seeded on add so the first
+       edit has a baseline. -->
+  <subscriber
+      for="senaite.core.interfaces.ILabel
+           zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler=".label.on_label_added"/>
+
+  <subscriber
+      for="senaite.core.interfaces.ILabel
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".label.on_label_modified"/>
+
 </configure>

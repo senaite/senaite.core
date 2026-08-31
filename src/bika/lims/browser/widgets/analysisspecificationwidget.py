@@ -68,6 +68,12 @@ class AnalysisSpecificationView(BikaListingView):
             self.show_categories = True
             self.expand_all_categories = False
 
+        # Track which category titles are referenced by the services in
+        # this listing. Resolved against the catalog-ordered set of all
+        # AnalysisCategory objects in `folderitems` so the rendered
+        # category groups follow the configured SortKey ordering.
+        self.found_categories = []
+
         # Operator Choices
         self.min_operator_choices = to_choices(MIN_OPERATORS)
         self.max_operator_choices = to_choices(MAX_OPERATORS)
@@ -189,7 +195,22 @@ class AnalysisSpecificationView(BikaListingView):
 
     def folderitems(self):
         items = super(AnalysisSpecificationView, self).folderitems()
-        self.categories.sort()
+        if self.show_categories_enabled():
+            # The AnalysisCategory `sortable_title` indexer folds SortKey
+            # into the value (see senaite.core.catalog.indexer.
+            # analysiscategory), so querying the setup catalog ordered
+            # by `sortable_title` gives the categories in SortKey order.
+            catalog = api.get_tool("senaite_catalog_setup")
+            brains = catalog({
+                "portal_type": "AnalysisCategory",
+                "sort_on": "sortable_title",
+            })
+            self.categories = [
+                b.Title for b in brains
+                if b.Title in self.found_categories
+            ]
+        else:
+            self.categories.sort()
         return items
 
     def folderitem(self, obj, item, index):
@@ -221,12 +242,13 @@ class AnalysisSpecificationView(BikaListingView):
         # get the category
         if self.show_categories_enabled():
             category = obj.getCategoryTitle()
-            if category not in self.categories:
-                self.categories.append(category)
+            if category not in self.found_categories:
+                self.found_categories.append(category)
             item["category"] = category
 
         item["Title"] = title
         item["Keyword"] = keyword
+        item["replace"]["Keyword"] = "<code>{}</code>".format(keyword)
         item["replace"]["Title"] = get_link(url, value=title)
         item["choices"]["min_operator"] = self.min_operator_choices
         item["choices"]["max_operator"] = self.max_operator_choices

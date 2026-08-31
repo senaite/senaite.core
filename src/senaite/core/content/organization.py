@@ -383,3 +383,32 @@ class Organization(Container):
 
     # BBB: AT schema field property
     BillingAddress = property(getBillingAddress, setBillingAddress)
+
+    @security.protected(permissions.View)
+    def getPrintAddress(self):
+        """Composed address for printing on labels, emails, reports.
+
+        Returns a list of three strings (street, "<city> <zip>",
+        "<state> <country>") built from the first non-empty of the
+        Postal, Physical, or Billing addresses.  Mirrors the legacy
+        AT `Organisation.getPrintAddress` so callers that still
+        target `setup.laboratory.getPrintAddress()` keep working
+        after the AT->DX migration of the Laboratory content type.
+        """
+        address_lines = []
+        for address in (self.getPostalAddress(),
+                        self.getPhysicalAddress(),
+                        self.getBillingAddress()):
+            city = address.get("city", "")
+            if not city:
+                continue
+            zip_ = address.get("zip", "")
+            state = address.get("state", "")
+            country = address.get("country", "")
+            address_lines = [
+                address.get("address", "").strip(),
+                u"{} {}".format(city, zip_).strip(),
+                u"{} {}".format(state, country).strip(),
+            ]
+            break
+        return address_lines

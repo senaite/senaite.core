@@ -18,12 +18,14 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import string
 from datetime import timedelta
 
 import six
 from AccessControl import ClassSecurityInfo
 from bika.lims import _
 from bika.lims import api
+from bika.lims import logger
 from plone.app.textfield import IRichTextValue
 from plone.app.textfield.widget import RichTextFieldWidget  # TBD: port to core
 from plone.autoform import directives
@@ -49,7 +51,9 @@ from zope import schema
 from zope.component import getUtility
 from zope.deprecation import deprecate
 from zope.interface import Interface
+from zope.interface import Invalid
 from zope.interface import implementer
+from zope.interface import invariant
 from zope.interface import provider
 from zope.schema.interfaces import IContextAwareDefaultFactory
 
@@ -150,7 +154,7 @@ DEFAULT_ID_FORMATTING = [
         "form": "{parent_ar_id}-P{partition_count:02d}",
         "portal_type": "AnalysisRequestPartition",
         "prefix": "analysisrequestpartition",
-        "sequence_type": "",
+        "sequence_type": "generated",
         "context": "",
         "counter_type": "",
         "counter_reference": "",
@@ -160,7 +164,7 @@ DEFAULT_ID_FORMATTING = [
         "form": "{parent_base_id}-R{retest_count:02d}",
         "portal_type": "AnalysisRequestRetest",
         "prefix": "analysisrequestretest",
-        "sequence_type": "",
+        "sequence_type": "generated",
         "context": "",
         "counter_type": "",
         "counter_reference": "",
@@ -170,13 +174,29 @@ DEFAULT_ID_FORMATTING = [
         "form": "{parent_ar_id}-S{secondary_count:02d}",
         "portal_type": "AnalysisRequestSecondary",
         "prefix": "analysisrequestsecondary",
-        "sequence_type": "",
+        "sequence_type": "generated",
         "context": "",
         "counter_type": "",
         "counter_reference": "",
         "split_length": 1
     },
 ]
+
+
+def _record_get(record, key, default=None):
+    """Resolve a value from a DataGrid record, which may expose its
+    fields either as attributes (RecordsRecord) or as dict items.
+    """
+    try:
+        value = getattr(record, key)
+    except AttributeError:
+        value = None
+    if value is None:
+        try:
+            value = record[key]
+        except (KeyError, TypeError):
+            value = default
+    return value
 
 
 class IIDFormattingRecordSchema(Interface):
@@ -941,12 +961,49 @@ class ISetupSchema(model.Schema):
     )
 
     # Sampling
+    sample_duplicate_enabled = schema.Bool(
+        title=_(
+            u"title_senaitesetup_sample_duplicate_enabled",
+            default=u"Allow sample duplication"
+        ),
+        description=_(
+            u"description_senaitesetup_sample_duplicate_enabled",
+            default=u"If enabled, users with sufficient privileges can "
+                    u"create a sibling sample directly from an existing "
+                    u"one via the 'Duplicate' action in the samples "
+                    u"listing. Enabled by default."
+        ),
+        default=True,
+    )
+
     printing_workflow_enabled = schema.Bool(
         title=_(u"Enable the Results Report Printing workflow"),
         description=_(
             u"Select this to allow the user to set an additional 'Printed' "
             u"status to those Analysis Requests that have been Published. "
             u"Disabled by default."
+        ),
+        default=False,
+    )
+
+    dispose_workflow_enabled = schema.Bool(
+        title=_(u"Enable the Sample Dispose workflow"),
+        description=_(
+            u"Select this to allow disposing samples through the 'dispose' "
+            u"transition and to enable the additional 'disposed' status. "
+            u"Disabled by default."
+        ),
+        default=False,
+    )
+
+    dispatch_workflow_enabled = schema.Bool(
+        title=_(u"Enable the Sample Dispatch workflow"),
+        description=_(
+            u"Select this to allow dispatching samples through the 'dispatch' "
+            u"transition and to enable the additional 'dispatched' status. "
+            u"The analyses of a dispatched sample become read-only and are "
+            u"brought back to their previous status when the sample is "
+            u"restored. Disabled by default."
         ),
         default=False,
     )
@@ -1147,58 +1204,76 @@ class ISetupSchema(model.Schema):
         description=_(
             u"<p>The ID Server provides unique sequential IDs for objects "
             u"such as Samples and Worksheets etc, based on a format "
-            u"specified for each content type.</p>"
-            u"<p>The format is constructed similarly to the Python format "
-            u"syntax, using predefined variables per content type, and "
-            u"advancing the IDs through a sequence number, 'seq' and its "
-            u"padding as a number of digits, e.g. '03d' for a sequence of "
-            u"IDs from 001 to 999.</p>"
-            u"<p>Alphanumeric prefixes for IDs are included as is in the "
-            u"formats, e.g. WS for Worksheet in WS-{seq:03d} produces "
-            u"sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p>"
-            u"<p>For dynamic generation of alphanumeric and sequential IDs, "
-            u"the wildcard {alpha} can be used. E.g WS-{alpha:2a3d} produces "
-            u"WS-AA001, WS-AA002, WS-AB034, etc.</p>"
-            u"<p>Variables that can be used include:"
-            u"<table>"
-            u"<tr>"
-            u"<th style='width:150px'>Content Type</th><th>Variables</th>"
-            u"</tr>"
-            u"<tr><td>Client ID</td><td>{clientId}</td></tr>"
-            u"<tr><td>Year</td><td>{year}</td></tr>"
-            u"<tr><td>Sample ID</td><td>{sampleId}</td></tr>"
-            u"<tr><td>Sample Type</td><td>{sampleType}</td></tr>"
-            u"<tr><td>Sampling Date</td><td>{samplingDate}</td></tr>"
-            u"<tr><td>Date Sampled</td><td>{dateSampled}</td></tr>"
-            u"</table>"
-            u"</p>"
-            u"<p>Configuration Settings:"
+            u"specified for each content type. The format is constructed "
+            u"similarly to the Python format syntax, e.g. "
+            u"<code>WS-{seq:03d}</code> produces <code>WS-001</code>, "
+            u"<code>WS-002</code>, <code>WS-003</code> etc.</p>"
+            u"<p>The current persistent counter values are managed in the "
+            u"<a href='ng'>Number Generator view</a>.</p>"
+            u"<details class='id-server-cheatsheet'>"
+            u"<summary>Available variables</summary>"
+            u"<table class='table table-sm'>"
+            u"<thead><tr><th style='width:30%'>Variable</th>"
+            u"<th>Description</th></tr></thead>"
+            u"<tbody>"
+            u"<tr><td><code>{seq}</code> / <code>{seq:04d}</code></td>"
+            u"<td>Numeric sequence number, optionally zero-padded.</td></tr>"
+            u"<tr><td><code>{alpha:NaNd}</code></td>"
+            u"<td>Alphanumeric counter, e.g. <code>{alpha:2a3d}</code> "
+            u"yields AA001, AA002, ..., AB001, ...</td></tr>"
+            u"<tr><td><code>{year}</code></td>"
+            u"<td>Two-digit current year (e.g. <code>26</code>).</td></tr>"
+            u"<tr><td><code>{yymmdd}</code></td>"
+            u"<td>Current date as <code>yymmdd</code>.</td></tr>"
+            u"<tr><td><code>{clientId}</code></td>"
+            u"<td>Client ID (samples only).</td></tr>"
+            u"<tr><td><code>{sampleType}</code></td>"
+            u"<td>Sample type prefix.</td></tr>"
+            u"<tr><td><code>{samplingDate}</code> / "
+            u"<code>{dateSampled}</code></td>"
+            u"<td>Sample dates (Python <code>strftime</code> specs apply).</td></tr>"
+            u"<tr><td><code>{parent_ar_id}</code> / "
+            u"<code>{parent_base_id}</code></td>"
+            u"<td>For partitions/retests/secondaries: the parent sample ID.</td></tr>"
+            u"<tr><td><code>{partition_count}</code></td>"
+            u"<td>Per-parent partition counter.</td></tr>"
+            u"<tr><td><code>{retest_count}</code> / "
+            u"<code>{secondary_count}</code> / "
+            u"<code>{test_count}</code></td>"
+            u"<td>Counters for retests, secondaries, and total tests.</td></tr>"
+            u"</tbody></table>"
+            u"</details>"
+            u"<details class='id-server-cheatsheet'>"
+            u"<summary>Configuration fields</summary>"
             u"<ul>"
-            u"<li>format:"
-            u"<ul><li>a python format string constructed from predefined "
-            u"variables like sampleId, clientId, sampleType.</li>"
-            u"<li>special variable 'seq' must be positioned last in the "
-            u"format string</li></ul></li>"
-            u"<li>sequence type: [generated|counter]</li>"
-            u"<li>context: if type counter, provides context the counting "
-            u"function</li>"
-            u"<li>counter type: [backreference|contained]</li>"
-            u"<li>counter reference: a parameter to the counting function</li>"
-            u"<li>prefix: default prefix if none provided in format string</li>"
-            u"<li>split length: the number of parts to be included in the "
-            u"prefix</li>"
-            u"</ul></p>"
+            u"<li><strong>Format</strong>: the ID template.</li>"
+            u"<li><strong>Seq Type</strong>: "
+            u"<code>generated</code> uses the persistent number counter; "
+            u"<code>counter</code> uses the count of related objects.</li>"
+            u"<li><strong>Context</strong>: only used by <code>counter</code> "
+            u"type; the named context the counter applies to.</li>"
+            u"<li><strong>Counter Type</strong>: "
+            u"<code>backreference</code> (deprecated) or "
+            u"<code>contained</code>.</li>"
+            u"<li><strong>Counter Ref</strong>: relationship name "
+            u"(backreference) or meta type (contained).</li>"
+            u"<li><strong>Prefix</strong>: default prefix if none in the "
+            u"format.</li>"
+            u"<li><strong>Split Length</strong>: how many segments of the "
+            u"format become the storage key prefix. Determines how the "
+            u"counter is partitioned (e.g. per year, per sample type).</li>"
+            u"</ul>"
+            u"</details>"
+            u"<style>"
+            u".id-server-cheatsheet { margin: 0.5em 0; }"
+            u".id-server-cheatsheet > summary { cursor: pointer; "
+            u"font-weight: 600; padding: 0.25em 0; }"
+            u".id-server-cheatsheet table { margin-top: 0.5em; }"
+            u"</style>"
         ),
         value_type=DataGridRow(schema=IIDFormattingRecordSchema),
         required=False,
         default=DEFAULT_ID_FORMATTING,
-    )
-
-    id_server_values = schema.Text(
-        title=_(u"ID Server Values"),
-        description=_(u"Current ID server counter values"),
-        required=False,
-        readonly=True,
     )
 
     ###
@@ -1269,9 +1344,9 @@ class ISetupSchema(model.Schema):
         "appearance",
         label=_(u"Appearance"),
         fields=[
-            "worksheet_layout",
             "dashboard_by_default",
             "landing_page",
+            "worksheet_layout",
             "show_partitions",
             "site_logo",
             "site_logo_css",
@@ -1286,7 +1361,10 @@ class ISetupSchema(model.Schema):
         "sampling",
         label=_(u"Sampling"),
         fields=[
+            "sample_duplicate_enabled",
             "printing_workflow_enabled",
+            "dispose_workflow_enabled",
+            "dispatch_workflow_enabled",
             "sampling_workflow_enabled",
             "schedule_sampling_enabled",
             "date_sampled_required",
@@ -1329,9 +1407,45 @@ class ISetupSchema(model.Schema):
         label=_(u"ID Server"),
         fields=[
             "id_formatting",
-            "id_server_values",
         ]
     )
+
+    @invariant
+    def validate_id_formatting(data):  # noqa: pylint:disable=no-self-argument
+        """Validate the IDFormatting entries.
+
+        Note: ``@invariant`` functions take the form data wrapper, not
+        a regular ``self``; the parameter name follows the
+        zope.interface convention.
+
+        - Each `form` value must parse as a Python format string.
+        - No duplicate `portal_type` entries (the second one would be
+          shadowed by the first at lookup time).
+        """
+        records = getattr(data, "id_formatting", None) or []
+        seen_types = {}
+        for idx, record in enumerate(records, start=1):
+            portal_type = (_record_get(record, "portal_type") or "").strip()
+            form_str = _record_get(record, "form") or ""
+            if portal_type:
+                conflict = seen_types.get(portal_type)
+                if conflict:
+                    raise Invalid(_(
+                        u"Duplicate ID format for portal type "
+                        u"'${pt}' (rows ${a} and ${b}). Only the first "
+                        u"row is used; remove or merge the duplicate.",
+                        mapping={"pt": portal_type, "a": conflict,
+                                 "b": idx}))
+                seen_types[portal_type] = idx
+            if form_str:
+                try:
+                    list(string.Formatter().parse(form_str))
+                except (ValueError, IndexError) as exc:
+                    raise Invalid(_(
+                        u"Invalid ID format on row ${i} "
+                        u"('${pt}'): ${err}",
+                        mapping={"i": idx, "pt": portal_type or "",
+                                 "err": str(exc)}))
 
 
 @implementer(ISetup, ISetupSchema, IHideActionsMenu)
@@ -1597,6 +1711,15 @@ class Setup(Container):
     @security.protected(permissions.ModifyPortalContent)
     def setAutoLogOff(self, value):
         """Set session lifetime in minutes
+
+        Writes the plone.session cookie `timeout` (in seconds) and keeps the
+        plugin's `refresh_interval` strictly below `timeout`, so that an
+        *active* user's session cookie is renewed by the refresh beacon before
+        it expires. plone.session does not refresh the ticket on regular
+        requests, so it treats `timeout` as an absolute lifetime from login;
+        without this a short auto log-off would log out users while they are
+        actively working, not only when idle. A value of 0 disables auto
+        log-off (the cookie never expires).
         """
         value = api.to_int(value, default=0)
         if value < 0:
@@ -1604,8 +1727,18 @@ class Setup(Container):
         value = value * 60
         acl = api.get_tool("acl_users")
         session = acl.get("session")
-        if session:
+        if session is None:
+            logger.warn(
+                "No 'session' plugin found in acl_users. Cannot set the "
+                "auto log-off timeout (%s seconds)" % value)
+        else:
             session.timeout = value
+            # Keep the refresh beacon ahead of expiry. Only adjust when the
+            # current interval would defeat the timeout (disabled, or >=
+            # timeout), so a manually-tuned lower interval is preserved.
+            if value and (session.refresh_interval < 0
+                          or session.refresh_interval >= value):
+                session.refresh_interval = max(60, value // 2)
         mutator = self.mutator("auto_log_off")
         return mutator(self, value // 60)
 
@@ -2088,34 +2221,6 @@ class Setup(Container):
         return mutator(self, value)
 
     @security.protected(permissions.View)
-    def getDashboardByDefault(self):
-        """Get dashboard by default setting
-        """
-        accessor = self.accessor("dashboard_by_default")
-        return accessor(self)
-
-    @security.protected(permissions.ModifyPortalContent)
-    def setDashboardByDefault(self, value):
-        """Set dashboard by default setting
-        """
-        mutator = self.mutator("dashboard_by_default")
-        return mutator(self, value)
-
-    @security.protected(permissions.View)
-    def getLandingPage(self):
-        """Get landing page
-        """
-        accessor = self.accessor("landing_page")
-        return accessor(self)
-
-    @security.protected(permissions.ModifyPortalContent)
-    def setLandingPage(self, value):
-        """Set landing page
-        """
-        mutator = self.mutator("landing_page")
-        return mutator(self, value)
-
-    @security.protected(permissions.View)
     def getShowPartitions(self):
         """Get show partitions setting
         """
@@ -2130,6 +2235,20 @@ class Setup(Container):
         return mutator(self, value)
 
     @security.protected(permissions.View)
+    def getSampleDuplicateEnabled(self):
+        """Get allow sample duplicate setting
+        """
+        accessor = self.accessor("sample_duplicate_enabled")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSampleDuplicateEnabled(self, value):
+        """Set allow sample duplicate setting
+        """
+        mutator = self.mutator("sample_duplicate_enabled")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
     def getPrintingWorkflowEnabled(self):
         """Get printing workflow enabled setting
         """
@@ -2141,6 +2260,34 @@ class Setup(Container):
         """Set printing workflow enabled setting
         """
         mutator = self.mutator("printing_workflow_enabled")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getDisposeWorkflowEnabled(self):
+        """Get dispose workflow enabled setting
+        """
+        accessor = self.accessor("dispose_workflow_enabled")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setDisposeWorkflowEnabled(self, value):
+        """Set dispose workflow enabled setting
+        """
+        mutator = self.mutator("dispose_workflow_enabled")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getDispatchWorkflowEnabled(self):
+        """Get dispatch workflow enabled setting
+        """
+        accessor = self.accessor("dispatch_workflow_enabled")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setDispatchWorkflowEnabled(self, value):
+        """Set dispatch workflow enabled setting
+        """
+        mutator = self.mutator("dispatch_workflow_enabled")
         return mutator(self, value)
 
     @security.protected(permissions.View)
@@ -2424,9 +2571,9 @@ class Setup(Container):
                     if normalized_row.get(key) is None:
                         normalized_row[key] = ""
                 # Ensure split_length is an int
-                if normalized_row.get("split_length"):
-                    normalized_row["split_length"] = api.to_int(
-                        normalized_row["split_length"], default=1)
+                split_length = normalized_row.get("split_length")
+                split_length_int = api.to_int(split_length, default=1)
+                normalized_row["split_length"] = max(split_length_int, 1)
                 normalized.append(normalized_row)
             value = normalized
 
@@ -2459,16 +2606,3 @@ class Setup(Container):
         """Return true if the rejection workflow is enabled
         """
         return self.getEnableRejectionWorkflow()
-
-    @property
-    def laboratory(self):
-        """Get the laboratory object via acquisition
-        The laboratory is stored in bika_setup which is in the portal root
-        """
-        bika_setup = api.get_bika_setup()
-        if bika_setup:
-            return bika_setup.laboratory
-        # when we finally migrated it...
-        elif "laboratory" in self.objectIds():
-            return self["laboratry"]
-        return None

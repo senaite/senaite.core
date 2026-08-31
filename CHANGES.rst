@@ -4,6 +4,120 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2995 Add interactive upgrade, catalog and user console scripts
+- #3008 Filter sidebar root folders by permission instead of by catalog
+- #3007 Fix empty sticker template selection when printing stickers from a listing
+- #3003 Fix colliding reference analyses group IDs within the same transaction
+- #3000 Validate inter-field limits from the instance when there is no form
+- #2999 Pin plone.jsonapi.core to 0.8.0 and add find-links for its sdist
+- #2997 Fix listing widget doctest for the new data-catalog table attribute
+- #2996 Fix missing Dexterity FTI utility registration on typeinfo import
+- #2993 Sync translations and add complete German, Dutch and Spanish translations
+- #2993 Make the dashboard fully translatable
+- #2992 Fix UnicodeEncodeError in Organization.getPrintAddress with non-ASCII address
+- #2988 Fix worksheet template analysis filtering for selected samples
+- #2985 Add a SENAITE-specific Manage Viewlets view
+- #2971 Make the Sample Dispatch workflow optional and lock analyses on dispatch
+- #2970 Add an optional Sample Dispose workflow
+- #2986 Fix UnicodeDecodeError from non-ASCII organisation titles in the title index
+- #2979 Show precise element-level audit log diffs for lists and record fields
+- #2984 Hide the Manage Portlets menu from the toolbar
+- #2983 Fix HiddenProfiles list to actually hide bundled add-on profiles
+- #2981 Forward results override flags to custom auto-import adapters
+- #2962 Remove the obsolete RegulatoryInspector role
+- #2976 Surface orphaned sample partitions as top-level rows in listings
+- #2982 Fix auto log-off logging out active users (session refresh interval)
+- #2978 Move front page and landing page fields to the Appearance fieldset
+- #2973 Add PublishTraverseView/JSONView base browser views for AJAX endpoints
+- #2974 Do not offer all sticker templates to content types without a sticker adapter
+- #2970 Add an optional Sample Dispose workflow
+- #2969 Speed up the getClientTitle reindex upgrade step with partial metadata refresh
+- #2977 Fix KeyError on AllowManualEntry when importing result options without the column
+- #2968 Support partial catalog metadata refresh and quiet per-object multiplex logging
+- #2965 Filter samples by their analyses in the samples listing
+- #2975 Fix ExpressionError in edit-analysis modal
+- #2898 Add AllowManualEntry for select result options
+- #2967 Fix My Organization menu action hidden for client users
+- #2966 Fix UnicodeDecodeError when filtering samples by a non-ASCII client name
+- #2964 Improve dashboard panel links, tooltips, and workflow-ordered chart legends
+- #2963 Show analysis service keyword as code across service listings
+- #2959 Refactor Remarks into a reusable React widget with edit and version history
+- #2961 Expose React and ReactDOM globally for SENAITE add-ons
+- #2960 Set multipart enctype on the sample header form so file uploads persist
+- #2957 Harmonize form input widths via tunable CSS variables
+- #2956 Restrict client discount fields to lab staff
+- #2958 Add labels with colors, filtering, and bulk-manage modal for samples
+- #2953 Fix IClientAwareMixin interface mismatch breaking client access on DX content
+- #2955 Defer workflow transition lookup with a React content-menu component
+- #2954 Declare i18n:domain on duration widget templates
+- #2952 Skip fields whose widget returns empty_marker in sample header submit
+- #2951 Remove twitter-together workflow and tweet drafts
+- #2949 Render NamedImage display widget at a scaled size via @@images
+- #2948 Fix UnicodeDecodeError in get_link when href contains non-ASCII bytes
+- #2945 Merge linked-user property sheets in first-non-empty-wins order
+- #2944 Cover catalog token and sidebar grant for linked client users
+- #2943 Polish client-role upgrade steps
+- #2942 Harden contact-to-user link path
+- #2941 Remove leftover per-client-group code paths
+- #2932 Fix validation for formulas with duplicate keywords
+- #2945 Add rangecomment support to dynamic results ranges
+- #2950 Add translations for new senaite.app.listing UI strings
+- #2947 Fix barcodes missing from PDFs behind a virtual-host path
+- #2940 Grant the global 'Client' role to users with linked_client_uid set
+- #2939 Persist linked user properties through the mutable properties plugin
+- #2938 Remove legacy per-client groups and persisted Owner local roles
+- #2937 Disable @@sharing on the client tree
+- #2934 Grant client access via a dynamic local-role provider instead of per-client groups
+- #2933 Hide 'Client' role column and strip direct Client role assignments
+- #2928 Fix ASTM consumer boundary bugs (sender shape, instrument cascade, sample fallback)
+- #2925 Add 'reattach' workflow transition to re-link detached partitions to their primary
+- #2926 Strip surrounding whitespace from analysis unit choices so configuration typos don't break the round-trip
+- #2927 Sort analysis categories on the analysis specification listing by SortKey
+- #2920 Fix TypeError in DynamicAnalysisSpec when xlsx has trailing empty headers
+- #2924 Fix login traceback that blocks running upgrade step 2731
+- #2923 Fix CopyError when migrating AT laboratory to DX
+- #2921 Fix duplicate Laboratory object by making setup/laboratory the single canonical Laboratory
+- #2922 Initialize unset Dexterity schema fields in api.create so ObjectAddedEvent subscribers don't read through acquisition
+- #2919 Enforce the AccessJSONAPI permission on state-changing JSON API routes
+- #2918 Fix Lab Information setup data import after Laboratory migration to Dexterity
+- #2917 Fix `ClientID` is not displayed in samples listing, but client name
+- #2916 Fix msgid collision on `description_calculation_imports` in Calculation content type
+- #2915 Rename 'Duplicate' sample transition to 'Duplicate Sample' to avoid translation collision with the worksheet duplicate-analysis label
+- #2914 Skip DublinCore creators/contributors when duplicating a sample
+- #2903 Refactor record parsing to use ast.literal_eval to prevent code execution
+- #2895 Add 'duplicate_sample' workflow transition for samples (with global toggle in setup)
+- #2910 Centralize intid cleanup in api.delete
+- #2913 Fix UnicodeEncodeError in render_html_attributes for non-ASCII attribute values
+- #2912 Fix missing <genericsetup:upgradeStep> tag for Worksheet Dexterity migration
+- #2908 Drop intid registrations created for portal_factory transients
+- #2907 Unregister intid on migration-time object deletion
+- #2909 Restore getPrintAddress on the DX Organization content type
+- #2890 Add hazard categories to SampleType, Sample, ReferenceDefinition and ReferenceSample (GHS + ISO 7010)
+- #2906 Only consult ar_add idempotency cache on a publisher retry
+- #2905 Rebuild title FieldIndex on every SENAITE catalog
+- #2904 Add IMultiCatalogBehavior to Laboratory FTI and repair existing migrations
+- #2902 Fix blob_to_named_file to handle non-blob AT image/file values
+- #2810 Migrate Laboratory to DX
+- #2901 Add generic unicode title indexer for the `title` FieldIndex
+- #2873 Catalog/cleanup sample catalog indexes
+- #2900 Fix circular import between senaite.core.catalog and bika.lims
+- #2899 Suppress profile-remove dialog during bulk ar_add hydration
+- #2741 Commit each created sample individually to reduce ZODB conflicts
+- #2896 Fix uncatalog_object to leave no stale uids in uid_catalog
+- #2897 Use UnorderedOrdering for Clients to avoid ZODB conflicts
+- #2894 Fix DL get flushed on submit
+- #2891 Translate sidebar navigation titles in JSON endpoint
+- #2881 Add text support for interim fields
+- #2888 Improve ID Server admin views
+- #2889 Remove orphan temp objects when renameAfterCreation fails
+- #2887 Set default Seq Type to 'generated' for partition/retest/secondary
+- #2886 Fix partition ID collision after detach
+- #2883 Add ViewNavigation permission for sidebar access control
+- #2885 Handle missing split_length values during setup row normalization
+- #2882 Refactor dashboard with permission-based access and async loading
+- #2880 Fix ConnectionStateError for DataGrid fields in test layers
+- #2879 Fix department and methods not displayed in services' csv export
+- #2878 Fix value of AT's SelectOtherWidget is not rendered in view mode
 - #2874 Fix save button visibility of sample header
 - #2875 Fix AttributeError in add_sample when rejection workflow is enabled
 - #2872 Use AT accessor/mutator in GenericSetup field adapter

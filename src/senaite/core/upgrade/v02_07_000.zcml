@@ -2,6 +2,368 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Hide unused viewlets"
+      description="Hide the analytics, keywords, next/previous navigation and
+                   related items viewlets, which are not used in SENAITE, by
+                   reimporting the viewlets step."
+      source="2753"
+      destination="2754"
+      handler=".v02_07_000.hide_legacy_viewlets"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Set up the optional dispatch workflow"
+      description="The dispatch workflow is now optional and disabled by
+                   default. Only if the installation already has dispatched
+                   samples, enable the workflow to preserve the current
+                   behavior, mark those samples with the IDispatched marker
+                   interface (the dispatched viewlet and the analysis lock
+                   guard now rely on it instead of the sample review_state)
+                   and lock their analyses."
+      source="2752"
+      destination="2753"
+      handler=".v02_07_000.setup_dispatch_workflow"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Reindex organisation titles with unicode keys"
+      description="The organisation `title` indexer now normalizes the Name to
+                   unicode, matching the generic title indexer. Rebuild the
+                   `title` index in the setup and client catalogs so existing
+                   non-ASCII organisation names (Client, Supplier, ...) become
+                   unicode keys and title queries stop raising a
+                   UnicodeDecodeError."
+      source="2751"
+      destination="2752"
+      handler=".v02_07_000.reindex_organisation_title"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove the obsolete 'RegulatoryInspector' role"
+      description="Remove the unused RegulatoryInspector role and the
+                   RegulatoryInspectors group from existing installations.
+                   The role is dropped from the portal_role_manager (which
+                   also clears any direct assignments), the group is removed
+                   from portal_groups, and the role is dropped from the
+                   portal's known roles."
+      source="2750"
+      destination="2751"
+      handler=".v02_07_000.remove_regulatory_inspector_role"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Register the 'dispose' sample workflow transition"
+      description="Register the new `senaite.core: Transition: Dispose Sample`
+                   permission (granted to LabManager, Manager), the 'disposed'
+                   sample state and the 'dispose' transition. The transition
+                   stays unavailable until the Dispose workflow is enabled in
+                   the setup."
+      source="2749"
+      destination="2750"
+      handler=".v02_07_000.setup_dispose_transition"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Expose getAnalysesKeywords as sample metadata"
+      description="Store the getAnalysesKeywords value as metadata in
+                   senaite_catalog_sample so the samples listing can display
+                   the contained analysis keywords and host the keyword
+                   filter. Existing samples are refreshed so the metadata is
+                   populated."
+      source="2748"
+      destination="2749"
+      handler=".v02_07_000.add_sample_analyses_keywords_metadata"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Reindex getClientTitle with unicode keys"
+      description="getClientTitle is now normalized to unicode by an indexer
+                   adapter so the sample catalog FieldIndex can be queried
+                   with non-ASCII client names without a UnicodeDecodeError.
+                   Reindex existing samples so their keys become unicode."
+      source="2747"
+      destination="2748"
+      handler=".v02_07_000.reindex_client_title"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Register the 'Delete Remarks' permission"
+      description="Register the new `senaite.core: Delete Remarks`
+                   permission (granted to LabManager, Manager) that gates
+                   the deletion and restoration of sample remarks, so a
+                   LabClerk can add/edit remarks but not delete them."
+      source="2746"
+      destination="2747"
+      handler=".v02_07_000.setup_delete_remarks_permission"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add labels index to sample catalog and ManageLabels permission"
+      description="Register the new `senaite.core: Manage Labels` permission
+                   (granted to LabClerk, LabManager, Manager) and add a
+                   `labels` KeywordIndex to `senaite_catalog_sample` so
+                   sample listings can filter by label. The existing
+                   `IHaveLabels` indexer populates the new index for
+                   already-labeled samples on reindex."
+      source="2745"
+      destination="2746"
+      handler=".v02_07_000.setup_sample_labels"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Reindex DX client-aware content after IClientAwareMixin interface mismatch fix"
+      description="The new `allowedRolesAndUsers` indexer wired by
+                   #2934 was registered against the AT-era
+                   `bika.lims.interfaces.IClientAwareMixin`, while the
+                   DX `ClientAwareMixin` base class implements
+                   `senaite.core.interfaces.IClientAwareMixin`. Every
+                   DX descendant (SamplePoint, SampleType,
+                   AnalysisProfile, ...) therefore never received the
+                   `client:&lt;uid&gt;` token, breaking catalog-level
+                   client access. The four call sites now import the
+                   DX interface; this step re-runs the client-tree
+                   reindex so existing DX content picks up the token."
+      source="2744"
+      destination="2745"
+      handler=".v02_07_000.reindex_dx_client_aware_allowed_roles"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove 'sharing' alias from Client FTI"
+      description="Drop the `sharing` method alias on the Client FTI.
+                   The alias still routed `/&lt;client&gt;/sharing` to
+                   @@sharing after `manage_access` was removed; the
+                   alias is dead weight once access is granted
+                   dynamically by the ILocalRoleProvider."
+      source="2743"
+      destination="2744"
+      handler=".v02_07_000.remove_client_sharing_alias"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Drop 'getGroupId' column from client catalog"
+      description="Remove the `getGroupId` metadata column from
+                   `senaite_catalog_client`. The column mirrored the
+                   legacy per-client group id and now only carries
+                   stale values."
+      source="2742"
+      destination="2743"
+      handler=".v02_07_000.drop_client_catalog_group_id_column"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove legacy per-client groups and persisted Owner local roles"
+      description="Iterate every Client, remove the per-client group
+                   created by the legacy auto-create mechanism, clear
+                   the corresponding Owner entry from the client folder's
+                   `__ac_local_roles__`, and reindex object security
+                   so the stale `user:&lt;group_id&gt;` token drops out
+                   of `allowedRolesAndUsers`. Only touches groups whose
+                   id matches the client's stored `_client_group_id` —
+                   groups renamed manually by an admin are left alone."
+      source="2741"
+      destination="2742"
+      handler=".v02_07_000.remove_legacy_client_groups"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove 'Manage Access' action from Client FTI"
+      description="Drop the per-type `manage_access` action that points
+                   at @@sharing on every Client. Sharing on the client
+                   tree is disabled because access is granted
+                   dynamically via the ILocalRoleProvider; leaving the
+                   action exposed would let an admin re-introduce the
+                   slow path."
+      source="2740"
+      destination="2741"
+      handler=".v02_07_000.remove_client_manage_access_action"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Switch client access to dynamic local-role provider"
+      description="Reindex `allowedRolesAndUsers` on every client-tree
+                   object so each carries the new stable
+                   `client:&lt;client_uid&gt;` token, backfill the
+                   `linked_client_uid` member property on already-linked
+                   client contacts, and remove the orphan
+                   `auto_create_client_group` registry record."
+      source="2739"
+      destination="2740"
+      handler=".v02_07_000.switch_to_dynamic_client_roles"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Strip the global 'Client' role from users"
+      description="Remove the directly-assigned global 'Client' role from
+                   every user. The role is now granted implicitly via
+                   membership in the per-client group, so a direct
+                   assignment is redundant and produces a half-configured
+                   user that has the Client landing page but no Owner
+                   role on any client folder."
+      source="2738"
+      destination="2739"
+      handler=".v02_07_000.strip_global_client_role"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add 'reattach' workflow transition"
+      description="Register the reattach workflow transition that
+                   re-links a detached partition back to its primary.
+                   The transition reuses the existing
+                   'Detach Sample Partition' permission."
+      source="2737"
+      destination="2738"
+      handler=".v02_07_000.setup_reattach_transition"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Consolidate duplicate Laboratory objects"
+      description="Keep a single Laboratory at setup/laboratory, migrate it
+                   to Dexterity if needed and remove the empty duplicate
+                   (e.g. laboratory-1) left behind by the half-finished
+                   Laboratory-to-DX migration."
+      source="2736"
+      destination="2737"
+      handler=".v02_07_000.consolidate_laboratory"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Rename 'Duplicate' transition title to 'Duplicate Sample'"
+      description="Re-import the workflow so the new transition title
+                   replaces the previous bare 'Duplicate' label, which
+                   collided in translations with the worksheet
+                   duplicate-analysis label."
+      source="2735"
+      destination="2736"
+      handler=".v02_07_000.setup_duplicate_sample_transition"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add 'duplicate_sample' workflow transition"
+      description="Register the duplicate_sample workflow transition.
+                   The transition reuses the AddAnalysisRequest
+                   permission, so no new permission is introduced."
+      source="2734"
+      destination="2735"
+      handler=".v02_07_000.setup_duplicate_sample_transition"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add hazard categories"
+      description="Register the hazard category vocabulary (GHS plus
+                   ISO 7010 biohazard / radioactive / non-ionising
+                   radiation / electricity / low temperature / hot
+                   content / magnetic field / hot surface /
+                   asphyxiating atmosphere / hot steam) and the
+                   hazard_categories field on SampleType, Sample,
+                   ReferenceDefinition and ReferenceSample"
+      source="2733"
+      destination="2734"
+      handler=".v02_07_000.add_hazard_categories"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Rebuild title indexes"
+      description="Clear and rebuild the title FieldIndex on every SENAITE
+                   catalog so stale byte-string keys from before #2901
+                   are replaced with unicode keys. Without this, any
+                   insert of a non-ASCII unicode title raises
+                   UnicodeDecodeError on BTree key comparison."
+      source="2732"
+      destination="2733"
+      handler=".v02_07_000.rebuild_title_indexes"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Repair laboratory migration"
+      description="Re-import typeinfo so the Laboratory FTI picks up the
+                   IMultiCatalogBehavior (without it the laboratory is
+                   never indexed in senaite_catalog_setup), re-wrap raw
+                   OFS.Image values left on the NamedBlobImage fields by
+                   the original migration, and reindex the live object."
+      source="2731"
+      destination="2732"
+      handler=".v02_07_000.repair_laboratory_migration"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate Laboratory to Dexterity"
+      description="Ensure Laboratory is using Dexterity schema and clean up AT remnants"
+      source="2730"
+      destination="2731"
+      handler=".v02_07_000.migrate_laboratory_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add new sample catalog indexes"
+      description="Add getSampleTypeUID and getSamplePointUID FieldIndexes
+                   and getAnalysesKeywords KeywordIndex to the sample
+                   catalog"
+      source="2729"
+      destination="2730"
+      handler=".v02_07_000.add_sample_catalog_indexes"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Clean up sample catalog indexes and columns"
+      description="Remove Province/District indexes and obsolete metadata
+                   columns (getClientURL, getTemplateURL, getPhysicalPath,
+                   getProvince, getDistrict) from the sample catalog."
+      source="2728"
+      destination="2729"
+      handler=".v02_07_000.cleanup_sample_catalog"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Import registry for per-sample commit flag"
+      description="Re-import the registry profile so the new
+                   `sample_add_form_commit_per_sample` record is created on
+                   existing instances; without it the Samples control panel
+                   fails to render with a KeyError."
+      source="2727"
+      destination="2728"
+      handler=".v02_07_000.import_registry"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Drop ordering annotations from Clients"
+      description="Remove the plone.folder.ordered.order PersistentList and
+                   plone.folder.ordered.pos OIBTree annotations from every
+                   Client. Clients now use UnorderedOrdering as their
+                   IOrdering adapter, so these annotations are no longer
+                   maintained and become a stale ZODB conflict spot if left
+                   in place."
+      source="2726"
+      destination="2727"
+      handler=".v02_07_000.drop_client_ordering_annotations"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Seed DetachedFrom backrefs"
+      description="Seed annotation backrefs for detached partitions so that
+                   the partition counter accounts for them"
+      source="2725"
+      destination="2726"
+      handler=".v02_07_000.seed_detached_partition_backrefs"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add ViewDashboard and ViewNavigation permissions"
+      description="Import rolemap for new ViewDashboard and ViewNavigation permissions"
+      source="2724"
+      destination="2725"
+      handler=".v02_07_000.import_rolemap"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove dashboard registry visibility"
+      description="Remove legacy registry-based dashboard panel visibility in favor of role-based access"
+      source="2723"
+      destination="2724"
+      handler=".v02_07_000.remove_dashboard_registry_visibility"
+      profile="senaite.core:default"/>
+
    <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Migrate Analysis Specifications to Dexterity"
       description="Convert AnalysisSpec content type from Archetypes to Dexterity"

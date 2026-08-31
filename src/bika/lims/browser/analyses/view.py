@@ -42,6 +42,7 @@ from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces import ISubmitted
 from bika.lims.utils import check_permission
 from bika.lims.utils import format_supsub
+from bika.lims.utils import formatTextResult
 from senaite.core.utils import format_supsub_unicode
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import get_fas_ico
@@ -228,6 +229,7 @@ class AnalysesView(ListingView):
                         "to_be_verified",
                         "verified",
                         "published",
+                        "locked",
                     ]
                 },
                 "columns": self.columns.keys()
@@ -558,7 +560,10 @@ class AnalysesView(ListingView):
         unit_choices = obj.getUnitChoices()
         vocab = []
         for unit in unit_choices:
-            value = unit.get("value", "")
+            # Strip surrounding whitespace so configuration typos like
+            # "mg/L " don't break the round-trip with the analysis's
+            # stored Unit value.
+            value = unit.get("value", "").strip()
             formatted = format_supsub_unicode(value)
             vocab.append({
                 "ResultValue": value,
@@ -737,7 +742,10 @@ class AnalysesView(ListingView):
         item['class']['service'] = 'service_title'
         item['service_uid'] = obj.getServiceUID
         item['Keyword'] = obj.getKeyword
-        item['Unit'] = format_supsub(obj.getUnit) if obj.getUnit else ''
+        # Strip surrounding whitespace from the stored Unit so it can
+        # match the (also-stripped) values in the unit choices dropdown.
+        unit = (obj.getUnit or "").strip()
+        item['Unit'] = format_supsub(unit) if unit else ''
         item['retested'] = obj.getRetestOfUID and True or False
         if self.is_analysis_edition_allowed(obj):
             modal_url = "{}/edit_analysis_modal".format(
@@ -1240,6 +1248,8 @@ class AnalysesView(ListingView):
     def get_formatted_interim(self, interim):
         """Returns the formatted value of the interim
         """
+        result_type = interim.get("result_type", "")
+
         # get the 'raw' value stored for this interim
         raw_value = interim.get("value")
 
@@ -1256,6 +1266,9 @@ class AnalysesView(ListingView):
         if choices:
             # values are predefined options for selection
             values = [choices.get(v) for v in values]
+        elif result_type in ["string", "text"]:
+            # If string-like result, return without any formatting
+            values = [formatTextResult(value, html=True) for value in values]
         else:
             # values are captured directly by the user
             values = [formatDecimalMark(value, self.dmk) for value in values]

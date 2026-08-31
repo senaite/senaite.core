@@ -18,7 +18,6 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from AccessControl import getSecurityManager
 from plone.app.contentmenu.menu import \
     DisplaySubMenuItem as BaseDisplaySubMenuItem
 from plone.app.contentmenu.menu import \
@@ -28,7 +27,6 @@ from plone.app.contentmenu.menu import \
 from plone.app.contentmenu.menu import \
     WorkflowSubMenuItem as BaseWorkflowSubMenuItem
 from plone.memoize.instance import memoize
-from plone.portlets.interfaces import ILocalPortletAssignable
 from senaite.core.interfaces import IShowDisplayMenu
 from senaite.core.interfaces import IShowFactoriesMenu
 
@@ -52,23 +50,24 @@ class FactoriesSubMenuItem(BaseFactoriesSubMenuItem):
 
 class PortletManagerSubMenuItem(BasePortletManagerSubMenuItem):
     """The "Manage Portlets" Menu
+
+    SENAITE does not use portlets, so this menu is always hidden.
     """
-    @memoize
     def available(self):
-        secman = getSecurityManager()
-        has_manage_portlets_permission = secman.checkPermission(
-            "Manage portal",
-            self.context
-        )
-        if not has_manage_portlets_permission:
-            return False
-        else:
-            return ILocalPortletAssignable.providedBy(self.context)
+        return False
 
 
 class WorkflowSubMenuItem(BaseWorkflowSubMenuItem):
     """The Workflow Menu
+
+    The transition list is rendered client-side by the React
+    `WorkflowMenu` component, which fetches it from the
+    `@@workflow_menu_data` endpoint on demand. We therefore skip
+    the expensive `getSubMenuItems` lookup at page-load time.
     """
 
     def available(self):
         return super(WorkflowSubMenuItem, self).available()
+
+    def getSubMenuItems(self):
+        return []

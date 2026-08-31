@@ -27,16 +27,25 @@ from pkg_resources import parse_version
 
 import transaction
 from Acquisition import aq_base
-from Acquisition import aq_parent
 from bika.lims import api
+from bika.lims.api import safe_unicode as u
 from bika.lims.interfaces import IAuditable
 from Persistence import PersistentMapping
 from plone.dexterity.fti import DexterityFTI
+from plone.dexterity.fti import register as register_dx_fti
+from plone.dexterity.interfaces import IDexterityFTI
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import get_installer
 from Products.ZCatalog.ProgressHandler import ZLogHandler
+from OFS.Image import File as OFSFile
+from OFS.Image import Image as OFSImage
+from plone.app.blob.field import BlobWrapper
+from plone.namedfile.file import NamedBlobFile
+from plone.namedfile.file import NamedBlobImage
 from senaite.core import logger
 from senaite.core.api.catalog import add_zc_text_index
+from senaite.core.interfaces.catalog import ISenaiteCatalogObject
+from zope.component import queryUtility
 from zope.interface import alsoProvides
 from zope.lifecycleevent import modified
 
@@ -377,9 +386,62 @@ def catalog_object(obj):
 def delete_object(obj):
     """delete the object w/o firing events
     """
-    uncatalog_object(obj)
-    parent = aq_parent(obj)
-    parent._delObject(obj.getId(), suppress_events=True)
+    api.delete(obj, check_permissions=False, suppress_events=True)
+
+
+def iter_senaite_catalogs():
+    """Yield every catalog tool in the portal that is a SENAITE catalog
+    """
+    portal = api.get_portal()
+    for obj in portal.objectValues():
+        if ISenaiteCatalogObject.providedBy(obj):
+            yield obj
+
+
+def rebuild_index(catalog, index_name, clear=True):
+    """Reindex every cataloged object on an index, optionally clearing first
+
+    When `clear` is True (default) the index BTree is wiped before
+    reindexing so stale keys from previous indexers are dropped --
+    needed e.g. when an indexer changes its return type and existing
+    keys would otherwise collide with the new ones (byte vs unicode).
+    Set `clear=False` to keep existing keys and only refresh entries
+    per docid via `reindexIndex`.
+
+    Streams progress to the log via a `ZLogHandler` so long-running
+    reindexes give feedback every 100 objects instead of going silent
+    until the whole catalog is done.
+
+    :param catalog: ZCatalog tool
+    :param index_name: Index id
+    :param clear: Clear the index BTree before reindexing
+    :type clear: bool
+    """
+    if catalog is None:
+        return
+    if index_name not in catalog.indexes():
+        logger.info(
+            "Skipping %s on %s (index not found)" % (
+                index_name, catalog.id))
+        return
+    index = catalog._catalog.getIndex(index_name)
+    if index is None:
+        return
+    total = len(catalog)
+    if clear:
+        logger.info(
+            "Clearing %s index on %s (%s objects to reindex) ..." % (
+                index_name, catalog.id, total))
+        index.clear()
+    else:
+        logger.info(
+            "Reindexing %s on %s (%s objects) ..." % (
+                index_name, catalog.id, total))
+    pghandler = ZLogHandler(steps=100)
+    catalog.reindexIndex(index_name, None, pghandler=pghandler)
+    logger.info(
+        "Rebuilt %s index on %s (%s objects)" % (
+            index_name, catalog.id, total))
 
 
 def uncatalog_brain(brain):
@@ -395,6 +457,48 @@ def uncatalog_brain(brain):
     logger.warn(80*"*")
     catalog.uncatalog_object(path)
     return True
+
+
+def register_missing_dx_ftis():
+    """Register the local IDexterityFTI utility for any Dexterity FTI in
+    portal_types that is missing it.
+
+    GenericSetup's `typeinfo` import fires an ObjectAddedEvent (which
+    triggers `plone.dexterity.fti.ftiAdded` -> `register`, registering
+    the local IDexterityFTI utility) only when the FTI is *created*.
+    Re-importing a type that already exists updates it in place without
+    re-registering. As a result, a DX FTI left behind by an interrupted
+    migration ends up with a valid portal_types entry whose
+    `createContent` lookup raises
+    `ComponentLookupError(IDexterityFTI, <type>)`, and re-running the
+    upgrade never recovers because the object still "exists".
+
+    This reconciles that state: it is idempotent (only registers the
+    utility when missing) and cheap (one queryUtility per DX type).
+    """
+    pt = api.get_tool("portal_types")
+    for fti in pt.objectValues():
+        if not IDexterityFTI.providedBy(fti):
+            continue
+        type_id = fti.getId()
+        if queryUtility(IDexterityFTI, name=type_id) is None:
+            logger.info("Registering missing DX FTI utility: %s" % type_id)
+            register_dx_fti(fti)
+
+
+def import_typeinfo(tool, profile):
+    """Run the `typeinfo` import step for the given profile and ensure
+    every Dexterity FTI has its local utility registered.
+
+    Migration steps that create Dexterity content right after importing
+    the type information must use this instead of calling
+    `runImportStepFromProfile(profile, "typeinfo")` directly, so that an
+    FTI left over from a partially-completed upgrade does not break
+    content creation with a ComponentLookupError.
+    See `register_missing_dx_ftis`.
+    """
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    register_missing_dx_ftis()
 
 
 def remove_at_portal_types(tool, types_to_remove=[]):
@@ -426,3 +530,49 @@ def remove_at_portal_types(tool, types_to_remove=[]):
     ft.manage_setPortalFactoryTypes(listOfTypeIds=at_types)
 
     logger.info("Remove AT types from portal_types tool ... [DONE]")
+
+
+def blob_to_named_file(blob, default_filename=u"file"):
+    """Convert an AT file/image value to a Dexterity NamedBlobFile/Image.
+
+    Accepts:
+    * A ``plone.app.blob.field.BlobWrapper`` (blob-aware AT fields).
+    * An ``OFS.Image.Image`` / ``OFS.Image.File`` (the value stored
+      by plain Archetypes ``ImageField`` / ``FileField``).
+
+    Anything else falsy returns ``None``. Anything else truthy is
+    returned unchanged, so legacy callers that already pass
+    ``NamedBlobFile``/``NamedBlobImage`` instances keep working.
+    """
+    if not blob:
+        return None
+
+    if isinstance(blob, BlobWrapper):
+        filename = u(blob.getFilename() or default_filename)
+        content_type = blob.getContentType() or ""
+        data = blob.data
+    elif isinstance(blob, (OFSImage, OFSFile)):
+        # ``filename`` attribute is set on upload but may be empty;
+        # fall back to the persistent id, then the default.
+        filename = u(getattr(blob, "filename", None)
+                     or blob.getId()
+                     or default_filename)
+        content_type = blob.getContentType() or ""
+        data = bytes(blob.data) if blob.data is not None else b""
+    else:
+        # Unknown shape (e.g. already a NamedBlobFile from a partial
+        # earlier migration); leave it for the field setter to deal
+        # with.
+        return blob
+
+    if content_type.startswith("image/"):
+        return NamedBlobImage(
+            data=data,
+            filename=filename,
+            contentType=content_type,
+        )
+    return NamedBlobFile(
+        data=data,
+        filename=filename,
+        contentType=content_type,
+    )

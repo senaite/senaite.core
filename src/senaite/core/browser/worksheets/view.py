@@ -48,6 +48,10 @@ class WorksheetsView(ListingView):
     # No URL suffix needed — the manage view is the default view.
     edit_view = "manage_results"
 
+    # Namespaces the request params (e.g. worksheets_review_state) so the
+    # listing can be deep-linked, e.g. from the dashboard.
+    form_id = "worksheets"
+
     def __init__(self, context, request):
         super(WorksheetsView, self).__init__(context, request)
 
@@ -309,7 +313,7 @@ class WorksheetsView(ListingView):
     def is_privileged_user(self):
         """Returns whether the current user is a privileged member
         """
-        privileged = ["Manager", "LabManager", "RegulatoryInspector"]
+        privileged = ["Manager", "LabManager"]
         user_roles = self.member.getRoles()
         if set(privileged).intersection(user_roles):
             return True

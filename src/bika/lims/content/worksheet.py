@@ -25,8 +25,8 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import RemarksWidget
+from senaite.core.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.worksheet.tools import getWorksheetLayouts
 from bika.lims.config import DEFAULT_WORKSHEET_LAYOUT
 from bika.lims.config import PROJECTNAME
@@ -1501,7 +1501,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             restrict = 'Manager' not in roles \
                 and 'LabManager' not in roles \
                 and 'LabClerk' not in roles \
-                and 'RegulatoryInspector' not in roles \
                 and self.bika_setup.getRestrictWorksheetUsersAccess()
             allowed = not restrict
 

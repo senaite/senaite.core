@@ -21,6 +21,33 @@
 from bika.lims import api
 from bika.lims import workflow as wf
 
+# Indexes / metadata columns on the parent sample that depend on the
+# set of analyses contained in it. They must be refreshed whenever an
+# analysis is added to or removed from the sample, otherwise listings
+# and catalog queries return stale results until the next workflow
+# transition reindexes the sample for other reasons.
+SAMPLE_ANALYSIS_DERIVED_IDXS = [
+    "getAnalysesKeywords",
+    "getAnalysesNum",
+    "getProgress",
+]
+
+
+def reindex_parent_analysis_derived(analysis):
+    """Reindex the indexes / columns derived from the analysis set on the
+    sample that holds the analysis and on all of its ancestors.
+
+    getAnalysesKeywords aggregates the keywords of the sample and its
+    descendants, so when an analysis is added to or removed from a partition
+    the ancestors (e.g. the primary sample) must be refreshed too.
+    """
+    request = analysis.getRequest()
+    if request is None:
+        return
+    samples = [request] + request.getAncestors(all_ancestors=True)
+    for sample in samples:
+        sample.reindexObject(idxs=SAMPLE_ANALYSIS_DERIVED_IDXS)
+
 
 def ObjectInitializedEventHandler(analysis, event):
     """Actions to be done when an analysis is added in an Analysis Request
@@ -43,6 +70,9 @@ def ObjectInitializedEventHandler(analysis, event):
 
     # Reindex the indexes for UIDReference fields on creation!
     analysis.reindexObject(idxs="getServiceUID")
+
+    # Refresh sample-level analysis-derived indexes / columns
+    reindex_parent_analysis_derived(analysis)
     return
 
 
@@ -56,4 +86,7 @@ def ObjectRemovedEventHandler(analysis, event):
     analysis_request = analysis.getRequest()
     wf.doActionFor(analysis_request, "submit")
     wf.doActionFor(analysis_request, "verify")
+
+    # Refresh sample-level analysis-derived indexes / columns
+    reindex_parent_analysis_derived(analysis)
     return

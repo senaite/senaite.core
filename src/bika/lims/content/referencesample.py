@@ -33,11 +33,17 @@ from DateTime import DateTime
 from Products.Archetypes.atapi import registerType
 from Products.Archetypes.BaseFolder import BaseFolder
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.Field import BooleanField
 from Products.Archetypes.Field import ComputedField
 from Products.Archetypes.Field import DateTimeField
+from Products.Archetypes.Field import LinesField
 from Products.Archetypes.Field import StringField
 from Products.Archetypes.Field import TextField
+from senaite.core.browser.widgets.hazardcategorieswidget import (
+    HazardCategoriesWidget)
+from senaite.core.vocabularies.hazard_categories import HAZARD_CATEGORIES
+from senaite.core.vocabularies.hazard_categories import format_title
 from Products.Archetypes.Schema import Schema
 from Products.Archetypes.Widget import BooleanWidget
 from Products.Archetypes.Widget import ComputedWidget
@@ -98,6 +104,23 @@ schema = BikaSchema.copy() + Schema((
         widget = BooleanWidget(
             label=_("Hazardous"),
             description=_("Samples of this type should be treated as hazardous"),
+        ),
+    ),
+
+    LinesField(
+        "HazardCategories",
+        schemata="Description",
+        default=[],
+        vocabulary="getHazardCategoriesVocabulary",
+        widget=HazardCategoriesWidget(
+            label=_(u"label_referencesample_hazard_categories",
+                    default=u"Hazard categories"),
+            description=_(
+                u"description_referencesample_hazard_categories",
+                default=u"Hazard categories for this reference "
+                        u"sample. Leave empty to inherit from the "
+                        u"reference definition."),
+            format="checkbox",
         ),
     ),
 
@@ -304,6 +327,32 @@ class ReferenceSample(BaseFolder):
         """ dispose sample """
         self.setDateDisposed(DateTime())
         self.reindexObject()
+
+    def getHazardCategories(self):
+        """Get the effective hazard categories
+
+        :returns: Sample-level overrides if set, otherwise the values
+                  inherited from the reference definition
+        :rtype: list
+        """
+        own = self.getField("HazardCategories").get(self)
+        if own:
+            return list(own)
+        definition = self.getReferenceDefinition()
+        if definition:
+            return list(definition.getHazardCategories() or [])
+        return []
+
+    def getHazardCategoriesVocabulary(self):
+        """Return AT DisplayList for the HazardCategories field.
+
+        :returns: Hazard categories vocabulary (GHS + ISO 7010)
+        :rtype: Products.Archetypes.atapi.DisplayList
+        """
+        return DisplayList([
+            (cat["code"], format_title(cat))
+            for cat in HAZARD_CATEGORIES
+        ])
 
 
 registerType(ReferenceSample, PROJECTNAME)

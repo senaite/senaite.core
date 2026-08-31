@@ -10,58 +10,151 @@
 
     <metal:title fill-slot="content-title">
       <h1 i18n:translate="">
-        Manage Numbergenerator
+        Manage Number Generator
       </h1>
     </metal:title>
     <metal:description fill-slot="content-description">
-      <p i18n:translate=""></p>
+      <a id="setup-link"
+         class="link-parent"
+         tal:attributes="href string:${context/@@plone_portal_state/portal_url}/setup/@@edit?tab=id_server-tab#fieldset-id_server"
+         i18n:translate="">
+        ID Server Settings
+      </a>
+      <p class="text-muted" i18n:translate="">
+        Persistent counters used by the ID Server. Adjust a counter
+        to change the next ID that will be issued for the matching
+        prefix. Setting a counter to 0 removes the entry from the
+        storage.
+      </p>
     </metal:description>
 
     <div metal:fill-slot="content-core"
-         tal:define="portal context/@@plone_portal_state/portal;">
+         tal:define="groups view/get_grouped_entries;
+                     portal context/@@plone_portal_state/portal;">
 
-      <form id="manage_form"
-            name="manage_form"
-            method="POST">
+      <link rel="stylesheet"
+            tal:attributes="href string:${portal/absolute_url}/++resource++senaite.core.idserver.css" />
+      <script tal:attributes="src string:${portal/absolute_url}/++resource++senaite.core.idserver.js"></script>
 
-        <input type="hidden" name="submitted" value="1"/>
-        <span tal:replace="structure context/@@authenticator/authenticator"/>
+      <tal:empty condition="not:groups">
+        <div class="alert alert-info" i18n:translate="">
+          The number generator storage is empty. Counters are seeded
+          on the first ID generation for each prefix.
+        </div>
+      </tal:empty>
 
-        <tal:numbers repeat="key view/storage">
-          <div class="field form-group"
-               tal:define="value python:view.storage[key]">
+      <tal:has_groups condition="groups">
 
-            <label for="number">
-              <span i18n:translate="">Key</span>:
-              <span class="text-primary" tal:content="key"/>
-            </label>
+        <div class="mb-3">
+          <input type="text"
+                 id="numbergenerator-filter"
+                 class="form-control form-control-sm"
+                 placeholder="Filter keys (regex supported)"
+                 i18n:attributes="placeholder"/>
+        </div>
 
-            <div class="input-group">
-              <span class="input-group-prepend">
-                <span class="input-group-text">seq:</span>
-              </span>
-              <input type="number"
-                     class="form-control"
-                     tal:attributes="name string:seeds.${key}:record;
-                                     value value"/>
+        <ul class="nav nav-tabs mb-3" role="tablist">
+          <li class="nav-item"
+              tal:repeat="group groups">
+            <a class="nav-link"
+               tal:attributes="id string:${group/tab_id}-link;
+                               href string:#${group/tab_id};
+                               aria-controls group/tab_id;
+                               class python:'nav-link active' if repeat['group'].index == 0 else 'nav-link';
+                               aria-selected python:'true' if repeat['group'].index == 0 else 'false'"
+               data-toggle="tab"
+               role="tab">
+              <span tal:content="group/label"/>
+              <span class="badge badge-secondary ml-1"
+                    tal:content="group/count"/>
+            </a>
+          </li>
+        </ul>
+
+        <form id="manage_form"
+              name="manage_form"
+              method="POST">
+
+          <input type="hidden" name="submitted" value="1"/>
+          <span tal:replace="structure context/@@authenticator/authenticator"/>
+
+          <div class="tab-content">
+            <div tal:repeat="group groups"
+                 tal:attributes="id group/tab_id;
+                                 class python:'tab-pane fade show active' if repeat['group'].index == 0 else 'tab-pane fade';
+                                 aria-labelledby string:${group/tab_id}-link"
+                 role="tabpanel">
+
+              <table class="table table-sm table-hover numbergenerator-table"
+                     style="table-layout: fixed;">
+                <colgroup>
+                  <col style="width: 35%"/>
+                  <col style="width: 12%"/>
+                  <col style="width: 23%"/>
+                  <col style="width: 30%"/>
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th class="numbergenerator-th sortable"
+                        data-col="0"
+                        data-sort="text"
+                        i18n:translate="">Key
+                      <span class="sort-indicator"/></th>
+                    <th class="numbergenerator-th sortable"
+                        data-col="1"
+                        data-sort="number"
+                        i18n:translate="">Counter
+                      <span class="sort-indicator"/></th>
+                    <th class="numbergenerator-th sortable"
+                        data-col="2"
+                        data-sort="text"
+                        i18n:translate="">Next ID
+                      <span class="sort-indicator"/></th>
+                    <th class="numbergenerator-th sortable"
+                        data-col="3"
+                        data-sort="text"
+                        i18n:translate="">ID Template
+                      <span class="sort-indicator"/></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr tal:repeat="entry group/entries"
+                      class="numbergenerator-row">
+                    <td class="text-monospace small text-break numbergenerator-key">
+                      <span tal:content="entry/key"/>
+                    </td>
+                    <td>
+                      <input type="number"
+                             class="form-control form-control-sm numbergenerator-counter"
+                             tal:attributes="name string:seeds.${entry/key}:record;
+                                             value entry/value"/>
+                    </td>
+                    <td class="text-monospace small text-break numbergenerator-next">
+                      <code tal:condition="entry/next_id"
+                            tal:content="entry/next_id"/>
+                      <span tal:condition="not:entry/next_id"
+                            class="text-muted">&#8212;</span>
+                    </td>
+                    <td class="text-monospace small text-muted text-break numbergenerator-tpl">
+                      <code tal:content="entry/template"/>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-
-            <div class="form-text text-muted">
-              <span i18n:translate="">ID Template</span>:
-              <code tal:content="python:view.get_id_template_for(key)"/>
-            </div>
-
-
           </div>
-        </tal:numbers>
 
-        <input class="btn btn-primary btn-sm"
-               type="submit"
-               name="seed"
-               i18n:attributes="value"
-               value="Seed"/>
+          <div class="form-actions mt-3">
+            <input class="btn btn-primary"
+                   type="submit"
+                   name="seed"
+                   i18n:attributes="value"
+                   value="Save"/>
+          </div>
 
-      </form>
+        </form>
+
+      </tal:has_groups>
 
     </div>
 

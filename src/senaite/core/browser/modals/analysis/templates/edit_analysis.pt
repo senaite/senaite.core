@@ -80,16 +80,19 @@
               <select tal:condition="python:result_type ==
                                      'select'
                                      and result_options"
+                      id="edit-analysis-result-select"
                       name="Result"
-                      class="custom-select"
-                      tal:define="current view/get_result">
+                      class="custom-select result-select-manual"
+                      tal:define="current view/get_result_selected_value">
                 <option value=""></option>
                 <tal:opt repeat="opt result_options">
                   <option tal:define="
                       val python:opt.get('ResultValue', '');
-                      txt python:opt.get('ResultText', '')"
+                      txt python:opt.get('ResultText', '');
+                      manual python:view.is_result_option_manual(opt)"
                           tal:attributes="
                       value val;
+                      data-manual-entry python:'1' if manual else '0';
                       selected python:str(val) == str(current)
                                or None"
                           tal:content="txt"/>
@@ -134,6 +137,20 @@
               </div>
 
             </div>
+
+            <!-- Result: manual entry for selected option -->
+            <input tal:condition="python:result_type ==
+                       'select'
+                       and result_options
+                       and not is_calculated"
+                   type="text"
+                   id="edit-analysis-result-other"
+                   name="ResultOther"
+                   class="form-control form-control-sm mt-2 result-other-input"
+                   tal:define="other view/get_result_other_text;
+                               is_manual view/is_result_selected_option_manual"
+                   tal:attributes="value other;
+                                   style python:is_manual and '' or 'display:none'"/>
 
             <!-- Multi-line result types (outside input-group) -->
 

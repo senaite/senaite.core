@@ -44,6 +44,7 @@ from .sample.permissions import FieldEditProfiles
 from .sample.permissions import FieldEditPublicationSpecifications
 from .sample.permissions import FieldEditRejectionReasons
 from .sample.permissions import FieldEditRemarks
+from .sample.permissions import DeleteRemarks
 from .sample.permissions import FieldEditResultsInterpretation
 from .sample.permissions import FieldEditSampleCondition
 from .sample.permissions import FieldEditSamplePoint
@@ -59,6 +60,7 @@ from .sample.permissions import TransitionCancelAnalysisRequest
 from .sample.permissions import TransitionCreatePartitions
 from .sample.permissions import TransitionDetachSamplePartition
 from .sample.permissions import TransitionDispatchSample
+from .sample.permissions import TransitionDisposeSample
 from .sample.permissions import TransitionInvalidate
 from .sample.permissions import TransitionMultiResults
 from .sample.permissions import TransitionPreserveSample
@@ -175,6 +177,8 @@ ManageBika = "senaite.core: Manage Bika"
 ManageSenaite = "senaite.core: Manage Bika"
 ManageAnalysisRequests = "senaite.core: Manage Analysis Requests"
 ManageInvoices = "senaite.core: Manage Invoices"
+ManageLabels = "senaite.core: Manage Labels"
+ViewLabels = "senaite.core: View Labels"
 ManageLoginDetails = "senaite.core: Manage Login Details"
 ManageReference = "senaite.core: Manage Reference"
 ViewResults = "senaite.core: View Results"
@@ -184,5 +188,7 @@ ViewResults = "senaite.core: View Results"
 # =======================
 # TODO Security Review these "view/action" permissions
 ImportInstrumentResults = "senaite.core: Import Instrument Results"
+ViewDashboard = "senaite.core: View Dashboard"
+ViewNavigation = "senaite.core: View Navigation"
 ViewRetractedAnalyses = "senaite.core: View Retracted Analyses"
 ViewLogTab = "senaite.core: View Log Tab"
