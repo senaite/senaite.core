@@ -31,7 +31,7 @@ class IAnalysisSpecsSchema(model.Schema):
     """
 
 
-@implementer(IAnalysisSpecs, IAnalysisSpecs,
+@implementer(IAnalysisSpecs, IAnalysisSpecsSchema,
              IDoNotSupportSnapshots, IHideActionsMenu)
 class IAnalysisSpecs(Container):
     """A container for analysis specifications
