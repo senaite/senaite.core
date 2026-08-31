@@ -40,6 +40,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
+from senaite.core.i18n import translate
 from senaite.core.permissions import AddAnalysisRequest
 from senaite.core.permissions import EditResults
 from senaite.core.permissions import ManageBika
@@ -77,23 +78,23 @@ PERIODICITY_DAYS = {
 # Status cards: (permission, title, portal_type,
 #                review_state, catalog, url, icon)
 STATUS_CARD_DEFS = [
-    (TransitionReceiveSample, "Samples to Receive",
+    (TransitionReceiveSample, _("Samples to Receive"),
      "AnalysisRequest", "sample_due", SAMPLE_CATALOG,
      "samples?samples_review_state=sample_due",
      "fa-inbox"),
-    (ViewResults, "Results Pending",
+    (ViewResults, _("Results Pending"),
      "AnalysisRequest", "sample_received", SAMPLE_CATALOG,
      "samples?samples_review_state=sample_received",
      "fa-flask"),
-    (TransitionVerify, "To be Verified",
+    (TransitionVerify, _("To be Verified"),
      "AnalysisRequest", "to_be_verified", SAMPLE_CATALOG,
      "samples?samples_review_state=to_be_verified",
      "fa-check-circle"),
-    (TransitionPublishResults, "To be Published",
+    (TransitionPublishResults, _("To be Published"),
      "AnalysisRequest", "verified", SAMPLE_CATALOG,
      "samples?samples_review_state=verified",
      "fa-paper-plane"),
-    (EditResults, "Open Worksheets",
+    (EditResults, _("Open Worksheets"),
      "Worksheet", "open", WORKSHEET_CATALOG,
      "worksheets?worksheets_review_state=open",
      "fa-th-list"),
@@ -101,19 +102,43 @@ STATUS_CARD_DEFS = [
 
 # Quick action links: (permission, title, url, icon)
 QUICK_LINK_DEFS = [
-    (AddAnalysisRequest, "Register Samples",
+    (AddAnalysisRequest, _("Register Samples"),
      "samples", "fa-plus-circle"),
-    (EditResults, "Worksheets",
+    (EditResults, _("Worksheets"),
      "worksheets", "fa-th-list"),
-    (TransitionVerify, "Verify Results",
+    (TransitionVerify, _("Verify Results"),
      "samples?samples_review_state=to_be_verified",
      "fa-check-double"),
-    (TransitionPublishResults, "Publish Reports",
+    (TransitionPublishResults, _("Publish Reports"),
      "samples?samples_review_state=verified",
      "fa-paper-plane"),
-    (ManageBika, "SENAITE Setup",
+    (ManageBika, _("SENAITE Setup"),
      "setup", "fa-cog"),
 ]
+
+# Keys in the async JSON payload whose values are i18n messages and must be
+# translated to the active language before serialization (the D3 chart data
+# under "data"/"datacolors" is deliberately excluded).
+TRANSLATABLE_KEYS = ("title", "description", "tooltip", "name")
+
+# Labels rendered client-side by dashboard.js. Exposed pre-translated via a
+# data attribute so the script stays translation-agnostic.
+JS_LABEL_DEFS = collections.OrderedDict([
+    ("status", _("Status")),
+    ("quick_actions", _("Quick Actions")),
+    ("show_hide_timeline", _("Show/hide timeline")),
+    ("no_data", _("No data for the selected period")),
+    ("no_actions", _("No actions available. Please contact your "
+                     "laboratory manager to get permissions assigned.")),
+    ("timeline_range",
+     _("From ${from} to ${to} (updated every 2 hours)")),
+    ("daily", _("Daily")),
+    ("weekly", _("Weekly")),
+    ("monthly", _("Monthly")),
+    ("quarterly", _("Quarterly")),
+    ("biannual", _("Biannual")),
+    ("yearly", _("Yearly")),
+])
 
 # State labels for evolution charts
 ANALYSIS_STATES = collections.OrderedDict([
@@ -300,6 +325,13 @@ class DashboardView(BrowserView):
 
     def get_current_time(self):
         return datetime.datetime.now().strftime("%H:%M")
+
+    def get_js_labels_json(self):
+        """Return the translated dashboard.js labels as a JSON string
+        """
+        labels = dict((key, translate(msg))
+                      for key, msg in JS_LABEL_DEFS.items())
+        return json.dumps(labels)
 
     # --- Status cards ---
 
@@ -572,7 +604,7 @@ class DashboardView(BrowserView):
     def _legend(self, count, total):
         pct = self._pct(count, total)
         return "%s %s (%s%%)" % (
-            _("of"), total, pct)
+            translate(_("of")), total, pct)
 
     # --- Cookie filter ---
 
@@ -827,6 +859,24 @@ SECTION_HANDLERS = {
 }
 
 
+def translate_labels(data):
+    """Recursively translate the i18n labels of a dashboard data structure
+
+    Only the values of `TRANSLATABLE_KEYS` are translated; every other value
+    (counts, urls, chart data) is returned unchanged. This lets the async JSON
+    payload carry text in the active language, since `json.dumps` would
+    otherwise serialize i18n messages to their untranslated message id.
+    """
+    if isinstance(data, dict):
+        return dict(
+            (key, translate(value) if key in TRANSLATABLE_KEYS and value
+             else translate_labels(value))
+            for key, value in data.items())
+    if isinstance(data, (list, tuple)):
+        return [translate_labels(item) for item in data]
+    return data
+
+
 class DashboardDataView(BrowserView):
     """JSON endpoint for async dashboard data loading
 
@@ -855,4 +905,4 @@ class DashboardDataView(BrowserView):
         view._setup(mtool)
 
         data = getattr(view, handler_name)()
-        return json.dumps(data)
+        return json.dumps(translate_labels(data))
