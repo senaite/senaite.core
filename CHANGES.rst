@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2931 Fix Laboratory address widget labels for countries with mixed subdivision type
 - #2995 Add interactive upgrade, catalog and user console scripts
 - #3008 Filter sidebar root folders by permission instead of by catalog
 - #3007 Fix empty sticker template selection when printing stickers from a listing
