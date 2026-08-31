@@ -631,6 +631,17 @@ class IMultiUploadFileRemover(Interface):
         :param uids: Set or list of UIDs to remove
         """
 
+
+class IAnalysisSpec(Interface):
+    """Marker interface for Analysis Specificition
+    """
+
+
+class IAnalysisSpecs(Interface):
+    """Marker interface for Analysis Specificitions
+    """
+
+
 class ILaboratory(Interface):
     """Marker interface for lab info
     """
