@@ -922,7 +922,7 @@ class ISetupSchema(model.Schema):
             vocabulary="senaite.core.vocabularies.top_level_folders"
         ),
         required=False,
-        default=("clients", "samples", "methods", "batches", "worksheets"),
+        default=("clients", "samples", "batches", "worksheets"),
     )
 
     sidebar_navigation_depth = schema.Int(

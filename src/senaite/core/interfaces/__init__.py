@@ -564,6 +564,16 @@ class ICalculations(Interface):
     """
 
 
+class IMethod(Interface):
+    """Marker interface for Method
+    """
+
+
+class IMethods(Interface):
+    """Marker interface for methods folder
+    """
+
+
 class IResultsReport(Interface):
     """Marker interface for Results Report
     """

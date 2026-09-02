@@ -158,8 +158,8 @@ First we build some basic setup structure:
     >>> department = api.create(setup.departments, "Department", title="Chemistry", Manager=labcontact)
     >>> category = api.create(setup.analysiscategories, "AnalysisCategory", title="Metals", Department=department)
 
-    >>> method_a = api.create(portal.methods, "Method", title="Method A")
-    >>> method_b = api.create(portal.methods, "Method", title="Method B")
+    >>> method_a = api.create(setup.methods, "Method", title="Method A")
+    >>> method_b = api.create(setup.methods, "Method", title="Method B")
 
     >>> Ca = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Calcium", Keyword="Ca", Category=category, Method=method_a)
     >>> Mg = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Magnesium", Keyword="Mg", Category=category, Method=method_a)
@@ -311,7 +311,7 @@ becomes the one without a method explicitely set:
 
 Same if we use a method that is not explicitely considered:
 
-    >>> method_c = api.create(portal.methods, "Method", title="Method C")
+    >>> method_c = api.create(setup.methods, "Method", title="Method C")
     >>> ca.setMethod(method_c)
     >>> sample.setSpecification(None)
     >>> sample.setSpecification(specification)

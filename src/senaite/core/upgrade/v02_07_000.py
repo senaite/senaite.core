@@ -27,6 +27,8 @@ from bika.lims import api
 from bika.lims.api import safe_unicode as u
 from bika.lims.api import snapshot as snap_api
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
+from bika.lims.browser.fields.uidreferencefield import \
+    get_storage as get_at_backref_storage
 from bika.lims.interfaces import IAuditable
 from bika.lims.interfaces import IDetachedPartition
 from bika.lims.interfaces import IInvalidated
@@ -94,6 +96,8 @@ REMOVE_AT_TYPES = [
     "Laboratory",
     "Calculation",
     "Calculations",
+    "Method",
+    "Methods",
     "Multifile",
     "Worksheet",
     "WorksheetFolder",
@@ -2913,3 +2917,164 @@ def remove_client_sharing_alias(tool):
     del aliases["sharing"]
     fti.setMethodAliases(aliases)
     logger.info("Removed 'sharing' method alias from Client FTI")
+
+
+def remove_methods_from_sidebar():
+    """Drop the `methods` folder from the sidebar navigation folders.
+
+    The methods folder is moved from the portal root into the setup folder,
+    so it is no longer a top-level folder eligible for the sidebar.
+    """
+    setup = api.get_senaite_setup()
+    folders = list(setup.getSidebarFolders() or [])
+    if "methods" not in folders:
+        return
+    folders = [folder for folder in folders if folder != "methods"]
+    setup.setSidebarFolders(tuple(folders))
+    logger.info("Removed 'methods' from the sidebar navigation folders")
+
+
+@upgradestep(product, version)
+def migrate_methods_to_dx(tool):
+    """Converts existing methods to Dexterity and moves them from the portal
+    root into the setup folder
+    """
+    logger.info("Convert Methods to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
+
+    # run required import steps
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # the methods folder is no longer a top-level sidebar folder
+    remove_methods_from_sidebar()
+
+    # get the old container from the portal root
+    portal = api.get_portal()
+    origin = portal.get("methods")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container (under the new setup folder)
+    destination = get_setup_folder("methods")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # copy items from old -> new container
+    objects = origin.objectValues()
+    for num, src in enumerate(objects, start=1):
+        migrate_method_to_dx(src, destination)
+        if num % 100 == 0:
+            transaction.savepoint()
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert Methods to Dexterity [DONE]")
+
+
+def migrate_method_to_dx(src, destination):
+    """Migrate an AT Method to DX in the destination folder
+
+    :param src: The source AT object
+    :param destination: The destination folder
+    """
+    portal_type = "Method"
+
+    if not api.is_at_content(src):
+        # already migrated -> just move it to the new folder
+        api.move_object(src, destination, check_constraints=False)
+        logger.info("Already migrated: {}".format(api.get_path(src)))
+        return
+
+    if api.get_portal_type(src) != portal_type:
+        logger.error("Not a '{}' object: {}".format(portal_type, src))
+        return
+
+    # origin and destination are different folders, so we can keep the ID
+    src_id = src.getId()
+    target = destination.get(src_id)
+    if not target:
+        # Don't use the api to skip the auto-id generation
+        target = createContent(portal_type, id=src_id)
+        destination._setObject(src_id, target)
+        target = destination._getOb(src_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = api.safe_unicode(src.Title() or "")
+    target.description = api.safe_unicode(src.Description() or "")
+    target.setMethodID(src.getMethodID() or "")
+    target.setAccredited(src.getAccredited())
+    target.setCalculations(src.getRawCalculations() or [])
+    target.setCalculation(src.getRawCalculation())
+
+    # instructions (AT html text -> DX rich text). The DX setter wraps plain
+    # (html) strings into a rich text value.
+    instructions = src.getInstructions()
+    if instructions:
+        target.setInstructions(api.safe_unicode(instructions))
+
+    # method document (AT blob file -> DX named blob file)
+    method_document = src.getMethodDocument()
+    if method_document:
+        named_file = blob_to_named_file(method_document)
+        if named_file:
+            target.setMethodDocument(named_file)
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter((src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID (keeps references from services/worksheets/instruments
+    # valid)
+    migrator.copy_uid(src, target)
+
+    # Copy the Instrument back-references (relationship "InstrumentMethods").
+    # They live in an annotation on the method and are NOT carried over by
+    # `copy_attributes`, so `getRawInstruments` would otherwise return empty.
+    src_backref_storage = get_at_backref_storage(src)
+    if src_backref_storage:
+        target_backref_storage = get_at_backref_storage(target)
+        for relationship, uids in src_backref_storage.items():
+            target_backref_storage[relationship] = PersistentList(uids)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    target.reindexObject()
+
+    logger.info("Migrated Method from %s -> %s" % (src, target))

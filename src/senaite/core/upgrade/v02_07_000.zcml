@@ -3,6 +3,16 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate Method content type to Dexterity"
+      description="Convert the Archetypes Method content type to Dexterity and
+                   move the methods folder from the portal root into the setup
+                   folder."
+      source="2756"
+      destination="2757"
+      handler=".v02_07_000.migrate_methods_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Remove stale uid_catalog records"
       description="Remove uid_catalog records that sit under a path that does
                    not match the convention of their object. The AT to DX

@@ -16,7 +16,6 @@
   <include file="clientfolder.zcml"/>
   <include file="instrument.zcml"/>
   <include file="invoice.zcml"/>
-  <include file="methodfolder.zcml"/>
   <include file="pricelist.zcml"/>
   <include file="referenceanalysis.zcml"/>
   <include file="referencesample.zcml"/>
