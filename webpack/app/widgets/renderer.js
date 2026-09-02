@@ -9,6 +9,8 @@ import AddressWidgetController from "./addresswidget/widget.js";
 import SelectOtherWidgetController from "./selectother/widget.js";
 import MultiUploadWidgetController from "./multiupload/widget.js";
 import RemarksWidgetController from "./remarks/widget.js";
+import DataGridWidgetController from "./datagrid/widget.js";
+import { read_model as read_datagrid_model } from "./datagrid/model.js";
 
 // Helper to render React components safely using createRoot
 const safeRender = (Component, el, props = {}) => {
@@ -141,5 +143,13 @@ export const render_remarks_widget = (el) => {
   const ref = safeRender(RemarksWidgetController, el, {
     root_class: "remarksfield",
   });
+  return ref;
+};
+
+// DataGrid Widget
+export const render_datagrid_widget = (el) => {
+  // capture the server-rendered cells *before* React replaces the mount node
+  const model = read_datagrid_model(el);
+  const ref = safeRender(DataGridWidgetController, el, { model });
   return ref;
 };
