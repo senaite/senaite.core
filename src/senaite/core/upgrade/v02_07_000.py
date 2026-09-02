@@ -38,7 +38,6 @@ from plone.app.blob.field import BlobWrapper
 from plone.dexterity.utils import createContent
 from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.interfaces import INamed
-from Products.Archetypes.utils import getRelURL
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.api import dtime
@@ -73,10 +72,12 @@ from senaite.core.upgrade.utils import blob_to_named_file
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import import_typeinfo
+from senaite.core.upgrade.utils import is_stale_uid_catalog_path
 from senaite.core.upgrade.utils import iter_senaite_catalogs
 from senaite.core.upgrade.utils import permanently_allow_type_for
 from senaite.core.upgrade.utils import rebuild_index
 from senaite.core.upgrade.utils import remove_at_portal_types
+from senaite.core.upgrade.utils import repair_uid_catalog_path
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.v02_06_000 import get_setup_folder
 from zope.annotation.interfaces import IAnnotations
@@ -102,94 +103,6 @@ PORTAL_FOLDER_ITEMS = {
     # ID: ID, Title, FTI
     "worksheets": ("worksheets", "Worksheets", "Worksheets"),
 }
-
-
-def get_uid_catalog_path(catalog, obj):
-    """Return the path an object has to be cataloged under in uid_catalog
-
-    Archetypes content is cataloged relative to the portal, Dexterity
-    content under the absolute path.
-
-    :param catalog: the uid_catalog tool
-    :param obj: the object to get the path for
-    :returns: the path the object belongs to in the uid_catalog
-    """
-    if api.is_at_content(obj):
-        return getRelURL(catalog, obj.getPhysicalPath())
-    return "/".join(obj.getPhysicalPath())
-
-
-def resolve_uid_catalog_path(portal, path):
-    """Return the object a uid_catalog path points to
-
-    Both path conventions are accepted. Returns `None` when the path does
-    not resolve, or resolves to another object through acquisition.
-
-    :param portal: the portal object
-    :param path: a path as stored in the uid_catalog
-    :returns: the object or None
-    """
-    portal_path = "/".join(portal.getPhysicalPath())
-    relative = path
-    if relative.startswith("%s/" % portal_path):
-        relative = relative[len(portal_path) + 1:]
-    obj = portal.unrestrictedTraverse(str(relative), None)
-    if obj is None:
-        return None
-    # traversal acquires, so make sure we got the object the path names
-    if "/".join(obj.getPhysicalPath()) != "%s/%s" % (portal_path, relative):
-        return None
-    return obj
-
-
-def expects_relative_path(fti):
-    """Check whether content of the given type is cataloged relative
-
-    Archetypes types carry the product they come from, Dexterity ones do
-    not.
-
-    :param fti: the type information of the content type
-    :returns: True for Archetypes content types
-    """
-    return bool(getattr(fti, "product", None))
-
-
-def is_stale_uid_catalog_path(types_tool, catalog, path, rid):
-    """Check whether a uid_catalog record sits under the wrong path
-
-    Decided on the metadata of the record alone, so that the objects
-    behind the records do not have to be woken up.
-
-    :param types_tool: the portal_types tool
-    :param catalog: the uid_catalog tool
-    :param path: a path as stored in the uid_catalog
-    :param rid: the record id of the path
-    :returns: True if the record has to be re-cataloged, None if the type
-              of the record is unknown and nothing can be decided
-    """
-    metadata = catalog._catalog.getMetadataForRID(rid)
-    fti = types_tool.getTypeInfo(metadata.get("portal_type"))
-    if fti is None:
-        # no type information to decide with, leave the record alone
-        return None
-    return path.startswith("/") == expects_relative_path(fti)
-
-
-def repair_uid_catalog_path(portal, catalog, path):
-    """Drop a stale record and catalog the object under the correct path
-
-    :param portal: the portal object
-    :param catalog: the uid_catalog tool
-    :param path: a path as stored in the uid_catalog
-    """
-    obj = resolve_uid_catalog_path(portal, path)
-    catalog.uncatalog_object(path)
-    if obj is None:
-        logger.info("Removed orphan uid_catalog record '%s'" % path)
-        return
-    target = get_uid_catalog_path(catalog, obj)
-    catalog.catalog_object(obj, target)
-    logger.info("Re-cataloged '%s' as '%s'" % (path, target))
 
 
 @upgradestep(product, version)
