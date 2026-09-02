@@ -3,6 +3,17 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove stale uid_catalog records"
+      description="Remove uid_catalog records that sit under a path that does
+                   not match the convention of their object. The AT to DX
+                   migrations left such records behind, and they break every
+                   lookup by UID as soon as the object is edited."
+      source="2754"
+      destination="2755"
+      handler=".v02_07_000.remove_stale_uid_catalog_records"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Hide unused viewlets"
       description="Hide the analytics, keywords, next/previous navigation and
                    related items viewlets, which are not used in SENAITE, by

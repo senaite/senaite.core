@@ -461,6 +461,33 @@ as the rest of the slots:
     >>> [ref for ref in ref9_uids if ref not in refs_uids]
     []
 
+Reference analyses from the same slot share the same group ID, and each new
+group of reference analyses created from the same reference sample is numbered
+right after the last one:
+
+    >>> gid6 = list(set([ref.getReferenceAnalysesGroupID() for ref in ref6]))
+    >>> gid9 = list(set([ref.getReferenceAnalysesGroupID() for ref in ref9]))
+    >>> len(gid6) == len(gid9) == 1
+    True
+
+    >>> [gid.startswith(control.getId() + "-") for gid in gid6 + gid9]
+    [True, True]
+
+    >>> num6 = int(gid6[0].split("-")[-1])
+    >>> num9 = int(gid9[0].split("-")[-1])
+    >>> num9 == num6 + 1
+    True
+
+Therefore, the next group ID for this reference sample comes right after the
+last one in use. Note the reference analyses of the last group were created
+within this same transaction, so the next group ID has to be resolved with a
+catalog search, that flushes the indexing queue first, and not by reading the
+index directly:
+
+    >>> expected = "{}-{}".format(control.getId(), str(num9 + 1).zfill(3))
+    >>> worksheet.nextRefAnalysesGroupID(control) == expected
+    True
+
 Reject any remaining analyses awaiting for assignment:
 
     >>> query = {"portal_type": "Analysis", "review_state": "unassigned"}
