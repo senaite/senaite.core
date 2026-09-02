@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3013 Add a doctest for api.get_uid_catalog_path
 - #3012 Remove stale uid_catalog records that break lookups by UID
 - #2995 Add interactive upgrade, catalog and user console scripts
 - #3008 Filter sidebar root folders by permission instead of by catalog
