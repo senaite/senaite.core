@@ -41,6 +41,7 @@ Needed Imports:
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
     >>> from plone.app.testing import setRoles
+    >>> from senaite.core.api.worksheet import create_worksheet
 
 Functional Helpers:
 
@@ -460,6 +461,33 @@ as the rest of the slots:
     >>> [ref for ref in ref9_uids if ref not in refs_uids]
     []
 
+Reference analyses from the same slot share the same group ID, and each new
+group of reference analyses created from the same reference sample is numbered
+right after the last one:
+
+    >>> gid6 = list(set([ref.getReferenceAnalysesGroupID() for ref in ref6]))
+    >>> gid9 = list(set([ref.getReferenceAnalysesGroupID() for ref in ref9]))
+    >>> len(gid6) == len(gid9) == 1
+    True
+
+    >>> [gid.startswith(control.getId() + "-") for gid in gid6 + gid9]
+    [True, True]
+
+    >>> num6 = int(gid6[0].split("-")[-1])
+    >>> num9 = int(gid9[0].split("-")[-1])
+    >>> num9 == num6 + 1
+    True
+
+Therefore, the next group ID for this reference sample comes right after the
+last one in use. Note the reference analyses of the last group were created
+within this same transaction, so the next group ID has to be resolved with a
+catalog search, that flushes the indexing queue first, and not by reading the
+index directly:
+
+    >>> expected = "{}-{}".format(control.getId(), str(num9 + 1).zfill(3))
+    >>> worksheet.nextRefAnalysesGroupID(control) == expected
+    True
+
 Reject any remaining analyses awaiting for assignment:
 
     >>> query = {"portal_type": "Analysis", "review_state": "unassigned"}
@@ -729,6 +757,49 @@ Reject any remaining analyses awaiting for assignment:
     >>> query = {"portal_type": "Analysis", "review_state": "unassigned"}
     >>> objs = map(api.get_object, api.search(query, "senaite_catalog_analysis"))
     >>> success = map(lambda obj: doActionFor(obj, "reject"), objs)
+
+
+Create Worksheet from Samples with a Template
+..............................................
+
+When analyses from selected samples are passed while creating a worksheet,
+the worksheet template must restrict which services are assigned.
+
+Create and receive a sample with `Cu` and `Fe` analyses:
+
+    >>> service_uids = [Cu.UID(), Fe.UID()]
+    >>> sample = create_analysisrequest(client, request, values, service_uids)
+    >>> success = doActionFor(sample, "receive")
+    >>> analyses = sample.getAnalyses(full_objects=True)
+
+Create a worksheet template that only contains `Cu`:
+
+    >>> layout = [
+    ...     {'pos': '1', 'type': 'a',
+    ...      'blank_ref': '',
+    ...      'control_ref': '',
+    ...      'dup': ''},
+    ... ]
+    >>> cu_template = api.create(setup.worksheettemplates,
+    ...                          "WorksheetTemplate",
+    ...                          title="Cu only WS Template",
+    ...                          Layout=layout,
+    ...                          Services=[Cu.UID()])
+
+Create the worksheet from all analyses of the selected sample:
+
+    >>> worksheet = create_worksheet(TEST_USER_ID,
+    ...                              template=cu_template,
+    ...                              analyses=analyses)
+
+Only the analysis listed in the worksheet template is assigned:
+
+    >>> [analysis.getServiceUID() for analysis in worksheet.getAnalyses()] == \
+    ... [Cu.UID()]
+    True
+    >>> [analysis.getServiceUID() for analysis in analyses
+    ...  if not analysis.getWorksheetUID()] == [Fe.UID()]
+    True
 
 
 Assignment of Worksheet Template with Method

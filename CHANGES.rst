@@ -6,6 +6,19 @@ Changelog
 
 - #2991 Replace the jQuery DataGrid handler with a ReactJS widget
 - #2990 Vendor the datagrid widget and drop collective.z3cform.datagridfield
+- #3012 Remove stale uid_catalog records that break lookups by UID
+- #2995 Add interactive upgrade, catalog and user console scripts
+- #3008 Filter sidebar root folders by permission instead of by catalog
+- #3007 Fix empty sticker template selection when printing stickers from a listing
+- #3003 Fix colliding reference analyses group IDs within the same transaction
+- #3000 Validate inter-field limits from the instance when there is no form
+- #2999 Pin plone.jsonapi.core to 0.8.0 and add find-links for its sdist
+- #2997 Fix listing widget doctest for the new data-catalog table attribute
+- #2996 Fix missing Dexterity FTI utility registration on typeinfo import
+- #2993 Sync translations and add complete German, Dutch and Spanish translations
+- #2993 Make the dashboard fully translatable
+- #2992 Fix UnicodeEncodeError in Organization.getPrintAddress with non-ASCII address
+- #2988 Fix worksheet template analysis filtering for selected samples
 - #2985 Add a SENAITE-specific Manage Viewlets view
 - #2971 Make the Sample Dispatch workflow optional and lock analyses on dispatch
 - #2970 Add an optional Sample Dispose workflow
