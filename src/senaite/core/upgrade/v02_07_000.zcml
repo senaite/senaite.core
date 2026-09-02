@@ -10,9 +10,20 @@
                    view and never holds content of its own, so nothing is
                    carried over. The snapshot machinery and audit log views
                    now live in senaite.core instead of bika.lims."
+      source="2755"
+      destination="2756"
+      handler=".v02_07_000.migrate_auditlog_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove stale uid_catalog records"
+      description="Remove uid_catalog records that sit under a path that does
+                   not match the convention of their object. The AT to DX
+                   migrations left such records behind, and they break every
+                   lookup by UID as soon as the object is edited."
       source="2754"
       destination="2755"
-      handler=".v02_07_000.migrate_auditlog_to_dx"
+      handler=".v02_07_000.remove_stale_uid_catalog_records"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

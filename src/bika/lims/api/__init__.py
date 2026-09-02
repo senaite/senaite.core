@@ -511,6 +511,27 @@ def move_object(obj, destination, check_constraints=True):
     return obj
 
 
+def get_uid_catalog_path(obj):
+    """Return the path an object has to be cataloged under in uid_catalog
+
+    Archetypes content is cataloged relative to the portal, Dexterity
+    content under the absolute path. Getting this wrong leaves a second
+    record for the same object behind, which makes every lookup by UID
+    ambiguous.
+
+    :param obj: object to get the uid_catalog path for
+    :type obj: ATContentType/DexterityContentType
+    :returns: the path the object belongs to in the uid_catalog
+    """
+    if is_at_content(obj):
+        # the uids of uid_catalog are relative paths to portal root
+        # see Products.Archetypes.UIDCatalog.UIDResolver.catalog_object
+        return getRelURL(get_tool(UID_CATALOG), obj.getPhysicalPath())
+    # DX content is cataloged below the absolute path, as it is done in
+    # `plone.app.referenceablebehavior.uidcatalog`
+    return "/".join(obj.getPhysicalPath())
+
+
 def uncatalog_object(obj, recursive=False):
     """Un-catalog the object from all catalogs
 
@@ -549,19 +570,9 @@ def catalog_object(obj, recursive=False):
     :param recursive: recursively catalog all child objects
     :type obj: ATContentType/DexterityContentType
     """
-    if is_at_content(obj):
-        # the uids of uid_catalog are relative paths to portal root
-        # see Products.Archetypes.UIDCatalog.UIDResolver.catalog_object
+    if is_at_content(obj) or is_dexterity_content(obj):
         uc = get_tool(UID_CATALOG)
-        rel_url = getRelURL(uc, obj.getPhysicalPath())
-        uc.catalog_object(obj, rel_url)
-
-    elif is_dexterity_content(obj):
-        # we catalog the object here below the absolute path, as it is done in
-        # `plone.app.referencablebehavior.uidcatalog``
-        uc = get_tool(UID_CATALOG)
-        abs_url = "/".join(obj.getPhysicalPath())
-        uc.catalog_object(obj, abs_url)
+        uc.catalog_object(obj, get_uid_catalog_path(obj))
 
     # reindex in registered catalogs
     obj.reindexObject()
@@ -1042,7 +1053,20 @@ def get_brain_by_uid(uid, default=None):
 
     # try to find the object with the reference catalog first
     brains = uc(UID=uid)
-    if len(brains) != 1:
+    if len(brains) > 1:
+        # More than one catalog record claims this UID. The object is there,
+        # but it cannot be told apart, so the lookup has to fail. Log it as
+        # such: an "object not found" further up the stack is misleading and
+        # sends the reader looking for a missing object instead of a broken
+        # catalog.
+        paths = sorted(map(lambda brain: brain.getPath(), brains))
+        logger.error(
+            "Found %s records in the uid_catalog for UID '%s': %s. The "
+            "catalog is inconsistent, most likely because of stale records "
+            "left behind by a content migration."
+            % (len(brains), uid, ", ".join(paths)))
+        return default
+    if not brains:
         return default
     return brains[0]
 
