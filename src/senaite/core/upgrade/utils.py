@@ -34,7 +34,6 @@ from Persistence import PersistentMapping
 from plone.dexterity.fti import DexterityFTI
 from plone.dexterity.fti import register as register_dx_fti
 from plone.dexterity.interfaces import IDexterityFTI
-from Products.Archetypes.utils import getRelURL
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import get_installer
 from Products.ZCatalog.ProgressHandler import ZLogHandler
@@ -384,21 +383,6 @@ def catalog_object(obj):
     obj.reindexObject()
 
 
-def get_uid_catalog_path(catalog, obj):
-    """Return the path an object has to be cataloged under in uid_catalog
-
-    Archetypes content is cataloged relative to the portal, Dexterity
-    content under the absolute path.
-
-    :param catalog: the uid_catalog tool
-    :param obj: the object to get the path for
-    :returns: the path the object belongs to in the uid_catalog
-    """
-    if api.is_at_content(obj):
-        return getRelURL(catalog, obj.getPhysicalPath())
-    return "/".join(obj.getPhysicalPath())
-
-
 def resolve_uid_catalog_path(portal, path):
     """Return the object a uid_catalog path points to
 
@@ -467,7 +451,7 @@ def repair_uid_catalog_path(portal, catalog, path):
     if obj is None:
         logger.info("Removed orphan uid_catalog record '%s'" % path)
         return
-    target = get_uid_catalog_path(catalog, obj)
+    target = api.get_uid_catalog_path(obj)
     catalog.catalog_object(obj, target)
     logger.info("Re-cataloged '%s' as '%s'" % (path, target))
 
