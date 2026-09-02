@@ -74,10 +74,12 @@ from senaite.core.upgrade.utils import blob_to_named_file
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import import_typeinfo
+from senaite.core.upgrade.utils import is_stale_uid_catalog_path
 from senaite.core.upgrade.utils import iter_senaite_catalogs
 from senaite.core.upgrade.utils import permanently_allow_type_for
 from senaite.core.upgrade.utils import rebuild_index
 from senaite.core.upgrade.utils import remove_at_portal_types
+from senaite.core.upgrade.utils import repair_uid_catalog_path
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.v02_06_000 import get_setup_folder
 from zope.annotation.interfaces import IAnnotations
@@ -105,6 +107,58 @@ PORTAL_FOLDER_ITEMS = {
     # ID: ID, Title, FTI
     "worksheets": ("worksheets", "Worksheets", "Worksheets"),
 }
+
+
+@upgradestep(product, version)
+def remove_stale_uid_catalog_records(tool):
+    """Remove uid_catalog records that sit under the wrong path
+
+    The AT to DX migrations created the Dexterity object first, which
+    `plone.app.referenceablebehavior` catalogs under the absolute path with
+    the throwaway uuid of `createContent`, and copied the UID of the
+    Archetypes source only afterwards. The `uncatalog_object` of that time
+    only tried the relative path, so the record under the absolute path
+    survived, carrying a UID that belongs to nothing.
+
+    Such a record stays unnoticed until the object is edited: the Dexterity
+    modified handler then re-catalogs it under the absolute path, now with
+    the real UID. From that moment on `uid_catalog(UID=...)` returns two
+    brains, `api.get_brain_by_uid` cannot tell them apart and returns
+    nothing, and every lookup through the SuperModel fails.
+
+    Records are matched against the path convention of their object, so
+    both halves of an already collided pair and the ones still waiting to
+    collide are cleaned up.
+    """
+    logger.info("Removing stale uid_catalog records ...")
+
+    portal = tool.aq_inner.aq_parent
+    catalog = api.get_tool("uid_catalog", context=portal)
+    types_tool = api.get_tool("portal_types", context=portal)
+
+    # take a snapshot, the catalog is modified while repairing
+    records = list(catalog._catalog.uids.items())
+    total = len(records)
+    stale = []
+    skipped = 0
+
+    for num, (path, rid) in enumerate(records):
+        if num and num % 10000 == 0:
+            logger.info("Checking uid_catalog record %s/%s" % (num, total))
+        is_stale = is_stale_uid_catalog_path(types_tool, catalog, path, rid)
+        if is_stale is None:
+            skipped += 1
+        elif is_stale:
+            stale.append(path)
+
+    logger.info("Found %s stale records out of %s" % (len(stale), total))
+    if skipped:
+        logger.info("Skipped %s records of an unknown portal type" % skipped)
+
+    for path in stale:
+        repair_uid_catalog_path(portal, catalog, path)
+
+    logger.info("Removing stale uid_catalog records [DONE]")
 
 
 @upgradestep(product, version)

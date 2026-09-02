@@ -329,7 +329,7 @@ Test creating navigation items from catalog brains using created client:
     >>> len(brains) > 0
     True
     >>> brain = brains[0]
-    >>> item = view._create_item_from_brain(brain, depth=1)
+    >>> item = view._create_item(brain, depth=1)
     >>> # Item should have required keys
     >>> "id" in item
     True
@@ -343,6 +343,17 @@ Test creating navigation items from catalog brains using created client:
     True
     >>> "children" in item
     True
+
+The same factory accepts a content object, which is how the root folders
+are built:
+
+    >>> item = view._create_item(client, depth=1)
+    >>> item["id"] == api.get_id(client)
+    True
+    >>> item["getURL"] == api.get_url(client)
+    True
+    >>> item["portal_type"]
+    'Client'
 
 
 Test navigation tree processing
@@ -426,6 +437,110 @@ Test the full JSON API response:
 
     >>> "count" in result
     True
+
+
+Root folders are filtered by permission, not by the catalog
+..........................................................
+
+Root folders are resolved from the navigation root and filtered with the
+`View` permission instead of with a `portal_catalog` query. The two do not
+always agree.
+
+The `Client` role is granted dynamically by the local role providers in
+`senaite.core.security.clientrole`, and those providers return nothing from
+`getAllRoles` on purpose, so that linking a contact to a user does not force
+a catalog reindex of the whole client tree. A role granted that way never
+reaches the `allowedRolesAndUsers` index, so a catalog-filtered sidebar hides
+root folders that the user can open by typing the URL.
+
+Imports and helpers for this section:
+
+    >>> from bika.lims.api.security import check_permission
+    >>> from plone import api as ploneapi
+    >>> from plone.app.testing import login
+    >>> from plone.app.testing import TEST_USER_NAME
+    >>> from plone.app.testing import TEST_USER_PASSWORD
+
+Create a contact for our client and link it to a new user:
+
+    >>> contact = api.create(client, "Contact", "Contact-1")
+    >>> client_user = ploneapi.user.create(
+    ...     email="contact-1@example.com",
+    ...     username="client-user-1",
+    ...     password=TEST_USER_PASSWORD,
+    ...     properties=dict(fullname="Test Client User"))
+    >>> contact.setUser(client_user)
+    True
+
+The user does not hold the `Client` role globally:
+
+    >>> sorted(ploneapi.user.get_roles(user=client_user))
+    ['Authenticated', 'Member']
+
+It holds it in the context of the portal, granted by the site root role
+provider from the `linked_client_uid` member property:
+
+    >>> sorted(ploneapi.user.get_roles(user=client_user, obj=portal))
+    ['Authenticated', 'Client', 'Member']
+
+Grant a root folder to the `Client` role only. Note `allowedRolesAndUsers`
+is built from "Access contents information", while the navigation bar (and
+traversal) is governed by "View":
+
+    >>> batches.manage_permission(
+    ...     "Access contents information", ["Client", "Manager"], acquire=0)
+    >>> batches.manage_permission("View", ["Client", "Manager"], acquire=0)
+    >>> batches.reindexObjectSecurity()
+
+    >>> setup.setSidebarFolders(("batches", ))
+    >>> setup.setSidebarNavigationDepth(1)
+    >>> setup.setSidebarSkipTypes(())
+
+Now act as the client user:
+
+    >>> login(portal, "client-user-1")
+
+The folder is viewable:
+
+    >>> check_permission("View", batches)
+    True
+
+But the catalog does not return it, because none of the tokens the query
+carries for this user matches the `Client` role in the index:
+
+    >>> portal_catalog = api.get_tool("portal_catalog")
+    >>> query = {"path": {"query": api.get_path(portal), "depth": 1},
+    ...          "id": "batches"}
+    >>> len(portal_catalog(**query))
+    0
+
+The sidebar shows the folder nevertheless:
+
+    >>> view = api.get_view("sidebar-navigation-json", context=portal)
+    >>> [item["id"] for item in view.get_navigation_tree()]
+    ['batches']
+
+A folder the user cannot view is excluded. Revoke `View` again as the lab
+manager:
+
+    >>> login(portal, TEST_USER_NAME)
+    >>> batches.manage_permission("View", ["Manager"], acquire=0)
+    >>> batches.reindexObjectSecurity()
+
+    >>> login(portal, "client-user-1")
+    >>> check_permission("View", batches)
+    False
+
+    >>> view = api.get_view("sidebar-navigation-json", context=portal)
+    >>> view.get_navigation_tree()
+    []
+
+Restore the folder permissions:
+
+    >>> login(portal, TEST_USER_NAME)
+    >>> batches.manage_permission("Access contents information", (), acquire=1)
+    >>> batches.manage_permission("View", (), acquire=1)
+    >>> batches.reindexObjectSecurity()
 
 
 Cleanup
