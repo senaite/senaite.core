@@ -1042,7 +1042,20 @@ def get_brain_by_uid(uid, default=None):
 
     # try to find the object with the reference catalog first
     brains = uc(UID=uid)
-    if len(brains) != 1:
+    if len(brains) > 1:
+        # More than one catalog record claims this UID. The object is there,
+        # but it cannot be told apart, so the lookup has to fail. Log it as
+        # such: an "object not found" further up the stack is misleading and
+        # sends the reader looking for a missing object instead of a broken
+        # catalog.
+        paths = sorted(map(lambda brain: brain.getPath(), brains))
+        logger.error(
+            "Found %s records in the uid_catalog for UID '%s': %s. The "
+            "catalog is inconsistent, most likely because of stale records "
+            "left behind by a content migration."
+            % (len(brains), uid, ", ".join(paths)))
+        return default
+    if not brains:
         return default
     return brains[0]
 

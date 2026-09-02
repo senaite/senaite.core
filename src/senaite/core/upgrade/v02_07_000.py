@@ -38,6 +38,7 @@ from plone.app.blob.field import BlobWrapper
 from plone.dexterity.utils import createContent
 from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.interfaces import INamed
+from Products.Archetypes.utils import getRelURL
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.api import dtime
@@ -101,6 +102,146 @@ PORTAL_FOLDER_ITEMS = {
     # ID: ID, Title, FTI
     "worksheets": ("worksheets", "Worksheets", "Worksheets"),
 }
+
+
+def get_uid_catalog_path(catalog, obj):
+    """Return the path an object has to be cataloged under in uid_catalog
+
+    Archetypes content is cataloged relative to the portal, Dexterity
+    content under the absolute path.
+
+    :param catalog: the uid_catalog tool
+    :param obj: the object to get the path for
+    :returns: the path the object belongs to in the uid_catalog
+    """
+    if api.is_at_content(obj):
+        return getRelURL(catalog, obj.getPhysicalPath())
+    return "/".join(obj.getPhysicalPath())
+
+
+def resolve_uid_catalog_path(portal, path):
+    """Return the object a uid_catalog path points to
+
+    Both path conventions are accepted. Returns `None` when the path does
+    not resolve, or resolves to another object through acquisition.
+
+    :param portal: the portal object
+    :param path: a path as stored in the uid_catalog
+    :returns: the object or None
+    """
+    portal_path = "/".join(portal.getPhysicalPath())
+    relative = path
+    if relative.startswith("%s/" % portal_path):
+        relative = relative[len(portal_path) + 1:]
+    obj = portal.unrestrictedTraverse(str(relative), None)
+    if obj is None:
+        return None
+    # traversal acquires, so make sure we got the object the path names
+    if "/".join(obj.getPhysicalPath()) != "%s/%s" % (portal_path, relative):
+        return None
+    return obj
+
+
+def expects_relative_path(fti):
+    """Check whether content of the given type is cataloged relative
+
+    Archetypes types carry the product they come from, Dexterity ones do
+    not.
+
+    :param fti: the type information of the content type
+    :returns: True for Archetypes content types
+    """
+    return bool(getattr(fti, "product", None))
+
+
+def is_stale_uid_catalog_path(types_tool, catalog, path, rid):
+    """Check whether a uid_catalog record sits under the wrong path
+
+    Decided on the metadata of the record alone, so that the objects
+    behind the records do not have to be woken up.
+
+    :param types_tool: the portal_types tool
+    :param catalog: the uid_catalog tool
+    :param path: a path as stored in the uid_catalog
+    :param rid: the record id of the path
+    :returns: True if the record has to be re-cataloged, None if the type
+              of the record is unknown and nothing can be decided
+    """
+    metadata = catalog._catalog.getMetadataForRID(rid)
+    fti = types_tool.getTypeInfo(metadata.get("portal_type"))
+    if fti is None:
+        # no type information to decide with, leave the record alone
+        return None
+    return path.startswith("/") == expects_relative_path(fti)
+
+
+def repair_uid_catalog_path(portal, catalog, path):
+    """Drop a stale record and catalog the object under the correct path
+
+    :param portal: the portal object
+    :param catalog: the uid_catalog tool
+    :param path: a path as stored in the uid_catalog
+    """
+    obj = resolve_uid_catalog_path(portal, path)
+    catalog.uncatalog_object(path)
+    if obj is None:
+        logger.info("Removed orphan uid_catalog record '%s'" % path)
+        return
+    target = get_uid_catalog_path(catalog, obj)
+    catalog.catalog_object(obj, target)
+    logger.info("Re-cataloged '%s' as '%s'" % (path, target))
+
+
+@upgradestep(product, version)
+def remove_stale_uid_catalog_records(tool):
+    """Remove uid_catalog records that sit under the wrong path
+
+    The AT to DX migrations created the Dexterity object first, which
+    `plone.app.referenceablebehavior` catalogs under the absolute path with
+    the throwaway uuid of `createContent`, and copied the UID of the
+    Archetypes source only afterwards. The `uncatalog_object` of that time
+    only tried the relative path, so the record under the absolute path
+    survived, carrying a UID that belongs to nothing.
+
+    Such a record stays unnoticed until the object is edited: the Dexterity
+    modified handler then re-catalogs it under the absolute path, now with
+    the real UID. From that moment on `uid_catalog(UID=...)` returns two
+    brains, `api.get_brain_by_uid` cannot tell them apart and returns
+    nothing, and every lookup through the SuperModel fails.
+
+    Records are matched against the path convention of their object, so
+    both halves of an already collided pair and the ones still waiting to
+    collide are cleaned up.
+    """
+    logger.info("Removing stale uid_catalog records ...")
+
+    portal = tool.aq_inner.aq_parent
+    catalog = api.get_tool("uid_catalog", context=portal)
+    types_tool = api.get_tool("portal_types", context=portal)
+
+    # take a snapshot, the catalog is modified while repairing
+    records = list(catalog._catalog.uids.items())
+    total = len(records)
+    stale = []
+    skipped = 0
+
+    for num, (path, rid) in enumerate(records):
+        if num and num % 10000 == 0:
+            logger.info("Checking uid_catalog record %s/%s" % (num, total))
+        is_stale = is_stale_uid_catalog_path(types_tool, catalog, path, rid)
+        if is_stale is None:
+            skipped += 1
+        elif is_stale:
+            stale.append(path)
+
+    logger.info("Found %s stale records out of %s" % (len(stale), total))
+    if skipped:
+        logger.info("Skipped %s records of an unknown portal type" % skipped)
+
+    for path in stale:
+        repair_uid_catalog_path(portal, catalog, path)
+
+    logger.info("Removing stale uid_catalog records [DONE]")
 
 
 @upgradestep(product, version)
