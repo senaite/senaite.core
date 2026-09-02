@@ -215,9 +215,9 @@ def create(container, portal_type, *args, **kwargs):
         notify(ObjectInitializedEvent(obj))
     else:
         # Avoid circular imports
-        from bika.lims.api.snapshot import pause_snapshots_for
-        from bika.lims.api.snapshot import resume_snapshots_for
-        from bika.lims.api.snapshot import take_snapshot
+        from senaite.core.api.snapshot import pause_snapshots_for
+        from senaite.core.api.snapshot import resume_snapshots_for
+        from senaite.core.api.snapshot import take_snapshot
 
         # Dexterity content creation
         # Schema fields (especially UID reference fields) must be set AFTER
@@ -1565,7 +1565,7 @@ def get_version(brain_or_object):
     :returns: The current version of the object, or None if not available
     :rtype: int or None
     """
-    from bika.lims.api.snapshot import get_version
+    from senaite.core.api.snapshot import get_version
     return get_version(get_object(brain_or_object))
 
 

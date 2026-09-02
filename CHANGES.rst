@@ -4,6 +4,8 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2980 Migrate AuditLog to Dexterity and move audit log machinery to senaite.core
+- #2979 Show precise element-level audit log diffs for lists and record fields
 - #3012 Remove stale uid_catalog records that break lookups by UID
 - #2995 Add interactive upgrade, catalog and user console scripts
 - #3008 Filter sidebar root folders by permission instead of by catalog

@@ -18,24 +18,21 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from senaite.core.api.snapshot import pause_snapshots_for
-from senaite.core.api.snapshot import resume_snapshots_for
-from plone.dexterity.browser.add import DefaultAddForm as BaseAddForm
-from plone.dexterity.browser.add import DefaultAddView as BaseAddView
+from bika.lims.interfaces import IDoNotSupportSnapshots
+from plone.dexterity.content import Container
+from plone.supermodel import model
+from senaite.core.interfaces import IAuditLog
+from senaite.core.interfaces import IHideActionsMenu
+from zope.interface import implementer
 
 
-class DefaultAddForm(BaseAddForm):
-    """Patched Add Form to handle renameAfterCreation of DX objects
+class IAuditLogSchema(model.Schema):
+    """Schema interface
     """
 
-    def add(self, object):
-        """Create a new object in a container
-        """
-        # Temporary disable snapshot creation for container
-        pause_snapshots_for(self.container)
-        super(DefaultAddForm, self).add(object)
-        resume_snapshots_for(self.container)
 
-
-class DefaultAddView(BaseAddView):
-    form = DefaultAddForm
+@implementer(IAuditLog, IAuditLogSchema, IDoNotSupportSnapshots,
+             IHideActionsMenu)
+class AuditLog(Container):
+    """The Audit Log container
+    """

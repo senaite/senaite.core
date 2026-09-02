@@ -33,7 +33,7 @@ from bika.lims.api import mail as mailapi
 from bika.lims.api.mail import is_valid_email_address
 from bika.lims.api.security import get_user
 from bika.lims.api.security import get_user_id
-from bika.lims.api.snapshot import take_snapshot
+from senaite.core.api.snapshot import take_snapshot
 from bika.lims.decorators import returns_json
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.utils import to_utf8
