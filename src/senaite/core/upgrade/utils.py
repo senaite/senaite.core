@@ -369,18 +369,16 @@ def copy_workflow_history(src, target):
 def uncatalog_object(obj):
     """Uncatalog the object for all catalogs
     """
-    # uncatalog from registered catalogs
-    obj.unindexObject()
-    # explicitly uncatalog from uid_catalog
-    uid_catalog = api.get_tool("uid_catalog")
-    url = "/".join(obj.getPhysicalPath()[2:])
-    uid_catalog.uncatalog_object(url)
+    # this used to build the path by hand and only ever removed the record
+    # under the relative path, which left the record of a Dexterity object
+    # behind. `api.uncatalog_object` removes both path variations.
+    api.uncatalog_object(obj)
 
 
 def catalog_object(obj):
     """Catalog the object
     """
-    obj.reindexObject()
+    api.catalog_object(obj)
 
 
 def resolve_uid_catalog_path(portal, path):
