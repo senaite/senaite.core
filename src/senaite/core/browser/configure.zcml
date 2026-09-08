@@ -46,4 +46,7 @@
   <include package=".workflow"/>
   <include package=".worksheets"/>
 
+  <!-- Files -->
+  <include file="auditlog.zcml"/>
+
 </configure>
