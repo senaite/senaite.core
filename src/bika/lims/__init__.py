@@ -116,7 +116,6 @@ def initialize(context):
     from bika.lims.content.worksheetfolder import WorksheetFolder
     from bika.lims.content.worksheettemplate import WorksheetTemplate
 
-    from bika.lims.controlpanel.auditlog import AuditLog
     from bika.lims.controlpanel.bika_analysiscategories import AnalysisCategories
     from bika.lims.controlpanel.bika_analysisprofiles import AnalysisProfiles
     from bika.lims.controlpanel.bika_analysisservices import AnalysisServices

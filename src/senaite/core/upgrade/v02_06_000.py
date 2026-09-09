@@ -23,7 +23,7 @@ from datetime import timedelta
 from Acquisition import aq_parent
 from bika.lims import api
 from bika.lims.api import UID_CATALOG
-from bika.lims.api.snapshot import disable_snapshots
+from senaite.core.api.snapshot import disable_snapshots
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import tmpID
 from plone.dexterity.fti import DexterityFTI

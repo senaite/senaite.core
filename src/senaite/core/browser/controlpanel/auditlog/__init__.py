@@ -17,25 +17,3 @@
 #
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
-from senaite.core.api.snapshot import pause_snapshots_for
-from senaite.core.api.snapshot import resume_snapshots_for
-from plone.dexterity.browser.add import DefaultAddForm as BaseAddForm
-from plone.dexterity.browser.add import DefaultAddView as BaseAddView
-
-
-class DefaultAddForm(BaseAddForm):
-    """Patched Add Form to handle renameAfterCreation of DX objects
-    """
-
-    def add(self, object):
-        """Create a new object in a container
-        """
-        # Temporary disable snapshot creation for container
-        pause_snapshots_for(self.container)
-        super(DefaultAddForm, self).add(object)
-        resume_snapshots_for(self.container)
-
-
-class DefaultAddView(BaseAddView):
-    form = DefaultAddForm
