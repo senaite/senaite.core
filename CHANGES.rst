@@ -4,7 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
-- #3015 Prevent submission of analyses with empty multi-valued results
+- #3015 Fix analyses with empty multi-valued results can be submitted
 - #3014 Fix AT to DX upgrade failing with undefined property 'add_permission'
 - #3001 Skip read-only fields when validating objects on create/update
 - #2994 Migrate Method content type to Dexterity
