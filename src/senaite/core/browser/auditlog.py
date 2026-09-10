@@ -24,10 +24,10 @@ import six
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.api.snapshot import compare_snapshots
-from bika.lims.api.snapshot import get_snapshot_by_version
-from bika.lims.api.snapshot import get_snapshot_metadata
-from bika.lims.api.snapshot import get_snapshots
+from senaite.core.api.snapshot import compare_snapshots
+from senaite.core.api.snapshot import get_snapshot_by_version
+from senaite.core.api.snapshot import get_snapshot_metadata
+from senaite.core.api.snapshot import get_snapshots
 from bika.lims.interfaces import IAuditable
 from senaite.core.api import dtime
 from senaite.core.i18n import translate as t
