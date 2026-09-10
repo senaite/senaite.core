@@ -16,17 +16,11 @@ document.addEventListener("DOMContentLoaded", function () {
   var portalUrl = config.getAttribute("data-portal-url");
   var dateFrom = config.getAttribute("data-date-from");
   var dateTo = config.getAttribute("data-date-to");
+  var labels = JSON.parse(
+    config.getAttribute("data-labels") || "{}");
 
-  // Translated labels rendered server-side (get_js_labels_json).
-  // Fall back to English if the attribute is missing.
-  var i18n = {};
-  try {
-    i18n = JSON.parse(config.getAttribute("data-i18n") || "{}");
-  } catch (e) {
-    i18n = {};
-  }
-  function t(key, fallback) {
-    return i18n[key] || fallback;
+  function t(key) {
+    return (labels && labels[key]) || key;
   }
 
   // Load overview (cards + links) together
@@ -78,11 +72,10 @@ document.addEventListener("DOMContentLoaded", function () {
       var icon = document.createElement("i");
       icon.className = "fas fa-info-circle mr-2";
       msg.appendChild(icon);
-      msg.appendChild(document.createTextNode(
-        t("no_actions",
-          "No actions available. Please contact your "
-          + "laboratory manager to get permissions "
-          + "assigned.")));
+      msg.appendChild(document.createTextNode(t(
+        "No actions available. Please contact your "
+        + "laboratory manager to get permissions "
+        + "assigned.")));
       el.appendChild(msg);
       return;
     }
@@ -92,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
       var heading = document.createElement("h2");
       heading.className = "h6 text-uppercase text-muted "
         + "font-weight-bold mb-3";
-      heading.textContent = t("status", "Status");
+      heading.textContent = t("Status");
       el.appendChild(heading);
 
       var wrap = document.createElement("div");
@@ -109,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
       var heading2 = document.createElement("h2");
       heading2.className = "h6 text-uppercase text-muted "
         + "font-weight-bold mb-3";
-      heading2.textContent = t("quick_actions", "Quick Actions");
+      heading2.textContent = t("Quick Actions");
       el.appendChild(heading2);
 
       var linkWrap = document.createElement("div");
@@ -203,8 +196,7 @@ document.addEventListener("DOMContentLoaded", function () {
       btnIcon.className = "fas fa-chart-bar mr-1";
       btn.appendChild(btnIcon);
       btn.appendChild(
-        document.createTextNode(
-          t("show_hide_timeline", "Show/hide timeline")));
+        document.createTextNode(t("Show/hide timeline")));
       btnWrap.appendChild(btn);
       container.appendChild(btnWrap);
 
@@ -220,11 +212,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       var legendDiv = document.createElement("div");
       legendDiv.className = "h2-legend mb-3";
-      legendDiv.textContent = t(
-        "timeline_range",
-        "From ${from} to ${to} (updated every 2 hours)")
-        .replace("${from}", dateFrom)
-        .replace("${to}", dateTo);
+      legendDiv.textContent = t("From") + " " + dateFrom
+        + " " + t("to") + " " + dateTo
+        + " " + t("(updated every 2 hours)");
       period.appendChild(legendDiv);
 
       period.appendChild(buildNavPills());
@@ -240,7 +230,7 @@ document.addEventListener("DOMContentLoaded", function () {
       var noData = document.createElement("div");
       noData.className = "bar-chart-no-data";
       noData.textContent =
-        t("no_data", "No data for the selected period");
+        t("No data for the selected period");
       chartDiv.appendChild(noData);
       container.appendChild(chartDiv);
     });
@@ -316,12 +306,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function buildNavPills() {
     var pills = [
-      { label: t("daily", "Daily"), value: "d" },
-      { label: t("weekly", "Weekly"), value: "w" },
-      { label: t("monthly", "Monthly"), value: "m" },
-      { label: t("quarterly", "Quarterly"), value: "q" },
-      { label: t("biannual", "Biannual"), value: "b" },
-      { label: t("yearly", "Yearly"), value: "y" }
+      { label: t("Daily"), value: "d" },
+      { label: t("Weekly"), value: "w" },
+      { label: t("Monthly"), value: "m" },
+      { label: t("Quarterly"), value: "q" },
+      { label: t("Biannual"), value: "b" },
+      { label: t("Yearly"), value: "y" }
     ];
     var ul = document.createElement("ul");
     ul.className = "nav nav-pills nav-pills-sm mb-3";

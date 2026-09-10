@@ -29,9 +29,9 @@
                          data-periodicity view/periodicity;
                          data-can-view-stats python:'true' if view.can_view_statistics() else 'false';
                          data-portal-url view/portal_url;
-                         data-i18n view/get_js_labels_json;
                          data-date-from python:plone_view.toLocalizedTime(view.date_from);
-                         data-date-to python:plone_view.toLocalizedTime(view.date_to)">
+                         data-date-to python:plone_view.toLocalizedTime(view.date_to);
+                         data-labels view/get_js_labels_json">
     </div>
 
     <!-- Status Cards + Quick Links (async) -->

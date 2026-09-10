@@ -40,15 +40,32 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
-from senaite.core.i18n import translate
 from senaite.core.permissions import AddAnalysisRequest
 from senaite.core.permissions import EditResults
 from senaite.core.permissions import ManageBika
 from senaite.core.permissions import TransitionPublishResults
 from senaite.core.permissions import TransitionReceiveSample
 from senaite.core.permissions import TransitionVerify
+from senaite.core.i18n import translate
 from senaite.core.permissions import ViewDashboard
 from senaite.core.permissions import ViewResults
+from zope.i18nmessageid import Message
+from zope.i18nmessageid import MessageFactory
+
+_pl = MessageFactory("plonelocales")
+
+# datetime.weekday()/month indices (Mon=0, Jan=1) into plonelocales msgids,
+# used by get_current_date() since strftime("%A %B") always renders in the
+# OS/C locale (English), ignoring the active Plone UI language entirely.
+WEEKDAY_KEYS = [
+    "weekday_mon", "weekday_tue", "weekday_wed", "weekday_thu",
+    "weekday_fri", "weekday_sat", "weekday_sun",
+]
+MONTH_KEYS = [
+    "month_jan", "month_feb", "month_mar", "month_apr",
+    "month_may", "month_jun", "month_jul", "month_aug",
+    "month_sep", "month_oct", "month_nov", "month_dec",
+]
 
 DASHBOARD_FILTER_COOKIE = "dashboard_filter_cookie"
 
@@ -115,30 +132,6 @@ QUICK_LINK_DEFS = [
     (ManageBika, _("SENAITE Setup"),
      "setup", "fa-cog"),
 ]
-
-# Keys in the async JSON payload whose values are i18n messages and must be
-# translated to the active language before serialization (the D3 chart data
-# under "data"/"datacolors" is deliberately excluded).
-TRANSLATABLE_KEYS = ("title", "description", "tooltip", "name")
-
-# Labels rendered client-side by dashboard.js. Exposed pre-translated via a
-# data attribute so the script stays translation-agnostic.
-JS_LABEL_DEFS = collections.OrderedDict([
-    ("status", _("Status")),
-    ("quick_actions", _("Quick Actions")),
-    ("show_hide_timeline", _("Show/hide timeline")),
-    ("no_data", _("No data for the selected period")),
-    ("no_actions", _("No actions available. Please contact your "
-                     "laboratory manager to get permissions assigned.")),
-    ("timeline_range",
-     _("From ${from} to ${to} (updated every 2 hours)")),
-    ("daily", _("Daily")),
-    ("weekly", _("Weekly")),
-    ("monthly", _("Monthly")),
-    ("quarterly", _("Quarterly")),
-    ("biannual", _("Biannual")),
-    ("yearly", _("Yearly")),
-])
 
 # State labels for evolution charts
 ANALYSIS_STATES = collections.OrderedDict([
@@ -320,18 +313,48 @@ class DashboardView(BrowserView):
         return api.get_user_fullname(user)
 
     def get_current_date(self):
-        return datetime.datetime.now().strftime(
-            "%A, %d %B %Y")
+        now = datetime.datetime.now()
+        weekday = translate(
+            _pl(WEEKDAY_KEYS[now.weekday()]), to_utf8=False)
+        month = translate(
+            _pl(MONTH_KEYS[now.month - 1]), to_utf8=False)
+        return u"%s, %s %s %s" % (
+            weekday, now.strftime("%d"), month, now.year)
 
     def get_current_time(self):
         return datetime.datetime.now().strftime("%H:%M")
 
-    def get_js_labels_json(self):
-        """Return the translated dashboard.js labels as a JSON string
+    def get_js_labels(self):
+        """Translated UI chrome strings for dashboard.js
+
+        dashboard.js renders section headings, the timeline toggle,
+        periodicity pills and empty-state text as plain hardcoded JS
+        string literals -- unlike card/panel data, these never pass
+        through the server at all, so no amount of catalog completeness
+        can localize them. This ships them pre-translated via the
+        #dashboard-config data-labels attribute instead.
         """
-        labels = dict((key, translate(msg))
-                      for key, msg in JS_LABEL_DEFS.items())
-        return json.dumps(labels)
+        keys = [
+            "Status",
+            "Quick Actions",
+            "Show/hide timeline",
+            "No data for the selected period",
+            "No actions available. Please contact your "
+            "laboratory manager to get permissions assigned.",
+            "From",
+            "to",
+            "(updated every 2 hours)",
+            "Daily",
+            "Weekly",
+            "Monthly",
+            "Quarterly",
+            "Biannual",
+            "Yearly",
+        ]
+        return {key: translate(_(key), to_utf8=False) for key in keys}
+
+    def get_js_labels_json(self):
+        return json.dumps(self.get_js_labels())
 
     # --- Status cards ---
 
@@ -604,7 +627,7 @@ class DashboardView(BrowserView):
     def _legend(self, count, total):
         pct = self._pct(count, total)
         return "%s %s (%s%%)" % (
-            translate(_("of")), total, pct)
+            translate(_("of"), to_utf8=False), total, pct)
 
     # --- Cookie filter ---
 
@@ -859,22 +882,23 @@ SECTION_HANDLERS = {
 }
 
 
-def translate_labels(data):
-    """Recursively translate the i18n labels of a dashboard data structure
+def _translate_deep(value):
+    """Recursively translate zope i18n Message instances found in a
+    dict/list data structure.
 
-    Only the values of `TRANSLATABLE_KEYS` are translated; every other value
-    (counts, urls, chart data) is returned unchanged. This lets the async JSON
-    payload carry text in the active language, since `json.dumps` would
-    otherwise serialize i18n messages to their untranslated message id.
+    ``json.dumps`` serializes a ``Message`` as its untranslated default
+    text (it just subclasses unicode), so any i18n Message reaching
+    ``json.dumps`` untouched renders in English regardless of how
+    complete the ``.po`` catalog is. This must run right before the
+    final ``json.dumps`` call on any data assembled from ``_(...)``.
     """
-    if isinstance(data, dict):
-        return dict(
-            (key, translate(value) if key in TRANSLATABLE_KEYS and value
-             else translate_labels(value))
-            for key, value in data.items())
-    if isinstance(data, (list, tuple)):
-        return [translate_labels(item) for item in data]
-    return data
+    if isinstance(value, Message):
+        return translate(value, to_utf8=False)
+    if isinstance(value, dict):
+        return {k: _translate_deep(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_translate_deep(v) for v in value]
+    return value
 
 
 class DashboardDataView(BrowserView):
@@ -905,4 +929,5 @@ class DashboardDataView(BrowserView):
         view._setup(mtool)
 
         data = getattr(view, handler_name)()
-        return json.dumps(translate_labels(data))
+        data = _translate_deep(data)
+        return json.dumps(data)
