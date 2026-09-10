@@ -22,6 +22,7 @@ Needed Imports:
     >>> from bika.lims.api.analysis import get_dependents
     >>> from bika.lims.api.analysis import get_formatted_interval
     >>> from bika.lims.api.analysis import is_analysis
+    >>> from bika.lims.api.analysis import is_empty_result
     >>> from bika.lims.api.analysis import is_out_of_range
     >>> from bika.lims.api.analysis import is_reference_analysis
     >>> from bika.lims.api.analysis import is_rejected
@@ -1043,3 +1044,59 @@ The same should work for dependencies:
     >>> dependencies = get_dependencies(au_analysis, recursive=True)
     >>> list(sorted(map(api.get_id, dependencies)))
     ['Cu-1', 'Fe-1']
+
+
+Check if a result value is empty
+................................
+
+Single-valued results are empty when no value is set:
+
+    >>> is_empty_result(None)
+    True
+
+    >>> is_empty_result("")
+    True
+
+    >>> is_empty_result("  ")
+    True
+
+    >>> is_empty_result("12")
+    False
+
+A result of zero is not an empty result:
+
+    >>> is_empty_result("0")
+    False
+
+    >>> is_empty_result(0)
+    False
+
+Multi-valued results are stored as a JSON list with the selected values, so
+they are empty when no value is selected, or when all the selected values are
+empty:
+
+    >>> is_empty_result("[]")
+    True
+
+    >>> is_empty_result('[""]')
+    True
+
+    >>> is_empty_result('["", ""]')
+    True
+
+    >>> is_empty_result('["1", ""]')
+    False
+
+    >>> is_empty_result('["0"]')
+    False
+
+Lists are supported as well, even if not JSON-serialized:
+
+    >>> is_empty_result([])
+    True
+
+    >>> is_empty_result(["", None])
+    True
+
+    >>> is_empty_result(["1"])
+    False

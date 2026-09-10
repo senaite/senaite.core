@@ -177,6 +177,26 @@ def is_out_of_range(brain_or_object, result=_marker):
     return True, not in_shoulder
 
 
+def is_empty_result(value):
+    """Checks if the passed in result value is empty
+
+    Multi-valued results, either from the result field or from a result
+    variable (interim), are stored as a JSON list with the selected values.
+    Therefore, values like `"[]"` or `'[""]'` are considered empty as well
+
+    :param value: The raw value of a result or of a result variable
+    :returns: True if the value is empty or all its values are empty
+    :rtype: bool
+    """
+    for val in api.to_list(value):
+        if val is None:
+            continue
+        if api.is_string(val) and not val.strip():
+            continue
+        return False
+    return True
+
+
 def get_formatted_interval(analysis_or_results_range, default=_marker):
     """Returns a string representation of the interval defined by the results
     range passed in

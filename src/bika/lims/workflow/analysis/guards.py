@@ -22,6 +22,7 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims import workflow as wf
 from bika.lims.api import security
+from bika.lims.api.analysis import is_empty_result
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
@@ -134,16 +135,15 @@ def guard_submit(analysis):
     """Return whether the transition "submit" can be performed or not
     """
     # Cannot submit without a result
-    if not analysis.getResult():
+    if is_empty_result(analysis.getResult()):
         return False
 
     # Cannot submit with interims without value
     for interim in analysis.getInterimFields():
-        true_values = ("true", "1", "on", "True", True, 1)
-        if interim.get("allow_empty", False) in true_values:
+        if api.to_bool(interim.get("allow_empty", False)):
             continue
 
-        if interim.get("value") in [None, ""]:
+        if is_empty_result(interim.get("value")):
             return False
 
     # Cannot submit if attachment not set, but is required

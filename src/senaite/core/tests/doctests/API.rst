@@ -1863,6 +1863,51 @@ With default fallback:
     2
 
 
+Convert to a boolean
+....................
+
+Boolean-like strings are evaluated case-insensitively:
+
+    >>> api.to_bool("true"), api.to_bool("True"), api.to_bool("TRUE")
+    (True, True, True)
+
+    >>> api.to_bool("yes"), api.to_bool("on"), api.to_bool("1")
+    (True, True, True)
+
+    >>> api.to_bool("false"), api.to_bool("no"), api.to_bool("off")
+    (False, False, False)
+
+    >>> api.to_bool("0"), api.to_bool(""), api.to_bool("  ")
+    (False, False, False)
+
+Booleans are returned as-is:
+
+    >>> api.to_bool(True), api.to_bool(False)
+    (True, False)
+
+Values of any other type follow the Python's truthiness rules:
+
+    >>> api.to_bool(1), api.to_bool(0)
+    (True, False)
+
+    >>> api.to_bool([1]), api.to_bool([])
+    (True, False)
+
+With default fallback for values that cannot be evaluated:
+
+    >>> api.to_bool(None)
+    False
+
+    >>> api.to_bool(None, True)
+    True
+
+    >>> api.to_bool("maybe")
+    False
+
+    >>> api.to_bool("maybe", True)
+    True
+
+
 Convert float to string
 .......................
 
