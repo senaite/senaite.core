@@ -1116,7 +1116,7 @@ is tested.  Here, I just want to test if object states are handled correctly.
 
 For setup types, we use senaite_deactivable_type_workflow::
 
-    >>> method1 = api.create(portal.methods, "Method", title="Test Method")
+    >>> method1 = api.create(senaite_setup.methods, "Method", title="Test Method")
     >>> api.is_active(method1)
     True
     >>> method1 = api.do_transition_for(method1, 'deactivate')
@@ -2459,6 +2459,51 @@ Convert to list
 
     >>> api.to_list('["[1, 2, 3]", "b", "c"]')
     [u'[1, 2, 3]', u'b', u'c']
+
+
+Get the uid_catalog path of an object
+.....................................
+
+The `uid_catalog` keys AT and DX content with different path
+conventions: AT content is keyed by the path **relative** to the portal
+root, while DX content is keyed by the **absolute** path. This function
+returns the path an object belongs to, so that no code has to build it
+by hand:
+
+    >>> uc = api.get_tool("uid_catalog")
+
+The client is AT content, so its relative path is returned:
+
+    >>> at_path = api.get_uid_catalog_path(client)
+    >>> at_path == "/".join(client.getPhysicalPath()[2:])
+    True
+
+And that is the path the object is really keyed by:
+
+    >>> at_path in uc._catalog.uids
+    True
+
+For Dexterity content the absolute path is returned instead:
+
+    >>> path_obj = api.create(
+    ...     portal.setup.sampletypes, "SampleType",
+    ...     title="Path Test SampleType", Prefix="PTS")
+    >>> dx_path = api.get_uid_catalog_path(path_obj)
+    >>> dx_path == "/".join(path_obj.getPhysicalPath())
+    True
+
+    >>> dx_path in uc._catalog.uids
+    True
+
+The two conventions never yield the same path. Cataloging an object
+under the wrong one leaves a second record behind, which makes every
+lookup by UID for that object ambiguous:
+
+    >>> at_path == "/".join(client.getPhysicalPath())
+    False
+
+    >>> dx_path == "/".join(path_obj.getPhysicalPath()[2:])
+    False
 
 
 Un-catalog an object

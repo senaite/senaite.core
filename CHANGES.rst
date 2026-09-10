@@ -5,6 +5,13 @@ Changelog
 ------------------
 
 - #3001 Skip read-only fields when validating objects on create/update
+- #2994 Migrate Method content type to Dexterity
+- #2991 Replace the jQuery DataGrid handler with a ReactJS widget
+- #2990 Vendor the datagrid widget and drop collective.z3cform.datagridfield
+- #2998 Stop leaking exception tracebacks in JSON API error responses
+- #2980 Migrate AuditLog to Dexterity and move audit log machinery to senaite.core
+- #2979 Show precise element-level audit log diffs for lists and record fields
+- #3013 Add a doctest for api.get_uid_catalog_path
 - #3012 Remove stale uid_catalog records that break lookups by UID
 - #2995 Add interactive upgrade, catalog and user console scripts
 - #3008 Filter sidebar root folders by permission instead of by catalog

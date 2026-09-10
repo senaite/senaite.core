@@ -37,7 +37,7 @@ Create some test folders and objects to build a navigation tree:
 
     >>> clients = portal.clients
     >>> samples = portal.samples
-    >>> methods = portal.methods
+    >>> methods = portal.setup.methods
     >>> batches = portal.batches
     >>> worksheets = portal.worksheets
 
