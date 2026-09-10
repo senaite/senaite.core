@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2990 Vendor the datagrid widget and drop collective.z3cform.datagridfield
 - #2998 Stop leaking exception tracebacks in JSON API error responses
 - #2980 Migrate AuditLog to Dexterity and move audit log machinery to senaite.core
 - #2979 Show precise element-level audit log diffs for lists and record fields
