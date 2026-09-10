@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3014 Fix AT to DX upgrade failing with undefined property 'add_permission'
 - #3001 Skip read-only fields when validating objects on create/update
 - #2994 Migrate Method content type to Dexterity
 - #2991 Replace the jQuery DataGrid handler with a ReactJS widget
