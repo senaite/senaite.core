@@ -93,6 +93,7 @@ profile = "profile-{0}:default".format(product)
 
 REMOVE_AT_TYPES = [
     "ARReport",
+    "AuditLog",
     "Contact",
     "Laboratory",
     "Calculation",
@@ -276,9 +277,14 @@ def migrate_auditlog_to_dx(tool):
     """
     logger.info("Convert AuditLog to Dexterity ...")
 
-    # remove the AT type and re-import the DX FTI
-    remove_at_portal_types(tool, ["AuditLog"])
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    # Flush *all* pending AT FTIs, not only the AuditLog one: the typeinfo
+    # step below imports every type of the profile, and applying a DX FTI
+    # over a type that is still Archetypes in the database fails with
+    # `ValueError: undefined property 'add_permission'`
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
+
+    # re-import the DX FTIs
+    import_typeinfo(tool, profile)
 
     # the legacy AT folder lived in `bika_setup`; the DX one now lives in
     # the new SENAITE setup
@@ -2992,7 +2998,7 @@ def migrate_methods_to_dx(tool):
     remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
     tool.runImportStepFromProfile(profile, "workflow")
 
     # the methods folder is no longer a top-level sidebar folder
