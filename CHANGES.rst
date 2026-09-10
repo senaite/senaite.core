@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2994 Migrate Method content type to Dexterity
 - #2991 Replace the jQuery DataGrid handler with a ReactJS widget
 - #2990 Vendor the datagrid widget and drop collective.z3cform.datagridfield
 - #2998 Stop leaking exception tracebacks in JSON API error responses

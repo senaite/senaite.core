@@ -23,6 +23,9 @@ from bika.lims import senaiteMessageFactory as _
 from bika.lims.catalog import SETUP_CATALOG
 from senaite.core.browser.form.adapters import EditFormAdapterBase
 
+FIELD_INSTRUMENTS = "form.widgets.instruments"
+FIELD_CALCULATIONS = "form.widgets.calculations"
+
 
 class EditForm(EditFormAdapterBase):
     """Edit form adapter for Method
@@ -35,14 +38,14 @@ class EditForm(EditFormAdapterBase):
         name = data.get("name")
         value = data.get("value")
 
-        if name == "Instruments":
+        if name == FIELD_INSTRUMENTS:
             # check if instruments can be removed
             self.add_error_field(
-                "Instruments", self.validate_instruments(value))
-        elif name == "Calculations":
+                FIELD_INSTRUMENTS, self.validate_instruments(value))
+        elif name == FIELD_CALCULATIONS:
             # check if calculations can be removed
             self.add_error_field(
-                "Calculations", self.validate_calculations(value))
+                FIELD_CALCULATIONS, self.validate_calculations(value))
 
         return self.data
 

@@ -1116,7 +1116,7 @@ is tested.  Here, I just want to test if object states are handled correctly.
 
 For setup types, we use senaite_deactivable_type_workflow::
 
-    >>> method1 = api.create(portal.methods, "Method", title="Test Method")
+    >>> method1 = api.create(senaite_setup.methods, "Method", title="Test Method")
     >>> api.is_active(method1)
     True
     >>> method1 = api.do_transition_for(method1, 'deactivate')

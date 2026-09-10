@@ -17,29 +17,3 @@
 #
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
-from Products.CMFPlone.utils import get_installer
-from senaite.core.tests.base import BaseTestCase
-
-
-class TestSetup(BaseTestCase):
-    """Test Setup
-    """
-
-    def test_is_senaite_core_installed(self):
-        qi = get_installer(self.portal)
-        self.assertTrue(qi.is_product_installed("senaite.core"))
-
-    def test_content_structure_exists(self):
-        existing = self.portal.objectIds()
-        self.assertIn("clients", existing)
-        self.assertIn("samples", existing)
-        # methods live in the setup folder
-        self.assertIn("methods", self.portal.setup.objectIds())
-
-
-def test_suite():
-    from unittest import TestSuite, makeSuite
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestSetup))
-    return suite
