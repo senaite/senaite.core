@@ -1155,6 +1155,34 @@ the setting is stored as a boolean, like the Dexterity types do, or as the
     False
 
 
+Reference analyses (blanks and controls) and duplicates are supported too:
+
+    >>> control = controls[0]
+    >>> control.setResult("")
+    >>> is_result_complete(control)
+    False
+
+    >>> control.setResult(10)
+    >>> is_result_complete(control)
+    True
+
+    >>> duplicate = duplicates[0]
+    >>> duplicate.setResult("")
+    >>> is_result_complete(duplicate)
+    False
+
+    >>> duplicate.setResult(10)
+    >>> is_result_complete(duplicate)
+    True
+
+Objects that are not analyses are not supported:
+
+    >>> is_result_complete(sample)
+    Traceback (most recent call last):
+    ...
+    APIError: ... is not supported.
+
+
 Check if a raw result value is empty
 ....................................
 
