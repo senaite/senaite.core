@@ -22,11 +22,11 @@ Needed Imports:
     >>> from bika.lims.api.analysis import get_dependents
     >>> from bika.lims.api.analysis import get_formatted_interval
     >>> from bika.lims.api.analysis import is_analysis
-    >>> from bika.lims.api.analysis import is_empty_result
-    >>> from bika.lims.api.analysis import is_empty_value
+    >>> from bika.lims.api.analysis import is_empty_result_value
     >>> from bika.lims.api.analysis import is_out_of_range
     >>> from bika.lims.api.analysis import is_reference_analysis
     >>> from bika.lims.api.analysis import is_rejected
+    >>> from bika.lims.api.analysis import is_result_complete
     >>> from bika.lims.api.analysis import is_retested
     >>> from bika.lims.api.analysis import is_retracted
     >>> from bika.lims.content.analysisrequest import AnalysisRequest
@@ -1047,8 +1047,8 @@ The same should work for dependencies:
     ['Cu-1', 'Fe-1']
 
 
-Check if an analysis has an empty result
-........................................
+Check if the result of an analysis is complete
+..............................................
 
 Create a numeric service and a service with a multiple selection list of
 result options:
@@ -1060,29 +1060,29 @@ result options:
     ...     {"ResultValue": "2", "ResultText": "Option 2"}])
     >>> Zn.setResultType("multiselect")
 
-An analysis without result set is considered empty:
+The result of an analysis without a result set is not complete:
 
     >>> sample = new_sample([api.get_uid(Ni)])
     >>> analysis = sample.getAnalyses(full_objects=True)[0]
-    >>> is_empty_result(analysis)
-    True
-
-    >>> analysis.setResult(12)
-    >>> is_empty_result(analysis)
+    >>> is_result_complete(analysis)
     False
 
-A result of zero is not an empty result:
+    >>> analysis.setResult(12)
+    >>> is_result_complete(analysis)
+    True
+
+A result of zero is a valid result:
 
     >>> analysis.setResult(0)
     >>> analysis.getResult()
     '0'
 
-    >>> is_empty_result(analysis)
-    False
+    >>> is_result_complete(analysis)
+    True
 
 Multi-valued results are stored as a JSON list with the selected values, so
-they are empty when no option is selected, or when all the selected values
-are empty:
+they are not complete when no option is selected, or when all the selected
+values are empty:
 
     >>> sample = new_sample([api.get_uid(Zn)])
     >>> analysis = sample.getAnalyses(full_objects=True)[0]
@@ -1090,16 +1090,16 @@ are empty:
     >>> analysis.getResult()
     '[]'
 
-    >>> is_empty_result(analysis)
-    True
+    >>> is_result_complete(analysis)
+    False
 
     >>> analysis.setResult(["", ""])
-    >>> is_empty_result(analysis)
-    True
+    >>> is_result_complete(analysis)
+    False
 
     >>> analysis.setResult(["1", ""])
-    >>> is_empty_result(analysis)
-    False
+    >>> is_result_complete(analysis)
+    True
 
 Result variables (interims) are taken into account as well:
 
@@ -1108,12 +1108,12 @@ Result variables (interims) are taken into account as well:
     >>> analysis.setResult(12)
     >>> analysis.setInterimFields([
     ...     {"keyword": "interim_1", "title": "Interim 1"}])
-    >>> is_empty_result(analysis)
-    True
+    >>> is_result_complete(analysis)
+    False
 
     >>> analysis.setInterimValue("interim_1", 0)
-    >>> is_empty_result(analysis)
-    False
+    >>> is_result_complete(analysis)
+    True
 
 And so are multi-valued result variables:
 
@@ -1122,12 +1122,12 @@ And so are multi-valued result variables:
     ...     "result_type": "multiselect",
     ...     "choices": "1:Option 1|2:Option 2"}])
     >>> analysis.setInterimValue("interim_1", [""])
-    >>> is_empty_result(analysis)
-    True
+    >>> is_result_complete(analysis)
+    False
 
     >>> analysis.setInterimValue("interim_1", ["2"])
-    >>> is_empty_result(analysis)
-    False
+    >>> is_result_complete(analysis)
+    True
 
 Result variables that allow empty values are not evaluated, no matter whether
 the setting is stored as a boolean, like the Dexterity types do, or as the
@@ -1139,20 +1139,20 @@ the setting is stored as a boolean, like the Dexterity types do, or as the
     ...     analysis.setInterimFields(interims)
 
     >>> analysis.setInterimValue("interim_1", [])
-    >>> is_empty_result(analysis)
-    True
+    >>> is_result_complete(analysis)
+    False
 
     >>> set_allow_empty(analysis, "on")
-    >>> is_empty_result(analysis)
-    False
+    >>> is_result_complete(analysis)
+    True
 
     >>> set_allow_empty(analysis, True)
-    >>> is_empty_result(analysis)
-    False
+    >>> is_result_complete(analysis)
+    True
 
     >>> set_allow_empty(analysis, False)
-    >>> is_empty_result(analysis)
-    True
+    >>> is_result_complete(analysis)
+    False
 
 
 Check if a raw result value is empty
@@ -1160,51 +1160,51 @@ Check if a raw result value is empty
 
 Single values are empty when no value is set:
 
-    >>> is_empty_value(None)
+    >>> is_empty_result_value(None)
     True
 
-    >>> is_empty_value("")
+    >>> is_empty_result_value("")
     True
 
-    >>> is_empty_value("  ")
+    >>> is_empty_result_value("  ")
     True
 
-    >>> is_empty_value("12")
+    >>> is_empty_result_value("12")
     False
 
 A value of zero is not empty:
 
-    >>> is_empty_value("0")
+    >>> is_empty_result_value("0")
     False
 
-    >>> is_empty_value(0)
+    >>> is_empty_result_value(0)
     False
 
 Multi-valued results are stored as a JSON list with the selected values, so
 they are empty when the list is empty or when all its values are empty:
 
-    >>> is_empty_value("[]")
+    >>> is_empty_result_value("[]")
     True
 
-    >>> is_empty_value('[""]')
+    >>> is_empty_result_value('[""]')
     True
 
-    >>> is_empty_value('["", ""]')
+    >>> is_empty_result_value('["", ""]')
     True
 
-    >>> is_empty_value('["1", ""]')
+    >>> is_empty_result_value('["1", ""]')
     False
 
-    >>> is_empty_value('["0"]')
+    >>> is_empty_result_value('["0"]')
     False
 
 Lists are supported as well, even if not JSON-serialized:
 
-    >>> is_empty_value([])
+    >>> is_empty_result_value([])
     True
 
-    >>> is_empty_value(["", None])
+    >>> is_empty_result_value(["", None])
     True
 
-    >>> is_empty_value(["1"])
+    >>> is_empty_result_value(["1"])
     False

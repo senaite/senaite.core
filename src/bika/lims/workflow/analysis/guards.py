@@ -22,7 +22,7 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims import workflow as wf
 from bika.lims.api import security
-from bika.lims.api.analysis import is_empty_result
+from bika.lims.api.analysis import is_result_complete
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
@@ -134,9 +134,9 @@ def guard_reinstate(analysis):
 def guard_submit(analysis):
     """Return whether the transition "submit" can be performed or not
     """
-    # Cannot submit without a result, either because the result is empty or
-    # because a result variable that does not allow empty values is empty
-    if is_empty_result(analysis):
+    # Cannot submit unless the result and all the required result variables
+    # have a value
+    if not is_result_complete(analysis):
         return False
 
     # Cannot submit if attachment not set, but is required

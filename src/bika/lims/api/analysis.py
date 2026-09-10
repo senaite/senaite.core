@@ -177,16 +177,17 @@ def is_out_of_range(brain_or_object, result=_marker):
     return True, not in_shoulder
 
 
-def is_empty_result(brain_or_object):
-    """Checks if the analysis passed in does not have a result set
+def is_result_complete(brain_or_object):
+    """Checks if the analysis passed in has all its results captured
 
-    An analysis is considered without result when its result is empty, or
-    when the value of any of its result variables (interims) that does not
-    allow empty values is empty
+    The result of an analysis is considered complete when the result itself
+    is not empty and none of its result variables (interims), except for
+    those that allow empty values, is empty
 
     :param brain_or_object: A single catalog brain or content object
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
-    :returns: True if the analysis does not have a result set
+    :returns: True if the result and all the required result variables of the
+              analysis have a value
     :rtype: bool
     """
     analysis = api.get_object(brain_or_object)
@@ -195,20 +196,20 @@ def is_empty_result(brain_or_object):
         api.fail("{} is not supported. Needs to be IAnalysis or "
                  "IReferenceAnalysis".format(repr(analysis)))
 
-    if is_empty_value(analysis.getResult()):
-        return True
+    if is_empty_result_value(analysis.getResult()):
+        return False
 
     for interim in analysis.getInterimFields():
         if api.to_bool(interim.get("allow_empty", False)):
             continue
 
-        if is_empty_value(interim.get("value")):
-            return True
+        if is_empty_result_value(interim.get("value")):
+            return False
 
-    return False
+    return True
 
 
-def is_empty_value(value):
+def is_empty_result_value(value):
     """Checks if the raw value of a result or of a result variable is empty
 
     Multi-valued results are stored as a JSON list with the selected values,
