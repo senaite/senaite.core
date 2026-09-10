@@ -1183,8 +1183,8 @@ class AnalysesView(ListingView):
                 continue
 
             interim_value = interim_field.get("value", "")
-            interim_allow_empty = api.to_bool(
-                interim_field.get("allow_empty", False))
+            interim_allow_empty = interim_field.get("allow_empty", False)
+            interim_allow_empty = api.to_bool(interim_allow_empty)
             interim_unit = interim_field.get("unit", "")
 
             # Get the interim's formatted value

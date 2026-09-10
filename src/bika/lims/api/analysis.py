@@ -177,12 +177,42 @@ def is_out_of_range(brain_or_object, result=_marker):
     return True, not in_shoulder
 
 
-def is_empty_result(value):
-    """Checks if the passed in result value is empty
+def is_empty_result(brain_or_object):
+    """Checks if the analysis passed in does not have a result set
 
-    Multi-valued results, either from the result field or from a result
-    variable (interim), are stored as a JSON list with the selected values.
-    Therefore, values like `"[]"` or `'[""]'` are considered empty as well
+    An analysis is considered without result when its result is empty, or
+    when the value of any of its result variables (interims) that does not
+    allow empty values is empty
+
+    :param brain_or_object: A single catalog brain or content object
+    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
+    :returns: True if the analysis does not have a result set
+    :rtype: bool
+    """
+    analysis = api.get_object(brain_or_object)
+    if not IAnalysis.providedBy(analysis) and \
+            not IReferenceAnalysis.providedBy(analysis):
+        api.fail("{} is not supported. Needs to be IAnalysis or "
+                 "IReferenceAnalysis".format(repr(analysis)))
+
+    if is_empty_value(analysis.getResult()):
+        return True
+
+    for interim in analysis.getInterimFields():
+        if api.to_bool(interim.get("allow_empty", False)):
+            continue
+
+        if is_empty_value(interim.get("value")):
+            return True
+
+    return False
+
+
+def is_empty_value(value):
+    """Checks if the raw value of a result or of a result variable is empty
+
+    Multi-valued results are stored as a JSON list with the selected values,
+    so values like `"[]"` or `'[""]'` are considered empty as well
 
     :param value: The raw value of a result or of a result variable
     :returns: True if the value is empty or all its values are empty

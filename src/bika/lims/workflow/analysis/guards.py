@@ -134,17 +134,10 @@ def guard_reinstate(analysis):
 def guard_submit(analysis):
     """Return whether the transition "submit" can be performed or not
     """
-    # Cannot submit without a result
-    if is_empty_result(analysis.getResult()):
+    # Cannot submit without a result, either because the result is empty or
+    # because a result variable that does not allow empty values is empty
+    if is_empty_result(analysis):
         return False
-
-    # Cannot submit with interims without value
-    for interim in analysis.getInterimFields():
-        if api.to_bool(interim.get("allow_empty", False)):
-            continue
-
-        if is_empty_result(interim.get("value")):
-            return False
 
     # Cannot submit if attachment not set, but is required
     if not analysis.getAttachment():

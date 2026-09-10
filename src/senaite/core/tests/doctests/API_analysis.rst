@@ -23,6 +23,7 @@ Needed Imports:
     >>> from bika.lims.api.analysis import get_formatted_interval
     >>> from bika.lims.api.analysis import is_analysis
     >>> from bika.lims.api.analysis import is_empty_result
+    >>> from bika.lims.api.analysis import is_empty_value
     >>> from bika.lims.api.analysis import is_out_of_range
     >>> from bika.lims.api.analysis import is_reference_analysis
     >>> from bika.lims.api.analysis import is_rejected
@@ -1046,57 +1047,164 @@ The same should work for dependencies:
     ['Cu-1', 'Fe-1']
 
 
-Check if a result value is empty
-................................
+Check if an analysis has an empty result
+........................................
 
-Single-valued results are empty when no value is set:
+Create a numeric service and a service with a multiple selection list of
+result options:
 
-    >>> is_empty_result(None)
+    >>> Ni = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Nickel", Keyword="Ni", Category=category.UID())
+    >>> Zn = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Zinc", Keyword="Zn", Category=category.UID())
+    >>> Zn.setResultOptions([
+    ...     {"ResultValue": "1", "ResultText": "Option 1"},
+    ...     {"ResultValue": "2", "ResultText": "Option 2"}])
+    >>> Zn.setResultType("multiselect")
+
+An analysis without result set is considered empty:
+
+    >>> sample = new_sample([api.get_uid(Ni)])
+    >>> analysis = sample.getAnalyses(full_objects=True)[0]
+    >>> is_empty_result(analysis)
     True
 
-    >>> is_empty_result("")
-    True
-
-    >>> is_empty_result("  ")
-    True
-
-    >>> is_empty_result("12")
+    >>> analysis.setResult(12)
+    >>> is_empty_result(analysis)
     False
 
 A result of zero is not an empty result:
 
-    >>> is_empty_result("0")
-    False
+    >>> analysis.setResult(0)
+    >>> analysis.getResult()
+    '0'
 
-    >>> is_empty_result(0)
+    >>> is_empty_result(analysis)
     False
 
 Multi-valued results are stored as a JSON list with the selected values, so
-they are empty when no value is selected, or when all the selected values are
-empty:
+they are empty when no option is selected, or when all the selected values
+are empty:
 
-    >>> is_empty_result("[]")
+    >>> sample = new_sample([api.get_uid(Zn)])
+    >>> analysis = sample.getAnalyses(full_objects=True)[0]
+    >>> analysis.setResult([])
+    >>> analysis.getResult()
+    '[]'
+
+    >>> is_empty_result(analysis)
     True
 
-    >>> is_empty_result('[""]')
+    >>> analysis.setResult(["", ""])
+    >>> is_empty_result(analysis)
     True
 
-    >>> is_empty_result('["", ""]')
-    True
-
-    >>> is_empty_result('["1", ""]')
+    >>> analysis.setResult(["1", ""])
+    >>> is_empty_result(analysis)
     False
 
-    >>> is_empty_result('["0"]')
+Result variables (interims) are taken into account as well:
+
+    >>> sample = new_sample([api.get_uid(Ni)])
+    >>> analysis = sample.getAnalyses(full_objects=True)[0]
+    >>> analysis.setResult(12)
+    >>> analysis.setInterimFields([
+    ...     {"keyword": "interim_1", "title": "Interim 1"}])
+    >>> is_empty_result(analysis)
+    True
+
+    >>> analysis.setInterimValue("interim_1", 0)
+    >>> is_empty_result(analysis)
+    False
+
+And so are multi-valued result variables:
+
+    >>> analysis.setInterimFields([{
+    ...     "keyword": "interim_1", "title": "Interim 1",
+    ...     "result_type": "multiselect",
+    ...     "choices": "1:Option 1|2:Option 2"}])
+    >>> analysis.setInterimValue("interim_1", [""])
+    >>> is_empty_result(analysis)
+    True
+
+    >>> analysis.setInterimValue("interim_1", ["2"])
+    >>> is_empty_result(analysis)
+    False
+
+Result variables that allow empty values are not evaluated, no matter whether
+the setting is stored as a boolean, like the Dexterity types do, or as the
+`"on"` value the Archetypes' records widget submits:
+
+    >>> def set_allow_empty(analysis, allow_empty):
+    ...     interims = analysis.getInterimFields()
+    ...     interims[0]["allow_empty"] = allow_empty
+    ...     analysis.setInterimFields(interims)
+
+    >>> analysis.setInterimValue("interim_1", [])
+    >>> is_empty_result(analysis)
+    True
+
+    >>> set_allow_empty(analysis, "on")
+    >>> is_empty_result(analysis)
+    False
+
+    >>> set_allow_empty(analysis, True)
+    >>> is_empty_result(analysis)
+    False
+
+    >>> set_allow_empty(analysis, False)
+    >>> is_empty_result(analysis)
+    True
+
+
+Check if a raw result value is empty
+....................................
+
+Single values are empty when no value is set:
+
+    >>> is_empty_value(None)
+    True
+
+    >>> is_empty_value("")
+    True
+
+    >>> is_empty_value("  ")
+    True
+
+    >>> is_empty_value("12")
+    False
+
+A value of zero is not empty:
+
+    >>> is_empty_value("0")
+    False
+
+    >>> is_empty_value(0)
+    False
+
+Multi-valued results are stored as a JSON list with the selected values, so
+they are empty when the list is empty or when all its values are empty:
+
+    >>> is_empty_value("[]")
+    True
+
+    >>> is_empty_value('[""]')
+    True
+
+    >>> is_empty_value('["", ""]')
+    True
+
+    >>> is_empty_value('["1", ""]')
+    False
+
+    >>> is_empty_value('["0"]')
     False
 
 Lists are supported as well, even if not JSON-serialized:
 
-    >>> is_empty_result([])
+    >>> is_empty_value([])
     True
 
-    >>> is_empty_result(["", None])
+    >>> is_empty_value(["", None])
     True
 
-    >>> is_empty_result(["1"])
+    >>> is_empty_value(["1"])
     False
