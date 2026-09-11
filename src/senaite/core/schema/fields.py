@@ -19,13 +19,13 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims.api.security import check_permission
-from collective.z3cform.datagridfield import DictRow
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import View
 from senaite.core.schema.interfaces import IBaseField
 from senaite.core.schema.interfaces import IDataGridField
 from senaite.core.schema.interfaces import IDataGridRow
 from senaite.core.schema.interfaces import IIntField
+from senaite.core.z3cform.datagridfield.row import DictRow
 from zope.interface import implementer
 from zope.schema import Field
 from zope.schema import Int

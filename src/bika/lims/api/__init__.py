@@ -215,9 +215,9 @@ def create(container, portal_type, *args, **kwargs):
         notify(ObjectInitializedEvent(obj))
     else:
         # Avoid circular imports
-        from bika.lims.api.snapshot import pause_snapshots_for
-        from bika.lims.api.snapshot import resume_snapshots_for
-        from bika.lims.api.snapshot import take_snapshot
+        from senaite.core.api.snapshot import pause_snapshots_for
+        from senaite.core.api.snapshot import resume_snapshots_for
+        from senaite.core.api.snapshot import take_snapshot
 
         # Dexterity content creation
         # Schema fields (especially UID reference fields) must be set AFTER
@@ -511,6 +511,27 @@ def move_object(obj, destination, check_constraints=True):
     return obj
 
 
+def get_uid_catalog_path(obj):
+    """Return the path an object has to be cataloged under in uid_catalog
+
+    Archetypes content is cataloged relative to the portal, Dexterity
+    content under the absolute path. Getting this wrong leaves a second
+    record for the same object behind, which makes every lookup by UID
+    ambiguous.
+
+    :param obj: object to get the uid_catalog path for
+    :type obj: ATContentType/DexterityContentType
+    :returns: the path the object belongs to in the uid_catalog
+    """
+    if is_at_content(obj):
+        # the uids of uid_catalog are relative paths to portal root
+        # see Products.Archetypes.UIDCatalog.UIDResolver.catalog_object
+        return getRelURL(get_tool(UID_CATALOG), obj.getPhysicalPath())
+    # DX content is cataloged below the absolute path, as it is done in
+    # `plone.app.referenceablebehavior.uidcatalog`
+    return "/".join(obj.getPhysicalPath())
+
+
 def uncatalog_object(obj, recursive=False):
     """Un-catalog the object from all catalogs
 
@@ -549,19 +570,9 @@ def catalog_object(obj, recursive=False):
     :param recursive: recursively catalog all child objects
     :type obj: ATContentType/DexterityContentType
     """
-    if is_at_content(obj):
-        # the uids of uid_catalog are relative paths to portal root
-        # see Products.Archetypes.UIDCatalog.UIDResolver.catalog_object
+    if is_at_content(obj) or is_dexterity_content(obj):
         uc = get_tool(UID_CATALOG)
-        rel_url = getRelURL(uc, obj.getPhysicalPath())
-        uc.catalog_object(obj, rel_url)
-
-    elif is_dexterity_content(obj):
-        # we catalog the object here below the absolute path, as it is done in
-        # `plone.app.referencablebehavior.uidcatalog``
-        uc = get_tool(UID_CATALOG)
-        abs_url = "/".join(obj.getPhysicalPath())
-        uc.catalog_object(obj, abs_url)
+        uc.catalog_object(obj, get_uid_catalog_path(obj))
 
     # reindex in registered catalogs
     obj.reindexObject()
@@ -1042,7 +1053,20 @@ def get_brain_by_uid(uid, default=None):
 
     # try to find the object with the reference catalog first
     brains = uc(UID=uid)
-    if len(brains) != 1:
+    if len(brains) > 1:
+        # More than one catalog record claims this UID. The object is there,
+        # but it cannot be told apart, so the lookup has to fail. Log it as
+        # such: an "object not found" further up the stack is misleading and
+        # sends the reader looking for a missing object instead of a broken
+        # catalog.
+        paths = sorted(map(lambda brain: brain.getPath(), brains))
+        logger.error(
+            "Found %s records in the uid_catalog for UID '%s': %s. The "
+            "catalog is inconsistent, most likely because of stale records "
+            "left behind by a content migration."
+            % (len(brains), uid, ", ".join(paths)))
+        return default
+    if not brains:
         return default
     return brains[0]
 
@@ -1541,7 +1565,7 @@ def get_version(brain_or_object):
     :returns: The current version of the object, or None if not available
     :rtype: int or None
     """
-    from bika.lims.api.snapshot import get_version
+    from senaite.core.api.snapshot import get_version
     return get_version(get_object(brain_or_object))
 
 
@@ -2355,6 +2379,14 @@ def validate(obj):
 
         # update obj_data for later use with invariants
         obj_data[field_name] = value
+
+        # Skip read-only fields. They cannot be set through the API, so
+        # validating submitted data against them is out of scope. Their
+        # value is often computed -- e.g. a display-only TextLine backed by
+        # a ComputedAttribute that returns a Decimal -- which would raise a
+        # spurious WrongType here and block the whole create/update.
+        if getattr(field, "readonly", False):
+            continue
 
         if field_name in SKIP_VALIDATION_FIELDS:
             continue
