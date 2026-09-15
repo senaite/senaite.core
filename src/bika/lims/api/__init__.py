@@ -2018,6 +2018,36 @@ def to_int(value, default=_marker):
         fail("Value %s cannot be converted to int" % repr(value))
 
 
+def to_bool(value, default=False):
+    """Converts the passed in value to a boolean
+
+    Boolean-like strings, such as "true", "yes", "on" or "1" are converted to
+    True, while "false", "no", "off", "0" and empty strings are converted to
+    False. Values of any other type are evaluated following the Python's
+    truthiness rules, except for None, that is converted to the default value
+
+    :param value: The value to be converted to a boolean
+    :param default: Value to return when the value cannot be evaluated
+    :returns: The boolean representation of the passed in value
+    :rtype: bool
+    """
+    if isinstance(value, bool):
+        return value
+
+    if value is None:
+        return default
+
+    if is_string(value):
+        val = value.strip().lower()
+        if val in ["y", "yes", "1", "true", "on"]:
+            return True
+        if val in ["n", "no", "0", "false", "off", ""]:
+            return False
+        return default
+
+    return bool(value)
+
+
 def is_floatable(value):
     """Checks if the passed in value is a valid floatable number
 
