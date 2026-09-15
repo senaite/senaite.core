@@ -65,7 +65,7 @@
 
   <!-- Edit Form: Method -->
   <adapter
-      for="bika.lims.interfaces.IMethod
+      for="senaite.core.interfaces.IMethod
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".method.EditForm"/>
 

@@ -20,9 +20,9 @@
 
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.api.snapshot import has_snapshots
-from bika.lims.api.snapshot import supports_snapshots
-from bika.lims.api.snapshot import take_snapshot
+from senaite.core.api.snapshot import has_snapshots
+from senaite.core.api.snapshot import supports_snapshots
+from senaite.core.api.snapshot import take_snapshot
 from bika.lims.interfaces import IDoNotSupportSnapshots
 from DateTime import DateTime
 from senaite.core.catalog import AUDITLOG_CATALOG

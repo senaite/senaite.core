@@ -25,6 +25,7 @@ import transaction
 from AccessControl import Unauthorized
 from bika.lims import api
 from bika.lims.jsonapi import check_jsonapi_permission
+from bika.lims.jsonapi import handle_errors
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import TEST_USER_ID
@@ -188,8 +189,59 @@ class TestJSONAPISecurity(BaseTestCase):
         self.assertIsNone(check_jsonapi_permission(self.target))
 
 
+class TestHandleErrorsNoTracebackLeak(BaseTestCase):
+    """Regression tests for the handle_errors decorator.
+
+    The decorator used to place `traceback.format_exc()` verbatim into
+    the JSON `message` field, leaking file paths, function names and
+    code structure to any caller that could trigger an exception
+    (CWE-209). The response must now carry only the exception's own
+    message plus its class name; the full traceback goes to the
+    server-side log.
+    """
+    layer = JSONAPI_TESTING
+
+    def test_message_is_the_exception_message_only(self):
+        @handle_errors
+        def raiser(*args, **kwargs):
+            raise ValueError("the visible message")
+
+        result = raiser()
+        self.assertEqual(result["message"], "the visible message")
+        self.assertFalse(result["success"])
+
+    def test_response_does_not_contain_a_traceback(self):
+        @handle_errors
+        def raiser(*args, **kwargs):
+            raise RuntimeError("boom")
+
+        result = raiser()
+        # The old version stuffed traceback.format_exc() into `message`,
+        # which always starts with "Traceback (most recent call last):".
+        self.assertNotIn("Traceback", result["message"])
+        self.assertNotIn("File \"", result["message"])
+        self.assertNotIn("line ", result["message"])
+
+    def test_response_includes_the_exception_type(self):
+        @handle_errors
+        def raiser(*args, **kwargs):
+            raise KeyError("missing")
+
+        result = raiser()
+        self.assertEqual(result["type"], "KeyError")
+
+    def test_successful_call_passes_through_unchanged(self):
+        @handle_errors
+        def ok(*args, **kwargs):
+            return {"success": True, "items": [1, 2, 3]}
+
+        result = ok()
+        self.assertEqual(result, {"success": True, "items": [1, 2, 3]})
+
+
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestJSONAPISecurity))
+    suite.addTest(makeSuite(TestHandleErrorsNoTracebackLeak))
     return suite

@@ -24,6 +24,7 @@ from zope.interface import Interface
 from zope import deprecation
 
 # BBB: Only kept for backwards compatibility
+from senaite.core.interfaces import IAuditLog  # noqa: F401
 from senaite.core.interfaces import ISamples as IAnalysisRequestsFolder
 from senaite.core.interfaces.widget import IReferenceWidgetVocabulary
 from senaite.core.interfaces import IMultiCatalogBehavior as _IMultiCatalogBehavior
@@ -71,11 +72,6 @@ class IBikaLIMS(Interface):
 
 class ISenaiteSite(IBikaLIMS):
     """Marker interface for Zope 3 browser layers.
-    """
-
-
-class IAuditLog(Interface):
-    """Marker interface for Audit Log
     """
 
 

@@ -24,10 +24,10 @@ import re
 import six
 
 from bika.lims import api
-from bika.lims.api.snapshot import get_last_snapshot
-from bika.lims.api.snapshot import get_snapshot_count
-from bika.lims.api.snapshot import get_snapshot_metadata
-from bika.lims.api.snapshot import get_snapshots
+from senaite.core.api.snapshot import get_last_snapshot
+from senaite.core.api.snapshot import get_snapshot_count
+from senaite.core.api.snapshot import get_snapshot_metadata
+from senaite.core.api.snapshot import get_snapshots
 from bika.lims.api.user import get_user_id
 from bika.lims.interfaces import IAuditable
 from plone.indexer import indexer

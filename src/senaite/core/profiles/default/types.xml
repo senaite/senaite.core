@@ -5,6 +5,9 @@
   <!-- SENAITE Setup -->
   <object name="Setup" meta_type="Dexterity FTI" />
 
+  <!-- Audit Log -->
+  <object name="AuditLog" meta_type="Dexterity FTI" />
+
   <!-- Analysis Profiles -->
   <object name="AnalysisProfile" meta_type="Dexterity FTI" />
   <object name="AnalysisProfiles" meta_type="Dexterity FTI" />
@@ -117,6 +120,9 @@
   <!-- Calculations -->
   <object name="Calculation" meta_type="Dexterity FTI" />
   <object name="Calculations" meta_type="Dexterity FTI" />
+  <!-- Methods -->
+  <object name="Method" meta_type="Dexterity FTI" />
+  <object name="Methods" meta_type="Dexterity FTI" />
 
   <!-- Results Report -->
   <object name="ResultsReport" meta_type="Dexterity FTI" />

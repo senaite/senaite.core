@@ -19,8 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.api.snapshot import pause_snapshots_for
-from bika.lims.api.snapshot import resume_snapshots_for
+from senaite.core.api.snapshot import pause_snapshots_for
+from senaite.core.api.snapshot import resume_snapshots_for
 from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IDetachedPartition
 from bika.lims.interfaces import IInvalidated
