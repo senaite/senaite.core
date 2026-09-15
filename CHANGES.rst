@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3004 Speed up the creation of worksheets with a worksheet template
 - #3015 Fix analyses with empty multi-valued results can be submitted
 - #3014 Fix AT to DX upgrade failing with undefined property 'add_permission'
 - #3001 Skip read-only fields when validating objects on create/update
