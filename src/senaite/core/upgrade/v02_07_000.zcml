@@ -8,10 +8,10 @@
                    move the methods folder from the portal root into the setup
                    folder."
       source="2756"
-      destination="2757"                            
-      handler=".v02_07_000.migrate_methods_to_dx"                            
+      destination="2757"
+      handler=".v02_07_000.migrate_methods_to_dx"
       profile="senaite.core:default"/>
-  
+
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Migrate AuditLog to Dexterity"
       description="Remove the legacy Archetypes AuditLog folder from
