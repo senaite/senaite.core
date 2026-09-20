@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3019 Fix traceback in the user profile after visiting the add user form
 - #3017 Stop the datetime API doctest from leaking the process timezone
 - #3016 Localize the dashboard date to the active language
 - #3015 Fix analyses with empty multi-valued results can be submitted
