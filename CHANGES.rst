@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #3020 Use UnorderedOrdering for Instruments to avoid ZODB conflicts
+- #3020 Update handlebars and tinymce to fix known vulnerabilities
 - #3019 Fix traceback in the user profile after visiting the add user form
 - #3017 Stop the datetime API doctest from leaking the process timezone
 - #3016 Localize the dashboard date to the active language

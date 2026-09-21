@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.3.2 (2026-01-14)
+ * TinyMCE version 8.9.1 (2026-09-09)
  */
 
 (function () {
@@ -1582,18 +1582,25 @@
         });
     };
 
+    const PLUGIN_CODE = 'fullscreen';
     var Plugin = () => {
-        global$3.add('fullscreen', (editor) => {
+        global$3.add(PLUGIN_CODE, (editor) => {
             const fullscreenState = Cell(null);
             if (editor.inline) {
-                return get$4(fullscreenState);
+                return {
+                    ...get$4(fullscreenState),
+                    getMetadata: () => ({ name: 'Full Screen', type: 'opensource', slug: PLUGIN_CODE })
+                };
             }
             register$2(editor);
             register$1(editor, fullscreenState);
             register(editor, fullscreenState);
             setup(editor, fullscreenState);
             editor.addShortcut('Meta+Shift+F', '', 'mceFullScreen');
-            return get$4(fullscreenState);
+            return {
+                ...get$4(fullscreenState),
+                getMetadata: () => ({ name: 'Full Screen', type: 'opensource', slug: PLUGIN_CODE })
+            };
         });
     };
 
