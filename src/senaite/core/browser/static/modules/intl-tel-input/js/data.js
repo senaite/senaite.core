@@ -1,19 +1,10 @@
 /*
- * International Telephone Input v26.8.1
- * https://github.com/jackocnr/intl-tel-input.git
+ * International Telephone Input v29.4.0
+ * git+https://github.com/jackocnr/intl-tel-input.git
  * Licensed under the MIT license
  */
-
-// UMD
-(function(factory) {
-  if (typeof module === 'object' && module.exports) {
-    module.exports = factory();
-  } else {
-    window.allCountries = factory();
-  }
-}(() => {
-
-var factoryOutput = (() => {
+"use strict";
+var _factory = (() => {
   var __defProp = Object.defineProperty;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
   var __getOwnPropNames = Object.getOwnPropertyNames;
@@ -32,10 +23,12 @@ var factoryOutput = (() => {
   };
   var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-  // src/js/intl-tel-input/data.ts
+  // packages/core/src/js/data.ts
   var data_exports = {};
   __export(data_exports, {
     default: () => data_default,
+    isIso2: () => isIso2,
+    iso2Set: () => iso2Set,
     rawCountryData: () => rawCountryData
   });
   var rawCountryData = [
@@ -49,11 +42,12 @@ var factoryOutput = (() => {
     ],
     [
       "ax",
-      // Åland Islands
+      // Åland Islands (AKA Aland Islands)
       "358",
       1,
-      ["18", "4"],
-      // (4 is a mobile range shared with FI)
+      ["18", "4", "50"],
+      // (4 and 50 are mobile ranges shared with FI)
+      // NOTE: https://en.wikipedia.org/wiki/Telephone%20numbers%20in%20%C3%85land says some 4XXX ranges (e.g. 4570) are specific to AX, but LPN doesn't respect this (https://libphonenumber.appspot.com/phonenumberparser?number=%2B3584570123456 says region=FI) so we won't either. Also it's too much of a maintenance burden to keep track of. Keep the 4 area code range here so that if the user selects AX and types this kind of number, we wont change the flag to FI. Whereas if they type a FI-only range then we will.
       "0"
     ],
     [
@@ -308,7 +302,63 @@ var factoryOutput = (() => {
       // Canada
       "1",
       1,
-      ["204", "226", "236", "249", "250", "257", "263", "289", "306", "343", "354", "365", "367", "368", "382", "403", "416", "418", "428", "431", "437", "438", "450", "468", "474", "506", "514", "519", "548", "579", "581", "584", "587", "604", "613", "639", "647", "672", "683", "705", "709", "742", "753", "778", "780", "782", "807", "819", "825", "867", "873", "879", "902", "905", "942"],
+      [
+        "204",
+        "226",
+        "236",
+        "249",
+        "250",
+        "257",
+        "263",
+        "289",
+        "306",
+        "343",
+        "354",
+        "365",
+        "367",
+        "368",
+        "382",
+        "403",
+        "416",
+        "418",
+        "428",
+        "431",
+        "437",
+        "438",
+        "450",
+        "468",
+        "474",
+        "506",
+        "514",
+        "519",
+        "548",
+        "579",
+        "581",
+        "584",
+        "587",
+        "604",
+        "613",
+        "639",
+        "647",
+        "672",
+        "683",
+        "705",
+        "709",
+        "742",
+        "753",
+        "778",
+        "780",
+        "782",
+        "807",
+        "819",
+        "825",
+        "867",
+        "873",
+        "879",
+        "902",
+        "905",
+        "942"
+      ],
       "1"
     ],
     [
@@ -543,8 +593,8 @@ var factoryOutput = (() => {
       // Finland
       "358",
       0,
-      ["4"],
-      // (mobile range shared with AX)
+      ["4", "50"],
+      // (mobile ranges shared with AX)
       "0"
     ],
     [
@@ -651,7 +701,8 @@ var factoryOutput = (() => {
       // Guernsey
       "44",
       1,
-      ["1481", "7781", "7839", "7911"],
+      //* Only 79111 and 79117 belong to GG - the rest of 7911 is GB (e.g. 79110).
+      ["1481", "7781", "7839", "79111", "79117"],
       "0"
     ],
     [
@@ -782,7 +833,8 @@ var factoryOutput = (() => {
       // Jersey
       "44",
       3,
-      ["1534", "7509", "7700", "7797", "7829", "7937"],
+      //* Only 77003/77007/77008 belong to JE - the rest of 7700 is GB (e.g. 77001).
+      ["1534", "7509", "77003", "77007", "77008", "7797", "7829", "7937"],
       "0"
     ],
     [
@@ -977,7 +1029,7 @@ var factoryOutput = (() => {
       // Mayotte
       "262",
       1,
-      ["269", "639"],
+      ["2689", "269", "639", "7093"],
       "0"
     ],
     [
@@ -1720,26 +1772,17 @@ var factoryOutput = (() => {
   for (const c of rawCountryData) {
     allCountries.push({
       name: "",
-      // populated in the plugin
+      // populated in the core library
       iso2: c[0],
       dialCode: c[1],
       priority: c[2] || 0,
       areaCodes: c[3] || null,
-      nodeById: {},
-      // populated by the plugin
-      nationalPrefix: c[4] || null,
-      normalisedName: "",
-      // populated in the plugin
-      initials: "",
-      // populated in the plugin
-      dialCodePlus: ""
-      // populated in the plugin
+      nationalPrefix: c[4] || null
     });
   }
+  var iso2Set = new Set(allCountries.map((c) => c.iso2));
+  var isIso2 = (val) => iso2Set.has(val);
   var data_default = allCountries;
   return __toCommonJS(data_exports);
 })();
-
-// UMD
-  return factoryOutput.default;
-}));
+var allCountries = _factory.default;
