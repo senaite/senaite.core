@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3022 Build the JavaScript bundles in CI
 - #3020 Use UnorderedOrdering for Instruments to avoid ZODB conflicts
 - #3019 Fix traceback in the user profile after visiting the add user form
 - #3017 Stop the datetime API doctest from leaking the process timezone
