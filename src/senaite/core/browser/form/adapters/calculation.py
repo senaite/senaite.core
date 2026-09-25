@@ -117,10 +117,13 @@ class EditForm(EditFormAdapterBase):
         formula = data.get("form").get(FIELD_FORMULA, "")
         formula_kws = self.get_formula_keywords(data)
         old_params = self.get_test_parameters(data)
+        interim_values = self.get_interim_values(data)
         new_params = {}
         for index, kw in enumerate(formula_kws):
             param_name = kw
-            param_value = old_params.get(kw) or ""
+            param_value = old_params.get(kw, interim_values.get(kw, ""))
+            if param_value is None:
+                param_value = ""
             new_params.update({param_name: param_value})
             self.add_update_field(FIELD_TEST_KEYWORD.format(index), param_name)
             self.add_update_field(FIELD_TEST_VALUE.format(index), param_value)
@@ -131,6 +134,16 @@ class EditForm(EditFormAdapterBase):
         self.add_update_field(FIELD_TEST_RESULT, result)
 
         return self.data
+
+    def get_interim_values(self, data):
+        form = data.get("form", {})
+        values = {}
+        for name, keyword in form.items():
+            match = INTERIM_KEYWORD_RX.search(name)
+            if match and keyword:
+                values[keyword] = form.get(
+                    FIELD_INTERIM_VALUE.format(match.group(1)), "")
+        return values
 
     def get_test_parameters(self, data):
         form = data.get("form")
