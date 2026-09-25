@@ -124,6 +124,7 @@
   <adapter name="sampletype_uid" factory=".sampletemplate.sampletype_uid"/>
 
   <!-- SamplePoint Indexer -->
+  <adapter name="sampletype_title" factory=".samplepoint.sampletype_title"/>
   <adapter name="sampletype_uid" factory=".samplepoint.sampletype_uid"/>
 
   <!-- SampleType Indexer -->

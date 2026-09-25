@@ -24,6 +24,14 @@ from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import login
 from plone.app.testing import setRoles
+from senaite.core.browser.form.adapters.calculation import EditForm
+from senaite.core.browser.form.adapters.calculation import FIELD_FORMULA
+from senaite.core.browser.form.adapters.calculation import FIELD_TEST_KEYWORD
+from senaite.core.browser.form.adapters.calculation import FIELD_TEST_RESULT
+from senaite.core.browser.form.adapters.calculation import FIELD_TEST_VALUE
+from senaite.core.content.calculation import Calculation
+from senaite.core.content.calculation import ICalculationSchema
+from senaite.core.content.calculation import calculate_formula
 from senaite.core.tests.base import DataTestCase
 from zope.lifecycleevent import modified
 
@@ -639,7 +647,113 @@ class TestCalculations(DataTestCase):
                     r['expected_result'])
 
 
+class TestCalculationFormula(unittest.TestCase):
+
+    formula = "([PSD180Mass] / [PSDTotalmass]) * 100"
+    parameters = {"PSD180Mass": "10", "PSDTotalmass": "20"}
+
+    def test_empty_formula(self):
+        for formula in ("", " \t\n", None):
+            self.assertEqual(calculate_formula(formula), "")
+
+    def test_integer_parameters_preserve_fraction(self):
+        self.assertEqual(
+            calculate_formula(self.formula, self.parameters), 50.0)
+
+    def test_incomplete_test_values(self):
+        for value in ("", " \t", None):
+            self.assertEqual(calculate_formula(
+                self.formula, {"PSD180Mass": value, "PSDTotalmass": "20"}),
+                "Enter values for all test parameters.")
+
+    def test_missing_test_parameter(self):
+        self.assertEqual(calculate_formula(
+            self.formula, {"PSDTotalmass": "20"}),
+            "Enter values for all test parameters.")
+
+    def test_zero_test_value(self):
+        self.assertEqual(calculate_formula(
+            self.formula, {"PSD180Mass": "0", "PSDTotalmass": "20"}), 0.0)
+
+    def test_unused_blank_parameter(self):
+        self.assertEqual(calculate_formula("10 / 20 * 100", {"unused": ""}), 50.0)
+
+    def test_new_parameters_use_interim_defaults(self):
+        form = {FIELD_FORMULA: self.formula}
+        for index, (keyword, value) in enumerate(self.parameters.items()):
+            prefix = "form.widgets.interim_fields.{}.widgets.".format(index)
+            form[prefix + "keyword"] = keyword
+            form[prefix + "value"] = value
+        data = EditForm(None, None).update_test_parameters({"form": form})
+        updates = {item["name"]: item["value"] for item in data["updates"]}
+        self.assertEqual(updates[FIELD_TEST_VALUE.format(0)], "10")
+        self.assertEqual(updates[FIELD_TEST_VALUE.format(1)], "20")
+        self.assertEqual(updates[FIELD_TEST_RESULT], 50.0)
+
+    def test_existing_test_value_overrides_interim_default(self):
+        form = {
+            FIELD_FORMULA: "[Mass] * 2",
+            "form.widgets.interim_fields.0.widgets.keyword": "Mass",
+            "form.widgets.interim_fields.0.widgets.value": "10",
+            FIELD_TEST_KEYWORD.format(0): "Mass",
+            FIELD_TEST_VALUE.format(0): "15",
+        }
+        data = EditForm(None, None).update_test_parameters({"form": form})
+        updates = {item["name"]: item["value"] for item in data["updates"]}
+        self.assertEqual(updates[FIELD_TEST_VALUE.format(0)], "15")
+        self.assertEqual(updates[FIELD_TEST_RESULT], 30)
+
+    def test_constant_division_preserves_fraction(self):
+        self.assertEqual(calculate_formula("10 / 20 * 100"), 50.0)
+
+    def test_explicit_floor_division(self):
+        self.assertEqual(calculate_formula("10 // 20 * 100"), 0)
+
+    def test_invalid_formula(self):
+        self.assertTrue(calculate_formula("10 /").startswith("Syntax Error:"))
+
+    def test_division_by_zero(self):
+        self.assertTrue(calculate_formula("10 / 0").startswith("Division by 0:"))
+
+    def test_live_preview(self):
+        form = {FIELD_FORMULA: self.formula}
+        for index, (keyword, value) in enumerate(self.parameters.items()):
+            form[FIELD_TEST_KEYWORD.format(index)] = keyword
+            form[FIELD_TEST_VALUE.format(index)] = value
+        data = EditForm(None, None).update_test_parameters({"form": form})
+        results = [item["value"] for item in data["updates"]
+                   if item["name"] == FIELD_TEST_RESULT]
+        self.assertEqual(results, [50.0])
+
+    def test_empty_preview(self):
+        data = EditForm(None, None).update_test_parameters(
+            {"form": {FIELD_FORMULA: ""}})
+        results = [item["value"] for item in data["updates"]
+                   if item["name"] == FIELD_TEST_RESULT]
+        self.assertEqual(results, [""])
+
+    def test_stored_test_result(self):
+        class TestCalculation(Calculation):
+            # Resolve fields without requiring a portal_types tool.
+            def accessor(self, name):
+                return ICalculationSchema[name].get
+
+            def mutator(self, name):
+                return ICalculationSchema[name].set
+
+        calculation = TestCalculation("test-calculation")
+        calculation.formula = self.formula
+        calculation.test_parameters = [
+            {"keyword": keyword, "value": value}
+            for keyword, value in self.parameters.items()]
+        calculation.imports = []
+        calculation.setTestResult("")
+        self.assertEqual(calculation.getTestResult(), "50.0")
+
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestCalculations))
+    suite.addTest(unittest.makeSuite(TestCalculationFormula))
     return suite
