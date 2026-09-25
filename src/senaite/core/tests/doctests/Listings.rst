@@ -196,3 +196,38 @@ points assigned to more than one type:
     >>> set(brain.UID for brain in catalog(query)) == set(map(api.get_uid, [sp1, sp2]))
     True
     >>> del request.form[filter_key]
+
+Sorting by Sample Types must keep unassigned points and order assigned points
+by their type titles in both directions:
+
+    >>> sp1.setSampleTypes([api.get_uid(st1)])
+    >>> sp3.setSampleTypes([])
+    >>> sp1.reindexObject()
+    >>> sp3.reindexObject()
+    >>> point_uids = map(api.get_uid, [sp1, sp2, sp3])
+    >>> points_view.contentFilter["UID"] = point_uids
+    >>> sort_key = "{}_sort_on".format(points_view.get_form_id())
+    >>> order_key = "{}_sort_order".format(points_view.get_form_id())
+    >>> request.form[sort_key] = points_view.columns["SampleTypes"]["index"]
+    >>> request.form[order_key] = "ascending"
+    >>> query = points_view.get_catalog_query()
+    >>> query["sort_on"]
+    'sampletype_title'
+    >>> [brain.UID for brain in catalog(query)] == map(api.get_uid, [sp3, sp2, sp1])
+    True
+    >>> request.form[order_key] = "descending"
+    >>> query = points_view.get_catalog_query()
+    >>> [brain.UID for brain in catalog(query)] == map(api.get_uid, [sp1, sp2, sp3])
+    True
+
+Points assigned to multiple types must also remain visible exactly once:
+
+    >>> sp1.setSampleTypes([api.get_uid(st1), api.get_uid(st2)])
+    >>> sp1.reindexObject()
+    >>> sorted(brain.UID for brain in catalog(points_view.get_catalog_query())) == sorted(point_uids)
+    True
+    >>> request.form[order_key] = "ascending"
+    >>> sorted(brain.UID for brain in catalog(points_view.get_catalog_query())) == sorted(point_uids)
+    True
+    >>> del request.form[sort_key]
+    >>> del request.form[order_key]
