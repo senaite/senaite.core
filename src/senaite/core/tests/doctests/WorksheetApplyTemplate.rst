@@ -874,3 +874,94 @@ Reject any remaining analyses awaiting for assignment:
     >>> query = {"portal_type": "Analysis", "review_state": "unassigned"}
     >>> objs = map(api.get_object, api.search(query, "senaite_catalog_analysis"))
     >>> success = map(lambda obj: doActionFor(obj, "reject"), objs)
+
+
+Worksheet metadata after applying a Worksheet Template
+......................................................
+
+The worksheet is reindexed once the whole template is applied, so the values the
+listings rely on are up-to-date. Create a template with two slots for routine
+analyses of `Cu`:
+
+    >>> from senaite.core.catalog import WORKSHEET_CATALOG
+
+    >>> layout = [
+    ...     {'pos': '1', 'type': 'a',
+    ...      'blank_ref': '', 'control_ref': '', 'dup': ''},
+    ...     {'pos': '2', 'type': 'a',
+    ...      'blank_ref': '', 'control_ref': '', 'dup': ''},
+    ... ]
+    >>> metadata_template = api.create(setup.worksheettemplates,
+    ...                               "WorksheetTemplate",
+    ...                               title="WS Template Metadata",
+    ...                               Layout=layout, Services=[Cu.UID()])
+
+Create two samples to fill the slots with and apply the template:
+
+    >>> samples = map(lambda i: create_analysisrequest(
+    ...     client, request, values, [Cu]), range(2))
+    >>> success = map(lambda s: doActionFor(s, "receive"), samples)
+
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+    >>> worksheet.applyWorksheetTemplate(metadata_template)
+
+    >>> def get_brain(worksheet):
+    ...     query = dict(UID=api.get_uid(worksheet))
+    ...     return api.search(query, WORKSHEET_CATALOG)[0]
+
+The record of the worksheet knows about the template assigned, as well as about
+the analyses and samples it contains:
+
+    >>> brain = get_brain(worksheet)
+    >>> brain.getWorksheetTemplateTitle == metadata_template.Title()
+    True
+
+    >>> brain.getNumberOfRegularAnalyses
+    2
+
+    >>> brain.getNumberOfRegularSamples
+    2
+
+    >>> brain.getNumberOfQCAnalyses
+    0
+
+    >>> sorted(brain.getAnalysesUIDs) == sorted(worksheet.getRawAnalyses())
+    True
+
+The same applies when the analyses are added in bulk, without a template:
+
+    >>> sample = create_analysisrequest(client, request, values, [Cu, Fe])
+    >>> success = doActionFor(sample, "receive")
+
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+    >>> worksheet.addAnalyses(sample.getAnalyses(full_objects=True))
+
+    >>> brain = get_brain(worksheet)
+    >>> brain.getNumberOfRegularAnalyses
+    2
+
+    >>> brain.getNumberOfRegularSamples
+    1
+
+    >>> sorted(brain.getAnalysesUIDs) == sorted(worksheet.getRawAnalyses())
+    True
+
+Adding duplicate or reference analyses in bulk reindexes the worksheet once they
+are added too, so the metadata of the record the listings rely on is up-to-date
+without reindexing on every single analysis created:
+
+    >>> dups = worksheet.addDuplicateAnalyses(1)
+    >>> brain = get_brain(worksheet)
+    >>> brain.getNumberOfQCAnalyses == worksheet.getNumberOfQCAnalyses() == len(dups) > 0
+    True
+
+    >>> sorted(brain.getAnalysesUIDs) == sorted(worksheet.getRawAnalyses())
+    True
+
+    >>> refs = worksheet.addReferenceAnalyses(control, [Cu.UID()])
+    >>> brain = get_brain(worksheet)
+    >>> brain.getNumberOfQCAnalyses == worksheet.getNumberOfQCAnalyses() == len(dups) + len(refs)
+    True
+
+    >>> sorted(brain.getAnalysesUIDs) == sorted(worksheet.getRawAnalyses())
+    True
