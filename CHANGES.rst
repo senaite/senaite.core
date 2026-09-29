@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3029 Let the worksheet pick the slot for reference analyses
 - #3028 Offer every valid reference sample when adding one to a worksheet
 - #3022 Build the JavaScript bundles in CI
 - #3020 Use UnorderedOrdering for Instruments to avoid ZODB conflicts
