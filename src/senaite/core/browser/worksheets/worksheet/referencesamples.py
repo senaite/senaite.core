@@ -88,13 +88,6 @@ class ReferenceSamplesView(ListingView):
                 "type": "multichoice",
                 "sortable": False,
             }),
-            ("Position", {
-                "title": _(
-                    u"listing_reference_samples_column_position",
-                    default=u"Position"
-                ),
-                "sortable": False,
-            }),
         ))
 
         self.review_states = [
@@ -136,14 +129,9 @@ class ReferenceSamplesView(ListingView):
         form = self.request.form
         # Selected reference/blank sample UIDs
         uids = form.get("uids")
-        # service -> position mapping
-        positions = form.get("Position")[0]
         skipped = []
         for uid in uids:
             referencesample = api.get_object_by_uid(uid)
-            position = positions.get(uid)
-            if position == "new":
-                position = None
             # get selected services of the reference sample
             key = "{}.{}".format("SupportedServices", uid)
             selected_services = form.get(key)
@@ -154,8 +142,10 @@ class ReferenceSamplesView(ListingView):
                 # something had happened.
                 skipped.append(api.get_title(referencesample))
                 continue
+            # No slot is passed in on purpose. Only the worksheet knows
+            # about the layout of its template, so it picks the slot.
             self.context.addReferenceAnalyses(
-                referencesample, selected_services, slot=position)
+                referencesample, selected_services)
 
         if skipped:
             self.add_status_message(_(
@@ -180,7 +170,7 @@ class ReferenceSamplesView(ListingView):
     def get_editable_columns(self):
         """Return editable fields
         """
-        columns = ["Position", "SupportedServices"]
+        columns = ["SupportedServices"]
         return columns
 
     @view.memoize
@@ -246,32 +236,6 @@ class ReferenceSamplesView(ListingView):
             })
         return sorted(choices, key=lambda d: d["ResultText"])
 
-    @view.memoize
-    def make_position_choices(self):
-        """Create choices for available positions
-        """
-        choices = []
-        for pos in self.get_available_positions():
-            choices.append({
-                "ResultValue": pos,
-                "ResultText": pos,
-            })
-        return choices
-
-    @view.memoize
-    def get_available_positions(self):
-        """Return a list of empty slot numbers
-        """
-        available_positions = ["new"]
-        layout = self.context.getLayoutView()
-        used_positions = [int(slot["position"]) for slot in layout]
-        if used_positions:
-            used = [
-                pos for pos in range(1, max(used_positions) + 1) if
-                pos not in used_positions]
-            available_positions.extend(used)
-        return available_positions
-
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
 
@@ -298,10 +262,6 @@ class ReferenceSamplesView(ListingView):
         item["choices"]["SupportedServices"] = supported_services_choices
         item["SupportedServices"] = \
             self.get_selected_values(supported_services_choices)
-
-        # Position
-        item["Position"] = "new"
-        item["choices"]["Position"] = self.make_position_choices()
 
         return item
 
