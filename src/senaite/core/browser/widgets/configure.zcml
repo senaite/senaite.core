@@ -29,6 +29,15 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Listing widget for Analysis Specifications -->
+  <browser:page
+      for="*"
+      name="analysisspec_services_widget"
+      class=".analysisspec_services_widget.AnalysisSpecServicesWidget"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <browser:page
       for="*"
       name="referencewidget_search"

@@ -18,24 +18,21 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IAnalysisSpecs
-from plone.app.folder.folder import ATFolder
-from plone.app.folder.folder import ATFolderSchema
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
+from bika.lims.interfaces import IDoNotSupportSnapshots
+from plone.dexterity.content import Container
+from plone.supermodel import model
+from senaite.core.interfaces import IAnalysisSpecs
 from senaite.core.interfaces import IHideActionsMenu
-from zope.interface.declarations import implements
+from zope.interface import implementer
 
 
-schema = ATFolderSchema.copy()
-
-# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/#2877
-class AnalysisSpecs(ATFolder):
-    implements(IAnalysisSpecs, IHideActionsMenu)
-    displayContentsTab = False
-    schema = schema
+class IAnalysisSpecsSchema(model.Schema):
+    """Schema interface
+    """
 
 
-schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
-atapi.registerType(AnalysisSpecs, PROJECTNAME)
+@implementer(IAnalysisSpecs, IAnalysisSpecsSchema,
+             IDoNotSupportSnapshots, IHideActionsMenu)
+class AnalysisSpecs(Container):
+    """A container for analysis specifications
+    """
