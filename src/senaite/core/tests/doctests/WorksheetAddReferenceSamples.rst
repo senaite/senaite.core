@@ -125,8 +125,20 @@ The worksheet runs copper, so copper is preselected:
     >>> get_preselected("add_control", control_cu)
     ['Copper']
 
-A sample for a service the worksheet does not run comes with nothing
-preselected. It is offered, but the choice is left to the user:
+A sample that supports more than the worksheet runs is narrowed down to
+the services it has in common with it:
+
+    >>> control_both = new_reference("Control Both", Cu, False)
+    >>> results = [{"uid": api.get_uid(s), "result": "1",
+    ...             "min": "0.9", "max": "1.1"} for s in [Cu, Fe]]
+    >>> control_both.setReferenceResults(results)
+    >>> control_both.reindexObject()
+    >>> get_preselected("add_control", control_both)
+    ['Copper']
+
+A sample that shares no service with the worksheet has nothing to narrow
+the selection down with, so nothing is preselected and the services have
+to be picked by hand:
 
     >>> get_preselected("add_control", control_fe)
     []
@@ -219,4 +231,4 @@ impossible through the UI:
     []
 
     >>> get_listed("add_control", ws3)
-    ['Control Cu', 'Control Fe']
+    ['Control Both', 'Control Cu', 'Control Fe']
