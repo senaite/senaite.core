@@ -5,6 +5,12 @@ Changelog
 ------------------
 
 - #3004 Speed up the creation of worksheets with a worksheet template
+- #3022 Build the JavaScript bundles in CI
+- #3020 Use UnorderedOrdering for Instruments to avoid ZODB conflicts
+- #3021 Update JavaScript dependencies
+- #3019 Fix traceback in the user profile after visiting the add user form
+- #3017 Stop the datetime API doctest from leaking the process timezone
+- #3016 Localize the dashboard date to the active language
 - #3015 Fix analyses with empty multi-valued results can be submitted
 - #3014 Fix AT to DX upgrade failing with undefined property 'add_permission'
 - #3001 Skip read-only fields when validating objects on create/update

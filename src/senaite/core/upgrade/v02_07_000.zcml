@@ -3,15 +3,28 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Drop ordering annotations from Instruments"
+      description="Remove the plone.folder.ordered.order PersistentList and
+                   plone.folder.ordered.pos OIBTree annotations from every
+                   Instrument. Instruments now use UnorderedOrdering as their
+                   IOrdering adapter, so these annotations are no longer
+                   maintained and become a stale ZODB conflict spot if left
+                   in place."
+      source="2757"
+      destination="2758"
+      handler=".v02_07_000.drop_instrument_ordering_annotations"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Migrate Method content type to Dexterity"
       description="Convert the Archetypes Method content type to Dexterity and
                    move the methods folder from the portal root into the setup
                    folder."
       source="2756"
-      destination="2757"                            
-      handler=".v02_07_000.migrate_methods_to_dx"                            
+      destination="2757"
+      handler=".v02_07_000.migrate_methods_to_dx"
       profile="senaite.core:default"/>
-  
+
   <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Migrate AuditLog to Dexterity"
       description="Remove the legacy Archetypes AuditLog folder from

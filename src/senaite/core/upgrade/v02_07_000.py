@@ -309,21 +309,25 @@ def migrate_auditlog_to_dx(tool):
     logger.info("Convert AuditLog to Dexterity [DONE]")
 
 
-def drop_client_ordering_annotations(tool):
-    """Remove the legacy IOrdering annotations from every Client.
+ORDERING_ORDER_KEY = "plone.folder.ordered.order"
+ORDERING_POS_KEY = "plone.folder.ordered.pos"
 
-    Clients now use `plone.folder.unordered.UnorderedOrdering` as
-    their `IOrdering` adapter, so the previous default-ordering
-    annotations are no longer maintained:
+
+def drop_ordering_annotations(portal_type, catalog, label):
+    """Remove the legacy IOrdering annotations from every object of the
+    given portal type.
+
+    Types switched to `plone.folder.unordered.UnorderedOrdering` no
+    longer maintain the default-ordering annotations:
 
       - `plone.folder.ordered.order` — a `PersistentList` of every
         child id, mutated on every `_setObject` via
-        `DefaultOrdering.notifyAdded`. On a Client with thousands of
-        children this list grows to many tens of thousands of entries
-        and, because `PersistentList` has no `_p_resolveConflict()`,
-        every concurrent registration on the same Client collided on
-        it and the conflict propagated all the way to the
-        publisher's retry loop.
+        `DefaultOrdering.notifyAdded`. On a container with thousands
+        of children this list grows to many tens of thousands of
+        entries and, because `PersistentList` has no
+        `_p_resolveConflict()`, every concurrent add collided on it
+        and the conflict propagated all the way to the publisher's
+        retry loop.
 
       - `plone.folder.ordered.pos` — companion `OIBTree` mapping
         child id -> position. No longer read by anything once the
@@ -334,36 +338,56 @@ def drop_client_ordering_annotations(tool):
     the ZODB cache. The adapter override is what stops new writes
     from touching them; this step is hygiene.
     """
-    ORDER_KEY = "plone.folder.ordered.order"
-    POS_KEY = "plone.folder.ordered.pos"
-
-    query = {"portal_type": "Client"}
-    brains = api.search(query, CLIENT_CATALOG)
+    brains = api.search({"portal_type": portal_type}, catalog)
     total = len(brains)
     logger.info(
-        "Dropping IOrdering annotations from {} clients".format(total))
+        "Dropping IOrdering annotations from {} {}".format(total, label))
 
     cleaned = 0
     for num, brain in enumerate(brains, start=1):
-        client = api.get_object(brain)
-        ann = IAnnotations(client)
-        had_order = ORDER_KEY in ann
-        had_pos = POS_KEY in ann
+        obj = api.get_object(brain)
+        ann = IAnnotations(obj)
+        had_order = ORDERING_ORDER_KEY in ann
+        had_pos = ORDERING_POS_KEY in ann
         if not (had_order or had_pos):
             continue
-        ann.pop(ORDER_KEY, None)
-        ann.pop(POS_KEY, None)
-        client._p_changed = True
+        ann.pop(ORDERING_ORDER_KEY, None)
+        ann.pop(ORDERING_POS_KEY, None)
+        obj._p_changed = True
         cleaned += 1
         if num % 100 == 0:
             logger.info(
-                "  ... processed {}/{} clients ({} cleaned)".format(
-                    num, total, cleaned))
+                "  ... processed {}/{} {} ({} cleaned)".format(
+                    num, total, label, cleaned))
             transaction.savepoint()
 
     logger.info(
-        "Dropped IOrdering annotations from {}/{} clients".format(
-            cleaned, total))
+        "Dropped IOrdering annotations from {}/{} {}".format(
+            cleaned, total, label))
+
+
+def drop_client_ordering_annotations(tool):
+    """Remove the legacy IOrdering annotations from every Client.
+
+    See `drop_ordering_annotations` for the rationale. Clients were
+    switched to `UnorderedOrdering` earlier in 2.7.0.
+    """
+    drop_ordering_annotations("Client", CLIENT_CATALOG, "clients")
+
+
+def drop_instrument_ordering_annotations(tool):
+    """Remove the legacy IOrdering annotations from every Instrument.
+
+    Instruments hold one `AutoImportLog` per results import: both
+    `senaite.core.astm.importer` and
+    `senaite.core.exportimport.auto_import_results` create them
+    inside the instrument. On a deployment with an active ASTM or
+    auto-import feed the ordering annotation therefore grows without
+    bound and is appended to on every single import.
+
+    See `drop_ordering_annotations` for the rationale.
+    """
+    drop_ordering_annotations("Instrument", SETUP_CATALOG, "instruments")
 
 
 @upgradestep(product, version)

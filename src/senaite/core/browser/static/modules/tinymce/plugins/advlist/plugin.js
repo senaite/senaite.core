@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.3.2 (2026-01-14)
+ * TinyMCE version 8.9.1 (2026-09-09)
  */
 
 (function () {
@@ -449,8 +449,9 @@
         addControl(editor, 'bullist', 'Bullet list', 'InsertUnorderedList', "UL" /* ListType.UnorderedList */, getBulletStyles(editor));
     };
 
+    const PLUGIN_CODE = 'advlist';
     var Plugin = () => {
-        global$1.add('advlist', (editor) => {
+        global$1.add(PLUGIN_CODE, (editor) => {
             if (editor.hasPlugin('lists')) {
                 register$1(editor);
                 register(editor);
@@ -460,6 +461,9 @@
                 // eslint-disable-next-line no-console
                 console.error('Please use the Lists plugin together with the List Styles plugin.');
             }
+            return {
+                getMetadata: () => ({ name: 'List Styles', type: 'opensource', slug: PLUGIN_CODE })
+            };
         });
     };
 
