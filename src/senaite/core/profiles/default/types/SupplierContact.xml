@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object name="Supplier" meta_type="Dexterity FTI"
+<object name="SupplierContact" meta_type="Dexterity FTI"
         i18n:domain="senaite.core"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 
   <!-- Title and Description -->
-  <property name="title" i18n:translate="">Supplier</property>
+  <property name="title" i18n:translate="">Contact</property>
   <property name="description" i18n:translate=""/>
 
   <!-- content-type icon -->
-  <property name="icon_expr">senaite_theme/icon/supplier</property>
+  <property name="icon_expr">senaite_theme/icon/supplier_contact</property>
 
   <!-- factory name; usually the same as type name -->
-  <property name="factory">Supplier</property>
+  <property name="factory">SupplierContact</property>
 
   <!-- URL TALES expression to add an item TTW -->
-  <property name="add_view_expr">string:${folder_url}/++add++Supplier</property>
+  <property name="add_view_expr">string:${folder_url}/++add++SupplierContact</property>
 
   <property name="link_target"/>
   <property name="immediate_view">view</property>
@@ -26,9 +26,6 @@
   <property name="filter_content_types">True</property>
   <!-- If filtering, what's allowed -->
   <property name="allowed_content_types">
-    <element value="SupplierContact"/>
-    <!-- AT based contents -->
-    <element value="ReferenceSample"/>
   </property>
 
   <property name="allow_discussion">False</property>
@@ -45,8 +42,8 @@
   <property name="add_permission">cmf.AddPortalContent</property>
 
   <!-- Python class for content items of this sort -->
-  <property name="schema">senaite.core.content.supplier.ISupplierSchema</property>
-  <property name="klass">senaite.core.content.supplier.Supplier</property>
+  <property name="schema">senaite.core.content.person.IPersonSchema</property>
+  <property name="klass">senaite.core.content.suppliercontact.SupplierContact</property>
 
   <!-- Dexterity behaviours for this type -->
   <property name="behaviors">
@@ -84,35 +81,6 @@
           link_target=""
           url_expr="string:${object_url}/edit" visible="True">
     <permission value="Modify portal content"/>
-  </action>
-
-  <action action_id="reference_samples"
-          title="Reference Samples"
-          category="object"
-          condition_expr=""
-          url_expr="string:${object_url}/reference_samples"
-          i18n:attributes="title"
-          i18n:domain="senaite.core"
-          visible="True">
-    <permission value="View"/>
-  </action>
-
-  <action action_id="contacts"
-          title="Contacts"
-          category="object"
-          url_expr="string:${object_url}/contacts"
-          i18n:attributes="title"
-          visible="True">
-    <permission value="View"/>
-  </action>
-
-  <action action_id="instruments"
-          title="Instruments"
-          category="object"
-          url_expr="string:${object_url}/instruments"
-          i18n:attributes="title"
-          visible="True">
-    <permission value="View"/>
   </action>
 
 </object>
