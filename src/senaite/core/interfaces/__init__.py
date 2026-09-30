@@ -222,6 +222,11 @@ class IContacts(Interface):
     """
 
 
+class ISupplierContact(Interface):
+    """Marker interface for a single Supplier Contact
+    """
+
+
 class IHaveAnalysisCategory(Interface):
     """Marker interface for objects that have AnalysisCategory(ies) assigned
     """
