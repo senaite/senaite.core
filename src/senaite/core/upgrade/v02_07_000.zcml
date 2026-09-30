@@ -3,6 +3,16 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate SupplierContact to Dexterity"
+      description="Convert the Archetypes SupplierContact content type to
+                   Dexterity. The contacts stay inside their Supplier, that is
+                   Dexterity already, so nothing is moved."
+      source="2758"
+      destination="2759"
+      handler=".v02_07_000.migrate_suppliercontacts_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Drop ordering annotations from Instruments"
       description="Remove the plone.folder.ordered.order PersistentList and
                    plone.folder.ordered.pos OIBTree annotations from every
