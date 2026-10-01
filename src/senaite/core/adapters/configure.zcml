@@ -52,6 +52,16 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
+  <!-- Publish the samples of the reports as soon as they are stored
+  Note this applies wide, cause the publish view of senaite.impress is
+  registered for samples, clients, batches and the samples folder, and the
+  handler does not depend on the context -->
+  <adapter
+    for="*
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".reportstored.PublishSamplesHandler"
+    provides="senaite.core.interfaces.IReportStoredHandler" />
+
   <!-- Dynamic calculation of local roles for a given context and principal -->
   <adapter factory=".localroles.DynamicLocalRoleAdapter" />
 
