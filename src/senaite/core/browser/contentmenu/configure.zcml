@@ -13,6 +13,15 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- JSON payload for the lazy React workflow menu -->
+  <browser:page
+      for="*"
+      name="workflow_menu_data"
+      class=".workflow_data.WorkflowMenuDataView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- A content provider showing the menu -->
 
   <adapter

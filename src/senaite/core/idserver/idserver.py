@@ -29,6 +29,7 @@ from bika.lims import logger
 from bika.lims.browser.fields.uidreferencefield import \
     get_backreferences as get_backuidreferences
 from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IAnalysisRequestDuplicate
 from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IAnalysisRequestRetest
 from bika.lims.interfaces import IAnalysisRequestSecondary
@@ -49,15 +50,38 @@ PORTAL_TYPE_SAMPLE = "AnalysisRequest"
 PORTAL_TYPE_SAMPLE_RETEST = "AnalysisRequestRetest"
 PORTAL_TYPE_SAMPLE_PARTITION = "AnalysisRequestPartition"
 PORTAL_TYPE_SAMPLE_SECONDARY = "AnalysisRequestSecondary"
+PORTAL_TYPE_SAMPLE_DUPLICATE = "AnalysisRequestDuplicate"
 
 SAMPLE_TYPES = [
     PORTAL_TYPE_SAMPLE,
-    PORTAL_TYPE_SAMPLE_RETEST,
+    PORTAL_TYPE_SAMPLE_DUPLICATE,
     PORTAL_TYPE_SAMPLE_PARTITION,
+    PORTAL_TYPE_SAMPLE_RETEST,
     PORTAL_TYPE_SAMPLE_SECONDARY,
 ]
 
+# Marker -> portal_type policy used by `get_type_id` to override
+# the real portal type of an AnalysisRequest based on a marker
+# interface. Each entry is a 3-tuple:
+#
+#     (marker, type_id, opt_in)
+#
+# When `opt_in` is True, the type_id is only honoured if a row
+# for it exists in the ID Server's `id_formatting`; otherwise
+# the lookup falls through to the next entry (and ultimately to
+# the real portal type). This lets duplicates share the regular
+# AnalysisRequest ID format by default while still allowing
+# integrators to opt into a dedicated template by adding a row
+# in the ID Server admin.
+SAMPLE_MARKER_TYPE_POLICY = (
+    (IAnalysisRequestPartition, PORTAL_TYPE_SAMPLE_PARTITION, False),
+    (IAnalysisRequestRetest, PORTAL_TYPE_SAMPLE_RETEST, False),
+    (IAnalysisRequestSecondary, PORTAL_TYPE_SAMPLE_SECONDARY, False),
+    (IAnalysisRequestDuplicate, PORTAL_TYPE_SAMPLE_DUPLICATE, True),
+)
+
 PARTITION_DETACHED_RELATIONSHIP = "AnalysisRequestDetachedFrom"
+DUPLICATED_FROM_RELATIONSHIP = "AnalysisRequestDuplicatedFrom"
 
 
 def get_objects_in_sequence(brain_or_object, ctype, cref):
@@ -102,15 +126,41 @@ def get_type_id(context, **kw):
         if type_id:
             return type_id
 
-    # Override by provided marker interface
-    if IAnalysisRequestPartition.providedBy(context):
-        return PORTAL_TYPE_SAMPLE_PARTITION
-    elif IAnalysisRequestRetest.providedBy(context):
-        return PORTAL_TYPE_SAMPLE_RETEST
-    elif IAnalysisRequestSecondary.providedBy(context):
-        return PORTAL_TYPE_SAMPLE_SECONDARY
+    # Override by provided marker interface using the policy table
+    type_id = resolve_marker_type_id(context)
+    if type_id:
+        return type_id
 
     return api.get_portal_type(context)
+
+
+def resolve_marker_type_id(context):
+    """Resolve the ID-server type id for `context` from
+    `SAMPLE_MARKER_TYPE_POLICY`. Returns the type_id of the first
+    matching marker, skipping opt-in entries that lack an
+    `id_formatting` row. Returns None when no marker matches.
+    """
+    for marker, type_id, opt_in in SAMPLE_MARKER_TYPE_POLICY:
+        if not marker.providedBy(context):
+            continue
+        if opt_in and not has_id_template_for(type_id):
+            continue
+        return type_id
+    return None
+
+
+def has_id_template_for(portal_type):
+    """Return True if `id_formatting` has a row matching the given
+    portal_type. Used to decide whether to honour a marker-based
+    type-id override (e.g. for `IAnalysisRequestDuplicate`) or to
+    fall back to the underlying portal type's template.
+    """
+    config_map = api.get_senaite_setup().getIDFormatting() or []
+    portal_type = (portal_type or "").lower()
+    for config in config_map:
+        if (config.get("portal_type") or "").lower() == portal_type:
+            return True
+    return False
 
 
 def get_suffix(id, regex="-[A-Z]{1}[0-9]{1,2}$"):
@@ -193,6 +243,31 @@ def get_secondary_count(context, default=0):
         return default
 
     return len(primary.getRawSecondaryAnalysisRequests())
+
+
+def get_duplicate_count(context, default=0):
+    """Returns the next ordinal for a sample created via the
+    'duplicate_sample' transition.
+
+    Counts existing duplicates of the same source via the
+    `AnalysisRequestDuplicatedFrom` backref. The UIDReference
+    field machinery is annotation-backed and synchronous, so by
+    the time `renameAfterCreation` runs the new duplicate has
+    already registered its backref against the source — it is
+    therefore included in the returned count without a +1
+    offset. If the relationship machinery ever moves to a
+    deferred index, this assumption needs revisiting.
+    """
+    if not is_ar(context):
+        return default
+
+    source = context.getDuplicatedFrom()
+    if not source:
+        return default
+
+    backrefs = get_backreferences(
+        source, relationship=DUPLICATED_FROM_RELATIONSHIP)
+    return len(backrefs)
 
 
 def is_ar(context):
@@ -305,6 +380,20 @@ def get_variables(context, **kw):
                 "parent_base_id": parent_base_id,
                 "secondary_count": secondary_count,
             })
+
+        # Duplicate
+        elif IAnalysisRequestDuplicate.providedBy(context):
+            source = context.getDuplicatedFrom()
+            if source is not None:
+                source_id = api.get_id(source)
+                parent_base_id = strip_suffix(source_id)
+                duplicate_count = get_duplicate_count(context)
+                variables.update({
+                    "parent_analysisrequest": source,
+                    "parent_ar_id": source_id,
+                    "parent_base_id": parent_base_id,
+                    "duplicate_count": duplicate_count,
+                })
 
     elif IResultsReport.providedBy(context):
         variables.update({

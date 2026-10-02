@@ -32,20 +32,29 @@ from zope.interface import implementer
 @adapter(Interface)
 @implementer(IPushConsumer)
 class PushConsumer(object):
-    """Adapter that handles push requests for name "enaite.core.lis2a.import"
+    """Adapter that handles push requests for name "senaite.core.lis2a.import"
     """
     def __init__(self, data):
         self.data = data
         self.request = api.get_request()
 
     def get_sender_name(self, json_data, default=""):
-        """Parse the sender name from the header record
+        """Parse the sender name from the header record.
+
+        The header record's `sender` field can be either a dict
+        (typical 2.x envelope, `{"name": ..., "serial": ...}`) or
+        a tuple/list of three values (older 1.x payloads emitted
+        `[name, serial, version]`). Both shapes are accepted.
         """
         header = json_data.get("H")
-        if not isinstance(header, list) and len(header) != 1:
+        if not isinstance(header, list) or len(header) != 1:
             return default
-        sender = header[0].get("sender", {})
-        return sender.get("name", default)
+        sender = header[0].get("sender")
+        if isinstance(sender, dict):
+            return sender.get("name", default) or default
+        if isinstance(sender, (list, tuple)) and sender:
+            return sender[0] or default
+        return default
 
     def process(self):
         """Processes the LIS2-A compliant message.
@@ -82,10 +91,13 @@ class PushConsumer(object):
             # import the data
             try:
                 result = importer.import_data()
-            except Exception as exc:
-                message = "An error occured in '{}.import_data()'".format(
-                    importer.__class__.__name__)
-                logger.error(exc)
+            except Exception:
+                # Log with traceback, but keep processing the rest of
+                # the batch — one malformed instrument message must
+                # not prevent the next one from being imported.
+                logger.exception(
+                    "Error in %s.import_data() while handling message: %r",
+                    importer.__class__.__name__, message)
                 continue
 
             if api.is_string(result):

@@ -5,6 +5,7 @@
 @import "plone.scss";
 @import "loader.scss";
 @import "listings.scss";
+@import "hazard_categories.scss";
 
 html, body  { height: 100%; }
 
@@ -27,6 +28,7 @@ h2, .h2 { font-size: 1.85rem; }
 .text-state-unassigned { color: $state-unassigned-color; }
 .text-state-retracted { color: $state-retracted-color; }
 .text-state-cancelled { color: $state-cancelled-color; }
+.text-state-locked { color: $state-locked-color; }
 
 /* Background Colors */
 .bg-state-active { background-color: $state-active-color !important; }
@@ -41,6 +43,7 @@ h2, .h2 { font-size: 1.85rem; }
 .bg-state-unassigned { background-color: $state-unassigned-color !important; }
 .bg-state-retracted { background-color: $state-retracted-color !important; }
 .bg-state-cancelled { background-color: $state-cancelled-color !important; }
+.bg-state-locked { background-color: $state-locked-color !important; }
 
 /* Cursors */
 .cursor-pointer { cursor: pointer; }
@@ -73,12 +76,6 @@ div.container-fluid {
   h1 {
     margin:0 10px 0;
   }
-}
-
-/* Remove bootstrap's default transition for buttons */
-.btn, .btn:hover {
-  /*text-decoration: none;
-  transition: none;*/
 }
 
 /* Notification Panel

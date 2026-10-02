@@ -192,7 +192,14 @@ window.SiteView = class SiteView {
     const edit_view = $el.data("edit-view") !== undefined
       ? String($el.data("edit-view"))
       : "edit";
-    this.open_iframe_edit_modal(url, title, edit_view);
+    // Collect hazard pictograms from the same row so they show up next
+    // to the title in the modal header. Sibling cell of the pencil
+    // contains the .hazard-pictogram-mini images.
+    const $pictos = $el.closest("td, th").find(".hazard-pictogram-mini");
+    const pictos_html = $pictos.map(function () {
+      return this.outerHTML;
+    }).get().join("");
+    this.open_iframe_edit_modal(url, title, edit_view, pictos_html);
   }
 
   isolate_content_area(doc) {
@@ -270,7 +277,7 @@ window.SiteView = class SiteView {
     }
   }
 
-  open_iframe_edit_modal(url, title, edit_view) {
+  open_iframe_edit_modal(url, title, edit_view, pictos_html) {
     // edit_view controls the load behaviour:
     //   "edit" (default) — auto-close when the URL no longer looks like
     //                      an edit form (save/cancel detected).
@@ -327,7 +334,13 @@ window.SiteView = class SiteView {
       $("body").append($modal);
     }
 
-    $modal.find(".modal-title").text(title);
+    // Set the title as text, then append hazard pictograms (if any) as
+    // HTML so the modal header mirrors what the listing row shows.
+    const $title = $modal.find(".modal-title");
+    $title.text(title);
+    if (pictos_html) {
+      $title.append(" ").append(pictos_html);
+    }
 
     const $iframe = $modal.find("iframe");
     $iframe.off("load").on("load", () => {

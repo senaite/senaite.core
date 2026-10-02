@@ -12,7 +12,9 @@ Needed Imports:
 
     >>> from bika.lims import api
     >>> from bika.lims.interfaces import IClient
+    >>> from plone.app.testing import login
     >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import TEST_USER_NAME
     >>> from plone.app.testing import setRoles
     >>> from senaite.core.catalog import CONTACT_CATALOG
 
@@ -448,16 +450,23 @@ First, link a user to a global contact:
     >>> global_contact1.setUser(global_user1)
     True
 
-Get the my_organization view:
+Availability is decided from the asking user (not from the view context), so
+log in as the linked user and traverse the view on the portal:
 
-    >>> my_org_view = global_contact1.restrictedTraverse("my_organization")
+    >>> login(portal, "global-user-1")
+    >>> my_org_view = portal.restrictedTraverse("my_organization")
 
 The view should NOT be available for users linked to global contacts:
 
     >>> my_org_view.available()
     False
 
-Now test with a client contact user. First, create a new user for the client contact:
+Now test with a client contact user. Log back in as the test user to create
+and link the user:
+
+    >>> login(portal, TEST_USER_NAME)
+
+Create a new user for the client contact:
 
     >>> client_user1 = ploneapi.user.create(
     ...     email="client.user1@example.com",
@@ -472,11 +481,16 @@ Link the user to the client contact:
     >>> client_contact1.setUser(client_user1)
     True
 
-Get the my_organization view for the client contact:
+Log in as the client user and traverse the view on the portal:
 
-    >>> client_my_org_view = client_contact1.restrictedTraverse("my_organization")
+    >>> login(portal, "client-user-1")
+    >>> client_my_org_view = portal.restrictedTraverse("my_organization")
 
 The view should be available for users linked to client contacts:
 
     >>> client_my_org_view.available()
     True
+
+Log back in as the test user:
+
+    >>> login(portal, TEST_USER_NAME)

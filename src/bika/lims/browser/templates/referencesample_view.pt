@@ -8,15 +8,19 @@
 <body>
 
 <metal:title fill-slot="content-title"
-        tal:define="portal context/@@plone_portal_state/portal;">
+        tal:define="portal context/@@plone_portal_state/portal;
+                    pictograms python:view.hazard_pictograms();">
     <h1>
         <img tal:condition="view/icon | nothing"
             src="" tal:attributes="src view/icon"/>
         <span tal:content="context/title_or_id"/>
-        <img tal:condition="context/getHazardous"
-                title="Hazardous"
-                i18n:attributes="title"
-                tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/hazardous_big.png"/>
+        <span class="hazard-pictograms" tal:condition="pictograms">
+          <img tal:repeat="picto pictograms"
+               class="hazard-pictogram"
+               tal:attributes="src python:picto['url'];
+                               alt python:picto['alt'];
+                               title python:picto['title']" />
+        </span>
 
         <img tal:condition="context/getBlank"
                 title="Blank"

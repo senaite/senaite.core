@@ -1,0 +1,13 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     tal:omit-tag=""
+     tal:define="items view/items;
+                 selected python:[item for item in items if item['checked']]">
+  <input type="hidden"
+         tal:repeat="item selected"
+         tal:attributes="name item/name;
+                         value item/value;
+                         id item/id" />
+  <input type="hidden" name="field-empty-marker" value="1"
+         tal:attributes="name string:${view/name}-empty-marker" />
+</div>

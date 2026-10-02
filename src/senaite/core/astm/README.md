@@ -1,148 +1,161 @@
 # SENAITE ASTM Interface
 
-This package provides a JSON API endpoint and a results importer for the
-[senaite.astm](https://github.com/senaite/senaite.astm) middleware.
+This package receives instrument results from the
+[senaite.astm](https://github.com/senaite/senaite.astm) middleware and
+imports them into SENAITE.
+
+The middleware listens on TCP for lab instruments (ASTM frames or HL7 v2
+over MLLP), parses every session into a JSON envelope, and POSTs it to
+SENAITE's `@@API/senaite/v1/push` endpoint. This package is the
+consumer of that envelope.
 
 
-## JSON Message Format 
+## Envelope format
 
-The required message format of this interface is JSON.
-
-One JSON format comes in the following format:
+The current contract is the **2.x envelope**: one top-level dict with a
+`metadata` block and per-record-type buckets, every bucket a list of
+dicts.
 
     {
-        u'H': [{...}],
-        u'P': [{...}],
-        u'O': [{...}],
-        u'R': [{...}, ...],
-        u'C': [{...}, ...],
-        u'M': [{...}, ...],
-        u'Q': [{...}, ...],
-        u'L': [{...}]
+        "metadata": {
+            "envelope_version": "1.1",
+            "astm":   "<raw ASTM frames>",
+            "lis2a":  "<raw LIS2-A payload>",
+            "hl7":    "<raw HL7 v2 payload>"
+        },
+        "H": [{...}],    # Header
+        "P": [{...}],    # Patient
+        "O": [{...}],    # Order
+        "R": [{...}, ...],   # Result
+        "C": [{...}, ...],   # Comment
+        "M": [{...}, ...],   # Manufacturer info
+        "L": [{...}],    # Terminator
+        "Q": [{...}, ...]    # Request information
     }
-    
-Where all records come as lists of dictionaries.
 
-Please refer to the `senaite.astm.records` module to see the Python aliases for
-the LIS2-A identifiers.
+The bucket layout is transport-agnostic — both ASTM records and HL7
+segments are routed into the same H/P/O/R/C buckets so a downstream
+importer can stay transport-blind. For HL7 the per-record fields are
+keyed by stringified field number, e.g. `envelope["R"][0]["3"]` is
+`OBX-3`; for ASTM the keys match the Python record-class attribute
+names like `result_name`, `sender`, `sample_id`.
+
+`senaite.astm` 1.x produced a looser shape: no `metadata` block, no HL7
+buckets, and `H[0]["sender"]` could be either a dict (`{"name": ...,
+"serial": ...}`) or a list (`[name, serial, version]`). The consumer
+accepts both shapes.
 
 
-## Results Importer
+## Dispatch
 
-The consumer will lookup for a named adapter for an adapter first, where the
-name is equal to the *sender name* of the header record.
+The push consumer is registered for the name `senaite.core.lis2a.import`
+(both 1.x and 2.x middleware default to that consumer name when
+`--message-format json` is set).
 
-Therefore, you could register a specific adapter, e.g. for the Yumizen H550 as follows:
+For every envelope in the batch, the consumer:
 
-``` xml
-    <configure xmlns="http://namespaces.zope.org/zope">
-        <!-- Adapter to handle instrument imports from senaite.astm -->
-        <adapter name="H550" factory=".astm_importer.ASTMImporter" />
-    </configure>
-```
-    
-And implement the `import_data` method like this:
+1. Extracts the sender name from `H[0].sender` (handles both the dict
+   and list shape).
+2. Looks up an `IASTMImporter` *named* adapter for that sender. If none
+   is registered, falls back to the generic unnamed adapter.
+3. Calls `importer.import_data()`.
 
-``` python
-    from bika.lims import api
-    from senaite.core.astm.importer import ASTMImporter as Base
-    from senaite.core.interfaces import IASTMImporter
-    from senaite.core.interfaces import ISenaiteCore
-    from zope.component import adapter
-    from zope.interface import Interface
-    from zope.interface import implementer
+That means a customer project registers one adapter per instrument
+model:
 
-    ALLOWED_SAMPLE_STATES = ["sample_received"]
-
-    @adapter(Interface, Interface, ISenaiteCore)
-    @implementer(IASTMImporter)
-    class ASTMImporter(Base):
-        """ASTM results importer for Yumizen H500/H550
-        """
-
-        def import_data(self):
-            """Import Yumizen H550 Results
-            """
-            if not self.instrument:
-                return self.log("Instrument not found")
-
-            if not self.sample:
-                return self.log("Sample not found")
-
-            self.log("Starting instrument import")
-
-            sample = self.sample
-            sample_id = self.sample.getId()
-            sample_state = api.get_workflow_status_of(self.sample)
-            sender = self.get_sender()
-            instrument = self.instrument
-            instrument_title = self.instrument.Title()
-            analyses = sample.getAnalyses(full_objects=True)
-
-            if sample_state not in ALLOWED_SAMPLE_STATES:
-                return self.log(
-                    "Sample review state must be in %s" %
-                    ", ".join(ALLOWED_SAMPLE_STATES))
-
-            self.log("Starting results import for sample '%s'" % sample_id)
-
-            # crate a new attachment with the message contents
-            filename = "%s.txt" % "_".join(sender)
-            attachment = self.create_attachment(
-                sample.getClient(), self.message, filename=filename)
-            attachments = sample.getAttachment()
-            if attachment not in attachments:
-                attachments.append(attachment)
-                sample.setAttachment(attachments)
-
-            for result in self.get_results():
-                value = result.get("value")
-                ...
+```xml
+<configure xmlns="http://namespaces.zope.org/zope">
+    <adapter name="HemoScreen"
+             factory=".astm_importer.ASTMImporter" />
+</configure>
 ```
 
+The adapter name must equal the `H[0].sender.name` the instrument
+sends.
 
-## ASTM Server Configuration
 
-The consumer and importer support only the JSON format from the middleware.
+## Writing an importer
 
-Therefore, the `senaite.astm` server needs to be started, e.g. like this:
+Subclass `senaite.core.astm.importer.ASTMImporter` and implement
+`import_data`. The base class provides:
 
-    $ senaite-astm-server -m json -u http://admin:admin@localhost:8080/senaite
-    
-For more information, used the command:
+- `self.data` — the parsed envelope.
+- `self.message` — the raw JSON string (use this when storing the
+  payload as an attachment).
+- `self.instrument` — best-matching Instrument from the SENAITE setup,
+  resolved by sender name + serial; logs ambiguous matches.
+- `self.sample` — Sample resolved from the order's sample ID; falls
+  back to `getClientSampleID` only when it has a single hit, and logs
+  ambiguous fallbacks.
+- `self.get_header()`, `self.get_order()`, `self.get_results()`,
+  `self.get_patients()`, `self.get_comments()` — bucket accessors.
+- `self.get_sender()` — `(name, serial, version)` tuple from the
+  header.
+- `self.log(...)` — appends to an `AutoImportLog` content item
+  attached to the instrument; created lazily on first call.
+- `self.create_attachment(container, contents, filename)` — write the
+  raw payload as an `Attachment` on the sample's client.
 
-``` sh
-    $ senaite-astm-server -h
-    
-    usage: senaite-astm-server [-h] [-l LISTEN] [-p PORT] [-o OUTPUT] [-u URL] [-c CONSUMER] [-m MESSAGE_FORMAT]
-                               [-r RETRIES] [-d DELAY] [-v] [--logfile LOGFILE]
+Minimal example:
 
-    optional arguments:
-    -h, --help            show this help message and exit
-    -v, --verbose         Verbose logging (default: False)
-    --logfile LOGFILE     Path to store log files (default: senaite-astm-server.log)
+```python
+from bika.lims import api
+from senaite.core.astm.importer import ASTMImporter as Base
+from senaite.core.interfaces import IASTMImporter, ISenaiteCore
+from zope.component import adapter
+from zope.interface import Interface, implementer
 
-    ASTM SERVER:
-    -l LISTEN, --listen LISTEN
-                            Listen IP address (default: 0.0.0.0)
-    -p PORT, --port PORT  Port to connect (default: 4010)
-    -o OUTPUT, --output OUTPUT
-                            Output directory to write full messages (default: None)
+ALLOWED_SAMPLE_STATES = ["sample_received"]
 
-    SENAITE LIMS:
-    -u URL, --url URL     SENAITE URL address including username and password in the format:
-                            http(s)://<user>:<password>@<senaite_url> (default: None)
-    -c CONSUMER, --consumer CONSUMER
-                            SENAITE push consumer interface (default: senaite.core.lis2a.import)
-    -m MESSAGE_FORMAT, --message-format MESSAGE_FORMAT
-                            Message format to send to SENAITE. Allowed formats: "astm", "lis2a", "json". (default: json)
-    -r RETRIES, --retries RETRIES
-                            Number of attempts of reconnection when SENAITE instance is not reachable. Only has
-                            effect when argument --url is set (default: 3)
-    -d DELAY, --delay DELAY
-                            Time delay in seconds between retries when SENAITE instance is not reachable. Only
-                            has effect when argument --url is set (default: 5)
+
+@adapter(Interface, Interface, ISenaiteCore)
+@implementer(IASTMImporter)
+class ASTMImporter(Base):
+    """ASTM results importer for the Horiba Yumizen H5xx."""
+
+    def import_data(self):
+        if not self.instrument:
+            return self.log("Instrument not found")
+        if not self.sample:
+            return self.log("Sample not found")
+
+        state = api.get_workflow_status_of(self.sample)
+        if state not in ALLOWED_SAMPLE_STATES:
+            return self.log(
+                "Sample state must be in %s" % ALLOWED_SAMPLE_STATES)
+
+        sender = self.get_sender()
+        filename = "%s.txt" % "_".join(sender)
+        self.create_attachment(
+            self.sample.getClient(), self.message, filename=filename)
+
+        for result in self.get_results():
+            # … set the value on the matching analysis …
+            pass
 ```
 
-**☝️ NOTE:** A proper instrument schema needs to be written to extract the required
-fields for the importer, see `senaite.astm.instruments` for examples.
+
+## Server configuration
+
+Point `senaite-astm-server` (or `senaite-hl7-server` from 2.x) at this
+SENAITE instance with `--message-format json`:
+
+    $ senaite-astm-server \
+        -m json \
+        -c senaite.core.lis2a.import \
+        -u http://admin:admin@localhost:8080/senaite
+
+See `senaite-astm-server --help` and `senaite-hl7-server --help` for
+the full option list.
+
+
+## Roadmap
+
+The current pattern asks every customer to write a per-instrument
+adapter. Most adapters do the same six things — extract the sample
+ID, extract the analysis keyword and normalise it, read value /
+status / flag / timestamp, optionally filter (e.g. HemoScreen
+`OBR-4 = OBS` only), and write the result through a shared helper.
+A generic profile-driven importer reading YAML or content-type
+definitions is in the works; see the sketch at
+`sketches/senaite-astm-generic-importer/` in the buildout repo.

@@ -41,4 +41,12 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <browser:page
+      name="manage_labels_modal"
+      for="*"
+      class=".manage_labels.ManageLabelsModal"
+      permission="senaite.core.permissions.ManageLabels"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
 </configure>

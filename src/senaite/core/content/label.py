@@ -19,12 +19,15 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import senaiteMessageFactory as _
+from plone.autoform.interfaces import IDisplayForm
+from plone.autoform import directives
 from plone.supermodel import model
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.interfaces import IHideActionsMenu
 from senaite.core.api import label as label_api
 from senaite.core.interfaces import ILabel
+from senaite.core.schema.colorfield import ColorField
 from zope import schema
 from zope.interface import Invalid
 from zope.interface import implementer
@@ -39,6 +42,13 @@ class ILabelSchema(model.Schema):
             u"title_label_title",
             default=u"Name"
         ),
+        description=_(
+            u"description_label_title",
+            default=u"Renaming this label rewrites the stored name "
+                    u"on every currently labeled content. The cascade "
+                    u"runs in the same transaction as the save and may "
+                    u"take a moment on large datasets."
+        ),
         required=True,
     )
 
@@ -48,6 +58,24 @@ class ILabelSchema(model.Schema):
             default=u"Description"
         ),
         required=False,
+    )
+
+    # Hide the color row on the display view — a viewlet renders the
+    # swatch next to the title instead. The field is still editable
+    # in the add / edit forms via the ColorField widget.
+    directives.mode(IDisplayForm, color="hidden")
+    color = ColorField(
+        title=_(
+            u"title_label_color",
+            default=u"Color"
+        ),
+        description=_(
+            u"description_label_color",
+            default=u"Hex color code used for the chip "
+                    u"(e.g. #0d6efd). Leave empty for the default style."
+        ),
+        required=False,
+        default=u"",
     )
 
     @invariant
@@ -70,3 +98,14 @@ class Label(Container):
     """A container for labels
     """
     _catalogs = [SETUP_CATALOG]
+
+    def getColor(self):
+        """Return the configured chip color as a unicode hex string.
+
+        Exposed as a catalog metadata column on senaite_catalog_setup
+        so chip-rendering consumers can read the color from the brain
+        without waking the Label object. Always returns a unicode
+        value (empty string for unset / invalid colors).
+        """
+        value = getattr(self, "color", u"") or u""
+        return value if isinstance(value, unicode) else value.decode("utf-8")

@@ -22,6 +22,7 @@ import os
 import os.path
 import tempfile
 import traceback
+from collections import OrderedDict
 
 from bika.lims import api
 from bika.lims import logger
@@ -154,14 +155,45 @@ class StickerView(BrowserView):
         return uids
 
     def get_sticker_template_adapters(self):
-        """Query context adapters for IGetStickerTemplate
+        """Query the adapters for IGetStickerTemplates
+
+        Stickers printed from a listing are rendered on the container (e.g. the
+        Samples folder), that has no adapter registered, while the items to
+        print do have one. Therefore, fall back to the adapters of the items
+        when the context itself provides none.
+
+        :returns: list of (name, adapter) tuples
+        """
+        adapters = self.query_sticker_template_adapters(self.context)
+        if adapters:
+            return adapters
+        return self.get_items_sticker_template_adapters()
+
+    def query_sticker_template_adapters(self, obj):
+        """Query the IGetStickerTemplates adapters registered for an object
+
+        :param obj: the object to look the adapters up for
+        :returns: list of (name, adapter) tuples
         """
         try:
-            return getAdapters((self.context, ), IGetStickerTemplates)
+            return list(getAdapters((obj, ), IGetStickerTemplates))
         except ComponentLookupError:
             logger.debug("No IGetStickerTemplates adapters found for %s."
-                         % api.get_path(self.context))
+                         % api.get_path(obj))
             return []
+
+    def get_items_sticker_template_adapters(self):
+        """Return the IGetStickerTemplates adapters of the items to print
+
+        :returns: list of (name, adapter) tuples
+        """
+        adapters = []
+        for uid in self.get_uids():
+            obj = api.get_object_by_uid(uid, default=None)
+            if obj is None:
+                continue
+            adapters.extend(self.query_sticker_template_adapters(obj))
+        return adapters
 
     def get_available_templates(self):
         """Returns a list of available sticker templates
@@ -179,15 +211,24 @@ class StickerView(BrowserView):
         templates = []
 
         adapters = self.get_sticker_template_adapters()
-        if adapters is not None:
-            # Gather all templates
-            for name, adapter in adapters:
-                templates += adapter(self.request)
+        has_adapter = len(adapters) > 0
+        # Gather all templates offered by the registered adapters
+        for name, adapter in adapters:
+            templates += adapter(self.request)
 
         if templates:
+            # several items can share the same adapter and templates
+            return self.uniquify_templates(templates)
+
+        # A context with no sticker adapter at all must not be offered the
+        # whole catalog: return nothing unless an explicit type filter narrows
+        # the templates down to a subfolder. Contexts that do have an adapter
+        # (even one returning no templates) keep falling back below.
+        if not has_adapter and not self.filter_by_type:
             return templates
 
-        # If there are no adapters, get all sticker templates available
+        # No adapter templates: fall back to the on-disk sticker templates,
+        # scoped by the type filter when given.
         selected_template = self.get_selected_template()
         for temp in get_sticker_templates(filter_by_type=self.filter_by_type):
             out = temp
@@ -195,6 +236,24 @@ class StickerView(BrowserView):
             templates.append(out)
 
         return templates
+
+    def uniquify_templates(self, templates):
+        """Remove duplicate template records, preserving the order
+
+        A template that is selected takes precedence over the same template
+        coming from another adapter without the selected flag set.
+
+        :param templates: list of template info records
+        :returns: list of template info records without duplicates
+        """
+        unique = OrderedDict()
+        for template in templates:
+            template_id = template.get("id")
+            existing = unique.get(template_id)
+            if existing and existing.get("selected"):
+                continue
+            unique[template_id] = template
+        return list(unique.values())
 
     def getSelectedTemplateCSS(self):
         """Looks for the CSS file from the selected template and return its

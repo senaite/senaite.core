@@ -21,6 +21,7 @@
 from datetime import datetime
 
 from bika.lims import api
+from senaite.core import logger
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.interfaces import IASTMImporter
@@ -54,61 +55,116 @@ class ASTMImporter(object):
 
     @property
     def instrument(self):
-        """Query the instrument of this import
+        """Query the instrument of this import.
+
+        Candidates are scored against the sender's name and serial
+        and the best match wins. The ranking is:
+
+        - 3: model and serial both match
+        - 2: title and serial both match
+        - 1: model matches (serial mismatch or missing)
+        - 1: title matches (serial mismatch or missing)
+        - 0: no match
+
+        Ties on the top score are logged so the operator can
+        disambiguate; the first such candidate is returned.
         """
         if self._instrument:
             return self._instrument
 
-        instrument = None
         name = self.get_instrument_name()
         serial = self.get_instrument_serial()
         query = {"portal_type": "Instrument"}
-        results = api.search(query, SETUP_CATALOG)
 
-        for brain in results:
+        best_score = 0
+        best_match = None
+        ties = []
+        for brain in api.search(query, SETUP_CATALOG):
             obj = api.get_object(brain)
-            model = obj.getModel()
-            title = obj.Title()
-            serialno = obj.getSerialNo()
-            # lookup instrument by model and serial
-            if model == name and serialno == serial:
-                instrument = obj
-            # lookup instrument by title and serial
-            elif title == name and serialno == serial:
-                instrument = obj
-            # lookup instrument by model only
-            elif model == name:
-                instrument = obj
-            # lookup instrument by title only
-            elif title == name:
-                instrument = obj
+            score = self._score_instrument_candidate(
+                obj, name=name, serial=serial)
+            if score > best_score:
+                best_score = score
+                best_match = obj
+                ties = [obj]
+            elif score == best_score and score > 0:
+                ties.append(obj)
 
-        self._instrument = instrument
-        return instrument
+        if len(ties) > 1:
+            titles = ", ".join(repr(o.Title()) for o in ties)
+            logger.warning(
+                "Multiple instruments matched sender %r/%r equally "
+                "(score=%d): %s — picking the first.",
+                name, serial, best_score, titles)
+
+        self._instrument = best_match
+        return best_match
+
+    @staticmethod
+    def _score_instrument_candidate(obj, name, serial):
+        model = obj.getModel()
+        title = obj.Title()
+        serialno = obj.getSerialNo()
+        if not name:
+            return 0
+        if model == name and serialno == serial:
+            return 3
+        if title == name and serialno == serial:
+            return 2
+        if model == name:
+            return 1
+        if title == name:
+            return 1
+        return 0
 
     @property
     def sample(self):
-        """Query the sample of this import
+        """Query the sample of this import.
+
+        Looks up the sample by `getId` first (the canonical
+        SENAITE Sample ID). If that returns nothing, falls back to
+        `getClientSampleID` — but Client Sample IDs are not unique
+        across clients, so a multi-hit fallback is *not* resolved
+        silently. Ambiguous or empty results are logged so the
+        operator can see what happened instead of getting a silent
+        `None`.
         """
         if self._sample:
             return self._sample
 
-        sample = None
-        # get the sample ID from the data
         sid = self.get_sample_id()
-        # Query by Sample ID
-        query_sid = {"getId": sid}
-        # Query by Client Sample ID
-        query_csid = {"getClientSampleID": sid}
+        if not sid:
+            return None
 
-        results = api.search(query_sid, SAMPLE_CATALOG)
-        if not results:
-            results = api.search(query_csid, SAMPLE_CATALOG)
+        results = api.search({"getId": sid}, SAMPLE_CATALOG)
         if len(results) == 1:
-            sample = api.get_object(results[0])
+            self._sample = api.get_object(results[0])
+            return self._sample
+        if len(results) > 1:
+            logger.warning(
+                "Sample ID %r matched %d samples — refusing to guess",
+                sid, len(results))
+            return None
 
-        self._sample = sample
-        return sample
+        # Fallback: Client Sample ID. Not unique across clients;
+        # accept only when exactly one match is found.
+        results = api.search(
+            {"getClientSampleID": sid}, SAMPLE_CATALOG)
+        if len(results) == 1:
+            logger.info(
+                "Resolved sample for %r via getClientSampleID fallback",
+                sid)
+            self._sample = api.get_object(results[0])
+            return self._sample
+        if len(results) > 1:
+            logger.warning(
+                "Client Sample ID %r matched %d samples across "
+                "clients — refusing to guess", sid, len(results))
+        else:
+            logger.info(
+                "No sample found for %r (tried getId and "
+                "getClientSampleID)", sid)
+        return None
 
     def log(self, message, level="info"):
         """Append log to logs

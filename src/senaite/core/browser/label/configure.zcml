@@ -10,4 +10,39 @@
       permission="senaite.core.permissions.ManageBika"
       layer="senaite.core.interfaces.ISenaiteCore"/>
 
+  <!-- Render the Label's page heading as a colored chip by
+       overriding the default `@@title` view that Plone's
+       main_template invokes for the document <h1>. Replaces the
+       earlier viewlet-based CSS-injection approach. -->
+  <browser:page
+      for="senaite.core.interfaces.ILabel"
+      name="title"
+      class=".title.LabelTitleView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.ISenaiteCore"/>
+
+  <!-- Single JSON endpoint for label management. Subpath traversal
+       dispatches to:
+       - @@senaite_labels/add       (POST, requires ManageLabels)
+       - @@senaite_labels/remove    (POST, requires ManageLabels)
+       - @@senaite_labels/available (GET,  requires ViewLabels)
+
+       The ZCML page registration uses the lowest of the two
+       permissions; the write routes re-check `ManageLabels` and
+       return 403 when missing.
+
+       N.B. The name is intentionally namespaced to `senaite_labels`
+       rather than the bare `labels` so the for="*" registration
+       cannot intercept traversal to e.g.
+       ++plone++senaite.core.static/assets/icons/labels — a path
+       that `bootstrap.py::resource_exists` walks when resolving
+       Label FTI icons. -->
+  <browser:page
+      for="*"
+      name="senaite_labels"
+      class=".api.LabelsAPI"
+      permission="senaite.core.permissions.ViewLabels"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      allowed_attributes="publishTraverse"/>
+
 </configure>

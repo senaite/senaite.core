@@ -211,9 +211,12 @@ class ServicesWidget(DefaultListingWidget):
         :param service: A single service object
         :returns: A list of dicts
         """
+        # Strip surrounding whitespace from configured unit choices so
+        # typos like "mg/L " don't break the round-trip with the
+        # service/analysis stored Unit value.
         return [
-            {"ResultValue": u["value"], "ResultText": u["value"]}
-            for u in service.getUnitChoices()
+            {"ResultValue": value, "ResultText": value}
+            for value in (u["value"].strip() for u in service.getUnitChoices())
         ]
 
     def extract(self):
@@ -301,10 +304,13 @@ class ServicesWidget(DefaultListingWidget):
         item["Hidden"] = hidden
         item["replace"]["Hidden"] = _("Yes") if hidden else _("No")
 
-        # Apply unit settings
+        # Apply unit settings. Strip surrounding whitespace so the
+        # stored Unit matches the (also-stripped) values in the unit
+        # choices dropdown built by `get_unit_vocabulary`.
         unit = self.get_record_value(uid, "unit", obj.getUnit())
-        item["Unit"] = unit or ""
-        item["replace"]["Unit"] = unit and format_supsub(unit) or ""
+        unit = (unit or "").strip()
+        item["Unit"] = unit
+        item["replace"]["Unit"] = format_supsub(unit) if unit else ""
         unit_choices = self.get_unit_vocabulary(obj)
         if unit_choices:
             item["choices"]["Unit"] = unit_choices

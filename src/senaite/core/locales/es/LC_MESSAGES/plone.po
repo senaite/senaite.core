@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-03-04 10:55+0000\n"
+"POT-Creation-Date: 2026-07-19 12:29+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: David Molins, 2024\n"
 "Language-Team: Spanish (https://app.transifex.com/senaite/teams/87045/es/)\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: senaite/core/browser/user/templates/account-panel.pt:16
 msgid "${action/title}"
-msgstr ""
+msgstr "${action/title}"
 
 #: senaite/core/browser/quickinstaller/templates/quickinstaller.pt:167
 msgid "Activated add-ons"
@@ -98,7 +98,7 @@ msgstr "Salir"
 
 #: senaite/core/skins/senaite_templates/senaite_widgets/recordswidget.pt:275
 msgid "More"
-msgstr ""
+msgstr "Más"
 
 #: senaite/core/browser/portlets/templates/edit-manager-macros.pt:79
 msgid "Move down"
@@ -241,12 +241,12 @@ msgstr "Se han definido aquí portlets antiguos. Haga clic en el botón para con
 #. Default: "Next ${number} items"
 #: senaite/core/browser/batching/templates/batchnavigation.pt:85
 msgid "batch_next_x_items"
-msgstr ""
+msgstr "Siguientes ${number} elementos"
 
 #. Default: "Previous ${number} items"
 #: senaite/core/browser/batching/templates/batchnavigation.pt:19
 msgid "batch_previous_x_items"
-msgstr ""
+msgstr "Anteriores ${number} elementos"
 
 #. Default: "Add action"
 #: senaite/core/browser/contentrules/templates/manage-elements.pt:183
@@ -445,7 +445,7 @@ msgstr "Las cookies no han sido habilitadas. Debe habilitar las cookies antes de
 #. Default: "File already uploaded:"
 #: senaite/core/z3cform/widgets/datagrid/datagridrow_file_input.pt:19
 msgid "file_already_uploaded"
-msgstr ""
+msgstr "Archivo ya subido:"
 
 #. Default: "Get help"
 #: senaite/core/browser/login/templates/login.pt:105
@@ -924,6 +924,11 @@ msgstr "¿Necesita una cuenta?"
 #: senaite/core/z3cform/widgets/datagrid/datagridrow_file_display.pt:27
 msgid "no_file"
 msgstr "Archivo no encontrado"
+
+#. Default: "No image"
+#: senaite/core/z3cform/widgets/namedimage/display.pt:17
+msgid "no_image"
+msgstr "Sin imagen"
 
 #. Default: "Plain Text"
 #: senaite/core/skins/senaite_templates/tinymce_wysiwyg_support.pt:82

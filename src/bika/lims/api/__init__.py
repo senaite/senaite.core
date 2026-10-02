@@ -41,6 +41,7 @@ from OFS.event import ObjectWillBeMovedEvent
 from plone import api as ploneapi
 from plone.api.exc import InvalidParameterError
 from plone.app.layout.viewlets.content import ContentHistoryView
+from plone.app.textfield import RichText
 from plone.behavior.interfaces import IBehaviorAssignable
 from plone.behavior.registration import lookup_behavior_registration
 from plone.dexterity.interfaces import IDexterityContent
@@ -56,6 +57,7 @@ from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.BaseObject import BaseObject
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.Archetypes.public import StringField
+from Products.Archetypes.utils import getRelURL
 from Products.Archetypes.utils import mapply
 from Products.CMFCore.interfaces import IFolderish
 from Products.CMFCore.interfaces import ISiteRoot
@@ -76,7 +78,6 @@ from senaite.core.interfaces import ITemporaryObject
 from z3c.form.validator import Data as ValidatorData
 from zope import globalrequest
 from zope.annotation.interfaces import IAttributeAnnotatable
-from zope.component import createObject
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.container.contained import notifyContainerModified
@@ -87,7 +88,6 @@ from zope.interface import Invalid
 from zope.interface import alsoProvides
 from zope.interface import directlyProvides
 from zope.interface import noLongerProvides
-from zope.lifecycleevent import ObjectCreatedEvent
 from zope.lifecycleevent import ObjectMovedEvent
 from zope.publisher.browser import TestRequest
 from zope.schema import getFieldsInOrder
@@ -215,9 +215,9 @@ def create(container, portal_type, *args, **kwargs):
         notify(ObjectInitializedEvent(obj))
     else:
         # Avoid circular imports
-        from bika.lims.api.snapshot import pause_snapshots_for
-        from bika.lims.api.snapshot import resume_snapshots_for
-        from bika.lims.api.snapshot import take_snapshot
+        from senaite.core.api.snapshot import pause_snapshots_for
+        from senaite.core.api.snapshot import resume_snapshots_for
+        from senaite.core.api.snapshot import take_snapshot
 
         # Dexterity content creation
         # Schema fields (especially UID reference fields) must be set AFTER
@@ -240,6 +240,15 @@ def create(container, portal_type, *args, **kwargs):
         # trigger snapshots for Dexterity (only ObjectAddedEvent does)
         content = createContent(portal_type, id=id or tmp_id, title=title,
                                 **other_kwargs)
+
+        # Initialize the remaining schema fields so the object is fully
+        # formed *before* addContentToContainer fires ObjectAddedEvent.
+        # createContent() does not initialize schema fields, so they stay
+        # absent as instance attributes. A subscriber that reads such a
+        # field (e.g. plone.app.linkintegrity reading RichText fields)
+        # would otherwise trigger an attribute lookup that falls through
+        # acquisition to the request container and raises AttributeError.
+        initialize_schema_fields(content, schema_fields, skip=field_kwargs)
 
         # Pause snapshots to prevent ObjectAddedEvent from creating
         # an incomplete snapshot (fields not yet set)
@@ -269,6 +278,43 @@ def create(container, portal_type, *args, **kwargs):
         notify(AfterAPICreatedObjectEvent(obj))
 
     return obj
+
+
+def initialize_schema_fields(content, fields, skip=None):
+    """Initialize unset RichText schema fields to their missing_value
+
+    `plone.dexterity.utils.createContent` does not initialize schema
+    fields, so they remain absent as instance attributes until written.
+    `plone.app.linkintegrity` reads every RichText field of an object on
+    `ObjectAddedEvent` through a raw attribute lookup; for an unset field
+    that lookup falls through acquisition to the request container and
+    raises AttributeError, which aborts object creation (e.g. during site
+    setup). Assigning the RichText fields their `missing_value` makes the
+    object fully formed before it is added to its container.
+
+    Only RichText fields are touched on purpose: they are the field type
+    link integrity inspects, and initializing unrelated fields would
+    change the empty-state semantics other code relies on. Field defaults
+    are not materialized here either, because some `defaultFactory`
+    callables depend on the object already being placed (e.g. the Setup
+    publication email body renders a view bound to the not-yet-created
+    setup); the content types apply their defaults lazily through their
+    accessors anyway.
+
+    :param content: the freshly created (not yet contained) DX object
+    :param fields: name -> field mapping for the content's portal type
+    :param skip: field names to leave untouched (e.g. provided kwargs)
+    """
+    skip = skip or []
+    for name, field in fields.items():
+        if name in skip or field.readonly:
+            continue
+        if not isinstance(field, RichText):
+            continue
+        # leave fields that are already set as instance attributes
+        if name in content.__dict__:
+            continue
+        setattr(content, name, field.missing_value)
 
 
 def copy_object(source, container=None, portal_type=None, *args, **kwargs):
@@ -465,6 +511,27 @@ def move_object(obj, destination, check_constraints=True):
     return obj
 
 
+def get_uid_catalog_path(obj):
+    """Return the path an object has to be cataloged under in uid_catalog
+
+    Archetypes content is cataloged relative to the portal, Dexterity
+    content under the absolute path. Getting this wrong leaves a second
+    record for the same object behind, which makes every lookup by UID
+    ambiguous.
+
+    :param obj: object to get the uid_catalog path for
+    :type obj: ATContentType/DexterityContentType
+    :returns: the path the object belongs to in the uid_catalog
+    """
+    if is_at_content(obj):
+        # the uids of uid_catalog are relative paths to portal root
+        # see Products.Archetypes.UIDCatalog.UIDResolver.catalog_object
+        return getRelURL(get_tool(UID_CATALOG), obj.getPhysicalPath())
+    # DX content is cataloged below the absolute path, as it is done in
+    # `plone.app.referenceablebehavior.uidcatalog`
+    return "/".join(obj.getPhysicalPath())
+
+
 def uncatalog_object(obj, recursive=False):
     """Un-catalog the object from all catalogs
 
@@ -472,18 +539,28 @@ def uncatalog_object(obj, recursive=False):
     :param recursive: recursively uncatalog all child objects
     :type obj: ATContentType/DexterityContentType
     """
-    # un-catalog from registered catalogs
-    obj.unindexObject()
-    # explicitly un-catalog from uid_catalog
-    uid_catalog = get_tool("uid_catalog")
-    # the uids of uid_catalog are relative paths to portal root
-    # see Products.Archetypes.UIDCatalog.UIDResolver.catalog_object
-    url = "/".join(obj.getPhysicalPath()[2:])
-    uid_catalog.uncatalog_object(url)
+    # explicitly uncatalog from uid_catalog
+    uid_catalog = get_tool(UID_CATALOG)
+
+    # make sure that both AT/DX paths are uncatalogued
+    rel_url = getRelURL(uid_catalog, obj.getPhysicalPath())
+    abs_url = "/".join(obj.getPhysicalPath())
+
+    # Try to uncatalog with both path variations
+    # Only uncatalog if the path exists in the catalog
+    for path in [rel_url, abs_url]:
+        if path in uid_catalog._catalog.uids:
+            try:
+                uid_catalog.uncatalog_object(path)
+            except Exception:
+                pass
 
     if recursive:
         for child in obj.objectValues():
             uncatalog_object(child, recursive=recursive)
+
+    # uncatalog from registered catalogs
+    obj.unindexObject()
 
 
 def catalog_object(obj, recursive=False):
@@ -493,14 +570,11 @@ def catalog_object(obj, recursive=False):
     :param recursive: recursively catalog all child objects
     :type obj: ATContentType/DexterityContentType
     """
-    if is_at_content(obj):
-        # explicitly re-catalog AT types at uid_catalog (DX types are
-        # automatically reindexed in UID catalog on reindexObject)
-        uc = get_tool("uid_catalog")
-        # the uids of uid_catalog are relative paths to portal root
-        # see Products.Archetypes.UIDCatalog.UIDResolver.catalog_object
-        url = "/".join(obj.getPhysicalPath()[2:])
-        uc.catalog_object(obj, url)
+    if is_at_content(obj) or is_dexterity_content(obj):
+        uc = get_tool(UID_CATALOG)
+        uc.catalog_object(obj, get_uid_catalog_path(obj))
+
+    # reindex in registered catalogs
     obj.reindexObject()
 
     if recursive:
@@ -522,8 +596,15 @@ def delete(obj, check_permissions=True, suppress_events=False):
 
     # un-catalog the object from all catalogs (uid_catalog included)
     uncatalog_object(obj)
+    if suppress_events:
+        # five.intid's removal subscriber listens on IObjectRemovedEvent,
+        # which is suppressed here — drop the keyref manually to avoid an
+        # orphan entry pinning the dead oid in storage.
+        from senaite.core.api import delete_intid  # noqa
+        delete_intid(obj)
+
     # delete the object
-    parent = get_parent(obj)
+    parent = aq_parent(obj)
     parent._delObject(obj.getId(), suppress_events=suppress_events)
 
 
@@ -972,7 +1053,20 @@ def get_brain_by_uid(uid, default=None):
 
     # try to find the object with the reference catalog first
     brains = uc(UID=uid)
-    if len(brains) != 1:
+    if len(brains) > 1:
+        # More than one catalog record claims this UID. The object is there,
+        # but it cannot be told apart, so the lookup has to fail. Log it as
+        # such: an "object not found" further up the stack is misleading and
+        # sends the reader looking for a missing object instead of a broken
+        # catalog.
+        paths = sorted(map(lambda brain: brain.getPath(), brains))
+        logger.error(
+            "Found %s records in the uid_catalog for UID '%s': %s. The "
+            "catalog is inconsistent, most likely because of stale records "
+            "left behind by a content migration."
+            % (len(brains), uid, ", ".join(paths)))
+        return default
+    if not brains:
         return default
     return brains[0]
 
@@ -1471,7 +1565,7 @@ def get_version(brain_or_object):
     :returns: The current version of the object, or None if not available
     :rtype: int or None
     """
-    from bika.lims.api.snapshot import get_version
+    from senaite.core.api.snapshot import get_version
     return get_version(get_object(brain_or_object))
 
 
@@ -1924,6 +2018,36 @@ def to_int(value, default=_marker):
         fail("Value %s cannot be converted to int" % repr(value))
 
 
+def to_bool(value, default=False):
+    """Converts the passed in value to a boolean
+
+    Boolean-like strings, such as "true", "yes", "on" or "1" are converted to
+    True, while "false", "no", "off", "0" and empty strings are converted to
+    False. Values of any other type are evaluated following the Python's
+    truthiness rules, except for None, that is converted to the default value
+
+    :param value: The value to be converted to a boolean
+    :param default: Value to return when the value cannot be evaluated
+    :returns: The boolean representation of the passed in value
+    :rtype: bool
+    """
+    if isinstance(value, bool):
+        return value
+
+    if value is None:
+        return default
+
+    if is_string(value):
+        val = value.strip().lower()
+        if val in ["y", "yes", "1", "true", "on"]:
+            return True
+        if val in ["n", "no", "0", "false", "off", ""]:
+            return False
+        return default
+
+    return bool(value)
+
+
 def is_floatable(value):
     """Checks if the passed in value is a valid floatable number
 
@@ -2285,6 +2409,14 @@ def validate(obj):
 
         # update obj_data for later use with invariants
         obj_data[field_name] = value
+
+        # Skip read-only fields. They cannot be set through the API, so
+        # validating submitted data against them is out of scope. Their
+        # value is often computed -- e.g. a display-only TextLine backed by
+        # a ComputedAttribute that returns a Decimal -- which would raise a
+        # spurious WrongType here and block the whole create/update.
+        if getattr(field, "readonly", False):
+            continue
 
         if field_name in SKIP_VALIDATION_FIELDS:
             continue

@@ -1,5 +1,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
+      i18n:domain="senaite.core"
       tal:omit-tag="">
 
   <div tal:define="name       python:view.name;

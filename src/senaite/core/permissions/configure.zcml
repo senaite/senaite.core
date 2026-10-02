@@ -97,6 +97,8 @@
   <permission id="senaite.core.permissions.ManageBika" title="senaite.core: Manage Bika"/>
   <permission id="senaite.core.permissions.ManageAnalysisRequests" title="senaite.core: Manage Analysis Requests"/>
   <permission id="senaite.core.permissions.ManageInvoices" title="senaite.core: Manage Invoices"/>
+  <permission id="senaite.core.permissions.ManageLabels" title="senaite.core: Manage Labels"/>
+  <permission id="senaite.core.permissions.ViewLabels" title="senaite.core: View Labels"/>
   <permission id="senaite.core.permissions.ManageLoginDetails" title="senaite.core: Manage Login Details"/>
   <permission id="senaite.core.permissions.ManageReference" title="senaite.core: Manage Reference"/>
   <permission id="senaite.core.permissions.ViewResults" title="senaite.core: View Results"/>

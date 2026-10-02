@@ -21,6 +21,7 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DurationWidget
@@ -1274,7 +1275,17 @@ class BikaSetup(folder.ATFolder):
     security = ClassSecurityInfo()
 
     def setAutoLogOff(self, value):
-        """set session lifetime
+        """Set the session lifetime (auto log-off), in minutes
+
+        Writes the plone.session cookie `timeout` (in seconds). It also keeps
+        the plugin's `refresh_interval` strictly below `timeout` so that an
+        *active* user's session cookie is renewed by the refresh beacon before
+        it expires. Without this, plone.session treats `timeout` as an absolute
+        lifetime measured from login (it does not refresh the ticket on regular
+        requests), so a short auto log-off would log out users even while they
+        are actively working, instead of only when idle.
+
+        A value of 0 disables auto log-off (the cookie never expires).
         """
         value = int(value)
         if value < 0:
@@ -1282,8 +1293,18 @@ class BikaSetup(folder.ATFolder):
         value = value * 60
         acl = api.get_tool("acl_users")
         session = acl.get("session")
-        if session:
-            session.timeout = value
+        if session is None:
+            logger.warn(
+                "No 'session' plugin found in acl_users. Cannot set the "
+                "auto log-off timeout (%s seconds)" % value)
+            return
+        session.timeout = value
+        # Ensure the refresh beacon runs ahead of expiry. Only adjust when the
+        # current interval would defeat the timeout (disabled, or >= timeout),
+        # so a manually-tuned interval below the timeout is preserved.
+        if value and (session.refresh_interval < 0
+                      or session.refresh_interval >= value):
+            session.refresh_interval = max(60, value // 2)
 
     def getAutoLogOff(self):
         """get session lifetime

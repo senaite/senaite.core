@@ -5,7 +5,32 @@
 
   <tal:menus repeat="menuItem menu">
 
-    <li class="nav-item"
+    <!-- Workflow menu: React mount point. The current state pill is
+         rendered server-side so the menu is visible immediately;
+         transitions are fetched on first open via
+         @@workflow_menu_data. -->
+    <li tal:condition="python:menuItem.get('action', '').endswith(
+                            'content_status_history')"
+        class="nav-item dropdown senaite-workflow-menu"
+        tal:attributes="
+            id menuItem/extra/id;
+            data-uid context/UID;
+            data-state-title python:view.translate_workflow_msg(
+                menuItem['extra'].get('stateTitle', ''));
+            data-state-class menuItem/extra/class | nothing;
+            data-fetch-url string:${context/absolute_url}/@@workflow_menu_data">
+      <a class="nav-link dropdown-toggle workflow-menu-toggle" href="#"
+         role="button" aria-haspopup="true" aria-expanded="false">
+        <span i18n:translate=""
+              tal:attributes="class string:${menuItem/extra/class} tb-state"
+              tal:content="menuItem/extra/stateTitle"/>
+      </a>
+      <div class="dropdown-menu"></div>
+    </li>
+
+    <li tal:condition="python:not menuItem.get('action', '').endswith(
+                            'content_status_history')"
+        class="nav-item"
         tal:attributes="id menuItem/extra/id;
                         class python:has_dropdown and 'nav-item dropdown' or 'nav-item'"
         tal:define="submenu menuItem/submenu;

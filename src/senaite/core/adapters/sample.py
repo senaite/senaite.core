@@ -38,6 +38,19 @@ class WorkflowActionDispatchAdapter(RequestContextAware):
 
 
 @implementer(IWorkflowActionUIDsAdapter)
+class WorkflowActionDisposeAdapter(RequestContextAware):
+    """Adapter in charge of Sample "dispose" action
+    """
+
+    def __call__(self, action, uids):
+        """Redirects the user to the dispose form
+        """
+        url = "{}/dispose_samples?uids={}".format(
+            api.get_url(self.context), ",".join(uids))
+        return self.redirect(redirect_url=url)
+
+
+@implementer(IWorkflowActionUIDsAdapter)
 class WorkflowActionMultiResultsAdapter(RequestContextAware):
     """Redirects to multi results view
     """

@@ -1,0 +1,35 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="senaite.core">
+<body>
+
+  <metal:head fill-slot="head_slot"
+              tal:define="portal_url context/@@plone_portal_state/portal_url">
+    <link rel="stylesheet" type="text/css" media="screen"
+          tal:attributes="href string:${portal_url}/++plone++senaite.core.viewlets/css/manage-viewlets.css" />
+  </metal:head>
+
+  <metal:statusmessage fill-slot="global_statusmessage">
+    <div class="senaite-manage-viewlets-header">
+      <h1 class="documentFirstHeading"
+          i18n:translate="title_manage_viewlets">
+        Manage Viewlets
+      </h1>
+      <p class="documentDescription text-muted"
+         i18n:translate="description_manage_viewlets">
+        The viewlet managers and their viewlets are shown in place, nested and
+        positioned as they appear on the site. Use the controls to hide, show
+        or reorder each viewlet.
+      </p>
+    </div>
+  </metal:statusmessage>
+
+  <!-- Suppress the default content title; the heading is rendered above -->
+  <metal:content-title fill-slot="content-title" />
+
+</body>
+</html>

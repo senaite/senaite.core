@@ -81,9 +81,11 @@ class HiddenProfiles(object):
             "Products.TextIndexNG3:default",
             "archetypes.multilingual:default",
             "archetypes.referencebrowserwidget:default",
-            "collective.js.jqueryui:default"
+            "collective.js.jqueryui:base",
+            "collective.js.jqueryui:bbb",
+            "collective.js.jqueryui:default",
+            "plone.app.caching:default",
             "plone.app.iterate:default",
-            "plone.app.iterate:plone.app.iterate",
             "plone.app.iterate:test",
             "plone.app.iterate:uninstall",
             "plone.app.jquery:default",
@@ -262,7 +264,10 @@ def add_senaite_setup_items(portal):
         ("suppliers", "Suppliers", "Suppliers"),
         ("sampletypes", "Sample Types", "SampleTypes"),
         ("worksheettemplates", "Worksheet Templates", "WorksheetTemplates"),
+        ("laboratory", "Laboratory", "Laboratory"),
         ("calculations", "Calculations", "Calculations"),
+        ("methods", "Methods", "Methods"),
+        ("auditlog", "Audit Log", "AuditLog"),
     ]
     setup = api.get_senaite_setup()
     add_dexterity_items(setup, items)

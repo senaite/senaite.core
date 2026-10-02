@@ -1,4 +1,4 @@
-<div class="remarks-widget"
+<div class="remarks-widget mt-5"
      tal:condition="python:view.available()"
      i18n:domain="senaite.core">
 

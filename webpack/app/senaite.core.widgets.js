@@ -6,6 +6,8 @@ import {
   render_tinymce_widget,
   render_uidreference_widget,
   render_multiupload_widget,
+  render_remarks_widget,
+  render_datagrid_widget,
 } from "./widgets/renderer.js"
 
 // Provide widget controllers in a global namespace
@@ -16,6 +18,14 @@ window.senaite.core.widgets = window.senaite.core.widgets || {};
 
 // Widget Renderers
 const WIDGETS = [
+  // DataGrid Widget (rendered first so it adopts the server cells before the
+  // per-cell widgets mount into them)
+  {
+    selector: ".senaite-datagrid-widget-input",
+    renderer: (el) => {
+      return render_datagrid_widget(el);
+    },
+  },
   // Query Select Widget
   {
     selector: ".senaite-queryselect-widget-input",
@@ -63,6 +73,13 @@ const WIDGETS = [
     selector: ".multiuploadfield",
     renderer: (el) => {
       return render_multiupload_widget(el);
+    },
+  },
+  // Remarks Widget
+  {
+    selector: ".senaite-remarks-widget-input",
+    renderer: (el) => {
+      return render_remarks_widget(el);
     },
   }
 ]
@@ -116,6 +133,10 @@ const render_all_widgets = (root_element) => {
     document.dispatchEvent(event);
   });
 };
+
+// Expose the renderer so widgets (e.g. the datagrid) can mount the per-cell
+// widgets within their own subtree
+window.senaite.core.render_all_widgets = render_all_widgets;
 
 // Initialize all widgets when the document is ready
 document.addEventListener("DOMContentLoaded", () => {

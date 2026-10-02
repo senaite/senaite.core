@@ -180,6 +180,64 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
             )
         return options
 
+    def is_result_option_manual(self, option):
+        """Returns whether the option should allow manual text input
+        """
+        if not option.get("AllowManualEntry"):
+            value = str(option.get("ResultValue", "")).strip().lower()
+            text = str(option.get("ResultText", "")).strip().lower()
+            return value == "other" or text == "other"
+        return option.get("AllowManualEntry")
+
+    def get_result_selected_value(self):
+        """Returns the selected option value for select-type results
+
+        If the current result is custom free text and a manual-entry option
+        exists, the first manual-entry option is selected.
+        """
+        result = self.get_result()
+        if not result:
+            return ""
+
+        options = self.get_result_options()
+        manual_value = ""
+        for option in options:
+            value = option.get("ResultValue", "")
+
+            if value == result:
+                return result
+
+            if not manual_value and self.is_result_option_manual(option):
+                manual_value = value
+
+        return manual_value
+
+    def get_result_other_text(self):
+        """Returns the manual free-text result for select-type results
+        """
+        result = self.get_result()
+        if not result:
+            return ""
+        options = self.get_result_options()
+        for option in options:
+            value = option.get("ResultValue", "")
+            if value == result:
+                return ""
+        return result
+
+    def is_result_selected_option_manual(self):
+        """Returns whether currently selected option allows manual entry
+        """
+        selected = self.get_result_selected_value()
+        if not selected:
+            return False
+        options = self.get_result_options()
+        for option in options:
+            value = option.get("ResultValue", "")
+            if value == selected:
+                return self.is_result_option_manual(option)
+        return False
+
     def get_result_values(self):
         """Returns the current result as a list of values
 
@@ -473,6 +531,19 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
             return
 
         form_data = self.request.form
+
+        # Normalize select + manual-entry option before persisting:
+        # if selected option allows manual text, persist the free text.
+        result_value = form_data.get("Result")
+        if result_value is not None:
+            result_value = str(result_value)
+            options = self.get_result_options()
+            selected_opt = filter(
+                lambda o: o.get("ResultValue", "") == result_value,
+                options
+            )
+            if selected_opt and self.is_result_option_manual(selected_opt[0]):
+                form_data["Result"] = form_data.get("ResultOther", "")
 
         # Map form field names to AT field names
         field_map = [

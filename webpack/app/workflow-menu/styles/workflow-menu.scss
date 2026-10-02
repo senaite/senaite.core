@@ -1,0 +1,72 @@
+/* SENAITE Workflow Menu - dropdown styles
+ *
+ * Scoped to the React component mount points so the rules don't bleed
+ * into other Bootstrap dropdowns. The state pill (.tb-state) renders
+ * its bolt via a ::before pseudo-element defined in toolbar.scss.
+ */
+
+/* Scoped under #senaite-toolbar so the rules beat the existing
+ * `#senaite-toolbar .dropdown-menu a { background-color: transparent }`
+ * declaration in toolbar.scss on ID specificity. */
+#senaite-toolbar .senaite-workflow-menu {
+
+    .workflow-menu-toggle {
+        padding: 0.5rem 0.85rem;
+        font-size: 1rem;
+        line-height: 1.4;
+        border-radius: 0.25rem;
+        transition: background-color 120ms ease-in-out;
+
+        &:hover,
+        &[aria-expanded="true"] {
+            background-color: rgba(255, 255, 255, 0.08);
+            text-decoration: none;
+        }
+
+        .tb-state {
+            font-weight: 500;
+        }
+    }
+
+    .workflow-menu-dropdown {
+        min-width: 14rem;
+        padding: 0.5rem 0;
+        margin-top: 0.35rem;
+        border-radius: 0.35rem;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+
+        .dropdown-item {
+            padding: 0.55rem 1.1rem;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            /* Bootstrap defaults: $dropdown-link-color = $gray-900 */
+            color: #212529;
+            transition: background-color 120ms ease-in-out,
+                        color 120ms ease-in-out;
+
+            &:hover,
+            &:focus {
+                /* Bootstrap defaults:
+                 * $dropdown-link-hover-color = shade-color($gray-900, 10%)
+                 * $dropdown-link-hover-bg = $gray-200 */
+                color: #1e2125;
+                background-color: #e9ecef;
+                text-decoration: none;
+            }
+
+            &:active,
+            &.active {
+                /* Bootstrap defaults:
+                 * $dropdown-link-active-color = $component-active-color
+                 * $dropdown-link-active-bg = $component-active-bg */
+                color: #fff;
+                background-color: #0d6efd;
+            }
+        }
+
+        .dropdown-item-text {
+            padding: 0.55rem 1.1rem;
+            font-size: 0.95rem;
+        }
+    }
+}

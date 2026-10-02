@@ -39,23 +39,8 @@ class IClientRegistry(ISenaiteRegistry):
         label=_(u"Client Settings"),
         description=_("Settings for Clients"),
         fields=[
-            "auto_create_client_group",
             "client_landing_page",
         ],
-    )
-
-    auto_create_client_group = schema.Bool(
-        title=_("Automatically Create Client Group"),
-        description=_("Automatically create a new global client group when a "
-                      "new client is created. If this is disabled, a client "
-                      "group is still created when a client contact is linked "
-                      "to a user account. Therefore, disabling this option "
-                      "makes only sense if you do not plan to link client "
-                      "contacts to user accounts and you want to keep your "
-                      "groups clean."
-                      ),
-        default=True,
-        required=False,
     )
 
     client_landing_page = schema.Choice(
@@ -330,6 +315,7 @@ class ISampleRegistry(ISenaiteRegistry):
             "sample_add_form_skip_partition_analyses",
             "sample_add_form_skip_analyses_in_states",
             "sample_add_form_allow_multi_paste",
+            "sample_add_form_commit_per_sample",
             "trigger_events_on_sample_creation",
         ],
     )
@@ -394,6 +380,25 @@ class ISampleRegistry(ISenaiteRegistry):
                     u"the fields listed here."
         ),
         value_type=schema.ASCIILine(),
+        required=False,
+    )
+
+    sample_add_form_commit_per_sample = schema.Bool(
+        title=_(
+            u"label_registry_sample_add_commit_per_sample",
+            default=u"Commit each sample in its own transaction"
+        ),
+        description=_(
+            u"description_registry_sample_add_commit_per_sample",
+            default=u"When enabled, each sample created from the add form "
+                    u"is committed in its own ZODB transaction with a "
+                    u"per-sample retry on conflict. This reduces the chance "
+                    u"that ID-counter or container contention aborts the "
+                    u"whole batch on instances with many concurrent users. "
+                    u"When disabled, the whole batch is created in a single "
+                    u"transaction (legacy behaviour)."
+        ),
+        default=False,
         required=False,
     )
 

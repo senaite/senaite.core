@@ -1,0 +1,37 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="senaite.core">
+  <head><title></title></head>
+  <body>
+
+    <metal:view_macro define-macro="view">
+      <span class="hazard-categories-display"
+            tal:define="codes python:accessor() or [];
+                        pictograms python:widget.get_pictograms(codes);">
+        <tal:none condition="not:pictograms">&mdash;</tal:none>
+        <span class="hazard-pictogram"
+              tal:repeat="picto pictograms"
+              tal:attributes="title python:picto['title']">
+          <img tal:attributes="src python:picto['url'];
+                               alt python:picto['alt'];
+                               title python:picto['title']" />
+        </span>
+      </span>
+    </metal:view_macro>
+
+    <metal:edit_macro define-macro="edit">
+      <metal:use use-macro="context/widgets/multiselection/macros/edit" />
+    </metal:edit_macro>
+
+    <metal:hidden_macro define-macro="hidden">
+      <metal:use use-macro="context/widgets/multiselection/macros/hidden" />
+    </metal:hidden_macro>
+
+    <metal:search_macro define-macro="search">
+      <metal:use use-macro="context/widgets/multiselection/macros/search" />
+    </metal:search_macro>
+
+  </body>
+</html>

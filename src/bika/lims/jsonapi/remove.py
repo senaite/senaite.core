@@ -18,12 +18,13 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import transaction
+from bika.lims.jsonapi import check_jsonapi_permission
 from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
 from Products.CMFCore.utils import getToolByName
 from zExceptions import BadRequest
 from zope import interface
-import transaction
 
 
 class Remove(object):
@@ -78,14 +79,17 @@ class Remove(object):
             "success": True,
             "error": False,
         }
-        
+
         data = uc(UID=_uid)
         if not data:
             raise BadRequest("No objects found")
-        
+
         for proxy in data:
+            obj = proxy.getObject()
+            # normal permissions still apply for this user
+            check_jsonapi_permission(obj)
             try:
-                parent = proxy.getObject().aq_parent
+                parent = obj.aq_parent
                 parent.manage_delObjects([proxy.id])
             except Exception as e:
                 savepoint.rollback()

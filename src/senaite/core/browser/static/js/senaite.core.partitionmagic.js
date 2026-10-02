@@ -25,13 +25,17 @@ window.PartitionController = class PartitionController {
 
   /**
    * Handles click on analysis row
-   * If user clicks on anything other than a checkbox, the row's checkbox is toggled
+   * If the user clicks on an empty area of the row, the row's checkbox is
+   * toggled. Clicks on interactive elements (links, inputs, labels, e.g. the
+   * service info icon) are ignored, so they keep their own behavior.
    */
   on_analysis_click(event) {
     const $row = $(event.currentTarget);
 
-    if (event.target.type !== "checkbox") {
-      $row.find("input[type=checkbox]").trigger("click");
+    if ($(event.target).closest("a, input, button, select, label").length) {
+      return;
     }
+
+    $row.find("input[type=checkbox]").trigger("click");
   }
 }

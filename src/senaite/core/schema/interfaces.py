@@ -18,8 +18,8 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from collective.z3cform.datagridfield.interfaces import IRow
 from plone.app.textfield.interfaces import IRichText
+from senaite.core.z3cform.datagridfield.interfaces import IRow
 from zope.schema.interfaces import IDatetime
 from zope.schema.interfaces import IDict
 from zope.schema.interfaces import IField
@@ -82,6 +82,11 @@ class IEmailField(ITextLine):
 
 class IPhoneField(ITextLine):
     """Input type "phone" widget
+    """
+
+
+class IColorField(ITextLine):
+    """Color picker field — value is a 6-digit hex string ``#rrggbb``.
     """
 
 

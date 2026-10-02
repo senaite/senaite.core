@@ -359,3 +359,48 @@ But not in the `portal_catalog`:
 
    >>> is_indexed(batch, PORTAL_CATALOG)
    portal_catalog: NO (found 0)
+
+
+Partial metadata refresh
+........................
+
+`BaseCatalog.catalog_object` accepts a list of column names as the
+`update_metadata` argument. Only those metadata columns are recomputed and
+spliced into the stored record, instead of rebuilding the whole record. This
+avoids re-running every (possibly expensive) metadata accessor when a caller
+only needs a few columns refreshed.
+
+    >>> sample_catalog = api.get_tool(SAMPLE_CATALOG)
+    >>> path = api.get_path(sample)
+    >>> rid = sample_catalog._catalog.uids[path]
+
+    >>> def get_meta(column):
+    ...     return sample_catalog.getMetadataForUID(path)[column]
+
+    >>> def poke(column, value):
+    ...     record = list(sample_catalog._catalog.data[rid])
+    ...     record[sample_catalog._catalog.schema[column]] = value
+    ...     sample_catalog._catalog.data[rid] = tuple(record)
+
+Plant a stale value in `getId` and refresh only that column, without
+reindexing (`idxs=[]` means "no index" when a column list is given):
+
+    >>> poke("getId", "STALE")
+    >>> get_meta("getId")
+    'STALE'
+    >>> sample_catalog.catalog_object(sample, path, idxs=[], update_metadata=["getId"])
+    >>> get_meta("getId") == sample.getId()
+    True
+
+Other metadata columns are left untouched by a partial refresh:
+
+    >>> poke("getClientID", "SENTINEL")
+    >>> sample_catalog.catalog_object(sample, path, idxs=[], update_metadata=["getId"])
+    >>> get_meta("getClientID")
+    'SENTINEL'
+
+A full refresh recomputes the whole record, so the sentinel is gone:
+
+    >>> sample_catalog.catalog_object(sample, path, update_metadata=1)
+    >>> get_meta("getClientID") == sample.getClientID()
+    True

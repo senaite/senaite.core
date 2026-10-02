@@ -18,6 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims.interfaces import IOrganisation
 from plone.indexer import indexer
 
@@ -26,7 +27,14 @@ from plone.indexer import indexer
 def title(instance):
     """Organisation objects does not use the built-in title, rather it uses
     Name schema field. We need this type-specific index to simulate the default
-    behavior for index `title`
+    behavior for index `title`.
+
+    The `Name` is coerced to unicode (like the generic `title` indexer) so the
+    shared `title` FieldIndex holds a single, consistent unicode key type. A
+    non-ASCII byte-string key would otherwise raise a `UnicodeDecodeError` on
+    Python 2 when compared against a unicode query value.
     """
     name = getattr(instance, "Name", None)
-    return name or ""
+    if not name:
+        return u""
+    return api.safe_unicode(name)

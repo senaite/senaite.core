@@ -20,6 +20,7 @@ Table of Contents:
    conventions/index
    adapters/index
    utilities/index
+   scripts/index
    doctests
    changelog
 

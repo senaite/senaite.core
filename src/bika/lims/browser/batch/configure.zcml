@@ -4,11 +4,20 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="senaite.core">
 
+    <!-- The permission is intentionally not `zope2.View`: every
+         linked client contact carries the global `Client` role,
+         which has `View` on every workflow state of `IBatch`.
+         `senaite.core: Manage Analysis Requests` is the
+         per-context permission a client contact only obtains via
+         the dynamic `ClientLinkRoleProvider` on their own client
+         subtree, so this view is reachable only inside the
+         user's own batches. Cross-client direct-URL access via
+         `/clients/Y/batch-Z/batchbook` is blocked. -->
     <browser:page
       for="bika.lims.interfaces.IBatch"
       name="batchbook"
       class="bika.lims.browser.batch.batchbook.BatchBookView"
-      permission="zope2.View"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

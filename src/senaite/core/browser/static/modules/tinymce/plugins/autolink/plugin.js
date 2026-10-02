@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.3.2 (2026-01-14)
+ * TinyMCE version 8.9.1 (2026-09-09)
  */
 
 (function () {
@@ -298,10 +298,14 @@
         });
     };
 
+    const PLUGIN_CODE = 'autolink';
     var Plugin = () => {
-        global$1.add('autolink', (editor) => {
+        global$1.add(PLUGIN_CODE, (editor) => {
             register(editor);
             setup(editor);
+            return {
+                getMetadata: () => ({ name: 'Autolink', type: 'opensource', slug: PLUGIN_CODE })
+            };
         });
     };
 

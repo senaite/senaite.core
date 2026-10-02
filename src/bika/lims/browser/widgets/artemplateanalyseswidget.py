@@ -236,6 +236,10 @@ class ARTemplateAnalysesView(BikaListingView):
         item["Hidden"] = hidden
         item["selected"] = uid in self.configuration
 
+        keyword = obj.getKeyword()
+        item["Keyword"] = keyword
+        item["replace"]["Keyword"] = "<code>{}</code>".format(keyword)
+
         # Make partition a required field
         item.setdefault("required", []).append("Partition")
 

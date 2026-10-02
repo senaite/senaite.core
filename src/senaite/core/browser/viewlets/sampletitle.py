@@ -19,8 +19,9 @@
 # Some rights reserved, see README and LICENSE.
 
 from plone.app.layout.viewlets.common import GlobalSectionsViewlet as Base
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.memoize.instance import memoize
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.api import hazard as hazard_api
 from zope.component import getMultiAdapter
 
 
@@ -43,6 +44,9 @@ class SampleTitleViewlet(Base):
 
     def is_hazardous(self):
         return self.context.getHazardous()
+
+    def hazard_pictograms(self):
+        return hazard_api.get_pictograms_for_sample(self.context)
 
     def exclude_invoice(self):
         return self.context.getInvoiceExclude()

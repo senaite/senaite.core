@@ -86,7 +86,6 @@ setup(
         "openpyxl==2.6.4",
         # Werkzeug >= 2.0.0 does not support Python 2.x anymore
         "Werkzeug<2.0.0",
-        "collective.z3cform.datagridfield",
         # pycountry > 18.12.8 does not support Python 2.x anymore
         "pycountry==18.12.8",
         # et-xmlfile >= 2.0.0 does not support Python 2.x anymore
@@ -107,6 +106,9 @@ setup(
 
           [console_scripts]
           reindex = senaite.core.scripts:reindex
+          senaite-catalog = senaite.core.scripts:catalog
+          senaite-upgrade = senaite.core.scripts:upgrade
+          senaite-users = senaite.core.scripts:users
           upgrade-sites = senaite.core.scripts:upgrade_sites
           zope-passwd = senaite.core.scripts:zope_passwd
           """,

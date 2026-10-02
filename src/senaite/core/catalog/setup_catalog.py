@@ -56,9 +56,12 @@ COLUMNS = BASE_COLUMNS + [
     # attribute name
     "Description",
     "Type",
+    "getColor",  # Label color (used by chip rendering)
     "description",
     "getCategoryUID",
     "getClientUID",
+    "getHazardCategories",
+    "getHazardous",
     "getKeyword",
     "getPrefix",  # used in reference widget columns
     "getProfileKey",  # used in reference widget columns

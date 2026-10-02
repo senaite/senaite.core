@@ -83,6 +83,46 @@ def assigned_state(instance):
 
 
 @indexer(IAnalysisRequest)
+def getAnalysesKeywords(instance):
+    """Returns the unique set of analysis keywords contained in this sample
+    and its partitions.
+
+    Enables catalog queries of the form::
+
+        catalog(getAnalysesKeywords="glucose")
+
+    to find all samples that have an analysis with a given keyword.
+    """
+    keywords = set()
+
+    def collect_keywords(container):
+        for analysis in container.objectValues(spec="Analysis"):
+            keyword = analysis.getKeyword()
+            if keyword:
+                keywords.add(keyword)
+
+    collect_keywords(instance)
+    for partition in instance.getDescendants(all_descendants=True):
+        collect_keywords(partition)
+
+    return list(keywords)
+
+
+@indexer(IAnalysisRequest)
+def getClientTitle(instance):
+    """Returns the title of the client the sample belongs to, normalized to
+    unicode.
+
+    The FieldIndex would otherwise store the raw (UTF-8 encoded) title
+    returned by `Client.Title()`, which makes the index keys byte strings.
+    Querying such an index with a unicode value (as the listing column filter
+    does) raises a UnicodeDecodeError on Python 2 when a key contains
+    non-ASCII characters. Returning unicode keeps the index keys unicode.
+    """
+    return api.safe_unicode(instance.getClientTitle())
+
+
+@indexer(IAnalysisRequest)
 def is_received(instance):
     """Returns whether the Analysis Request has been received
     """

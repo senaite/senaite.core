@@ -39,3 +39,6 @@
   border-bottom-right-radius: 0;
   border-right: 0;
 }
+.edit-analysis-form .result-other-input {
+  max-width: 100%;
+}

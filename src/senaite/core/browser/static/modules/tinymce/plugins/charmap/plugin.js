@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.3.2 (2026-01-14)
+ * TinyMCE version 8.9.1 (2026-09-09)
  */
 
 (function () {
@@ -976,14 +976,18 @@
         });
     };
 
+    const PLUGIN_CODE = 'charmap';
     var Plugin = () => {
-        global$1.add('charmap', (editor) => {
+        global$1.add(PLUGIN_CODE, (editor) => {
             register$2(editor);
             const charMap = getCharMap(editor);
             register$1(editor, charMap);
             register(editor);
             init(editor, charMap[0]);
-            return get(editor);
+            return {
+                ...get(editor),
+                getMetadata: () => ({ name: 'Character Map', type: 'opensource', slug: PLUGIN_CODE })
+            };
         });
     };
 

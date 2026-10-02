@@ -24,6 +24,7 @@ from zope.interface import Interface
 from zope import deprecation
 
 # BBB: Only kept for backwards compatibility
+from senaite.core.interfaces import IAuditLog  # noqa: F401
 from senaite.core.interfaces import ISamples as IAnalysisRequestsFolder
 from senaite.core.interfaces.widget import IReferenceWidgetVocabulary
 from senaite.core.interfaces import IMultiCatalogBehavior as _IMultiCatalogBehavior
@@ -71,11 +72,6 @@ class IBikaLIMS(Interface):
 
 class ISenaiteSite(IBikaLIMS):
     """Marker interface for Zope 3 browser layers.
-    """
-
-
-class IAuditLog(Interface):
-    """Marker interface for Audit Log
     """
 
 
@@ -161,6 +157,13 @@ class IAnalysisRequestRetest(Interface):
 
 class IAnalysisRequestSecondary(Interface):
     """Marker interface for Secondary Analysis Requests
+    """
+
+
+class IAnalysisRequestDuplicate(Interface):
+    """Marker interface for Analysis Requests created via the
+    'duplicate_sample' transition (a direct sibling copy, no add
+    form)
     """
 
 
@@ -538,6 +541,11 @@ class IPreservations(Interface):
 
 class IReferenceDefinitions(Interface):
     """Marker interface for Reference Definitions
+    """
+
+
+class IReferenceDefinition(Interface):
+    """Marker interface for a Reference Definition
     """
 
 

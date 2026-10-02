@@ -19,6 +19,10 @@
       name="senaite.core.vocabularies.analysis_types" />
 
   <utility
+      component=".hazard_categories.HazardCategoriesVocabularyFactory"
+      name="senaite.core.vocabularies.hazard_categories" />
+
+  <utility
       component=".references.ReferenceDefinitionVocabularyFactory"
       name="senaite.core.vocabularies.reference_definition" />
 

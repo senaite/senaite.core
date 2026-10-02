@@ -60,7 +60,6 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
     </permission-map>
 
     <permission-map name="Delete objects" acquired="False">
@@ -120,7 +119,6 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
       <permission-role>Verifier</permission-role>
       <permission-role>Owner</permission-role>
     </permission-map>
@@ -174,7 +172,6 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
     </permission-map>
 
     <!-- FIELD PERMISSIONS (to_be_verified) -->
@@ -214,7 +211,6 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
       <permission-role>Sampler</permission-role>
       <permission-role>Verifier</permission-role>
     </permission-map>

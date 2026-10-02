@@ -223,7 +223,7 @@ class PrintView(BrowserView):
                   accreditation_body, accreditation_logo, logo
         """
         portal = self.context.portal_url.getPortalObject()
-        lab = self.context.bika_setup.laboratory
+        lab = api.get_senaite_setup().laboratory
         lab_address = lab.getPostalAddress() \
             or lab.getBillingAddress() \
             or lab.getPhysicalAddress()

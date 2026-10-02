@@ -18,18 +18,15 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from zope.interface import Interface
-from zope.interface import implements
+# BBB: this module was moved to senaite.core.events.remarks
+from senaite.core.events.remarks import IRemarksAddedEvent
+from senaite.core.events.remarks import RemarksAddedEvent
+from senaite.core.events.remarks import IRemarksChangedEvent
+from senaite.core.events.remarks import RemarksChangedEvent
 
-
-class IRemarksAddedEvent(Interface):
-    """Remarks Added Event
-    """
-
-
-class RemarksAddedEvent(object):
-    implements(IRemarksAddedEvent)
-
-    def __init__(self, context, history):
-        self.context = context
-        self.history = history
+__all__ = [
+    "IRemarksAddedEvent",
+    "RemarksAddedEvent",
+    "IRemarksChangedEvent",
+    "RemarksChangedEvent",
+]

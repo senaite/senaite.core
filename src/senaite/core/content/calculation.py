@@ -242,7 +242,7 @@ class ICalculationSchema(model.Schema):
     interim_fields = InterimFields(
         title=_(u"label_calculation_interims",
                 default=u"Calculation Interim Fields"),
-        description=_(u"description_calculation_imports",
+        description=_(u"description_calculation_interims",
                       default=u"Define interim fields such as vessel mass, "
                       u"dilution factors, should your calculation require "
                       u"them. The field title specified here will be used "

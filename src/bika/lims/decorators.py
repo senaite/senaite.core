@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 import cProfile
-import json
 import os
 import threading
 import time
@@ -28,6 +27,9 @@ from functools import wraps
 from bika.lims import api
 from bika.lims import logger
 from senaite.app.supermodel.interfaces import ISuperModel
+# BBB: returns_json moved to senaite.core.decorators; re-exported here so
+# existing `from bika.lims.decorators import returns_json` keeps working.
+from senaite.core.decorators import returns_json  # noqa: F401
 from zope.component import queryAdapter
 
 
@@ -40,18 +42,6 @@ def XXX_REMOVEME(func):
             self.__class__.__name__, func.func_name)
         raise RuntimeError(msg)
         return func(self, *args, **kwargs)
-    return decorator
-
-
-def returns_json(func):
-    """Decorator for functions which return JSON
-    """
-    def decorator(*args, **kwargs):
-        instance = args[0]
-        result = func(*args, **kwargs)
-        request = getattr(instance, 'request', None)
-        request.response.setHeader("Content-Type", "application/json")
-        return json.dumps(result)
     return decorator
 
 

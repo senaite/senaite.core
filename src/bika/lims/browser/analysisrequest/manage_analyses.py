@@ -74,6 +74,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 "title": _("Service"),
                 "index": "sortable_title",
                 "sortable": False}),
+            ("Keyword", {
+                "title": _("Keyword"),
+                "sortable": False}),
             ("ResultUnit", {
                 "title": _("Unit"),
                 "sortable": False}),
@@ -94,7 +97,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 "title": _("Max")}),
         ))
 
-        columns = ["Title", "Unit", "Hidden", ]
+        columns = ["Title", "Keyword", "Unit", "Hidden", ]
         if self.show_prices():
             columns.append("Price")
         if self.show_ar_specs():
@@ -238,6 +241,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
         spec = rr.get(keyword, ResultsRangeDict())
 
         item["Title"] = obj.Title()
+        item["Keyword"] = keyword
+        item["replace"]["Keyword"] = "<code>{}</code>".format(keyword)
         item["ResultUnit"] = obj.getUnit()
         item["Price"] = price
         item["before"]["Price"] = self.get_currency_symbol()

@@ -1,0 +1,29 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag=""
+      tal:define="items view/items;
+                  items python:list(items)">
+  <span class="hazard-categories-widget"
+        tal:attributes="id view/id"
+        tal:condition="python:len(items) > 0">
+    <span class="option"
+          tal:repeat="item items">
+      <input type="checkbox"
+             tal:attributes="id item/id;
+                             name item/name;
+                             value item/value;
+                             checked python:item['checked'] or None;
+                             disabled view/disabled;
+                             readonly view/readonly" />
+      <label tal:attributes="for item/id">
+        <img class="hazard-pictogram"
+             tal:attributes="src python:view.pictogram_url(item['value']);
+                             alt item/label;
+                             title item/label" />
+        <span class="label" tal:content="item/label">Label</span>
+      </label>
+    </span>
+  </span>
+  <input type="hidden" value="1"
+         tal:attributes="name string:${view/name}-empty-marker" />
+</html>

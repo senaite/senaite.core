@@ -18,10 +18,11 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import api
-from bika.lims.api.security import get_user_id
-from bika.lims.utils import tmpID
-from senaite.core.api.dtime import now
+from senaite.core.api.remarks import apply_delete
+from senaite.core.api.remarks import apply_edit
+from senaite.core.api.remarks import apply_restore
+from senaite.core.api.remarks import find_record
+from senaite.core.api.remarks import make_record
 from senaite.core.schema.interfaces import IRemarksField
 from senaite.core.schema.fields import BaseField
 from zope.interface import implementer
@@ -30,16 +31,9 @@ from zope.schema.interfaces import IFromUnicode
 
 
 def fill_remark_object(value):
-    user_id = get_user_id()
-    properties = api.get_user_properties(user_id)
-    fullname = properties and properties.get("fullname") or user_id
-    return {
-        "id": tmpID(),
-        "user_id": user_id,
-        "user_name": fullname,
-        "created": now(),
-        "content": value,
-    }
+    """Create a new remark record for the given content
+    """
+    return make_record(value)
 
 
 @implementer(IRemarksField, IFromUnicode)
@@ -71,7 +65,61 @@ class RemarksField(List, BaseField):
         return super(RemarksField, self).get(object) or []
 
     def add(self, object, value):
+        """Append a new remark record for the given content
+        :param object: the instance of this field
+        :param value: the content of the new remark
+        :returns: the new remark record
+        """
         remarks = self.get(object)
-        new_remark = fill_remark_object(value)
+        new_remark = make_record(value)
         remarks.append(new_remark)
         self.set(object, remarks)
+        return new_remark
+
+    def edit(self, object, remark_id, value):
+        """Edit the content of an existing remark record, keeping the prior
+        content as a version.
+        :param object: the instance of this field
+        :param remark_id: the id of the remark record to edit
+        :param value: the new content of the remark
+        :returns: the updated remark record or None if not found
+        """
+        remarks = self.get(object)
+        index, record = find_record(remarks, remark_id)
+        if record is None:
+            return None
+        apply_edit(record, value)
+        remarks[index] = record
+        self.set(object, remarks)
+        return record
+
+    def delete(self, object, remark_id):
+        """Soft-delete an existing remark record, keeping it for audit but
+        marking it as deleted.
+        :param object: the instance of this field
+        :param remark_id: the id of the remark record to delete
+        :returns: the deleted remark record or None if not found
+        """
+        remarks = self.get(object)
+        index, record = find_record(remarks, remark_id)
+        if record is None:
+            return None
+        apply_delete(record)
+        remarks[index] = record
+        self.set(object, remarks)
+        return record
+
+    def restore(self, object, remark_id):
+        """Restore a soft-deleted remark record, making it visible again.
+        :param object: the instance of this field
+        :param remark_id: the id of the remark record to restore
+        :returns: the restored remark record or None if not found
+        """
+        remarks = self.get(object)
+        index, record = find_record(remarks, remark_id)
+        if record is None:
+            return None
+        apply_restore(record)
+        remarks[index] = record
+        self.set(object, remarks)
+        return record

@@ -27,16 +27,25 @@ from pkg_resources import parse_version
 
 import transaction
 from Acquisition import aq_base
-from Acquisition import aq_parent
 from bika.lims import api
+from bika.lims.api import safe_unicode as u
 from bika.lims.interfaces import IAuditable
 from Persistence import PersistentMapping
 from plone.dexterity.fti import DexterityFTI
+from plone.dexterity.fti import register as register_dx_fti
+from plone.dexterity.interfaces import IDexterityFTI
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import get_installer
 from Products.ZCatalog.ProgressHandler import ZLogHandler
+from OFS.Image import File as OFSFile
+from OFS.Image import Image as OFSImage
+from plone.app.blob.field import BlobWrapper
+from plone.namedfile.file import NamedBlobFile
+from plone.namedfile.file import NamedBlobImage
 from senaite.core import logger
 from senaite.core.api.catalog import add_zc_text_index
+from senaite.core.interfaces.catalog import ISenaiteCatalogObject
+from zope.component import queryUtility
 from zope.interface import alsoProvides
 from zope.lifecycleevent import modified
 
@@ -360,26 +369,150 @@ def copy_workflow_history(src, target):
 def uncatalog_object(obj):
     """Uncatalog the object for all catalogs
     """
-    # uncatalog from registered catalogs
-    obj.unindexObject()
-    # explicitly uncatalog from uid_catalog
-    uid_catalog = api.get_tool("uid_catalog")
-    url = "/".join(obj.getPhysicalPath()[2:])
-    uid_catalog.uncatalog_object(url)
+    # this used to build the path by hand and only ever removed the record
+    # under the relative path, which left the record of a Dexterity object
+    # behind. `api.uncatalog_object` removes both path variations.
+    api.uncatalog_object(obj)
 
 
 def catalog_object(obj):
     """Catalog the object
     """
-    obj.reindexObject()
+    api.catalog_object(obj)
+
+
+def resolve_uid_catalog_path(portal, path):
+    """Return the object a uid_catalog path points to
+
+    Both path conventions are accepted. Returns `None` when the path does
+    not resolve, or resolves to another object through acquisition.
+
+    :param portal: the portal object
+    :param path: a path as stored in the uid_catalog
+    :returns: the object or None
+    """
+    portal_path = "/".join(portal.getPhysicalPath())
+    relative = path
+    if relative.startswith("%s/" % portal_path):
+        relative = relative[len(portal_path) + 1:]
+    obj = portal.unrestrictedTraverse(str(relative), None)
+    if obj is None:
+        return None
+    # traversal acquires, so make sure we got the object the path names
+    if "/".join(obj.getPhysicalPath()) != "%s/%s" % (portal_path, relative):
+        return None
+    return obj
+
+
+def expects_relative_path(fti):
+    """Check whether content of the given type is cataloged relative
+
+    Archetypes types carry the product they come from, Dexterity ones do
+    not.
+
+    :param fti: the type information of the content type
+    :returns: True for Archetypes content types
+    """
+    return bool(getattr(fti, "product", None))
+
+
+def is_stale_uid_catalog_path(types_tool, catalog, path, rid):
+    """Check whether a uid_catalog record sits under the wrong path
+
+    Decided on the metadata of the record alone, so that the objects
+    behind the records do not have to be woken up.
+
+    :param types_tool: the portal_types tool
+    :param catalog: the uid_catalog tool
+    :param path: a path as stored in the uid_catalog
+    :param rid: the record id of the path
+    :returns: True if the record has to be re-cataloged, None if the type
+              of the record is unknown and nothing can be decided
+    """
+    metadata = catalog._catalog.getMetadataForRID(rid)
+    fti = types_tool.getTypeInfo(metadata.get("portal_type"))
+    if fti is None:
+        # no type information to decide with, leave the record alone
+        return None
+    return path.startswith("/") == expects_relative_path(fti)
+
+
+def repair_uid_catalog_path(portal, catalog, path):
+    """Drop a stale record and catalog the object under the correct path
+
+    :param portal: the portal object
+    :param catalog: the uid_catalog tool
+    :param path: a path as stored in the uid_catalog
+    """
+    obj = resolve_uid_catalog_path(portal, path)
+    catalog.uncatalog_object(path)
+    if obj is None:
+        logger.info("Removed orphan uid_catalog record '%s'" % path)
+        return
+    target = api.get_uid_catalog_path(obj)
+    catalog.catalog_object(obj, target)
+    logger.info("Re-cataloged '%s' as '%s'" % (path, target))
 
 
 def delete_object(obj):
     """delete the object w/o firing events
     """
-    uncatalog_object(obj)
-    parent = aq_parent(obj)
-    parent._delObject(obj.getId(), suppress_events=True)
+    api.delete(obj, check_permissions=False, suppress_events=True)
+
+
+def iter_senaite_catalogs():
+    """Yield every catalog tool in the portal that is a SENAITE catalog
+    """
+    portal = api.get_portal()
+    for obj in portal.objectValues():
+        if ISenaiteCatalogObject.providedBy(obj):
+            yield obj
+
+
+def rebuild_index(catalog, index_name, clear=True):
+    """Reindex every cataloged object on an index, optionally clearing first
+
+    When `clear` is True (default) the index BTree is wiped before
+    reindexing so stale keys from previous indexers are dropped --
+    needed e.g. when an indexer changes its return type and existing
+    keys would otherwise collide with the new ones (byte vs unicode).
+    Set `clear=False` to keep existing keys and only refresh entries
+    per docid via `reindexIndex`.
+
+    Streams progress to the log via a `ZLogHandler` so long-running
+    reindexes give feedback every 100 objects instead of going silent
+    until the whole catalog is done.
+
+    :param catalog: ZCatalog tool
+    :param index_name: Index id
+    :param clear: Clear the index BTree before reindexing
+    :type clear: bool
+    """
+    if catalog is None:
+        return
+    if index_name not in catalog.indexes():
+        logger.info(
+            "Skipping %s on %s (index not found)" % (
+                index_name, catalog.id))
+        return
+    index = catalog._catalog.getIndex(index_name)
+    if index is None:
+        return
+    total = len(catalog)
+    if clear:
+        logger.info(
+            "Clearing %s index on %s (%s objects to reindex) ..." % (
+                index_name, catalog.id, total))
+        index.clear()
+    else:
+        logger.info(
+            "Reindexing %s on %s (%s objects) ..." % (
+                index_name, catalog.id, total))
+    pghandler = ZLogHandler(steps=100)
+    catalog.reindexIndex(index_name, None, pghandler=pghandler)
+    logger.info(
+        "Rebuilt %s index on %s (%s objects)" % (
+            index_name, catalog.id, total))
 
 
 def uncatalog_brain(brain):
@@ -395,6 +528,48 @@ def uncatalog_brain(brain):
     logger.warn(80*"*")
     catalog.uncatalog_object(path)
     return True
+
+
+def register_missing_dx_ftis():
+    """Register the local IDexterityFTI utility for any Dexterity FTI in
+    portal_types that is missing it.
+
+    GenericSetup's `typeinfo` import fires an ObjectAddedEvent (which
+    triggers `plone.dexterity.fti.ftiAdded` -> `register`, registering
+    the local IDexterityFTI utility) only when the FTI is *created*.
+    Re-importing a type that already exists updates it in place without
+    re-registering. As a result, a DX FTI left behind by an interrupted
+    migration ends up with a valid portal_types entry whose
+    `createContent` lookup raises
+    `ComponentLookupError(IDexterityFTI, <type>)`, and re-running the
+    upgrade never recovers because the object still "exists".
+
+    This reconciles that state: it is idempotent (only registers the
+    utility when missing) and cheap (one queryUtility per DX type).
+    """
+    pt = api.get_tool("portal_types")
+    for fti in pt.objectValues():
+        if not IDexterityFTI.providedBy(fti):
+            continue
+        type_id = fti.getId()
+        if queryUtility(IDexterityFTI, name=type_id) is None:
+            logger.info("Registering missing DX FTI utility: %s" % type_id)
+            register_dx_fti(fti)
+
+
+def import_typeinfo(tool, profile):
+    """Run the `typeinfo` import step for the given profile and ensure
+    every Dexterity FTI has its local utility registered.
+
+    Migration steps that create Dexterity content right after importing
+    the type information must use this instead of calling
+    `runImportStepFromProfile(profile, "typeinfo")` directly, so that an
+    FTI left over from a partially-completed upgrade does not break
+    content creation with a ComponentLookupError.
+    See `register_missing_dx_ftis`.
+    """
+    tool.runImportStepFromProfile(profile, "typeinfo")
+    register_missing_dx_ftis()
 
 
 def remove_at_portal_types(tool, types_to_remove=[]):
@@ -426,3 +601,49 @@ def remove_at_portal_types(tool, types_to_remove=[]):
     ft.manage_setPortalFactoryTypes(listOfTypeIds=at_types)
 
     logger.info("Remove AT types from portal_types tool ... [DONE]")
+
+
+def blob_to_named_file(blob, default_filename=u"file"):
+    """Convert an AT file/image value to a Dexterity NamedBlobFile/Image.
+
+    Accepts:
+    * A ``plone.app.blob.field.BlobWrapper`` (blob-aware AT fields).
+    * An ``OFS.Image.Image`` / ``OFS.Image.File`` (the value stored
+      by plain Archetypes ``ImageField`` / ``FileField``).
+
+    Anything else falsy returns ``None``. Anything else truthy is
+    returned unchanged, so legacy callers that already pass
+    ``NamedBlobFile``/``NamedBlobImage`` instances keep working.
+    """
+    if not blob:
+        return None
+
+    if isinstance(blob, BlobWrapper):
+        filename = u(blob.getFilename() or default_filename)
+        content_type = blob.getContentType() or ""
+        data = blob.data
+    elif isinstance(blob, (OFSImage, OFSFile)):
+        # ``filename`` attribute is set on upload but may be empty;
+        # fall back to the persistent id, then the default.
+        filename = u(getattr(blob, "filename", None)
+                     or blob.getId()
+                     or default_filename)
+        content_type = blob.getContentType() or ""
+        data = bytes(blob.data) if blob.data is not None else b""
+    else:
+        # Unknown shape (e.g. already a NamedBlobFile from a partial
+        # earlier migration); leave it for the field setter to deal
+        # with.
+        return blob
+
+    if content_type.startswith("image/"):
+        return NamedBlobImage(
+            data=data,
+            filename=filename,
+            contentType=content_type,
+        )
+    return NamedBlobFile(
+        data=data,
+        filename=filename,
+        contentType=content_type,
+    )

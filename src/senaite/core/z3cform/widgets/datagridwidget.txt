@@ -1,0 +1,128 @@
+DataGrid widget
+===============
+
+The DataGrid widget renders a table of records (a list of dictionaries) and
+extracts the submitted rows back into a list of dictionaries. Every row is
+submitted with the request keys `<name>.<idx>.widgets.<subfield>` and the
+number of real rows is tracked in a `<name>.count` hidden field.
+
+Running this test from the buildout directory:
+
+    bin/test-senaite -s senaite.core -m senaite.core.tests.test_z3c_widgets -t datagridwidget
+
+Some imports we need:
+
+    >>> from senaite.core.interfaces import ISenaiteFormLayer
+    >>> from senaite.core.schema.fields import DataGridField
+    >>> from senaite.core.schema.fields import DataGridRow
+    >>> from senaite.core.z3cform.widgets.datagrid.datagrid import DataGridWidget
+    >>> from senaite.core.z3cform.widgets.datagrid.datagrid import DataGridWidgetFactory
+    >>> from z3c.form import interfaces
+    >>> from z3c.form.form import EditForm
+    >>> from z3c.form.testing import TestRequest
+    >>> from zope import schema
+    >>> from zope.interface import alsoProvides
+    >>> from zope.interface import implementer
+    >>> from zope.interface import Interface
+    >>> from zope.interface.verify import verifyClass
+
+The widget class provides `IWidget`:
+
+    >>> verifyClass(interfaces.IWidget, DataGridWidget)
+    True
+
+A minimal row schema and a content type carrying the grid field:
+
+    >>> class IRecordSchema(Interface):
+    ...     name = schema.TextLine(title=u"Name", required=False)
+    ...     kind = schema.Choice(
+    ...         title=u"Kind", required=False, values=[u"", u"a", u"b"])
+
+    >>> class IContent(Interface):
+    ...     grid = DataGridField(
+    ...         title=u"Grid",
+    ...         value_type=DataGridRow(schema=IRecordSchema),
+    ...         required=False)
+
+    >>> @implementer(IContent)
+    ... class Content(object):
+    ...     grid = None
+
+A helper that wires up the widget for a given request:
+
+    >>> def make_widget(request):
+    ...     context = Content()
+    ...     field = IContent["grid"].bind(context)
+    ...     alsoProvides(request, ISenaiteFormLayer)
+    ...     widget = DataGridWidgetFactory(field, request)
+    ...     widget.context = context
+    ...     widget.form = EditForm(context, request)
+    ...     alsoProvides(widget, interfaces.IFormAware)
+    ...     widget.update()
+    ...     return widget
+
+The factory returns a DataGrid widget:
+
+    >>> widget = make_widget(TestRequest())
+    >>> isinstance(widget, DataGridWidget)
+    True
+
+Even an empty grid renders the auto-append (`AA`) and template (`TT`) rows,
+so the client can add new rows:
+
+    >>> indexes = [w.name.split(".")[-1] for w in widget.widgets]
+    >>> "AA" in indexes and "TT" in indexes
+    True
+
+Submitting two rows extracts them back in order:
+
+    >>> request = TestRequest(form={
+    ...     "grid.count": "2",
+    ...     "grid.0-empty-marker": "1",
+    ...     "grid.0.widgets.name": u"foo",
+    ...     "grid.0.widgets.kind": u"a",
+    ...     "grid.1-empty-marker": "1",
+    ...     "grid.1.widgets.name": u"bar",
+    ...     "grid.1.widgets.kind": u"b",
+    ... })
+    >>> widget = make_widget(request)
+    >>> widget.extract() == [
+    ...     {"name": u"foo", "kind": u"a"},
+    ...     {"name": u"bar", "kind": u"b"}]
+    True
+
+The auto-append (`AA`) and template (`TT`) rows are never extracted, even
+when their keys are present in the request:
+
+    >>> request = TestRequest(form={
+    ...     "grid.count": "1",
+    ...     "grid.0-empty-marker": "1",
+    ...     "grid.0.widgets.name": u"real",
+    ...     "grid.0.widgets.kind": u"a",
+    ...     "grid.AA-empty-marker": "1",
+    ...     "grid.AA.widgets.name": u"ghost",
+    ...     "grid.TT-empty-marker": "1",
+    ...     "grid.TT.widgets.name": u"template",
+    ... })
+    >>> widget = make_widget(request)
+    >>> widget.extract() == [{"name": u"real", "kind": u"a"}]
+    True
+
+An empty grid extracts to an empty list:
+
+    >>> widget = make_widget(TestRequest(form={"grid.count": "0"}))
+    >>> widget.extract()
+    []
+
+The counter marker reflects the number of real rows only (never `AA`/`TT`):
+
+    >>> request = TestRequest(form={
+    ...     "grid.count": "2",
+    ...     "grid.0-empty-marker": "1",
+    ...     "grid.0.widgets.name": u"foo",
+    ...     "grid.1-empty-marker": "1",
+    ...     "grid.1.widgets.name": u"bar",
+    ... })
+    >>> widget = make_widget(request)
+    >>> 'value="2"' in widget.counterMarker
+    True

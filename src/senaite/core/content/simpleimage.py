@@ -24,6 +24,7 @@ from plone.rfc822.interfaces import IPrimaryField
 from plone.supermodel import model
 from Products.CMFCore import permissions
 from senaite.core.content.base import Item
+from senaite.core.content.mixins import ClientAwareMixin
 from senaite.core.interfaces import ISimpleImage
 from zope import schema
 from zope.interface import alsoProvides
@@ -56,8 +57,14 @@ alsoProvides(ISimpleImageSchema["image"], IPrimaryField)
 
 
 @implementer(ISimpleImage, ISimpleImageSchema)
-class SimpleImage(Item):
-    """A simple image content type for client attachments
+class SimpleImage(Item, ClientAwareMixin):
+    """A simple image content type for client attachments.
+
+    Drag-and-drop uploads land this content under a Client,
+    so it carries the `IClientAwareMixin` marker so the
+    `allowedRolesAndUsers` indexer adds the identity-bound
+    `client:<uid>` token and the dynamic role provider grants
+    Owner/Client to the linked client contact.
     """
 
     _catalogs = ["senaite_attachments_catalog"]

@@ -6,6 +6,16 @@
   <adapter name="is_active" factory=".generic.is_active"/>
   <adapter name="listing_searchable_text" factory=".generic.listing_searchable_text"/>
   <adapter name="sortable_title" factory=".generic.sortable_title"/>
+  <adapter name="title" factory=".generic.title"/>
+
+  <!-- allowedRolesAndUsers: append a stable `client:<uid>` token for
+       any client-tree content so access can be granted dynamically
+       via the asking user's `linked_client_uid` member property
+       without ever rewriting the catalog when contacts are linked. -->
+  <adapter name="allowedRolesAndUsers"
+      factory=".allowedrolesandusers.allowedRolesAndUsers_for_client"/>
+  <adapter name="allowedRolesAndUsers"
+      factory=".allowedrolesandusers.allowedRolesAndUsers_for_client_aware"/>
 
   <!-- Client Indexer -->
   <adapter name="client_searchable_text" factory=".client.client_searchable_text"/>
@@ -54,6 +64,8 @@
 
   <!-- Sample Indexer -->
   <adapter name="assigned_state" factory=".sample.assigned_state"/>
+  <adapter name="getAnalysesKeywords" factory=".sample.getAnalysesKeywords"/>
+  <adapter name="getClientTitle" factory=".sample.getClientTitle"/>
   <adapter name="is_received" factory=".sample.is_received"/>
   <adapter name="listing_searchable_text" factory=".sample.listing_searchable_text"/>
 

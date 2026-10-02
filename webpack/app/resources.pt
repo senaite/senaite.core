@@ -1,4 +1,6 @@
 <!-- external JS libraries -->
+<!-- shared React instance, consumed via Webpack externals by core and add-ons -->
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/react/vendor-react.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/jquery/jquery.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/jquery-form/jquery.form.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/jquery-ui/jquery-ui.min.js"></script>

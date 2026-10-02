@@ -18,15 +18,16 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import json
+
+import transaction
+from bika.lims.jsonapi import check_jsonapi_permission
 from bika.lims.jsonapi.read import read
 from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
 from Products.CMFCore.utils import getToolByName
 from zExceptions import BadRequest
 from zope import interface
-import json
-
-import transaction
 
 
 class doActionFor(object):
@@ -73,8 +74,10 @@ class doActionFor(object):
         if len(objects) == 0:
             raise BadRequest("No matching objects found")
         for obj_dict in objects:
+            obj = uc(UID=obj_dict['UID'])[0].getObject()
+            # normal permissions still apply for this user
+            check_jsonapi_permission(obj)
             try:
-                obj = uc(UID=obj_dict['UID'])[0].getObject()
                 workflow.doActionFor(obj, action)
                 obj.reindexObject()
             except Exception as e:
@@ -114,6 +117,8 @@ class doActionFor(object):
             if not obj_path.startswith("/"):
                 obj_path = "/" + obj_path
             obj = context.restrictedTraverse(str(site_path + obj_path))
+            # normal permissions still apply for this user
+            check_jsonapi_permission(obj)
             if obj_path.startswith(site_path):
                 obj_path = obj_path[len(site_path):]
             try:

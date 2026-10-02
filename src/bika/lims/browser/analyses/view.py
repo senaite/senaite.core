@@ -229,6 +229,7 @@ class AnalysesView(ListingView):
                         "to_be_verified",
                         "verified",
                         "published",
+                        "locked",
                     ]
                 },
                 "columns": self.columns.keys()
@@ -559,7 +560,10 @@ class AnalysesView(ListingView):
         unit_choices = obj.getUnitChoices()
         vocab = []
         for unit in unit_choices:
-            value = unit.get("value", "")
+            # Strip surrounding whitespace so configuration typos like
+            # "mg/L " don't break the round-trip with the analysis's
+            # stored Unit value.
+            value = unit.get("value", "").strip()
             formatted = format_supsub_unicode(value)
             vocab.append({
                 "ResultValue": value,
@@ -738,7 +742,10 @@ class AnalysesView(ListingView):
         item['class']['service'] = 'service_title'
         item['service_uid'] = obj.getServiceUID
         item['Keyword'] = obj.getKeyword
-        item['Unit'] = format_supsub(obj.getUnit) if obj.getUnit else ''
+        # Strip surrounding whitespace from the stored Unit so it can
+        # match the (also-stripped) values in the unit choices dropdown.
+        unit = (obj.getUnit or "").strip()
+        item['Unit'] = format_supsub(unit) if unit else ''
         item['retested'] = obj.getRetestOfUID and True or False
         if self.is_analysis_edition_allowed(obj):
             modal_url = "{}/edit_analysis_modal".format(
@@ -1176,7 +1183,8 @@ class AnalysesView(ListingView):
                 continue
 
             interim_value = interim_field.get("value", "")
-            interim_allow_empty = interim_field.get("allow_empty") == "on"
+            interim_allow_empty = interim_field.get("allow_empty", False)
+            interim_allow_empty = api.to_bool(interim_allow_empty)
             interim_unit = interim_field.get("unit", "")
 
             # Get the interim's formatted value

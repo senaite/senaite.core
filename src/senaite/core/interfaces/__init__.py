@@ -64,6 +64,11 @@ class IHideActionsMenu(Interface):
     """
 
 
+class IAuditLog(Interface):
+    """Marker interface for Audit Log
+    """
+
+
 class IAjaxEditForm(Interface):
     """Ajax edit form adapter
     """
@@ -161,6 +166,24 @@ class ISamples(Interface):
 
 class ISamplesView(Interface):
     """Marker interface for samples listing view
+    """
+
+
+class ILockingState(Interface):
+    """Marker interface for samples in a state that requires their analyses
+    to be locked (read-only), e.g. disposed or dispatched. Add-ons can mark
+    their own sample states with an interface that inherits from this one so
+    the analyses get locked without adding a new guard in senaite.core.
+    """
+
+
+class IDispatched(ILockingState):
+    """Marker interface for dispatched samples
+    """
+
+
+class IDisposed(ILockingState):
+    """Marker interface for disposed samples
     """
 
 
@@ -546,6 +569,16 @@ class ICalculations(Interface):
     """
 
 
+class IMethod(Interface):
+    """Marker interface for Method
+    """
+
+
+class IMethods(Interface):
+    """Marker interface for methods folder
+    """
+
+
 class IResultsReport(Interface):
     """Marker interface for Results Report
     """
@@ -562,8 +595,17 @@ class ISimpleImage(Interface):
 
 
 class IAfterCreateSampleHook(Interface):
-    """Subscription adapter after the sample was created
+    """Subscription adapter run by sample-creation paths after a
+    new Sample is created (e.g. via the AR add form or the
+    'duplicate_sample' transition).
+
+    Implementations may declare an integer attribute ``sort`` on
+    the instance to influence dispatch order — lower values run
+    first. Hooks that do not set ``sort`` are treated as 10
+    (the default). Use this to pin pre/post-processing hooks
+    relative to the partition-copy default at sort=10.
     """
+
     def update(sample, source=None):
         """Update the sample after it was created
 
@@ -603,3 +645,7 @@ class IMultiUploadFileRemover(Interface):
 
         :param uids: Set or list of UIDs to remove
         """
+
+class ILaboratory(Interface):
+    """Marker interface for lab info
+    """
