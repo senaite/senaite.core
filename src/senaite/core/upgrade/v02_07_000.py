@@ -124,9 +124,16 @@ def normalize_id_formatting_rows(tool):
     programmatic update of the setup is refused.
     """
     setup = api.get_senaite_setup()
-    rows = setup.id_formatting
+    if setup is None:
+        logger.warning("SenaiteSetup not found [SKIP]")
+        return
+    # Read the stored value, not the field default: a site that has
+    # never saved the ID server tab has no value of its own, and the
+    # default is unicode already. Writing it out here would pin today's
+    # defaults into that site's database for good.
+    rows = setup.__dict__.get("id_formatting")
     if not rows:
-        logger.info("No ID formatting rows to normalize [SKIP]")
+        logger.info("No stored ID formatting rows to normalize [SKIP]")
         return
     setup.id_formatting = [normalized_row(row) for row in rows]
     logger.info("Normalized %s ID formatting row(s)" % len(rows))
