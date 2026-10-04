@@ -3,6 +3,18 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Store the ID formatting rows as unicode"
+      description="The rows came over from the Archetypes RecordsField as
+                   native strings, while the Dexterity subfields are TextLine
+                   and only accept unicode. Validating the Setup object
+                   therefore fails over a field nobody edited, which refuses
+                   every programmatic update of the setup."
+      source="2758"
+      destination="2759"
+      handler=".v02_07_000.normalize_id_formatting_rows"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Drop ordering annotations from Instruments"
       description="Remove the plone.folder.ordered.order PersistentList and
                    plone.folder.ordered.pos OIBTree annotations from every
