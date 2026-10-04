@@ -129,6 +129,9 @@ def drop_setup_marker_behavior(tool):
     """
     portal_types = api.get_tool("portal_types")
     fti = portal_types.getTypeInfo("Setup")
+    if fti is None:
+        logger.warning("Setup type not found [SKIP]")
+        return
     behaviors = list(fti.behaviors)
     if EXCLUDE_FROM_NAV_BEHAVIOR not in behaviors:
         logger.info("Setup FTI has no stale marker behavior [SKIP]")
