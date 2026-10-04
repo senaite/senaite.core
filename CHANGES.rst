@@ -6,6 +6,7 @@ Changelog
 
 - #3023 Return a 404 when at_download is traversed on non-Archetypes content
 - #3024 Store the ID formatting rows as unicode
+- #3034 Store the ID formatting rows as unicode
 - #3022 Build the JavaScript bundles in CI
 - #3020 Use UnorderedOrdering for Instruments to avoid ZODB conflicts
 - #3021 Update JavaScript dependencies
