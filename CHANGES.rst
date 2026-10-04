@@ -9,6 +9,7 @@ Changelog
 - #3025 Drop the stale marker behavior from the Setup FTI
 - #3035 Drop the stale marker behavior from the Setup FTI
 - #3024 Store the ID formatting rows as unicode
+- #3034 Store the ID formatting rows as unicode
 - #3022 Build the JavaScript bundles in CI
 - #3020 Use UnorderedOrdering for Instruments to avoid ZODB conflicts
 - #3021 Update JavaScript dependencies
