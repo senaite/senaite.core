@@ -158,12 +158,17 @@ class RecordsField(RecordField):
         if errors and name in errors:
             return True
 
+        # Pass the whole set down. A subfield validator that checks one
+        # row against the others (uniqueness, for instance) has no other
+        # way to see them, and reading them back off the request assumes
+        # the value arrived through a browser form.
         validation_results = (
             RecordField.validate(
                 self,
                 record,
                 instance,
                 errors={},
+                records=value,
                 **kwargs
                 )
             for record
