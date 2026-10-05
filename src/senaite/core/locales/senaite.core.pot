@@ -7195,6 +7195,11 @@ msgstr ""
 msgid "biannually"
 msgstr ""
 
+#. Default: "This is a test message from the mail settings of your SENAITE installation.\n\nReceiving it at the address configured as the site's 'From' address means outgoing mail is working, and that results reports and notifications will reach their recipients."
+#: senaite/core/browser/controlpanel/mail.py:51
+msgid "body_test_email"
+msgstr ""
+
 #: senaite/core/browser/worksheets/worksheet/templates/print/sample_by_column.pt:48
 #: senaite/core/browser/worksheets/worksheet/templates/print/sample_by_row.pt:48
 msgid "by"
@@ -11224,6 +11229,11 @@ msgstr ""
 #. Default: "Interface Code"
 #: bika/lims/content/instrument.py:248
 msgid "subfield_label_instrument_interface_name"
+msgstr ""
+
+#. Default: "Test e-mail from SENAITE"
+#: senaite/core/browser/controlpanel/mail.py:47
+msgid "subject_test_email"
 msgstr ""
 
 #. Default: "This sample has been dispatched by ${actor} on ${date}"
