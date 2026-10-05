@@ -50,12 +50,14 @@ TEST_MAIL_SUBJECT = _(
 
 TEST_MAIL_BODY = _(
     "body_test_email",
-    default=u"This is a test message from the mail settings of your "
+    default=u"Hello,\n\n"
+            u"This is a test message from the mail settings of your "
             u"SENAITE installation.\n\n"
-            u"Receiving it at the address configured as the site's "
-            u"'From' address means outgoing mail is working, and that "
-            u"results reports and notifications will reach their "
-            u"recipients.")
+            u"If it reached you, outgoing mail is working, and the "
+            u"results reports and notifications your laboratory sends "
+            u"will find their recipients too.\n\n"
+            u"Nothing else to do here. Have a good day.\n\n"
+            u"SENAITE")
 
 
 class MailControlPanelForm(BaseMailControlPanelForm):
