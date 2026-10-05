@@ -7214,11 +7214,6 @@ msgstr "auto"
 msgid "biannually"
 msgstr "halbjährlich"
 
-#. Default: "This is a test message from the mail settings of your SENAITE installation.\n\nReceiving it at the address configured as the site's 'From' address means outgoing mail is working, and that results reports and notifications will reach their recipients."
-#: senaite/core/browser/controlpanel/mail.py:51
-msgid "body_test_email"
-msgstr "Dies ist eine Testnachricht aus den E-Mail-Einstellungen Ihrer SENAITE-Installation.\n\nWenn sie an der Adresse ankommt, die als Absenderadresse der Site eingetragen ist, funktioniert der Mailversand, und Befundberichte und Benachrichtigungen erreichen ihre Empfänger."
-
 #: senaite/core/browser/worksheets/worksheet/templates/print/sample_by_column.pt:48
 #: senaite/core/browser/worksheets/worksheet/templates/print/sample_by_row.pt:48
 msgid "by"
@@ -11608,11 +11603,6 @@ msgstr "Ordner zum Import der Prüfgeräteergebnisse"
 #: bika/lims/content/instrument.py:248
 msgid "subfield_label_instrument_interface_name"
 msgstr "Schnittstellencode"
-
-#. Default: "Test e-mail from SENAITE"
-#: senaite/core/browser/controlpanel/mail.py:47
-msgid "subject_test_email"
-msgstr "Test-E-Mail von SENAITE"
 
 #. Default: "This sample has been dispatched by ${actor} on ${date}"
 #: senaite/core/browser/viewlets/templates/sample_dispatched_viewlet.pt:14
