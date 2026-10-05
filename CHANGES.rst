@@ -4,8 +4,8 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3042 Fix result options not settable outside a browser form
 - #3023 Return a 404 when at_download is traversed on non-Archetypes content
-- #3041 Fix result options not settable outside a browser form
 - #3022 Build the JavaScript bundles in CI
 - #3020 Use UnorderedOrdering for Instruments to avoid ZODB conflicts
 - #3021 Update JavaScript dependencies
