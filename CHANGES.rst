@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3037 Drop the obsolete JSON API error handler patch
 - #3022 Build the JavaScript bundles in CI
 - #3020 Use UnorderedOrdering for Instruments to avoid ZODB conflicts
 - #3021 Update JavaScript dependencies
