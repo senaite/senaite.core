@@ -47,6 +47,7 @@
   <include package=".worksheets"/>
 
   <!-- Files -->
+  <include file="at_download.zcml"/>
   <include file="auditlog.zcml"/>
 
 </configure>
