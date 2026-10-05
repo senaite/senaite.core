@@ -546,20 +546,26 @@ class Calculation(Container):
         """
         params = []
 
+        def row(keyword, fallback):
+            """One test parameter row, as the field's schema wants it
+
+            Both subfields are TextLine, which only accepts unicode. A
+            service's keyword is an Archetypes StringField and comes
+            back as a native string, so a calculation that depends on
+            one used to store a row that no longer validated.
+            """
+            keyword = api.safe_unicode(keyword)
+            existing = [x.get("value") for x in value
+                        if api.safe_unicode(x.get("keyword")) == keyword]
+            val = existing[0] if existing else fallback
+            return {"keyword": keyword, "value": api.safe_unicode(val)}
+
         # Set default/existing values for InterimField keywords
         for interim in self.getInterimFields():
-            keyword = interim.get("keyword")
-            ex = [x.get("value") for x in value if
-                  x.get("keyword") == keyword]
-            params.append({"keyword": keyword,
-                           "value": ex[0] if ex else interim.get("value")})
+            params.append(row(interim.get("keyword"), interim.get("value")))
         # Set existing/blank values for service keywords
         for service in self.getDependentServices():
-            keyword = service.getKeyword()
-            ex = [x.get("value") for x in value if
-                  x.get("keyword") == keyword]
-            params.append({"keyword": keyword,
-                           "value": ex[0] if ex else ""})
+            params.append(row(service.getKeyword(), ""))
 
         mutator = self.mutator("test_parameters")
         mutator(self, params)
