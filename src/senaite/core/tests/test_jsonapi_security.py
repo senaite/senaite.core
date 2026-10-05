@@ -26,6 +26,7 @@ from AccessControl import Unauthorized
 from bika.lims import api
 from bika.lims.jsonapi import check_jsonapi_permission
 from bika.lims.jsonapi import handle_errors
+from bika.lims.jsonapi import set_error_status
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import TEST_USER_ID
@@ -121,8 +122,17 @@ class TestJSONAPISecurity(BaseTestCase):
 
     def assert_blocked(self, browser, route, query):
         """The route must answer with an authorization failure
+
+        Both halves matter. The envelope tells a client what went
+        wrong, and the status tells every layer in between: a proxy, a
+        log, a monitoring check and a browser all read the status and
+        none of them parse the body. The route used to answer 200 with
+        a failure envelope, which reads as success to all of them.
         """
+        browser.raiseHttpErrors = False
         self.open_api(browser, route, query)
+        status = browser.headers["status"].split()[0]
+        self.assertIn(status, ("401", "403"))
         self.assertIn('"success": false', browser.contents)
         self.assertIn("Unauthorized", browser.contents)
 
@@ -157,6 +167,7 @@ class TestJSONAPISecurity(BaseTestCase):
         setRoles(self.portal, TEST_USER_ID, ["Member"])
         transaction.commit()
         browser = self.get_authenticated_browser()
+        browser.raiseHttpErrors = False
         self.open_api(browser, "getusers", "roles:list=Manager")
         self.assertIn('"success": false', browser.contents)
         self.assertIn("Access JSON API", browser.contents)
@@ -187,6 +198,57 @@ class TestJSONAPISecurity(BaseTestCase):
         login(self.portal, TEST_USER_NAME)
         # must not raise and returns None
         self.assertIsNone(check_jsonapi_permission(self.target))
+
+
+class FakeResponse(object):
+    """Records the status the error handler sets."""
+
+    def __init__(self):
+        self.status = None
+
+    def setStatus(self, status):
+        self.status = status
+
+
+class FakeRequest(object):
+    def __init__(self):
+        self.response = FakeResponse()
+
+
+class TestErrorStatus(BaseTestCase):
+    """The status an error answers with.
+
+    It belongs to the error reaching the client, not to the moment the
+    exception object was made. A refusal that answers 200 with a
+    failure envelope reads as success to everything between the route
+    and the caller.
+    """
+    layer = JSONAPI_TESTING
+
+    def test_a_typed_error_answers_with_its_own_status(self):
+        from senaite.jsonapi.exceptions import NotFoundError
+        request = FakeRequest()
+        set_error_status(NotFoundError("no such thing"), request)
+        self.assertEqual(request.response.status, 404)
+
+    def test_a_plain_exception_is_a_server_error(self):
+        request = FakeRequest()
+        set_error_status(RuntimeError("boom"), request)
+        self.assertEqual(request.response.status, 500)
+
+    # A status that is not a number says nothing, so it is not trusted.
+    def test_a_nonsense_status_is_a_server_error(self):
+        class Odd(Exception):
+            status = "teapot"
+
+        request = FakeRequest()
+        set_error_status(Odd("x"), request)
+        self.assertEqual(request.response.status, 500)
+
+    def test_outside_a_request_nothing_happens(self):
+        from senaite.jsonapi.exceptions import NotFoundError
+        # must not raise
+        self.assertIsNone(set_error_status(NotFoundError("x"), None))
 
 
 class TestHandleErrorsNoTracebackLeak(BaseTestCase):
@@ -243,5 +305,6 @@ def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestJSONAPISecurity))
+    suite.addTest(makeSuite(TestErrorStatus))
     suite.addTest(makeSuite(TestHandleErrorsNoTracebackLeak))
     return suite
