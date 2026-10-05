@@ -58,7 +58,7 @@ setup(
         "plone.app.referenceablebehavior",
         "plone.app.relationfield",
         "plone.app.z3cform",
-        "plone.jsonapi.core",
+        "plone.jsonapi.core>=0.8.0",
         "plone.resource",
         "plone.subrequest",
         "setuptools",

@@ -25,7 +25,7 @@ import transaction
 from AccessControl import Unauthorized
 from bika.lims import api
 from bika.lims.jsonapi import check_jsonapi_permission
-from bika.lims.jsonapi import handle_errors
+from plone.jsonapi.core.browser.decorators import handle_errors
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import TEST_USER_ID
@@ -121,8 +121,17 @@ class TestJSONAPISecurity(BaseTestCase):
 
     def assert_blocked(self, browser, route, query):
         """The route must answer with an authorization failure
+
+        Both halves matter. The envelope tells a client what went
+        wrong, and the status tells every layer in between: a proxy, a
+        log, a monitoring check and a browser all read the status and
+        none of them parse the body. The route used to answer 200 with
+        a failure envelope, which reads as success to all of them.
         """
+        browser.raiseHttpErrors = False
         self.open_api(browser, route, query)
+        status = browser.headers["status"].split()[0]
+        self.assertIn(status, ("401", "403"))
         self.assertIn('"success": false', browser.contents)
         self.assertIn("Unauthorized", browser.contents)
 
@@ -157,6 +166,7 @@ class TestJSONAPISecurity(BaseTestCase):
         setRoles(self.portal, TEST_USER_ID, ["Member"])
         transaction.commit()
         browser = self.get_authenticated_browser()
+        browser.raiseHttpErrors = False
         self.open_api(browser, "getusers", "roles:list=Manager")
         self.assertIn('"success": false', browser.contents)
         self.assertIn("Access JSON API", browser.contents)
@@ -189,33 +199,54 @@ class TestJSONAPISecurity(BaseTestCase):
         self.assertIsNone(check_jsonapi_permission(self.target))
 
 
+class FakeResponse(object):
+    """Records the status a route's error handling sets."""
+
+    def __init__(self):
+        self.status = None
+
+    def setStatus(self, status):
+        self.status = status
+
+
+class FakeInstance(object):
+    """What a route provider looks like to the error decorator."""
+
+    def __init__(self):
+        self.request = type("R", (object,), {})()
+        self.request.response = FakeResponse()
+
+
 class TestHandleErrorsNoTracebackLeak(BaseTestCase):
-    """Regression tests for the handle_errors decorator.
+    """Regression tests for the JSON API error decorator.
 
     The decorator used to place `traceback.format_exc()` verbatim into
     the JSON `message` field, leaking file paths, function names and
     code structure to any caller that could trigger an exception
-    (CWE-209). The response must now carry only the exception's own
-    message plus its class name; the full traceback goes to the
-    server-side log.
+    (CWE-209). The response must carry only the exception's own message
+    plus its class name; the full traceback goes to the server-side log.
+
+    senaite.core used to monkey-patch the decorator to get that. The
+    behaviour now comes from plone.jsonapi.core itself, so the tests
+    follow it there rather than guarding a patch that is gone.
     """
     layer = JSONAPI_TESTING
 
     def test_message_is_the_exception_message_only(self):
         @handle_errors
-        def raiser(*args, **kwargs):
+        def raiser(instance, *args, **kwargs):
             raise ValueError("the visible message")
 
-        result = raiser()
+        result = raiser(FakeInstance())
         self.assertEqual(result["message"], "the visible message")
         self.assertFalse(result["success"])
 
     def test_response_does_not_contain_a_traceback(self):
         @handle_errors
-        def raiser(*args, **kwargs):
+        def raiser(instance, *args, **kwargs):
             raise RuntimeError("boom")
 
-        result = raiser()
+        result = raiser(FakeInstance())
         # The old version stuffed traceback.format_exc() into `message`,
         # which always starts with "Traceback (most recent call last):".
         self.assertNotIn("Traceback", result["message"])
@@ -224,19 +255,42 @@ class TestHandleErrorsNoTracebackLeak(BaseTestCase):
 
     def test_response_includes_the_exception_type(self):
         @handle_errors
-        def raiser(*args, **kwargs):
+        def raiser(instance, *args, **kwargs):
             raise KeyError("missing")
 
-        result = raiser()
+        result = raiser(FakeInstance())
         self.assertEqual(result["type"], "KeyError")
 
     def test_successful_call_passes_through_unchanged(self):
         @handle_errors
-        def ok(*args, **kwargs):
+        def ok(instance, *args, **kwargs):
             return {"success": True, "items": [1, 2, 3]}
 
-        result = ok()
+        result = ok(FakeInstance())
         self.assertEqual(result, {"success": True, "items": [1, 2, 3]})
+
+    # The status belongs to the error reaching the client, not to the
+    # moment it was constructed: an error that is caught on the way to a
+    # successful answer must not leave its status behind on it.
+    def test_the_status_is_set_when_the_error_is_rendered(self):
+        from senaite.jsonapi.exceptions import NotFoundError
+
+        @handle_errors
+        def raiser(instance, *args, **kwargs):
+            raise NotFoundError("no such thing")
+
+        instance = FakeInstance()
+        raiser(instance)
+        self.assertEqual(instance.request.response.status, 404)
+
+    def test_a_plain_exception_is_a_server_error(self):
+        @handle_errors
+        def raiser(instance, *args, **kwargs):
+            raise RuntimeError("boom")
+
+        instance = FakeInstance()
+        raiser(instance)
+        self.assertEqual(instance.request.response.status, 500)
 
 
 def test_suite():

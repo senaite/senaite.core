@@ -51,33 +51,6 @@ def check_jsonapi_permission(obj):
     raise Unauthorized(msg)
 
 
-def handle_errors(f):
-    """JSON error handler for the SENAITE API routes.
-
-    Returns a JSON envelope with only the exception message and its
-    class name; the full traceback is logged server-side but never
-    included in the response body. The previous implementation
-    stuffed `traceback.format_exc()` verbatim into the `message`
-    field, which leaked file paths, function names, and code
-    structure to any caller that could trigger an error
-    (CWE-209 information exposure through an error message).
-    """
-    from plone.jsonapi.core.browser.helpers import error
-
-    def decorator(*args, **kwargs):
-        try:
-            return f(*args, **kwargs)
-        except Exception as exc:
-            logger.error(
-                "JSON API error in %s: %s",
-                getattr(f, "__name__", repr(f)),
-                traceback.format_exc(),
-            )
-            return error(str(exc), type=type(exc).__name__)
-
-    return decorator
-
-
 def get_include_fields(request):
     """Retrieve include_fields values from the request
     """
