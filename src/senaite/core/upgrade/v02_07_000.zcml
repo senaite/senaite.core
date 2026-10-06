@@ -3,6 +3,18 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Drop the stale marker behavior from the Setup FTI"
+      description="The FTI lists a marker interface among the type's
+                   behaviors. It is not a registered behavior, so looking the
+                   behaviors up raises BehaviorRegistrationNotFound, which is
+                   enough to refuse any update of the Setup object through the
+                   API."
+      source="2759"
+      destination="2760"
+      handler=".v02_07_000.drop_setup_marker_behavior"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Store the ID formatting rows as unicode"
       description="The rows came over from the Archetypes RecordsField as
                    native strings, while the Dexterity subfields are TextLine
