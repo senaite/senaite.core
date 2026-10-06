@@ -29,7 +29,9 @@ from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.content.mixins import ClientAwareMixin
 from senaite.core.interfaces import IAnalysisProfile
+from senaite.core.schema.uidreferencefield import UIDField
 from senaite.core.schema import UIDReferenceField
+from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
 from senaite.core.z3cform.widgets.listing.widget import ListingWidgetFactory
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
@@ -43,7 +45,7 @@ from zope.interface import invariant
 class IAnalysisProfileRecord(Interface):
     """Record schema for selected services
     """
-    uid = schema.TextLine(title=u"Profile UID")
+    uid = UIDField(title=u"Profile UID")
     hidden = schema.Bool(title=u"Hidden")
 
 
@@ -102,7 +104,7 @@ class IAnalysisProfileSchema(model.Schema):
     directives.widget("services",
                       ListingWidgetFactory,
                       listing_view="analysisprofile_services_widget")
-    services = schema.List(
+    services = DataGridField(
         title=_(
             u"title_analysisprofile_services",
             default=u"Profile Analyses"
