@@ -1498,7 +1498,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         """Sets the Specifications and ResultRange values
         """
         current_spec = self.getRawSpecification()
-        if value and current_spec == api.get_uid(value):
+        if value and current_spec == get_specification_uid(value):
             # Specification has not changed, preserve the current value to
             # prevent result ranges (both from Sample and from analyses) from
             # being overriden
@@ -2684,6 +2684,24 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             "sort_order": "ascending",
         }
         return query
+
+
+def get_specification_uid(value):
+    """Return the UID of a Specification field value, or None.
+
+    A UIDReferenceField mutator is handed whatever the field accepts,
+    and that includes a list even where only one reference is meant:
+    the JSON API normalises every reference to one before setting it.
+    `api.get_uid` refuses a list outright, so the comparison that keeps
+    the result ranges from being overwritten has to unwrap it first.
+
+    An empty value has no UID, and neither has a list of more than one,
+    which is not a value this single-valued field can hold.
+    """
+    values = api.to_list(value)
+    if len(values) != 1 or not values[0]:
+        return None
+    return api.get_uid(values[0])
 
 
 registerType(AnalysisRequest, PROJECTNAME)
