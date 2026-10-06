@@ -56,6 +56,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.api import dtime
+from senaite.core.api.choices import to_options
 from senaite.core.api.analysisservice import get_calculation_dependencies_for
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
@@ -1330,8 +1331,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
     def get_conditions_info(self, obj):
         conditions = obj.getConditions()
         for condition in conditions:
-            choices = condition.get("choices", "")
-            options = filter(None, choices.split('|'))
+            options = to_options(condition.get("choices", ""))
             if options:
                 condition.update({"options": options})
         return conditions
