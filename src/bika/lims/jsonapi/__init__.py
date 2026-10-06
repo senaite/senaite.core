@@ -51,16 +51,43 @@ def check_jsonapi_permission(obj):
     raise Unauthorized(msg)
 
 
+def set_error_status(exc, request):
+    """Put the status an exception carries onto the response.
+
+    A typed JSON API error knows the status it means (401, 403, 404,
+    ...); anything else is a server error. The status belongs to the
+    error reaching the client, so it is set here, where the envelope is
+    built, and not where the exception object was made: an error that is
+    caught on the way to a successful answer must not leave its status
+    behind on that answer.
+
+    :param request: the current request, or None outside one
+    """
+    status = getattr(exc, "status", None)
+    if not isinstance(status, int):
+        status = 500
+    if request is None:
+        return
+    response = getattr(request, "response", None)
+    if response is not None:
+        response.setStatus(status)
+
+
 def handle_errors(f):
     """JSON error handler for the SENAITE API routes.
 
     Returns a JSON envelope with only the exception message and its
-    class name; the full traceback is logged server-side but never
-    included in the response body. The previous implementation
-    stuffed `traceback.format_exc()` verbatim into the `message`
-    field, which leaked file paths, function names, and code
-    structure to any caller that could trigger an error
-    (CWE-209 information exposure through an error message).
+    class name, and sets the HTTP status the exception carries; the
+    full traceback is logged server-side but never included in the
+    response body. An earlier implementation stuffed
+    `traceback.format_exc()` verbatim into the `message` field, which
+    leaked file paths, function names, and code structure to any caller
+    that could trigger an error (CWE-209 information exposure through
+    an error message).
+
+    A refusal that answers 200 with a failure envelope reads as success
+    to a proxy, a log, a monitoring check and a browser alike, none of
+    which parse the body.
     """
     from plone.jsonapi.core.browser.helpers import error
 
@@ -73,6 +100,7 @@ def handle_errors(f):
                 getattr(f, "__name__", repr(f)),
                 traceback.format_exc(),
             )
+            set_error_status(exc, api.get_request())
             return error(str(exc), type=type(exc).__name__)
 
     return decorator
