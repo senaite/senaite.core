@@ -217,16 +217,18 @@ class ASTMImporter(object):
     def get_sender(self):
         """Return the instrument name, serial and version
 
+        Components the analyzer does not send travel as null, and a message
+        can reach us without a header at all, so none of the three can be
+        assumed to be a string. Surrounding whitespace is dropped as well,
+        since analyzers pad these fields to a fixed width and the instrument
+        they have to match is configured without the padding
+
         :returns: Tuple of instrument name, serial, version
         """
-        header = self.get_header()
-        if not header:
-            return None
-        sender = header.get("sender", {})
-        name = sender.get("name", "")
-        serial = sender.get("serial", "")
-        version = sender.get("version", "")
-        return name, serial, version
+        header = self.get_header() or {}
+        sender = header.get("sender") or {}
+        keys = ("name", "serial", "version")
+        return tuple([(sender.get(key) or "").strip() for key in keys])
 
     def create_attachment(self, container, contents, filename=None):
         """Create a new attachment with the given contents
