@@ -37,6 +37,7 @@ from zope.event import notify
 from zope.interface import alsoProvides
 from zope.interface import implementer
 from zope.schema import ASCIILine
+from zope.schema.interfaces import InvalidValue
 from zope.schema import List
 
 BACKREFS_STORAGE = "senaite.core.schema.uidreferencefield.backreferences"
@@ -114,11 +115,65 @@ def get_backref_storage(context):
 
 
 @implementer(IUIDReferenceField)
+class UIDField(ASCIILine):
+    """A single UID
+
+    Takes a native string and a text string alike, and the writers
+    below store the native one. Which of the two arrives depends on
+    nothing but the route: a JSON body carries text, code running in
+    the process carries what the catalog holds. Refusing either turns
+    that detail into a WrongContainedType on a field the caller never
+    mentioned, which is a poor way to learn about it.
+
+    The tolerance is in `_validate` rather than in `_type`, which stays
+    the single type the field stores. z3c.form builds a value of a
+    collection by calling its value type's `_type`, so a tuple there
+    reaches the form as an attempt to instantiate `basestring`.
+    """
+
+    def _validate(self, value):
+        if isinstance(value, six.string_types):
+            # the writers below store the native string either way
+            value = to_uid(value)
+            # The reference field checks this for the UIDs it holds
+            # itself. A UID written into a datagrid row had nothing
+            # checking it, so anything shaped like a line of ASCII was
+            # stored and only came up later, as a row pointing at
+            # nothing.
+            if value and not api.is_uid(value):
+                raise InvalidValue(value)
+        super(UIDField, self)._validate(value)
+
+
+def to_uid(value):
+    """Normalize a UID to the native string it is stored as
+
+    A UID is made by plone.uuid as a native string, kept on the object
+    as one under `_plone.uuid`, handed out by `UID()` as one and
+    indexed in the uid catalog as one. A reference stored as text would
+    differ in type from the thing it points at, for no reason beyond
+    how it happened to arrive.
+
+    Text is converted, because that is how a UID arrives over the API.
+    Anything else, and anything that does not encode, is handed back
+    untouched, so the field refuses it with a message about the value
+    rather than about a conversion of ours that failed.
+    """
+    if isinstance(value, str):
+        return value
+    if isinstance(value, six.text_type):
+        try:
+            return str(value)
+        except UnicodeEncodeError:
+            return value
+    return value
+
+
 class UIDReferenceField(List, BaseField):
     """Stores UID references to other objects
     """
 
-    value_type = ASCIILine(title=u"UID")
+    value_type = UIDField(title=u"UID")
 
     def __init__(self, allowed_types=None, multi_valued=True, **kw):
         if allowed_types is None:
@@ -238,7 +293,10 @@ class UIDReferenceField(List, BaseField):
             uid = self.get_uid(v)
             if uid is None:
                 continue
-            uids.append(uid)
+            # Normalized here because api.get_uid hands a UID straight
+            # back, so the spelling the caller happened to have is the
+            # spelling that would be stored.
+            uids.append(to_uid(uid))
 
         # current set UIDs
         existing = self.to_list(self.get_raw(object))

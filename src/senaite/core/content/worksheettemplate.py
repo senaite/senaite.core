@@ -27,7 +27,9 @@ from bika.lims.interfaces import IDeactivable
 from plone.supermodel import model
 from plone.autoform import directives
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.schema.uidreferencefield import UIDField
 from senaite.core.schema import UIDReferenceField
+from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
 from senaite.core.content.base import Container
 from senaite.core.config.widgets import get_default_columns
@@ -82,7 +84,7 @@ def default_layout_positions(count_positions=None, start_pos=0):
 class IWorksheetTemplateServiceRecord(Interface):
     """Record schema for selected services
     """
-    uid = schema.TextLine(
+    uid = UIDField(
         title=_(u"title_service_uid", default=u"Service UID")
     )
 
@@ -342,7 +344,7 @@ class IWorksheetTemplateSchema(model.Schema):
         ListingWidgetFactory,
         listing_view="worksheettemplate_services_widget"
     )
-    services = schema.List(
+    services = DataGridField(
         title=_(
             u"title_worksheettemplate_services",
             default=u"Analysis Services"

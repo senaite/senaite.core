@@ -18,6 +18,7 @@ Test code taken from:
 Test preparation
 ----------------
 
+    >>> import six
     >>> import sys
     >>> from bika.lims import api
     >>> from plone.app.testing import setRoles
@@ -166,3 +167,99 @@ Removed reference UIDs are also ignored:
     ['REMOVED_UID']
     >>> field.get(context)
     []
+
+
+The shape of a UID
+------------------
+
+A UID is 32 hex characters, and whether it arrives as a native string or
+as text depends only on how it got here: a JSON body carries text, code
+running in the process carries what the catalog holds. The field takes
+both, so that detail does not end up as a WrongContainedType on a field
+the caller never mentioned.
+
+    >>> uid = api.get_uid(contact1)
+    >>> field.validate([str(uid)])
+    >>> field.validate([six.text_type(uid)])
+
+The tolerance lives in the validation, not in the type the field names.
+z3c.form builds the value of a collection by calling its value type's
+`_type` on every line of the form, so that has to stay a single type
+that can be instantiated:
+
+    >>> field.value_type._type(uid) == uid
+    True
+
+The same holds for a UID written into a datagrid row, which is the other
+place UIDs are stored:
+
+    >>> from senaite.core.content.analysisprofile import (
+    ...     IAnalysisProfileRecord)
+    >>> row = IAnalysisProfileRecord["uid"]
+    >>> row.validate(str(uid))
+    >>> row.validate(six.text_type(uid))
+
+Anything that is not a line of ASCII is still refused:
+
+    >>> row.validate(u"caf\xe9")
+    Traceback (most recent call last):
+    ...
+    InvalidValue
+
+What is stored is the native string, whichever of the two went in. A
+UID is made by plone.uuid as a native string, kept on the object as one
+and indexed in the uid catalog as one, so a reference stored as text
+would differ in type from the thing it points at:
+
+    >>> field.set(context, [six.text_type(uid)])
+    >>> stored = field.get_raw(context)
+    >>> [type(x).__name__ for x in stored]
+    ['str']
+    >>> stored == [uid]
+    True
+
+The same for a UID written into a datagrid row, which the datagrid
+field does when it stores them. zope.schema never asks a subfield to
+store anything, so the row would otherwise keep whichever spelling the
+caller had:
+
+    >>> profiles = portal.setup.analysisprofiles
+    >>> profile = api.create(profiles, "AnalysisProfile", title="Panel")
+    >>> services_folder = portal.bika_setup.bika_analysisservices
+    >>> service = api.create(services_folder,
+    ...                      "AnalysisService", title="pH", Keyword="pH")
+    >>> service_uid = api.get_uid(service)
+
+    >>> profile.setServices([{"uid": six.text_type(service_uid),
+    ...                       "hidden": False}])
+    >>> [type(r["uid"]).__name__ for r in profile.services]
+    ['str']
+    >>> profile.services[0]["uid"] == service_uid
+    True
+
+A row subfield refuses anything that is not a UID, which is what the
+reference field has always done for the UIDs it holds itself:
+
+    >>> row.validate(uid)
+    >>> row.validate(u"not-a-uid")
+    Traceback (most recent call last):
+    ...
+    InvalidValue
+    >>> row.validate(u"f" * 31)
+    Traceback (most recent call last):
+    ...
+    InvalidValue
+
+The portal's own UID is the one short one there is:
+
+    >>> row.validate("0")
+
+Something that is not a UID at all is handed back as it came, for the
+field to refuse rather than for the conversion to fail here:
+
+    >>> from senaite.core.schema.uidreferencefield import to_uid
+
+    >>> to_uid(u"caf\xe9") == u"caf\xe9"
+    True
+    >>> to_uid(None) is None
+    True
