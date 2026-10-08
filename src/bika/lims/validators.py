@@ -753,8 +753,8 @@ class PrePreservationValidator:
 
         instance = kwargs['instance']
         # fieldname = kwargs['field'].getName()
-        request = kwargs.get('REQUEST', {})
-        form = request.form
+        request = kwargs.get('REQUEST') or {}
+        form = getattr(request, "form", {})
         preservation = form.get('Preservation')
 
         if type(preservation) in (list, tuple):
@@ -1377,7 +1377,7 @@ class DefaultResultValidator(object):
     name = "service_defaultresult_validator"
 
     def __call__(self, value, **kwargs):
-        request = kwargs.get('REQUEST', {})
+        request = kwargs.get('REQUEST') or {}
         field_name = kwargs['field'].getName()
 
         default_result = request.get(field_name, None)
@@ -1417,7 +1417,7 @@ class ServiceConditionsValidator(object):
 
     def __call__(self, field_value, **kwargs):
         instance = kwargs["instance"]
-        request = kwargs.get("REQUEST", {})
+        request = kwargs.get("REQUEST") or {}
         translate = getToolByName(instance, "translation_service").translate
         field_name = kwargs["field"].getName()
 
