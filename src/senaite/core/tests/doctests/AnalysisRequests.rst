@@ -165,3 +165,68 @@ sets the widget.visible to 'invisible'.
     >>> p = doActionFor(an, 'submit')
     >>> DateReceivedFieldVisibility(ar1)(ar1, 'edit', ar1.schema['DateReceived'], 'default')
     'invisible'
+
+
+Date Sampled requirements with the sampling workflow (#2771)
+...........................................................
+
+Viewing a received sample makes Date Sampled required::
+
+    >>> from bika.lims.adapters.widgetvisibility import SamplingFieldsVisibility
+    >>> date_sampled = ar1.getField("DateSampled")
+    >>> SamplingFieldsVisibility(ar1).isVisible(date_sampled, "edit")
+    'visible'
+    >>> date_sampled.required
+    True
+
+With collection enabled, a new sample has no collection date yet. Its add form
+must hide Date Sampled and clear the requirement left by the received sample::
+
+    >>> bika_setup.setSamplingWorkflowEnabled(True)
+    >>> sampling_values = values.copy()
+    >>> del sampling_values["DateSampled"]
+    >>> pending = create_analysisrequest(client, request, sampling_values, service_uids)
+    >>> pending.getDateSampled() is None
+    True
+    >>> visibility = SamplingFieldsVisibility(pending)
+    >>> visibility.isVisible(date_sampled, "add")
+    'invisible'
+    >>> date_sampled.required
+    False
+
+Editing a sample awaiting collection must also clear that requirement::
+
+    >>> SamplingFieldsVisibility(ar1).isVisible(date_sampled, "edit")
+    'visible'
+    >>> visibility.isVisible(date_sampled, "edit")
+    'visible'
+    >>> date_sampled.required
+    False
+
+Without collection, the setup setting determines whether the date is required.
+Enabling collection must clear this requirement even when the setting is on::
+
+    >>> bika_setup.setSamplingWorkflowEnabled(False)
+    >>> bika_setup.setDateSampledRequired(True)
+    >>> SamplingFieldsVisibility(ar).isVisible(date_sampled, "add")
+    'visible'
+    >>> date_sampled.required
+    True
+    >>> bika_setup.setSamplingWorkflowEnabled(True)
+    >>> visibility.isVisible(date_sampled, "add")
+    'invisible'
+    >>> date_sampled.required
+    False
+    >>> bika_setup.setDateSampledRequired(False)
+    >>> bika_setup.setSamplingWorkflowEnabled(False)
+    >>> SamplingFieldsVisibility(ar).isVisible(date_sampled, "add")
+    'visible'
+    >>> date_sampled.required
+    False
+
+Received samples still require Date Sampled::
+
+    >>> SamplingFieldsVisibility(ar1).isVisible(date_sampled, "edit")
+    'visible'
+    >>> date_sampled.required
+    True

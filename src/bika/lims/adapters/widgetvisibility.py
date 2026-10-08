@@ -170,9 +170,13 @@ class SamplingFieldsVisibility(SenaiteATWidgetVisibility):
                 setup = api.get_senaite_setup()
                 field.required = setup.getDateSampledRequired()
 
-            elif sampling and mode == "add":
-                # sampling workflow enabled, don not display in add form
-                return "invisible"
+            else:
+                # Fields are shared between samples. Reset the requirement
+                # imposed by received samples or the setup setting.
+                field.required = False
+                if mode == "add":
+                    # sampling workflow enabled, do not display in add form
+                    return "invisible"
 
         elif field_name == "SamplingDate":
             if not sampling:
