@@ -1,5 +1,16 @@
-<div metal:define-macro="widget-wrapper"
-     i18n:domain="plone"
+<tal:wrapper metal:define-macro="widget-wrapper">
+
+<!-- Heading of the section this field opens, drawn above the field
+     itself. Only fields named in the schema's fieldset sections have
+     one; every other field renders exactly as before. -->
+<h4 class="senaite-fieldset-section"
+    i18n:domain="senaite.core"
+    i18n:translate=""
+    tal:define="section python:view.get_section_heading()"
+    tal:condition="section"
+    tal:content="section">Section</h4>
+
+<div i18n:domain="plone"
      tal:define="widget nocall:context;
                  widget_clazz python:widget.__class__.__name__;
                  widget_css_class python:'input-group input-group-sm d-flex' if widget_clazz != 'ListingWidget' else '';
@@ -105,3 +116,5 @@
   </tal:view_mode>
 
 </div>
+
+</tal:wrapper>
