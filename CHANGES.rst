@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3054 Fix Date Sampled incorrectly required when the sampling workflow is enabled
 - #3023 Return a 404 when at_download is traversed on non-Archetypes content
 - #3022 Build the JavaScript bundles in CI
 - #3020 Use UnorderedOrdering for Instruments to avoid ZODB conflicts
