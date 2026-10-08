@@ -915,7 +915,9 @@ class UncertaintiesValidator:
     def __call__(self, subf_value, *args, **kwargs):
 
         instance = kwargs['instance']
-        request = kwargs.get('REQUEST', {})
+        # Whole-object validation passes REQUEST explicitly as None, so a
+        # default for the missing key is not enough here
+        request = kwargs.get('REQUEST') or {}
         fieldname = kwargs['field'].getName()
         translate = getToolByName(instance, 'translation_service').translate
 
@@ -926,7 +928,15 @@ class UncertaintiesValidator:
         if instance.REQUEST.get(key, False):
             return True
 
-        for i, value in enumerate(request[fieldname]):
+        # A sub-field validator is handed one cell at a time, so this one
+        # reads the whole records value back out of the form. There is no
+        # form when the field is set programmatically, through the API or
+        # an import, and the validator then has nothing to check.
+        records = request.get(fieldname)
+        if records is None:
+            return True
+
+        for i, value in enumerate(records):
 
             # Values must be numbers
             try:
