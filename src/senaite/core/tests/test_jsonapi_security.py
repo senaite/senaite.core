@@ -25,6 +25,7 @@ import transaction
 from AccessControl import Unauthorized
 from bika.lims import api
 from bika.lims.jsonapi import check_jsonapi_permission
+from bika.lims.jsonapi import check_jsonapi_read_permission
 from bika.lims.jsonapi import handle_errors
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import PloneSandboxLayer
@@ -61,20 +62,27 @@ class TestJSONAPISecurity(BaseTestCase):
     """Regression tests for GHSA-jrw6-7x4q-w25j
 
     The state-changing JSON API routes (`update`, `update_many`, `remove`,
-    `doActionFor`, `doActionFor_many`), the user-enumeration route
-    (`getusers`) and the reading routes (`read`,
-    `allowedTransitionsFor_many`) must enforce the `AccessJSONAPI`
-    permission. The `@@API` view itself is published with `zope2.View`,
-    which Anonymous holds on the site root, so the per-route permission
-    check is the only barrier against anonymous / under-privileged
-    callers (CWE-862).
+    `doActionFor`, `doActionFor_many`) and the user-enumeration route
+    (`getusers`) must enforce the `AccessJSONAPI` permission. The `@@API`
+    view itself is published with `zope2.View`, which Anonymous holds on
+    the site root, so the per-route permission check is the only barrier
+    against anonymous / under-privileged callers (CWE-862).
 
-    The reading routes were left ungated by the original fix. `read`
-    takes a caller-chosen `catalog_name`, every index of that catalog as
-    a filter and `include_fields` / `include_methods`, so without the
-    gate it answers with a filterable, paginated dump of whatever the
-    caller may view. `allowedTransitionsFor_many` discloses the workflow
-    transitions available per UID.
+    The reading routes (`read`, `allowedTransitionsFor_many`) were left
+    ungated by the original fix. `read` takes a caller-chosen
+    `catalog_name`, every index of that catalog as a filter and
+    `include_fields` / `include_methods`, so without a gate it answers
+    with a filterable, paginated dump of whatever the caller may view.
+    `allowedTransitionsFor_many` discloses the workflow transitions
+    available per UID.
+
+    They are gated with `ReadJSONAPI` and not with `AccessJSONAPI`,
+    because the UI calls them from views that every authenticated user
+    works in, while `AccessJSONAPI` is held by LabManager and Manager
+    only. Widening that one permission instead would have handed the
+    writing routes to everybody. What the gate has to stop is the
+    anonymous caller, for whom acquisition from the site root turns the
+    route into a bulk download.
 
     `bika_setup` is the object the advisory PoC abused: its UID is
     resolvable, so each route reaches the permission check.
@@ -99,7 +107,6 @@ class TestJSONAPISecurity(BaseTestCase):
         """
         values = quote(json.dumps({"/bika_setup": {"Title": "hacked"}}))
         paths = quote(json.dumps(["/bika_setup"]))
-        uids = quote(json.dumps([self.target_uid]))
         return [
             ("update", "obj_uid=%s&Title=hacked" % self.target_uid),
             ("update_many", "input_values=%s" % values),
@@ -107,6 +114,13 @@ class TestJSONAPISecurity(BaseTestCase):
             ("doActionFor", "UID=%s&action=reject" % self.target_uid),
             ("doActionFor_many", "action=reject&f=%s" % paths),
             ("getusers", "roles:list=Manager"),
+        ]
+
+    def get_reading_routes(self):
+        """Return (route, query) for every route gated by ReadJSONAPI
+        """
+        uids = quote(json.dumps([self.target_uid]))
+        return [
             ("read", "catalog_name=portal_catalog&portal_type=Client"),
             ("allowedTransitionsFor_many", "uid=%s" % uids),
         ]
@@ -143,6 +157,14 @@ class TestJSONAPISecurity(BaseTestCase):
         """
         logout()
         for route, query in self.get_gated_routes():
+            browser = self.getBrowser(loggedIn=False)
+            self.assert_blocked(browser, route, query)
+
+    def test_anonymous_is_blocked_on_the_reading_routes(self):
+        """Anonymous callers must not reach the reading routes either
+        """
+        logout()
+        for route, query in self.get_reading_routes():
             browser = self.getBrowser(loggedIn=False)
             self.assert_blocked(browser, route, query)
 
@@ -185,21 +207,35 @@ class TestJSONAPISecurity(BaseTestCase):
         self.open_api(browser, "getusers", "roles:list=Manager")
         self.assertIn('"success": true', browser.contents)
 
-    def test_read_gate_is_the_blocker_for_member(self):
-        """The AccessJSONAPI check is what blocks the catalog dump
+    def test_read_gate_is_the_blocker_for_anonymous(self):
+        """The ReadJSONAPI check is what blocks the catalog dump
 
-        A Member can view the site root, so a refusal naming the
+        Anonymous holds View on the site root, so a refusal naming the
         permission proves the gate fired and not incidental View
         protection on the searched content.
         """
-        setRoles(self.portal, TEST_USER_ID, ["Member"])
-        transaction.commit()
-        browser = self.get_authenticated_browser()
+        logout()
+        browser = self.getBrowser(loggedIn=False)
         browser.raiseHttpErrors = False
         self.open_api(browser, "read", "catalog_name=portal_catalog")
         self.assertIn('"success": false', browser.contents)
-        self.assertIn("Access JSON API", browser.contents)
+        self.assertIn("Read JSON API", browser.contents)
         self.assertNotIn('"objects": [{', browser.contents)
+
+    def test_member_may_use_the_reading_routes(self):
+        """Every authenticated user holds ReadJSONAPI
+
+        The UI calls `read` from views a plain Member works in, so the
+        gate must not block them. A Member does not hold
+        `AccessJSONAPI`, which is what the sweep above asserts, so this
+        also pins down that the two permissions stay separate.
+        """
+        setRoles(self.portal, TEST_USER_ID, ["Member"])
+        transaction.commit()
+        for route, query in self.get_reading_routes():
+            browser = self.get_authenticated_browser()
+            self.open_api(browser, route, query)
+            self.assertIn('"success": true', browser.contents)
 
     def test_privileged_user_can_still_read(self):
         """The gate does not over-block legitimate `read` callers
@@ -224,6 +260,21 @@ class TestJSONAPISecurity(BaseTestCase):
         login(self.portal, TEST_USER_NAME)
         # must not raise and returns None
         self.assertIsNone(check_jsonapi_permission(self.target))
+
+    def test_read_permission_helper_denies_anonymous(self):
+        """The reading helper raises Unauthorized for anonymous callers
+        """
+        logout()
+        self.assertRaises(
+            Unauthorized, check_jsonapi_read_permission, self.target)
+
+    def test_read_permission_helper_allows_member(self):
+        """The reading helper passes for a plain authenticated user
+        """
+        setRoles(self.portal, TEST_USER_ID, ["Member"])
+        login(self.portal, TEST_USER_NAME)
+        # must not raise and returns None
+        self.assertIsNone(check_jsonapi_read_permission(self.target))
 
 
 class TestHandleErrorsNoTracebackLeak(BaseTestCase):

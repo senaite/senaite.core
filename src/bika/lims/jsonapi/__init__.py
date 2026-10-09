@@ -34,23 +34,43 @@ from Products.Archetypes.config import TOOL_NAME
 from Products.CMFCore.utils import getToolByName
 from senaite.core.browser.fields.parsing import parse_record_literal
 from senaite.core.permissions import AccessJSONAPI
+from senaite.core.permissions import ReadJSONAPI
+
+
+def check_permission(permission, obj):
+    """Check the given permission on the given object
+
+    Raises Unauthorized if the current user does not hold `permission`
+    on the passed-in object.
+    """
+    if getSecurityManager().checkPermission(permission, obj):
+        return
+    msg = "You don't have the '{0}' permission on {1}".format(
+        permission, obj.absolute_url())
+    raise Unauthorized(msg)
 
 
 def check_jsonapi_permission(obj):
     """Check the AccessJSONAPI permission on the given object
 
-    Raises Unauthorized if the current user does not hold the
-    `senaite.core: Access JSON API` permission on the passed-in object.
-    This guards the JSON API routes against anonymous and
-    under-privileged callers (CWE-862), the reading ones as well as the
-    state-changing ones: a catalog search that is not gated discloses
-    in bulk what a single ungated write changes one object at a time.
+    This guards the state-changing JSON API routes against anonymous
+    and under-privileged callers (CWE-862).
     """
-    if getSecurityManager().checkPermission(AccessJSONAPI, obj):
-        return
-    msg = "You don't have the '{0}' permission on {1}".format(
-        AccessJSONAPI, obj.absolute_url())
-    raise Unauthorized(msg)
+    check_permission(AccessJSONAPI, obj)
+
+
+def check_jsonapi_read_permission(obj):
+    """Check the ReadJSONAPI permission on the given object
+
+    This guards the reading JSON API routes (CWE-862). They are held by
+    every authenticated user, because the UI calls them from views
+    those users work in, and the data they return is bounded by the
+    View permission on each object. Anonymous must not reach them: the
+    routes take a caller-chosen catalog and answer with field data in
+    bulk, which turns whatever is anonymously viewable through
+    acquisition into a single downloadable dump.
+    """
+    check_permission(ReadJSONAPI, obj)
 
 
 def handle_errors(f):

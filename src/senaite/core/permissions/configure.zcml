@@ -92,6 +92,7 @@
 
   <!-- Behavioral Permissions -->
   <permission id="senaite.core.permissions.AccessJSONAPI" title="senaite.core: Access JSON API"/>
+  <permission id="senaite.core.permissions.ReadJSONAPI" title="senaite.core: Read JSON API"/>
   <permission id="senaite.core.permissions.EditFieldResults" title="senaite.core: Edit Field Results"/>
   <permission id="senaite.core.permissions.EditResults" title="senaite.core: Edit Results"/>
   <permission id="senaite.core.permissions.ManageBika" title="senaite.core: Manage Bika"/>
