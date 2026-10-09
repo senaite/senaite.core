@@ -41,8 +41,10 @@ def check_jsonapi_permission(obj):
 
     Raises Unauthorized if the current user does not hold the
     `senaite.core: Access JSON API` permission on the passed-in object.
-    This guards the state-changing JSON API routes against anonymous and
-    under-privileged callers (CWE-862).
+    This guards the JSON API routes against anonymous and
+    under-privileged callers (CWE-862), the reading ones as well as the
+    state-changing ones: a catalog search that is not gated discloses
+    in bulk what a single ungated write changes one object at a time.
     """
     if getSecurityManager().checkPermission(AccessJSONAPI, obj):
         return

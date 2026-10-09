@@ -23,6 +23,7 @@ import re
 import App
 from bika.lims import logger
 from bika.lims.interfaces import IJSONReadExtender
+from bika.lims.jsonapi import check_jsonapi_permission
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.jsonapi import get_include_methods
 from bika.lims.jsonapi import load_brain_metadata
@@ -40,6 +41,9 @@ UID_CATALOG = "uid_catalog"
 
 
 def read(context, request):
+    # normal permissions still apply for this user
+    check_jsonapi_permission(context)
+
     tag = AuthenticatorView(context, request).authenticator()
     pattern = r'<input .*name="(\w+)".*value="(\w+)"'
     _authenticator = re.match(pattern, tag).groups()[1]
