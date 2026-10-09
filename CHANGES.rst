@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #3056 Let a reference sample inherit the expected values of its definition
+- #3053 Fix TypeError when saving a Method with empty Instruments
 - #3023 Return a 404 when at_download is traversed on non-Archetypes content
 - #3022 Build the JavaScript bundles in CI
 - #3020 Use UnorderedOrdering for Instruments to avoid ZODB conflicts
