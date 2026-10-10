@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3058 Fix the sample progress and analyses count lagging by one analysis
 - #3053 Fix TypeError when saving a Method with empty Instruments
 - #3023 Return a 404 when at_download is traversed on non-Archetypes content
 - #3022 Build the JavaScript bundles in CI
