@@ -171,9 +171,9 @@ class SamplingFieldsVisibility(SenaiteATWidgetVisibility):
                 field.required = setup.getDateSampledRequired()
 
             else:
-                # Fields are shared between samples. Reset the requirement
-                # imposed by received samples or the setup setting.
-                field.required = False
+                # The field is shared by every sample, so the requirement
+                # set for a received sample leaks into the next request.
+                field.required = bool(self.context.getDateSampled())
                 if mode == "add":
                     # sampling workflow enabled, do not display in add form
                     return "invisible"
