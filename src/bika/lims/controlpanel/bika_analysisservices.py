@@ -28,6 +28,7 @@ from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IAnalysisServices
 from senaite.core.permissions import AddAnalysisService
+from bika.lims.utils import format_currency_symbol
 from bika.lims.utils import format_supsub
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
@@ -262,7 +263,7 @@ class AnalysisServicesView(ControlPanelListingView):
         locale_currency = locale.numbers.currencies.get(currency)
         if locale_currency is None:
             return "$"
-        return locale_currency.symbol
+        return format_currency_symbol(locale_currency.symbol)
 
     def format_price(self, price):
         """Formats the price with the set decimal mark and correct currency

@@ -27,6 +27,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
 from senaite.core.permissions import FieldEditTemplate
+from bika.lims.utils import format_currency_symbol
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from senaite.core.i18n import translate as t
@@ -164,7 +165,8 @@ class ARTemplateAnalysesView(BikaListingView):
         locale = locales.getLocale("en")
         setup = api.get_senaite_setup()
         currency = setup.getCurrency()
-        return locale.numbers.currencies[currency].symbol
+        return format_currency_symbol(
+            locale.numbers.currencies[currency].symbol)
 
     @view.memoize
     def get_decimal_mark(self):

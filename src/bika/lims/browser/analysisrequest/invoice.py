@@ -25,6 +25,7 @@ from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IAnalysisProfile
 from bika.lims.interfaces import IInvoiceView
 from bika.lims.utils import createPdf
+from bika.lims.utils import format_currency_symbol
 from plone.memoize import view
 from plone.protect.interfaces import IDisableCSRFProtection
 from Products.CMFPlone.i18nl10n import ulocalized_time
@@ -84,7 +85,8 @@ class InvoiceView(BrowserView):
         locale = locales.getLocale("en")
         setup = api.get_senaite_setup()
         currency = setup.getCurrency()
-        return locale.numbers.currencies[currency].symbol
+        return format_currency_symbol(
+            locale.numbers.currencies[currency].symbol)
 
     @view.memoize
     def get_decimal_mark(self):

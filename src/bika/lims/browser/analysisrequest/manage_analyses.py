@@ -26,6 +26,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import ISubmitted
 from bika.lims.utils import dicts_to_dict
+from bika.lims.utils import format_currency_symbol
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import logged_in_client
@@ -174,7 +175,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
         locale = locales.getLocale('en')
         setup = api.get_senaite_setup()
         currency = setup.getCurrency()
-        return locale.numbers.currencies[currency].symbol
+        return format_currency_symbol(
+            locale.numbers.currencies[currency].symbol)
 
     @view.memoize
     def get_logged_in_client(self):

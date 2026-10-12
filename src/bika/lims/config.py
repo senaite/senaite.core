@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import format_currency_symbol
 from Products.Archetypes.public import DisplayList
 from senaite.core.p3compat import cmp
 from zope.i18n.locales import locales
@@ -104,7 +105,7 @@ currencies = locales.getLocale('en').numbers.currencies.values()
 currencies.sort(lambda x, y: cmp(x.displayName, y.displayName))
 
 CURRENCIES = DisplayList(
-    [(c.type, "%s (%s)" % (c.displayName, c.symbol))
+    [(c.type, "%s (%s)" % (c.displayName, format_currency_symbol(c.symbol)))
      for c in currencies]
 )
 

@@ -23,6 +23,7 @@ import collections
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api.security import check_permission
+from bika.lims.utils import format_currency_symbol
 from bika.lims.utils import format_supsub
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
@@ -155,7 +156,8 @@ class ServicesWidget(DefaultListingWidget):
         locale = locales.getLocale("en")
         bika_setup = api.get_senaite_setup()
         currency = bika_setup.getCurrency()
-        return locale.numbers.currencies[currency].symbol
+        return format_currency_symbol(
+            locale.numbers.currencies[currency].symbol)
 
     @view.memoize
     def get_decimal_mark(self):

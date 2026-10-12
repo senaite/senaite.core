@@ -22,6 +22,7 @@ from collections import OrderedDict
 
 from bika.lims import _
 from bika.lims import api
+from bika.lims.utils import format_currency_symbol
 from senaite.core.api import geo
 from senaite.core.config.setup import SKIP_NAV_TYPES
 from senaite.core.interfaces import IWorksheetLayouts
@@ -85,8 +86,9 @@ class CurrenciesVocabulary(object):
     def __call__(self, context):
         locale = locales.getLocale("en", "US")
         currencies = locale.numbers.currencies.values()
-        items = [(c.type, c.type, u"{} ({})".format(c.displayName, c.symbol))
-                 for c in currencies]
+        items = [(c.type, c.type, u"{} ({})".format(
+            c.displayName, format_currency_symbol(c.symbol)))
+            for c in currencies]
         items.sort(key=lambda x: x[2])
         return SimpleVocabulary.fromItems(items)
 

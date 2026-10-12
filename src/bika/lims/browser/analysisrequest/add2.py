@@ -42,6 +42,7 @@ from bika.lims.interfaces import IAddSampleObjectInfo
 from bika.lims.interfaces import IAddSampleRecordsValidator
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
 from bika.lims.interfaces.field import IUIDReferenceField
+from bika.lims.utils import format_currency_symbol
 from bika.lims.utils import get_client as get_client_from_chain
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from BTrees.OOBTree import OOBTree
@@ -259,6 +260,11 @@ class AnalysisRequestAddView(BrowserView):
         currency = setup.getCurrency()
         currencies = locales.getLocale("en").numbers.currencies
         return currencies[currency]
+
+    def get_currency_symbol(self):
+        """Returns the symbol of the configured currency
+        """
+        return format_currency_symbol(self.get_currency().symbol)
 
     def get_ar_count(self):
         """Return the ar_count request paramteter
@@ -1189,7 +1195,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "methods": map(self.get_method_info, obj.getMethods()),
             "calculation": self.get_calculation_info(obj.getCalculation()),
             "price": obj.getPrice(),
-            "currency_symbol": self.get_currency().symbol,
+            "currency_symbol": self.get_currency_symbol(),
             "accredited": obj.getAccredited(),
             "category": obj.getCategoryTitle(),
             "poc": obj.getPointOfCapture(),

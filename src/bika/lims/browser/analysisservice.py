@@ -32,6 +32,7 @@ from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.jsonapi import load_field_values
 from senaite.core.permissions import ViewLogTab
+from bika.lims.utils import format_currency_symbol
 from bika.lims.utils import get_image
 from magnitude import mg
 from plone.memoize import view
@@ -70,7 +71,8 @@ class AnalysisServiceInfoView(BrowserView):
         locale = locales.getLocale('en')
         setup = api.get_senaite_setup()
         currency = setup.getCurrency()
-        return locale.numbers.currencies[currency].symbol
+        return format_currency_symbol(
+            locale.numbers.currencies[currency].symbol)
 
     def get_icon_for(self, typename):
         image = "{}_big.png".format(typename)
