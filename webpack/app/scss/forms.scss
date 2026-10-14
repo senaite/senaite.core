@@ -193,3 +193,23 @@ span.options:has(> input.hide-title) {
 .mce-edit-focus {
   padding: 8px !important;
 }
+
+/* Heading of a section inside a fieldset. Drawn above the first field
+   of the section, with a rule under it so the fields that follow read
+   as belonging to it. */
+h4.senaite-fieldset-section {
+  margin: 1.5rem 0 0.75rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid #dee2e6;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #6c757d;
+
+  /* The first one sits directly under the tab bar, which needs less
+     space than a heading following a field, but not none. */
+  &:first-child {
+    margin-top: 0.75rem;
+  }
+}

@@ -36,6 +36,7 @@ from Products.CMFCore import permissions
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.api import dtime
 from senaite.core.catalog import AUDITLOG_CATALOG
+from senaite.core.config import FIELDSET_SECTIONS
 from senaite.core.content.base import Container
 from senaite.core.interfaces import IHideActionsMenu
 from senaite.core.interfaces import ISetup
@@ -1446,6 +1447,29 @@ class ISetupSchema(model.Schema):
                         u"('${pt}'): ${err}",
                         mapping={"i": idx, "pt": portal_type or "",
                                  "err": str(exc)}))
+
+
+# Headings drawn inside a fieldset, before the field they name. Four of
+# the tabs hold more settings than anyone reads as one list, and the
+# groupings below are the ones the fields already fall into.
+ISetupSchema.setTaggedValue(FIELDSET_SECTIONS, {
+    # Analyses
+    "categorise_analysis_services": _("Display"),
+    "auto_verify_samples": _("Verification"),
+    "results_decimal_mark": _("Result formatting"),
+    "enable_rejection_workflow": _("Rejection"),
+    "default_number_of_ars_to_add": _("Registration"),
+    "sampleview_analysis_columns_order": _("Column order"),
+    # Appearance
+    "site_logo": _("Branding"),
+    "sidebar_folders": _("Side navigation"),
+    # Sampling
+    "sample_duplicate_enabled": _("Optional workflow steps"),
+    "workdays": _("Timing"),
+    # Notifications
+    "notify_on_sample_rejection": _("Rejection"),
+    "invalidation_reason_required": _("Invalidation"),
+})
 
 
 @implementer(ISetup, ISetupSchema, IHideActionsMenu)
