@@ -20,9 +20,15 @@
 
 from bika.lims import api
 from zope.i18n import translate as ztranslate
+from zope.i18n.locales import locales
 from zope.i18nmessageid import MessageFactory
 
 _pl = MessageFactory("plonelocales")
+
+# Symbols the CLDR data of zope.i18n has wrong or outdated
+CURRENCY_SYMBOL_OVERRIDES = {
+    "INR": u"\u20b9",
+}
 
 
 def translate(msgid, to_utf8=True, **kwargs):
@@ -92,3 +98,13 @@ def get_month_name(month, abbr=False, to_utf8=True):
     msgid = "month_%s_abbr" if abbr else "month_%s"
     msgid = msgid % ids[month-1]
     return translate(_pl(msgid), to_utf8=to_utf8)
+
+
+def get_currency_symbol(currency):
+    """Returns the display symbol for the given currency code
+    """
+    override = CURRENCY_SYMBOL_OVERRIDES.get(currency)
+    if override:
+        return override
+    currencies = locales.getLocale("en").numbers.currencies
+    return currencies[currency].symbol
