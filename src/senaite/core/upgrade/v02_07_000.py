@@ -22,6 +22,7 @@
 import json
 from datetime import timedelta
 
+import six
 import transaction
 from bika.lims import api
 from bika.lims.api import safe_unicode as u
@@ -109,6 +110,40 @@ PORTAL_FOLDER_ITEMS = {
     # ID: ID, Title, FTI
     "worksheets": ("worksheets", "Worksheets", "Worksheets"),
 }
+
+
+@upgradestep(product, version)
+def normalize_id_formatting_rows(tool):
+    """Store the ID formatting rows as unicode.
+
+    The rows came over from the Archetypes RecordsField as native
+    strings, and the Dexterity subfields are TextLine, which only
+    accepts unicode. Validating the Setup object therefore fails with
+    WrongContainedType over a field nobody edited, and because the
+    JSON API validates the whole object before saving it, every
+    programmatic update of the setup is refused.
+    """
+    setup = api.get_senaite_setup()
+    if setup is None:
+        logger.warning("SenaiteSetup not found [SKIP]")
+        return
+    # Read the stored value, not the field default: a site that has
+    # never saved the ID server tab has no value of its own, and the
+    # default is unicode already. Writing it out here would pin today's
+    # defaults into that site's database for good.
+    rows = setup.__dict__.get("id_formatting")
+    if not rows:
+        logger.info("No stored ID formatting rows to normalize [SKIP]")
+        return
+    setup.id_formatting = [normalized_row(row) for row in rows]
+    logger.info("Normalized %s ID formatting row(s)" % len(rows))
+
+
+def normalized_row(row):
+    """Return the row with its string values as unicode."""
+    return dict(
+        (u(key), u(value) if isinstance(value, six.string_types) else value)
+        for key, value in row.items())
 
 
 @upgradestep(product, version)
