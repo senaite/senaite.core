@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3059 Fix Indian Rupee symbol displayed as raw CLDR choice pattern
 - #3053 Fix TypeError when saving a Method with empty Instruments
 - #3023 Return a 404 when at_download is traversed on non-Archetypes content
 - #3022 Build the JavaScript bundles in CI
