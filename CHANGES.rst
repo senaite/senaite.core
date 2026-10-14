@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3030 Fix the missing signature in the worksheet print view
 - #3060 Fix empty link text in the Client share field
 - #3059 Fix Indian Rupee symbol displayed as raw CLDR choice pattern
 - #3053 Fix TypeError when saving a Method with empty Instruments
