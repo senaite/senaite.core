@@ -42,7 +42,6 @@ from bika.lims.interfaces import IAddSampleObjectInfo
 from bika.lims.interfaces import IAddSampleRecordsValidator
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
 from bika.lims.interfaces.field import IUIDReferenceField
-from bika.lims.utils import format_currency_symbol
 from bika.lims.utils import get_client as get_client_from_chain
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from BTrees.OOBTree import OOBTree
@@ -61,6 +60,7 @@ from senaite.core.api.analysisservice import get_calculation_dependencies_for
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.contact import IContactSchema
+from senaite.core.i18n import get_currency_symbol
 from senaite.core.interfaces import IAfterCreateSampleHook
 from senaite.core.p3compat import cmp
 from senaite.core.permissions import TransitionMultiResults
@@ -264,7 +264,8 @@ class AnalysisRequestAddView(BrowserView):
     def get_currency_symbol(self):
         """Returns the symbol of the configured currency
         """
-        return format_currency_symbol(self.get_currency().symbol)
+        setup = api.get_senaite_setup()
+        return get_currency_symbol(setup.getCurrency())
 
     def get_ar_count(self):
         """Return the ar_count request paramteter

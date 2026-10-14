@@ -26,14 +26,13 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import ISubmitted
 from bika.lims.utils import dicts_to_dict
-from bika.lims.utils import format_currency_symbol
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import logged_in_client
 from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.i18n import translate as t
-from zope.i18n.locales import locales
+from senaite.core.i18n import get_currency_symbol
 
 DETACHED_STATES = ["cancelled", "rejected", "retracted"]
 
@@ -172,11 +171,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
     def get_currency_symbol(self):
         """Get the currency Symbol
         """
-        locale = locales.getLocale('en')
         setup = api.get_senaite_setup()
         currency = setup.getCurrency()
-        return format_currency_symbol(
-            locale.numbers.currencies[currency].symbol)
+        return get_currency_symbol(currency)
 
     @view.memoize
     def get_logged_in_client(self):

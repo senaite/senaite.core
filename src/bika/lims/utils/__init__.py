@@ -508,25 +508,10 @@ def attachPdf(mimemultipart, pdfreport, filename=None):
     mimemultipart.attach(part)
 
 
-def format_currency_symbol(symbol):
-    """Returns a printable symbol for a currency.
-
-    Some currencies have a CLDR choice pattern stored as their symbol,
-    e.g. '=0#Rs.|1#Re.|1<Rs.' for the Indian Rupee (INR). In that case,
-    the text of the last (plural) alternative is returned.
-    """
-    if not symbol or "|" not in symbol:
-        return symbol
-    # Each alternative is '<condition><sep><text>' with '#' or '<' as
-    # separator, e.g. '1<Rs.' returns 'Rs.'
-    return re.sub(r"^[^#<]*[#<]", "", symbol.split("|")[-1])
-
-
 def currency_format(context, locale):
     locale = locales.getLocale(locale)
     currency = context.bika_setup.getCurrency()
-    symbol = format_currency_symbol(
-        locale.numbers.currencies[currency].symbol)
+    symbol = locale.numbers.currencies[currency].symbol
 
     def format(val):
         return '%s %0.2f' % (symbol, val)

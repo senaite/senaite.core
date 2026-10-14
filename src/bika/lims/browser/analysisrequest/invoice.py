@@ -25,13 +25,12 @@ from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IAnalysisProfile
 from bika.lims.interfaces import IInvoiceView
 from bika.lims.utils import createPdf
-from bika.lims.utils import format_currency_symbol
+from senaite.core.i18n import get_currency_symbol
 from plone.memoize import view
 from plone.protect.interfaces import IDisableCSRFProtection
 from Products.CMFPlone.i18nl10n import ulocalized_time
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.app.supermodel.model import SuperModel
-from zope.i18n.locales import locales
 from zope.interface import alsoProvides
 from zope.interface import implements
 
@@ -82,11 +81,9 @@ class InvoiceView(BrowserView):
     def get_currency_symbol(self):
         """Get the currency Symbol
         """
-        locale = locales.getLocale("en")
         setup = api.get_senaite_setup()
         currency = setup.getCurrency()
-        return format_currency_symbol(
-            locale.numbers.currencies[currency].symbol)
+        return get_currency_symbol(currency)
 
     @view.memoize
     def get_decimal_mark(self):
