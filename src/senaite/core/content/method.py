@@ -296,6 +296,9 @@ class Method(Container):
     def setInstruments(self, value):
         """Set the method on the selected instruments
         """
+        if not value:
+            value = []
+
         # filter out empty value
         value = filter(lambda uid: uid, value)
 
