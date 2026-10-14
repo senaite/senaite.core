@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #3056 Let a reference sample inherit the expected values of its definition
+- #3060 Fix empty link text in the Client share field
+- #3059 Fix Indian Rupee symbol displayed as raw CLDR choice pattern
 - #3053 Fix TypeError when saving a Method with empty Instruments
 - #3023 Return a 404 when at_download is traversed on non-Archetypes content
 - #3022 Build the JavaScript bundles in CI
