@@ -76,7 +76,7 @@ class IClientShareableBehavior(model.Schema):
             "sort_on": "title",
             "sort_order": "ascending",
         },
-        display_template="<a href='${url}'>${title}</a>",
+        display_template="<a href='${url}'>${Title}</a>",
         columns=[
             {
                 "name": "getName",
