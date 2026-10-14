@@ -232,3 +232,48 @@ impossible through the UI:
 
     >>> get_listed("add_control", ws3)
     ['Control Both', 'Control Cu', 'Control Fe']
+
+
+The worksheet picks the slot
+............................
+
+The listing does not offer a position. Submitting it adds the reference
+analyses without naming a slot, so the worksheet decides, which is the only
+place that knows the layout of an assigned worksheet template.
+
+    >>> ws4 = api.create(portal.worksheets, "Worksheet", Analyst="test_user_1_")
+    >>> uid = api.get_uid(control_cu)
+    >>> request.form["submitted"] = 1
+    >>> request.form["uids"] = [uid]
+    >>> request.form["SupportedServices.{}".format(uid)] = [api.get_uid(Cu)]
+    >>> view = api.get_view("add_control", context=ws4, request=request)
+    >>> view.handle_submit()
+
+    >>> len(ws4.getAnalyses())
+    1
+
+The control landed in the first slot, since the worksheet was empty:
+
+    >>> ws4.get_slot_positions("c")
+    [1]
+
+A routine analysis added first pushes the reference to a new slot at the
+end, gaps in the layout are not filled:
+
+    >>> ws5 = api.create(portal.worksheets, "Worksheet", Analyst="test_user_1_")
+    >>> sample3 = create_analysisrequest(client, request, values, [api.get_uid(Cu)])
+    >>> success = doActionFor(sample3, "receive")
+    >>> ws5.addAnalysis(api.get_object(sample3.getAnalyses()[0]))
+    >>> ws5.get_slot_positions("a")
+    [1]
+
+    >>> view = api.get_view("add_control", context=ws5, request=request)
+    >>> view.handle_submit()
+    >>> ws5.get_slot_positions("c")
+    [2]
+
+Clean up the request:
+
+    >>> del request.form["submitted"]
+    >>> del request.form["uids"]
+    >>> del request.form["SupportedServices.{}".format(uid)]
