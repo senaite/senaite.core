@@ -101,6 +101,7 @@ REMOVE_AT_TYPES = [
     "Method",
     "Methods",
     "Multifile",
+    "SupplierContact",
     "Worksheet",
     "WorksheetFolder",
 ]
@@ -1077,6 +1078,44 @@ def migrate_contacts_to_dx(tool):
     logger.info("Migrating Contacts to Dexterity [DONE]")
 
 
+def migrate_person_fields(src, target):
+    """Copy the fields every Person-based type has from AT to DX
+
+    Shared by the migrators of the types that derive from `Person`, so the
+    list of fields does not have to be kept in sync in several places.
+
+    :param src: the source AT object
+    :param target: the target DX object
+    """
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = u""  # calculated
+    target.description = u""  # not used
+    target.salutation = api.safe_unicode(src.getSalutation() or "")
+    target.firstname = api.safe_unicode(src.getFirstname() or "")
+    target.middleinitial = api.safe_unicode(src.getMiddleinitial() or "")
+    target.middlename = api.safe_unicode(src.getMiddlename() or "")
+    target.surname = api.safe_unicode(src.getSurname() or "")
+    target.username = api.safe_unicode(src.getUsername() or "")
+    target.email_address = api.safe_unicode(src.getEmailAddress() or "")
+    target.business_phone = api.safe_unicode(src.getBusinessPhone() or "")
+    target.business_fax = api.safe_unicode(src.getBusinessFax() or "")
+    target.home_phone = api.safe_unicode(src.getHomePhone() or "")
+    target.mobile_phone = api.safe_unicode(src.getMobilePhone() or "")
+    target.job_title = api.safe_unicode(src.getJobTitle() or "")
+    target.department = api.safe_unicode(src.getDepartment() or "")
+
+    # NOTE: Addresses behave differently in AT and DX
+    physical_address = src.getPhysicalAddress() or {}
+    if physical_address:
+        address = to_dx_address(physical_address, PHYSICAL_ADDRESS)
+        target.setPhysicalAddress(address)
+
+    postal_address = src.getPostalAddress() or {}
+    if postal_address:
+        address = to_dx_address(postal_address, POSTAL_ADDRESS)
+        target.setPostalAddress(address)
+
+
 def migrate_contact_to_dx(src, destination=None):
     """Migrate an AT contact to DX in the destination folder
 
@@ -1110,34 +1149,8 @@ def migrate_contact_to_dx(src, destination=None):
         target = destination._getOb(target_id)
 
     # Manually set the fields
-    # NOTE: always convert string values to unicode for dexterity fields!
-    target.title = u""  # calculated
-    target.description = u""  # not used
-    target.salutation = api.safe_unicode(src.getSalutation() or "")
-    target.firstname = api.safe_unicode(src.getFirstname() or "")
-    target.middleinitial = api.safe_unicode(src.getMiddleinitial() or "")
-    target.middlename = api.safe_unicode(src.getMiddlename() or "")
-    target.surname = api.safe_unicode(src.getSurname() or "")
-    target.username = api.safe_unicode(src.getUsername() or "")
-    target.email_address = api.safe_unicode(src.getEmailAddress() or "")
-    target.business_phone = api.safe_unicode(src.getBusinessPhone() or "")
-    target.business_fax = api.safe_unicode(src.getBusinessFax() or "")
-    target.home_phone = api.safe_unicode(src.getHomePhone() or "")
-    target.mobile_phone = api.safe_unicode(src.getMobilePhone() or "")
-    target.job_title = api.safe_unicode(src.getJobTitle() or "")
-    target.department = api.safe_unicode(src.getDepartment() or "")
+    migrate_person_fields(src, target)
     target.cc_contact = src.getRawCCContact() or []
-
-    # NOTE: Addresses behave differently in AT and DX
-    physical_address = src.getPhysicalAddress() or {}
-    if physical_address:
-        address = to_dx_address(physical_address, PHYSICAL_ADDRESS)
-        target.setPhysicalAddress(address)
-
-    postal_address = src.getPostalAddress() or {}
-    if postal_address:
-        address = to_dx_address(postal_address, POSTAL_ADDRESS)
-        target.setPostalAddress(address)
 
     # Migrate the contents from AT to DX
     migrator = getMultiAdapter(
@@ -1183,6 +1196,108 @@ def migrate_contact_to_dx(src, destination=None):
         target.setUser(target.getUsername())
 
     logger.info("Migrated Contact from %s -> %s" % (src, target))
+
+
+@upgradestep(product, version)
+def migrate_suppliercontacts_to_dx(tool):
+    """Migrate SupplierContact objects from Archetypes to Dexterity
+    """
+    logger.info("Migrating Supplier Contacts to Dexterity ...")
+
+    # Ensure old AT types are flushed first
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
+
+    # run required import steps
+    import_typeinfo(tool, profile)
+
+    query = {"portal_type": "SupplierContact"}
+    brains = api.search(query, CONTACT_CATALOG)
+    total = len(brains)
+    logger.info("Found {} Supplier Contacts to migrate".format(total))
+
+    for num, brain in enumerate(brains, start=1):
+        contact = api.get_object(brain)
+
+        if num % 100 == 0:
+            logger.info("Progress: {}/{} supplier contacts migrated".format(
+                num, total))
+            transaction.savepoint()
+
+        # Skip if already migrated to Dexterity
+        if not api.is_at_content(contact):
+            logger.info("[{}/{}] Already migrated: {}".format(
+                num, total, api.get_path(contact)))
+            continue
+
+        migrate_suppliercontact_to_dx(contact)
+
+    logger.info("Migrating Supplier Contacts to Dexterity [DONE]")
+
+
+def migrate_suppliercontact_to_dx(src):
+    """Migrate an AT supplier contact to DX, in its own container
+
+    Supplier contacts live inside their Supplier, that is Dexterity already,
+    so there is no container to move here.
+
+    :param src: The source AT object
+    """
+    portal_type = "SupplierContact"
+
+    if api.get_portal_type(src) != portal_type:
+        logger.error("Not a '{}' object: {}".format(portal_type, src))
+        return
+
+    # use a temporary ID, the original one is copied over at the end
+    target_id = tmpID()
+    destination = api.get_parent(src)
+
+    target = destination.get(target_id)
+    if not target:
+        # Don't use the api to skip the auto-id generation
+        target = createContent(portal_type, id=target_id)
+        destination._setObject(target_id, target)
+        target = destination._getOb(target_id)
+
+    # `SupplierContact` adds no fields of its own to `Person`
+    migrate_person_fields(src, target)
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter((src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID, so the references to this contact keep resolving
+    migrator.copy_uid(src, target)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    target.reindexObject()
+
+    logger.info("Migrated SupplierContact from %s -> %s" % (src, target))
 
 
 def migrate_multifiles_to_dx(tool):
