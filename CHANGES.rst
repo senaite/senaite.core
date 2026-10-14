@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3035 Drop the stale marker behavior from the Setup FTI
 - #3034 Store the ID formatting rows as unicode
 - #3060 Fix empty link text in the Client share field
 - #3059 Fix Indian Rupee symbol displayed as raw CLDR choice pattern
