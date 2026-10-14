@@ -91,6 +91,10 @@ from zope.interface import noLongerProvides
 version = "2.7.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
+# Single valued reference sub-fields of a partition record,
+# which are stored as a list of one UID
+PARTITION_REFERENCES = ("container", "preservation", "sampletype")
+
 REMOVE_AT_TYPES = [
     "ARReport",
     "AuditLog",
@@ -3155,3 +3159,74 @@ def migrate_method_to_dx(src, destination):
     target.reindexObject()
 
     logger.info("Migrated Method from %s -> %s" % (src, target))
+
+
+def to_reference_list(value):
+    """Return a single valued partition reference as the list it is stored in
+
+    :param value: the stored value, a bare UID or a list already
+    :type value: str, list or None
+    :returns: list with the UID, or an empty list
+    :rtype: list
+    """
+    if isinstance(value, (list, tuple)):
+        return list(value)
+    return [value] if value else []
+
+
+def fix_partition_record(record):
+    """Return a partition record with its values in the stored types
+
+    :param record: a single partition of a sample template
+    :type record: dict
+    :returns: the record with list references and a text partition id
+    :rtype: dict
+    """
+    fixed = dict(record)
+    fixed["part_id"] = u(record.get("part_id") or "")
+    for name in PARTITION_REFERENCES:
+        fixed[name] = to_reference_list(record.get(name))
+    return fixed
+
+
+def fix_service_record(record):
+    """Return a service record with its partition id in the stored type
+
+    :param record: a single service setting of a sample template
+    :type record: dict
+    :returns: the record with a text partition id
+    :rtype: dict
+    """
+    fixed = dict(record)
+    fixed["part_id"] = u(record.get("part_id") or "")
+    return fixed
+
+
+def fix_sampletemplate_records(tool):
+    """Store the records of sample templates in the types the schema holds
+
+    `setPartitions` stored the single valued reference sub-fields of a
+    partition as the bare UID, where the record schema holds a list of one,
+    and both setters stored the partition id as a native string, where the
+    schema holds text. Every template that the 2.6.0 migration brought over
+    from Archetypes went through those two setters, and its partitions read
+    back the first character of a UID instead of the reference.
+    """
+    logger.info("Fixing the records of sample templates ...")
+    brains = api.search({"portal_type": "SampleTemplate"}, SETUP_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Fixing sample template records: %s/%s"
+                        % (num, total))
+        template = api.get_object(brain)
+        partitions = list(getattr(template, "partitions", None) or [])
+        services = list(getattr(template, "services", None) or [])
+        fixed_partitions = [fix_partition_record(r) for r in partitions]
+        fixed_services = [fix_service_record(r) for r in services]
+        if fixed_partitions != partitions:
+            template.partitions = fixed_partitions
+        if fixed_services != services:
+            template.services = fixed_services
+
+    logger.info("Fixing the records of sample templates [DONE]")

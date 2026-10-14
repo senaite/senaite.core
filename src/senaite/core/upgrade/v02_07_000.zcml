@@ -3,6 +3,18 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Fix the records of sample templates"
+      description="Store the single valued references of a partition as the
+                   list of one UID the record schema holds, and the partition
+                   id of both partitions and services as text. Templates that
+                   the 2.6.0 migration brought over from Archetypes read their
+                   partition references back as a single character."
+      source="2758"
+      destination="2759"
+      handler=".v02_07_000.fix_sampletemplate_records"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Drop ordering annotations from Instruments"
       description="Remove the plone.folder.ordered.order PersistentList and
                    plone.folder.ordered.pos OIBTree annotations from every
