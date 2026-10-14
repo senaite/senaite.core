@@ -1288,9 +1288,16 @@ class InlineFieldValidator:
         request = kwargs.get('REQUEST')
         instance = kwargs['instance']
 
-        # skip inter-field validation when REQUEST is not available (API context)
+        # Inter-field validation needs the request, which an API call
+        # does not have. Answer True rather than None: a validation
+        # chain reads None as "no opinion" and keeps whatever an
+        # earlier validator said, and these subfields sit behind an
+        # isEmpty/V_SUFFICIENT that fails for every value that is not
+        # empty. The address subfields guarded this way (country,
+        # state, district) were therefore impossible to set over the
+        # JSON API, each one refused with "'<value>' is not empty".
         if request is None:
-            return
+            return True
 
         # extract the request values
         data = request.get(field.getName())
