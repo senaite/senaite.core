@@ -155,6 +155,19 @@ from the method's instruments::
     >>> map(api.get_title, method.getInstruments())
     ['Balance']
 
+An empty value does not break the setter. This happens, e.g. when the
+Instruments field is left empty in the add or edit form and `None` is
+passed to the setter::
+
+    >>> method.setInstruments(None)
+    >>> method.getInstruments()
+    []
+
+The back reference was also removed on the instrument side::
+
+    >>> method in instrument1.getMethods()
+    False
+
 
 Method ID uniqueness
 ....................
