@@ -347,7 +347,7 @@
     <div metal:fill-slot="content-core"
          tal:define="portal context/@@plone_portal_state/portal;
                      user context/portal_membership/getAuthenticatedMember;
-                     currency_symbol python:view.get_currency().symbol;">
+                     currency_symbol python:view.get_currency_symbol();">
 
       <form id="analysisrequest_add_form"
             name="analysisrequest_add_form"
