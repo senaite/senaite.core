@@ -22,6 +22,7 @@ import copy
 import json
 
 from bika.lims import api
+from senaite.core.api.choices import to_options
 from bika.lims.config import LDL
 from bika.lims.config import UDL
 from plone.autoform.form import AutoExtensibleForm
@@ -447,17 +448,7 @@ class EditAnalysisForm(AutoExtensibleForm, form.Form):
     def _parse_choices(self, choices):
         """Parse choices string into list of dicts
         """
-        if not choices:
-            return []
-        options = []
-        for item in choices.split("|"):
-            parts = item.strip().split(":")
-            if len(parts) == 2:
-                options.append({
-                    "value": parts[0],
-                    "text": parts[1],
-                })
-        return options
+        return to_options(choices)
 
     def parse_multi_value(self, value):
         """Parse a multi-value interim into a list

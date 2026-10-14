@@ -273,7 +273,7 @@
                 <option></option>
                 {{/unless}}
                 {{#each options}}
-                <option>{{this}}</option>
+                <option value="{{value}}">{{text}}</option>
                 {{/each}}
               </select>
               {{else}}
