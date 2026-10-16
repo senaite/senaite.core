@@ -205,3 +205,18 @@ A report may contain more than one sample, all of them are published:
     'published'
     >>> api.get_review_status(sample_b)
     'published'
+
+
+The former publish action stays importable
+..........................................
+
+SENAITE no longer offers the action to publish the samples of a stored
+report by hand. Add-ons that register its adapter under their own name or
+context still need the class to start, so it is kept:
+
+    >>> from bika.lims.browser.workflow.client import \
+    ...     WorkflowActionPublishSamplesAdapter
+    >>> from bika.lims.interfaces import IWorkflowActionUIDsAdapter
+    >>> IWorkflowActionUIDsAdapter.implementedBy(
+    ...     WorkflowActionPublishSamplesAdapter)
+    True
