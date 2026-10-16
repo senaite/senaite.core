@@ -25,7 +25,6 @@ from collections import OrderedDict
 from string import Template
 
 import six
-import transaction
 from bika.lims import _
 from bika.lims import api
 from bika.lims import logger
@@ -38,7 +37,6 @@ from bika.lims.decorators import returns_json
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.utils import to_utf8
 from plone.memoize import view
-from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -77,10 +75,8 @@ class EmailView(BrowserView):
         cancel = form.get("cancel", False) and True or False
 
         if send and self.validate_email_form():
-            logger.info("*** PUBLISH SAMPLES & SEND REPORTS ***")
-            # 1. Publish all samples
-            self.publish_samples()
-            # 2. Notify all recipients
+            logger.info("*** SEND REPORTS ***")
+            # Note the samples were published when the reports were stored
             self.form_action_send()
 
         elif cancel:
@@ -471,40 +467,6 @@ class EmailView(BrowserView):
             report.reindexObject()
             # manually take a new snapshot
             take_snapshot(report)
-
-    def publish_samples(self):
-        """Publish all samples of the reports
-        """
-        samples = set()
-
-        # collect primary + contained samples of the reports
-        for report in self.reports:
-            samples.add(report.getAnalysisRequest())
-            samples.update(report.getContainedAnalysisRequests())
-
-        # publish all samples + their partitions
-        for sample in samples:
-            self.publish(sample)
-
-    def publish(self, sample):
-        """Set status to prepublished/published/republished
-        """
-        wf = api.get_tool("portal_workflow")
-        status = wf.getInfoFor(sample, "review_state")
-        transitions = {"verified": "publish",
-                       "published": "republish"}
-        transition = transitions.get(status, "prepublish")
-        logger.info("Transitioning sample {}: {} -> {}".format(
-            api.get_id(sample), status, transition))
-        try:
-            # Manually update the view on the database to avoid conflict errors
-            sample.getClient()._p_jar.sync()
-            # Perform WF transition
-            wf.doActionFor(sample, transition)
-            # Commit the changes
-            transaction.commit()
-        except WorkflowException as e:
-            logger.error(e)
 
     def render_email_template(self, template, template_context=None):
         """Return the rendered email template

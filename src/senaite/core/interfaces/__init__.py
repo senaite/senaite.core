@@ -584,6 +584,27 @@ class IResultsReport(Interface):
     """
 
 
+class IReportStoredHandler(Interface):
+    """Handles the results reports right after they have been stored
+
+    This adapter is looked up by the storage adapter of senaite.impress once
+    all the reports of a publication are created and before the transaction
+    is committed, so whatever it does takes place in the very same
+    transaction.
+
+    It is the seam to react on the creation of the reports, e.g. to
+    transition the samples they belong to. Note it is kept apart from the
+    storage adapter on purpose, so replacing the storage (that only knows
+    *where* reports are kept) does not silently drop that behavior.
+    """
+
+    def __call__(reports):
+        """Handle the reports that have just been stored
+
+        :param reports: the newly created report objects
+        """
+
+
 class ISimpleFile(Interface):
     """Marker interface for simple files
     """
