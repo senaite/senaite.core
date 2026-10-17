@@ -35,9 +35,11 @@ def on_method_added(method, event):
         return
 
     # An instrument links back to the method by looking its UID up in the
-    # uid_catalog. The method is cataloged there by another subscriber of
-    # this event, which may well run after this one, so catalog it first.
-    # This is the very record that subscriber writes, it is updated in place
+    # uid_catalog. The method gets there through the handler of the
+    # IReferenceable behavior for this very event, but that one runs after
+    # this one: subscribers of the more general IMethod are called first.
+    # Catalog it here, under the same path, so that handler only updates
+    # the record
     uid_catalog = api.get_tool("uid_catalog")
     uid_catalog.catalog_object(method, api.get_uid_catalog_path(method))
 
