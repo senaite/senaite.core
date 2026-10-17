@@ -31,7 +31,7 @@ from plone.app.textfield.value import RichTextValue
 from plone.autoform import directives
 from plone.namedfile.field import NamedBlobFile
 from plone.supermodel import model
-from plone.uuid.interfaces import ATTRIBUTE_NAME
+from plone.uuid.interfaces import ATTRIBUTE_NAME as UID_ATTRIBUTE_NAME
 from Products.CMFCore import permissions
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
@@ -344,7 +344,7 @@ class Method(Container):
 
         :returns: False while the method is still being created
         """
-        return getattr(aq_base(self), ATTRIBUTE_NAME, None) is not None
+        return getattr(aq_base(self), UID_ATTRIBUTE_NAME, None) is not None
 
     def has_pending_instruments(self):
         """Checks whether the method keeps instruments it was created with
