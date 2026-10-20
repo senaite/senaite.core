@@ -165,3 +165,58 @@ sets the widget.visible to 'invisible'.
     >>> p = doActionFor(an, 'submit')
     >>> DateReceivedFieldVisibility(ar1)(ar1, 'edit', ar1.schema['DateReceived'], 'default')
     'invisible'
+
+Sample Condition
+
+A `SampleCondition` describes the condition of the sample when it arrives at
+the laboratory::
+
+    >>> condition = api.create(sampleconditions, "SampleCondition", title="Damaged container")
+    >>> condition
+    <SampleCondition at /plone/setup/sampleconditions/samplecondition-1>
+
+Create another `AnalysisRequest` with the Sample Condition set::
+
+    >>> values_with_condition = dict(values, SampleCondition=condition.UID())
+    >>> ar2 = create_analysisrequest(client, request, values_with_condition, service_uids)
+    >>> ar2
+    <AnalysisRequest at /plone/clients/client-1/water-0003>
+    >>> ar2.getSampleCondition() == condition
+    True
+
+
+Sample Condition required setting
+.................................
+
+By default, the Sample Condition is not required::
+
+    >>> from bika.lims.adapters.widgetvisibility import SamplingWorkflowWidgetVisibility
+    >>> setup = api.get_senaite_setup()
+    >>> setup.getSampleConditionRequired()
+    False
+
+    >>> field = ar2.getField("SampleCondition")
+    >>> visibility = SamplingWorkflowWidgetVisibility(ar2)
+    >>> visibility(ar2, "add", field, "visible")
+    'visible'
+    >>> field.required
+    False
+
+When the setting is enabled, the field becomes required::
+
+    >>> setup.setSampleConditionRequired(True)
+    >>> setup.getSampleConditionRequired()
+    True
+
+    >>> visibility(ar2, "add", field, "visible")
+    'visible'
+    >>> field.required
+    True
+
+Disabling the setting makes the field optional again::
+
+    >>> setup.setSampleConditionRequired(False)
+    >>> visibility(ar2, "add", field, "visible")
+    'visible'
+    >>> field.required
+    False
