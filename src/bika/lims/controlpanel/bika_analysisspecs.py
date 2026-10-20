@@ -18,15 +18,8 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import collections
-
-from bika.lims import api
-from bika.lims import bikaMessageFactory as _
-from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IAnalysisSpecs
-from senaite.core.permissions import AddAnalysisSpec
-from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from Products.Archetypes import atapi
@@ -35,108 +28,9 @@ from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 
-# TODO: Separate content and view into own modules!
-
-
-class AnalysisSpecsView(ControlPanelListingView):
-
-    def __init__(self, context, request):
-        super(AnalysisSpecsView, self).__init__(context, request)
-
-        self.catalog = "senaite_catalog_setup"
-
-        self.contentFilter = {
-            "portal_type": "AnalysisSpec",
-            "sort_on": "sortable_title",
-            "sort_order": "ascending",
-            "path": {
-                "query": api.get_path(context),
-                "level": 0}
-        }
-
-        self.context_actions = {
-            _("Add"): {
-                "url": "createObject?type_name=AnalysisSpec",
-                "permission": AddAnalysisSpec,
-                "icon": "++resource++bika.lims.images/add.png"}
-        }
-
-        self.title = self.context.translate(_("Analysis Specifications"))
-        self.icon = "{}/{}".format(
-            self.portal_url,
-            "/++resource++bika.lims.images/analysisspec_big.png"
-        )
-
-        self.show_select_row = False
-        self.show_select_column = True
-        self.pagesize = 25
-
-        self.columns = collections.OrderedDict((
-            ("Title", {
-                "title": _("Analysis Specification"),
-                "index": "sortable_title"}),
-            ("SampleType", {
-                "title": _("Sample Type"),
-                "index": "sampletype_title"}),
-            ("DynamicSpec", {
-                "title": _("Dynamic Specification"),
-                "sortable": False,
-            })
-        ))
-
-        self.review_states = [
-            {
-                "id": "default",
-                "title": _("Active"),
-                "contentFilter": {"is_active": True},
-                "transitions": [{"id": "deactivate"}, ],
-                "columns": self.columns.keys(),
-            }, {
-                "id": "inactive",
-                "title": _("Inactive"),
-                "contentFilter": {'is_active': False},
-                "transitions": [{"id": "activate"}, ],
-                "columns": self.columns.keys(),
-            }, {
-                "id": "all",
-                "title": _("All"),
-                "contentFilter": {},
-                "columns": self.columns.keys(),
-            },
-        ]
-
-    def folderitem(self, obj, item, index):
-        """Service triggered each time an item is iterated in folderitems.
-        The use of this service prevents the extra-loops in child objects.
-        :obj: the instance of the class to be foldered
-        :item: dict containing the properties of the object to be used by
-            the template
-        :index: current index of the item
-        """
-        obj = api.get_object(obj)
-        title = obj.Title()
-        url = obj.absolute_url()
-
-        item["replace"]["Title"] = get_link(url, value=title)
-
-        sampletype = obj.getSampleType()
-        if sampletype:
-            title = sampletype.Title()
-            url = sampletype.absolute_url()
-            item["replace"]["SampleType"] = get_link(url, value=title)
-
-        dynamic_spec = obj.getDynamicAnalysisSpec()
-        if dynamic_spec:
-            title = dynamic_spec.Title()
-            url = api.get_url(dynamic_spec)
-            item["replace"]["DynamicSpec"] = get_link(url, value=title)
-
-        return item
-
-
 schema = ATFolderSchema.copy()
 
-
+# TODO: Migrated to DX - https://github.com/senaite/senaite.core/pull/#2877
 class AnalysisSpecs(ATFolder):
     implements(IAnalysisSpecs, IHideActionsMenu)
     displayContentsTab = False
