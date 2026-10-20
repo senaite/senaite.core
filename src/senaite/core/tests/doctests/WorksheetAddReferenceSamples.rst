@@ -232,3 +232,138 @@ impossible through the UI:
 
     >>> get_listed("add_control", ws3)
     ['Control Both', 'Control Cu', 'Control Fe']
+
+
+The worksheet picks the slot
+............................
+
+The listing does not offer a position. Submitting it adds the reference
+analyses without naming a slot, so the worksheet decides, which is the only
+place that knows the layout of an assigned worksheet template.
+
+    >>> ws4 = api.create(portal.worksheets, "Worksheet", Analyst="test_user_1_")
+    >>> uid = api.get_uid(control_cu)
+    >>> request.form["submitted"] = 1
+    >>> request.form["uids"] = [uid]
+    >>> request.form["SupportedServices.{}".format(uid)] = [api.get_uid(Cu)]
+    >>> view = api.get_view("add_control", context=ws4, request=request)
+    >>> view.handle_submit()
+
+    >>> len(ws4.getAnalyses())
+    1
+
+The control landed in the first slot, since the worksheet was empty:
+
+    >>> ws4.get_slot_positions("c")
+    [1]
+
+A routine analysis added first pushes the reference to a new slot at the
+end, gaps in the layout are not filled:
+
+    >>> ws5 = api.create(portal.worksheets, "Worksheet", Analyst="test_user_1_")
+    >>> sample3 = create_analysisrequest(client, request, values, [api.get_uid(Cu)])
+    >>> success = doActionFor(sample3, "receive")
+    >>> ws5.addAnalysis(api.get_object(sample3.getAnalyses()[0]))
+    >>> ws5.get_slot_positions("a")
+    [1]
+
+    >>> view = api.get_view("add_control", context=ws5, request=request)
+    >>> view.handle_submit()
+    >>> ws5.get_slot_positions("c")
+    [2]
+
+Clean up the request:
+
+    >>> del request.form["submitted"]
+    >>> del request.form["uids"]
+    >>> del request.form["SupportedServices.{}".format(uid)]
+
+A helper to submit the listing for a single reference sample:
+
+    >>> def submit(view_name, worksheet, reference, service):
+    ...     uid = api.get_uid(reference)
+    ...     form = {
+    ...         "submitted": 1,
+    ...         "uids": [uid],
+    ...         "SupportedServices.{}".format(uid): [api.get_uid(service)],
+    ...     }
+    ...     request.form.update(form)
+    ...     try:
+    ...         view = api.get_view(
+    ...             view_name, context=worksheet, request=request)
+    ...         view.handle_submit()
+    ...     finally:
+    ...         for key in form:
+    ...             request.form.pop(key, None)
+
+    >>> def new_routine_analysis():
+    ...     sample = create_analysisrequest(client, request, values, [api.get_uid(Cu)])
+    ...     success = doActionFor(sample, "receive")
+    ...     return api.get_object(sample.getAnalyses()[0])
+
+Gaps are not filled when there is no template. A worksheet with routine
+analyses in slots 1 and 3 has a gap at slot 2, but the control goes to a new
+slot at the end:
+
+    >>> ws6 = api.create(portal.worksheets, "Worksheet", Analyst="test_user_1_")
+    >>> ws6.addAnalysis(new_routine_analysis(), 1)
+    >>> ws6.addAnalysis(new_routine_analysis(), 3)
+    >>> ws6.get_slot_positions("a")
+    [1, 3]
+
+    >>> submit("add_control", ws6, control_cu, Cu)
+    >>> ws6.get_slot_positions("c")
+    [4]
+
+
+Slots reserved by the worksheet template
+........................................
+
+With a worksheet template assigned, the reference analyses take the slots its
+layout reserves for their type. The gaps in between are kept for the routine
+analyses the template expects there:
+
+    >>> layout = [
+    ...     {"pos": "1", "type": "a", "blank_ref": "", "control_ref": "",
+    ...      "dup": ""},
+    ...     {"pos": "2", "type": "a", "blank_ref": "", "control_ref": "",
+    ...      "dup": ""},
+    ...     {"pos": "3", "type": "c", "blank_ref": "", "control_ref": "",
+    ...      "dup": ""},
+    ...     {"pos": "4", "type": "b", "blank_ref": "", "control_ref": "",
+    ...      "dup": ""},
+    ... ]
+    >>> template = api.create(setup.worksheettemplates, "WorksheetTemplate",
+    ...                       title="QC Template", Layout=layout)
+
+The template is assigned without applying it, so it does not pull in any of
+the routine analyses created above:
+
+    >>> ws7 = api.create(portal.worksheets, "Worksheet", Analyst="test_user_1_")
+    >>> ws7.setWorksheetTemplate(template)
+    >>> ws7.addAnalysis(new_routine_analysis(), 1)
+    >>> ws7.get_slot_positions("a")
+    [1]
+
+The control goes to slot 3, the one the template reserves for a control,
+leaving slot 2 free for a routine analysis:
+
+    >>> submit("add_control", ws7, control_cu, Cu)
+    >>> ws7.get_slot_positions("c")
+    [3]
+
+The blank goes to slot 4, the one the template reserves for a blank:
+
+    >>> submit("add_blank", ws7, blank_cu, Cu)
+    >>> ws7.get_slot_positions("b")
+    [4]
+
+Once the template's control slot is taken, another control goes to a new slot
+after the template layout:
+
+    >>> submit("add_control", ws7, control_fe, Fe)
+    >>> ws7.get_slot_positions("c")
+    [3, 5]
+
+    >>> ws7.get_slot_positions("all")
+    [1, 3, 4, 5]
