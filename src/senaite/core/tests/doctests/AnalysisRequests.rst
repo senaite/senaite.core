@@ -132,7 +132,7 @@ For this we need an AR with more than one Analysis:
 
     .. code ::
 
-    >>> from bika.lims.adapters.widgetvisibility import SamplingFieldsVisibility
+    >>> from bika.lims.adapters.widgetvisibility import DateReceivedFieldVisibility
     >>> from bika.lims.workflow import doActionFor
 
     >>> as2 = api.create(bika_analysisservices, 'AnalysisService', title='Another Type Of Analysis', ShortTitle='Another', Category=analysiscategory, Keyword='AN')
@@ -191,7 +191,7 @@ Sample Condition required setting
 
 By default, the Sample Condition is not required::
 
-    >>> from bika.lims.adapters.widgetvisibility import SamplingWorkflowWidgetVisibility
+    >>> from bika.lims.adapters.widgetvisibility import SamplingFieldsVisibility
     >>> setup = api.get_senaite_setup()
     >>> visibility = SamplingFieldsVisibility(ar2)
     >>> field = ar2.getField("SampleCondition")
