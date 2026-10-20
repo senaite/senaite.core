@@ -333,6 +333,7 @@ class ISetupSchema(model.Schema):
             "creation, e.g. to enter field results immediately, or lab "
             "results, when the automatic sample reception is activated."
         ),
+        default=False,
     )
 
     categorize_sample_analyses = schema.Bool(
