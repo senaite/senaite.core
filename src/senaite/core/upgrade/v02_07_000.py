@@ -174,6 +174,7 @@ def normalized_row(row):
         (u(key), u(value) if isinstance(value, six.string_types) else value)
         for key, value in row.items())
 
+
 @upgradestep(product, version)
 def remove_stale_uid_catalog_records(tool):
     """Remove uid_catalog records that sit under the wrong path
