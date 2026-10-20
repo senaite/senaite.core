@@ -393,6 +393,18 @@ class ISetupSchema(model.Schema):
         default=True,
     )
 
+    sample_condition_required = schema.Bool(
+        title=_(
+            u"title_senaitesetup_sample_condition_required",
+            default=u"Sample Condition required"),
+        description=_(
+            u"description_senaitesetup_sample_condition_required",
+            default=u"Select this to make Sample Condition field required on "
+                    u"sample creation"
+        ),
+        default=False,
+    )
+
     show_lab_name_in_login = schema.Bool(
         title=_(
             u"title_senaitesetup_show_lab_name_in_login",
@@ -1368,6 +1380,7 @@ class ISetupSchema(model.Schema):
             "sampling_workflow_enabled",
             "schedule_sampling_enabled",
             "date_sampled_required",
+            "sample_condition_required",
             "autoreceive_samples",
             "sample_preservation_enabled",
             "workdays",
@@ -1622,6 +1635,21 @@ class Setup(Container):
         creation is required when the sampling workflow is not active
         """
         mutator = self.mutator("date_sampled_required")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getSampleConditionRequired(self):
+        """Returns whether the Sample Condition field is required on sample creation
+        """
+        accessor = self.accessor("sample_condition_required")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSampleConditionRequired(self, value):
+        """Sets whether the entry of a value for Sample Condition field on sample
+        creation is required
+        """
+        mutator = self.mutator("sample_condition_required")
         return mutator(self, value)
 
     @security.protected(permissions.View)
