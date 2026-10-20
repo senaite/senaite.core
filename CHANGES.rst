@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #3062 Allow to make Sample Condition required on sample creation
+- #3028 Offer every valid reference sample when adding one to a worksheet
 - #3060 Fix empty link text in the Client share field
 - #3059 Fix Indian Rupee symbol displayed as raw CLDR choice pattern
 - #3053 Fix TypeError when saving a Method with empty Instruments
