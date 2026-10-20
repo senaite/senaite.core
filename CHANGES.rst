@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3030 Fix the missing signature in the worksheet print view
 - #3029 Let the worksheet pick the slot for reference analyses
 - #3028 Offer every valid reference sample when adding one to a worksheet
 - #3060 Fix empty link text in the Client share field
