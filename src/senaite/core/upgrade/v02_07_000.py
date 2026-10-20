@@ -112,6 +112,35 @@ PORTAL_FOLDER_ITEMS = {
 }
 
 
+EXCLUDE_FROM_NAV_BEHAVIOR = (
+    "plone.app.dexterity.behaviors.exclfromnav.IExcludeFromNavigationDefault"
+)
+
+
+@upgradestep(product, version)
+def drop_setup_marker_behavior(tool):
+    """Drop the exclude-from-navigation marker from the Setup FTI.
+
+    It is a marker interface, not a registered behavior, so every lookup
+    of the type's behaviors raises BehaviorRegistrationNotFound. That is
+    enough to refuse any update of the Setup object through the API.
+    The profile no longer ships the line; an existing site keeps it in
+    its FTI until it is removed here.
+    """
+    portal_types = api.get_tool("portal_types")
+    fti = portal_types.getTypeInfo("Setup")
+    if fti is None:
+        logger.warning("Setup type not found [SKIP]")
+        return
+    behaviors = list(fti.behaviors)
+    if EXCLUDE_FROM_NAV_BEHAVIOR not in behaviors:
+        logger.info("Setup FTI has no stale marker behavior [SKIP]")
+        return
+    behaviors.remove(EXCLUDE_FROM_NAV_BEHAVIOR)
+    fti.behaviors = tuple(behaviors)
+    logger.info("Removed the stale marker behavior from the Setup FTI")
+
+
 @upgradestep(product, version)
 def normalize_id_formatting_rows(tool):
     """Store the ID formatting rows as unicode.
