@@ -132,7 +132,7 @@ For this we need an AR with more than one Analysis:
 
     .. code ::
 
-    >>> from bika.lims.adapters.widgetvisibility import DateReceivedFieldVisibility
+    >>> from bika.lims.adapters.widgetvisibility import SamplingFieldsVisibility
     >>> from bika.lims.workflow import doActionFor
 
     >>> as2 = api.create(bika_analysisservices, 'AnalysisService', title='Another Type Of Analysis', ShortTitle='Another', Category=analysiscategory, Keyword='AN')
@@ -172,7 +172,7 @@ Sample Condition
 A `SampleCondition` describes the condition of the sample when it arrives at
 the laboratory::
 
-    >>> condition = api.create(sampleconditions, "SampleCondition", title="Damaged container")
+    >>> condition = api.create(sampleconditions, "SampleCondition", title="Fit for purpose")
     >>> condition
     <SampleCondition at /plone/setup/sampleconditions/samplecondition-1>
 
@@ -193,11 +193,8 @@ By default, the Sample Condition is not required::
 
     >>> from bika.lims.adapters.widgetvisibility import SamplingWorkflowWidgetVisibility
     >>> setup = api.get_senaite_setup()
-    >>> setup.getSampleConditionRequired()
-    False
-
+    >>> visibility = SamplingFieldsVisibility(ar2)
     >>> field = ar2.getField("SampleCondition")
-    >>> visibility = SamplingWorkflowWidgetVisibility(ar2)
     >>> visibility(ar2, "add", field, "visible")
     'visible'
     >>> field.required
