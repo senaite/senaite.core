@@ -44,6 +44,7 @@ Variables::
     >>> bika_setup = portal.bika_setup
     >>> sampletypes = setup.sampletypes
     >>> samplepoints = setup.samplepoints
+    >>> sampleconditions = setup.sampleconditions
     >>> analysiscategories = setup.analysiscategories
     >>> bika_analysisservices = bika_setup.bika_analysisservices
     >>> bika_labcontacts = bika_setup.bika_labcontacts
