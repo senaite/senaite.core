@@ -32,6 +32,7 @@ from plone.app.z3cform.views import Macros
 from plone.app.z3cform.views import RenderWidget
 from plone.dexterity.browser.edit import DefaultEditView
 from plone.dexterity.browser.view import DefaultView
+from senaite.core.config import FIELDSET_SECTIONS
 from senaite.core.interfaces import ISenaiteFormLayer
 from z3c.form.interfaces import INPUT_MODE
 from zope.browserpage.viewpagetemplatefile import ViewPageTemplateFile
@@ -112,6 +113,22 @@ class SenaiteRenderWidget(RenderWidget):
             if cls not in current_css:
                 current_css.append(cls)
         return " ".join(current_css)
+
+    def get_section_heading(self):
+        """Heading of the section this field opens, or None
+
+        A field opens a section when the schema that declares it names
+        it in the `FIELDSET_SECTIONS` tagged value.
+
+        :returns: the heading to draw above the field
+        :rtype: str or None
+        """
+        field = getattr(self.context, "field", None)
+        schema = getattr(field, "interface", None)
+        if schema is None:
+            return None
+        sections = schema.queryTaggedValue(FIELDSET_SECTIONS) or {}
+        return sections.get(field.__name__)
 
     def get_prepend_text(self):
         """Get the text/style to prepend to the input field
