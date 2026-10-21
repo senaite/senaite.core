@@ -399,8 +399,8 @@ class ISetupSchema(model.Schema):
             default=u"Sample Condition required"),
         description=_(
             u"description_senaitesetup_sample_condition_required",
-            default=u"Select this to make Sample Condition field required on "
-                    u"sample creation"
+            default=u"Select this to make the Sample Condition field "
+                    u"required"
         ),
         default=False,
     )
@@ -1639,15 +1639,14 @@ class Setup(Container):
 
     @security.protected(permissions.View)
     def getSampleConditionRequired(self):
-        """Returns whether the Sample Condition field is required on sample creation
+        """Returns whether the Sample Condition field is required
         """
         accessor = self.accessor("sample_condition_required")
         return accessor(self)
 
     @security.protected(permissions.ModifyPortalContent)
     def setSampleConditionRequired(self, value):
-        """Sets whether the entry of a value for Sample Condition field on sample
-        creation is required
+        """Sets whether the Sample Condition field is required
         """
         mutator = self.mutator("sample_condition_required")
         return mutator(self, value)

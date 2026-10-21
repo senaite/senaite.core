@@ -151,7 +151,8 @@ class SamplingFieldsVisibility(SenaiteATWidgetVisibility):
     def __init__(self, context):
         super(SamplingFieldsVisibility, self).__init__(
             context=context, sort=10,
-            field_names=["Sampler", "DateSampled", "SamplingDate", "SampleCondition"])
+            field_names=["Sampler", "DateSampled", "SamplingDate",
+                         "SampleCondition"])
 
     def isVisible(self, field, mode="view", default="visible"):
         """Returns the visibility of the field involved with the sampling

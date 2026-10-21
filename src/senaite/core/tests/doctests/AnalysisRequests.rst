@@ -168,6 +168,7 @@ sets the widget.visible to 'invisible'.
     'invisible'
 
 Sample Condition
+................
 
 A `SampleCondition` describes the condition of the sample when it arrives at
 the laboratory::
@@ -207,6 +208,14 @@ When the setting is enabled, the field becomes required::
     True
 
     >>> visibility(ar2, "add", field, "visible")
+    'visible'
+    >>> field.required
+    True
+
+Like the Date Sampled setting, it applies when an existing sample is edited
+as well::
+
+    >>> visibility(ar2, "edit", field, "visible")
     'visible'
     >>> field.required
     True
