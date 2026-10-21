@@ -30,16 +30,9 @@ class AddControlView(ReferenceSamplesView):
     def __init__(self, context, request):
         super(AddControlView, self).__init__(context, request)
 
-        self.contentFilter = {
-            "portal_type": "ReferenceSample",
-            "getSupportedServices": self.get_assigned_services_uids(),
-            "isValid": True,
-            "getBlank": False,
-            "review_state": "current",
-            "is_active": True,
-            "sort_on": "sortable_title",
-            "sort_order": "ascending",
-        }
+        # narrow the base filter down to control samples
+        self.contentFilter["getBlank"] = False
+
         self.title = translate(_(
             u"listing_add_control_title",
             default=u"Add Control Reference"
