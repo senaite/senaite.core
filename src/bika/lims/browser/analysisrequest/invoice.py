@@ -22,7 +22,7 @@ from bika.lims import _
 from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IAnalysis
-from bika.lims.interfaces import IAnalysisProfile
+from bika.lims.interfaces import IAnalysisProfile as IATAnalysisProfile
 from bika.lims.interfaces import IInvoiceView
 from bika.lims.utils import createPdf
 from senaite.core.i18n import get_currency_symbol
@@ -31,6 +31,7 @@ from plone.protect.interfaces import IDisableCSRFProtection
 from Products.CMFPlone.i18nl10n import ulocalized_time
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.app.supermodel.model import SuperModel
+from senaite.core.interfaces import IAnalysisProfile
 from zope.interface import alsoProvides
 from zope.interface import implements
 
@@ -125,8 +126,14 @@ class InvoiceView(BrowserView):
 
     def is_profile(self, obj):
         """Checks if the object is a profile
+
+        Both markers are asked for. A profile is Dexterity content and
+        carries the senaite.core one; the bika.lims interface of the
+        same name stayed behind with the Archetypes class and still
+        marks a profile on a site that has not been migrated yet.
         """
-        return IAnalysisProfile.providedBy(obj)
+        return (IAnalysisProfile.providedBy(obj)
+                or IATAnalysisProfile.providedBy(obj))
 
     def is_analysis(self, obj):
         """Checks if the object is an analysis
