@@ -30,7 +30,9 @@ from senaite.core.config.widgets import get_default_columns
 from senaite.core.content.base import Container
 from senaite.core.content.mixins import ClientAwareMixin
 from senaite.core.interfaces import ISampleTemplate
+from senaite.core.schema.uidreferencefield import UIDField
 from senaite.core.schema import UIDReferenceField
+from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.listing.widget import ListingWidgetFactory
@@ -44,7 +46,7 @@ from zope.interface import implementer
 class IServiceRecord(Interface):
     """Record schema for selected services and partitions
     """
-    uid = schema.TextLine(title=u"Service UID")
+    uid = UIDField(title=u"Service UID")
     hidden = schema.Bool(title=u"Hidden")
     part_id = schema.TextLine(title=u"Partition ID")
 
@@ -265,7 +267,7 @@ class ISampleTemplateSchema(model.Schema):
     directives.widget("services",
                       ListingWidgetFactory,
                       listing_view="sampletemplate_services_widget")
-    services = schema.List(
+    services = DataGridField(
         title=_(
             u"title_sampletemplate_services",
             default=u"Services"
