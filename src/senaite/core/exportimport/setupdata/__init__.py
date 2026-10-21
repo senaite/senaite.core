@@ -773,17 +773,18 @@ class Supplier_Contacts(WorksheetImporter):
             if not folder:
                 continue
             folder = folder[0].getObject()
-            obj = _createObjectByType("SupplierContact", folder, tmpID())
-            obj.edit(
-                Firstname=row['Firstname'],
-                Surname=row.get('Surname', ''),
-                Username=row.get('Username')
+
+            def u_row_get(name):
+                return api.safe_unicode(row.get(name, ""))
+
+            contact = api.create(
+                folder, "SupplierContact",
+                firstname=u_row_get("Firstname"),
+                surname=u_row_get("Surname"),
+                username=u_row_get("Username"),
             )
-            self.fill_contactfields(row, obj)
-            self.fill_addressfields(row, obj)
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+            self.fill_contactfields(row, contact)
+            self.fill_addressfields(row, contact)
 
 
 class Manufacturers(WorksheetImporter):

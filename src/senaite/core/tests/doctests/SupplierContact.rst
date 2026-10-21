@@ -77,6 +77,18 @@ It is indexed in the contact catalog, and not in the setup catalog:
     >>> api.get_catalogs_for(contact)
     [<ContactCatalog at /plone/senaite_catalog_contact>]
 
+The contact indexers apply, so the contact can be searched and sorted in the
+listing of the supplier:
+
+    >>> catalog = api.get_tool("senaite_catalog_contact")
+    >>> results = catalog(portal_type="SupplierContact",
+    ...                   listing_searchable_text="jane")
+    >>> [api.get_object(brain) for brain in results] == [contact]
+    True
+
+    >>> catalog.getIndexDataForUID(api.get_path(contact))["sortable_title"]
+    'jane doe'
+
 
 The fields of Person are available
 ..................................
@@ -153,3 +165,8 @@ And it lives in the same supplier, under the original ID:
 
     >>> api.get_id(migrated)
     'at-contact'
+
+It is indexed with the contact indexers of the new type:
+
+    >>> catalog.getIndexDataForUID(api.get_path(migrated))["sortable_title"]
+    'john smith'
