@@ -25,6 +25,5 @@
   <type portal_type="ReferenceSample"/>
   <type portal_type="Pricelist"/>
   <type portal_type="SampleType"/>
-  <type portal_type="SupplierContact"/>
  </factorytypes>
 </object>
