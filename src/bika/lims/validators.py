@@ -629,6 +629,29 @@ class CoordinateValidator:
 validation.register(CoordinateValidator())
 
 
+def get_sibling_records(kwargs):
+    """Return every record of the field the validated row belongs to
+
+    A uniqueness check needs the other rows. The records field hands
+    them over; a caller that predates that falls back to the request,
+    and a value set through the API has neither, which used to raise a
+    TypeError on None instead of validating.
+
+    :param kwargs: the keyword arguments the subfield validator got
+    :returns: a list of records, empty when there are none to compare
+    """
+    records = kwargs.get("records")
+    if records is not None:
+        return records
+    instance = kwargs.get("instance")
+    field = kwargs.get("field")
+    if instance is None or field is None:
+        return []
+    request = getattr(instance, "REQUEST", None)
+    form = getattr(request, "form", None) or {}
+    return form.get(field.getName()) or []
+
+
 class ResultOptionsValueValidator(object):
     """Validator for the subfield "ResultValue" of ResultOptions field
     """
@@ -641,13 +664,8 @@ class ResultOptionsValueValidator(object):
         if not api.is_floatable(value):
             return _t(_("Result Value must be a number"))
 
-        # Get all records
-        instance = kwargs['instance']
-        field_name = kwargs['field'].getName()
-        request = instance.REQUEST
-        records = request.form.get(field_name)
-
         # Result values must be unique
+        records = get_sibling_records(kwargs)
         value = api.to_float(value)
         values = map(lambda ro: ro.get("ResultValue"), records)
         values = filter(api.is_floatable, values)
@@ -674,13 +692,8 @@ class ResultOptionsTextValidator(object):
         if not value or not value.strip():
             return _t(_("Display Value is required"))
 
-        # Get all records
-        instance = kwargs['instance']
-        field_name = kwargs['field'].getName()
-        request = instance.REQUEST
-        records = request.form.get(field_name)
-
         # Result Text must be unique
+        records = get_sibling_records(kwargs)
         original_texts = map(lambda ro: ro.get("ResultText"), records)
         duplicates = filter(lambda text: text == value, original_texts)
         if len(duplicates) > 1:
