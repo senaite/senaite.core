@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3043 Store a calculation's test parameters as unicode
 - #3035 Drop the stale marker behavior from the Setup FTI
 - #3034 Store the ID formatting rows as unicode
 - #3033 Give the immediate results entry setting a default
