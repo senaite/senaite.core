@@ -174,7 +174,7 @@ class ASTMImporter(object):
         if self.instrument and self._importlog is None:
             self._importlog = api.create(self.instrument, "AutoImportLog")
             self._importlog.setInstrument(self.instrument)
-            self._importlog.setInterface(", ".join(self.get_sender()))
+            self._importlog.setInterface(self.get_interface())
             self._importlog.setImportFile("ASTM")
             self._importlog.setLogTime(timestamp.isoformat())
         if self._importlog:
@@ -229,6 +229,14 @@ class ASTMImporter(object):
         sender = header.get("sender") or {}
         keys = ("name", "serial", "version")
         return tuple([(sender.get(key) or "").strip() for key in keys])
+
+    def get_interface(self):
+        """Return the sender components as the interface of the import log
+
+        Components the analyzer does not send are left out, so the interface
+        does not read e.g. `GeneXpert, , `
+        """
+        return ", ".join(filter(None, self.get_sender()))
 
     def create_attachment(self, container, contents, filename=None):
         """Create a new attachment with the given contents

@@ -95,7 +95,26 @@ class GetSenderTest(unittest.TestCase):
         self.assertEqual(imp.get_instrument_version(), "")
 
 
+class GetInterfaceTest(unittest.TestCase):
+    """`get_interface` joins the sender components the analyzer sent
+    """
+
+    def test_full_sender(self):
+        sender = {"name": "XN-550", "serial": "18642", "version": "1.2"}
+        result = importer({"sender": sender}).get_interface()
+        self.assertEqual(result, "XN-550, 18642, 1.2")
+
+    def test_null_components(self):
+        sender = {"name": "GeneXpert", "serial": None, "version": ""}
+        result = importer({"sender": sender}).get_interface()
+        self.assertEqual(result, "GeneXpert")
+
+    def test_missing_sender(self):
+        self.assertEqual(importer().get_interface(), "")
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(GetSenderTest))
+    suite.addTest(unittest.makeSuite(GetInterfaceTest))
     return suite
