@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3040 Send a SENAITE test e-mail from the mail settings
 - #3035 Drop the stale marker behavior from the Setup FTI
 - #3034 Store the ID formatting rows as unicode
 - #3033 Give the immediate results entry setting a default
