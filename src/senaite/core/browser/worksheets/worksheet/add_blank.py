@@ -30,16 +30,8 @@ class AddBlankView(ReferenceSamplesView):
     def __init__(self, context, request):
         super(AddBlankView, self).__init__(context, request)
 
-        self.contentFilter = {
-            "portal_type": "ReferenceSample",
-            "getSupportedServices": self.get_assigned_services_uids(),
-            "isValid": True,
-            "getBlank": True,
-            "review_state": "current",
-            "is_active": True,
-            "sort_on": "sortable_title",
-            "sort_order": "ascending",
-        }
+        # narrow the base filter down to blank samples
+        self.contentFilter["getBlank"] = True
 
         self.title = translate(_(
             u"listing_add_blank_title",
