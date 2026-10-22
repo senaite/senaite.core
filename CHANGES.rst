@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3063 Remove the unused front page settings from the setup
 - #3062 Allow to make Sample Condition required
 - #3047 Fix ASTM import crashing on a sender with null components
 - #3035 Drop the stale marker behavior from the Setup FTI
