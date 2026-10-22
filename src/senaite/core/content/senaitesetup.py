@@ -41,7 +41,6 @@ from senaite.core.interfaces import IHideActionsMenu
 from senaite.core.interfaces import ISetup
 from senaite.core.schema import DurationField
 from senaite.core.schema import RichTextField
-from senaite.core.schema import UIDReferenceField
 from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
 from senaite.core.schema.textlinefield import TextLineField
@@ -867,43 +866,6 @@ class ISetupSchema(model.Schema):
         default="analyses_classic_view",
     )
 
-    dashboard_by_default = schema.Bool(
-        title=_(
-            u"title_senaitesetup_dashboard_by_default",
-            default=u"Use Dashboard as default front page"
-        ),
-        description=_(
-            u"description_senaitesetup_dashboard_by_default",
-            default=u"Select this to activate the dashboard as a default front "
-                    u"page."
-        ),
-        default=True,
-    )
-
-    landing_page = UIDReferenceField(
-        title=_(
-            u"title_senaitesetup_landing_page",
-            default=u"Landing Page"
-        ),
-        description=_(
-            u"description_senaitesetup_landing_page",
-            default=u"The landing page is shown for non-authenticated users if "
-                    u"the Dashboard is not selected as the default front page. "
-                    u"If no landing page is selected, the default frontpage is "
-                    u"displayed."
-        ),
-        allowed_types=(
-            "Document",
-            "Client",
-            "ClientFolder",
-            "Samples",
-            "WorksheetFolder",
-        ),
-        multi_valued=False,
-        relationship="SetupLandingPage",
-        required=False,
-    )
-
     show_partitions = schema.Bool(
         title=_(
             u"title_senaitesetup_show_partitions",
@@ -1357,8 +1319,6 @@ class ISetupSchema(model.Schema):
         "appearance",
         label=_(u"Appearance"),
         fields=[
-            "dashboard_by_default",
-            "landing_page",
             "worksheet_layout",
             "show_partitions",
             "site_logo",
