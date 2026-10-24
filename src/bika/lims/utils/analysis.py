@@ -22,6 +22,7 @@ import copy
 import math
 
 from bika.lims import api
+from senaite.core.api.choices import to_choices
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IBaseAnalysis
 from bika.lims.interfaces import IReferenceSample
@@ -468,12 +469,8 @@ def format_interim(interim_field, html=True):
     values = filter(None, api.to_list(value))
 
     # if choices, display texts instead of values
-    choices = item.get("choices")
+    choices = to_choices(item.get("choices"))
     if choices:
-        # generate a {value:text} dict
-        choices = choices.split("|")
-        choices = dict(map(lambda ch: ch.strip().split(":"), choices))
-
         # set the text as the formatted value
         texts = [choices.get(v, "") for v in values]
         values = filter(None, texts)
