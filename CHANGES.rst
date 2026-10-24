@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3038 Answer a refused JSON API request with its own status
 - #3036 Fix setting a sample's specification through the API
 - #3062 Allow to make Sample Condition required
 - #3047 Fix ASTM import crashing on a sender with null components
