@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3048 Write the four analysis limits without trailing zeros
 - #3039 Do not reset the laboratory name when the setup profile is imported again
 - #3038 Answer a refused JSON API request with its own status
 - #3036 Fix setting a sample's specification through the API
