@@ -5,6 +5,11 @@ Changelog
 ------------------
 
 - #3061 Set the instruments a method is created with once it has a UID
+- #3039 Do not reset the laboratory name when the setup profile is imported again
+- #3038 Answer a refused JSON API request with its own status
+- #3036 Fix setting a sample's specification through the API
+- #3062 Allow to make Sample Condition required
+- #3047 Fix ASTM import crashing on a sender with null components
 - #3035 Drop the stale marker behavior from the Setup FTI
 - #3034 Store the ID formatting rows as unicode
 - #3033 Give the immediate results entry setting a default
