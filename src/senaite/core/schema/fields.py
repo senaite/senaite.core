@@ -28,6 +28,7 @@ from senaite.core.schema.interfaces import IIntField
 from senaite.core.z3cform.datagridfield.row import DictRow
 from zope.interface import implementer
 from zope.schema import Field
+from zope.schema import getFields
 from zope.schema import Int
 from zope.schema import List
 from zope.schema._bootstrapfields import _NotGiven
@@ -105,10 +106,40 @@ class DataGridField(List, BaseField):
     """A field that stores a list of dictionaries
     """
     def set(self, object, value):
-        super(DataGridField, self).set(object, value)
+        super(DataGridField, self).set(object, normalize_rows(self, value))
 
 
 @implementer(IDataGridRow)
 class DataGridRow(DictRow, BaseField):
     """A field that stores a data grid row
     """
+
+
+def normalize_rows(field, value):
+    """Normalize the UIDs of a datagrid field's rows
+
+    The rows are plain dictionaries, and zope.schema never asks a
+    subfield to store anything: the row goes into the list as it came.
+    A UID therefore keeps whichever spelling the caller happened to
+    have, which is why this happens here, where the rows are stored,
+    rather than in each of the setters that build them.
+    """
+    # Imported here: uidreferencefield imports BaseField from this
+    # module, so naming it at the top would close the circle.
+    from senaite.core.schema.uidreferencefield import UIDField
+    from senaite.core.schema.uidreferencefield import to_uid
+
+    schema = getattr(getattr(field, "value_type", None), "schema", None)
+    if schema is None or not value:
+        return value
+    names = [name for name, sub in getFields(schema).items()
+             if isinstance(sub, UIDField)]
+    if not names:
+        return value
+    rows = []
+    for row in value:
+        if isinstance(row, dict):
+            row = dict(row, **dict((n, to_uid(row.get(n))) for n in names
+                                   if n in row))
+        rows.append(row)
+    return rows
