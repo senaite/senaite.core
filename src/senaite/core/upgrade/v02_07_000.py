@@ -1823,8 +1823,6 @@ def migrate_setup_fields_to_dx(tool):
         ("MaxNumberOfSamplesAdd", "max_number_of_samples_add", None),
         # Appearance
         ("WorksheetLayout", "worksheet_layout", None),
-        ("DashboardByDefault", "dashboard_by_default", None),
-        ("LandingPage", "landing_page", None),
         ("ShowPartitions", "show_partitions", None),
         ("ShowLabNameInLogin", "show_lab_name_in_login", None),
         # Sampling
