@@ -90,7 +90,7 @@ Create an Analysis Specification for `Water`:
     >>> rr4 = {"uid": api.get_uid(Mg), "min": 40, "max": 50, "warn_min": 35, "warn_max": 55}
     >>> rr5 = {"uid": api.get_uid(Zn), "min": 50, "max": 60, "warn_min": 45, "warn_max": 65}
     >>> rr = [rr1, rr2, rr3, rr4, rr5]
-    >>> specification = api.create(bikasetup.bika_analysisspecs, "AnalysisSpec", title="Lab Water Spec", SampleType=sampletype_uid, ResultsRange=rr)
+    >>> specification = api.create(setup.analysisspecs, "AnalysisSpec", title="Lab Water Spec", SampleType=sampletype_uid, ResultsRange=rr)
 
 
 Creation of a Sample with Specification
