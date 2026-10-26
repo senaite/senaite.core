@@ -3,6 +3,27 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser">
 
+  <!-- Data manager adapter for our own user data schema.
+
+       plone.app.users generates the profile schema at runtime and
+       registers the adapter for that generated schema only. All
+       generated schemas share the name
+       "plone.supermodel.model.member-fields", and interfaces with
+       the same name and module compare equal, so the registration
+       of the registration form overwrites the one of the profile
+       form. Fields copied into the generated schema keep working,
+       but our "contact" field is not copied (plone's
+       field_in_form only knows plone's own fields), so it keeps
+       this interface and its lookup then fails with
+       "Could not adapt". Registering it here makes the lookup
+       independent of who registered last.
+  -->
+  <adapter
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      provides=".userdatapanel.IUserDataSchema"
+      factory="plone.app.users.browser.userdatapanel.UserDataPanelAdapter"
+      />
+
   <!-- Personal Preferences -->
   <browser:page
       name="personal-preferences"

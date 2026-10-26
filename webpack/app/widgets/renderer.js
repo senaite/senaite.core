@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import tinymce from "tinymce";
 import intlTelInput from "intl-tel-input";
-import "intl-tel-input/build/css/intlTelInput.css";
+import "intl-tel-input/styles";
 
 import QuerySelectWidgetController from "./queryselect/widget.js";
 import AddressWidgetController from "./addresswidget/widget.js";

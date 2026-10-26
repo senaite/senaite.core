@@ -40,6 +40,8 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
+from senaite.core.i18n import get_month_name
+from senaite.core.i18n import get_weekday_name
 from senaite.core.i18n import translate
 from senaite.core.permissions import AddAnalysisRequest
 from senaite.core.permissions import EditResults
@@ -320,8 +322,17 @@ class DashboardView(BrowserView):
         return api.get_user_fullname(user)
 
     def get_current_date(self):
-        return datetime.datetime.now().strftime(
-            "%A, %d %B %Y")
+        """Returns the current date, localized to the active language
+
+        Note `strftime` resolves the names of the weekday and of the month
+        through the locale of the operating system, that has nothing to do
+        with the language the user selected
+        """
+        now = datetime.datetime.now()
+        # `get_weekday_name` expects Sunday == 0, same as `%w`
+        weekday = get_weekday_name(int(now.strftime("%w")), to_utf8=False)
+        month = get_month_name(now.month, to_utf8=False)
+        return u"{}, {:02d} {} {}".format(weekday, now.day, month, now.year)
 
     def get_current_time(self):
         return datetime.datetime.now().strftime("%H:%M")
