@@ -172,6 +172,19 @@ def get_subdivisions(thing, default=_marker):
     return sorted(subdivisions, key=lambda s: s.code)
 
 
+def get_subdivision_type(subdivisions, default=None):
+    """Return the common subdivision type, or default if types differ or empty.
+    """
+    if not subdivisions:
+        return default
+
+    types = set(subdivision.type for subdivision in subdivisions)
+    if len(types) == 1:
+        return types.pop()
+
+    return default
+
+
 def get_country_or_subdivision(thing, default=_marker):
     """Returns the country or subdivision for the thing passed-in
     :param thing: the thing or search term to look for a country or subdivision

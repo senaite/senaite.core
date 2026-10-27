@@ -235,9 +235,9 @@ class AddressWidget(HTMLFormElement, Widget):
                 subdivisions = geo.get_subdivisions(country, [])
                 sub1[country] = map(lambda sub: sub.name, subdivisions)
 
-                label = _("State")
-                if subdivisions:
-                    label = _(subdivisions[0].type)
+                label = geo.get_subdivision_type(subdivisions)
+                if not label:
+                    label = _(u"label_subdivision_state", default=u"State")
                 labels[country]["subdivision1"] = translate(label)
 
             subdivision1 = item.get("subdivision1")
@@ -245,9 +245,9 @@ class AddressWidget(HTMLFormElement, Widget):
                 subdivisions = geo.get_subdivisions(subdivision1, [])
                 sub2[subdivision1] = map(lambda sub: sub.name, subdivisions)
 
-                label = _("District")
-                if subdivisions:
-                    label = _(subdivisions[0].type)
+                label = geo.get_subdivision_type(subdivisions)
+                if not label:
+                    label = _(u"label_subdivision_district", default=u"District")
                 labels[country]["subdivision2"] = translate(label)
 
         attributes = {
