@@ -5,6 +5,21 @@ Changelog
 ------------------
 
 - #3027 Fix Sample Points sorting and filtering by Sample Types
+- #3039 Do not reset the laboratory name when the setup profile is imported again
+- #3038 Answer a refused JSON API request with its own status
+- #3036 Fix setting a sample's specification through the API
+- #3062 Allow to make Sample Condition required
+- #3047 Fix ASTM import crashing on a sender with null components
+- #3035 Drop the stale marker behavior from the Setup FTI
+- #3034 Store the ID formatting rows as unicode
+- #3033 Give the immediate results entry setting a default
+- #3030 Fix the missing signature in the worksheet print view
+- #3029 Let the worksheet pick the slot for reference analyses
+- #3028 Offer every valid reference sample when adding one to a worksheet
+- #3060 Fix empty link text in the Client share field
+- #3059 Fix Indian Rupee symbol displayed as raw CLDR choice pattern
+- #3053 Fix TypeError when saving a Method with empty Instruments
+- #3023 Return a 404 when at_download is traversed on non-Archetypes content
 - #3022 Build the JavaScript bundles in CI
 - #3020 Use UnorderedOrdering for Instruments to avoid ZODB conflicts
 - #3021 Update JavaScript dependencies
