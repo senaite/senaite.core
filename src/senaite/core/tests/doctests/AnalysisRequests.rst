@@ -44,6 +44,7 @@ Variables::
     >>> bika_setup = portal.bika_setup
     >>> sampletypes = setup.sampletypes
     >>> samplepoints = setup.samplepoints
+    >>> sampleconditions = setup.sampleconditions
     >>> analysiscategories = setup.analysiscategories
     >>> bika_analysisservices = bika_setup.bika_analysisservices
     >>> bika_labcontacts = bika_setup.bika_labcontacts
@@ -166,31 +167,94 @@ sets the widget.visible to 'invisible'.
     >>> DateReceivedFieldVisibility(ar1)(ar1, 'edit', ar1.schema['DateReceived'], 'default')
     'invisible'
 
+Sample Condition
+................
 
-Date Sampled requirements with the sampling workflow (#2771)
-...........................................................
+A `SampleCondition` describes the condition of the sample when it arrives at
+the laboratory::
 
-Viewing a received sample makes Date Sampled required::
+    >>> condition = api.create(sampleconditions, "SampleCondition", title="Fit for purpose")
+    >>> condition
+    <SampleCondition at /plone/setup/sampleconditions/samplecondition-1>
 
-    >>> from bika.lims.adapters.widgetvisibility import SamplingFieldsVisibility
-    >>> date_sampled = ar1.getField("DateSampled")
-    >>> SamplingFieldsVisibility(ar1).isVisible(date_sampled, "edit")
-    'visible'
-    >>> date_sampled.required
+Create another `AnalysisRequest` with the Sample Condition set::
+
+    >>> values_with_condition = dict(values, SampleCondition=condition.UID())
+    >>> ar2 = create_analysisrequest(client, request, values_with_condition, service_uids)
+    >>> ar2
+    <AnalysisRequest at /plone/clients/client-1/water-0003>
+    >>> ar2.getSampleCondition() == condition
     True
 
-With Sampling workflow enabled, a new sample has no collection date yet. Its add
-form must hide Date Sampled and clear the requirement left by the received sample::
 
+Sample Condition required setting
+.................................
+
+By default, the Sample Condition is not required::
+
+    >>> from bika.lims.adapters.widgetvisibility import SamplingFieldsVisibility
+    >>> setup = api.get_senaite_setup()
+    >>> visibility = SamplingFieldsVisibility(ar2)
+    >>> field = ar2.getField("SampleCondition")
+    >>> visibility(ar2, "add", field, "visible")
+    'visible'
+    >>> field.required
+    False
+
+When the setting is enabled, the field becomes required::
+
+    >>> setup.setSampleConditionRequired(True)
+    >>> setup.getSampleConditionRequired()
+    True
+
+    >>> visibility(ar2, "add", field, "visible")
+    'visible'
+    >>> field.required
+    True
+
+Like the Date Sampled setting, it applies when an existing sample is edited
+as well::
+
+    >>> visibility(ar2, "edit", field, "visible")
+    'visible'
+    >>> field.required
+    True
+
+Disabling the setting makes the field optional again::
+
+    >>> setup.setSampleConditionRequired(False)
+    >>> visibility(ar2, "add", field, "visible")
+    'visible'
+    >>> field.required
+    False
+
+
+Date Sampled requirements with the sampling workflow (#2771)
+............................................................
+
+With Sampling workflow enabled, a new sample has no collection date yet::
+
+    >>> from bika.lims.adapters.widgetvisibility import SamplingFieldsVisibility
     >>> setup.setSamplingWorkflowEnabled(True)
     >>> sampling_values = values.copy()
     >>> del sampling_values["DateSampled"]
     >>> pending = create_analysisrequest(client, request, sampling_values, service_uids)
     >>> pending.getDateSampled() is None
     True
+
+The Date Sampled field is shared between samples. Viewing a received sample
+makes it required, including on the sample awaiting sampling::
+
     >>> date_sampled = pending.getField("DateSampled")
     >>> date_sampled is ar1.getField("DateSampled")
     True
+    >>> SamplingFieldsVisibility(ar1).isVisible(date_sampled, "edit")
+    'visible'
+    >>> date_sampled.required
+    True
+
+The add form must hide Date Sampled and clear that shared requirement::
+
     >>> visibility = SamplingFieldsVisibility(pending)
     >>> visibility.isVisible(date_sampled, "add")
     'invisible'

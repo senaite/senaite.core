@@ -151,7 +151,8 @@ class SamplingFieldsVisibility(SenaiteATWidgetVisibility):
     def __init__(self, context):
         super(SamplingFieldsVisibility, self).__init__(
             context=context, sort=10,
-            field_names=["Sampler", "DateSampled", "SamplingDate"])
+            field_names=["Sampler", "DateSampled", "SamplingDate",
+                         "SampleCondition"])
 
     def isVisible(self, field, mode="view", default="visible"):
         """Returns the visibility of the field involved with the sampling
@@ -159,6 +160,7 @@ class SamplingFieldsVisibility(SenaiteATWidgetVisibility):
         """
         field_name = field.getName()
         sampling = self.context.getSamplingWorkflowEnabled()
+        setup = api.get_senaite_setup()
 
         if field_name == "DateSampled":
             if IReceived.providedBy(self.context):
@@ -167,7 +169,6 @@ class SamplingFieldsVisibility(SenaiteATWidgetVisibility):
 
             elif not sampling:
                 # not received and no sampling, use setup's setting
-                setup = api.get_senaite_setup()
                 field.required = setup.getDateSampledRequired()
 
             else:
@@ -187,6 +188,8 @@ class SamplingFieldsVisibility(SenaiteATWidgetVisibility):
             if not sampling:
                 # sampling deactivated, do not display this field
                 return "invisible"
+        elif field_name == "SampleCondition":
+            field.required = setup.getSampleConditionRequired()
 
         return default
 
