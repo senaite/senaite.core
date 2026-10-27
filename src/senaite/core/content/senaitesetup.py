@@ -81,104 +81,104 @@ def default_email_from_sample_publication(context):
 
 DEFAULT_ID_FORMATTING = [
     {
-        "form": "B-{seq:03d}",
-        "portal_type": "Batch",
-        "prefix": "batch",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"B-{seq:03d}",
+        u"portal_type": u"Batch",
+        u"prefix": u"batch",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
     {
-        "form": "D-{seq:03d}",
-        "portal_type": "DuplicateAnalysis",
-        "prefix": "duplicate",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"D-{seq:03d}",
+        u"portal_type": u"DuplicateAnalysis",
+        u"prefix": u"duplicate",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
     {
-        "form": "I-{seq:03d}",
-        "portal_type": "Invoice",
-        "prefix": "invoice",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"I-{seq:03d}",
+        u"portal_type": u"Invoice",
+        u"prefix": u"invoice",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
     {
-        "form": "QC-{seq:03d}",
-        "portal_type": "ReferenceSample",
-        "prefix": "refsample",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"QC-{seq:03d}",
+        u"portal_type": u"ReferenceSample",
+        u"prefix": u"refsample",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
     {
-        "form": "SA-{seq:03d}",
-        "portal_type": "ReferenceAnalysis",
-        "prefix": "refanalysis",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"SA-{seq:03d}",
+        u"portal_type": u"ReferenceAnalysis",
+        u"prefix": u"refanalysis",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
     {
-        "form": "WS-{seq:03d}",
-        "portal_type": "Worksheet",
-        "prefix": "worksheet",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"WS-{seq:03d}",
+        u"portal_type": u"Worksheet",
+        u"prefix": u"worksheet",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
     {
-        "form": "{sampleType}-{seq:04d}",
-        "portal_type": "AnalysisRequest",
-        "prefix": "analysisrequest",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"{sampleType}-{seq:04d}",
+        u"portal_type": u"AnalysisRequest",
+        u"prefix": u"analysisrequest",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
     {
-        "form": "{parent_ar_id}-P{partition_count:02d}",
-        "portal_type": "AnalysisRequestPartition",
-        "prefix": "analysisrequestpartition",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"{parent_ar_id}-P{partition_count:02d}",
+        u"portal_type": u"AnalysisRequestPartition",
+        u"prefix": u"analysisrequestpartition",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
     {
-        "form": "{parent_base_id}-R{retest_count:02d}",
-        "portal_type": "AnalysisRequestRetest",
-        "prefix": "analysisrequestretest",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"{parent_base_id}-R{retest_count:02d}",
+        u"portal_type": u"AnalysisRequestRetest",
+        u"prefix": u"analysisrequestretest",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
     {
-        "form": "{parent_ar_id}-S{secondary_count:02d}",
-        "portal_type": "AnalysisRequestSecondary",
-        "prefix": "analysisrequestsecondary",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"{parent_ar_id}-S{secondary_count:02d}",
+        u"portal_type": u"AnalysisRequestSecondary",
+        u"prefix": u"analysisrequestsecondary",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
 ]
 
@@ -333,6 +333,7 @@ class ISetupSchema(model.Schema):
             "creation, e.g. to enter field results immediately, or lab "
             "results, when the automatic sample reception is activated."
         ),
+        default=False,
     )
 
     categorize_sample_analyses = schema.Bool(
@@ -391,6 +392,18 @@ class ISetupSchema(model.Schema):
                     u"when 'Sampling workflow' is not active"
         ),
         default=True,
+    )
+
+    sample_condition_required = schema.Bool(
+        title=_(
+            u"title_senaitesetup_sample_condition_required",
+            default=u"Sample Condition required"),
+        description=_(
+            u"description_senaitesetup_sample_condition_required",
+            default=u"Select this to make the Sample Condition field "
+                    u"required"
+        ),
+        default=False,
     )
 
     show_lab_name_in_login = schema.Bool(
@@ -1368,6 +1381,7 @@ class ISetupSchema(model.Schema):
             "sampling_workflow_enabled",
             "schedule_sampling_enabled",
             "date_sampled_required",
+            "sample_condition_required",
             "autoreceive_samples",
             "sample_preservation_enabled",
             "workdays",
@@ -1622,6 +1636,20 @@ class Setup(Container):
         creation is required when the sampling workflow is not active
         """
         mutator = self.mutator("date_sampled_required")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getSampleConditionRequired(self):
+        """Returns whether the Sample Condition field is required
+        """
+        accessor = self.accessor("sample_condition_required")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSampleConditionRequired(self, value):
+        """Sets whether the Sample Condition field is required
+        """
+        mutator = self.mutator("sample_condition_required")
         return mutator(self, value)
 
     @security.protected(permissions.View)
