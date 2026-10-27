@@ -1,6 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configure xmlns="http://namespaces.zope.org/zope">
 
+  <!-- Audit Log: AT Object Created -->
+  <subscriber
+      for="Products.Archetypes.interfaces.IBaseObject
+           Products.Archetypes.interfaces.IObjectInitializedEvent"
+      handler=".auditlog.ObjectInitializedEventHandler"
+      />
+
+  <!-- Audit Log: Dexterity Object Created -->
+  <subscriber
+      for="plone.dexterity.interfaces.IDexterityContent
+           zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler=".auditlog.ObjectInitializedEventHandler"
+      />
+
+  <!-- Audit Log: AT Object Modified -->
+  <subscriber
+      for="Products.Archetypes.interfaces.IBaseObject
+           Products.Archetypes.interfaces.IObjectEditedEvent"
+      handler=".auditlog.ObjectModifiedEventHandler"
+      />
+
+  <!-- Audit Log: Dexterity Object Modified -->
+  <subscriber
+      for="plone.dexterity.interfaces.IDexterityContent
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".auditlog.ObjectModifiedEventHandler"
+      />
+
+  <!-- Audit Log: After Transition Event -->
+  <subscriber
+      for="*
+           Products.CMFCore.interfaces.IActionSucceededEvent"
+      handler=".auditlog.ObjectTransitionedEventHandler"
+      />
+
+  <!-- Audit Log: Object removed Event -->
+  <subscriber
+      for="*
+           zope.lifecycleevent.interfaces.IObjectRemovedEvent"
+      handler=".auditlog.ObjectRemovedEventHandler"
+      />
+
   <!-- Contact/LabContact *modified* event handler
        This subscriber updates the properties of the linked user.  -->
   <subscriber

@@ -18,8 +18,8 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.api.snapshot import pause_snapshots_for
-from bika.lims.api.snapshot import resume_snapshots_for
+from senaite.core.api.snapshot import pause_snapshots_for
+from senaite.core.api.snapshot import resume_snapshots_for
 from plone.dexterity.browser.add import DefaultAddForm as BaseAddForm
 from plone.dexterity.browser.add import DefaultAddView as BaseAddView
 

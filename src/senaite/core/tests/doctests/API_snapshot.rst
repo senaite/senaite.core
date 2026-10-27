@@ -29,7 +29,7 @@ Needed Imports:
     >>> from zope.lifecycleevent import modified
     >>> from zope.component.globalregistry import getGlobalSiteManager
     >>> from zope.lifecycleevent.interfaces import IObjectModifiedEvent
-    >>> from bika.lims.subscribers.auditlog import ObjectModifiedEventHandler
+    >>> from senaite.core.subscribers.auditlog import ObjectModifiedEventHandler
     >>> from zope.interface import Interface
 
 

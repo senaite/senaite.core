@@ -23,6 +23,15 @@ Define some variables:
 Test fixture:
 
     >>> import os
+    >>> import time
+
+This test changes the timezone of the process, both through the `TZ` variable
+of the environment and by patching `time.tzname`. Remember the values, so they
+can be restored at the end of this test:
+
+    >>> TZ_ORIGINAL = os.environ.get("TZ")
+    >>> TZNAME_ORIGINAL = time.tzname
+
     >>> os.environ["TZ"] = "CET"
 
 
@@ -1422,3 +1431,18 @@ And include the hours if we wish to do so:
 
     >>> dtime.get_ymd("2023-04-12", "20250324061202", with_hours=True)
     '1y 11m 12d 6h'
+
+
+Test teardown
+.............
+
+Restore the timezone of the process, so the tests that run after this one are
+not affected. Note `dtime.time` is the `time` module itself, so a patched
+`tzname` leaks into every other test and changes the timezone they resolve
+through `get_os_timezone`:
+
+    >>> time.tzname = TZNAME_ORIGINAL
+    >>> if TZ_ORIGINAL is None:
+    ...     del os.environ["TZ"]
+    ... else:
+    ...     os.environ["TZ"] = TZ_ORIGINAL

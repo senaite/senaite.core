@@ -1,19 +1,10 @@
 /*
- * International Telephone Input v26.8.1
- * https://github.com/jackocnr/intl-tel-input.git
+ * International Telephone Input v29.4.0
+ * git+https://github.com/jackocnr/intl-tel-input.git
  * Licensed under the MIT license
  */
-
-// UMD
-(function(factory) {
-  if (typeof module === 'object' && module.exports) {
-    module.exports = factory();
-  } else {
-    window.intlTelInput = factory();
-  }
-}(() => {
-
-var factoryOutput = (() => {
+"use strict";
+var _factory = (() => {
   var __defProp = Object.defineProperty;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
   var __getOwnPropNames = Object.getOwnPropertyNames;
@@ -32,13 +23,13 @@ var factoryOutput = (() => {
   };
   var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-  // src/js/intl-tel-input/intlTelInputWithUtils.ts
+  // packages/core/src/js/intlTelInputWithUtils.ts
   var intlTelInputWithUtils_exports = {};
   __export(intlTelInputWithUtils_exports, {
     default: () => intlTelInputWithUtils_default
   });
 
-  // src/js/intl-tel-input/data.ts
+  // packages/core/src/js/data.ts
   var rawCountryData = [
     [
       "af",
@@ -50,11 +41,12 @@ var factoryOutput = (() => {
     ],
     [
       "ax",
-      // Åland Islands
+      // Åland Islands (AKA Aland Islands)
       "358",
       1,
-      ["18", "4"],
-      // (4 is a mobile range shared with FI)
+      ["18", "4", "50"],
+      // (4 and 50 are mobile ranges shared with FI)
+      // NOTE: https://en.wikipedia.org/wiki/Telephone%20numbers%20in%20%C3%85land says some 4XXX ranges (e.g. 4570) are specific to AX, but LPN doesn't respect this (https://libphonenumber.appspot.com/phonenumberparser?number=%2B3584570123456 says region=FI) so we won't either. Also it's too much of a maintenance burden to keep track of. Keep the 4 area code range here so that if the user selects AX and types this kind of number, we wont change the flag to FI. Whereas if they type a FI-only range then we will.
       "0"
     ],
     [
@@ -309,7 +301,63 @@ var factoryOutput = (() => {
       // Canada
       "1",
       1,
-      ["204", "226", "236", "249", "250", "257", "263", "289", "306", "343", "354", "365", "367", "368", "382", "403", "416", "418", "428", "431", "437", "438", "450", "468", "474", "506", "514", "519", "548", "579", "581", "584", "587", "604", "613", "639", "647", "672", "683", "705", "709", "742", "753", "778", "780", "782", "807", "819", "825", "867", "873", "879", "902", "905", "942"],
+      [
+        "204",
+        "226",
+        "236",
+        "249",
+        "250",
+        "257",
+        "263",
+        "289",
+        "306",
+        "343",
+        "354",
+        "365",
+        "367",
+        "368",
+        "382",
+        "403",
+        "416",
+        "418",
+        "428",
+        "431",
+        "437",
+        "438",
+        "450",
+        "468",
+        "474",
+        "506",
+        "514",
+        "519",
+        "548",
+        "579",
+        "581",
+        "584",
+        "587",
+        "604",
+        "613",
+        "639",
+        "647",
+        "672",
+        "683",
+        "705",
+        "709",
+        "742",
+        "753",
+        "778",
+        "780",
+        "782",
+        "807",
+        "819",
+        "825",
+        "867",
+        "873",
+        "879",
+        "902",
+        "905",
+        "942"
+      ],
       "1"
     ],
     [
@@ -544,8 +592,8 @@ var factoryOutput = (() => {
       // Finland
       "358",
       0,
-      ["4"],
-      // (mobile range shared with AX)
+      ["4", "50"],
+      // (mobile ranges shared with AX)
       "0"
     ],
     [
@@ -652,7 +700,8 @@ var factoryOutput = (() => {
       // Guernsey
       "44",
       1,
-      ["1481", "7781", "7839", "7911"],
+      //* Only 79111 and 79117 belong to GG - the rest of 7911 is GB (e.g. 79110).
+      ["1481", "7781", "7839", "79111", "79117"],
       "0"
     ],
     [
@@ -783,7 +832,8 @@ var factoryOutput = (() => {
       // Jersey
       "44",
       3,
-      ["1534", "7509", "7700", "7797", "7829", "7937"],
+      //* Only 77003/77007/77008 belong to JE - the rest of 7700 is GB (e.g. 77001).
+      ["1534", "7509", "77003", "77007", "77008", "7797", "7829", "7937"],
       "0"
     ],
     [
@@ -978,7 +1028,7 @@ var factoryOutput = (() => {
       // Mayotte
       "262",
       1,
-      ["269", "639"],
+      ["2689", "269", "639", "7093"],
       "0"
     ],
     [
@@ -1721,32 +1771,50 @@ var factoryOutput = (() => {
   for (const c of rawCountryData) {
     allCountries.push({
       name: "",
-      // populated in the plugin
+      // populated in the core library
       iso2: c[0],
       dialCode: c[1],
       priority: c[2] || 0,
       areaCodes: c[3] || null,
-      nodeById: {},
-      // populated by the plugin
-      nationalPrefix: c[4] || null,
-      normalisedName: "",
-      // populated in the plugin
-      initials: "",
-      // populated in the plugin
-      dialCodePlus: ""
-      // populated in the plugin
+      nationalPrefix: c[4] || null
     });
   }
+  var iso2Set = new Set(allCountries.map((c) => c.iso2));
+  var isIso2 = (val) => iso2Set.has(val);
   var data_default = allCountries;
 
-  // src/js/modules/constants.ts
+  // packages/core/src/js/constants.ts
   var EVENTS = {
-    OPEN_COUNTRY_DROPDOWN: "open:countrydropdown",
-    CLOSE_COUNTRY_DROPDOWN: "close:countrydropdown",
+    OPEN_COUNTRY_SELECTOR: "open:countryselector",
+    CLOSE_COUNTRY_SELECTOR: "close:countryselector",
     COUNTRY_CHANGE: "countrychange",
-    INPUT: "input"
+    INPUT: "input",
     // used for synthetic input trigger
+    STRICT_REJECT: "strict:reject"
   };
+  var ITI_SLOTS = [
+    "container",
+    "input",
+    "countryContainer",
+    "selectedCountry",
+    "selectedCountryPrimary",
+    "selectedFlag",
+    "arrow",
+    "selectedDialCode",
+    "countrySelector",
+    "countrySelectorContainer",
+    "searchWrapper",
+    "searchIcon",
+    "searchInput",
+    "searchClear",
+    "countryList",
+    "countryListItem",
+    "countryListItemFlag",
+    "countryName",
+    "dialCode",
+    "countryCheck",
+    "noResults"
+  ];
   var CLASSES = {
     HIDE: "iti__hide",
     V_HIDE: "iti__v-hide",
@@ -1755,7 +1823,8 @@ var factoryOutput = (() => {
     FLAG: "iti__flag",
     LOADING: "iti__loading",
     COUNTRY_ITEM: "iti__country",
-    HIGHLIGHT: "iti__highlight"
+    HIGHLIGHT: "iti__highlight",
+    STRICT_REJECT_ANIMATION: "iti__strict-reject-animation"
   };
   var KEYS = {
     ARROW_UP: "ArrowUp",
@@ -1767,7 +1836,7 @@ var factoryOutput = (() => {
   };
   var INPUT_TYPES = {
     PASTE: "insertFromPaste",
-    DELETE_FWD: "deleteContentForward"
+    DELETE_FORWARD: "deleteContentForward"
   };
   var REGEX = {
     ALPHA_UNICODE: /\p{L}/u,
@@ -1784,29 +1853,26 @@ var factoryOutput = (() => {
     HIDDEN_SEARCH_RESET_MS: 1e3,
     NEXT_TICK: 0
   };
-  var SENTINELS = {
-    UNKNOWN_NUMBER_TYPE: -99,
-    UNKNOWN_VALIDATION_ERROR: -99
-  };
   var LAYOUT = {
     NARROW_VIEWPORT_WIDTH: 500,
     // keep in sync with .iti__country-list CSS media query
-    SANE_SELECTED_WITH_DIAL_WIDTH: 78,
+    FALLBACK_SELECTED_COUNTRY_WITH_DIAL_WIDTH: 78,
     // px width fallback when separateDialCode enabled
-    SANE_SELECTED_NO_DIAL_WIDTH: 42,
+    FALLBACK_SELECTED_COUNTRY_NO_DIAL_WIDTH: 42,
     // px width fallback when no separate dial code
     INPUT_PADDING_EXTRA_LEFT: 6,
     // px gap between selected country container and input text
     DROPDOWN_MARGIN: 3,
     // px margin between dropdown and tel input
-    SANE_DROPDOWN_HEIGHT: 200
+    FALLBACK_DROPDOWN_HEIGHT: 200
     // px height fallback for dropdown
   };
-  var DIAL = {
+  var DIAL_CODE = {
     PLUS: "+",
     NANP: "1"
     // North American Numbering Plan
   };
+  var E164_MAX_DIGITS = 15;
   var UK = {
     ISO2: "gb",
     DIAL_CODE: "44",
@@ -1821,14 +1887,23 @@ var factoryOutput = (() => {
     DIAL_CODE: "1"
     // +1 United States
   };
-  var PLACEHOLDER_MODES = {
-    AGGRESSIVE: "aggressive",
-    POLITE: "polite",
-    OFF: "off"
+  var PLACEHOLDER_POLICY = {
+    AGGRESSIVE: "AGGRESSIVE",
+    POLITE: "POLITE",
+    OFF: "OFF"
   };
-  var INITIAL_COUNTRY = {
-    AUTO: "auto"
-  };
+  var COUNTRY_SELECTOR_MODES = [
+    "OFF",
+    "DROPDOWN",
+    "FULLSCREEN",
+    "AUTO"
+  ];
+  var NUMBER_FORMATS = [
+    "E164",
+    "INTERNATIONAL",
+    "NATIONAL",
+    "RFC3966"
+  ];
   var NUMBER_TYPES = [
     "FIXED_LINE",
     "MOBILE",
@@ -1843,10 +1918,25 @@ var factoryOutput = (() => {
     "VOICEMAIL",
     "UNKNOWN"
   ];
-  var NUMBER_TYPE_SET = new Set(NUMBER_TYPES);
+  var VALIDATION_ERRORS = [
+    "IS_POSSIBLE",
+    "INVALID_COUNTRY_CODE",
+    "TOO_SHORT",
+    "TOO_LONG",
+    "IS_POSSIBLE_LOCAL_ONLY",
+    "INVALID_LENGTH"
+  ];
+  var toEnumObject = (arr) => Object.fromEntries(arr.map((v) => [v, v]));
+  var NUMBER_FORMAT = toEnumObject(NUMBER_FORMATS);
+  var NUMBER_TYPE = toEnumObject(NUMBER_TYPES);
+  var VALIDATION_ERROR = toEnumObject(VALIDATION_ERRORS);
+  var COUNTRY_SELECTOR_MODE = toEnumObject(COUNTRY_SELECTOR_MODES);
   var DATA_KEYS = {
-    COUNTRY_CODE: "countryCode",
-    DIAL_CODE: "dialCode"
+    // e.g. <li data-iso2="us"> for country items in the country list
+    ISO2: "iso2",
+    DIAL_CODE: "dialCode",
+    // e.g. <input data-intl-tel-input-id="0"> on the input element
+    INSTANCE_ID: "intlTelInputId"
   };
   var ARIA = {
     EXPANDED: "aria-expanded",
@@ -1860,10 +1950,10 @@ var factoryOutput = (() => {
     MODAL: "aria-modal"
   };
 
-  // src/js/intl-tel-input/i18n/en/index.ts
+  // packages/core/src/js/locale/en.ts
   var interfaceTranslations = {
-    selectedCountryAriaLabel: "Change country, selected ${countryName} (${dialCode})",
-    noCountrySelected: "Select country",
+    selectedCountryAriaLabel: "Change country for phone number, currently selected ${countryName} (${dialCode})",
+    noCountrySelected: "Select country for phone number",
     countryListAriaLabel: "List of countries",
     searchPlaceholder: "Search",
     clearSearchAriaLabel: "Clear search",
@@ -1880,101 +1970,110 @@ var factoryOutput = (() => {
   };
   var en_default = interfaceTranslations;
 
-  // src/js/modules/core/options.ts
-  var mq = (q) => typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia(q).matches;
-  var isNarrowViewport = () => mq(`(max-width: ${LAYOUT.NARROW_VIEWPORT_WIDTH}px)`);
-  var computeDefaultUseFullscreenPopup = () => {
+  // packages/core/src/js/core/options.ts
+  var mediaQuery = (q) => typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia(q).matches;
+  var isNarrowViewport = () => mediaQuery(`(max-width: ${LAYOUT.NARROW_VIEWPORT_WIDTH}px)`);
+  var resolveAutoCountrySelectorMode = () => {
     if (typeof navigator !== "undefined" && typeof window !== "undefined") {
-      const isShortViewport = mq("(max-height: 600px)");
-      const isCoarsePointer = mq("(pointer: coarse)");
-      return isNarrowViewport() || isCoarsePointer && isShortViewport;
+      const isShortViewport = mediaQuery("(max-height: 600px)");
+      const isCoarsePointer = mediaQuery("(pointer: coarse)");
+      if (isNarrowViewport() || isCoarsePointer && isShortViewport) {
+        return COUNTRY_SELECTOR_MODE.FULLSCREEN;
+      }
     }
-    return false;
+    return COUNTRY_SELECTOR_MODE.DROPDOWN;
   };
   var defaults = {
-    //* Whether or not to allow the dropdown.
-    allowDropdown: true,
+    //* How the country selector is displayed. "DROPDOWN" vs "FULLSCREEN", or "AUTO" to decide itself, or "OFF".
+    countrySelectorMode: COUNTRY_SELECTOR_MODE.AUTO,
     //* The number type to enforce during validation.
-    allowedNumberTypes: ["MOBILE", "FIXED_LINE"],
+    allowedNumberTypes: [NUMBER_TYPE.MOBILE, NUMBER_TYPE.FIXED_LINE],
     //* Whether or not to allow extensions after the main number.
     allowNumberExtensions: false,
     // Allow alphanumeric "phonewords" (e.g. +1 800 FLOWERS) as valid numbers
     allowPhonewords: false,
-    //* Add a placeholder in the input with an example number for the selected country.
-    autoPlaceholder: PLACEHOLDER_MODES.POLITE,
+    //* Add custom classes to the elements we generate, keyed by slot name e.g. { selectedCountry: "rounded-l-lg" }.
+    classNames: {},
     //* Add a custom class to the (injected) container element.
     containerClass: "",
     //* Locale for localising country names via Intl.DisplayNames.
     countryNameLocale: "en",
-    //* The order of the countries in the dropdown. Defaults to alphabetical.
+    //* Override individual country names by iso2 code.
+    countryNameOverrides: {},
+    //* The order of the countries in the country list. Defaults to alphabetical.
     countryOrder: null,
-    //* Add a country search input at the top of the dropdown.
+    //* Add a country search input at the top of the country selector.
     countrySearch: true,
     //* Modify the auto placeholder.
     customPlaceholder: null,
     //* Always show the dropdown
     dropdownAlwaysOpen: false,
-    //* Append menu to specified element.
-    dropdownContainer: null,
+    //* Optional DOM element to append the dropdown to (used to escape ancestors with overflow:hidden, or to mount in a custom container). Only consulted in dropdown rendering; ignored when the country selector renders as a fullscreen popup (see fullscreenParent).
+    dropdownParent: null,
     //* Don't display these countries.
-    excludeCountries: [],
+    excludeCountries: null,
     //* Fix the dropdown width to the input width (rather than being as wide as the longest country name).
-    fixDropdownWidth: true,
+    matchDropdownWidth: true,
     //* Format the number as the user types
     formatAsYouType: true,
-    //* Format the input value during initialisation and on setNumber.
-    formatOnDisplay: true,
-    //* geoIp lookup function.
-    geoIpLookup: null,
-    //* Inject a hidden input with the name returned from this function, and on submit, populate it with the result of getNumber.
-    hiddenInput: null,
-    //* Internationalise the plugin text e.g. search input placeholder, country names.
-    i18n: {},
+    //* Optional DOM element to append the fullscreen popup to, instead of document.body (e.g. a modal <dialog>, where a body-mounted popup would be unreachable). Only consulted in fullscreen rendering (see dropdownParent for the dropdown). Null means document.body, which is resolved on open rather than here, as document may not exist yet (e.g. SSR).
+    fullscreenParent: null,
+    //* Inject hidden inputs with the names returned from this function, and on submit, populate them with the full number and selected country iso2.
+    hiddenInputs: null,
+    //* Translations for the core library UI strings e.g. search input placeholder, country names.
+    uiTranslations: {},
     //* Initial country.
     initialCountry: "",
+    //* Async lookup function used to determine the initial country (e.g. via IP). Ignored if initialCountry is set.
+    initialCountryLookup: null,
     //* A function to load the utils script.
     loadUtils: null,
-    //* National vs international formatting for numbers e.g. placeholders and displaying existing numbers.
-    nationalMode: true,
+    //* Format used when displaying numbers (placeholder examples and stored values). One of "E164", "INTERNATIONAL", "NATIONAL".
+    numberDisplayFormat: NUMBER_FORMAT.INTERNATIONAL,
     //* Display only these countries.
-    onlyCountries: [],
+    onlyCountries: null,
+    //* When to set the placeholder to an example number for the selected country: "POLITE" only when the input has no manually-set placeholder, "AGGRESSIVE" always, "OFF" never.
+    placeholderNumberPolicy: PLACEHOLDER_POLICY.POLITE,
     //* Number type to use for placeholders.
-    placeholderNumberType: "MOBILE",
+    placeholderNumberType: NUMBER_TYPE.MOBILE,
     //* Add custom classes to the search input element.
     searchInputClass: "",
     //* Display the international dial code next to the selected flag.
-    separateDialCode: false,
-    //* Show flags - for both the selected country, and in the country dropdown
+    separateDialCode: true,
+    //* When strictMode rejects a key (etc), play a short feedback animation
+    strictRejectAnimation: true,
+    //* Show flags - for both the selected country, and in the country list
     showFlags: true,
     //* Only allow certain chars e.g. a plus followed by numeric digits, and cap at max valid length.
-    strictMode: false,
-    //* Use full screen popup instead of dropdown for country list.
-    useFullscreenPopup: computeDefaultUseFullscreenPopup()
+    strictMode: true
   };
   var toString = (val) => JSON.stringify(val);
   var isPlainObject = (val) => Boolean(val) && typeof val === "object" && !Array.isArray(val);
-  var isFn = (val) => typeof val === "function";
+  var isFunction = (val) => typeof val === "function";
   var isElLike = (val) => {
-    if (!val || typeof val !== "object") return false;
+    if (!val || typeof val !== "object") {
+      return false;
+    }
     const v = val;
     return v.nodeType === 1 && typeof v.tagName === "string" && typeof v.appendChild === "function";
   };
-  var iso2Set = new Set(data_default.map((c) => c.iso2));
-  var isIso2 = (val) => iso2Set.has(val);
-  var placeholderModeSet = new Set(Object.values(PLACEHOLDER_MODES));
+  var placeholderPolicySet = new Set(Object.values(PLACEHOLDER_POLICY));
+  var slotSet = new Set(ITI_SLOTS);
   var warn = (message) => {
     console.warn(`[intl-tel-input] ${message}`);
   };
   var warnOption = (optionName, expectedType, actualValue) => {
-    warn(`Option '${optionName}' must be ${expectedType}; got ${toString(actualValue)}. Ignoring.`);
+    warn(
+      `Option '${optionName}' must be ${expectedType}; got ${toString(actualValue)}. Ignoring.`
+    );
   };
-  var hasOwn = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
   var validateIso2Array = (key, value) => {
-    const expectedType = "an array of ISO2 country code strings";
+    const expectedType = "an array of iso2 country code strings";
     if (!Array.isArray(value)) {
       warnOption(key, expectedType, value);
       return false;
     }
+    const valid = [];
     for (const v of value) {
       if (typeof v !== "string") {
         warnOption(key, expectedType, value);
@@ -1982,11 +2081,12 @@ var factoryOutput = (() => {
       }
       const lower = v.toLowerCase();
       if (!isIso2(lower)) {
-        warn(`Invalid country code in '${key}': '${v}'. Ignoring.`);
-        return false;
+        warn(`Invalid iso2 code in '${key}': '${v}'. Skipping.`);
+      } else {
+        valid.push(v);
       }
     }
-    return true;
+    return valid;
   };
   var validateOptions = (customOptions) => {
     if (customOptions === void 0) {
@@ -1999,34 +2099,53 @@ var factoryOutput = (() => {
     }
     const validatedOptions = {};
     for (const [key, value] of Object.entries(customOptions)) {
-      if (!hasOwn(defaults, key)) {
+      if (!Object.hasOwn(defaults, key)) {
         warn(`Unknown option '${key}'. Ignoring.`);
         continue;
       }
       switch (key) {
-        case "allowDropdown":
         case "allowNumberExtensions":
         case "allowPhonewords":
         case "countrySearch":
         case "dropdownAlwaysOpen":
-        case "fixDropdownWidth":
+        case "matchDropdownWidth":
         case "formatAsYouType":
-        case "formatOnDisplay":
-        case "nationalMode":
         case "showFlags":
         case "separateDialCode":
         case "strictMode":
-        case "useFullscreenPopup":
+        case "strictRejectAnimation":
           if (typeof value !== "boolean") {
             warnOption(key, "a boolean", value);
             break;
           }
           validatedOptions[key] = value;
           break;
-        case "autoPlaceholder":
-          if (typeof value !== "string" || !placeholderModeSet.has(value)) {
-            const validModes = Array.from(placeholderModeSet).join(", ");
-            warnOption("autoPlaceholder", `one of ${validModes}`, value);
+        case "countrySelectorMode":
+          if (typeof value !== "string" || !COUNTRY_SELECTOR_MODES.includes(value)) {
+            warnOption(
+              "countrySelectorMode",
+              `one of ${COUNTRY_SELECTOR_MODES.map((m) => `"${m}"`).join(", ")}`,
+              value
+            );
+            break;
+          }
+          validatedOptions[key] = value;
+          break;
+        case "numberDisplayFormat":
+          if (typeof value !== "string" || value === NUMBER_FORMAT.RFC3966 || !(value === NUMBER_FORMAT.E164 || value === NUMBER_FORMAT.INTERNATIONAL || value === NUMBER_FORMAT.NATIONAL)) {
+            warnOption(
+              "numberDisplayFormat",
+              'one of "E164", "INTERNATIONAL", "NATIONAL"',
+              value
+            );
+            break;
+          }
+          validatedOptions[key] = value;
+          break;
+        case "placeholderNumberPolicy":
+          if (typeof value !== "string" || !placeholderPolicySet.has(value)) {
+            const validPolicies = Array.from(placeholderPolicySet).join(", ");
+            warnOption("placeholderNumberPolicy", `one of ${validPolicies}`, value);
             break;
           }
           validatedOptions[key] = value;
@@ -2040,37 +2159,77 @@ var factoryOutput = (() => {
           }
           validatedOptions[key] = value;
           break;
-        case "countryOrder":
-          if (value === null || validateIso2Array(key, value)) {
+        case "classNames": {
+          if (!isPlainObject(value)) {
+            warnOption("classNames", "an object", value);
+            break;
+          }
+          const validSlots = {};
+          for (const [slot, slotValue] of Object.entries(value)) {
+            if (!slotSet.has(slot)) {
+              warn(
+                `Unknown slot '${slot}' in 'classNames'. Valid slots: ${ITI_SLOTS.join(", ")}. Skipping.`
+              );
+            } else if (typeof slotValue !== "string") {
+              warnOption(`classNames.${slot}`, "a string", slotValue);
+            } else {
+              validSlots[slot] = slotValue.trim().replace(/\s+/g, " ");
+            }
+          }
+          validatedOptions[key] = validSlots;
+          break;
+        }
+        case "countryOrder": {
+          if (value === null) {
             validatedOptions[key] = value;
+          } else {
+            const filtered = validateIso2Array(key, value);
+            if (filtered !== false) {
+              validatedOptions[key] = filtered;
+            }
           }
           break;
+        }
         case "customPlaceholder":
-        case "geoIpLookup":
-        case "hiddenInput":
+        case "hiddenInputs":
+        case "initialCountryLookup":
         case "loadUtils":
-          if (value !== null && !isFn(value)) {
+          if (value !== null && !isFunction(value)) {
             warnOption(key, "a function or null", value);
             break;
           }
           validatedOptions[key] = value;
           break;
-        case "dropdownContainer":
+        case "dropdownParent":
+        case "fullscreenParent":
           if (value !== null && !isElLike(value)) {
-            warnOption("dropdownContainer", "an HTMLElement or null", value);
+            warnOption(key, "an HTMLElement or null", value);
             break;
           }
           validatedOptions[key] = value;
           break;
         case "excludeCountries":
-        case "onlyCountries":
-          if (validateIso2Array(key, value)) {
+        case "onlyCountries": {
+          if (value === null) {
             validatedOptions[key] = value;
+          } else {
+            const filtered = validateIso2Array(key, value);
+            if (filtered !== false) {
+              validatedOptions[key] = filtered;
+            }
           }
           break;
-        case "i18n":
+        }
+        case "uiTranslations":
           if (value && !isPlainObject(value)) {
-            warnOption("i18n", "an object", value);
+            warnOption("uiTranslations", "an object", value);
+            break;
+          }
+          validatedOptions[key] = value;
+          break;
+        case "countryNameOverrides":
+          if (value && !isPlainObject(value)) {
+            warnOption("countryNameOverrides", "an object", value);
             break;
           }
           validatedOptions[key] = value;
@@ -2081,16 +2240,16 @@ var factoryOutput = (() => {
             break;
           }
           const lower = value.toLowerCase();
-          if (lower && (lower !== INITIAL_COUNTRY.AUTO && !isIso2(lower))) {
-            warnOption("initialCountry", "a valid ISO2 country code or 'auto'", value);
+          if (lower && !isIso2(lower)) {
+            warnOption("initialCountry", "a valid iso2 country code", value);
             break;
           }
           validatedOptions[key] = value;
           break;
         }
         case "placeholderNumberType":
-          if (typeof value !== "string" || !NUMBER_TYPE_SET.has(value)) {
-            const validTypes = Array.from(NUMBER_TYPE_SET).join(", ");
+          if (typeof value !== "string" || !NUMBER_TYPES.includes(value)) {
+            const validTypes = NUMBER_TYPES.join(", ");
             warnOption("placeholderNumberType", `one of ${validTypes}`, value);
             break;
           }
@@ -2099,14 +2258,22 @@ var factoryOutput = (() => {
         case "allowedNumberTypes":
           if (value !== null) {
             if (!Array.isArray(value)) {
-              warnOption("allowedNumberTypes", "an array of number types or null", value);
+              warnOption(
+                "allowedNumberTypes",
+                "an array of number types or null",
+                value
+              );
               break;
             }
             let allValid = true;
             for (const v of value) {
-              if (typeof v !== "string" || !NUMBER_TYPE_SET.has(v)) {
-                const validTypes = Array.from(NUMBER_TYPE_SET).join(", ");
-                warnOption("allowedNumberTypes", `an array of valid number types (${validTypes})`, v);
+              if (typeof v !== "string" || !NUMBER_TYPES.includes(v)) {
+                const validTypes = NUMBER_TYPES.join(", ");
+                warnOption(
+                  "allowedNumberTypes",
+                  `an array of valid number types (${validTypes})`,
+                  v
+                );
                 allValid = false;
                 break;
               }
@@ -2122,86 +2289,51 @@ var factoryOutput = (() => {
     }
     return validatedOptions;
   };
-  var applyOptionSideEffects = (o) => {
-    if (o.dropdownAlwaysOpen) {
-      o.useFullscreenPopup = false;
-      o.allowDropdown = true;
+  var normaliseOptions = (o) => {
+    if (o.initialCountry) {
+      o.initialCountry = o.initialCountry.toLowerCase();
     }
-    if (o.useFullscreenPopup) {
-      o.fixDropdownWidth = false;
+    if (o.onlyCountries?.length) {
+      o.onlyCountries = o.onlyCountries.map((c) => c.toLowerCase());
+    }
+    if (o.excludeCountries?.length) {
+      o.excludeCountries = o.excludeCountries.map((c) => c.toLowerCase());
+    }
+    if (o.countryOrder) {
+      o.countryOrder = o.countryOrder.map((c) => c.toLowerCase());
+    }
+  };
+  var applyOptionSideEffects = (o) => {
+    if (o.countrySelectorMode === COUNTRY_SELECTOR_MODE.AUTO) {
+      o.countrySelectorMode = resolveAutoCountrySelectorMode();
+    }
+    if (o.dropdownAlwaysOpen) {
+      o.countrySelectorMode = COUNTRY_SELECTOR_MODE.DROPDOWN;
+    }
+    if (o.countrySelectorMode === COUNTRY_SELECTOR_MODE.FULLSCREEN) {
+      o.matchDropdownWidth = false;
     } else {
       if (isNarrowViewport()) {
-        o.fixDropdownWidth = true;
+        o.matchDropdownWidth = true;
       }
     }
-    if (o.onlyCountries.length === 1) {
+    if (o.onlyCountries?.length === 1) {
       o.initialCountry = o.onlyCountries[0];
     }
-    if (o.separateDialCode) {
-      o.nationalMode = false;
+    if (o.separateDialCode && o.numberDisplayFormat === NUMBER_FORMAT.NATIONAL) {
+      o.numberDisplayFormat = NUMBER_FORMAT.INTERNATIONAL;
     }
-    if (o.allowDropdown && !o.showFlags && !o.separateDialCode) {
-      o.nationalMode = false;
+    if (o.countrySelectorMode !== COUNTRY_SELECTOR_MODE.OFF && !o.showFlags && !o.separateDialCode && o.numberDisplayFormat === NUMBER_FORMAT.NATIONAL) {
+      o.numberDisplayFormat = NUMBER_FORMAT.INTERNATIONAL;
     }
-    if (o.useFullscreenPopup && !o.dropdownContainer) {
-      o.dropdownContainer = document.body;
-    }
-    o.i18n = { ...en_default, ...o.i18n };
+    o.uiTranslations = { ...en_default, ...o.uiTranslations };
   };
 
-  // src/js/modules/utils/string.ts
+  // packages/core/src/js/helpers/string.ts
   var getNumeric = (s) => s.replace(/\D/g, "");
   var normaliseString = (s = "") => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-  // src/js/modules/utils/isAndroid.ts
-  var getIsAndroid = () => typeof navigator !== "undefined" ? /Android/i.test(navigator.userAgent) : false;
-
-  // src/js/modules/core/countrySearch.ts
-  var getMatchedCountries = (countries, query) => {
-    const normalisedQuery = normaliseString(query);
-    const iso2Matches = [];
-    const nameStartWith = [];
-    const nameContains = [];
-    const dialCodeMatches = [];
-    const dialCodeContains = [];
-    const initialsMatches = [];
-    for (const c of countries) {
-      if (c.iso2 === normalisedQuery) {
-        iso2Matches.push(c);
-      } else if (c.normalisedName.startsWith(normalisedQuery)) {
-        nameStartWith.push(c);
-      } else if (c.normalisedName.includes(normalisedQuery)) {
-        nameContains.push(c);
-      } else if (normalisedQuery === c.dialCode || normalisedQuery === c.dialCodePlus) {
-        dialCodeMatches.push(c);
-      } else if (c.dialCodePlus.includes(normalisedQuery)) {
-        dialCodeContains.push(c);
-      } else if (c.initials.includes(normalisedQuery)) {
-        initialsMatches.push(c);
-      }
-    }
-    const sortByPriority = (a, b) => a.priority - b.priority;
-    return [
-      ...iso2Matches.sort(sortByPriority),
-      ...nameStartWith.sort(sortByPriority),
-      ...nameContains.sort(sortByPriority),
-      ...dialCodeMatches.sort(sortByPriority),
-      ...dialCodeContains.sort(sortByPriority),
-      ...initialsMatches.sort(sortByPriority)
-    ];
-  };
-  var findFirstCountryStartingWith = (countries, query) => {
-    const lowerQuery = query.toLowerCase();
-    for (const c of countries) {
-      const lowerName = c.name.toLowerCase();
-      if (lowerName.startsWith(lowerQuery)) {
-        return c;
-      }
-    }
-    return null;
-  };
-
-  // src/js/modules/utils/dom.ts
+  // packages/core/src/js/helpers/dom.ts
   var buildClassNames = (flags) => Object.keys(flags).filter((k) => Boolean(flags[k])).join(" ");
   var createEl = (tagName, attrs, container) => {
     const el = document.createElement(tagName);
@@ -2216,67 +2348,239 @@ var factoryOutput = (() => {
     return el;
   };
 
-  // src/js/modules/core/icons.ts
-  var buildSearchIcon = () => `
-  <svg class="iti__search-icon-svg" width="14" height="14" viewBox="0 0 24 24" focusable="false" ${ARIA.HIDDEN}="true">
-    <circle cx="11" cy="11" r="7" />
-    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-  </svg>`;
-  var buildClearIcon = (id2) => {
-    const maskId = `iti-${id2}-clear-mask`;
-    return `
-    <svg class="iti__search-clear-svg" width="12" height="12" viewBox="0 0 16 16" ${ARIA.HIDDEN}="true" focusable="false">
-      <mask id="${maskId}" maskUnits="userSpaceOnUse">
-        <rect width="16" height="16" fill="white" />
-        <path d="M5.2 5.2 L10.8 10.8 M10.8 5.2 L5.2 10.8" stroke="black" stroke-linecap="round" class="iti__search-clear-x" />
-      </mask>
-      <circle cx="8" cy="8" r="8" class="iti__search-clear-bg" mask="url(#${maskId})" />
-    </svg>`;
-  };
-  var buildCheckIcon = () => `
-  <svg class="iti__country-check-svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" focusable="false" ${ARIA.HIDDEN}="true">
-    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-  </svg>`;
-  var buildGlobeIcon = () => `
-  <svg width="256" height="256" viewBox="0 0 512 512" class="iti__globe-svg">
-    <path d="M508 213a240 240 0 0 0-449-87l-2 5-2 5c-8 14-13 30-17 46a65 65 0 0 1 56 4c16-10 35-19 56-27l9-3c-6 23-10 48-10 74h-16l4 6c3 4 5 8 6 13h6c0 22 3 44 8 65l2 10-25-10-4 5 12 18 9 3 6 2 8 3 9 26 1 2 16-7h1l-5-13-1-2c24 6 49 9 75 10v26l11 10 7 7v-30l1-13c22 0 44-3 65-8l10-2-21 48-1 1a317 317 0 0 1-14 23l-21 5h-2c6 16 7 33 1 50a240 240 0 0 0 211-265m-401-56-11 6c19-44 54-79 98-98-11 20-21 44-29 69-21 6-40 15-58 23m154 182v4c-29-1-57-6-81-13-7-25-12-52-13-81h94zm0-109h-94c1-29 6-56 13-81 24-7 52-12 81-13zm0-112c-22 1-44 4-65 8l-10 2 12-30 9-17 1-2a332 332 0 0 1 13-23c13-4 26-6 40-7zm187 69 6 4c4 12 6 25 6 38v1h-68c-1-26-4-51-10-74l48 20 1 1 14 8zm-14-44 10 20c-20-11-43-21-68-29-8-25-18-49-29-69 37 16 67 44 87 78M279 49h1c13 1 27 3 39 7l14 23 1 2a343 343 0 0 1 12 26l2 5 6 16c-23-6-48-9-74-10h-1zm0 87h1c29 1 56 6 81 13 7 24 12 51 12 80v1h-94zm2 207h-2v-94h95c-1 29-6 56-13 81-24 7-51 12-80 13m86 60-20 10c11-20 21-43 29-68 25-8 48-18 68-29-16 37-43 67-77 87m87-115-7 5-16 9-2 1a337 337 0 0 1-47 21c6-24 9-49 10-75h68c0 13-2 27-6 39"/>
-    <path d="m261 428-2-2-22-21a40 40 0 0 0-32-11h-1a37 37 0 0 0-18 8l-1 1-4 2-2 2-5 4c-9-3-36-31-47-44s-32-45-34-55l3-2a151 151 0 0 0 11-9v-1a39 39 0 0 0 5-48l-3-3-11-19-3-4-5-7h-1l-3-3-4-3-5-2a35 35 0 0 0-16-3h-5c-4 1-14 5-24 11l-4 2-4 3-4 2c-9 8-17 17-18 27a380 380 0 0 0 212 259h3c12 0 25-10 36-21l10-12 6-11a39 39 0 0 0-8-40"/>
-  </svg>`;
-
-  // src/js/modules/core/ui.ts
-  var UI = class _UI {
-    constructor(input, options, id2) {
-      this.#searchKeyupTimer = null;
-      this.#inlineDropdownHeight = null;
-      this.#dropdownForContainer = null;
-      this.#selectedItem = null;
-      this.highlightedItem = null;
-      input.dataset.intlTelInputId = id2.toString();
-      this.telInput = input;
-      this.#options = options;
-      this.#id = id2;
-      this.hadInitialPlaceholder = Boolean(input.getAttribute("placeholder"));
-      this.#isRTL = !!this.telInput.closest("[dir=rtl]");
-      if (this.#options.separateDialCode) {
-        this.#originalPaddingLeft = this.telInput.style.paddingLeft;
+  // packages/core/src/js/core/icons.ts
+  var SVG_NS = "http://www.w3.org/2000/svg";
+  var buildSvg = ([tag, attrs, children]) => {
+    const el = document.createElementNS(SVG_NS, tag);
+    if (attrs) {
+      for (const k in attrs) {
+        el.setAttribute(k, String(attrs[k]));
       }
     }
+    if (children) {
+      for (const c of children) {
+        el.appendChild(buildSvg(c));
+      }
+    }
+    return el;
+  };
+  var buildSearchIcon = () => buildSvg(
+    ["svg", { class: "iti__search-icon-svg", width: 14, height: 14, viewBox: "0 0 24 24", focusable: "false", [ARIA.HIDDEN]: "true" }, [
+      ["circle", { cx: 11, cy: 11, r: 7 }],
+      ["line", { x1: 21, y1: 21, x2: 16.65, y2: 16.65 }]
+    ]]
+  );
+  var buildClearIcon = (id) => {
+    const maskId = `iti-${id}-clear-mask`;
+    return buildSvg(
+      ["svg", { class: "iti__search-clear-svg", width: 12, height: 12, viewBox: "0 0 16 16", [ARIA.HIDDEN]: "true", focusable: "false" }, [
+        ["mask", { id: maskId, maskUnits: "userSpaceOnUse" }, [
+          ["rect", { width: 16, height: 16, fill: "white" }],
+          ["path", { d: "M5.2 5.2 L10.8 10.8 M10.8 5.2 L5.2 10.8", stroke: "black", "stroke-linecap": "round", class: "iti__search-clear-x" }]
+        ]],
+        ["circle", { cx: 8, cy: 8, r: 8, class: "iti__search-clear-bg", mask: `url(#${maskId})` }]
+      ]]
+    );
+  };
+  var buildCheckIcon = () => buildSvg(
+    ["svg", { class: "iti__country-check-svg", width: 14, height: 14, viewBox: "0 0 16 16", fill: "currentColor", focusable: "false", [ARIA.HIDDEN]: "true" }, [
+      ["path", { d: "M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" }]
+    ]]
+  );
+  var buildGlobeIcon = () => buildSvg(
+    ["svg", { width: 256, height: 256, viewBox: "0 0 512 512", class: "iti__globe-svg" }, [
+      ["path", { d: "M508 213a240 240 0 0 0-449-87l-2 5-2 5c-8 14-13 30-17 46a65 65 0 0 1 56 4c16-10 35-19 56-27l9-3c-6 23-10 48-10 74h-16l4 6c3 4 5 8 6 13h6c0 22 3 44 8 65l2 10-25-10-4 5 12 18 9 3 6 2 8 3 9 26 1 2 16-7h1l-5-13-1-2c24 6 49 9 75 10v26l11 10 7 7v-30l1-13c22 0 44-3 65-8l10-2-21 48-1 1a317 317 0 0 1-14 23l-21 5h-2c6 16 7 33 1 50a240 240 0 0 0 211-265m-401-56-11 6c19-44 54-79 98-98-11 20-21 44-29 69-21 6-40 15-58 23m154 182v4c-29-1-57-6-81-13-7-25-12-52-13-81h94zm0-109h-94c1-29 6-56 13-81 24-7 52-12 81-13zm0-112c-22 1-44 4-65 8l-10 2 12-30 9-17 1-2a332 332 0 0 1 13-23c13-4 26-6 40-7zm187 69 6 4c4 12 6 25 6 38v1h-68c-1-26-4-51-10-74l48 20 1 1 14 8zm-14-44 10 20c-20-11-43-21-68-29-8-25-18-49-29-69 37 16 67 44 87 78M279 49h1c13 1 27 3 39 7l14 23 1 2a343 343 0 0 1 12 26l2 5 6 16c-23-6-48-9-74-10h-1zm0 87h1c29 1 56 6 81 13 7 24 12 51 12 80v1h-94zm2 207h-2v-94h95c-1 29-6 56-13 81-24 7-51 12-80 13m86 60-20 10c11-20 21-43 29-68 25-8 48-18 68-29-16 37-43 67-77 87m87-115-7 5-16 9-2 1a337 337 0 0 1-47 21c6-24 9-49 10-75h68c0 13-2 27-6 39" }],
+      ["path", { d: "m261 428-2-2-22-21a40 40 0 0 0-32-11h-1a37 37 0 0 0-18 8l-1 1-4 2-2 2-5 4c-9-3-36-31-47-44s-32-45-34-55l3-2a151 151 0 0 0 11-9v-1a39 39 0 0 0 5-48l-3-3-11-19-3-4-5-7h-1l-3-3-4-3-5-2a35 35 0 0 0-16-3h-5c-4 1-14 5-24 11l-4 2-4 3-4 2c-9 8-17 17-18 27a380 380 0 0 0 212 259h3c12 0 25-10 36-21l10-12 6-11a39 39 0 0 0-8-40" }]
+    ]]
+  );
+
+  // packages/core/src/js/core/countrySearch.ts
+  var normaliseName = (s) => normaliseString(s).replace(/[^\p{L}]+/gu, " ").trim();
+  var buildSearchTokens = (countries) => {
+    const tokens = /* @__PURE__ */ new Map();
+    for (const c of countries) {
+      const normalisedName = normaliseName(c.name);
+      const words = normalisedName.split(" ").filter(Boolean);
+      const initials = words.map((w) => w[0] || "").join("");
+      tokens.set(c.iso2, {
+        normalisedName,
+        words,
+        initials,
+        dialCodePlus: `+${c.dialCode}`
+      });
+    }
+    return tokens;
+  };
+  var getMatchedCountries = (countries, searchTokens, query) => {
+    const lowerQuery = normaliseString(query);
+    const nameQuery = normaliseName(query);
+    const skipNameBuckets = lowerQuery !== "" && nameQuery === "";
+    const iso2Matches = [];
+    const nameStartsWith = [];
+    const nameContains = [];
+    const dialCodeMatches = [];
+    const dialCodeContains = [];
+    const initialsMatches = [];
+    const wordMatches = [];
+    for (const c of countries) {
+      const t = searchTokens.get(c.iso2);
+      if (c.iso2 === lowerQuery) {
+        iso2Matches.push(c);
+      } else if (!skipNameBuckets && t.normalisedName.startsWith(nameQuery)) {
+        nameStartsWith.push(c);
+      } else if (!skipNameBuckets && t.normalisedName.includes(nameQuery)) {
+        nameContains.push(c);
+      } else if (lowerQuery === c.dialCode || lowerQuery === t.dialCodePlus) {
+        dialCodeMatches.push(c);
+      } else if (t.dialCodePlus.includes(lowerQuery)) {
+        dialCodeContains.push(c);
+      } else if (t.initials.includes(lowerQuery)) {
+        initialsMatches.push(c);
+      }
+    }
+    const queryWords = nameQuery.split(" ").filter(Boolean);
+    if (queryWords.length > 1 && iso2Matches.length === 0 && nameStartsWith.length === 0 && nameContains.length === 0) {
+      const claimed = /* @__PURE__ */ new Set([
+        ...dialCodeMatches.map((c) => c.iso2),
+        ...dialCodeContains.map((c) => c.iso2),
+        ...initialsMatches.map((c) => c.iso2)
+      ]);
+      for (const c of countries) {
+        if (claimed.has(c.iso2)) {
+          continue;
+        }
+        const t = searchTokens.get(c.iso2);
+        if (queryWords.some((qw) => t.words.some((sw) => sw.startsWith(qw)))) {
+          wordMatches.push(c);
+        }
+      }
+    }
+    const sortByPriority = (a, b) => a.priority - b.priority;
+    return [
+      ...iso2Matches,
+      ...nameStartsWith,
+      ...nameContains,
+      // priority sort is only relevant when showing multiple countries with the same dial code (that's what the priority field is used to distinguish between)
+      ...dialCodeMatches.sort(sortByPriority),
+      ...dialCodeContains.sort(sortByPriority),
+      ...initialsMatches,
+      ...wordMatches
+    ];
+  };
+  var findFirstCountryStartingWith = (countries, searchTokens, query) => {
+    const nameQuery = normaliseName(query);
+    for (const c of countries) {
+      const { normalisedName } = searchTokens.get(c.iso2);
+      if (normalisedName.startsWith(nameQuery)) {
+        return c;
+      }
+    }
+    return null;
+  };
+
+  // packages/core/src/js/core/numerals.ts
+  var Numerals = class _Numerals {
+    #userNumeralSet;
+    //* Stateless conversion of any Arabic-Indic / Persian digits to ASCII 0-9.
+    //* Use this when you need to normalise digits without affecting any instance's tracked numeral set (e.g. for the country-search query).
+    static toAscii(str) {
+      if (!str) {
+        return "";
+      }
+      return str.replace(
+        /[٠-٩]/g,
+        (ch) => String.fromCharCode(48 + (ch.charCodeAt(0) - 1632))
+      ).replace(
+        /[۰-۹]/g,
+        (ch) => String.fromCharCode(48 + (ch.charCodeAt(0) - 1776))
+      );
+    }
+    constructor(initialValue) {
+      if (initialValue) {
+        this.#updateNumeralSet(initialValue);
+      }
+    }
+    // If any Arabic-Indic digits, then label it as that set. Same for Persian. Otherwise assume ASCII.
+    #updateNumeralSet(str) {
+      if (/[٠-٩]/.test(str)) {
+        this.#userNumeralSet = "arabic-indic";
+      } else if (/[۰-۹]/.test(str)) {
+        this.#userNumeralSet = "persian";
+      } else {
+        this.#userNumeralSet = "ascii";
+      }
+    }
+    // Denormalise ASCII 0-9 to the user's numeral set. If not yet known, return as-is.
+    // NOTE: normalise is always called before this, so it should be impossible for the numeral set to be unknown at this point.
+    denormalise(str) {
+      if (!this.#userNumeralSet || this.#userNumeralSet === "ascii") {
+        return str;
+      }
+      const base = this.#userNumeralSet === "arabic-indic" ? 1632 : 1776;
+      return str.replace(/[0-9]/g, (d) => String.fromCharCode(base + Number(d)));
+    }
+    // Normalize Eastern Arabic (U+0660-0669) and Persian/Extended Arabic-Indic (U+06F0-06F9) numerals to ASCII 0-9.
+    // Tracks the user's numeral set as a side effect so denormalise can mirror it back.
+    normalise(str) {
+      if (!str) {
+        return "";
+      }
+      this.#updateNumeralSet(str);
+      if (this.#userNumeralSet === "ascii") {
+        return str;
+      }
+      return _Numerals.toAscii(str);
+    }
+    isAscii() {
+      return !this.#userNumeralSet || this.#userNumeralSet === "ascii";
+    }
+  };
+
+  // packages/core/src/js/core/ui.ts
+  var supportsCssAnchor = typeof CSS !== "undefined" && typeof CSS.supports === "function" && CSS.supports("anchor-name: --x");
+  var UI = class {
     // private
     #options;
     #id;
     #isRTL;
-    #originalPaddingLeft;
+    #originalPaddingLeft = "";
     #countries;
-    #searchKeyupTimer;
+    #searchTokens;
+    #searchDebounceTimer = null;
     #inlineDropdownHeight;
-    #selectedDialCode;
-    #dropdownArrow;
-    #dropdownContent;
-    #searchIcon;
-    #searchNoResults;
-    #searchResultsA11yText;
-    #dropdownForContainer;
-    #selectedItem;
+    #cssAnchorPositioningDone = false;
+    #countryContainerEl;
+    #selectedCountryEl;
+    #selectedFlagEl;
+    #selectedDialCodeEl;
+    #arrowEl;
+    #countrySelectorEl;
+    #searchIconEl;
+    #searchInputEl;
+    #searchClearButtonEl;
+    #countryListEl;
+    #hiddenInputPhoneEl;
+    #hiddenInputCountryEl;
+    #noResultsMessageEl;
+    #searchResultsLiveRegionEl;
+    #detachedCountrySelectorEl;
+    #selectedListItemEl = null;
+    #highlightedListItemEl = null;
+    #listItemByIso2 = /* @__PURE__ */ new Map();
+    #countrySelectorAbortController = null;
+    #resizeObserver;
+    // public
+    telInputEl;
+    hadInitialPlaceholder;
+    constructor(input, options, id) {
+      input.dataset[DATA_KEYS.INSTANCE_ID] = id.toString();
+      this.telInputEl = input;
+      this.#options = options;
+      this.#id = id;
+      this.hadInitialPlaceholder = Boolean(input.getAttribute("placeholder"));
+      this.#isRTL = !!this.telInputEl.closest("[dir=rtl]");
+      this.#originalPaddingLeft = this.telInputEl.style.paddingLeft;
+    }
     // Validate that the provided element is an HTMLInputElement.
     static validateInput(input) {
       const tagName = input?.tagName;
@@ -2288,672 +2592,1080 @@ var factoryOutput = (() => {
         );
       }
     }
-    //* Generate all of the markup for the plugin: the selected country overlay, and the dropdown.
-    generateMarkup(countries) {
+    //* Append any consumer-supplied classes (via the classNames option) for the given slot to our own classes for that element.
+    #withSlotClass(slot, ourClasses) {
+      const custom = this.#options.classNames[slot];
+      return custom ? `${ourClasses} ${custom}` : ourClasses;
+    }
+    //* Generate all of the markup for the core library: the selected country overlay, and the country selector.
+    buildMarkup(countries, searchTokens) {
       this.#countries = countries;
-      this.telInput.classList.add("iti__tel-input");
-      if (!this.telInput.hasAttribute("autocomplete")) {
-        this.telInput.setAttribute("autocomplete", "tel");
+      this.#searchTokens = searchTokens;
+      this.telInputEl.classList.add(
+        ...this.#withSlotClass("input", "iti__tel-input").split(" ")
+      );
+      if (!this.telInputEl.hasAttribute("type")) {
+        this.telInputEl.setAttribute("type", "tel");
       }
-      if (!this.telInput.hasAttribute("inputmode")) {
-        this.telInput.setAttribute("inputmode", "tel");
+      if (!this.telInputEl.hasAttribute("autocomplete")) {
+        this.telInputEl.setAttribute("autocomplete", "tel");
+      }
+      if (!this.telInputEl.hasAttribute("inputmode")) {
+        this.telInputEl.setAttribute("inputmode", "tel");
       }
       const wrapper = this.#createWrapperAndInsert();
-      this.#maybeBuildCountryContainer(wrapper);
-      wrapper.appendChild(this.telInput);
-      this.#maybeUpdateInputPaddingAndReveal();
-      this.#maybeBuildHiddenInputs(wrapper);
+      this.#buildCountryContainer(wrapper);
+      wrapper.appendChild(this.telInputEl);
+      this.#updateInputPaddingAndReveal();
+      this.#observeSelectedCountryResize();
+      this.#buildHiddenInputs(wrapper);
+      this.ensureDropdownWidthSet();
     }
     #createWrapperAndInsert() {
-      const {
-        allowDropdown,
-        showFlags,
-        containerClass,
-        useFullscreenPopup
-      } = this.#options;
+      const { countrySelectorMode, showFlags, containerClass } = this.#options;
       const parentClasses = buildClassNames({
         iti: true,
-        "iti--allow-dropdown": allowDropdown,
+        "iti--input-container": true,
+        "iti--has-country-selector": countrySelectorMode !== COUNTRY_SELECTOR_MODE.OFF,
         "iti--show-flags": showFlags,
-        "iti--inline-dropdown": !useFullscreenPopup,
+        "iti--inline-country-selector": countrySelectorMode !== COUNTRY_SELECTOR_MODE.FULLSCREEN,
         [containerClass]: Boolean(containerClass)
       });
-      const wrapper = createEl("div", { class: parentClasses });
+      const wrapper = createEl("div", {
+        class: this.#withSlotClass("container", parentClasses)
+      });
       if (this.#isRTL) {
         wrapper.setAttribute("dir", "ltr");
       }
-      this.telInput.before(wrapper);
+      this.telInputEl.before(wrapper);
       return wrapper;
     }
-    #maybeBuildCountryContainer(wrapper) {
-      const { allowDropdown, separateDialCode, showFlags } = this.#options;
-      if (allowDropdown || showFlags || separateDialCode) {
-        this.countryContainer = createEl(
-          "div",
-          // visibly hidden until we measure it's width to set the input padding correctly
-          { class: `iti__country-container ${CLASSES.V_HIDE}` },
-          wrapper
+    #buildCountryContainer(wrapper) {
+      const { countrySelectorMode, separateDialCode, showFlags } = this.#options;
+      const enableCountrySelector = countrySelectorMode !== COUNTRY_SELECTOR_MODE.OFF;
+      if (!enableCountrySelector && !showFlags && !separateDialCode) {
+        return;
+      }
+      this.#countryContainerEl = createEl(
+        "div",
+        // visibly hidden until we measure its width to set the input padding correctly
+        {
+          class: this.#withSlotClass(
+            "countryContainer",
+            `iti__country-container ${CLASSES.V_HIDE}`
+          )
+        },
+        wrapper
+      );
+      if (enableCountrySelector) {
+        this.#selectedCountryEl = createEl(
+          "button",
+          {
+            type: "button",
+            class: this.#withSlotClass("selectedCountry", "iti__selected-country"),
+            [ARIA.EXPANDED]: "false",
+            [ARIA.LABEL]: this.#options.uiTranslations.noCountrySelected,
+            [ARIA.HASPOPUP]: "dialog",
+            [ARIA.CONTROLS]: `iti-${this.#id}__country-selector`
+          },
+          this.#countryContainerEl
         );
-        if (allowDropdown) {
-          this.selectedCountry = createEl(
-            "button",
-            {
-              type: "button",
-              class: "iti__selected-country",
-              [ARIA.EXPANDED]: "false",
-              [ARIA.LABEL]: this.#options.i18n.noCountrySelected,
-              [ARIA.HASPOPUP]: "dialog",
-              [ARIA.CONTROLS]: `iti-${this.#id}__dropdown-content`
-            },
-            this.countryContainer
-          );
-          if (this.telInput.disabled) {
-            this.selectedCountry.setAttribute("disabled", "true");
-          }
-        } else {
-          this.selectedCountry = createEl(
-            "div",
-            { class: "iti__selected-country" },
-            this.countryContainer
-          );
+        if (this.telInputEl.disabled) {
+          this.#selectedCountryEl.setAttribute("disabled", "true");
         }
-        const selectedCountryPrimary = createEl(
+      } else {
+        this.#selectedCountryEl = createEl(
           "div",
-          { class: "iti__selected-country-primary" },
-          this.selectedCountry
+          { class: this.#withSlotClass("selectedCountry", "iti__selected-country") },
+          this.#countryContainerEl
         );
-        this.selectedCountryInner = createEl(
+      }
+      const selectedCountryPrimary = createEl(
+        "div",
+        {
+          class: this.#withSlotClass(
+            "selectedCountryPrimary",
+            "iti__selected-country-primary"
+          )
+        },
+        this.#selectedCountryEl
+      );
+      this.#selectedFlagEl = createEl(
+        "div",
+        { class: this.#withSlotClass("selectedFlag", CLASSES.FLAG) },
+        selectedCountryPrimary
+      );
+      if (enableCountrySelector) {
+        this.#arrowEl = createEl(
           "div",
-          { class: CLASSES.FLAG },
+          {
+            class: this.#withSlotClass("arrow", "iti__arrow"),
+            [ARIA.HIDDEN]: "true"
+          },
           selectedCountryPrimary
         );
-        if (allowDropdown) {
-          this.#dropdownArrow = createEl(
-            "div",
-            { class: "iti__arrow", [ARIA.HIDDEN]: "true" },
-            selectedCountryPrimary
-          );
-        }
-        if (separateDialCode) {
-          this.#selectedDialCode = createEl(
-            "div",
-            { class: "iti__selected-dial-code" },
-            this.selectedCountry
-          );
-        }
-        if (allowDropdown) {
-          this.#buildDropdownContent();
-        }
+      }
+      if (separateDialCode) {
+        this.#selectedDialCodeEl = createEl(
+          "div",
+          {
+            class: this.#withSlotClass(
+              "selectedDialCode",
+              "iti__selected-dial-code"
+            )
+          },
+          this.#selectedCountryEl
+        );
+      }
+      if (enableCountrySelector) {
+        this.#buildCountrySelector();
       }
     }
-    #maybeEnsureDropdownWidthSet() {
-      const { fixDropdownWidth } = this.#options;
-      if (fixDropdownWidth && !this.#dropdownContent.style.width) {
-        const inputWidth = this.telInput.offsetWidth;
-        if (inputWidth > 0) {
-          this.#dropdownContent.style.width = `${inputWidth}px`;
-        }
+    ensureDropdownWidthSet() {
+      const { matchDropdownWidth, countrySelectorMode } = this.#options;
+      if (countrySelectorMode === COUNTRY_SELECTOR_MODE.OFF || !matchDropdownWidth || this.#countrySelectorEl.style.width) {
+        return;
+      }
+      const inputWidth = this.telInputEl.offsetWidth;
+      if (inputWidth > 0) {
+        this.#countrySelectorEl.style.width = `${inputWidth}px`;
       }
     }
-    #buildDropdownContent() {
+    #buildCountrySelector() {
       const {
-        fixDropdownWidth,
-        useFullscreenPopup,
+        matchDropdownWidth,
+        countrySelectorMode,
         countrySearch,
-        i18n,
-        dropdownContainer,
+        uiTranslations,
         containerClass
       } = this.#options;
-      const extraClasses = fixDropdownWidth ? "" : "iti--flexible-dropdown-width";
-      this.#dropdownContent = createEl("div", {
-        id: `iti-${this.#id}__dropdown-content`,
-        class: `iti__dropdown-content ${CLASSES.HIDE} ${extraClasses}`,
+      const isFullscreen = countrySelectorMode === COUNTRY_SELECTOR_MODE.FULLSCREEN;
+      const detachedParent = this.#getDetachedParent();
+      const extraClasses = matchDropdownWidth ? "" : "iti--flexible-dropdown-width";
+      this.#countrySelectorEl = createEl("div", {
+        id: `iti-${this.#id}__country-selector`,
+        class: this.#withSlotClass(
+          "countrySelector",
+          `iti__country-selector ${CLASSES.HIDE} ${extraClasses}`
+        ),
         role: "dialog",
         [ARIA.MODAL]: "true"
       });
       if (this.#isRTL) {
-        this.#dropdownContent.setAttribute("dir", "rtl");
+        this.#countrySelectorEl.setAttribute("dir", "rtl");
       }
       if (countrySearch) {
         this.#buildSearchUI();
       }
-      this.countryList = createEl(
+      this.#countryListEl = createEl(
         "ul",
         {
-          class: "iti__country-list",
+          class: this.#withSlotClass("countryList", "iti__country-list"),
           id: `iti-${this.#id}__country-listbox`,
           role: "listbox",
-          [ARIA.LABEL]: i18n.countryListAriaLabel
+          [ARIA.LABEL]: uiTranslations.countryListAriaLabel
         },
-        this.#dropdownContent
+        this.#countrySelectorEl
       );
+      if (!countrySearch) {
+        this.#countryListEl.setAttribute("tabindex", "0");
+      }
       this.#appendListItems();
       if (countrySearch) {
         this.#updateSearchResultsA11yText();
       }
-      if (!useFullscreenPopup) {
-        this.#maybeEnsureDropdownWidthSet();
-        this.#inlineDropdownHeight = this.#getHiddenInlineDropdownHeight();
-        if (countrySearch) {
-          this.#dropdownContent.style.height = `${this.#inlineDropdownHeight}px`;
-        }
-      }
-      if (dropdownContainer) {
-        const dropdownClasses = buildClassNames({
+      if (detachedParent) {
+        const wrapperClasses = buildClassNames({
           iti: true,
-          "iti--container": true,
-          "iti--fullscreen-popup": useFullscreenPopup,
-          "iti--inline-dropdown": !useFullscreenPopup,
+          "iti--detached-country-selector": true,
+          "iti--fullscreen-popup": isFullscreen,
+          "iti--inline-country-selector": !isFullscreen,
           [containerClass]: Boolean(containerClass)
         });
-        this.#dropdownForContainer = createEl("div", { class: dropdownClasses });
-        this.#dropdownForContainer.appendChild(this.#dropdownContent);
+        this.#detachedCountrySelectorEl = createEl("div", {
+          class: this.#withSlotClass("countrySelectorContainer", wrapperClasses)
+        });
+        this.#detachedCountrySelectorEl.appendChild(this.#countrySelectorEl);
       } else {
-        this.countryContainer.appendChild(this.#dropdownContent);
+        this.#countryContainerEl.appendChild(this.#countrySelectorEl);
       }
     }
+    //* Resolve the DOM element to attach the country selector to. Fullscreen is always detached: it uses the consumer-supplied fullscreenParent, falling back to document.body; dropdown uses the consumer-supplied dropdownParent (if any); otherwise the country selector renders inline within the input wrapper (no detached element).
+    //* NOTE: these are deliberately two separate options. For the dropdown, setting a parent switches it from inline to detached rendering (pos:fixed, positioned against the input), whereas the fullscreen popup is detached regardless, so its parent only relocates it. Sharing one option would force a detached dropdown on anyone who only needs to move the fullscreen popup e.g. into a modal <dialog> (issue #2199).
+    #getDetachedParent() {
+      const { countrySelectorMode, dropdownParent, fullscreenParent } = this.#options;
+      if (countrySelectorMode === COUNTRY_SELECTOR_MODE.FULLSCREEN) {
+        return fullscreenParent ?? document.body;
+      }
+      if (countrySelectorMode === COUNTRY_SELECTOR_MODE.DROPDOWN) {
+        return dropdownParent;
+      }
+      return null;
+    }
     #buildSearchUI() {
-      const { i18n, searchInputClass } = this.#options;
+      const { uiTranslations, searchInputClass } = this.#options;
       const searchWrapper = createEl(
         "div",
-        { class: "iti__search-input-wrapper" },
-        this.#dropdownContent
+        { class: this.#withSlotClass("searchWrapper", "iti__search-input-wrapper") },
+        this.#countrySelectorEl
       );
-      this.#searchIcon = createEl(
+      this.#searchIconEl = createEl(
         "span",
         {
-          class: "iti__search-icon",
+          class: this.#withSlotClass("searchIcon", "iti__search-icon"),
           [ARIA.HIDDEN]: "true"
         },
         searchWrapper
       );
-      this.#searchIcon.innerHTML = buildSearchIcon();
-      this.searchInput = createEl(
+      this.#searchIconEl.appendChild(buildSearchIcon());
+      this.#searchInputEl = createEl(
         "input",
         {
           id: `iti-${this.#id}__search-input`,
           // Chrome says inputs need either a name or an id
           type: "search",
-          class: `iti__search-input ${searchInputClass}`,
-          placeholder: i18n.searchPlaceholder,
+          class: this.#withSlotClass(
+            "searchInput",
+            `iti__search-input ${searchInputClass}`
+          ),
+          placeholder: uiTranslations.searchPlaceholder,
           // role=combobox + aria-autocomplete=list + aria-activedescendant allows maintaining focus on the search input while allowing users to navigate search results with up/down keyboard keys
           role: "combobox",
           [ARIA.EXPANDED]: "true",
-          [ARIA.LABEL]: i18n.searchPlaceholder,
+          [ARIA.LABEL]: uiTranslations.searchPlaceholder,
           [ARIA.CONTROLS]: `iti-${this.#id}__country-listbox`,
           [ARIA.AUTOCOMPLETE]: "list",
           autocomplete: "off"
         },
         searchWrapper
       );
-      this.searchClearButton = createEl(
+      this.#searchClearButtonEl = createEl(
         "button",
         {
           type: "button",
-          class: `iti__search-clear ${CLASSES.HIDE}`,
-          [ARIA.LABEL]: i18n.clearSearchAriaLabel,
+          class: this.#withSlotClass(
+            "searchClear",
+            `iti__search-clear ${CLASSES.HIDE}`
+          ),
+          [ARIA.LABEL]: uiTranslations.clearSearchAriaLabel,
           tabindex: "-1"
         },
         searchWrapper
       );
-      this.searchClearButton.innerHTML = buildClearIcon(this.#id);
-      this.#searchResultsA11yText = createEl(
+      this.#searchClearButtonEl.appendChild(buildClearIcon(this.#id));
+      this.#searchResultsLiveRegionEl = createEl(
         "span",
         { class: "iti__a11y-text" },
-        this.#dropdownContent
+        this.#countrySelectorEl
       );
-      this.#searchNoResults = createEl(
+      this.#noResultsMessageEl = createEl(
         "div",
         {
-          class: `iti__no-results ${CLASSES.HIDE}`,
+          class: this.#withSlotClass("noResults", `iti__no-results ${CLASSES.HIDE}`),
           [ARIA.HIDDEN]: "true"
-          // all a11y messaging happens in this.#searchResultsA11yText
+          // all a11y messaging happens in this.#searchResultsLiveRegionEl
         },
-        this.#dropdownContent
+        this.#countrySelectorEl
       );
-      this.#searchNoResults.textContent = i18n.searchEmptyState;
+      this.#noResultsMessageEl.textContent = uiTranslations.searchEmptyState ?? null;
     }
-    #maybeUpdateInputPaddingAndReveal() {
-      if (this.countryContainer) {
-        this.#updateInputPadding();
-        this.countryContainer.classList.remove(CLASSES.V_HIDE);
+    #updateInputPaddingAndReveal() {
+      if (!this.#countryContainerEl) {
+        return;
       }
+      this.#updateInputPadding();
+      this.#countryContainerEl.classList.remove(CLASSES.V_HIDE);
     }
-    #maybeBuildHiddenInputs(wrapper) {
-      const { hiddenInput } = this.#options;
-      if (hiddenInput) {
-        const telInputName = this.telInput.getAttribute("name") || "";
-        const names = hiddenInput(telInputName);
-        if (names.phone) {
-          const existingInput = this.telInput.form?.querySelector(
-            `input[name="${names.phone}"]`
-          );
-          if (existingInput) {
-            this.hiddenInput = existingInput;
-          } else {
-            this.hiddenInput = createEl("input", {
-              type: "hidden",
-              name: names.phone
-            });
-            wrapper.appendChild(this.hiddenInput);
-          }
+    #buildHiddenInputs(wrapper) {
+      const { hiddenInputs } = this.#options;
+      if (!hiddenInputs) {
+        return;
+      }
+      const telInputName = this.telInputEl.getAttribute("name") || "";
+      const names = hiddenInputs(telInputName);
+      if (names.phone) {
+        const existingInput = this.telInputEl.form?.querySelector(
+          `input[name="${names.phone}"]`
+        );
+        if (existingInput) {
+          this.#hiddenInputPhoneEl = existingInput;
+        } else {
+          this.#hiddenInputPhoneEl = createEl("input", {
+            type: "hidden",
+            name: names.phone
+          });
+          wrapper.appendChild(this.#hiddenInputPhoneEl);
         }
-        if (names.country) {
-          const existingInput = this.telInput.form?.querySelector(
-            `input[name="${names.country}"]`
-          );
-          if (existingInput) {
-            this.hiddenInputCountry = existingInput;
-          } else {
-            this.hiddenInputCountry = createEl("input", {
-              type: "hidden",
-              name: names.country
-            });
-            wrapper.appendChild(this.hiddenInputCountry);
-          }
+      }
+      if (names.country) {
+        const existingInput = this.telInputEl.form?.querySelector(
+          `input[name="${names.country}"]`
+        );
+        if (existingInput) {
+          this.#hiddenInputCountryEl = existingInput;
+        } else {
+          this.#hiddenInputCountryEl = createEl("input", {
+            type: "hidden",
+            name: names.country
+          });
+          wrapper.appendChild(this.#hiddenInputCountryEl);
         }
       }
     }
     //* For each country: add a country list item <li> to the countryList <ul> container.
     #appendListItems() {
       const frag = document.createDocumentFragment();
+      const liClass = this.#withSlotClass("countryListItem", CLASSES.COUNTRY_ITEM);
       for (let i = 0; i < this.#countries.length; i++) {
         const c = this.#countries[i];
-        const liClass = buildClassNames({
-          [CLASSES.COUNTRY_ITEM]: true
-        });
         const listItem = createEl("li", {
           id: `iti-${this.#id}__item-${c.iso2}`,
           class: liClass,
-          tabindex: "-1",
           role: "option",
           [ARIA.SELECTED]: "false"
         });
-        listItem.dataset.dialCode = c.dialCode;
-        listItem.dataset.countryCode = c.iso2;
-        c.nodeById[this.#id] = listItem;
+        listItem.dataset[DATA_KEYS.DIAL_CODE] = c.dialCode;
+        listItem.dataset[DATA_KEYS.ISO2] = c.iso2;
+        this.#listItemByIso2.set(c.iso2, listItem);
         if (this.#options.showFlags) {
-          createEl("div", { class: `${CLASSES.FLAG} iti__${c.iso2}` }, listItem);
+          createEl(
+            "div",
+            {
+              class: this.#withSlotClass(
+                "countryListItemFlag",
+                `${CLASSES.FLAG} iti__${c.iso2}`
+              )
+            },
+            listItem
+          );
         }
-        const nameEl = createEl("span", { class: "iti__country-name" }, listItem);
+        const nameEl = createEl(
+          "span",
+          { class: this.#withSlotClass("countryName", "iti__country-name") },
+          listItem
+        );
         nameEl.textContent = `${c.name} `;
-        const dialEl = createEl("span", { class: "iti__dial-code" }, nameEl);
+        const dialEl = createEl(
+          "span",
+          { class: this.#withSlotClass("dialCode", "iti__dial-code") },
+          nameEl
+        );
         if (this.#isRTL) {
           dialEl.setAttribute("dir", "ltr");
         }
         dialEl.textContent = `(+${c.dialCode})`;
         frag.appendChild(listItem);
       }
-      this.countryList.appendChild(frag);
+      this.#countryListEl.appendChild(frag);
     }
-    //* Update the input padding to make space for the selected country/dial code.
+    //* Update the input padding to make space for (1) the selected country/globe, (2) the arrow, and (3) the separate dial code, all of which are optional, hence handling this in the JS rather than CSS.
     #updateInputPadding() {
-      if (this.selectedCountry) {
-        const fallbackWidth = this.#options.separateDialCode ? LAYOUT.SANE_SELECTED_WITH_DIAL_WIDTH : LAYOUT.SANE_SELECTED_NO_DIAL_WIDTH;
-        const selectedCountryWidth = this.selectedCountry.offsetWidth || this.#getHiddenSelectedCountryWidth() || fallbackWidth;
+      if (this.#selectedCountryEl) {
+        const fallbackWidth = this.#options.separateDialCode ? LAYOUT.FALLBACK_SELECTED_COUNTRY_WITH_DIAL_WIDTH : LAYOUT.FALLBACK_SELECTED_COUNTRY_NO_DIAL_WIDTH;
+        const selectedCountryWidth = this.#selectedCountryEl.offsetWidth || this.#getHiddenSelectedCountryWidth() || fallbackWidth;
         const inputPadding = selectedCountryWidth + LAYOUT.INPUT_PADDING_EXTRA_LEFT;
-        this.telInput.style.paddingLeft = `${inputPadding}px`;
+        this.telInputEl.style.paddingLeft = `${inputPadding}px`;
       }
     }
-    static #getBody() {
-      let body;
-      try {
-        body = window.top.document.body;
-      } catch (e) {
-        body = document.body;
+    //* Keep the input padding in sync when the selected country's rendered width changes — e.g. responsive font-size shifts that change the dial code text width. Skip while hidden (offsetWidth === 0) so we don't waste work or clobber the padding using a fallback constant.
+    #observeSelectedCountryResize() {
+      if (!this.#selectedCountryEl || typeof ResizeObserver === "undefined") {
+        return;
       }
-      return body;
+      this.#resizeObserver = new ResizeObserver(() => {
+        if (this.#selectedCountryEl?.offsetWidth) {
+          this.#updateInputPadding();
+        }
+      });
+      this.#resizeObserver.observe(this.#selectedCountryEl);
     }
     //* When input is in a hidden container during init, we cannot calculate the selected country width.
     //* Fix: clone the markup, make it invisible, add it to the end of the DOM, and then measure it's width.
     //* To get the right styling to apply, all we need is a shallow clone of the container,
-    //* and then to inject a deep clone of the selectedCountry element.
+    //* and then to inject a deep clone of the selectedCountryEl element.
+    //* Measures in the LOCAL document.body: appending to the local body escapes any hidden ancestor container, and the input's own frame is where intl-tel-input's styles live (so the clone lays out correctly). We deliberately do NOT escape to window.top: that only measures correctly in the rare case where the top frame also loads the library's styles, and measures wrong when it doesn't (e.g. a same-origin iframe whose outer frame lacks the styles — cf. #2178). If the local frame itself isn't laid out yet (e.g. an iframe hidden during init), this returns 0 and the caller falls back to a sane constant; the ResizeObserver in #observeSelectedCountryResize then corrects the padding once the input becomes visible.
     #getHiddenSelectedCountryWidth() {
-      if (this.telInput.parentNode) {
-        const body = _UI.#getBody();
-        const containerClone = this.telInput.parentNode.cloneNode(
-          false
-        );
-        containerClone.style.visibility = "hidden";
-        body.appendChild(containerClone);
-        const countryContainerClone = this.countryContainer.cloneNode();
-        containerClone.appendChild(countryContainerClone);
-        const selectedCountryClone = this.selectedCountry.cloneNode(
-          true
-        );
-        countryContainerClone.appendChild(selectedCountryClone);
-        const width = selectedCountryClone.offsetWidth;
-        body.removeChild(containerClone);
-        return width;
+      if (!this.telInputEl.parentNode) {
+        return 0;
       }
-      return 0;
+      const body = document.body;
+      const containerClone = this.telInputEl.parentNode.cloneNode(
+        false
+      );
+      containerClone.style.visibility = "hidden";
+      body.appendChild(containerClone);
+      const countryContainerClone = this.#countryContainerEl.cloneNode();
+      containerClone.appendChild(countryContainerClone);
+      const selectedCountryClone = this.#selectedCountryEl.cloneNode(
+        true
+      );
+      countryContainerClone.appendChild(selectedCountryClone);
+      const width = selectedCountryClone.offsetWidth;
+      body.removeChild(containerClone);
+      return width;
     }
-    // this is run before we add the dropdown to the DOM
-    #getHiddenInlineDropdownHeight() {
-      const body = _UI.#getBody();
-      this.#dropdownContent.classList.remove(CLASSES.HIDE);
-      const tempContainer = createEl("div", { class: "iti iti--inline-dropdown" });
-      tempContainer.appendChild(this.#dropdownContent);
+    //* Measure the inline dropdown size once, lazily, on first open — see #getHiddenInlineDropdownSize for why measuring forces a reflow. Memoised via #inlineDropdownHeight so subsequent opens are free.
+    //* Captured for two uses: (1) on open, decide whether to position the dropdown above or below the input; (2) when countrySearch is enabled, pin the dropdown height (and, when matchDropdownWidth is disabled, width) so it doesn't jump around as the country list is filtered.
+    #ensureInlineDropdownSizeMeasured() {
+      if (this.#inlineDropdownHeight !== void 0) {
+        return;
+      }
+      const { countrySearch, matchDropdownWidth } = this.#options;
+      const { height, width } = this.#getHiddenInlineDropdownSize();
+      this.#inlineDropdownHeight = height;
+      if (countrySearch) {
+        this.#countrySelectorEl.style.height = `${height}px`;
+        if (!matchDropdownWidth && width > 0) {
+          this.#countrySelectorEl.style.width = `${width}px`;
+        }
+      }
+    }
+    // Measure the dropdown by moving it into a temporary hidden container on the body (it needs the right ancestor classes to lay out correctly). Restores it to its original position afterwards — a no-op during init (when it is still detached) but required when called lazily on first open (when it is already inserted).
+    //* Deliberately measures in the LOCAL document.body (not window.top): this runs on first open, when the input's own frame is visibly rendered and styled. Escaping to the top frame breaks when the input is inside a same-origin iframe whose outer frame lacks intl-tel-input's styles (e.g. Storybook), as the dropdown would then be measured unstyled and come out far too tall (issue #2178).
+    #getHiddenInlineDropdownSize() {
+      const body = document.body;
+      const selectorEl = this.#countrySelectorEl;
+      const originalParent = selectorEl.parentNode;
+      const originalNextSibling = selectorEl.nextSibling;
+      selectorEl.classList.remove(CLASSES.HIDE);
+      const tempContainer = createEl("div", {
+        class: "iti iti--inline-country-selector"
+      });
+      tempContainer.appendChild(selectorEl);
       tempContainer.style.visibility = "hidden";
       body.appendChild(tempContainer);
-      const height = this.#dropdownContent.offsetHeight;
+      const height = selectorEl.offsetHeight;
+      const width = selectorEl.offsetWidth;
       body.removeChild(tempContainer);
-      tempContainer.style.visibility = "";
-      this.#dropdownContent.classList.add(CLASSES.HIDE);
-      return height > 0 ? height : LAYOUT.SANE_DROPDOWN_HEIGHT;
+      selectorEl.classList.add(CLASSES.HIDE);
+      if (originalParent) {
+        originalParent.insertBefore(selectorEl, originalNextSibling);
+      }
+      return {
+        height: height > 0 ? height : LAYOUT.FALLBACK_DROPDOWN_HEIGHT,
+        width
+      };
     }
     //* Update search results text (for a11y).
     #updateSearchResultsA11yText() {
-      const { i18n } = this.#options;
-      const count = this.countryList.childElementCount;
-      this.#searchResultsA11yText.textContent = i18n.searchSummaryAria(count);
+      const { uiTranslations } = this.#options;
+      const count = this.#countryListEl.childElementCount;
+      this.#searchResultsLiveRegionEl.textContent = uiTranslations.searchSummaryAria(count);
     }
     //* Country search: Filter the countries according to the search query.
-    filterCountriesByQuery(query) {
+    #filterCountriesByQuery(query) {
       let matchedCountries;
       if (query === "") {
         matchedCountries = this.#countries;
       } else {
-        matchedCountries = getMatchedCountries(this.#countries, query);
+        const normalisedQuery = Numerals.toAscii(query);
+        matchedCountries = getMatchedCountries(
+          this.#countries,
+          this.#searchTokens,
+          normalisedQuery
+        );
       }
-      this.#filterCountries(matchedCountries);
+      this.#showFilteredCountries(matchedCountries);
+    }
+    //* Pre-fill the search input with "+" and show all countries
+    //* (used when user types "+" in the phone input to open the country selector).
+    //* Explicitly focus the search input (openCountrySelector skips this when
+    //* dropdownAlwaysOpen, but here we need focus to redirect subsequent keystrokes).
+    prefillSearchWithPlus() {
+      this.#searchInputEl.value = "+";
+      this.#searchInputEl.focus();
+      this.#filterCountriesByQuery("");
     }
     // Search input handlers
-    #doFilter() {
-      const inputQuery = this.searchInput.value.trim();
-      this.filterCountriesByQuery(inputQuery);
-      if (this.searchInput.value) {
-        this.searchClearButton.classList.remove(CLASSES.HIDE);
+    #applySearchFilter() {
+      const inputQuery = this.#searchInputEl.value.trim();
+      this.#filterCountriesByQuery(inputQuery);
+      if (this.#searchInputEl.value) {
+        this.#searchClearButtonEl.classList.remove(CLASSES.HIDE);
       } else {
-        this.searchClearButton.classList.add(CLASSES.HIDE);
+        this.#searchClearButtonEl.classList.add(CLASSES.HIDE);
       }
     }
-    handleSearchChange() {
-      if (this.#searchKeyupTimer) {
-        clearTimeout(this.#searchKeyupTimer);
+    #handleSearchChange() {
+      if (this.#searchDebounceTimer) {
+        clearTimeout(this.#searchDebounceTimer);
       }
-      this.#searchKeyupTimer = setTimeout(() => {
-        this.#doFilter();
-        this.#searchKeyupTimer = null;
+      this.#searchDebounceTimer = setTimeout(() => {
+        this.#applySearchFilter();
+        this.#searchDebounceTimer = null;
       }, TIMINGS.SEARCH_DEBOUNCE_MS);
     }
-    handleSearchClear() {
-      this.searchInput.value = "";
-      this.searchInput.focus();
-      this.#doFilter();
+    #handleSearchClear() {
+      this.#searchInputEl.value = "";
+      this.#searchInputEl.focus();
+      this.#applySearchFilter();
     }
-    //* Check if an element is visible within it's container, else scroll until it is.
-    scrollTo(element) {
-      const container = this.countryList;
-      const scrollTop = document.documentElement.scrollTop;
-      const containerHeight = container.offsetHeight;
-      const containerTop = container.getBoundingClientRect().top + scrollTop;
-      const containerBottom = containerTop + containerHeight;
-      const elementHeight = element.offsetHeight;
-      const elementTop = element.getBoundingClientRect().top + scrollTop;
-      const elementBottom = elementTop + elementHeight;
-      const newScrollTop = elementTop - containerTop + container.scrollTop;
-      if (elementTop < containerTop) {
-        container.scrollTop = newScrollTop;
-      } else if (elementBottom > containerBottom) {
-        const heightDifference = containerHeight - elementHeight;
-        container.scrollTop = newScrollTop - heightDifference;
+    //* Check if a country list item element is visible within it's container (the country list), else scroll until it is.
+    #scrollCountryListToItem(element) {
+      const container = this.#countryListEl;
+      const containerRect = container.getBoundingClientRect();
+      const elementRect = element.getBoundingClientRect();
+      const offsetTop = elementRect.top - containerRect.top + container.scrollTop;
+      if (elementRect.top < containerRect.top) {
+        container.scrollTop = offsetTop;
+      } else if (elementRect.bottom > containerRect.bottom) {
+        container.scrollTop = offsetTop - containerRect.height + elementRect.height;
       }
+    }
+    //* The element that holds focus while the country selector is open: the search input, or (when countrySearch is disabled) the country list itself.
+    #getOpenFocusEl() {
+      return this.#options.countrySearch ? this.#searchInputEl : this.#countryListEl;
     }
     //* Remove highlighting from the previous list item and highlight the new one.
-    highlightListItem(listItem, shouldFocus) {
-      const prevItem = this.highlightedItem;
-      if (prevItem) {
-        prevItem.classList.remove(CLASSES.HIGHLIGHT);
+    #highlightListItem(listItem, doScroll = true) {
+      this.#highlightedListItemEl?.classList.remove(CLASSES.HIGHLIGHT);
+      if (listItem) {
+        listItem.classList.add(CLASSES.HIGHLIGHT);
+        const activeDescendant = listItem.getAttribute("id") || "";
+        this.#getOpenFocusEl().setAttribute(
+          ARIA.ACTIVE_DESCENDANT,
+          activeDescendant
+        );
+        if (doScroll) {
+          this.#scrollCountryListToItem(listItem);
+        }
+        this.#highlightedListItemEl = listItem;
+      } else {
+        this.#highlightedListItemEl = null;
       }
-      this.highlightedItem = listItem;
-      if (this.highlightedItem) {
-        this.highlightedItem.classList.add(CLASSES.HIGHLIGHT);
-        if (this.#options.countrySearch) {
-          const activeDescendant = this.highlightedItem.getAttribute("id") || "";
-          this.searchInput.setAttribute(ARIA.ACTIVE_DESCENDANT, activeDescendant);
+    }
+    //* Bind a form-submit listener that syncs the hidden inputs with the current phone number
+    //* and country iso2. No-op if there are no hidden inputs or the input is not in a form.
+    bindHiddenInputSubmitListener(signal, getPhone, getCountryIso2) {
+      const form = this.telInputEl.form;
+      if (!form || !this.#hiddenInputPhoneEl && !this.#hiddenInputCountryEl) {
+        return;
+      }
+      form.addEventListener(
+        "submit",
+        () => {
+          if (this.#hiddenInputPhoneEl) {
+            this.#hiddenInputPhoneEl.value = getPhone();
+          }
+          if (this.#hiddenInputCountryEl) {
+            this.#hiddenInputCountryEl.value = getCountryIso2();
+          }
+        },
+        { signal }
+      );
+    }
+    //* Wire up triggers that open/close the country selector: label click (focus input or swallow repeat click),
+    //* selected-country click (open), and keydown on countryContainer (open on arrow/space/enter, close on tab).
+    bindAllInitialCountrySelectorListeners(signal, onOpen, onClose) {
+      const label = this.telInputEl.closest("label");
+      if (label) {
+        label.addEventListener(
+          "click",
+          (e) => {
+            if (!this.isCountrySelectorOpen()) {
+              this.telInputEl.focus();
+            } else {
+              e.preventDefault();
+            }
+          },
+          { signal }
+        );
+      }
+      this.#selectedCountryEl.addEventListener(
+        "click",
+        () => {
+          if (!this.isCountrySelectorOpen() && !this.telInputEl.disabled && !this.telInputEl.readOnly) {
+            onOpen();
+          }
+        },
+        { signal }
+      );
+      this.#countryContainerEl.addEventListener(
+        "keydown",
+        (e) => {
+          const openKeys = [
+            KEYS.ARROW_UP,
+            KEYS.ARROW_DOWN,
+            KEYS.SPACE,
+            KEYS.ENTER
+          ];
+          if (!this.isCountrySelectorOpen() && openKeys.includes(e.key)) {
+            e.preventDefault();
+            e.stopPropagation();
+            onOpen();
+          }
+          if (e.key === KEYS.TAB) {
+            onClose();
+          }
+        },
+        { signal }
+      );
+    }
+    //* Open the country selector: create a fresh AbortController, do the DOM work, and wire up all
+    //* open-state listeners (which invoke the caller's onSelect / onClose callbacks).
+    openCountrySelector(onSelect, onClose) {
+      const { dropdownAlwaysOpen } = this.#options;
+      this.#countrySelectorAbortController = new AbortController();
+      if (this.#options.countrySelectorMode !== COUNTRY_SELECTOR_MODE.FULLSCREEN) {
+        this.#ensureInlineDropdownSizeMeasured();
+      }
+      this.ensureDropdownWidthSet();
+      if (this.#detachedCountrySelectorEl) {
+        this.#injectAndPositionDetachedCountrySelector();
+      } else {
+        const positionBelow = this.#shouldPositionDropdownBelowInput();
+        const distance = this.telInputEl.offsetHeight + LAYOUT.DROPDOWN_MARGIN;
+        if (positionBelow) {
+          this.#countrySelectorEl.style.top = `${distance}px`;
+        } else {
+          this.#countrySelectorEl.style.bottom = `${distance}px`;
         }
       }
-      if (shouldFocus) {
-        this.highlightedItem.focus();
+      this.#countrySelectorEl.classList.remove(CLASSES.HIDE);
+      this.#selectedCountryEl.setAttribute(ARIA.EXPANDED, "true");
+      const itemToHighlight = this.#selectedListItemEl ?? this.#countryListEl.firstElementChild;
+      if (itemToHighlight) {
+        this.#highlightListItem(itemToHighlight);
+      }
+      if (!dropdownAlwaysOpen) {
+        this.#getOpenFocusEl().focus();
+      }
+      if (this.#options.countrySelectorMode === COUNTRY_SELECTOR_MODE.FULLSCREEN && this.#detachedCountrySelectorEl && window.visualViewport) {
+        this.#adjustFullscreenPopupToViewport();
+        window.visualViewport.addEventListener(
+          "resize",
+          () => {
+            this.#adjustFullscreenPopupToViewport();
+            if (this.#highlightedListItemEl) {
+              this.#scrollCountryListToItem(this.#highlightedListItemEl);
+            }
+          },
+          { signal: this.#countrySelectorAbortController.signal }
+        );
+      }
+      this.#arrowEl.classList.add(CLASSES.ARROW_UP);
+      this.#bindCountrySelectorOpenListeners(onSelect, onClose);
+    }
+    //* Wire up all listeners needed while the country selector is open: list-item hover (highlight),
+    //* list-item click & enter key (select), click-off & escape (close), search input (filter),
+    //* (when countrySearch disabled) typed-char hidden search, and (when the country selector is in an
+    //* external container) update (fixed) position on scroll/resize.
+    #bindCountrySelectorOpenListeners(onSelect, onClose) {
+      const signal = this.#countrySelectorAbortController.signal;
+      this.#bindListItemHover(signal);
+      this.#bindListItemClick(signal, onSelect);
+      if (!this.#options.dropdownAlwaysOpen) {
+        this.#bindOutsideClickToClose(signal, onClose);
+      }
+      this.#bindCountrySelectorKeydownListener(signal, onSelect, onClose);
+      if (this.#options.countrySearch) {
+        this.#bindSearchInputListener(signal);
+      }
+      if (this.#options.countrySelectorMode === COUNTRY_SELECTOR_MODE.DROPDOWN && this.#options.dropdownParent && !supportsCssAnchor) {
+        document.addEventListener("scroll", onClose, { signal, capture: true, passive: true });
+      }
+    }
+    //* When mouse over a list item, just highlight that one (so if they hit "enter" we know which to select).
+    #bindListItemHover(signal) {
+      this.#countryListEl.addEventListener(
+        "mouseover",
+        (e) => {
+          const listItem = e.target?.closest(
+            `.${CLASSES.COUNTRY_ITEM}`
+          );
+          if (listItem) {
+            this.#highlightListItem(listItem, false);
+          }
+        },
+        { signal }
+      );
+    }
+    //* Delegate clicks on the country list to the caller's onSelect callback, passing the clicked list item.
+    #bindListItemClick(signal, onSelect) {
+      this.#countryListEl.addEventListener(
+        "click",
+        (e) => {
+          const listItem = e.target?.closest(
+            `.${CLASSES.COUNTRY_ITEM}`
+          );
+          if (listItem) {
+            onSelect(listItem);
+          }
+        },
+        { signal }
+      );
+    }
+    //* Invoke onClickOff when the user clicks anywhere outside the country selector.
+    #bindOutsideClickToClose(signal, onClickOff) {
+      setTimeout(() => {
+        document.documentElement.addEventListener(
+          "click",
+          (e) => {
+            if (!this.#countrySelectorEl.contains(e.target)) {
+              onClickOff();
+            }
+          },
+          { signal }
+        );
+      }, 0);
+    }
+    //* Keyboard navigation while the country selector is open: arrow keys navigate, hidden-search keys filter,
+    //* and enter/escape invoke the caller's callbacks (which handle country selection / close).
+    //* Uses keydown rather than keypress so non-char keys (arrow, esc) fire and so holding a key repeats.
+    #bindCountrySelectorKeydownListener(signal, onEnter, onEscape) {
+      let query = "";
+      let queryTimer = null;
+      const handleKeydown = (e) => {
+        const allowedKeys = [
+          KEYS.ARROW_UP,
+          KEYS.ARROW_DOWN,
+          KEYS.ENTER,
+          KEYS.ESC
+        ];
+        if (allowedKeys.includes(e.key)) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (e.key === KEYS.ARROW_UP || e.key === KEYS.ARROW_DOWN) {
+            this.#handleUpDownKey(e.key);
+          } else if (e.key === KEYS.ENTER && !e.isComposing) {
+            onEnter(this.#highlightedListItemEl);
+          } else if (e.key === KEYS.ESC) {
+            onEscape();
+            this.#selectedCountryEl.focus();
+          }
+        }
+        if (!this.#options.countrySearch && REGEX.HIDDEN_SEARCH_CHAR.test(e.key)) {
+          e.stopPropagation();
+          if (queryTimer) {
+            clearTimeout(queryTimer);
+          }
+          query += e.key.toLowerCase();
+          this.#searchForCountry(query);
+          queryTimer = setTimeout(() => {
+            query = "";
+          }, TIMINGS.HIDDEN_SEARCH_RESET_MS);
+        }
+      };
+      this.#selectedCountryEl?.addEventListener("keydown", handleKeydown, { signal });
+      this.#countrySelectorEl?.addEventListener("keydown", handleKeydown, { signal });
+      if (this.#detachedCountrySelectorEl) {
+        this.#countrySelectorEl?.addEventListener(
+          "keydown",
+          (e) => {
+            if (e.key === KEYS.TAB) {
+              e.preventDefault();
+              onEscape();
+              const focusEl = e.shiftKey ? this.#selectedCountryEl : this.telInputEl;
+              focusEl.focus();
+            }
+          },
+          { signal }
+        );
+      }
+    }
+    //* Wire up country search input listener: typing filters the list, the clear button resets it.
+    #bindSearchInputListener(signal) {
+      this.#searchInputEl.addEventListener(
+        "input",
+        () => this.#handleSearchChange(),
+        { signal }
+      );
+      this.#searchClearButtonEl.addEventListener(
+        "click",
+        () => this.#handleSearchClear(),
+        { signal }
+      );
+    }
+    //* Hidden search (countrySearch disabled): jump to the first list item whose name starts with the query.
+    #searchForCountry(query) {
+      const match = findFirstCountryStartingWith(
+        this.#countries,
+        this.#searchTokens,
+        query
+      );
+      if (match) {
+        const listItem = this.#listItemByIso2.get(match.iso2);
+        this.#highlightListItem(listItem);
       }
     }
     //* Highlight the next/prev item in the list (and ensure it is visible).
-    handleUpDownKey(key) {
-      let next = key === KEYS.ARROW_UP ? this.highlightedItem?.previousElementSibling : this.highlightedItem?.nextElementSibling;
-      if (!next && this.countryList.childElementCount > 1) {
-        next = key === KEYS.ARROW_UP ? this.countryList.lastElementChild : this.countryList.firstElementChild;
+    #handleUpDownKey(key) {
+      let next = key === KEYS.ARROW_UP ? this.#highlightedListItemEl?.previousElementSibling : this.#highlightedListItemEl?.nextElementSibling;
+      if (!next && this.#countryListEl.childElementCount > 1) {
+        next = key === KEYS.ARROW_UP ? this.#countryListEl.lastElementChild : this.#countryListEl.firstElementChild;
       }
       if (next) {
-        this.scrollTo(next);
-        this.highlightListItem(next, false);
+        this.#highlightListItem(next);
       }
     }
-    // Update the selected list item in the dropdown
-    #updateSelectedItem(iso2) {
-      if (this.#selectedItem && this.#selectedItem.dataset.countryCode !== iso2) {
-        this.#selectedItem.setAttribute(ARIA.SELECTED, "false");
-        this.#selectedItem.querySelector(".iti__country-check")?.remove();
-        this.#selectedItem = null;
+    // Update the selected list item in the country list
+    #updateSelectedListItem(iso2) {
+      if (this.#selectedListItemEl && this.#selectedListItemEl.dataset[DATA_KEYS.ISO2] !== iso2) {
+        this.#selectedListItemEl.setAttribute(ARIA.SELECTED, "false");
+        this.#selectedListItemEl.querySelector(".iti__country-check")?.remove();
+        this.#selectedListItemEl = null;
       }
-      if (iso2 && !this.#selectedItem) {
-        const newListItem = this.countryList.querySelector(
-          `[data-country-code="${iso2}"]`
+      if (iso2 && !this.#selectedListItemEl) {
+        const newListItem = this.#countryListEl.querySelector(
+          `[data-iso2="${iso2}"]`
         );
         if (newListItem) {
           newListItem.setAttribute(ARIA.SELECTED, "true");
           const checkIcon = createEl(
             "span",
-            { class: "iti__country-check", [ARIA.HIDDEN]: "true" },
+            {
+              class: this.#withSlotClass("countryCheck", "iti__country-check"),
+              [ARIA.HIDDEN]: "true"
+            },
             newListItem
           );
-          checkIcon.innerHTML = buildCheckIcon();
-          this.#selectedItem = newListItem;
+          checkIcon.appendChild(buildCheckIcon());
+          this.#selectedListItemEl = newListItem;
+          if (this.#options.dropdownAlwaysOpen) {
+            this.#highlightListItem(newListItem);
+          }
         }
       }
     }
     //* Country search: Filter the country list to the given array of countries.
-    #filterCountries(matchedCountries) {
-      this.countryList.innerHTML = "";
+    #showFilteredCountries(matchedCountries) {
+      this.#countryListEl.replaceChildren();
       let noCountriesAddedYet = true;
       for (const c of matchedCountries) {
-        const listItem = c.nodeById[this.#id];
+        const listItem = this.#listItemByIso2.get(c.iso2);
         if (listItem) {
-          this.countryList.appendChild(listItem);
+          this.#countryListEl.appendChild(listItem);
           if (noCountriesAddedYet) {
-            this.highlightListItem(listItem, false);
+            this.#highlightListItem(listItem, false);
             noCountriesAddedYet = false;
           }
         }
       }
       if (noCountriesAddedYet) {
-        this.highlightListItem(null, false);
-        if (this.#searchNoResults) {
-          this.#searchNoResults.classList.remove(CLASSES.HIDE);
+        this.#highlightListItem(null);
+        if (this.#noResultsMessageEl) {
+          this.#noResultsMessageEl.classList.remove(CLASSES.HIDE);
         }
-      } else if (this.#searchNoResults) {
-        this.#searchNoResults.classList.add(CLASSES.HIDE);
+      } else if (this.#noResultsMessageEl) {
+        this.#noResultsMessageEl.classList.add(CLASSES.HIDE);
       }
-      this.countryList.scrollTop = 0;
+      this.#countryListEl.scrollTop = 0;
       this.#updateSearchResultsA11yText();
     }
-    destroy() {
-      this.telInput.iti = void 0;
-      delete this.telInput.dataset.intlTelInputId;
-      if (this.#options.separateDialCode) {
-        this.telInput.style.paddingLeft = this.#originalPaddingLeft;
-      }
-      const wrapper = this.telInput.parentNode;
-      wrapper.before(this.telInput);
-      wrapper.remove();
-      this.telInput = null;
-      this.countryContainer = null;
-      this.selectedCountry = null;
-      this.selectedCountryInner = null;
-      this.searchInput = null;
-      this.searchClearButton = null;
-      this.countryList = null;
-      this.hiddenInput = null;
-      this.hiddenInputCountry = null;
-      this.highlightedItem = null;
-      this.#selectedDialCode = null;
-      this.#dropdownArrow = null;
-      this.#dropdownContent = null;
-      this.#searchIcon = null;
-      this.#searchNoResults = null;
-      this.#searchResultsA11yText = null;
-      this.#dropdownForContainer = null;
-      this.#selectedItem = null;
-      for (const c of this.#countries) {
-        delete c.nodeById[this.#id];
-      }
-      this.#countries = null;
-    }
-    // UI: Open the dropdown (DOM only).
-    openDropdown() {
-      const {
-        countrySearch,
-        dropdownAlwaysOpen,
-        dropdownContainer
-      } = this.#options;
-      this.#maybeEnsureDropdownWidthSet();
-      if (dropdownContainer) {
-        this.#handleDropdownContainer();
-      } else {
-        const positionBelow = this.#shouldPositionInlineDropdownBelowInput();
-        const distance = this.telInput.offsetHeight + LAYOUT.DROPDOWN_MARGIN;
-        if (positionBelow) {
-          this.#dropdownContent.style.top = `${distance}px`;
-        } else {
-          this.#dropdownContent.style.bottom = `${distance}px`;
-        }
-      }
-      this.#dropdownContent.classList.remove(CLASSES.HIDE);
-      this.selectedCountry.setAttribute(ARIA.EXPANDED, "true");
+    // UI: Close the country selector (DOM + abort scoped listeners).
+    closeCountrySelector() {
+      const { countrySearch } = this.#options;
+      this.#countrySelectorAbortController.abort();
+      this.#countrySelectorAbortController = null;
+      this.#countrySelectorEl.classList.add(CLASSES.HIDE);
+      this.#selectedCountryEl.setAttribute(ARIA.EXPANDED, "false");
+      this.#getOpenFocusEl().removeAttribute(ARIA.ACTIVE_DESCENDANT);
       if (countrySearch) {
-        const firstCountryItem = this.countryList.firstElementChild;
-        if (firstCountryItem) {
-          this.highlightListItem(firstCountryItem, false);
-          this.countryList.scrollTop = 0;
-        }
-        if (!dropdownAlwaysOpen) {
-          this.searchInput.focus();
+        this.#searchInputEl.value = "";
+        this.#applySearchFilter();
+        if (this.#highlightedListItemEl) {
+          this.#highlightedListItemEl.classList.remove(CLASSES.HIGHLIGHT);
+          this.#highlightedListItemEl = null;
         }
       }
-      this.#dropdownArrow.classList.add(CLASSES.ARROW_UP);
-    }
-    // UI: Close the dropdown (DOM only).
-    closeDropdown() {
-      const { countrySearch, dropdownContainer } = this.#options;
-      this.#dropdownContent.classList.add(CLASSES.HIDE);
-      this.selectedCountry.setAttribute(ARIA.EXPANDED, "false");
-      if (countrySearch) {
-        this.searchInput.removeAttribute(ARIA.ACTIVE_DESCENDANT);
-        if (this.highlightedItem) {
-          this.highlightedItem.classList.remove(CLASSES.HIGHLIGHT);
-          this.highlightedItem = null;
-        }
-      }
-      this.#dropdownArrow.classList.remove(CLASSES.ARROW_UP);
-      if (dropdownContainer) {
-        this.#dropdownForContainer.remove();
-        this.#dropdownForContainer.style.top = "";
-        this.#dropdownForContainer.style.bottom = "";
-        this.#dropdownForContainer.style.paddingLeft = "";
-        this.#dropdownForContainer.style.paddingRight = "";
+      this.#arrowEl.classList.remove(CLASSES.ARROW_UP);
+      if (this.#detachedCountrySelectorEl) {
+        this.#detachedCountrySelectorEl.remove();
+        this.#detachedCountrySelectorEl.style.top = "";
+        this.#detachedCountrySelectorEl.style.bottom = "";
+        this.#detachedCountrySelectorEl.style.height = "";
+        this.#detachedCountrySelectorEl.style.paddingLeft = "";
+        this.#detachedCountrySelectorEl.style.paddingRight = "";
       } else {
-        this.#dropdownContent.style.top = "";
-        this.#dropdownContent.style.bottom = "";
+        this.#countrySelectorEl.style.top = "";
+        this.#countrySelectorEl.style.bottom = "";
       }
     }
-    #shouldPositionInlineDropdownBelowInput() {
+    #shouldPositionDropdownBelowInput() {
       if (this.#options.dropdownAlwaysOpen) {
         return true;
       }
-      const inputPos = this.telInput.getBoundingClientRect();
+      const inputPos = this.telInputEl.getBoundingClientRect();
       const spaceAbove = inputPos.top;
       const spaceBelow = window.innerHeight - inputPos.bottom;
       return spaceBelow >= this.#inlineDropdownHeight || spaceBelow >= spaceAbove;
     }
-    // inject dropdown into container and apply positioning styles
-    #handleDropdownContainer() {
-      const { dropdownContainer, useFullscreenPopup } = this.#options;
-      if (useFullscreenPopup) {
-        if (window.innerWidth >= 500) {
-          const inputPos = this.telInput.getBoundingClientRect();
-          this.#dropdownForContainer.style.paddingLeft = `${inputPos.left}px`;
-          this.#dropdownForContainer.style.paddingRight = `${window.innerWidth - inputPos.right}px`;
+    // inject the country selector into its detached wrapper and apply positioning styles
+    #injectAndPositionDetachedCountrySelector() {
+      const isFullscreen = this.#options.countrySelectorMode === COUNTRY_SELECTOR_MODE.FULLSCREEN;
+      const detachedParent = this.#getDetachedParent();
+      if (isFullscreen) {
+        if (window.innerWidth >= LAYOUT.NARROW_VIEWPORT_WIDTH) {
+          const inputPos = this.telInputEl.getBoundingClientRect();
+          this.#detachedCountrySelectorEl.style.paddingLeft = `${inputPos.left}px`;
+          this.#detachedCountrySelectorEl.style.paddingRight = `${window.innerWidth - inputPos.right}px`;
         }
       } else {
-        const inputPos = this.telInput.getBoundingClientRect();
-        this.#dropdownForContainer.style.left = `${inputPos.left}px`;
-        const positionBelow = this.#shouldPositionInlineDropdownBelowInput();
-        if (positionBelow) {
-          this.#dropdownForContainer.style.top = `${inputPos.bottom + LAYOUT.DROPDOWN_MARGIN}px`;
+        this.#setupCssAnchorPositioning();
+      }
+      if (!isFullscreen && !supportsCssAnchor) {
+        const inputPos = this.telInputEl.getBoundingClientRect();
+        this.#detachedCountrySelectorEl.style.left = `${inputPos.left}px`;
+        if (this.#shouldPositionDropdownBelowInput()) {
+          this.#detachedCountrySelectorEl.style.top = `${inputPos.bottom + LAYOUT.DROPDOWN_MARGIN}px`;
         } else {
-          this.#dropdownForContainer.style.top = "unset";
-          this.#dropdownForContainer.style.bottom = `${window.innerHeight - inputPos.top + LAYOUT.DROPDOWN_MARGIN}px`;
+          this.#detachedCountrySelectorEl.style.top = "unset";
+          this.#detachedCountrySelectorEl.style.bottom = `${window.innerHeight - inputPos.top + LAYOUT.DROPDOWN_MARGIN}px`;
         }
       }
-      dropdownContainer.appendChild(this.#dropdownForContainer);
+      detachedParent.appendChild(this.#detachedCountrySelectorEl);
     }
-    // UI: Whether the dropdown is currently closed (hidden).
-    isDropdownClosed() {
-      return this.#dropdownContent.classList.contains(CLASSES.HIDE);
-    }
-    setCountry(selectedCountryData) {
-      const { allowDropdown, showFlags, separateDialCode, i18n } = this.#options;
-      const { name, dialCode, iso2 = "" } = selectedCountryData;
-      if (allowDropdown) {
-        this.#updateSelectedItem(iso2);
+    //* Wire up CSS Anchor Positioning between the input and the detached country selector using a
+    //* unique anchor name per instance. Called lazily on first open (memoised) — the matching styles in
+    //* intlTelInput.css only take effect in browsers that support anchor(); elsewhere these
+    //* properties are inert. We append our name to any existing anchor-name (read via
+    //* getComputedStyle so we pick up CSS-defined values), so consumer-set anchors on the input
+    //* are preserved. Caveat: this snapshots the consumer's value once — if they later change
+    //* anchor-name via CSS (e.g. a class swap), our inline write will shadow the change.
+    #setupCssAnchorPositioning() {
+      if (this.#cssAnchorPositioningDone) {
+        return;
       }
-      if (this.selectedCountry) {
-        const flagClass = iso2 && showFlags ? `${CLASSES.FLAG} iti__${iso2}` : `${CLASSES.FLAG} ${CLASSES.GLOBE}`;
-        let ariaLabel, title, selectedCountryInner;
+      this.#cssAnchorPositioningDone = true;
+      const anchorName = `--iti-anchor-${this.#id}`;
+      const existing = getComputedStyle(this.telInputEl).anchorName;
+      this.telInputEl.style.anchorName = existing && existing !== "none" ? `${existing}, ${anchorName}` : anchorName;
+      this.#detachedCountrySelectorEl.style.positionAnchor = anchorName;
+    }
+    // Adjust the fullscreen popup dimensions to match the visual viewport,
+    // so it stays above the virtual keyboard on mobile devices.
+    #adjustFullscreenPopupToViewport() {
+      const vv = window.visualViewport;
+      if (!vv || !this.#detachedCountrySelectorEl) {
+        return;
+      }
+      this.#detachedCountrySelectorEl.style.height = `${vv.height}px`;
+    }
+    // UI: Whether the country selector is currently open (visible).
+    isCountrySelectorOpen() {
+      return !this.#countrySelectorEl.classList.contains(CLASSES.HIDE);
+    }
+    // Toggle the loading spinner on the selected flag (used during auto-country geoIP lookup).
+    setLoading(isLoading) {
+      this.#selectedFlagEl.classList.toggle(CLASSES.LOADING, isLoading);
+    }
+    //* Play the strict-reject animation (shake, or background-colour flash under prefers-reduced-motion) on the wrapper.
+    //* Called when strictMode rejects the whole input (keystroke, or whole paste).
+    //* Uses the wrapper (not the input) so any separateDialCode / country button move together with the input.
+    playStrictRejectAnimation() {
+      if (!this.#options.strictRejectAnimation) {
+        return;
+      }
+      const wrapperEl = this.telInputEl.parentElement;
+      if (!wrapperEl) {
+        return;
+      }
+      wrapperEl.classList.remove(CLASSES.STRICT_REJECT_ANIMATION);
+      void wrapperEl.offsetWidth;
+      wrapperEl.classList.add(CLASSES.STRICT_REJECT_ANIMATION);
+      wrapperEl.addEventListener(
+        "animationend",
+        () => wrapperEl.classList.remove(CLASSES.STRICT_REJECT_ANIMATION),
+        { once: true }
+      );
+    }
+    isLoading() {
+      return this.#selectedFlagEl.classList.contains(CLASSES.LOADING);
+    }
+    // Set the disabled state of the input and country selector.
+    setDisabled(disabled) {
+      this.telInputEl.disabled = disabled;
+      if (this.#selectedCountryEl) {
+        if (disabled) {
+          this.#selectedCountryEl.setAttribute("disabled", "true");
+        } else {
+          this.#selectedCountryEl.removeAttribute("disabled");
+        }
+      }
+    }
+    // Set the readonly state of the input and country selector.
+    setReadonly(readonly) {
+      this.telInputEl.readOnly = readonly;
+      if (this.#selectedCountryEl) {
+        if (readonly) {
+          this.#selectedCountryEl.setAttribute("disabled", "true");
+        } else {
+          this.#selectedCountryEl.removeAttribute("disabled");
+        }
+      }
+    }
+    setSelectedCountry(selectedCountry) {
+      const { countrySelectorMode, showFlags, separateDialCode, uiTranslations } = this.#options;
+      const name = selectedCountry?.name;
+      const dialCode = selectedCountry?.dialCode;
+      const iso2 = selectedCountry?.iso2 ?? "";
+      if (countrySelectorMode !== COUNTRY_SELECTOR_MODE.OFF) {
+        this.#updateSelectedListItem(iso2);
+      }
+      if (this.#selectedCountryEl) {
+        const flagClass = this.#withSlotClass(
+          "selectedFlag",
+          iso2 && showFlags ? `${CLASSES.FLAG} iti__${iso2}` : `${CLASSES.FLAG} ${CLASSES.GLOBE}`
+        );
+        let ariaLabel, title;
+        let flagContent = null;
         if (iso2) {
           title = name;
-          ariaLabel = i18n.selectedCountryAriaLabel.replace("${countryName}", name).replace("${dialCode}", `+${dialCode}`);
-          selectedCountryInner = showFlags ? "" : buildGlobeIcon();
+          ariaLabel = uiTranslations.selectedCountryAriaLabel.replace("${countryName}", name).replace("${dialCode}", `+${dialCode}`);
+          if (!showFlags) {
+            flagContent = buildGlobeIcon();
+          }
         } else {
-          title = i18n.noCountrySelected;
-          ariaLabel = i18n.noCountrySelected;
-          selectedCountryInner = buildGlobeIcon();
+          title = uiTranslations.noCountrySelected;
+          ariaLabel = uiTranslations.noCountrySelected;
+          flagContent = buildGlobeIcon();
         }
-        this.selectedCountryInner.className = flagClass;
-        this.selectedCountry.setAttribute("title", title);
-        this.selectedCountry.setAttribute(ARIA.LABEL, ariaLabel);
-        this.selectedCountryInner.innerHTML = selectedCountryInner;
+        this.#selectedFlagEl.className = flagClass;
+        this.#selectedCountryEl.setAttribute("title", title);
+        this.#selectedCountryEl.setAttribute(ARIA.LABEL, ariaLabel);
+        if (flagContent) {
+          this.#selectedFlagEl.replaceChildren(flagContent);
+        } else {
+          this.#selectedFlagEl.replaceChildren();
+        }
       }
       if (separateDialCode) {
         const fullDialCode = dialCode ? `+${dialCode}` : "";
-        this.#selectedDialCode.textContent = fullDialCode;
+        this.#selectedDialCodeEl.textContent = fullDialCode;
         this.#updateInputPadding();
       }
     }
+    destroy() {
+      this.telInputEl.iti = void 0;
+      delete this.telInputEl.dataset[DATA_KEYS.INSTANCE_ID];
+      this.#resizeObserver?.disconnect();
+      this.telInputEl.style.paddingLeft = this.#originalPaddingLeft;
+      const wrapper = this.telInputEl.parentNode;
+      if (wrapper) {
+        wrapper.before(this.telInputEl);
+        wrapper.remove();
+      }
+      this.#listItemByIso2.clear();
+    }
   };
 
-  // src/js/modules/data/country-data.ts
+  // packages/core/src/js/data/country-data.ts
   var processAllCountries = (options) => {
     const { onlyCountries, excludeCountries } = options;
     if (onlyCountries?.length) {
-      const lowerCaseOnlyCountries = onlyCountries.map(
-        (country) => country.toLowerCase()
-      );
       return data_default.filter(
-        (country) => lowerCaseOnlyCountries.includes(country.iso2)
+        (country) => onlyCountries.includes(country.iso2)
       );
     } else if (excludeCountries?.length) {
-      const lowerCaseExcludeCountries = excludeCountries.map(
-        (country) => country.toLowerCase()
-      );
       return data_default.filter(
-        (country) => !lowerCaseExcludeCountries.includes(country.iso2)
+        (country) => !excludeCountries.includes(country.iso2)
       );
     }
-    return data_default;
+    return [...data_default];
   };
   var generateCountryNames = (countries, options) => {
-    const { countryNameLocale, i18n } = options;
+    const { countryNameLocale, countryNameOverrides, uiTranslations } = options;
+    const bundledCountryNames = uiTranslations?.countryNames;
     let displayNames;
     try {
       const hasDisplayNames = typeof Intl !== "undefined" && typeof Intl.DisplayNames === "function";
@@ -2969,21 +3681,21 @@ var factoryOutput = (() => {
       displayNames = null;
     }
     for (const c of countries) {
-      c.name = i18n[c.iso2] || displayNames?.of(c.iso2.toUpperCase()) || "";
+      c.name = countryNameOverrides[c.iso2] || bundledCountryNames?.[c.iso2] || displayNames?.of(c.iso2.toUpperCase()) || "";
     }
   };
   var processDialCodes = (countries) => {
     const dialCodes = /* @__PURE__ */ new Set();
-    let dialCodeMaxLen = 0;
+    let dialCodeMaxLength = 0;
     const dialCodeToIso2Map = {};
     const addToDialCodeMap = (iso2, dialCode) => {
       if (!iso2 || !dialCode) {
         return;
       }
-      if (dialCode.length > dialCodeMaxLen) {
-        dialCodeMaxLen = dialCode.length;
+      if (dialCode.length > dialCodeMaxLength) {
+        dialCodeMaxLength = dialCode.length;
       }
-      if (!dialCodeToIso2Map.hasOwnProperty(dialCode)) {
+      if (!Object.hasOwn(dialCodeToIso2Map, dialCode)) {
         dialCodeToIso2Map[dialCode] = [];
       }
       const iso2List = dialCodeToIso2Map[dialCode];
@@ -2992,7 +3704,9 @@ var factoryOutput = (() => {
       }
       iso2List.push(iso2);
     };
-    const countriesSortedByPriority = [...countries].sort((a, b) => a.priority - b.priority);
+    const countriesSortedByPriority = [...countries].sort(
+      (a, b) => a.priority - b.priority
+    );
     for (const c of countriesSortedByPriority) {
       if (!dialCodes.has(c.dialCode)) {
         dialCodes.add(c.dialCode);
@@ -3015,16 +3729,11 @@ var factoryOutput = (() => {
         }
       }
     }
-    return { dialCodes, dialCodeMaxLen, dialCodeToIso2Map };
+    return { dialCodes, dialCodeMaxLength, dialCodeToIso2Map };
   };
   var sortCountries = (countries, options) => {
-    if (options.countryOrder) {
-      options.countryOrder = options.countryOrder.map(
-        (iso2) => iso2.toLowerCase()
-      );
-    }
+    const { countryOrder } = options;
     countries.sort((a, b) => {
-      const { countryOrder } = options;
       if (countryOrder) {
         const aIndex = countryOrder.indexOf(a.iso2);
         const bIndex = countryOrder.indexOf(b.iso2);
@@ -3040,16 +3749,9 @@ var factoryOutput = (() => {
       return a.name.localeCompare(b.name);
     });
   };
-  var cacheSearchTokens = (countries) => {
-    for (const c of countries) {
-      c.normalisedName = normaliseString(c.name);
-      c.initials = c.normalisedName.split(/[^a-z]/).map((word) => word[0]).join("");
-      c.dialCodePlus = `+${c.dialCode}`;
-    }
-  };
 
-  // src/js/modules/data/intl-regionless.ts
-  var REGIONLESS_DIAL_CODES = /* @__PURE__ */ new Set([
+  // packages/core/src/js/data/intl-regionless.ts
+  var regionlessDialCodes = /* @__PURE__ */ new Set([
     "800",
     "808",
     "870",
@@ -3061,24 +3763,21 @@ var factoryOutput = (() => {
   ]);
   var hasRegionlessDialCode = (number) => {
     const dialCode = getNumeric(number).slice(0, 3);
-    return number.startsWith("+") && REGIONLESS_DIAL_CODES.has(dialCode);
+    return number.startsWith("+") && regionlessDialCodes.has(dialCode);
   };
 
-  // src/js/modules/format/formatting.ts
-  var beforeSetNumber = (fullNumber, hasValidDialCode, separateDialCode, selectedCountryData) => {
-    let number = fullNumber;
-    if (separateDialCode) {
-      if (hasValidDialCode) {
-        const dialCode = `+${selectedCountryData.dialCode}`;
-        const start = number[dialCode.length] === " " || number[dialCode.length] === "-" ? dialCode.length + 1 : dialCode.length;
-        number = number.substring(start);
-      }
+  // packages/core/src/js/format/formatting.ts
+  var stripSeparateDialCode = (fullNumber, hasValidDialCode, separateDialCode, selectedCountry) => {
+    if (!separateDialCode || !hasValidDialCode) {
+      return fullNumber;
     }
-    return number;
+    const dialCode = `+${selectedCountry.dialCode}`;
+    const start = fullNumber[dialCode.length] === " " || fullNumber[dialCode.length] === "-" ? dialCode.length + 1 : dialCode.length;
+    return fullNumber.substring(start);
   };
-  var formatNumberAsYouType = (fullNumber, telInputValue, utils2, selectedCountryData, separateDialCode) => {
-    const result = utils2 ? utils2.formatNumberAsYouType(fullNumber, selectedCountryData.iso2) : fullNumber;
-    const { dialCode } = selectedCountryData;
+  var formatNumberAsYouType = (fullNumber, telInputValue, utils, selectedCountry, separateDialCode) => {
+    const result = utils ? utils.formatNumberAsYouType(fullNumber, selectedCountry?.iso2) : fullNumber;
+    const dialCode = selectedCountry?.dialCode;
     if (separateDialCode && telInputValue.charAt(0) !== "+" && result.includes(`+${dialCode}`)) {
       const afterDialCode = result.split(`+${dialCode}`)[1] || "";
       return afterDialCode.trim();
@@ -3086,8 +3785,8 @@ var factoryOutput = (() => {
     return result;
   };
 
-  // src/js/modules/format/caret.ts
-  var translateCursorPosition = (relevantChars, formattedValue, prevCaretPos, isDeleteForwards) => {
+  // packages/core/src/js/format/caret.ts
+  var computeNewCaretPosition = (relevantChars, formattedValue, prevCaretPos, isDeleteForwards) => {
     if (prevCaretPos === 0 && !isDeleteForwards) {
       return 0;
     }
@@ -3106,8 +3805,8 @@ var factoryOutput = (() => {
     return formattedValue.length;
   };
 
-  // src/js/modules/data/nanp-regionless.ts
-  var regionlessNanpNumbers = [
+  // packages/core/src/js/data/nanp-regionless.ts
+  var regionlessNanpAreaCodes = /* @__PURE__ */ new Set([
     "800",
     "822",
     "833",
@@ -3125,155 +3824,114 @@ var factoryOutput = (() => {
     "887",
     "888",
     "889"
-  ];
+  ]);
   var isRegionlessNanp = (number) => {
     const numeric = getNumeric(number);
-    if (numeric.startsWith(DIAL.NANP) && numeric.length >= 4) {
+    if (numeric.startsWith(DIAL_CODE.NANP) && numeric.length >= 4) {
       const areaCode = numeric.substring(1, 4);
-      return regionlessNanpNumbers.includes(areaCode);
+      return regionlessNanpAreaCodes.has(areaCode);
     }
     return false;
   };
 
-  // src/js/modules/core/numerals.ts
-  var Numerals = class {
-    #userNumeralSet;
-    constructor() {
-    }
-    // If any Arabic-Indic digits, then label it as that set. Same for Persian. Otherwise assume ASCII.
-    #updateNumeralSet(str) {
-      if (/[\u0660-\u0669]/.test(str)) {
-        this.#userNumeralSet = "arabic-indic";
-      } else if (/[\u06F0-\u06F9]/.test(str)) {
-        this.#userNumeralSet = "persian";
-      } else {
-        this.#userNumeralSet = "ascii";
-      }
-    }
-    // Denormalise ASCII 0-9 to the user's numeral set, if known. If not known, return the string as-is.
-    denormalise(str, currentInputValue) {
-      if (!this.#userNumeralSet) {
-        this.#updateNumeralSet(currentInputValue);
-      }
-      if (this.#userNumeralSet === "ascii") {
-        return str;
-      }
-      const base = this.#userNumeralSet === "arabic-indic" ? 1632 : 1776;
-      return str.replace(/[0-9]/g, (d) => String.fromCharCode(base + Number(d)));
-    }
-    // Normalize Eastern Arabic (U+0660-0669) and Persian/Extended Arabic-Indic (U+06F0-06F9) numerals to ASCII 0-9
-    normalise(str) {
-      if (!str) {
-        return "";
-      }
-      this.#updateNumeralSet(str);
-      if (this.#userNumeralSet === "ascii") {
-        return str;
-      }
-      const base = this.#userNumeralSet === "arabic-indic" ? 1632 : 1776;
-      const regex = this.#userNumeralSet === "arabic-indic" ? /[\u0660-\u0669]/g : /[\u06F0-\u06F9]/g;
-      return str.replace(regex, (ch) => String.fromCharCode(48 + (ch.charCodeAt(0) - base)));
-    }
-    isAscii() {
-      return this.#userNumeralSet === "ascii";
+  // packages/core/src/js/intlTelInput.ts
+  var nextId = 0;
+  var ensureUtils = (methodName) => {
+    if (!intlTelInput.utils) {
+      throw new Error(
+        `intlTelInput.utils is required for ${methodName}(). See: https://intl-tel-input.com/docs/utils`
+      );
     }
   };
-
-  // src/js/intl-tel-input.ts
-  var id = 0;
-  var iso2Set2 = new Set(data_default.map((c) => c.iso2));
-  var isIso22 = (val) => iso2Set2.has(val);
+  var createDeferred = () => {
+    let resolve;
+    let reject;
+    const promise = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+    return { promise, resolve, reject };
+  };
   var Iti = class _Iti {
+    //* PUBLIC FIELDS - READONLY
+    //* Can't be private as it's called from intlTelInput convenience wrapper.
+    id;
+    // accessed externally via iti.promise.then(...)
+    promise;
     //* PRIVATE FIELDS
     #ui;
     #options;
     #isAndroid;
     // country data
     #countries;
-    #dialCodeMaxLen;
+    #dialCodeMaxLength;
     #dialCodeToIso2Map;
     #dialCodes;
     #countryByIso2;
-    #selectedCountryData;
-    #maxCoreNumberLength;
-    #defaultCountry;
+    #searchTokens;
+    #selectedCountry = null;
+    #maxCoreNumberLength = null;
+    #fallbackCountryIso2;
+    // is this instance still active (not destroyed)
+    #isActive = true;
     #abortController;
-    #dropdownAbortController;
     #numerals;
-    #resolveAutoCountryPromise;
-    #rejectAutoCountryPromise;
-    #resolveUtilsScriptPromise;
-    #rejectUtilsScriptPromise;
+    //* Tracks whether the user has typed/pasted their own formatting chars, so AYT-formatting should back off.
+    #userOverrideFormatting = false;
+    #strictPasteSnapshot = null;
+    #autoCountryDeferred;
+    #utilsDeferred;
     constructor(input, customOptions = {}) {
-      this.id = id++;
+      this.id = nextId++;
       UI.validateInput(input);
       const validatedOptions = validateOptions(customOptions);
       this.#options = { ...defaults, ...validatedOptions };
+      normaliseOptions(this.#options);
       applyOptionSideEffects(this.#options);
       this.#ui = new UI(input, this.#options, this.id);
-      this.#isAndroid = getIsAndroid();
-      this.#numerals = new Numerals();
-      this.promise = this.#createInitPromises(this.#options);
+      this.#isAndroid = typeof navigator !== "undefined" && /Android/i.test(navigator.userAgent);
+      this.#numerals = new Numerals(input.value);
+      this.promise = this.#createInitPromise(this.#options);
       this.#countries = processAllCountries(this.#options);
-      const { dialCodes, dialCodeMaxLen, dialCodeToIso2Map } = processDialCodes(
-        this.#countries
-      );
+      const { dialCodes, dialCodeMaxLength, dialCodeToIso2Map } = processDialCodes(this.#countries);
       this.#dialCodes = dialCodes;
-      this.#dialCodeMaxLen = dialCodeMaxLen;
+      this.#dialCodeMaxLength = dialCodeMaxLength;
       this.#dialCodeToIso2Map = dialCodeToIso2Map;
       this.#countryByIso2 = new Map(this.#countries.map((c) => [c.iso2, c]));
       this.#init();
     }
     #getTelInputValue() {
-      const inputValue = this.#ui.telInput.value.trim();
+      const inputValue = this.#ui.telInputEl.value.trim();
       return this.#numerals.normalise(inputValue);
     }
     #setTelInputValue(asciiValue) {
-      const currentValue = this.#ui.telInput.value;
-      this.#ui.telInput.value = this.#numerals.denormalise(asciiValue, currentValue);
+      this.#ui.telInputEl.value = this.#numerals.denormalise(asciiValue);
     }
-    #createInitPromises(options) {
-      const { initialCountry, geoIpLookup, loadUtils } = options;
-      const needsAutoCountryPromise = initialCountry === INITIAL_COUNTRY.AUTO && Boolean(geoIpLookup);
-      const needsUtilsScriptPromise = Boolean(loadUtils) && !intlTelInput.utils;
-      let autoCountryPromise;
-      if (needsAutoCountryPromise) {
-        autoCountryPromise = new Promise((resolve, reject) => {
-          this.#resolveAutoCountryPromise = resolve;
-          this.#rejectAutoCountryPromise = reject;
-        });
-      } else {
-        autoCountryPromise = Promise.resolve(void 0);
-        this.#resolveAutoCountryPromise = () => {
-        };
-        this.#rejectAutoCountryPromise = () => {
-        };
+    #createInitPromise(options) {
+      const { initialCountry, initialCountryLookup, loadUtils } = options;
+      const needsAutoCountryDeferred = !initialCountry && Boolean(initialCountryLookup);
+      const needsUtilsDeferred = Boolean(loadUtils) && !intlTelInput.utils;
+      if (needsAutoCountryDeferred) {
+        this.#autoCountryDeferred = createDeferred();
       }
-      let utilsScriptPromise;
-      if (needsUtilsScriptPromise) {
-        utilsScriptPromise = new Promise((resolve, reject) => {
-          this.#resolveUtilsScriptPromise = resolve;
-          this.#rejectUtilsScriptPromise = reject;
-        });
-      } else {
-        utilsScriptPromise = Promise.resolve(void 0);
-        this.#resolveUtilsScriptPromise = () => {
-        };
-        this.#rejectUtilsScriptPromise = () => {
-        };
+      if (needsUtilsDeferred) {
+        this.#utilsDeferred = createDeferred();
       }
-      return Promise.all([autoCountryPromise, utilsScriptPromise]);
+      return Promise.all([
+        this.#autoCountryDeferred?.promise,
+        this.#utilsDeferred?.promise
+      ]).then(() => {
+      });
     }
     #init() {
-      this.#selectedCountryData = {};
       this.#abortController = new AbortController();
       this.#processCountryData();
-      this.#ui.generateMarkup(this.#countries);
+      this.#ui.buildMarkup(this.#countries, this.#searchTokens);
       this.#setInitialState();
       this.#initListeners();
-      this.#initRequests();
+      this.#startAsyncLoads();
       if (this.#options.dropdownAlwaysOpen) {
-        this.#openDropdown();
+        this.openCountrySelector();
       }
     }
     //********************
@@ -3283,542 +3941,498 @@ var factoryOutput = (() => {
     #processCountryData() {
       generateCountryNames(this.#countries, this.#options);
       sortCountries(this.#countries, this.#options);
-      cacheSearchTokens(this.#countries);
+      this.#searchTokens = buildSearchTokens(this.#countries);
     }
     //* Set the initial state of the input value and the selected country by:
     //* 1. Extracting a dial code from the given number
     //* 2. Using explicit initialCountry
     #setInitialState(overrideAutoCountry = false) {
-      const attributeValueRaw = this.#ui.telInput.getAttribute("value");
-      const attributeValue = this.#numerals.normalise(attributeValueRaw);
+      const attributeValueRaw = this.#ui.telInputEl.getAttribute("value");
+      const attributeValue = this.#numerals.normalise(attributeValueRaw ?? "");
       const inputValue = this.#getTelInputValue();
       const useAttribute = attributeValue && attributeValue.startsWith("+") && (!inputValue || !inputValue.startsWith("+"));
-      const val = useAttribute ? attributeValue : inputValue;
-      const dialCode = this.#getDialCode(val);
-      const isRegionlessNanpNumber = isRegionlessNanp(val);
-      const { initialCountry, geoIpLookup } = this.#options;
-      const isAutoCountry = initialCountry === INITIAL_COUNTRY.AUTO && geoIpLookup;
-      const doingAutoCountryLookup = isAutoCountry && !overrideAutoCountry;
-      const initialCountryLower = initialCountry.toLowerCase();
-      const isValidInitialCountry = isIso22(initialCountryLower);
+      const value = useAttribute ? attributeValue : inputValue;
+      const dialCode = this.#getDialCode(value);
+      const isRegionlessNanpNumber = isRegionlessNanp(value);
+      const { initialCountry, initialCountryLookup } = this.#options;
+      const isAutoCountry = !initialCountry && Boolean(initialCountryLookup);
+      const resolvedInitialCountry = isAutoCountry && intlTelInput.autoCountry ? intlTelInput.autoCountry : initialCountry;
+      const doingAutoCountryLookup = isAutoCountry && !overrideAutoCountry && !intlTelInput.autoCountry;
+      const isValidInitialCountry = isIso2(resolvedInitialCountry);
       if (dialCode) {
         if (isRegionlessNanpNumber) {
           if (isValidInitialCountry) {
-            this.#setCountry(initialCountryLower);
+            this.#updateSelectedCountry(resolvedInitialCountry);
           } else if (!doingAutoCountryLookup) {
-            this.#setCountry(US.ISO2);
+            this.#updateSelectedCountry(US.ISO2);
           }
         } else {
-          this.#updateCountryFromNumber(val);
+          if (isValidInitialCountry) {
+            this.#updateSelectedCountry(resolvedInitialCountry);
+          }
+          this.#updateCountryFromNumber(value);
         }
       } else if (isValidInitialCountry) {
-        this.#setCountry(initialCountryLower);
+        this.#updateSelectedCountry(resolvedInitialCountry);
       } else if (!doingAutoCountryLookup) {
-        this.#setCountry("");
+        this.#updateSelectedCountry("");
       }
-      if (val) {
-        this.#updateValFromNumber(val);
+      if (value) {
+        this.#updateValueFromNumber(value);
       }
     }
     //* Initialise the main event listeners: input keyup, and click selected country.
     #initListeners() {
-      this.#initTelInputListeners();
-      if (this.#options.allowDropdown) {
-        this.#initDropdownListeners();
+      this.#bindAllTelInputListeners();
+      if (this.#options.countrySelectorMode !== COUNTRY_SELECTOR_MODE.OFF) {
+        this.#ui.bindAllInitialCountrySelectorListeners(
+          this.#abortController.signal,
+          () => this.openCountrySelector(),
+          () => this.#closeCountrySelectorInternal()
+        );
       }
-      if ((this.#ui.hiddenInput || this.#ui.hiddenInputCountry) && this.#ui.telInput.form) {
-        this.#initHiddenInputListener();
-      }
-    }
-    //* Update hidden input on form submit.
-    #initHiddenInputListener() {
-      const handleHiddenInputSubmit = () => {
-        if (this.#ui.hiddenInput) {
-          this.#ui.hiddenInput.value = this.getNumber();
-        }
-        if (this.#ui.hiddenInputCountry) {
-          this.#ui.hiddenInputCountry.value = this.#selectedCountryData.iso2 || "";
-        }
-      };
-      this.#ui.telInput.form?.addEventListener("submit", handleHiddenInputSubmit, {
-        signal: this.#abortController.signal
-      });
-    }
-    //* initialise the dropdown listeners.
-    #initDropdownListeners() {
-      const signal = this.#abortController.signal;
-      const handleLabelClick = (e) => {
-        if (this.#ui.isDropdownClosed()) {
-          this.#ui.telInput.focus();
-        } else {
-          e.preventDefault();
-        }
-      };
-      const label = this.#ui.telInput.closest("label");
-      if (label) {
-        label.addEventListener("click", handleLabelClick, { signal });
-      }
-      const handleClickSelectedCountry = () => {
-        if (this.#ui.isDropdownClosed() && !this.#ui.telInput.disabled && !this.#ui.telInput.readOnly) {
-          this.#openDropdown();
-        }
-      };
-      this.#ui.selectedCountry.addEventListener(
-        "click",
-        handleClickSelectedCountry,
-        {
-          signal
-        }
-      );
-      const handleCountryContainerKeydown = (e) => {
-        const allowedKeys = [KEYS.ARROW_UP, KEYS.ARROW_DOWN, KEYS.SPACE, KEYS.ENTER];
-        if (this.#ui.isDropdownClosed() && allowedKeys.includes(e.key)) {
-          e.preventDefault();
-          e.stopPropagation();
-          this.#openDropdown();
-        }
-        if (e.key === KEYS.TAB) {
-          this.#closeDropdown();
-        }
-      };
-      this.#ui.countryContainer.addEventListener(
-        "keydown",
-        handleCountryContainerKeydown,
-        { signal }
+      this.#ui.bindHiddenInputSubmitListener(
+        this.#abortController.signal,
+        () => this.getNumber(),
+        () => this.#selectedCountry?.iso2 || ""
       );
     }
-    //* Init requests: utils script / geo ip lookup.
-    #initRequests() {
-      const { loadUtils, initialCountry, geoIpLookup } = this.#options;
-      if (loadUtils && !intlTelInput.utils) {
+    //* Init requests: utils script / initial country lookup.
+    #startAsyncLoads() {
+      if (this.#utilsDeferred) {
+        const { loadUtils } = this.#options;
         const doAttachUtils = () => {
-          intlTelInput.attachUtils(loadUtils)?.catch(() => {
+          intlTelInput.attachUtils(loadUtils).catch(() => {
           });
         };
         if (intlTelInput.documentReady()) {
           doAttachUtils();
         } else {
-          const handlePageLoad = () => {
-            doAttachUtils();
-          };
-          window.addEventListener("load", handlePageLoad, {
+          window.addEventListener("load", doAttachUtils, {
             signal: this.#abortController.signal
           });
         }
-      } else {
-        this.#resolveUtilsScriptPromise();
       }
-      const isAutoCountry = initialCountry === INITIAL_COUNTRY.AUTO && geoIpLookup;
-      if (isAutoCountry) {
-        if (this.#selectedCountryData.iso2) {
-          this.#resolveAutoCountryPromise();
+      if (this.#autoCountryDeferred) {
+        if (this.#selectedCountry) {
+          this.#autoCountryDeferred.resolve();
         } else {
           this.#loadAutoCountry();
         }
       }
     }
-    //* Perform the geo ip lookup.
-    #loadAutoCountry() {
+    //* Perform the initial country lookup.
+    async #loadAutoCountry() {
       if (intlTelInput.autoCountry) {
-        this.#handleAutoCountry();
-      } else {
-        this.#ui.selectedCountryInner.classList.add(CLASSES.LOADING);
-        if (!intlTelInput.startedLoadingAutoCountry) {
-          intlTelInput.startedLoadingAutoCountry = true;
-          if (typeof this.#options.geoIpLookup === "function") {
-            const successCallback = (iso2 = "") => {
-              this.#ui.selectedCountryInner.classList.remove(CLASSES.LOADING);
-              const iso2Lower = iso2.toLowerCase();
-              if (isIso22(iso2Lower)) {
-                intlTelInput.autoCountry = iso2Lower;
-                setTimeout(() => _Iti.forEachInstance("handleAutoCountry"));
-              } else {
-                _Iti.forEachInstance("handleAutoCountryFailure");
-              }
-            };
-            const failureCallback = () => {
-              this.#ui.selectedCountryInner.classList.remove(CLASSES.LOADING);
-              _Iti.forEachInstance("handleAutoCountryFailure");
-            };
-            this.#options.geoIpLookup(successCallback, failureCallback);
+        this.#handleAutoCountryLoaded();
+        return;
+      }
+      this.#ui.setLoading(true);
+      if (intlTelInput.startedLoadingAutoCountry) {
+        return;
+      }
+      intlTelInput.startedLoadingAutoCountry = true;
+      if (typeof this.#options.initialCountryLookup === "function") {
+        let timeoutId;
+        try {
+          const iso2 = await Promise.race([
+            this.#options.initialCountryLookup(),
+            new Promise((_, reject) => {
+              timeoutId = setTimeout(
+                () => reject(new Error("intl-tel-input: initialCountryLookup timed out after 10s")),
+                1e4
+              );
+            })
+          ]);
+          const iso2Lower = typeof iso2 === "string" ? iso2.toLowerCase() : "";
+          if (!isIso2(iso2Lower)) {
+            intlTelInput.startedLoadingAutoCountry = false;
+            _Iti.forEachInstance("handleAutoCountryFailure");
+            return;
+          }
+          intlTelInput.autoCountry = iso2Lower;
+          setTimeout(() => _Iti.forEachInstance("handleAutoCountryLoaded"));
+        } catch {
+          intlTelInput.startedLoadingAutoCountry = false;
+          _Iti.forEachInstance("handleAutoCountryFailure");
+        } finally {
+          if (timeoutId !== void 0) {
+            clearTimeout(timeoutId);
           }
         }
       }
     }
-    #openDropdownWithPlus() {
-      this.#openDropdown();
-      this.#ui.searchInput.value = "+";
-      this.#ui.filterCountriesByQuery("");
+    #openCountrySelectorWithPlus() {
+      this.openCountrySelector();
+      this.#ui.prefillSearchWithPlus();
+    }
+    //* Delete the character just typed (the one immediately before the caret). Used by Android workarounds where we can't preventDefault on keydown.
+    #removeJustTypedChar(inputValue) {
+      const currentCaretPos = this.#ui.telInputEl.selectionStart || 0;
+      const valueBeforeCaret = inputValue.substring(0, currentCaretPos - 1);
+      const valueAfterCaret = inputValue.substring(currentCaretPos);
+      this.#setTelInputValue(valueBeforeCaret + valueAfterCaret);
+      return currentCaretPos - 1;
     }
     //* Initialize the tel input listeners.
-    #initTelInputListeners() {
+    #bindAllTelInputListeners() {
       this.#bindInputListener();
-      this.#maybeBindKeydownListener();
-      this.#maybeBindPasteListener();
+      this.#bindKeydownListener();
+      this.#bindStrictPasteListener();
+    }
+    //* Android workaround for handling plus when separateDialCode enabled (as impossible to handle with keydown/keyup, for which e.key always returns "Unidentified", see https://stackoverflow.com/q/59584061/217866)
+    #handleAndroidPlusKey(inputValue) {
+      this.#removeJustTypedChar(inputValue);
+      this.#openCountrySelectorWithPlus();
+    }
+    //* Android strictMode workaround: the keydown-based filter can't block these because e.key is "Unidentified" on Android virtual keyboards, so strip them here on input.
+    #handleAndroidStrictReject(inputValue, rejectedInput) {
+      const newCaretPos = this.#removeJustTypedChar(inputValue);
+      this.#ui.telInputEl.setSelectionRange(newCaretPos, newCaretPos);
+      this.#ui.playStrictRejectAnimation();
+      this.#dispatchEvent(EVENTS.STRICT_REJECT, {
+        source: "key",
+        rejectedInput,
+        reason: "invalid"
+      });
+    }
+    //* Format the input value using libphonenumber's AYT formatter, preserving caret position (called after an input event).
+    #formatAsYouType(inputValue, isDeleteForwards) {
+      const currentCaretPos = this.#ui.telInputEl.selectionStart || 0;
+      const valueBeforeCaret = inputValue.substring(0, currentCaretPos);
+      const relevantCharsBeforeCaret = valueBeforeCaret.replace(
+        REGEX.NON_PLUS_NUMERIC_GLOBAL,
+        ""
+      ).length;
+      const fullNumber = this.#getFullNumber();
+      const formattedValue = formatNumberAsYouType(
+        fullNumber,
+        inputValue,
+        intlTelInput.utils,
+        this.#selectedCountry,
+        this.#options.separateDialCode
+      );
+      const newCaretPos = computeNewCaretPosition(
+        relevantCharsBeforeCaret,
+        formattedValue,
+        currentCaretPos,
+        isDeleteForwards
+      );
+      this.#setTelInputValue(formattedValue);
+      this.#ui.telInputEl.setSelectionRange(newCaretPos, newCaretPos);
+    }
+    //* If separateDialCode AND typed dial code (e.g. from paste or autofill, or from typing a dial code when countrySearch disabled), then remove the typed dial code.
+    //* Only strip when a full dial code is actually present — otherwise a lone typed "+" (or partial prefix) would get erased.
+    #stripTypedDialCode(inputValue) {
+      if (inputValue.startsWith("+") && this.#selectedCountry && this.#getDialCode(inputValue)) {
+        const cleanNumber = stripSeparateDialCode(
+          inputValue,
+          true,
+          true,
+          this.#selectedCountry
+        );
+        this.#setTelInputValue(cleanNumber);
+      }
     }
     #bindInputListener() {
-      const {
-        strictMode,
-        formatAsYouType,
-        separateDialCode,
-        allowDropdown,
-        countrySearch
-      } = this.#options;
-      let userOverrideFormatting = false;
-      if (REGEX.ALPHA_UNICODE.test(this.#getTelInputValue())) {
-        userOverrideFormatting = true;
-      }
-      const handleInputEvent = (e) => {
-        const inputValue = this.#getTelInputValue();
-        if (this.#isAndroid && e?.data === "+" && separateDialCode && allowDropdown && countrySearch) {
-          const currentCaretPos = this.#ui.telInput.selectionStart || 0;
-          const valueBeforeCaret = inputValue.substring(0, currentCaretPos - 1);
-          const valueAfterCaret = inputValue.substring(currentCaretPos);
-          this.#setTelInputValue(valueBeforeCaret + valueAfterCaret);
-          this.#openDropdownWithPlus();
-          return;
-        }
-        if (this.#updateCountryFromNumber(inputValue)) {
-          this.#triggerCountryChange();
-        }
-        const isFormattingChar = e?.data && REGEX.NON_PLUS_NUMERIC.test(e.data);
-        const isPaste = e?.inputType === INPUT_TYPES.PASTE && inputValue;
-        if (isFormattingChar || isPaste && !strictMode) {
-          userOverrideFormatting = true;
-        } else if (!REGEX.NON_PLUS_NUMERIC.test(inputValue)) {
-          userOverrideFormatting = false;
-        }
-        const isSetNumber = e?.detail && e.detail["isSetNumber"];
-        const isAscii = this.#numerals.isAscii();
-        if (formatAsYouType && !userOverrideFormatting && !isSetNumber && isAscii) {
-          const currentCaretPos = this.#ui.telInput.selectionStart || 0;
-          const valueBeforeCaret = inputValue.substring(
-            0,
-            currentCaretPos
-          );
-          const relevantCharsBeforeCaret = valueBeforeCaret.replace(
-            REGEX.NON_PLUS_NUMERIC_GLOBAL,
-            ""
-          ).length;
-          const isDeleteForwards = e?.inputType === INPUT_TYPES.DELETE_FWD;
-          const fullNumber = this.#getFullNumber();
-          const formattedValue = formatNumberAsYouType(
-            fullNumber,
-            inputValue,
-            intlTelInput.utils,
-            this.#selectedCountryData,
-            separateDialCode
-          );
-          const newCaretPos = translateCursorPosition(
-            relevantCharsBeforeCaret,
-            formattedValue,
-            currentCaretPos,
-            isDeleteForwards
-          );
-          this.#setTelInputValue(formattedValue);
-          this.#ui.telInput.setSelectionRange(newCaretPos, newCaretPos);
-        }
-        if (separateDialCode && inputValue.startsWith("+") && this.#selectedCountryData.dialCode) {
-          const cleanNumber = beforeSetNumber(
-            inputValue,
-            true,
-            separateDialCode,
-            this.#selectedCountryData
-          );
-          this.#setTelInputValue(cleanNumber);
-        }
-      };
-      this.#ui.telInput.addEventListener(
+      this.#userOverrideFormatting = REGEX.ALPHA_UNICODE.test(
+        this.#getTelInputValue()
+      );
+      this.#ui.telInputEl.addEventListener(
         "input",
-        handleInputEvent,
+        this.#handleInputEvent,
         {
           signal: this.#abortController.signal
         }
       );
     }
-    #maybeBindKeydownListener() {
-      const { strictMode, separateDialCode, allowDropdown, countrySearch } = this.#options;
-      if (strictMode || separateDialCode) {
-        const handleKeydownEvent = (e) => {
-          if (e.key && e.key.length === 1 && !e.altKey && !e.ctrlKey && !e.metaKey) {
-            if (separateDialCode && allowDropdown && countrySearch && e.key === "+") {
-              e.preventDefault();
-              this.#openDropdownWithPlus();
-              return;
-            }
-            if (strictMode) {
-              const inputValue = this.#getTelInputValue();
-              const alreadyHasPlus = inputValue.startsWith("+");
-              const isInitialPlus = !alreadyHasPlus && this.#ui.telInput.selectionStart === 0 && e.key === "+";
-              const normalisedKey = this.#numerals.normalise(e.key);
-              const isNumeric = /^[0-9]$/.test(normalisedKey);
-              const isAllowedChar = separateDialCode ? isNumeric : isInitialPlus || isNumeric;
-              const input = this.#ui.telInput;
-              const selStart = input.selectionStart;
-              const selEnd = input.selectionEnd;
-              const before = inputValue.slice(0, selStart);
-              const after = inputValue.slice(selEnd);
-              const newValue = before + e.key + after;
-              const newFullNumber = this.#getFullNumber(newValue);
-              const coreNumber = intlTelInput.utils.getCoreNumber(
-                newFullNumber,
-                this.#selectedCountryData.iso2
-              );
-              const hasExceededMaxLength = this.#maxCoreNumberLength && coreNumber.length > this.#maxCoreNumberLength;
-              const newCountry = this.#getNewCountryFromNumber(newFullNumber);
-              const isChangingDialCode = newCountry !== null;
-              if (!isAllowedChar || hasExceededMaxLength && !isChangingDialCode && !isInitialPlus) {
-                e.preventDefault();
-              }
-            }
-          }
-        };
-        this.#ui.telInput.addEventListener("keydown", handleKeydownEvent, {
-          signal: this.#abortController.signal
-        });
+    //* On input event: (1) Update selected country, (2) Format-as-you-type.
+    //* Note that this fires AFTER the input is updated.
+    #handleInputEvent = (e) => {
+      const {
+        strictMode,
+        formatAsYouType,
+        separateDialCode,
+        countrySelectorMode,
+        countrySearch
+      } = this.#options;
+      const detail = e?.detail;
+      if (detail?.["isCountryChange"]) {
+        return;
       }
+      let inputValue = this.#getTelInputValue();
+      const isPaste = e?.inputType === INPUT_TYPES.PASTE;
+      const isStrictPaste = strictMode && isPaste;
+      if (this.#isAndroid && !isPaste && e?.data === "+" && separateDialCode && countrySelectorMode !== COUNTRY_SELECTOR_MODE.OFF && countrySearch) {
+        this.#handleAndroidPlusKey(inputValue);
+        return;
+      }
+      if (this.#isAndroid && !isPaste && strictMode && (e?.data === " " || e?.data === "-" || e?.data === ".")) {
+        this.#handleAndroidStrictReject(inputValue, e.data);
+        return;
+      }
+      if (isStrictPaste) {
+        const didRejectPaste = this.#handleStrictPasteInputEvent();
+        if (didRejectPaste) {
+          return;
+        }
+        inputValue = this.#getTelInputValue();
+      }
+      if (this.#updateCountryFromNumber(inputValue)) {
+        this.#dispatchCountryChangeEvent();
+        this.#dispatchEvent(EVENTS.INPUT, { isCountryChange: true });
+      }
+      const isFormattingChar = !isStrictPaste && e?.data && REGEX.NON_PLUS_NUMERIC.test(e.data);
+      const isNonStrictPaste = isPaste && inputValue && !strictMode;
+      if (isFormattingChar || isNonStrictPaste) {
+        this.#userOverrideFormatting = true;
+      } else if (!REGEX.NON_PLUS_NUMERIC.test(inputValue)) {
+        this.#userOverrideFormatting = false;
+      }
+      if (formatAsYouType && !this.#userOverrideFormatting && !detail?.["isSetNumber"] && this.#numerals.isAscii()) {
+        this.#formatAsYouType(
+          inputValue,
+          e?.inputType === INPUT_TYPES.DELETE_FORWARD
+        );
+      }
+      if (separateDialCode) {
+        this.#stripTypedDialCode(inputValue);
+      }
+    };
+    #bindKeydownListener() {
+      const { strictMode, separateDialCode } = this.#options;
+      if (!strictMode && !separateDialCode) {
+        return;
+      }
+      this.#ui.telInputEl.addEventListener("keydown", this.#handleKeydownEvent, {
+        signal: this.#abortController.signal
+      });
     }
-    #maybeBindPasteListener() {
-      if (this.#options.strictMode) {
-        const handlePasteEvent = (e) => {
-          e.preventDefault();
-          const input = this.#ui.telInput;
-          const selStart = input.selectionStart;
-          const selEnd = input.selectionEnd;
-          const inputValue = this.#getTelInputValue();
-          const before = inputValue.slice(0, selStart);
-          const after = inputValue.slice(selEnd);
-          const iso2 = this.#selectedCountryData.iso2;
-          const pastedRaw = e.clipboardData.getData("text");
-          const pasted = this.#numerals.normalise(pastedRaw);
-          const initialCharSelected = selStart === 0 && selEnd > 0;
-          const allowLeadingPlus = !inputValue.startsWith("+") || initialCharSelected;
-          const allowedChars = pasted.replace(REGEX.NON_PLUS_NUMERIC_GLOBAL, "");
-          const hasLeadingPlus = allowedChars.startsWith("+");
-          const numerics = allowedChars.replace(/\+/g, "");
-          const sanitised = hasLeadingPlus && allowLeadingPlus ? `+${numerics}` : numerics;
-          let newVal = before + sanitised + after;
-          if (newVal.length > 5) {
-            let coreNumber = intlTelInput.utils.getCoreNumber(newVal, iso2);
-            while (coreNumber.length === 0 && newVal.length > 0) {
-              newVal = newVal.slice(0, -1);
-              coreNumber = intlTelInput.utils.getCoreNumber(newVal, iso2);
-            }
-            if (!coreNumber) {
-              return;
-            }
-            if (this.#maxCoreNumberLength && coreNumber.length > this.#maxCoreNumberLength) {
-              if (input.selectionEnd === inputValue.length) {
-                const trimLength = coreNumber.length - this.#maxCoreNumberLength;
-                newVal = newVal.slice(0, newVal.length - trimLength);
-              } else {
-                return;
-              }
-            }
+    //* On keydown event: (1) if strictMode then prevent invalid characters, (2) if separateDialCode then handle plus key
+    //* Note that this fires BEFORE the input is updated.
+    #handleKeydownEvent = (e) => {
+      const { strictMode, separateDialCode, countrySelectorMode, countrySearch } = this.#options;
+      if (!e.key || e.key.length !== 1 || e.altKey || e.ctrlKey || e.metaKey) {
+        return;
+      }
+      if (separateDialCode && countrySelectorMode !== COUNTRY_SELECTOR_MODE.OFF && countrySearch && e.key === "+") {
+        e.preventDefault();
+        this.#openCountrySelectorWithPlus();
+        return;
+      }
+      if (!strictMode) {
+        return;
+      }
+      const inputValue = this.#getTelInputValue();
+      const alreadyHasPlus = inputValue.startsWith("+");
+      const isInitialPlus = !alreadyHasPlus && this.#ui.telInputEl.selectionStart === 0 && e.key === "+";
+      const normalisedKey = this.#numerals.normalise(e.key);
+      const isNumeric = /^[0-9]$/.test(normalisedKey);
+      const isAllowedChar = separateDialCode ? isNumeric : isInitialPlus || isNumeric;
+      const input = this.#ui.telInputEl;
+      const selStart = input.selectionStart;
+      const selEnd = input.selectionEnd;
+      const before = inputValue.slice(0, selStart ?? void 0);
+      const after = inputValue.slice(selEnd ?? void 0);
+      const newValue = before + normalisedKey + after;
+      const newFullNumber = this.#buildFullNumber(newValue);
+      let hasExceededMaxLength = getNumeric(newFullNumber).length > E164_MAX_DIGITS;
+      if (!hasExceededMaxLength && intlTelInput.utils && this.#maxCoreNumberLength) {
+        const coreNumber = intlTelInput.utils.getCoreNumber(
+          newFullNumber,
+          this.#selectedCountry?.iso2
+        );
+        hasExceededMaxLength = coreNumber.length > this.#maxCoreNumberLength;
+      }
+      const newCountry = this.#resolveCountryChangeFromNumber(newFullNumber);
+      const isChangingDialCode = newCountry !== null;
+      if (!isAllowedChar || hasExceededMaxLength && !isChangingDialCode && !isInitialPlus) {
+        this.#ui.playStrictRejectAnimation();
+        this.#dispatchEvent(EVENTS.STRICT_REJECT, {
+          source: "key",
+          rejectedInput: e.key,
+          reason: !isAllowedChar ? "invalid" : "max-length"
+        });
+        e.preventDefault();
+      }
+    };
+    #bindStrictPasteListener() {
+      if (!this.#options.strictMode) {
+        return;
+      }
+      this.#ui.telInputEl.addEventListener("paste", this.#handleStrictPasteEvent, {
+        signal: this.#abortController.signal
+      });
+    }
+    // In strict mode, remember paste details before the browser inserts the pasted text.
+    // The actual sanitisation runs on the following input event so native paste stays enabled.
+    #handleStrictPasteEvent = (e) => {
+      const input = this.#ui.telInputEl;
+      const inputValue = this.#getTelInputValue();
+      this.#strictPasteSnapshot = {
+        pastedRaw: e.clipboardData?.getData("text") ?? "",
+        value: inputValue,
+        selectionStart: input.selectionStart ?? inputValue.length,
+        selectionEnd: input.selectionEnd ?? inputValue.length
+      };
+    };
+    // Handle paste input events when strictMode is enabled by sanitising the pasted content after
+    // the browser inserts it, and rejecting it entirely if it would result in an invalid number.
+    #handleStrictPasteInputEvent() {
+      const input = this.#ui.telInputEl;
+      const pasteSnapshot = this.#strictPasteSnapshot;
+      this.#strictPasteSnapshot = null;
+      if (!pasteSnapshot) {
+        return false;
+      }
+      const pastedRaw = pasteSnapshot.pastedRaw;
+      const originalValue = pasteSnapshot.value;
+      const selStart = pasteSnapshot.selectionStart;
+      const selEnd = pasteSnapshot.selectionEnd;
+      const before = originalValue.slice(0, selStart);
+      const after = originalValue.slice(selEnd);
+      const iso2 = this.#selectedCountry?.iso2;
+      const pasted = this.#numerals.normalise(pastedRaw);
+      const initialCharSelected = selStart === 0 && selEnd > 0;
+      const allowLeadingPlus = !originalValue.startsWith("+") || initialCharSelected;
+      const allowedChars = pasted.replace(REGEX.NON_PLUS_NUMERIC_GLOBAL, "");
+      const hasLeadingPlus = allowedChars.startsWith("+");
+      const numerics = allowedChars.replace(/\+/g, "");
+      const sanitised = hasLeadingPlus && allowLeadingPlus ? `+${numerics}` : numerics;
+      let newValue = before + sanitised + after;
+      let rejectReason = sanitised !== pasted ? "invalid" : null;
+      if (newValue.length > 30) {
+        this.#rejectStrictPasteAsTooLong(pasteSnapshot);
+        return true;
+      }
+      const excessDigits = getNumeric(this.#buildFullNumber(newValue)).length - E164_MAX_DIGITS;
+      if (excessDigits > 0) {
+        if (selEnd !== originalValue.length) {
+          this.#rejectStrictPasteAsTooLong(pasteSnapshot);
+          return true;
+        }
+        newValue = newValue.slice(0, newValue.length - excessDigits);
+        rejectReason = "max-length";
+      }
+      if (this.#maxCoreNumberLength && newValue.length > 5 && intlTelInput.utils) {
+        let coreNumber = intlTelInput.utils.getCoreNumber(newValue, iso2);
+        while (coreNumber.length === 0 && newValue.length > 0) {
+          newValue = newValue.slice(0, -1);
+          coreNumber = intlTelInput.utils.getCoreNumber(newValue, iso2);
+        }
+        if (!coreNumber) {
+          this.#rejectStrictPasteAsTooLong(pasteSnapshot);
+          return true;
+        }
+        if (coreNumber.length > this.#maxCoreNumberLength) {
+          if (selEnd === originalValue.length) {
+            const trimLength = coreNumber.length - this.#maxCoreNumberLength;
+            newValue = newValue.slice(0, newValue.length - trimLength);
+            rejectReason = "max-length";
+          } else {
+            this.#rejectStrictPasteAsTooLong(pasteSnapshot);
+            return true;
           }
-          this.#setTelInputValue(newVal);
-          const caretPos = selStart + sanitised.length;
-          input.setSelectionRange(caretPos, caretPos);
-          input.dispatchEvent(new InputEvent("input", { bubbles: true }));
-        };
-        this.#ui.telInput.addEventListener("paste", handlePasteEvent, {
-          signal: this.#abortController.signal
+        }
+      }
+      this.#setTelInputValue(newValue);
+      const caretPos = selStart + sanitised.length;
+      input.setSelectionRange(caretPos, caretPos);
+      if (rejectReason) {
+        if (pasted.length > 0 && sanitised.length === 0) {
+          this.#ui.playStrictRejectAnimation();
+        }
+        this.#dispatchEvent(EVENTS.STRICT_REJECT, {
+          source: "paste",
+          rejectedInput: pastedRaw,
+          reason: rejectReason
         });
       }
+      return false;
+    }
+    // Reject a paste entirely because it would exceed the max length, restoring the previous value.
+    #rejectStrictPasteAsTooLong(pasteSnapshot) {
+      this.#ui.playStrictRejectAnimation();
+      this.#dispatchEvent(EVENTS.STRICT_REJECT, {
+        source: "paste",
+        rejectedInput: pasteSnapshot.pastedRaw,
+        reason: "max-length"
+      });
+      this.#restoreValueBeforeStrictPaste(pasteSnapshot);
+    }
+    #restoreValueBeforeStrictPaste(pasteSnapshot) {
+      this.#setTelInputValue(pasteSnapshot.value);
+      this.#ui.telInputEl.setSelectionRange(
+        pasteSnapshot.selectionStart,
+        pasteSnapshot.selectionEnd
+      );
     }
     //* Adhere to the input's maxlength attr.
-    #cap(number) {
-      const max = Number(this.#ui.telInput.getAttribute("maxlength"));
+    #truncateToMaxLength(number) {
+      const max = Number(this.#ui.telInputEl.getAttribute("maxlength"));
       return max && number.length > max ? number.substring(0, max) : number;
     }
     //* Trigger a custom event on the input (typed via ItiEventMap).
-    #trigger(name, detailProps = {}) {
+    #dispatchEvent(name, detailProps = {}) {
       const e = new CustomEvent(name, {
         bubbles: true,
         cancelable: true,
         detail: detailProps
       });
-      this.#ui.telInput.dispatchEvent(e);
+      this.#ui.telInputEl.dispatchEvent(e);
     }
-    //* Open the dropdown.
-    #openDropdown() {
-      const { dropdownContainer, useFullscreenPopup } = this.#options;
-      this.#dropdownAbortController = new AbortController();
-      this.#ui.openDropdown();
-      if (!useFullscreenPopup && dropdownContainer) {
-        const handleWindowScroll = () => this.#closeDropdown();
-        window.addEventListener("scroll", handleWindowScroll, {
-          signal: this.#dropdownAbortController.signal
-        });
+    //* Open the country selector. Bail if already open — otherwise the existing AbortController gets overwritten
+    //* and its listeners leak. Reachable via openCountrySelectorWithPlus when dropdownAlwaysOpen is set.
+    //* Public so consumers can programmatically open the country selector.
+    openCountrySelector() {
+      if (this.#ui.isCountrySelectorOpen()) {
+        return;
       }
-      this.#bindDropdownListeners();
-      this.#trigger(EVENTS.OPEN_COUNTRY_DROPDOWN);
-    }
-    //* We only bind dropdown listeners when the dropdown is open.
-    #bindDropdownListeners() {
-      const signal = this.#dropdownAbortController.signal;
-      this.#bindDropdownMouseoverListener(signal);
-      this.#bindDropdownCountryClickListener(signal);
-      if (!this.#options.dropdownAlwaysOpen) {
-        this.#bindDropdownClickOffListener(signal);
-      }
-      this.#bindDropdownKeydownListener(signal);
-      if (this.#options.countrySearch) {
-        this.#bindDropdownSearchListeners(signal);
-      }
-    }
-    //* When mouse over a list item, just highlight that one
-    //* we add the class "highlight", so if they hit "enter" we know which one to select.
-    #bindDropdownMouseoverListener(signal) {
-      const handleMouseoverCountryList = (e) => {
-        const listItem = e.target?.closest(
-          `.${CLASSES.COUNTRY_ITEM}`
-        );
-        if (listItem) {
-          this.#ui.highlightListItem(listItem, false);
-        }
-      };
-      this.#ui.countryList.addEventListener(
-        "mouseover",
-        handleMouseoverCountryList,
-        {
-          signal
-        }
+      this.#ui.openCountrySelector(
+        (li) => this.#selectListItem(li),
+        () => this.#closeCountrySelectorInternal()
       );
+      this.#dispatchEvent(EVENTS.OPEN_COUNTRY_SELECTOR);
     }
-    //* Listen for country selection.
-    #bindDropdownCountryClickListener(signal) {
-      const handleClickCountryList = (e) => {
-        const listItem = e.target?.closest(
-          `.${CLASSES.COUNTRY_ITEM}`
-        );
-        if (listItem) {
-          this.#selectListItem(listItem);
-        }
-      };
-      this.#ui.countryList.addEventListener("click", handleClickCountryList, {
-        signal
-      });
-    }
-    //* Click off to close (except when this initial opening click is bubbling up).
-    //* We cannot just stopPropagation as it may be needed to close another instance.
-    #bindDropdownClickOffListener(signal) {
-      const handleClickOffToClose = (e) => {
-        const target = e.target;
-        const clickedInsideDropdown = !!target.closest(
-          `#iti-${this.id}__dropdown-content`
-        );
-        if (!clickedInsideDropdown) {
-          this.#closeDropdown();
-        }
-      };
-      setTimeout(() => {
-        document.documentElement.addEventListener(
-          "click",
-          handleClickOffToClose,
-          { signal }
-        );
-      }, 0);
-    }
-    //* Listen for up/down scrolling, enter to select, or escape to close.
-    //* Use keydown as keypress doesn't fire for non-char keys and we want to catch if they
-    //* just hit down and hold it to scroll down (no keyup event).
-    //* Listen on the document because that's where key events are triggered if no input has focus.
-    #bindDropdownKeydownListener(signal) {
-      let query = "";
-      let queryTimer = null;
-      const handleKeydownOnDropdown = (e) => {
-        const allowedKeys = [
-          KEYS.ARROW_UP,
-          KEYS.ARROW_DOWN,
-          KEYS.ENTER,
-          KEYS.ESC
-        ];
-        if (allowedKeys.includes(e.key)) {
-          e.preventDefault();
-          e.stopPropagation();
-          if (e.key === KEYS.ARROW_UP || e.key === KEYS.ARROW_DOWN) {
-            this.#ui.handleUpDownKey(e.key);
-          } else if (e.key === KEYS.ENTER) {
-            this.#handleEnterKey();
-          } else if (e.key === KEYS.ESC) {
-            this.#closeDropdown();
-            this.#ui.selectedCountry.focus();
-          }
-        }
-        if (!this.#options.countrySearch && REGEX.HIDDEN_SEARCH_CHAR.test(e.key)) {
-          e.stopPropagation();
-          if (queryTimer) {
-            clearTimeout(queryTimer);
-          }
-          query += e.key.toLowerCase();
-          this.#searchForCountry(query);
-          queryTimer = setTimeout(() => {
-            query = "";
-          }, TIMINGS.HIDDEN_SEARCH_RESET_MS);
-        }
-      };
-      document.addEventListener("keydown", handleKeydownOnDropdown, { signal });
-    }
-    //* Search input listeners when countrySearch enabled.
-    #bindDropdownSearchListeners(signal) {
-      this.#ui.searchInput.addEventListener(
-        "input",
-        () => this.#ui.handleSearchChange(),
-        { signal }
-      );
-      this.#ui.searchClearButton.addEventListener(
-        "click",
-        () => this.#ui.handleSearchClear(),
-        { signal }
-      );
-    }
-    //* Hidden search (countrySearch disabled): Find the first list item whose name starts with the query string.
-    #searchForCountry(query) {
-      const match = findFirstCountryStartingWith(this.#countries, query);
-      if (match) {
-        const listItem = match.nodeById[this.id];
-        this.#ui.highlightListItem(listItem, false);
-        this.#ui.scrollTo(listItem);
-      }
-    }
-    //* Select the currently highlighted item.
-    #handleEnterKey() {
-      if (this.#ui.highlightedItem) {
-        this.#selectListItem(this.#ui.highlightedItem);
-      }
-    }
-    //* Update the input's value to the given val (format first if possible)
-    //* NOTE: this is called from _setInitialState, handleUtils and setNumber.
-    #updateValFromNumber(fullNumber) {
-      const { formatOnDisplay, nationalMode, separateDialCode } = this.#options;
+    //* Update the input's value to the given number (format first if possible)
+    //* NOTE: this is called from setInitialState, handleUtilsLoaded and setNumber.
+    #updateValueFromNumber(fullNumber) {
+      const { numberDisplayFormat, separateDialCode } = this.#options;
       let number = fullNumber;
-      if (formatOnDisplay && intlTelInput.utils && this.#selectedCountryData) {
+      if (intlTelInput.utils && this.#selectedCountry) {
         const isRegionless = hasRegionlessDialCode(fullNumber);
-        const useNational = nationalMode && !isRegionless || !number.startsWith("+") && !separateDialCode;
-        const { NATIONAL, INTERNATIONAL } = intlTelInput.utils.numberFormat;
-        const format = useNational ? NATIONAL : INTERNATIONAL;
+        const preserveUserNational = !number.startsWith("+") && !separateDialCode;
+        const useNational = numberDisplayFormat === NUMBER_FORMAT.NATIONAL && !isRegionless || preserveUserNational;
+        let format;
+        if (useNational) {
+          format = NUMBER_FORMAT.NATIONAL;
+        } else if (numberDisplayFormat === NUMBER_FORMAT.E164 && !isRegionless) {
+          format = NUMBER_FORMAT.E164;
+        } else {
+          format = NUMBER_FORMAT.INTERNATIONAL;
+        }
         number = intlTelInput.utils.formatNumber(
           number,
-          this.#selectedCountryData.iso2,
+          this.#selectedCountry?.iso2,
           format
         );
       }
-      number = this.#beforeSetNumber(number);
+      number = this.#prepareNumberForInput(number);
       this.#setTelInputValue(number);
     }
     //* Check if need to select a new country based on the given number
-    //* Note: called from _setInitialState, keyup handler, setNumber.
+    //* Note: called from setInitialState, keyup handler, setNumber.
     #updateCountryFromNumber(fullNumber) {
-      const iso2 = this.#getNewCountryFromNumber(fullNumber);
+      const iso2 = this.#resolveCountryChangeFromNumber(fullNumber);
       if (iso2 !== null) {
-        return this.#setCountry(iso2);
+        return this.#updateSelectedCountry(iso2);
       }
       return false;
     }
     // if there is a selected country, and the number doesn't start with a dial code, then add it
-    #ensureHasDialCode(number) {
-      const { dialCode, nationalPrefix } = this.#selectedCountryData;
+    #withDialCodePrefix(number) {
+      const dialCode = this.#selectedCountry?.dialCode;
+      const nationalPrefix = this.#selectedCountry?.nationalPrefix;
       const alreadyHasPlus = number.startsWith("+");
       if (alreadyHasPlus || !dialCode) {
         return number;
@@ -3827,13 +4441,12 @@ var factoryOutput = (() => {
       const cleanNumber = hasPrefix ? number.substring(1) : number;
       return `+${dialCode}${cleanNumber}`;
     }
-    //* Get the new country based on the input number, or return null if no change, or empty string if should be empty (e.g. if they type an invalid dial code).
-    #getNewCountryFromNumber(fullNumber) {
+    //* Get the new country iso2 (or "" for empty/globe state) based on the input number, or return null if no change.
+    #resolveCountryChangeFromNumber(fullNumber) {
       const plusIndex = fullNumber.indexOf("+");
-      let number = plusIndex ? fullNumber.substring(plusIndex) : fullNumber;
-      const selectedIso2 = this.#selectedCountryData.iso2;
-      const selectedDialCode = this.#selectedCountryData.dialCode;
-      number = this.#ensureHasDialCode(number);
+      let number = plusIndex > 0 ? fullNumber.substring(plusIndex) : fullNumber;
+      const selectedIso2 = this.#selectedCountry?.iso2;
+      number = this.#withDialCodePrefix(number);
       const dialCodeMatch = this.#getDialCode(number, true);
       const numeric = getNumeric(number);
       if (dialCodeMatch) {
@@ -3845,483 +4458,500 @@ var factoryOutput = (() => {
           }
           return iso2Codes[0];
         }
-        if (!selectedIso2 && this.#defaultCountry && iso2Codes.includes(this.#defaultCountry)) {
-          return this.#defaultCountry;
-        }
-        const isRegionlessNanpNumber = selectedDialCode === DIAL.NANP && isRegionlessNanp(numeric);
-        if (isRegionlessNanpNumber) {
-          return null;
-        }
-        const { areaCodes, priority } = this.#selectedCountryData;
-        if (areaCodes) {
-          const dialCodeAreaCodes = areaCodes.map(
-            (areaCode) => `${selectedDialCode}${areaCode}`
-          );
-          for (const dialCodeAreaCode of dialCodeAreaCodes) {
-            if (numeric.startsWith(dialCodeAreaCode)) {
-              return null;
-            }
-          }
-        }
-        const isMainCountry = priority === 0;
-        const hasAreaCodesButNoneMatched = areaCodes && !isMainCountry && numeric.length > dialCodeMatchNumeric.length;
-        const isValidSelection = selectedIso2 && iso2Codes.includes(selectedIso2) && !hasAreaCodesButNoneMatched;
-        const alreadySelected = selectedIso2 === iso2Codes[0];
-        if (!isValidSelection && !alreadySelected) {
-          return iso2Codes[0];
-        }
+        return this.#resolveCountryChangeFromMultiMatch(
+          iso2Codes,
+          dialCodeMatchNumeric,
+          numeric
+        );
       } else if (number.startsWith("+") && numeric.length) {
-        const currentDial = this.#selectedCountryData.dialCode || "";
+        const currentDial = this.#selectedCountry?.dialCode || "";
         if (currentDial && currentDial.startsWith(numeric)) {
           return null;
         }
+        if (!selectedIso2) {
+          return null;
+        }
         return "";
-      } else if ((!number || number === "+") && !selectedIso2 && this.#defaultCountry) {
-        return this.#defaultCountry;
+      } else if ((!number || number === "+") && !selectedIso2 && this.#fallbackCountryIso2) {
+        return this.#fallbackCountryIso2;
+      }
+      return null;
+    }
+    //* Resolve the country when multiple countries share the matched dial code.
+    #resolveCountryChangeFromMultiMatch(iso2Codes, dialCodeMatchNumeric, numeric) {
+      const selectedIso2 = this.#selectedCountry?.iso2;
+      const selectedDialCode = this.#selectedCountry?.dialCode;
+      if (!selectedIso2 && this.#fallbackCountryIso2 && iso2Codes.includes(this.#fallbackCountryIso2)) {
+        return this.#fallbackCountryIso2;
+      }
+      const isRegionlessNanpNumber = selectedDialCode === DIAL_CODE.NANP && isRegionlessNanp(numeric);
+      if (isRegionlessNanpNumber) {
+        return null;
+      }
+      const areaCodes = this.#selectedCountry?.areaCodes;
+      const priority = this.#selectedCountry?.priority;
+      if (areaCodes) {
+        const dialCodeAreaCodes = areaCodes.map(
+          (areaCode) => `${selectedDialCode}${areaCode}`
+        );
+        for (const dialCodeAreaCode of dialCodeAreaCodes) {
+          if (numeric.startsWith(dialCodeAreaCode)) {
+            return null;
+          }
+        }
+      }
+      const isMainCountry = priority === 0;
+      const hasAreaCodesButNoneMatched = areaCodes && !isMainCountry && numeric.length > dialCodeMatchNumeric.length;
+      const isValidSelection = selectedIso2 && iso2Codes.includes(selectedIso2) && !hasAreaCodesButNoneMatched;
+      const alreadySelected = selectedIso2 === iso2Codes[0];
+      if (!isValidSelection && !alreadySelected) {
+        return iso2Codes[0];
       }
       return null;
     }
     //* Update the selected country, dial code (if separateDialCode), placeholder, title, and selected list item.
-    //* Note: called from _setInitialState, _updateCountryFromNumber, _selectListItem, setCountry.
-    #setCountry(iso2) {
-      const prevIso2 = this.#selectedCountryData.iso2 || "";
-      this.#selectedCountryData = iso2 ? this.#countryByIso2.get(iso2) : {};
-      if (this.#selectedCountryData.iso2) {
-        this.#defaultCountry = this.#selectedCountryData.iso2;
+    //* Note: called from setInitialState, updateCountryFromNumber, selectListItem, setSelectedCountry.
+    #updateSelectedCountry(iso2) {
+      const prevIso2 = this.#selectedCountry?.iso2 || "";
+      this.#selectedCountry = iso2 ? this.#countryByIso2.get(iso2) : null;
+      if (this.#selectedCountry) {
+        this.#fallbackCountryIso2 = this.#selectedCountry.iso2;
       }
-      this.#ui.setCountry(this.#selectedCountryData);
+      this.#ui.setSelectedCountry(this.#selectedCountry);
       this.#updatePlaceholder();
-      this.#updateMaxLength();
+      this.#updateMaxCoreNumberLength();
       return prevIso2 !== iso2;
     }
     //* Update the maximum valid number length for the currently selected country.
-    #updateMaxLength() {
+    #updateMaxCoreNumberLength() {
       const { strictMode, placeholderNumberType, allowedNumberTypes } = this.#options;
-      const { iso2 } = this.#selectedCountryData;
-      if (strictMode && intlTelInput.utils) {
-        if (iso2) {
-          const numberType = intlTelInput.utils.numberType[placeholderNumberType];
-          let exampleNumber = intlTelInput.utils.getExampleNumber(
-            iso2,
-            false,
-            numberType,
-            true
-          );
-          let validNumber = exampleNumber;
-          while (intlTelInput.utils.isPossibleNumber(
-            exampleNumber,
-            iso2,
-            allowedNumberTypes
-          )) {
-            validNumber = exampleNumber;
-            exampleNumber += "0";
-          }
-          const coreNumber = intlTelInput.utils.getCoreNumber(validNumber, iso2);
-          this.#maxCoreNumberLength = coreNumber.length;
-          if (iso2 === "by") {
-            this.#maxCoreNumberLength = coreNumber.length + 1;
-          }
-        } else {
-          this.#maxCoreNumberLength = null;
-        }
+      if (!strictMode || !intlTelInput.utils) {
+        return;
+      }
+      const iso2 = this.#selectedCountry?.iso2;
+      if (!iso2) {
+        this.#maxCoreNumberLength = null;
+        return;
+      }
+      let exampleNumber = intlTelInput.utils.getExampleNumber(
+        iso2,
+        placeholderNumberType,
+        NUMBER_FORMAT.E164
+      );
+      let validNumber = exampleNumber;
+      while (intlTelInput.utils.isValidNumber(
+        exampleNumber,
+        iso2,
+        allowedNumberTypes
+      )) {
+        validNumber = exampleNumber;
+        exampleNumber += "0";
+      }
+      const coreNumber = intlTelInput.utils.getCoreNumber(validNumber, iso2);
+      this.#maxCoreNumberLength = coreNumber.length;
+      if (iso2 === "by") {
+        this.#maxCoreNumberLength = coreNumber.length + 1;
       }
     }
     //* Update the input placeholder to an example number from the currently selected country.
     #updatePlaceholder() {
       const {
-        autoPlaceholder,
+        placeholderNumberPolicy,
         placeholderNumberType,
-        nationalMode,
+        numberDisplayFormat,
         customPlaceholder
       } = this.#options;
-      const shouldSetPlaceholder = autoPlaceholder === PLACEHOLDER_MODES.AGGRESSIVE || !this.#ui.hadInitialPlaceholder && autoPlaceholder === PLACEHOLDER_MODES.POLITE;
-      if (intlTelInput.utils && shouldSetPlaceholder) {
-        const numberType = intlTelInput.utils.numberType[placeholderNumberType];
-        let placeholder = this.#selectedCountryData.iso2 ? intlTelInput.utils.getExampleNumber(
-          this.#selectedCountryData.iso2,
-          nationalMode,
-          numberType
-        ) : "";
-        placeholder = this.#beforeSetNumber(placeholder);
-        if (typeof customPlaceholder === "function") {
-          placeholder = customPlaceholder(placeholder, this.#selectedCountryData);
-        }
-        this.#ui.telInput.setAttribute("placeholder", placeholder);
-      }
-    }
-    //* Called when the user selects a list item from the dropdown.
-    #selectListItem(listItem) {
-      const iso2 = listItem.dataset[DATA_KEYS.COUNTRY_CODE];
-      const countryChanged = this.#setCountry(iso2);
-      this.#closeDropdown();
-      const dialCode = listItem.dataset[DATA_KEYS.DIAL_CODE];
-      this.#updateDialCode(dialCode);
-      if (this.#options.formatOnDisplay) {
-        const inputValue = this.#getTelInputValue();
-        this.#updateValFromNumber(inputValue);
-      }
-      this.#ui.telInput.focus();
-      if (countryChanged) {
-        this.#triggerCountryChange();
-      }
-    }
-    //* Close the dropdown and unbind any listeners.
-    #closeDropdown(isDestroy) {
-      if (this.#ui.isDropdownClosed() || this.#options.dropdownAlwaysOpen && !isDestroy) {
+      const shouldSetPlaceholder = placeholderNumberPolicy === PLACEHOLDER_POLICY.AGGRESSIVE || !this.#ui.hadInitialPlaceholder && placeholderNumberPolicy === PLACEHOLDER_POLICY.POLITE;
+      if (!intlTelInput.utils || !shouldSetPlaceholder) {
         return;
       }
-      this.#ui.closeDropdown();
-      this.#dropdownAbortController.abort();
-      this.#dropdownAbortController = null;
-      this.#trigger(EVENTS.CLOSE_COUNTRY_DROPDOWN);
+      let placeholder = this.#selectedCountry ? intlTelInput.utils.getExampleNumber(
+        this.#selectedCountry.iso2,
+        placeholderNumberType,
+        numberDisplayFormat
+      ) : "";
+      placeholder = this.#prepareNumberForInput(placeholder);
+      if (typeof customPlaceholder === "function") {
+        placeholder = customPlaceholder(placeholder, this.#selectedCountry);
+      }
+      this.#ui.telInputEl.setAttribute("placeholder", placeholder);
+    }
+    //* Called when the user selects a list item from the country list (no-op if listItem is null).
+    #selectListItem(listItem) {
+      if (!listItem) {
+        return;
+      }
+      const iso2 = listItem.dataset[DATA_KEYS.ISO2];
+      const countryChanged = this.#updateSelectedCountry(iso2);
+      this.#closeCountrySelectorInternal();
+      const dialCode = listItem.dataset[DATA_KEYS.DIAL_CODE];
+      this.#updateDialCode(dialCode);
+      const inputValue = this.#getTelInputValue();
+      this.#updateValueFromNumber(inputValue);
+      this.#ui.telInputEl.focus();
+      if (countryChanged) {
+        this.#dispatchCountryChangeEvent();
+        this.#dispatchEvent(EVENTS.INPUT, { isCountryChange: true });
+      }
+    }
+    //* Public: close the country selector (consumer-callable; delegates to the internal helper
+    //* without the destroy-specific path).
+    closeCountrySelector() {
+      this.#closeCountrySelectorInternal();
+    }
+    //* Close the country selector and unbind any listeners. The isDestroy flag forces close even
+    //* when dropdownAlwaysOpen is set, so destroy() can fully tear down.
+    #closeCountrySelectorInternal(isDestroy) {
+      if (!this.#ui.isCountrySelectorOpen() || this.#options.dropdownAlwaysOpen && !isDestroy) {
+        return;
+      }
+      this.#ui.closeCountrySelector();
+      this.#dispatchEvent(EVENTS.CLOSE_COUNTRY_SELECTOR);
     }
     //* Replace any existing dial code with the new one
-    //* Note: called from _selectListItem and setCountry
-    #updateDialCode(newDialCodeBare) {
-      const inputVal = this.#getTelInputValue();
-      const newDialCode = `+${newDialCodeBare}`;
-      let newNumber;
-      if (inputVal.startsWith("+")) {
-        const prevDialCode = this.#getDialCode(inputVal);
-        if (prevDialCode) {
-          newNumber = inputVal.replace(prevDialCode, newDialCode);
-        } else {
-          newNumber = newDialCode;
-        }
-        this.#setTelInputValue(newNumber);
+    //* Note: called from selectListItem and setSelectedCountry
+    #updateDialCode(newDialCodeDigits) {
+      const inputValue = this.#getTelInputValue();
+      if (!inputValue.startsWith("+")) {
+        return;
       }
+      const newDialCode = `+${newDialCodeDigits}`;
+      const prevDialCode = this.#getDialCode(inputValue);
+      let newNumber;
+      if (prevDialCode) {
+        newNumber = inputValue.replace(prevDialCode, newDialCode);
+      } else {
+        newNumber = newDialCode;
+      }
+      this.#setTelInputValue(newNumber);
     }
     //* Try and extract a valid international dial code from a full telephone number.
     //* Note: returns the raw string inc plus character and any whitespace/dots etc.
     #getDialCode(number, includeAreaCode) {
+      if (!number.startsWith("+")) {
+        return "";
+      }
       let dialCode = "";
-      if (number.startsWith("+")) {
-        let numericChars = "";
-        let foundBaseDialCode = false;
-        for (let i = 0; i < number.length; i++) {
-          const c = number.charAt(i);
-          if (/[0-9]/.test(c)) {
-            numericChars += c;
-            const hasMapEntry = Boolean(this.#dialCodeToIso2Map[numericChars]);
-            if (!hasMapEntry) {
-              break;
-            }
-            if (this.#dialCodes.has(numericChars)) {
-              dialCode = number.substring(0, i + 1);
-              foundBaseDialCode = true;
-              if (!includeAreaCode) {
-                break;
-              }
-            } else if (includeAreaCode && foundBaseDialCode) {
-              dialCode = number.substring(0, i + 1);
-            }
-            if (numericChars.length === this.#dialCodeMaxLen) {
-              break;
-            }
+      let numericChars = "";
+      let foundBaseDialCode = false;
+      for (let i = 0; i < number.length; i++) {
+        const c = number.charAt(i);
+        if (!/[0-9]/.test(c)) {
+          continue;
+        }
+        numericChars += c;
+        const hasMapEntry = Boolean(this.#dialCodeToIso2Map[numericChars]);
+        if (!hasMapEntry) {
+          break;
+        }
+        if (this.#dialCodes.has(numericChars)) {
+          dialCode = number.substring(0, i + 1);
+          foundBaseDialCode = true;
+          if (!includeAreaCode) {
+            break;
           }
+        } else if (includeAreaCode && foundBaseDialCode) {
+          dialCode = number.substring(0, i + 1);
+        }
+        if (numericChars.length === this.#dialCodeMaxLength) {
+          break;
         }
       }
       return dialCode;
     }
-    //* Get the input val, adding the dial code if separateDialCode is enabled.
-    #getFullNumber(overrideVal) {
-      const val = overrideVal ? this.#numerals.normalise(overrideVal) : this.#getTelInputValue();
-      const { dialCode } = this.#selectedCountryData;
-      let prefix;
-      const numericVal = getNumeric(val);
-      if (this.#options.separateDialCode && !val.startsWith("+") && dialCode && numericVal) {
-        prefix = `+${dialCode}`;
-      } else {
-        prefix = "";
-      }
-      return prefix + val;
+    //* Build a full number from an already-normalised value, adding the dial code if separateDialCode is enabled.
+    #buildFullNumber(value) {
+      const dialCode = this.#selectedCountry?.dialCode;
+      const numericValue = getNumeric(value);
+      const usePrefix = this.#options.separateDialCode && !value.startsWith("+") && dialCode && numericValue;
+      return (usePrefix ? `+${dialCode}` : "") + value;
+    }
+    //* Get the input value as a full number, adding the dial code if separateDialCode is enabled.
+    #getFullNumber() {
+      const value = this.#getTelInputValue();
+      return this.#buildFullNumber(value);
     }
     //* Remove the dial code if separateDialCode is enabled also cap the length if the input has a maxlength attribute
-    #beforeSetNumber(fullNumber) {
+    #prepareNumberForInput(fullNumber) {
       const hasValidDialCode = Boolean(this.#getDialCode(fullNumber));
-      const number = beforeSetNumber(
+      const number = stripSeparateDialCode(
         fullNumber,
         hasValidDialCode,
         this.#options.separateDialCode,
-        this.#selectedCountryData
+        this.#selectedCountry
       );
-      return this.#cap(number);
+      return this.#truncateToMaxLength(number);
     }
-    //* Trigger the 'countrychange' event.
-    #triggerCountryChange() {
-      this.#trigger(EVENTS.COUNTRY_CHANGE);
+    //* Dispatch the 'countrychange' event.
+    #dispatchCountryChangeEvent() {
+      this.#dispatchEvent(EVENTS.COUNTRY_CHANGE, this.#selectedCountry ?? null);
     }
     //**************************
     //*  INTERNAL METHODS
     //**************************
-    //* Called when the geoip call returns.
-    #handleAutoCountry() {
-      if (!this.#ui.telInput) {
-        this.#resolveAutoCountryPromise?.();
+    //* Called when the initial country lookup returns.
+    #handleAutoCountryLoaded() {
+      if (!this.#autoCountryDeferred || !intlTelInput.autoCountry) {
         return;
       }
-      if (this.#options.initialCountry === INITIAL_COUNTRY.AUTO && intlTelInput.autoCountry) {
-        this.#defaultCountry = intlTelInput.autoCountry;
-        const hasSelectedCountryOrGlobe = this.#selectedCountryData.iso2 || this.#ui.selectedCountryInner.classList.contains(CLASSES.GLOBE);
-        if (!hasSelectedCountryOrGlobe) {
-          this.setCountry(this.#defaultCountry);
-        }
-        this.#resolveAutoCountryPromise();
+      if (!this.#isActive) {
+        this.#autoCountryDeferred.resolve();
+        return;
       }
+      const isFocused = document.activeElement === this.#ui.telInputEl;
+      const hasTypedValue = Boolean(this.#getTelInputValue());
+      if (this.#ui.isLoading() && !(isFocused && hasTypedValue)) {
+        this.setSelectedCountry(intlTelInput.autoCountry);
+      } else {
+        this.#fallbackCountryIso2 = intlTelInput.autoCountry;
+      }
+      this.#ui.setLoading(false);
+      this.#autoCountryDeferred.resolve();
     }
-    //* Called when the geoip call fails or times out.
+    //* Called when the initial country lookup fails or times out.
     #handleAutoCountryFailure() {
-      if (!this.#ui.telInput) {
-        this.#rejectAutoCountryPromise?.();
+      if (!this.#isActive) {
+        this.#autoCountryDeferred?.reject();
         return;
       }
-      this.#setInitialState(true);
-      this.#rejectAutoCountryPromise();
+      if (this.#ui.isLoading()) {
+        this.#setInitialState(true);
+      }
+      this.#ui.setLoading(false);
+      this.#autoCountryDeferred?.reject();
     }
     //* Called when the utils request completes.
-    #handleUtils() {
-      if (!this.#ui.telInput) {
-        this.#resolveUtilsScriptPromise?.();
+    #handleUtilsLoaded() {
+      if (!this.#isActive) {
+        this.#utilsDeferred?.resolve();
         return;
       }
-      if (intlTelInput.utils) {
-        const inputValue = this.#getTelInputValue();
-        if (inputValue) {
-          this.#updateValFromNumber(inputValue);
-        }
-        if (this.#selectedCountryData.iso2) {
-          this.#updatePlaceholder();
-          this.#updateMaxLength();
-        }
+      if (!intlTelInput.utils) {
+        this.#utilsDeferred?.resolve();
+        return;
       }
-      this.#resolveUtilsScriptPromise();
+      const inputValue = this.#getTelInputValue();
+      const isFocused = document.activeElement === this.#ui.telInputEl;
+      if (inputValue && !isFocused) {
+        this.#updateValueFromNumber(inputValue);
+      }
+      if (this.#selectedCountry) {
+        this.#updatePlaceholder();
+        this.#updateMaxCoreNumberLength();
+      }
+      this.#utilsDeferred?.resolve();
     }
     //* Called when the utils request fails or times out.
     #handleUtilsFailure(error) {
-      if (!this.#ui.telInput) {
-        this.#rejectUtilsScriptPromise?.(error);
+      if (!this.#isActive) {
+        this.#utilsDeferred?.reject(error);
         return;
       }
-      this.#rejectUtilsScriptPromise(error);
+      this.#utilsDeferred?.reject(error);
     }
     //********************
     //*  PUBLIC METHODS
     //********************
-    //* Remove plugin.
+    //* Remove core library.
     destroy() {
-      if (!this.#ui.telInput) {
+      if (!this.#isActive) {
         return;
       }
-      if (this.#options.allowDropdown) {
-        this.#closeDropdown(true);
+      this.#isActive = false;
+      if (this.#options.countrySelectorMode !== COUNTRY_SELECTOR_MODE.OFF) {
+        this.#closeCountrySelectorInternal(true);
       }
       this.#abortController.abort();
-      this.#abortController = null;
       this.#ui.destroy();
-      if (intlTelInput.instances instanceof Map) {
-        intlTelInput.instances.delete(this.id);
-      } else {
-        delete intlTelInput.instances[this.id];
-      }
+      intlTelInput.instances.delete(String(this.id));
     }
-    // check if the instance is still valid (not destroyed/unmounted)
+    // check if the instance is still valid (not destroyed)
     isActive() {
-      return !!this.#ui?.telInput;
+      return this.#isActive;
     }
     //* Get the extension from the current number.
     getExtension() {
-      if (intlTelInput.utils && this.#ui.telInput) {
-        return intlTelInput.utils.getExtension(
-          this.#getFullNumber(),
-          this.#selectedCountryData.iso2
-        );
+      if (!this.#isActive) {
+        return "";
       }
-      return "";
+      ensureUtils("getExtension");
+      return intlTelInput.utils.getExtension(
+        this.#getFullNumber(),
+        this.#selectedCountry?.iso2
+      );
     }
-    //* Format the number to the given format.
+    //* Format the number to the given format (defaults to "E164").
     getNumber(format) {
-      if (intlTelInput.utils && this.#ui.telInput) {
-        const { iso2 } = this.#selectedCountryData;
-        const fullNumber = this.#getFullNumber();
-        const formattedNumber = intlTelInput.utils.formatNumber(
-          fullNumber,
-          iso2,
-          format
-        );
-        const currentVal = this.#ui.telInput.value;
-        return this.#numerals.denormalise(formattedNumber, currentVal);
+      if (!this.#isActive) {
+        return "";
       }
-      return "";
+      ensureUtils("getNumber");
+      const iso2 = this.#selectedCountry?.iso2;
+      const fullNumber = this.#getFullNumber();
+      const formattedNumber = intlTelInput.utils.formatNumber(
+        fullNumber,
+        iso2,
+        format
+      );
+      return this.#numerals.denormalise(formattedNumber);
     }
-    //* Get the type of the entered number e.g. landline/mobile.
+    //* Get the type of the entered number e.g. "FIXED_LINE" / "MOBILE", or null if it can't be determined / instance is destroyed.
     getNumberType() {
-      if (intlTelInput.utils && this.#ui.telInput) {
-        return intlTelInput.utils.getNumberType(
-          this.#getFullNumber(),
-          this.#selectedCountryData.iso2
-        );
-      }
-      return SENTINELS.UNKNOWN_NUMBER_TYPE;
-    }
-    //* Get the country data for the currently selected country.
-    getSelectedCountryData() {
-      return this.#selectedCountryData;
-    }
-    //* Get the validation error.
-    getValidationError() {
-      if (intlTelInput.utils && this.#ui.telInput) {
-        const { iso2 } = this.#selectedCountryData;
-        return intlTelInput.utils.getValidationError(this.#getFullNumber(), iso2);
-      }
-      return SENTINELS.UNKNOWN_VALIDATION_ERROR;
-    }
-    //* Validate the input val using number length only
-    isValidNumber() {
-      const { dialCode, iso2 } = this.#selectedCountryData;
-      if (intlTelInput.utils && this.#ui.telInput) {
-        const number = this.#getFullNumber();
-        const coreNumber = intlTelInput.utils.getCoreNumber(number, iso2);
-        if (coreNumber) {
-          if (dialCode === UK.DIAL_CODE) {
-            if (coreNumber[0] === UK.MOBILE_PREFIX && coreNumber.length !== UK.MOBILE_CORE_LENGTH) {
-              return false;
-            }
-          }
-          const hasAlphaChar = REGEX.ALPHA_UNICODE.test(number);
-          if (!hasAlphaChar && dialCode) {
-            const nationalPortion = number.startsWith("+") ? number.slice(1 + dialCode.length) : number;
-            const nationalDigitCount = getNumeric(nationalPortion).length;
-            if (coreNumber.length > nationalDigitCount) {
-              return false;
-            }
-          }
-        }
-      }
-      return this.#validateNumber(false);
-    }
-    //* Validate the input val with precise validation
-    isValidNumberPrecise() {
-      return this.#validateNumber(true);
-    }
-    #utilsIsPossibleNumber(val) {
-      return intlTelInput.utils ? intlTelInput.utils.isPossibleNumber(
-        val,
-        this.#selectedCountryData.iso2,
-        this.#options.allowedNumberTypes
-      ) : null;
-    }
-    //* Shared internal validation logic to handle alpha character extension rules.
-    #validateNumber(precise) {
-      if (!intlTelInput.utils || !this.#ui.telInput) {
+      if (!this.#isActive) {
         return null;
       }
-      const { allowNumberExtensions, allowPhonewords } = this.#options;
-      const testValidity = (s) => precise ? this.#utilsIsValidNumber(s) : this.#utilsIsPossibleNumber(s);
-      const val = this.#getFullNumber();
-      if (!this.#selectedCountryData.iso2) {
-        const isRegionlessDialCode = hasRegionlessDialCode(val);
-        if (!isRegionlessDialCode) {
-          return false;
+      ensureUtils("getNumberType");
+      return intlTelInput.utils.getNumberType(
+        this.#getFullNumber(),
+        this.#selectedCountry?.iso2
+      );
+    }
+    //* Get the country data for the currently selected country.
+    getSelectedCountry() {
+      return this.#selectedCountry ?? null;
+    }
+    //* Get the validation error e.g. "TOO_SHORT" / "TOO_LONG", or null if it can't be determined / instance is destroyed.
+    getValidationError() {
+      if (!this.#isActive) {
+        return null;
+      }
+      ensureUtils("getValidationError");
+      const iso2 = this.#selectedCountry?.iso2;
+      return intlTelInput.utils.getValidationError(this.#getFullNumber(), iso2);
+    }
+    //* Validate the input value using number length only
+    isValidNumber() {
+      if (!this.#isActive) {
+        return null;
+      }
+      ensureUtils("isValidNumber");
+      const dialCode = this.#selectedCountry?.dialCode;
+      const iso2 = this.#selectedCountry?.iso2;
+      const number = this.#getFullNumber();
+      const coreNumber = intlTelInput.utils.getCoreNumber(number, iso2);
+      if (coreNumber) {
+        if (dialCode === UK.DIAL_CODE) {
+          if (coreNumber[0] === UK.MOBILE_PREFIX && coreNumber.length !== UK.MOBILE_CORE_LENGTH) {
+            return false;
+          }
+        }
+        const hasAlphaChar = REGEX.ALPHA_UNICODE.test(number);
+        if (!hasAlphaChar && dialCode) {
+          const nationalPortion = number.startsWith("+") ? number.slice(1 + dialCode.length) : number;
+          const nationalDigitCount = getNumeric(nationalPortion).length;
+          if (coreNumber.length > nationalDigitCount) {
+            return false;
+          }
         }
       }
-      if (!testValidity(val)) {
+      return this.#validateNumber("possible");
+    }
+    //* Validate the input value with precise validation
+    isValidNumberPrecise() {
+      if (!this.#isActive) {
+        return null;
+      }
+      ensureUtils("isValidNumberPrecise");
+      return this.#validateNumber("precise");
+    }
+    //* Shared internal validation logic to handle alpha character extension rules.
+    #validateNumber(mode) {
+      const { allowNumberExtensions, allowPhonewords, allowedNumberTypes } = this.#options;
+      const iso2 = this.#selectedCountry?.iso2;
+      const value = this.#getFullNumber();
+      if (!this.#selectedCountry && !hasRegionlessDialCode(value)) {
         return false;
       }
-      const alphaCharPosition = val.search(REGEX.ALPHA_UNICODE);
-      const hasAlphaChar = alphaCharPosition > -1;
-      if (hasAlphaChar) {
-        const selectedIso2 = this.#selectedCountryData.iso2;
-        const hasExtension = Boolean(intlTelInput.utils.getExtension(val, selectedIso2));
-        if (hasExtension) {
-          return allowNumberExtensions;
-        }
-        return allowPhonewords;
+      const check = mode === "precise" ? intlTelInput.utils.isValidNumberPrecise : intlTelInput.utils.isValidNumber;
+      if (!check(value, iso2, allowedNumberTypes)) {
+        return false;
+      }
+      if (REGEX.ALPHA_UNICODE.test(value)) {
+        const hasExtension = Boolean(
+          intlTelInput.utils.getExtension(value, iso2)
+        );
+        return hasExtension ? allowNumberExtensions : allowPhonewords;
       }
       return true;
     }
-    #utilsIsValidNumber(val) {
-      return intlTelInput.utils ? intlTelInput.utils.isValidNumber(
-        val,
-        this.#selectedCountryData.iso2,
-        this.#options.allowedNumberTypes
-      ) : null;
-    }
-    //* Update the selected country, and update the input val accordingly.
-    setCountry(iso2) {
-      if (!this.#ui.telInput) {
+    //* Update the selected country, and update the input value accordingly.
+    setSelectedCountry(iso2) {
+      if (!this.#isActive) {
         return;
       }
       const iso2Lower = iso2?.toLowerCase();
-      if (!isIso22(iso2Lower)) {
-        throw new Error(`Invalid country code: '${iso2Lower}'`);
+      if (!isIso2(iso2Lower)) {
+        throw new Error(`Invalid iso2 code: '${iso2Lower}'`);
       }
-      const currentCountry = this.#selectedCountryData.iso2;
+      const currentCountry = this.#selectedCountry?.iso2;
       const isCountryChange = iso2 && iso2Lower !== currentCountry || !iso2 && currentCountry;
-      if (isCountryChange) {
-        this.#setCountry(iso2Lower);
-        this.#updateDialCode(this.#selectedCountryData.dialCode);
-        if (this.#options.formatOnDisplay) {
-          const inputValue = this.#getTelInputValue();
-          this.#updateValFromNumber(inputValue);
-        }
-        this.#triggerCountryChange();
+      if (!isCountryChange) {
+        return;
       }
+      this.#updateSelectedCountry(iso2Lower);
+      this.#updateDialCode(this.#selectedCountry?.dialCode || "");
+      const inputValue = this.#getTelInputValue();
+      this.#updateValueFromNumber(inputValue);
+      this.#dispatchCountryChangeEvent();
+      this.#dispatchEvent(EVENTS.INPUT, { isCountryChange: true });
     }
     //* Set the input value and update the country.
     setNumber(number) {
-      if (!this.#ui.telInput) {
+      if (!this.#isActive) {
         return;
       }
       const normalisedNumber = this.#numerals.normalise(number);
       const countryChanged = this.#updateCountryFromNumber(normalisedNumber);
-      this.#updateValFromNumber(normalisedNumber);
+      this.#updateValueFromNumber(normalisedNumber);
       if (countryChanged) {
-        this.#triggerCountryChange();
+        this.#dispatchCountryChangeEvent();
       }
-      this.#trigger(EVENTS.INPUT, { isSetNumber: true });
+      this.#dispatchEvent(EVENTS.INPUT, { isSetNumber: true });
     }
-    //* Set the placeholder number typ
+    //* Set the placeholder number type
     setPlaceholderNumberType(type) {
-      if (!this.#ui.telInput) {
+      if (!this.#isActive) {
         return;
       }
       this.#options.placeholderNumberType = type;
       this.#updatePlaceholder();
     }
+    // Set the disabled state of the input and country selector.
     setDisabled(disabled) {
-      if (!this.#ui.telInput) {
+      if (!this.#isActive) {
         return;
       }
-      this.#ui.telInput.disabled = disabled;
-      if (disabled) {
-        this.#ui.selectedCountry.setAttribute("disabled", "true");
-      } else {
-        this.#ui.selectedCountry.removeAttribute("disabled");
+      this.#ui.setDisabled(disabled);
+    }
+    // Set the readonly state of the input and country selector.
+    setReadonly(readonly) {
+      if (!this.#isActive) {
+        return;
       }
+      this.#ui.setReadonly(readonly);
     }
     //********************
     //*  STATIC METHODS
     //********************
-    // Internal instance notification used by utils/geoip loaders.
+    // Internal instance notification used by utils/initial-country loaders.
     // Kept public so module-level helpers (e.g. attachUtils) can call it, while still allowing
     // access to private instance methods.
     static forEachInstance(method, ...args) {
-      const instances = intlTelInput.instances;
-      const values = instances instanceof Map ? Array.from(instances.values()) : Object.values(instances);
+      const values = [...intlTelInput.instances.values()];
       const arg = args[0];
       values.forEach((instance) => {
         if (!(instance instanceof _Iti)) {
           return;
         }
         switch (method) {
-          case "handleUtils":
-            instance.#handleUtils();
+          case "handleUtilsLoaded":
+            instance.#handleUtilsLoaded();
             break;
           case "handleUtilsFailure":
             instance.#handleUtilsFailure(arg);
             break;
-          case "handleAutoCountry":
-            instance.#handleAutoCountry();
+          case "handleAutoCountryLoaded":
+            instance.#handleAutoCountryLoaded();
             break;
           case "handleAutoCountryFailure":
             instance.#handleAutoCountryFailure();
@@ -4330,44 +4960,36 @@ var factoryOutput = (() => {
       });
     }
   };
-  var attachUtils = (source) => {
-    if (!intlTelInput.utils && !intlTelInput.startedLoadingUtilsScript) {
-      let loadCall;
-      if (typeof source === "function") {
-        try {
-          loadCall = Promise.resolve(source());
-        } catch (error) {
-          return Promise.reject(error);
-        }
-      } else {
-        return Promise.reject(
-          new TypeError(
-            `The argument passed to attachUtils must be a function that returns a promise for the utilities module, not ${typeof source}`
-          )
+  var attachUtils = async (source) => {
+    if (intlTelInput.utils || intlTelInput.startedLoadingUtils) {
+      return null;
+    }
+    if (typeof source !== "function") {
+      throw new TypeError(
+        `The argument passed to attachUtils must be a function that returns a promise for the utils module, not ${typeof source}`
+      );
+    }
+    intlTelInput.startedLoadingUtils = true;
+    try {
+      const module = await source();
+      const utils = module?.default;
+      if (!utils || typeof utils !== "object") {
+        throw new TypeError(
+          "The loader function passed to attachUtils did not resolve to a module object with utils as its default export."
         );
       }
-      intlTelInput.startedLoadingUtilsScript = true;
-      return loadCall.then((module) => {
-        const utils2 = module?.default;
-        if (!utils2 || typeof utils2 !== "object") {
-          throw new TypeError(
-            "The loader function passed to attachUtils did not resolve to a module object with utils as its default export."
-          );
-        }
-        intlTelInput.utils = utils2;
-        Iti.forEachInstance("handleUtils");
-        return true;
-      }).catch((error) => {
-        Iti.forEachInstance("handleUtilsFailure", error);
-        throw error;
-      });
+      intlTelInput.utils = utils;
+      Iti.forEachInstance("handleUtilsLoaded");
+      return true;
+    } catch (error) {
+      Iti.forEachInstance("handleUtilsFailure", error);
+      throw error;
     }
-    return null;
   };
   var intlTelInput = Object.assign(
     (input, options) => {
       const iti = new Iti(input, options);
-      intlTelInput.instances[iti.id] = iti;
+      intlTelInput.instances.set(String(iti.id), iti);
       input.iti = iti;
       return iti;
     },
@@ -4375,40 +4997,46 @@ var factoryOutput = (() => {
       defaults,
       //* Using a static var like this allows us to mock it in the tests.
       documentReady: () => document.readyState === "complete",
-      //* Get the country data object.
-      getCountryData: () => data_default,
-      //* A getter for the plugin instance.
+      //* Get the full list of all countries the library knows about.
+      getAllCountries: () => data_default,
+      //* A getter for the core library instance.
       getInstance: (input) => {
-        const id2 = input.dataset.intlTelInputId;
-        return id2 ? intlTelInput.instances[id2] : null;
+        const id = input.dataset[DATA_KEYS.INSTANCE_ID];
+        return id ? intlTelInput.instances.get(id) ?? null : null;
       },
       //* A map from instance ID to instance object.
-      instances: {},
+      instances: /* @__PURE__ */ new Map(),
       attachUtils,
-      startedLoadingUtilsScript: false,
+      startedLoadingUtils: false,
       startedLoadingAutoCountry: false,
-      version: "26.8.1"
+      version: "29.4.0",
+      NUMBER_FORMAT,
+      NUMBER_TYPE,
+      VALIDATION_ERROR,
+      PLACEHOLDER_POLICY,
+      COUNTRY_SELECTOR_MODE
     }
   );
-  var intl_tel_input_default = intlTelInput;
+  var intlTelInput_default = intlTelInput;
 
-  // build/js/utils.js
+  // packages/core/dist/js/utils.js
+  var _scope = {};
   (function() {
     var k = this || self;
     function m(a, b) {
       a = a.split(".");
       var c = k;
-      a[0] in c || "undefined" == typeof c.execScript || c.execScript("var " + a[0]);
-      for (var d; a.length && (d = a.shift()); ) a.length || void 0 === b ? c[d] && c[d] !== Object.prototype[d] ? c = c[d] : c = c[d] = {} : c[d] = b;
+      a[0] in c || typeof c.execScript == "undefined" || c.execScript("var " + a[0]);
+      for (var d; a.length && (d = a.shift()); ) a.length || b === void 0 ? c[d] && c[d] !== Object.prototype[d] ? c = c[d] : c = c[d] = {} : c[d] = b;
     }
     function n(a, b) {
       function c() {
       }
       c.prototype = b.prototype;
-      a.ma = b.prototype;
+      a.na = b.prototype;
       a.prototype = new c();
       a.prototype.constructor = a;
-      a.sa = function(d, e, f) {
+      a.ta = function(d, e, f) {
         for (var g = Array(arguments.length - 2), h = 2; h < arguments.length; h++) g[h - 2] = arguments[h];
         return b.prototype[e].apply(d, g);
       };
@@ -4421,7 +5049,7 @@ var factoryOutput = (() => {
       return b;
     }
     ;
-    var da = class {
+    var ca = class {
       constructor(a) {
         if (ba !== ba) throw Error("SafeUrl is not meant to be built directly");
         this.g = a;
@@ -4430,12 +5058,12 @@ var factoryOutput = (() => {
         return this.g.toString();
       }
     }, ba = {};
-    new da("about:invalid#zClosurez");
-    new da("about:blank");
-    const ea = {};
+    new ca("about:invalid#zClosurez");
+    new ca("about:blank");
+    const da = {};
     class fa {
       constructor() {
-        if (ea !== ea) throw Error("SafeStyle is not meant to be built directly");
+        if (da !== da) throw Error("SafeStyle is not meant to be built directly");
       }
       toString() {
         return "".toString();
@@ -4466,9 +5094,9 @@ var factoryOutput = (() => {
     new ka();
     function la(a, b) {
       this.g = a;
-      this.l = !!b.aa;
+      this.l = !!b.ca;
       this.h = b.i;
-      this.s = b.type;
+      this.u = b.type;
       this.o = false;
       switch (this.h) {
         case ma:
@@ -4516,16 +5144,35 @@ var factoryOutput = (() => {
     p.prototype.add = function(a, b) {
       va(this, a.g, b);
     };
+    p.prototype.equals = function(a) {
+      if (!a || this.constructor != a.constructor) return false;
+      for (var b = ua(this.m()), c = 0; c < b.length; c++) {
+        var d = b[c], e = d.g;
+        if (q(this, e) != q(a, e)) return false;
+        if (q(this, e)) {
+          var f = d.h == 11 || d.h == 10, g = u(this, e);
+          e = u(a, e);
+          if (d.l) {
+            if (g.length != e.length) return false;
+            for (d = 0; d < g.length; d++) {
+              var h = g[d], l = e[d];
+              if (f ? !h.equals(l) : h != l) return false;
+            }
+          } else if (f ? !g.equals(e) : g != e) return false;
+        }
+      }
+      return true;
+    };
     function wa(a, b) {
       for (var c = ua(a.m()), d = 0; d < c.length; d++) {
         var e = c[d], f = e.g;
         if (q(b, f)) {
           a.g && delete a.g[e.g];
-          var g = 11 == e.h || 10 == e.h;
+          var g = e.h == 11 || e.h == 10;
           if (e.l) {
-            e = u(b, f);
+            e = u(b, f) || [];
             for (var h = 0; h < e.length; h++) va(a, f, g ? e[h].clone() : e[h]);
-          } else e = v(b, f), g ? (g = v(a, f)) ? wa(g, e) : t(a, f, e.clone()) : t(a, f, e);
+          } else e = u(b, f), g ? (g = u(a, f)) ? wa(g, e) : t(a, f, e.clone()) : t(a, f, e);
         }
       }
     }
@@ -4535,15 +5182,15 @@ var factoryOutput = (() => {
       return a;
     };
     function q(a, b) {
-      return null != a.h[b];
+      return a.h[b] != null;
     }
-    function v(a, b) {
+    function u(a, b) {
       var c = a.h[b];
-      if (null == c) return null;
+      if (c == null) return null;
       if (a.l) {
         if (!(b in a.g)) {
           var d = a.l, e = a.j[b];
-          if (null != c) if (e.l) {
+          if (c != null) if (e.l) {
             for (var f = [], g = 0; g < c.length; g++) f[g] = d.h(e, c[g]);
             c = f;
           } else c = d.h(e, c);
@@ -4554,14 +5201,14 @@ var factoryOutput = (() => {
       return c;
     }
     function r(a, b, c) {
-      var d = v(a, b);
+      var d = u(a, b);
       return a.j[b].l ? d[c || 0] : d;
     }
-    function w(a, b) {
+    function v(a, b) {
       if (q(a, b)) a = r(a, b);
       else a: {
         a = a.j[b];
-        if (void 0 === a.j) if (b = a.s, b === Boolean) a.j = false;
+        if (a.j === void 0) if (b = a.u, b === Boolean) a.j = false;
         else if (b === Number) a.j = 0;
         else if (b === String) a.j = a.o ? "0" : "";
         else {
@@ -4572,10 +5219,7 @@ var factoryOutput = (() => {
       }
       return a;
     }
-    function u(a, b) {
-      return v(a, b) || [];
-    }
-    function x(a, b) {
+    function w(a, b) {
       return a.j[b].l ? q(a, b) ? a.h[b].length : 0 : q(a, b) ? 1 : 0;
     }
     function t(a, b, c) {
@@ -4587,114 +5231,117 @@ var factoryOutput = (() => {
       a.h[b].push(c);
       a.g && delete a.g[b];
     }
-    function y(a, b) {
+    function x(a, b) {
       var c = [], d;
-      for (d in b) 0 != d && c.push(new la(d, b[d]));
+      for (d in b) d != 0 && c.push(new la(d, b[d]));
       return new ta(a, c);
     }
     ;
-    function z() {
+    function y() {
     }
-    z.prototype.g = function(a) {
+    y.prototype.g = function(a) {
       new a.h();
       throw Error("Unimplemented");
     };
-    z.prototype.h = function(a, b) {
-      if (11 == a.h || 10 == a.h) return b instanceof p ? b : this.g(a.s.prototype.m(), b);
-      if (14 == a.h) return "string" === typeof b && xa.test(b) && (a = Number(b), 0 < a) ? a : b;
+    y.prototype.h = function(a, b) {
+      if (a.h == 11 || a.h == 10) return b instanceof p ? b : this.g(a.u.prototype.m(), b);
+      if (a.h == 14) return typeof b === "string" && xa.test(b) && (a = Number(b), a > 0) ? a : b;
       if (!a.o) return b;
-      a = a.s;
+      a = a.u;
       if (a === String) {
-        if ("number" === typeof b) return String(b);
-      } else if (a === Number && "string" === typeof b && ("Infinity" === b || "-Infinity" === b || "NaN" === b || xa.test(b))) return Number(b);
+        if (typeof b === "number") return String(b);
+      } else if (a === Number && typeof b === "string" && (b === "Infinity" || b === "-Infinity" || b === "NaN" || xa.test(b))) return Number(b);
       return b;
     };
     var xa = /^-?[0-9]+$/;
-    function B() {
+    function ya() {
     }
-    n(B, z);
-    B.prototype.g = function(a, b) {
+    n(ya, y);
+    ya.prototype.g = function(a, b) {
       a = new a.h();
       a.l = this;
       a.h = b;
       a.g = {};
       return a;
     };
-    function C() {
+    function z() {
     }
-    n(C, B);
-    C.prototype.h = function(a, b) {
-      return 8 == a.h ? !!b : z.prototype.h.apply(this, arguments);
+    n(z, ya);
+    z.prototype.h = function(a, b) {
+      return a.h == 8 ? !!b : y.prototype.h.apply(this, arguments);
     };
-    C.prototype.g = function(a, b) {
-      return C.ma.g.call(this, a, b);
+    z.prototype.g = function(a, b) {
+      return z.na.g.call(this, a, b);
     };
-    function D(a, b) {
-      null != a && this.g.apply(this, arguments);
+    function B(a, b) {
+      a != null && this.g.apply(this, arguments);
     }
-    D.prototype.h = "";
-    D.prototype.set = function(a) {
+    B.prototype.h = "";
+    B.prototype.set = function(a) {
       this.h = "" + a;
     };
-    D.prototype.g = function(a, b, c) {
+    B.prototype.g = function(a, b, c) {
       this.h += String(a);
-      if (null != b) for (let d = 1; d < arguments.length; d++) this.h += arguments[d];
+      if (b != null) for (let d = 1; d < arguments.length; d++) this.h += arguments[d];
       return this;
     };
-    function E(a) {
+    function C(a) {
       a.h = "";
     }
-    D.prototype.toString = function() {
+    B.prototype.toString = function() {
       return this.h;
     };
-    function F() {
+    function D() {
       p.call(this);
     }
-    n(F, p);
-    var ya = null;
+    n(D, p);
+    var za = null;
+    function E() {
+      p.call(this);
+    }
+    n(E, p);
+    var Aa = null;
+    function F(a) {
+      return u(a, 9) || [];
+    }
     function G() {
       p.call(this);
     }
     n(G, p);
-    var za = null;
-    function H() {
-      p.call(this);
-    }
-    n(H, p);
-    var Aa = null;
-    F.prototype.m = function() {
-      var a = ya;
-      a || (ya = a = y(F, { 0: { name: "NumberFormat", ia: "i18n.phonenumbers.NumberFormat" }, 1: { name: "pattern", required: true, i: 9, type: String }, 2: { name: "format", required: true, i: 9, type: String }, 3: { name: "leading_digits_pattern", aa: true, i: 9, type: String }, 4: { name: "national_prefix_formatting_rule", i: 9, type: String }, 6: { name: "national_prefix_optional_when_formatting", i: 8, defaultValue: false, type: Boolean }, 5: { name: "domestic_carrier_code_formatting_rule", i: 9, type: String } }));
-      return a;
-    };
-    F.m = F.prototype.m;
-    G.prototype.m = function() {
+    var Ba = null;
+    D.prototype.m = function() {
       var a = za;
-      a || (za = a = y(G, { 0: { name: "PhoneNumberDesc", ia: "i18n.phonenumbers.PhoneNumberDesc" }, 2: { name: "national_number_pattern", i: 9, type: String }, 9: { name: "possible_length", aa: true, i: 5, type: Number }, 10: { name: "possible_length_local_only", aa: true, i: 5, type: Number }, 6: { name: "example_number", i: 9, type: String } }));
+      a || (za = a = x(D, { 0: { name: "NumberFormat", ja: "i18n.phonenumbers.NumberFormat" }, 1: { name: "pattern", required: true, i: 9, type: String }, 2: { name: "format", required: true, i: 9, type: String }, 3: { name: "leading_digits_pattern", ca: true, i: 9, type: String }, 4: { name: "national_prefix_formatting_rule", i: 9, type: String }, 6: { name: "national_prefix_optional_when_formatting", i: 8, defaultValue: false, type: Boolean }, 5: { name: "domestic_carrier_code_formatting_rule", i: 9, type: String } }));
       return a;
     };
-    G.m = G.prototype.m;
-    H.prototype.m = function() {
+    D.m = D.prototype.m;
+    E.prototype.m = function() {
       var a = Aa;
-      a || (Aa = a = y(H, {
-        0: { name: "PhoneMetadata", ia: "i18n.phonenumbers.PhoneMetadata" },
-        1: { name: "general_desc", i: 11, type: G },
-        2: { name: "fixed_line", i: 11, type: G },
-        3: { name: "mobile", i: 11, type: G },
-        4: { name: "toll_free", i: 11, type: G },
-        5: { name: "premium_rate", i: 11, type: G },
-        6: { name: "shared_cost", i: 11, type: G },
-        7: { name: "personal_number", i: 11, type: G },
-        8: { name: "voip", i: 11, type: G },
-        21: { name: "pager", i: 11, type: G },
-        25: { name: "uan", i: 11, type: G },
-        27: { name: "emergency", i: 11, type: G },
-        28: { name: "voicemail", i: 11, type: G },
-        29: { name: "short_code", i: 11, type: G },
-        30: { name: "standard_rate", i: 11, type: G },
-        31: { name: "carrier_specific", i: 11, type: G },
-        33: { name: "sms_services", i: 11, type: G },
-        24: { name: "no_international_dialling", i: 11, type: G },
+      a || (Aa = a = x(E, { 0: { name: "PhoneNumberDesc", ja: "i18n.phonenumbers.PhoneNumberDesc" }, 2: { name: "national_number_pattern", i: 9, type: String }, 9: { name: "possible_length", ca: true, i: 5, type: Number }, 10: { name: "possible_length_local_only", ca: true, i: 5, type: Number }, 6: { name: "example_number", i: 9, type: String } }));
+      return a;
+    };
+    E.m = E.prototype.m;
+    G.prototype.m = function() {
+      var a = Ba;
+      a || (Ba = a = x(G, {
+        0: { name: "PhoneMetadata", ja: "i18n.phonenumbers.PhoneMetadata" },
+        1: { name: "general_desc", i: 11, type: E },
+        2: { name: "fixed_line", i: 11, type: E },
+        3: { name: "mobile", i: 11, type: E },
+        4: { name: "toll_free", i: 11, type: E },
+        5: { name: "premium_rate", i: 11, type: E },
+        6: { name: "shared_cost", i: 11, type: E },
+        7: { name: "personal_number", i: 11, type: E },
+        8: { name: "voip", i: 11, type: E },
+        21: { name: "pager", i: 11, type: E },
+        25: { name: "uan", i: 11, type: E },
+        27: { name: "emergency", i: 11, type: E },
+        28: { name: "voicemail", i: 11, type: E },
+        29: { name: "short_code", i: 11, type: E },
+        30: { name: "standard_rate", i: 11, type: E },
+        31: { name: "carrier_specific", i: 11, type: E },
+        33: { name: "sms_services", i: 11, type: E },
+        24: { name: "no_international_dialling", i: 11, type: E },
         9: { name: "id", required: true, i: 9, type: String },
         10: { name: "country_code", i: 5, type: Number },
         11: { name: "international_prefix", i: 9, type: String },
@@ -4708,31 +5355,31 @@ var factoryOutput = (() => {
         },
         16: { name: "national_prefix_transform_rule", i: 9, type: String },
         18: { name: "same_mobile_and_fixed_line_pattern", i: 8, defaultValue: false, type: Boolean },
-        19: { name: "number_format", aa: true, i: 11, type: F },
-        20: { name: "intl_number_format", aa: true, i: 11, type: F },
+        19: { name: "number_format", ca: true, i: 11, type: D },
+        20: { name: "intl_number_format", ca: true, i: 11, type: D },
         22: { name: "main_country_for_code", i: 8, defaultValue: false, type: Boolean },
         23: { name: "leading_digits", i: 9, type: String }
       }));
       return a;
     };
-    H.m = H.prototype.m;
-    function I() {
+    G.m = G.prototype.m;
+    function H() {
       p.call(this);
     }
-    n(I, p);
-    var Ba = null, Ca = { ra: 0, qa: 1, pa: 5, oa: 10, na: 20 };
-    I.prototype.m = function() {
-      var a = Ba;
-      a || (Ba = a = y(I, { 0: { name: "PhoneNumber", ia: "i18n.phonenumbers.PhoneNumber" }, 1: { name: "country_code", required: true, i: 5, type: Number }, 2: { name: "national_number", required: true, i: 4, type: Number }, 3: { name: "extension", i: 9, type: String }, 4: { name: "italian_leading_zero", i: 8, type: Boolean }, 8: { name: "number_of_leading_zeros", i: 5, defaultValue: 1, type: Number }, 5: { name: "raw_input", i: 9, type: String }, 6: { name: "country_code_source", i: 14, defaultValue: 0, type: Ca }, 7: {
+    n(H, p);
+    var Ca = null, Da = { sa: 0, ra: 1, qa: 5, pa: 10, oa: 20 };
+    H.prototype.m = function() {
+      var a = Ca;
+      a || (Ca = a = x(H, { 0: { name: "PhoneNumber", ja: "i18n.phonenumbers.PhoneNumber" }, 1: { name: "country_code", required: true, i: 5, type: Number }, 2: { name: "national_number", required: true, i: 4, type: Number }, 3: { name: "extension", i: 9, type: String }, 4: { name: "italian_leading_zero", i: 8, type: Boolean }, 8: { name: "number_of_leading_zeros", i: 5, defaultValue: 1, type: Number }, 5: { name: "raw_input", i: 9, type: String }, 6: { name: "country_code_source", i: 14, defaultValue: 0, type: Da }, 7: {
         name: "preferred_domestic_carrier_code",
         i: 9,
         type: String
       } }));
       return a;
     };
-    I.ctor = I;
-    I.ctor.m = I.prototype.m;
-    var J = {
+    H.ctor = H;
+    H.ctor.m = H.prototype.m;
+    var I = {
       1: "US AG AI AS BB BM BS CA DM DO GD GU JM KN KY LC MP MS PR SX TC TT VC VG VI".split(" "),
       7: ["RU", "KZ"],
       20: ["EG"],
@@ -4948,11 +5595,11 @@ var factoryOutput = (() => {
       995: ["GE"],
       996: ["KG"],
       998: ["UZ"]
-    }, Da = {
+    }, Ea = {
       AC: [, [
         ,
         ,
-        "(?:[01589]\\d|[46])\\d{4}",
+        "(?:[01589]\\d|[2-467])\\d{4}",
         ,
         ,
         ,
@@ -4960,7 +5607,7 @@ var factoryOutput = (() => {
         ,
         ,
         [5, 6]
-      ], [, , "6[2-467]\\d{3}", , , , "62889", , , [5]], [, , "4\\d{4}", , , , "40123", , , [5]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "AC", 247, "00", , , , , , , , , , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "(?:0[1-9]|[1589]\\d)\\d{4}", , , , "542011", , , [6]], , , [, , , , , , , , , [-1]]],
+      ], [, , "6\\d{4}", , , , "62889", , , [5]], [, , "[2-47]\\d{4}", , , , "40123", , , [5]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "AC", 247, "00", , , , , , , , , , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "(?:0[1-9]|[1589]\\d)\\d{4}", , , , "542011", , , [6]], , , [, , , , , , , , , [-1]]],
       AD: [
         ,
         [, , "(?:1|6\\d)\\d{7}|[135-9]\\d{5}", , , , , , , [6, 8, 9]],
@@ -5061,7 +5708,7 @@ var factoryOutput = (() => {
         ,
         [7]
       ], "AG", 1, "011", "1", , , "([457]\\d{6})$|1", "268$1", , , , , [, , "26840[69]\\d{4}", , , , "2684061234", , , , [7]], , "268", [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      AI: [, [, , "(?:264|[58]\\d\\d|900)\\d{7}", , , , , , , [10], [7]], [, , "264(?:292|4(?:6[12]|9[78]))\\d{4}", , , , "2644612345", , , , [7]], [, , "264(?:235|4(?:69|76)|5(?:3[6-9]|8[1-4])|7(?:29|72))\\d{4}", , , , "2642351234", , , , [7]], [, , "8(?:00|33|44|55|66|77|88)[2-9]\\d{6}", , , , "8002123456"], [, , "900[2-9]\\d{6}", , , , "9002123456"], [, , , , , , , , , [-1]], [
+      AI: [, [, , "(?:264|[58]\\d\\d|900)\\d{7}", , , , , , , [10], [7]], [, , "264(?:292|4(?:6[12]|9[78]))\\d{4}", , , , "2644612345", , , , [7]], [, , "264(?:235|4(?:69|7[67])|5(?:3[6-9]|8[1-4])|7(?:29|72))\\d{4}", , , , "2642351234", , , , [7]], [, , "8(?:00|33|44|55|66|77|88)[2-9]\\d{6}", , , , "8002123456"], [, , "900[2-9]\\d{6}", , , , "9002123456"], [, , , , , , , , , [-1]], [
         ,
         ,
         "52(?:3(?:[2-46-9][02-9]\\d|5(?:[02-46-9]\\d|5[0-46-9]))|4(?:[2-478][02-9]\\d|5(?:[034]\\d|2[024-9]|5[0-46-9])|6(?:0[1-9]|[2-9]\\d)|9(?:[05-9]\\d|2[0-5]|49)))\\d{4}|52[34][2-9]1[02-9]\\d{4}|5(?:00|2[125-9]|3[23]|44|66|77|88)[2-9]\\d{6}",
@@ -5138,7 +5785,7 @@ var factoryOutput = (() => {
         [
           ,
           ,
-          "3(?:7(?:1[15]|81)|8(?:21|4[16]|69|9[12]))[46]\\d{5}|(?:2(?:2(?:2[59]|44|52)|3(?:26|44)|47[35]|9(?:[07]2|2[26]|34|46))|3327)[45]\\d{5}|(?:2(?:657|9(?:54|66))|3(?:48[27]|7(?:55|77)|8(?:65|78)))[2-8]\\d{5}|(?:2(?:284|3(?:02|23)|477|622|920)|3(?:4(?:46|89|92)|541))[2-7]\\d{5}|(?:(?:11[1-8]|670)\\d|2(?:2(?:0[45]|1[2-6]|3[3-6])|3(?:[06]4|7[45])|494|6(?:04|1[2-8]|[36][45]|4[3-6])|80[45]|9(?:[17][4-6]|[48][45]|9[3-6]))|3(?:364|4(?:1[2-8]|[25][4-6]|3[3-6]|84)|5(?:1[2-9]|[38][4-6])|6(?:2[45]|44)|7[069][45]|8(?:0[45]|1[2-7]|3[4-6]|5[3-6]|7[2-6]|8[3-68])))\\d{6}|(?:2(?:2(?:62|81)|320|9(?:42|83))|3(?:329|4(?:62|7[16])|5(?:43|64)|7(?:18|5[17])))[2-6]\\d{5}|2(?:2(?:21|4[23]|6[145]|7[1-4]|8[356]|9[267])|3(?:16|3[13-8]|43|5[346-8]|9[3-5])|6(?:2[46]|4[78]|5[1568])|9(?:03|2[1457-9]|3[1356]|4[08]|[56][23]|82))4\\d{5}|(?:2(?:257|3(?:24|46|92)|9(?:01|23|64))|3(?:4(?:42|64)|5(?:25|37|4[47]|71)|7(?:35|72)|825))[3-6]\\d{5}|(?:2(?:2(?:02|2[3467]|4[156]|5[45]|6[6-8]|91)|3(?:1[47]|25|[45][25]|96)|47[48]|625|932)|3(?:38[2578]|4(?:0[0-24-9]|3[78]|4[457]|58|6[035-9]|72|83|9[136-8])|5(?:2[124]|[368][23]|4[2689]|7[2-6])|7(?:16|2[15]|3[14]|4[13]|5[468]|7[3-5]|8[26])|8(?:2[67]|3[278]|4[3-5]|5[78]|6[1-378]|[78]7|94)))[4-6]\\d{5}",
+          "3(?:7(?:1[15]|81)|8(?:21|4[16]|69|9[12]))[46]\\d{5}|(?:2(?:2(?:2[59]|44|52)|3(?:26|44)|47[35]|9(?:[07]2|2[26]|34|46))|3327)[45]\\d{5}|(?:2(?:657|9(?:54|66))|3(?:48[27]|7(?:55|77)|8(?:65|78)))[2-8]\\d{5}|(?:2(?:284|3(?:02|23)|477|622|920)|3(?:4(?:46|89|92)|541))[2-7]\\d{5}|(?:(?:11[0-8]|670)\\d|2(?:2(?:0[45]|1[2-6]|3[3-6])|3(?:[06]4|7[45])|494|6(?:04|1[2-8]|[36][45]|4[3-6])|80[45]|9(?:[17][4-6]|[48][45]|9[3-6]))|3(?:364|4(?:1[2-8]|[25][4-6]|3[3-6]|84)|5(?:1[2-9]|[38][4-6])|6(?:2[45]|44)|7[069][45]|8(?:0[45]|1[2-7]|3[4-6]|5[3-6]|7[2-6]|8[3-68])))\\d{6}|(?:2(?:2(?:62|81)|320|9(?:42|83))|3(?:329|4(?:62|7[16])|5(?:43|64)|7(?:18|5[17])))[2-6]\\d{5}|2(?:2(?:21|4[23]|6[145]|7[1-4]|8[356]|9[267])|3(?:16|3[13-8]|43|5[346-8]|9[3-5])|6(?:2[46]|4[78]|5[1568])|9(?:03|2[1457-9]|3[1356]|4[08]|[56][23]|82))4\\d{5}|(?:2(?:257|3(?:24|46|92)|9(?:01|23|64))|3(?:4(?:42|64)|5(?:25|37|4[47]|71)|7(?:35|72)|825))[3-6]\\d{5}|(?:2(?:2(?:02|2[3467]|4[156]|5[45]|6[6-8]|91)|3(?:1[47]|25|[45][25]|96)|47[48]|625|932)|3(?:38[2578]|4(?:0[0-24-9]|3[78]|4[457]|58|6[035-9]|72|83|9[136-8])|5(?:2[124]|[368][23]|4[2689]|7[2-6])|7(?:16|2[15]|3[14]|4[13]|5[468]|7[3-5]|8[26])|8(?:2[67]|3[278]|4[3-5]|5[78]|6[1-378]|[78]7|94)))[4-6]\\d{5}",
           ,
           ,
           ,
@@ -5151,7 +5798,7 @@ var factoryOutput = (() => {
         [
           ,
           ,
-          "93(?:7(?:1[15]|81)|8(?:21|4[16]|69|9[12]))[46]\\d{5}|9(?:2(?:2(?:2[59]|44|52)|3(?:26|44)|47[35]|9(?:[07]2|2[26]|34|46))|3327)[45]\\d{5}|9(?:2(?:657|9(?:54|66))|3(?:48[27]|7(?:55|77)|8(?:65|78)))[2-8]\\d{5}|9(?:2(?:284|3(?:02|23)|477|622|920)|3(?:4(?:46|89|92)|541))[2-7]\\d{5}|(?:675\\d|9(?:11[1-8]\\d|2(?:2(?:0[45]|1[2-6]|3[3-6])|3(?:[06]4|7[45])|494|6(?:04|1[2-8]|[36][45]|4[3-6])|80[45]|9(?:[17][4-6]|[48][45]|9[3-6]))|3(?:364|4(?:1[2-8]|[25][4-6]|3[3-6]|84)|5(?:1[2-9]|[38][4-6])|6(?:2[45]|44)|7[069][45]|8(?:0[45]|1[2-7]|3[4-6]|5[3-6]|7[2-6]|8[3-68]))))\\d{6}|9(?:2(?:2(?:62|81)|320|9(?:42|83))|3(?:329|4(?:62|7[16])|5(?:43|64)|7(?:18|5[17])))[2-6]\\d{5}|92(?:2(?:21|4[23]|6[145]|7[1-4]|8[356]|9[267])|3(?:16|3[13-8]|43|5[346-8]|9[3-5])|6(?:2[46]|4[78]|5[1568])|9(?:03|2[1457-9]|3[1356]|4[08]|[56][23]|82))4\\d{5}|9(?:2(?:257|3(?:24|46|92)|9(?:01|23|64))|3(?:4(?:42|64)|5(?:25|37|4[47]|71)|7(?:35|72)|825))[3-6]\\d{5}|9(?:2(?:2(?:02|2[3467]|4[156]|5[45]|6[6-8]|91)|3(?:1[47]|25|[45][25]|96)|47[48]|625|932)|3(?:38[2578]|4(?:0[0-24-9]|3[78]|4[457]|58|6[035-9]|72|83|9[136-8])|5(?:2[124]|[368][23]|4[2689]|7[2-6])|7(?:16|2[15]|3[14]|4[13]|5[468]|7[3-5]|8[26])|8(?:2[67]|3[278]|4[3-5]|5[78]|6[1-378]|[78]7|94)))[4-6]\\d{5}",
+          "93(?:7(?:1[15]|81)|8(?:21|4[16]|69|9[12]))[46]\\d{5}|9(?:2(?:2(?:2[59]|44|52)|3(?:26|44)|47[35]|9(?:[07]2|2[26]|34|46))|3327)[45]\\d{5}|9(?:2(?:657|9(?:54|66))|3(?:48[27]|7(?:55|77)|8(?:65|78)))[2-8]\\d{5}|9(?:2(?:284|3(?:02|23)|477|622|920)|3(?:4(?:46|89|92)|541))[2-7]\\d{5}|(?:675\\d|9(?:11[0-8]\\d|2(?:2(?:0[45]|1[2-6]|3[3-6])|3(?:[06]4|7[45])|494|6(?:04|1[2-8]|[36][45]|4[3-6])|80[45]|9(?:[17][4-6]|[48][45]|9[3-6]))|3(?:364|4(?:1[2-8]|[25][4-6]|3[3-6]|84)|5(?:1[2-9]|[38][4-6])|6(?:2[45]|44)|7[069][45]|8(?:0[45]|1[2-7]|3[4-6]|5[3-6]|7[2-6]|8[3-68]))))\\d{6}|9(?:2(?:2(?:62|81)|320|9(?:42|83))|3(?:329|4(?:62|7[16])|5(?:43|64)|7(?:18|5[17])))[2-6]\\d{5}|92(?:2(?:21|4[23]|6[145]|7[1-4]|8[356]|9[267])|3(?:16|3[13-8]|43|5[346-8]|9[3-5])|6(?:2[46]|4[78]|5[1568])|9(?:03|2[1457-9]|3[1356]|4[08]|[56][23]|82))4\\d{5}|9(?:2(?:257|3(?:24|46|92)|9(?:01|23|64))|3(?:4(?:42|64)|5(?:25|37|4[47]|71)|7(?:35|72)|825))[3-6]\\d{5}|9(?:2(?:2(?:02|2[3467]|4[156]|5[45]|6[6-8]|91)|3(?:1[47]|25|[45][25]|96)|47[48]|625|932)|3(?:38[2578]|4(?:0[0-24-9]|3[78]|4[457]|58|6[035-9]|72|83|9[136-8])|5(?:2[124]|[368][23]|4[2689]|7[2-6])|7(?:16|2[15]|3[14]|4[13]|5[468]|7[3-5]|8[26])|8(?:2[67]|3[278]|4[3-5]|5[78]|6[1-378]|[78]7|94)))[4-6]\\d{5}",
           ,
           ,
           ,
@@ -5420,7 +6067,7 @@ var factoryOutput = (() => {
         ,
         ,
         "27111234"
-      ], [, , "(?:1[13-9]\\d|644)\\d{7}|(?:3[78]|44|66)[02-9]\\d{7}", , , , "1812345678", , , [10]], [, , "80[03]\\d{7}", , , , "8001234567", , , [10]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "96(?:0[469]|1[0-47]|3[389]|43|6[69]|7[78])\\d{6}", , , , "9604123456", , , [10]], "BD", 880, "00", "0", , , "0", , , , [[, "(\\d{2})(\\d{4,6})", "$1-$2", ["31[5-8]|[459]1"], "0$1"], [
+      ], [, , "(?:1[13-9]\\d|644)\\d{7}|(?:3[78]|44|66)[02-9]\\d{7}", , , , "1812345678", , , [10]], [, , "80[03]\\d{7}", , , , "8001234567", , , [10]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "96(?:0[1-69]|1[0-479]|2[278]|3[13-9]|4[0-47-9]|54|6[69]|7[78]|88)\\d{6}", , , , "9604123456", , , [10]], "BD", 880, "00", "0", , , "0", , , , [[, "(\\d{2})(\\d{4,6})", "$1-$2", ["31[5-8]|[459]1"], "0$1"], [
         ,
         "(\\d{3})(\\d{3,7})",
         "$1-$2",
@@ -5442,7 +6089,7 @@ var factoryOutput = (() => {
       BF: [, [
         ,
         ,
-        "(?:[025-7]\\d|44)\\d{6}",
+        "[024-7]\\d{7}",
         ,
         ,
         ,
@@ -5450,7 +6097,7 @@ var factoryOutput = (() => {
         ,
         ,
         [8]
-      ], [, , "2(?:0(?:49|5[23]|6[5-7]|9[016-9])|4(?:4[569]|5[4-6]|6[5-7]|7[0179])|5(?:[34]\\d|50|6[5-7]))\\d{4}", , , , "20491234"], [, , "(?:0[1-7]|44|5[0-8]|[67]\\d)\\d{6}", , , , "70123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "BF", 226, "00", , , , , , , , [[, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[024-7]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      ], [, , "2(?:0(?:49|5[23]|6[5-7]|9[016-9])|4(?:4[569]|5[4-6]|6[5-7]|7[0179])|5(?:[34]\\d|50|6[5-8]))\\d{4}", , , , "20491234"], [, , "(?:0[1-7]|4[4-6]|5[0-8]|[67]\\d)\\d{6}", , , , "70123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "BF", 226, "00", , , , , , , , [[, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[024-7]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
       BG: [, [
         ,
         ,
@@ -5518,7 +6165,7 @@ var factoryOutput = (() => {
         ,
         [, , , , , , , , , [-1]]
       ],
-      BI: [, [, , "(?:[267]\\d|31)\\d{6}", , , , , , , [8]], [, , "(?:22|31)\\d{6}", , , , "22201234"], [, , "(?:29|6[124-9]|7[125-9])\\d{6}", , , , "79561234"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "BI", 257, "00", , , , , , , , [[, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[2367]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      BI: [, [, , "(?:[267]\\d|31)\\d{6}", , , , , , , [8]], [, , "(?:22|31)\\d{6}", , , , "22201234"], [, , "(?:29|6[1-9]|7[125-9])\\d{6}", , , , "79561234"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "BI", 257, "00", , , , , , , , [[, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[2367]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
       BJ: [, [, , "(?:01\\d|8)\\d{7}", , , , , , , [8, 10]], [, , "012\\d{7}", , , , "0120211234", , , [10]], [
         ,
         ,
@@ -5531,96 +6178,23 @@ var factoryOutput = (() => {
         ,
         [10]
       ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "857[58]\\d{4}", , , , "85751234", , , [8]], "BJ", 229, "00", , , , , , , , [[, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["8"]], [, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4 $5", ["0"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "81\\d{6}", , , , "81123456", , , [8]], , , [, , , , , , , , , [-1]]],
-      BL: [, [, , "(?:590\\d|7090)\\d{5}|(?:69|[89]\\d)\\d{7}", , , , , , , [9]], [
+      BL: [
         ,
-        ,
-        "590(?:2[7-9]|3[3-7]|5[12]|87)\\d{4}",
-        ,
-        ,
-        ,
-        "590271234"
-      ], [, , "(?:69(?:0\\d\\d|1(?:2[2-9]|3[0-5])|4(?:0[89]|1[2-6]|9\\d)|6(?:1[016-9]|5[0-4]|[67]\\d))|7090[0-4])\\d{4}", , , , "690001234"], [, , "80\\d{7}", , , , "800012345"], [, , "8[129]\\d{7}", , , , "810123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "9(?:(?:39[5-7]|76[018])\\d|475[0-6])\\d{4}", , , , "976012345"], "BL", 590, "00", "0", , , "0", , , , , , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      BM: [
-        ,
-        [, , "(?:441|[58]\\d\\d|900)\\d{7}", , , , , , , [10], [7]],
-        [
-          ,
-          ,
-          "441(?:[46]\\d\\d|5(?:4\\d|60|89))\\d{4}",
-          ,
-          ,
-          ,
-          "4414123456",
-          ,
-          ,
-          ,
-          [7]
-        ],
-        [, , "441(?:[2378]\\d|5[0-39]|9[02])\\d{5}", , , , "4413701234", , , , [7]],
-        [, , "8(?:00|33|44|55|66|77|88)[2-9]\\d{6}", , , , "8002123456"],
-        [, , "900[2-9]\\d{6}", , , , "9002123456"],
-        [, , , , , , , , , [-1]],
-        [, , "52(?:3(?:[2-46-9][02-9]\\d|5(?:[02-46-9]\\d|5[0-46-9]))|4(?:[2-478][02-9]\\d|5(?:[034]\\d|2[024-9]|5[0-46-9])|6(?:0[1-9]|[2-9]\\d)|9(?:[05-9]\\d|2[0-5]|49)))\\d{4}|52[34][2-9]1[02-9]\\d{4}|5(?:00|2[125-9]|3[23]|44|66|77|88)[2-9]\\d{6}", , , , "5002345678"],
-        [, , , , , , , , , [-1]],
-        "BM",
-        1,
-        "011",
-        "1",
-        ,
-        ,
-        "([2-9]\\d{6})$|1",
-        "441$1",
-        ,
-        ,
-        ,
-        ,
-        [, , , , , , , , , [-1]],
-        ,
-        "441",
+        [, , "7090\\d{5}|(?:[56]9|[89]\\d)\\d{7}", , , , , , , [9]],
+        [, , "(?:59(?:0(?:2[7-9]|3[3-7]|5[12]|87)|87\\d)|80[6-9]\\d\\d)\\d{4}", , , , "590271234"],
+        [, , "(?:69(?:0\\d\\d|1(?:2[2-9]|3[0-5]))|7090[0-4])\\d{4}", , , , "690001234"],
+        [, , "80[0-5]\\d{6}", , , , "800012345"],
+        [, , "8[129]\\d{7}", , , , "810123456"],
         [, , , , , , , , , [-1]],
         [, , , , , , , , , [-1]],
-        ,
-        ,
-        [, , , , , , , , , [-1]]
-      ],
-      BN: [, [, , "[2-578]\\d{6}", , , , , , , [7]], [, , "22[0-7]\\d{4}|(?:2[013-9]|[34]\\d|5[0-25-9])\\d{5}", , , , "2345678"], [, , "(?:22[89]|[78]\\d\\d)\\d{4}", , , , "7123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "5[34]\\d{5}", , , , "5345678"], "BN", 673, "00", , , , , , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[2-578]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      BO: [, [
-        ,
-        ,
-        "8001\\d{5}|(?:[2-467]\\d|50)\\d{6}",
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        [8, 9],
-        [7]
-      ], [, , "(?:2(?:2\\d\\d|5(?:11|[258]\\d|9[67])|6(?:12|2\\d|9[34])|8(?:2[34]|39|62))|3(?:3\\d\\d|4(?:6\\d|8[24])|8(?:25|42|5[257]|86|9[25])|9(?:[27]\\d|3[2-4]|4[248]|5[24]|6[2-6]))|4(?:4\\d\\d|6(?:11|[24689]\\d|72)))\\d{4}", , , , "22123456", , , [8], [7]], [, , "[67]\\d{7}", , , , "71234567", , , [8]], [, , "8001[07]\\d{4}", , , , "800171234", , , [9]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "50\\d{6}", , , , "50123456", , , [8], [7]], "BO", 591, "00(?:1\\d)?", "0", , , "0(1\\d)?", , , , [[
-        ,
-        "(\\d)(\\d{7})",
-        "$1 $2",
-        ["[235]|4[46]"],
-        ,
-        "0$CC $1"
-      ], [, "(\\d{8})", "$1", ["[67]"], , "0$CC $1"], [, "(\\d{3})(\\d{2})(\\d{4})", "$1 $2 $3", ["8"], , "0$CC $1"]], , [, , , , , , , , , [-1]], , , [, , "8001[07]\\d{4}", , , , , , , [9]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      BQ: [
-        ,
-        [, , "(?:[34]1|7\\d)\\d{5}", , , , , , , [7]],
-        [, , "(?:318[023]|41(?:6[023]|70)|7(?:1[578]|2[05]|50)\\d)\\d{3}", , , , "7151234"],
-        [, , "(?:31(?:8[14-8]|9[14578])|416[14-9]|7(?:0[01]|7[07]|8\\d|9[056])\\d)\\d{3}", , , , "3181234"],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        "BQ",
-        599,
+        [, , "9(?:(?:39[5-7]|76[018])\\d|475[0-6])\\d{4}", , , , "976012345"],
+        "BL",
+        590,
         "00",
+        "0",
         ,
         ,
-        ,
-        ,
+        "0",
         ,
         ,
         ,
@@ -5628,99 +6202,26 @@ var factoryOutput = (() => {
         ,
         [, , , , , , , , , [-1]],
         ,
-        "[347]",
+        ,
         [, , , , , , , , , [-1]],
         [, , , , , , , , , [-1]],
         ,
         ,
         [, , , , , , , , , [-1]]
       ],
-      BR: [, [, , "[1-467]\\d{9,10}|55[0-46-9]\\d{8}|[34]\\d{7}|55\\d{7,8}|(?:5[0-46-9]|[89]\\d)\\d{7,9}", , , , , , , [8, 9, 10, 11]], [, , "(?:[14689][1-9]|2[12478]|3[1-578]|5[13-5]|7[13-579])[2-5]\\d{7}", , , , "1123456789", , , [10], [8]], [, , "(?:[14689][1-9]|2[12478]|3[1-578]|5[13-5]|7[13-579])(?:7|9\\d)\\d{7}", , , , "11961234567", , , [10, 11], [8, 9]], [, , "800\\d{6,7}", , , , "800123456", , , [9, 10]], [, , "[59]00\\d{6,7}", , , , "500123456", , , [9, 10]], [
+      BM: [, [, , "(?:441|[58]\\d\\d|900)\\d{7}", , , , , , , [10], [7]], [, , "441(?:[46]\\d\\d|5(?:4\\d|60|89))\\d{4}", , , , "4414123456", , , , [7]], [
         ,
         ,
-        "(?:30[03]\\d{3}|4(?:0(?:0\\d|20)|370|864))\\d{4}|300\\d{5}",
-        ,
-        ,
-        ,
-        "40041234",
-        ,
-        ,
-        [8, 10]
-      ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "BR", 55, "00(?:1[245]|2[1-35]|31|4[13]|[56]5|99)", "0", , , "(?:0|90)(?:(1[245]|2[1-35]|31|4[13]|[56]5|99)(\\d{10,11}))?", "$2", , , [[, "(\\d{3,6})", "$1", ["1(?:1[25-8]|2[357-9]|3[02-68]|4[12568]|5|6[0-8]|8[015]|9[0-47-9])|321|610"]], [, "(\\d{4})(\\d{4})", "$1-$2", ["300|4(?:0[02]|37|86)", "300|4(?:0(?:0|20)|370|864)"]], [, "(\\d{4})(\\d{4})", "$1-$2", ["[2-57]", "[2357]|4(?:[0-24-9]|3(?:[0-689]|7[1-9]))"]], [
-        ,
-        "(\\d{3})(\\d{2,3})(\\d{4})",
-        "$1 $2 $3",
-        ["(?:[358]|90)0"],
-        "0$1"
-      ], [, "(\\d{5})(\\d{4})", "$1-$2", ["9"]], [, "(\\d{2})(\\d{4})(\\d{4})", "$1 $2-$3", ["(?:[14689][1-9]|2[12478]|3[1-578]|5[13-5]|7[13-579])[2-57]"], "($1)", "0 $CC ($1)"], [, "(\\d{2})(\\d{5})(\\d{4})", "$1 $2-$3", ["[16][1-9]|[2-57-9]"], "($1)", "0 $CC ($1)"]], [[, "(\\d{4})(\\d{4})", "$1-$2", ["300|4(?:0[02]|37|86)", "300|4(?:0(?:0|20)|370|864)"]], [, "(\\d{3})(\\d{2,3})(\\d{4})", "$1 $2 $3", ["(?:[358]|90)0"], "0$1"], [
-        ,
-        "(\\d{2})(\\d{4})(\\d{4})",
-        "$1 $2-$3",
-        ["(?:[14689][1-9]|2[12478]|3[1-578]|5[13-5]|7[13-579])[2-57]"],
-        "($1)",
-        "0 $CC ($1)"
-      ], [, "(\\d{2})(\\d{5})(\\d{4})", "$1 $2-$3", ["[16][1-9]|[2-57-9]"], "($1)", "0 $CC ($1)"]], [, , , , , , , , , [-1]], , , [, , "(?:30[03]\\d{3}|4(?:0(?:0\\d|20)|864))\\d{4}|800\\d{6,7}|300\\d{5}", , , , , , , [8, 9, 10]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      BS: [
-        ,
-        [, , "(?:242|[58]\\d\\d|900)\\d{7}", , , , , , , [10], [7]],
-        [, , "242(?:3(?:02|[236][1-9]|4[0-24-9]|5[0-68]|7[347]|8[0-4]|9[2-467])|461|502|6(?:0[1-5]|12|2[013]|[45]0|7[67]|8[78]|9[89])|7(?:02|88))\\d{4}", , , , "2423456789", , , , [7]],
-        [
-          ,
-          ,
-          "242(?:3(?:5[79]|7[56]|95)|4(?:[23][1-9]|4[1-35-9]|5[1-8]|6[2-8]|7\\d|81)|5(?:2[45]|3[35]|44|5[1-46-9]|65|77)|6[34]6|7(?:27|38)|8(?:0[1-9]|1[02-9]|2\\d|3[0-4]|[89]9))\\d{4}",
-          ,
-          ,
-          ,
-          "2423591234",
-          ,
-          ,
-          ,
-          [7]
-        ],
-        [, , "242300\\d{4}|8(?:00|33|44|55|66|77|88)[2-9]\\d{6}", , , , "8002123456", , , , [7]],
-        [, , "900[2-9]\\d{6}", , , , "9002123456"],
-        [, , , , , , , , , [-1]],
-        [, , "52(?:3(?:[2-46-9][02-9]\\d|5(?:[02-46-9]\\d|5[0-46-9]))|4(?:[2-478][02-9]\\d|5(?:[034]\\d|2[024-9]|5[0-46-9])|6(?:0[1-9]|[2-9]\\d)|9(?:[05-9]\\d|2[0-5]|49)))\\d{4}|52[34][2-9]1[02-9]\\d{4}|5(?:00|2[125-9]|3[23]|44|66|77|88)[2-9]\\d{6}", , , , "5002345678"],
-        [, , , , , , , , , [-1]],
-        "BS",
-        1,
-        "011",
-        "1",
-        ,
-        ,
-        "([3-8]\\d{6})$|1",
-        "242$1",
+        "441(?:[2378]\\d|5[0-39]|9[02])\\d{5}",
         ,
         ,
         ,
-        ,
-        [, , , , , , , , , [-1]],
-        ,
-        "242",
-        [, , , , , , , , , [-1]],
-        [, , "242225\\d{4}", , , , "2422250123"],
-        ,
-        ,
-        [, , , , , , , , , [-1]]
-      ],
-      BT: [, [, , "[178]\\d{7}|[2-8]\\d{6}", , , , , , , [7, 8], [6]], [, , "(?:2[3-6]|[34][5-7]|5[236]|6[2-46]|7[246]|8[2-4])\\d{5}", , , , "2345678", , , [7], [6]], [, , "(?:1[67]|[78]7)\\d{6}", , , , "17123456", , , [8]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "BT", 975, "00", , , , , , , , [[, "(\\d{3})(\\d{3})", "$1 $2", ["[2-7]"]], [, "(\\d)(\\d{3})(\\d{3})", "$1 $2 $3", ["[2-6]|7[246]|8[2-4]"]], [
-        ,
-        "(\\d{2})(\\d{2})(\\d{2})(\\d{2})",
-        "$1 $2 $3 $4",
-        ["1[67]|[78]"]
-      ]], [[, "(\\d)(\\d{3})(\\d{3})", "$1 $2 $3", ["[2-6]|7[246]|8[2-4]"]], [, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["1[67]|[78]"]]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      BW: [, [, , "(?:0800|(?:[37]|800)\\d)\\d{6}|(?:[2-6]\\d|90)\\d{5}", , , , , , , [7, 8, 10]], [, , "(?:2(?:4[0-48]|6[0-24]|9[0578])|3(?:1[0-35-9]|55|[69]\\d|7[013]|81)|4(?:6[03]|7[1267]|9[0-5])|5(?:3[03489]|4[0489]|7[1-47]|88|9[0-49])|6(?:2[1-35]|5[149]|8[013467]))\\d{4}", , , , "2401234", , , [7]], [
-        ,
-        ,
-        "(?:321|7[1-8]\\d)\\d{5}",
+        "4413701234",
         ,
         ,
         ,
-        "71123456",
-        ,
-        ,
-        [8]
-      ], [, , "(?:0800|800\\d)\\d{6}", , , , "0800012345", , , [10]], [, , "90\\d{5}", , , , "9012345", , , [7]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "79(?:1(?:[0-2]\\d|3[0-8])|2[0-7]\\d)\\d{3}", , , , "79101234", , , [8]], "BW", 267, "00", , , , , , , , [[, "(\\d{2})(\\d{5})", "$1 $2", ["90"]], [, "(\\d{3})(\\d{4})", "$1 $2", ["[24-6]|3[15-9]"]], [, "(\\d{2})(\\d{3})(\\d{3})", "$1 $2 $3", ["[37]"]], [, "(\\d{4})(\\d{3})(\\d{3})", "$1 $2 $3", ["0"]], [, "(\\d{3})(\\d{4})(\\d{3})", "$1 $2 $3", ["8"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [
+        [7]
+      ], [, , "8(?:00|33|44|55|66|77|88)[2-9]\\d{6}", , , , "8002123456"], [, , "900[2-9]\\d{6}", , , , "9002123456"], [, , , , , , , , , [-1]], [, , "52(?:3(?:[2-46-9][02-9]\\d|5(?:[02-46-9]\\d|5[0-46-9]))|4(?:[2-478][02-9]\\d|5(?:[034]\\d|2[024-9]|5[0-46-9])|6(?:0[1-9]|[2-9]\\d)|9(?:[05-9]\\d|2[0-5]|49)))\\d{4}|52[34][2-9]1[02-9]\\d{4}|5(?:00|2[125-9]|3[23]|44|66|77|88)[2-9]\\d{6}", , , , "5002345678"], [, , , , , , , , , [-1]], "BM", 1, "011", "1", , , "([2-9]\\d{6})$|1", "441$1", , , , , [, , , , , , , , , [-1]], , "441", [, , , , , , , , , [-1]], [
         ,
         ,
         ,
@@ -5732,99 +6233,227 @@ var factoryOutput = (() => {
         ,
         [-1]
       ], , , [, , , , , , , , , [-1]]],
-      BY: [, [, , "(?:[12]\\d|33|44|902)\\d{7}|8(?:0[0-79]\\d{5,7}|[1-7]\\d{9})|8(?:1[0-489]|[5-79]\\d)\\d{7}|8[1-79]\\d{6,7}|8[0-79]\\d{5}|8\\d{5}", , , , , , , [6, 7, 8, 9, 10, 11], [5]], [, , "(?:1(?:5(?:1[1-5]|[24]\\d|6[2-4]|9[1-7])|6(?:[235]\\d|4[1-7])|7\\d\\d)|2(?:1(?:[246]\\d|3[0-35-9]|5[1-9])|2(?:[235]\\d|4[0-8])|3(?:[26]\\d|3[02-79]|4[024-7]|5[03-7])))\\d{5}", , , , "152450911", , , [9], [5, 6, 7]], [, , "(?:2(?:5[5-79]|9[1-9])|(?:33|44)\\d)\\d{6}", , , , "294911911", , , [9]], [
+      BN: [, [, , "[2-578]\\d{6}", , , , , , , [7]], [, , "22[0-7]\\d{4}|(?:2[013-9]|[34]\\d|5[0-25-9])\\d{5}", , , , "2345678"], [, , "(?:22[89]|[78]\\d\\d)\\d{4}", , , , "7123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "5[34]\\d{5}", , , , "5345678"], "BN", 673, "00", , , , , , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[2-578]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      BO: [, [, , "(?:[2-7]\\d\\d|8001)\\d{5}", , , , , , , [8, 9], [7]], [
         ,
         ,
-        "800\\d{3,7}|8(?:0[13]|20\\d)\\d{7}",
-        ,
-        ,
-        ,
-        "8011234567"
-      ], [, , "(?:810|902)\\d{7}", , , , "9021234567", , , [10]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "249\\d{6}", , , , "249123456", , , [9]], "BY", 375, "810", "8", , , "0|80?", , "8~10", , [[, "(\\d{3})(\\d{3})", "$1 $2", ["800"], "8 $1"], [, "(\\d{3})(\\d{2})(\\d{2,4})", "$1 $2 $3", ["800"], "8 $1"], [, "(\\d{4})(\\d{2})(\\d{3})", "$1 $2-$3", ["1(?:5[169]|6[3-5]|7[179])|2(?:1[35]|2[34]|3[3-5])", "1(?:5[169]|6(?:3[1-3]|4|5[125])|7(?:1[3-9]|7[0-24-6]|9[2-7]))|2(?:1[35]|2[34]|3[3-5])"], "8 0$1"], [
-        ,
-        "(\\d{3})(\\d{2})(\\d{2})(\\d{2})",
-        "$1 $2-$3-$4",
-        ["1(?:[56]|7[467])|2[1-3]"],
-        "8 0$1"
-      ], [, "(\\d{2})(\\d{3})(\\d{2})(\\d{2})", "$1 $2-$3-$4", ["[1-4]"], "8 0$1"], [, "(\\d{3})(\\d{3,4})(\\d{4})", "$1 $2 $3", ["[89]"], "8 $1"]], , [, , , , , , , , , [-1]], , , [, , "800\\d{3,7}|(?:8(?:0[13]|10|20\\d)|902)\\d{7}"], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      BZ: [, [, , "(?:0800\\d|[2-8])\\d{6}", , , , , , , [7, 11]], [, , "(?:2(?:[02]\\d|36|[68]0)|[3-58](?:[02]\\d|[68]0)|7(?:[02]\\d|32|[68]0))\\d{4}", , , , "2221234", , , [7]], [, , "6[0-35-7]\\d{5}", , , , "6221234", , , [7]], [
-        ,
-        ,
-        "0800\\d{7}",
+        "(?:2(?:2\\d\\d|5(?:11|[258]\\d|9[67])|6(?:12|2\\d|9[34])|8(?:2[34]|39|62))|3(?:3\\d\\d|4(?:6\\d|8[24])|8(?:25|42|5[257]|86|9[25])|9(?:[27]\\d|3[2-4]|4[248]|5[24]|6[2-6]))|4(?:4\\d\\d|6(?:11|[24689]\\d|72)))\\d{4}",
         ,
         ,
         ,
-        "08001234123",
+        "22123456",
         ,
         ,
-        [11]
-      ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "BZ", 501, "00", , , , , , , , [[, "(\\d{3})(\\d{4})", "$1-$2", ["[2-8]"]], [, "(\\d)(\\d{3})(\\d{4})(\\d{3})", "$1-$2-$3-$4", ["0"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      CA: [, [, , "[2-9]\\d{9}|3\\d{6}", , , , , , , [7, 10]], [
+        [8],
+        [7]
+      ], [, , "(?:57|[67]\\d)\\d{6}", , , , "71234567", , , [8]], [, , "8001[07]\\d{4}", , , , "800171234", , , [9]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "50\\d{6}", , , , "50123456", , , [8], [7]], "BO", 591, "00(?:1\\d)?", "0", , , "0(1\\d)?", , , , [[, "(\\d)(\\d{7})", "$1 $2", ["[23]|4[46]|50"], , "0$CC $1"], [, "(\\d{8})", "$1", ["[5-7]"], , "0$CC $1"], [, "(\\d{3})(\\d{2})(\\d{4})", "$1 $2 $3", ["8"], , "0$CC $1"]], , [, , , , , , , , , [-1]], , , [, , "8001[07]\\d{4}", , , , , , , [9]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      BQ: [, [
         ,
         ,
-        "(?:2(?:04|[23]6|[48]9|5[07]|63)|3(?:06|43|54|6[578]|82)|4(?:03|1[68]|[26]8|3[178]|50|74)|5(?:06|1[49]|48|79|8[147])|6(?:04|[18]3|39|47|72)|7(?:0[59]|42|53|78|8[02])|8(?:[06]7|19|25|7[39])|9(?:0[25]|42))[2-9]\\d{6}",
+        "(?:[34]1|7\\d)\\d{5}",
         ,
         ,
         ,
-        "5062345678",
+        ,
+        ,
+        ,
+        [7]
+      ], [, , "(?:318[023]|41(?:6[023]|70)|7(?:1[578]|2[05]|50)\\d)\\d{3}", , , , "7151234"], [, , "(?:31(?:8[14-8]|9[14578])|416[14-9]|7(?:0[01]|7[07]|8\\d|9[056])\\d)\\d{3}", , , , "3181234"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "BQ", 599, "00", , , , , , , , , , [, , , , , , , , , [-1]], , "[347]", [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      BR: [, [, , "[1-467]\\d{9,10}|55[0-46-9]\\d{8}|[34]\\d{7}|55\\d{7,8}|(?:5[0-46-9]|[89]\\d)\\d{7,9}", , , , , , , [8, 9, 10, 11]], [
+        ,
+        ,
+        "(?:[14689][1-9]|2[12478]|3[1-578]|5[13-5]|7[13-579])[2-5]\\d{7}",
+        ,
+        ,
+        ,
+        "1123456789",
+        ,
+        ,
+        [10],
+        [8]
+      ], [, , "(?:[14689][1-9]|2[12478]|3[1-578]|5[13-5]|7[13-579])(?:7|9\\d)\\d{7}", , , , "11961234567", , , [10, 11], [8, 9]], [, , "800\\d{6,7}", , , , "800123456", , , [9, 10]], [, , "[59]00\\d{6,7}", , , , "500123456", , , [9, 10]], [, , "(?:30[03]\\d{3}|4(?:0(?:0\\d|20)|370|864))\\d{4}|300\\d{5}", , , , "40041234", , , [8, 10]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "BR", 55, "00(?:1[245]|2[1-35]|31|4[13]|[56]5|99)", "0", , , "(?:0|90)(?:(1[245]|2[1-35]|31|4[13]|[56]5|99)(\\d{10,11}))?", "$2", , , [
+        [, "(\\d{3,6})", "$1", ["1(?:1[25-8]|2[357-9]|3[02-68]|4[12568]|5|6[0-8]|8[015]|9[0-47-9])|321|610"]],
+        [, "(\\d{4})(\\d{4})", "$1-$2", ["300|4(?:0[02]|37|86)", "300|4(?:0(?:0|20)|370|864)"]],
+        [, "(\\d{4})(\\d{4})", "$1-$2", ["[2-57]", "[2357]|4(?:[0-24-9]|3(?:[0-689]|7[1-9]))"]],
+        [, "(\\d{3})(\\d{2,3})(\\d{4})", "$1 $2 $3", ["(?:[358]|90)0"], "0$1"],
+        [, "(\\d{5})(\\d{4})", "$1-$2", ["9"]],
+        [, "(\\d{2})(\\d{4})(\\d{4})", "$1 $2-$3", ["(?:[14689][1-9]|2[12478]|3[1-578]|5[13-5]|7[13-579])[2-57]"], "($1)", "0 $CC ($1)"],
+        [, "(\\d{2})(\\d{5})(\\d{4})", "$1 $2-$3", ["[16][1-9]|[2-57-9]"], "($1)", "0 $CC ($1)"]
+      ], [[
+        ,
+        "(\\d{4})(\\d{4})",
+        "$1-$2",
+        ["300|4(?:0[02]|37|86)", "300|4(?:0(?:0|20)|370|864)"]
+      ], [, "(\\d{3})(\\d{2,3})(\\d{4})", "$1 $2 $3", ["(?:[358]|90)0"], "0$1"], [, "(\\d{2})(\\d{4})(\\d{4})", "$1 $2-$3", ["(?:[14689][1-9]|2[12478]|3[1-578]|5[13-5]|7[13-579])[2-57]"], "($1)", "0 $CC ($1)"], [, "(\\d{2})(\\d{5})(\\d{4})", "$1 $2-$3", ["[16][1-9]|[2-57-9]"], "($1)", "0 $CC ($1)"]], [, , , , , , , , , [-1]], , , [, , "(?:30[03]\\d{3}|4(?:0(?:0\\d|20)|864))\\d{4}|800\\d{6,7}|300\\d{5}", , , , , , , [8, 9, 10]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      BS: [, [
+        ,
+        ,
+        "(?:242|[58]\\d\\d|900)\\d{7}",
+        ,
+        ,
+        ,
+        ,
         ,
         ,
         [10],
         [7]
-      ], [, , "(?:2(?:04|[23]6|[48]9|5[07]|63)|3(?:06|43|54|6[578]|82)|4(?:03|1[68]|[26]8|3[178]|50|74)|5(?:06|1[49]|48|79|8[147])|6(?:04|[18]3|39|47|72)|7(?:0[59]|42|53|78|8[02])|8(?:[06]7|19|25|7[39])|9(?:0[25]|42))[2-9]\\d{6}", , , , "5062345678", , , [10], [7]], [, , "8(?:00|33|44|55|66|77|88)[2-9]\\d{6}", , , , "8002123456", , , [10]], [, , "900[2-9]\\d{6}", , , , "9002123456", , , [10]], [, , , , , , , , , [-1]], [
-        ,
-        ,
-        "52(?:3(?:[2-46-9][02-9]\\d|5(?:[02-46-9]\\d|5[0-46-9]))|4(?:[2-478][02-9]\\d|5(?:[034]\\d|2[024-9]|5[0-46-9])|6(?:0[1-9]|[2-9]\\d)|9(?:[05-9]\\d|2[0-5]|49)))\\d{4}|52[34][2-9]1[02-9]\\d{4}|(?:5(?:2[125-9]|3[23]|44|66|77|88)|6(?:22|33))[2-9]\\d{6}",
-        ,
-        ,
-        ,
-        "5219023456",
-        ,
-        ,
-        [10]
-      ], [, , "600[2-9]\\d{6}", , , , "6002012345", , , [10]], "CA", 1, "011", "1", , , "1", , , 1, , , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "310\\d{4}", , , , "3101234", , , [7]], , , [, , , , , , , , , [-1]]],
-      CC: [, [, , "1(?:[0-79]\\d{8}(?:\\d{2})?|8[0-24-9]\\d{7})|[148]\\d{8}|1\\d{5,7}", , , , , , , [6, 7, 8, 9, 10, 12]], [, , "8(?:51(?:0(?:02|31|60|89)|1(?:18|76)|223)|91(?:0(?:1[0-2]|29)|1(?:[28]2|50|79)|2(?:10|64)|3(?:[06]8|22)|4[29]8|62\\d|70[23]|959))\\d{3}", , , , "891621234", , , [9], [8]], [
-        ,
-        ,
-        "4(?:79[01]|83[0-36-9]|95[0-3])\\d{5}|4(?:[0-36]\\d|4[047-9]|[58][0-24-9]|7[02-8]|9[0-47-9])\\d{6}",
-        ,
-        ,
-        ,
-        "412345678",
-        ,
-        ,
-        [9]
-      ], [, , "180(?:0\\d{3}|2)\\d{3}", , , , "1800123456", , , [7, 10]], [, , "190[0-26]\\d{6}", , , , "1900123456", , , [10]], [, , "13(?:00\\d{6}(?:\\d{2})?|45[0-4]\\d{3})|13\\d{4}", , , , "1300123456", , , [6, 8, 10, 12]], [, , , , , , , , , [-1]], [, , "14(?:5(?:1[0458]|[23][458])|71\\d)\\d{4}", , , , "147101234", , , [9]], "CC", 61, "001[14-689]|14(?:1[14]|34|4[17]|[56]6|7[47]|88)0011", "0", , , "([59]\\d{7})$|0", "8$1", "0011", , , , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      CD: [, [
-        ,
-        ,
-        "(?:(?:[189]|5\\d)\\d|2)\\d{7}|[1-68]\\d{6}",
+      ], [, , "242(?:3(?:02|[236][1-9]|4[0-24-9]|5[0-68]|7[347]|8[0-4]|9[2-467])|461|502|6(?:0[1-5]|12|2[013]|[45]0|7[67]|8[78]|9[89])|7(?:02|88))\\d{4}", , , , "2423456789", , , , [7]], [, , "242(?:3(?:5[79]|7[56]|95)|4(?:[23][1-9]|4[1-35-9]|5[1-8]|6[2-8]|7\\d|81)|5(?:2[45]|3[35]|44|5[1-46-9]|65|77)|6[34]6|7(?:27|38)|8(?:0[1-9]|1[02-9]|2\\d|3[0-4]|[89]9))\\d{4}", , , , "2423591234", , , , [7]], [, , "242300\\d{4}|8(?:00|33|44|55|66|77|88)[2-9]\\d{6}", , , , "8002123456", , , , [7]], [, , "900[2-9]\\d{6}", , , , "9002123456"], [
         ,
         ,
         ,
         ,
         ,
         ,
-        [7, 8, 9, 10]
-      ], [, , "(?:(?:12|573)\\d\\d|276)\\d{5}|[1-6]\\d{6}", , , , "1234567"], [, , "88\\d{5}|(?:8[0-69]|9[016-9])\\d{7}", , , , "991234567", , , [7, 9]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "CD", 243, "00", "0", , , "0", , , , [[, "(\\d{2})(\\d{2})(\\d{3})", "$1 $2 $3", ["88"], "0$1"], [, "(\\d{2})(\\d{5})", "$1 $2", ["[1-6]"], "0$1"], [, "(\\d{2})(\\d{2})(\\d{4})", "$1 $2 $3", ["2"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["1"], "0$1"], [
         ,
-        "(\\d{3})(\\d{3})(\\d{3})",
+        ,
+        ,
+        [-1]
+      ], [, , "52(?:3(?:[2-46-9][02-9]\\d|5(?:[02-46-9]\\d|5[0-46-9]))|4(?:[2-478][02-9]\\d|5(?:[034]\\d|2[024-9]|5[0-46-9])|6(?:0[1-9]|[2-9]\\d)|9(?:[05-9]\\d|2[0-5]|49)))\\d{4}|52[34][2-9]1[02-9]\\d{4}|5(?:00|2[125-9]|3[23]|44|66|77|88)[2-9]\\d{6}", , , , "5002345678"], [, , , , , , , , , [-1]], "BS", 1, "011", "1", , , "([3-8]\\d{6})$|1", "242$1", , , , , [, , , , , , , , , [-1]], , "242", [, , , , , , , , , [-1]], [, , "242225\\d{4}", , , , "2422250123"], , , [, , , , , , , , , [-1]]],
+      BT: [, [, , "[178]\\d{7}|[2-8]\\d{6}", , , , , , , [7, 8], [6]], [
+        ,
+        ,
+        "(?:2[3-6]|[34][5-7]|5[236]|6[2-46]|7[246]|8[2-4])\\d{5}",
+        ,
+        ,
+        ,
+        "2345678",
+        ,
+        ,
+        [7],
+        [6]
+      ], [, , "(?:1[67]|[78]7)\\d{6}", , , , "17123456", , , [8]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "BT", 975, "00", , , , , , , , [[, "(\\d{3})(\\d{3})", "$1 $2", ["[2-7]"]], [, "(\\d)(\\d{3})(\\d{3})", "$1 $2 $3", ["[2-6]|7[246]|8[2-4]"]], [, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["1[67]|[78]"]]], [[, "(\\d)(\\d{3})(\\d{3})", "$1 $2 $3", ["[2-6]|7[246]|8[2-4]"]], [, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["1[67]|[78]"]]], [, , , , , , , , , [-1]], , , [
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        [-1]
+      ], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      BW: [, [, , "(?:0800|(?:[37]|800)\\d)\\d{6}|(?:[2-6]\\d|90)\\d{5}", , , , , , , [7, 8, 10]], [, , "(?:2(?:4[0-48]|6[0-24]|9[0578])|3(?:1[0-35-9]|55|[69]\\d|7[013]|81)|4(?:6[03]|7[1267]|9[0-5])|5(?:3[03489]|4[0489]|7[1-47]|88|9[0-49])|6(?:2[1-35]|5[149]|8[013467]))\\d{4}", , , , "2401234", , , [7]], [, , "(?:321|7(?:[1-8]\\d|9[03]))\\d{5}", , , , "71123456", , , [8]], [, , "(?:0800|800\\d)\\d{6}", , , , "0800012345", , , [10]], [, , "90\\d{5}", , , , "9012345", , , [7]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [
+        ,
+        ,
+        "79(?:1(?:[0-2]\\d|3[0-8])|2[0-7]\\d)\\d{3}",
+        ,
+        ,
+        ,
+        "79101234",
+        ,
+        ,
+        [8]
+      ], "BW", 267, "00", , , , , , , , [[, "(\\d{2})(\\d{5})", "$1 $2", ["90"]], [, "(\\d{3})(\\d{4})", "$1 $2", ["[24-6]|3[15-9]"]], [, "(\\d{2})(\\d{3})(\\d{3})", "$1 $2 $3", ["[37]"]], [, "(\\d{4})(\\d{3})(\\d{3})", "$1 $2 $3", ["0"]], [, "(\\d{3})(\\d{4})(\\d{3})", "$1 $2 $3", ["8"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      BY: [, [, , "(?:[12]\\d|33|44|902)\\d{7}|8(?:0[0-79]\\d{5,7}|[1-7]\\d{9})|8(?:1[0-489]|[5-79]\\d)\\d{7}|8[1-79]\\d{6,7}|8[0-79]\\d{5}|8\\d{5}", , , , , , , [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ], [5]], [, , "(?:1(?:5(?:1[1-5]|[24]\\d|6[2-4]|9[1-7])|6(?:[235]\\d|4[1-7])|7\\d\\d)|2(?:1(?:[246]\\d|3[0-35-9]|5[1-9])|2(?:[235]\\d|4[0-8])|3(?:[26]\\d|3[02-79]|4[024-7]|5[03-7])))\\d{5}", , , , "152450911", , , [9], [5, 6, 7]], [, , "(?:2(?:5[5-79]|9[1-9])|(?:33|44)\\d)\\d{6}", , , , "294911911", , , [9]], [, , "800\\d{3,7}|8(?:0[13]|20\\d)\\d{7}", , , , "8011234567"], [, , "(?:810|902)\\d{7}", , , , "9021234567", , , [10]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "249\\d{6}", , , , "249123456", , , [9]], "BY", 375, "810", "8", , , "0|80?", , "8~10", , [[
+        ,
+        "(\\d{3})(\\d{3})",
+        "$1 $2",
+        ["800"],
+        "8 $1"
+      ], [, "(\\d{3})(\\d{2})(\\d{2,4})", "$1 $2 $3", ["800"], "8 $1"], [, "(\\d{4})(\\d{2})(\\d{3})", "$1 $2-$3", ["1(?:5[169]|6[3-5]|7[179])|2(?:1[35]|2[34]|3[3-5])", "1(?:5[169]|6(?:3[1-3]|4|5[125])|7(?:1[3-9]|7[0-24-6]|9[2-7]))|2(?:1[35]|2[34]|3[3-5])"], "8 0$1"], [, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2-$3-$4", ["1(?:[56]|7[467])|2[1-3]"], "8 0$1"], [, "(\\d{2})(\\d{3})(\\d{2})(\\d{2})", "$1 $2-$3-$4", ["[1-4]"], "8 0$1"], [
+        ,
+        "(\\d{3})(\\d{3,4})(\\d{4})",
         "$1 $2 $3",
         ["[89]"],
-        "0$1"
-      ], [, "(\\d{2})(\\d{2})(\\d{3})(\\d{3})", "$1 $2 $3 $4", ["5"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      CF: [
+        "8 $1"
+      ]], , [, , , , , , , , , [-1]], , , [, , "800\\d{3,7}|(?:8(?:0[13]|10|20\\d)|902)\\d{7}"], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      BZ: [, [, , "(?:0800\\d|[2-8])\\d{6}", , , , , , , [7, 11]], [, , "(?:2(?:[02]\\d|36|[68]0)|[3-58](?:[02]\\d|[68]0)|7(?:[02]\\d|32|[68]0))\\d{4}", , , , "2221234", , , [7]], [, , "6[0-35-7]\\d{5}", , , , "6221234", , , [7]], [, , "0800\\d{7}", , , , "08001234123", , , [11]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "BZ", 501, "00", , , , , , , , [[, "(\\d{3})(\\d{4})", "$1-$2", ["[2-8]"]], [
         ,
-        [, , "8776\\d{4}|(?:[27]\\d|61)\\d{6}", , , , , , , [8]],
-        [, , "(?:2[12]|61)\\d{6}", , , , "21612345"],
-        [, , "7[02-7]\\d{6}", , , , "70012345"],
+        "(\\d)(\\d{3})(\\d{4})(\\d{3})",
+        "$1-$2-$3-$4",
+        ["0"]
+      ]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      CA: [
+        ,
+        [, , "[2-9]\\d{9}|3\\d{6}", , , , , , , [7, 10]],
+        [, , "(?:2(?:04|[23]6|[48]9|5[07]|63)|3(?:06|43|54|6[578]|82)|4(?:03|1[68]|[26]8|3[178]|50|74)|5(?:06|1[49]|48|79|8[147])|6(?:04|[18]3|39|47|72)|7(?:0[59]|42|53|78|8[02])|8(?:[06]7|19|25|7[39])|9(?:0[25]|42))[2-9]\\d{6}", , , , "5062345678", , , [10], [7]],
+        [
+          ,
+          ,
+          "(?:2(?:04|[23]6|[48]9|5[07]|63)|3(?:06|43|54|6[578]|82)|4(?:03|1[68]|[26]8|3[178]|50|74)|5(?:06|1[49]|48|79|8[147])|6(?:04|[18]3|39|47|72)|7(?:0[59]|42|53|78|8[02])|8(?:[06]7|19|25|7[39])|9(?:0[25]|42))[2-9]\\d{6}",
+          ,
+          ,
+          ,
+          "5062345678",
+          ,
+          ,
+          [10],
+          [7]
+        ],
+        [, , "8(?:00|33|44|55|66|77|88)[2-9]\\d{6}", , , , "8002123456", , , [10]],
+        [, , "900[2-9]\\d{6}", , , , "9002123456", , , [10]],
         [, , , , , , , , , [-1]],
-        [, , "8776\\d{4}", , , , "87761234"],
+        [, , "52(?:3(?:[2-46-9][02-9]\\d|5(?:[02-46-9]\\d|5[0-46-9]))|4(?:[2-478][02-9]\\d|5(?:[034]\\d|2[024-9]|5[0-46-9])|6(?:0[1-9]|[2-9]\\d)|9(?:[05-9]\\d|2[0-5]|49)))\\d{4}|52[34][2-9]1[02-9]\\d{4}|(?:5(?:2[125-9]|3[23]|44|66|77|88)|6(?:22|33))[2-9]\\d{6}", , , , "5219023456", , , [10]],
+        [, , "600[2-9]\\d{6}", , , , "6002012345", , , [10]],
+        "CA",
+        1,
+        "011",
+        "1",
+        ,
+        ,
+        "1",
+        ,
+        ,
+        1,
+        ,
+        ,
+        [, , , , , , , , , [-1]],
+        ,
+        ,
+        [, , , , , , , , , [-1]],
+        [, , "310\\d{4}", , , , "3101234", , , [7]],
+        ,
+        ,
+        [, , , , , , , , , [-1]]
+      ],
+      CC: [, [, , "1(?:[0-79]\\d{8}(?:\\d{2})?|8[0-24-9]\\d{7})|[148]\\d{8}|1\\d{5,7}", , , , , , , [6, 7, 8, 9, 10, 12]], [, , "8(?:51(?:0(?:02|31|60|89)|1(?:18|76)|223)|91(?:0(?:1[0-2]|29)|1(?:[28]2|50|79)|2(?:10|64)|3(?:[06]8|22)|4[29]8|62\\d|70[23]|959))\\d{3}", , , , "891621234", , , [9], [8]], [, , "4(?:79[01]|83[0-36-9]|95[0-3])\\d{5}|4(?:[0-36]\\d|4[047-9]|[58][0-24-9]|7[02-8]|9[0-47-9])\\d{6}", , , , "412345678", , , [9]], [
+        ,
+        ,
+        "180(?:0\\d{3}|2)\\d{3}",
+        ,
+        ,
+        ,
+        "1800123456",
+        ,
+        ,
+        [7, 10]
+      ], [, , "190[0-26]\\d{6}", , , , "1900123456", , , [10]], [, , "13(?:00\\d{6}(?:\\d{2})?|45[0-4]\\d{3})|13\\d{4}", , , , "1300123456", , , [6, 8, 10, 12]], [, , , , , , , , , [-1]], [, , "14(?:5(?:1[0458]|[23][458])|71\\d)\\d{4}", , , , "147101234", , , [9]], "CC", 61, "001[14-689]|14(?:1[14]|34|4[17]|[56]6|7[47]|88)0011", "0", , , "([59]\\d{7})$|0", "8$1", "0011", , , , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      CD: [, [, , "(?:(?:[189]|5\\d)\\d|2)\\d{7}|[1-68]\\d{6}", , , , , , , [7, 8, 9, 10]], [
+        ,
+        ,
+        "(?:(?:12|573)\\d\\d|276)\\d{5}|[1-6]\\d{6}",
+        ,
+        ,
+        ,
+        "1234567"
+      ], [, , "88\\d{5}|(?:8[0-69]|9[016-9])\\d{7}", , , , "991234567", , , [7, 9]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "CD", 243, "00", "0", , , "0", , , , [[, "(\\d{2})(\\d{2})(\\d{3})", "$1 $2 $3", ["88"], "0$1"], [, "(\\d{2})(\\d{5})", "$1 $2", ["[1-6]"], "0$1"], [, "(\\d{2})(\\d{2})(\\d{4})", "$1 $2 $3", ["2"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["1"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[89]"], "0$1"], [
+        ,
+        "(\\d{2})(\\d{2})(\\d{3})(\\d{3})",
+        "$1 $2 $3 $4",
+        ["5"],
+        "0$1"
+      ]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      CF: [, [, , "8776\\d{4}|(?:[27]\\d|61)\\d{6}", , , , , , , [8]], [, , "(?:2[12]|61)\\d{6}", , , , "21612345"], [, , "7[02-7]\\d{6}", , , , "70012345"], [, , , , , , , , , [-1]], [, , "8776\\d{4}", , , , "87761234"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "CF", 236, "00", , , , , , , , [[, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[26-8]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      CG: [
+        ,
+        [, , "222\\d{6}|(?:0\\d|80)\\d{7}", , , , , , , [9]],
+        [, , "222[1-589]\\d{5}", , , , "222123456"],
+        [, , "026(?:1[0-5]|6[6-9])\\d{4}|0(?:[14-6]\\d\\d|2(?:40|5[5-8]|6[07-9]))\\d{5}", , , , "061234567"],
+        [, , , , , , , , , [-1]],
+        [, , "80[0-2]\\d{6}", , , , "800123456"],
         [, , , , , , , , , [-1]],
         [, , , , , , , , , [-1]],
         [, , , , , , , , , [-1]],
-        "CF",
-        236,
+        "CG",
+        242,
         "00",
         ,
         ,
@@ -5833,7 +6462,7 @@ var factoryOutput = (() => {
         ,
         ,
         ,
-        [[, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[26-8]"]]],
+        [[, "(\\d)(\\d{4})(\\d{4})", "$1 $2 $3", ["8"]], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["[02]"]]],
         ,
         [, , , , , , , , , [-1]],
         ,
@@ -5844,92 +6473,103 @@ var factoryOutput = (() => {
         ,
         [, , , , , , , , , [-1]]
       ],
-      CG: [, [, , "222\\d{6}|(?:0\\d|80)\\d{7}", , , , , , , [9]], [, , "222[1-589]\\d{5}", , , , "222123456"], [, , "026(?:1[0-5]|6[6-9])\\d{4}|0(?:[14-6]\\d\\d|2(?:40|5[5-8]|6[07-9]))\\d{5}", , , , "061234567"], [, , , , , , , , , [-1]], [, , "80[0-2]\\d{6}", , , , "800123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "CG", 242, "00", , , , , , , , [[, "(\\d)(\\d{4})(\\d{4})", "$1 $2 $3", ["8"]], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["[02]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      CH: [, [
+      CH: [, [, , "8\\d{11}|[2-9]\\d{8}", , , , , , , [9, 12]], [
         ,
         ,
-        "8\\d{11}|[2-9]\\d{8}",
-        ,
-        ,
+        "(?:2[12467]|3[1-4]|4[134]|5[256]|6[12]|[7-9]1)\\d{7}",
         ,
         ,
         ,
+        "212345678",
         ,
-        [9, 12]
-      ], [, , "(?:2[12467]|3[1-4]|4[134]|5[256]|6[12]|[7-9]1)\\d{7}", , , , "212345678", , , [9]], [, , "(?:6[89]|7[235-9])\\d{7}", , , , "781234567", , , [9]], [, , "800\\d{6}", , , , "800123456", , , [9]], [, , "90[016]\\d{6}", , , , "900123456", , , [9]], [, , "84[0248]\\d{6}", , , , "840123456", , , [9]], [, , "878\\d{6}", , , , "878123456", , , [9]], [, , , , , , , , , [-1]], "CH", 41, "00", "0", , , "0", , , , [[, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["8[047]|90"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[2-79]|81"], "0$1"], [
         ,
-        "(\\d{3})(\\d{2})(\\d{3})(\\d{2})(\\d{2})",
-        "$1 $2 $3 $4 $5",
-        ["8"],
-        "0$1"
-      ]], , [, , "74[0248]\\d{6}", , , , "740123456", , , [9]], , , [, , , , , , , , , [-1]], [, , "5[18]\\d{7}", , , , "581234567", , , [9]], , , [, , "860\\d{9}", , , , "860123456789", , , [12]]],
-      CI: [, [, , "[02]\\d{9}", , , , , , , [10]], [, , "2(?:[15]\\d{3}|7(?:2(?:0[23]|1[2357]|2[245]|3[45]|4[3-5])|3(?:06|1[69]|[2-6]7)))\\d{5}", , , , "2123456789"], [, , "0[157]\\d{8}", , , , "0123456789"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "CI", 225, "00", , , , , , , , [[
+        [9]
+      ], [, , "(?:6[89]|7[235-9])\\d{7}", , , , "781234567", , , [9]], [, , "800\\d{6}", , , , "800123456", , , [9]], [, , "90[016]\\d{6}", , , , "900123456", , , [9]], [, , "84[0248]\\d{6}", , , , "840123456", , , [9]], [, , "878\\d{6}", , , , "878123456", , , [9]], [, , , , , , , , , [-1]], "CH", 41, "00", "0", , , "0", , , , [[, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["8[047]|90"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[2-79]|81"], "0$1"], [, "(\\d{3})(\\d{2})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4 $5", ["8"], "0$1"]], , [
         ,
-        "(\\d{2})(\\d{2})(\\d)(\\d{5})",
+        ,
+        "74[0248]\\d{6}",
+        ,
+        ,
+        ,
+        "740123456",
+        ,
+        ,
+        [9]
+      ], , , [, , , , , , , , , [-1]], [, , "5[18]\\d{7}", , , , "581234567", , , [9]], , , [, , "860\\d{9}", , , , "860123456789", , , [12]]],
+      CI: [, [, , "[02]\\d{9}", , , , , , , [10]], [, , "2(?:[15]\\d{3}|7(?:2(?:0[23]|1[2357]|2[245]|3[45]|4[3-5])|3(?:06|1[69]|[2-6]7)))\\d{5}", , , , "2123456789"], [, , "0[157]\\d{8}", , , , "0123456789"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "CI", 225, "00", , , , , , , , [[, "(\\d{2})(\\d{2})(\\d)(\\d{5})", "$1 $2 $3 $4", ["2"]], [
+        ,
+        "(\\d{2})(\\d{2})(\\d{2})(\\d{4})",
         "$1 $2 $3 $4",
-        ["2"]
-      ], [, "(\\d{2})(\\d{2})(\\d{2})(\\d{4})", "$1 $2 $3 $4", ["0"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+        ["0"]
+      ]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
       CK: [, [, , "[2-578]\\d{4}", , , , , , , [5]], [, , "(?:2\\d|3[13-7]|4[1-5])\\d{3}", , , , "21234"], [, , "[578]\\d{4}", , , , "71234"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "CK", 682, "00", , , , , , , , [[, "(\\d{2})(\\d{3})", "$1 $2", ["[2-578]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      CL: [, [
+      CL: [, [, , "12300\\d{6}|6\\d{9,10}|[2-9]\\d{8}", , , , , , , [9, 10, 11]], [
         ,
         ,
-        "12300\\d{6}|6\\d{9,10}|[2-9]\\d{8}",
-        ,
-        ,
-        ,
+        "2(?:1982[0-6]|3314[05-9])\\d{3}|(?:2(?:1(?:160|962)|3(?:(?:[24]\\d|50)\\d|3(?:[0346-9]\\d|1[0-35-9]|2[1-9]|5[0-24-9])|600)|646[59])|(?:600|80[1-9])\\d\\d|9(?:(?:10[0-2]|7[1-9]\\d)\\d|3(?:[0-57-9]\\d\\d|6(?:0[02-9]|[1-9]\\d))|6(?:[0-8]\\d\\d|9(?:[02-79]\\d|1[05-9]))|9(?:[03-9]\\d\\d|1(?:[0235-9]\\d|4[0-24-9])|2(?:[0-79]\\d|8[0-46-9]))))\\d{4}|(?:22|3[2-5]|[47][1-35]|5[1-3578]|6[13-57]|8[1-9]|9[2458])\\d{7}",
         ,
         ,
         ,
-        [9, 10, 11]
-      ], [, , "2(?:1982[0-6]|3314[05-9])\\d{3}|(?:2(?:1(?:160|962)|3(?:(?:2\\d|50)\\d|3(?:[034679]\\d|1[0-35-9]|2[1-9]|5[0-24-9]|8[0-389])|600)|646[59])|(?:600|80[1-9])\\d\\d|9(?:(?:10[0-2]|7[1-9]\\d)\\d|3(?:[0-57-9]\\d\\d|6(?:0[02-9]|[1-9]\\d))|6(?:[0-8]\\d\\d|9(?:[02-79]\\d|1[05-9]))|9(?:[03-9]\\d\\d|1(?:[0235-9]\\d|4[0-24-9])|2(?:[0-79]\\d|8[0-46-9]))))\\d{4}|(?:22|3[2-5]|[47][1-35]|5[1-3578]|6[13-57]|8[1-9]|9[2458])\\d{7}", , , , "600123456", , , [9]], [
-        ,
-        ,
-        "2(?:1982[0-6]|3314[05-9])\\d{3}|(?:2(?:1(?:160|962)|3(?:(?:2\\d|50)\\d|3(?:[034679]\\d|1[0-35-9]|2[1-9]|5[0-24-9]|8[0-389])|600)|646[59])|80[1-8]\\d\\d|9(?:(?:10[0-2]|7[1-9]\\d)\\d|3(?:[0-57-9]\\d\\d|6(?:0[02-9]|[1-9]\\d))|6(?:[0-8]\\d\\d|9(?:[02-79]\\d|1[05-9]))|9(?:[03-9]\\d\\d|1(?:[0235-9]\\d|4[0-24-9])|2(?:[0-79]\\d|8[0-46-9]))))\\d{4}|(?:22|3[2-5]|[47][1-35]|5[1-3578]|6[13-57]|8[1-9]|9[2458])\\d{7}",
-        ,
-        ,
-        ,
-        "221234567",
+        "600123456",
         ,
         ,
         [9]
-      ], [, , "(?:123|8)00\\d{6}", , , , "800123456", , , [9, 11]], [, , , , , , , , , [-1]], [, , "600\\d{7,8}", , , , "6001234567", , , [10, 11]], [, , , , , , , , , [-1]], [, , "44\\d{7}", , , , "441234567", , , [9]], "CL", 56, "(?:0|1(?:1[0-69]|2[02-5]|5[13-58]|69|7[0167]|8[018]))0", , , , , , , , [[, "(\\d{4})", "$1", ["1(?:[03-589]|21)|[29]0|78"]], [, "(\\d{5})(\\d{4})", "$1 $2", ["219", "2196"], "($1)"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["60|809"]], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["44"]], [
+      ], [, , "2(?:1982[0-6]|3314[05-9])\\d{3}|(?:2(?:1(?:160|962)|3(?:(?:[24]\\d|50)\\d|3(?:[0346-9]\\d|1[0-35-9]|2[1-9]|5[0-24-9])|600)|646[59])|80[1-8]\\d\\d|9(?:(?:10[0-2]|7[1-9]\\d)\\d|3(?:[0-57-9]\\d\\d|6(?:0[02-9]|[1-9]\\d))|6(?:[0-8]\\d\\d|9(?:[02-79]\\d|1[05-9]))|9(?:[03-9]\\d\\d|1(?:[0235-9]\\d|4[0-24-9])|2(?:[0-79]\\d|8[0-46-9]))))\\d{4}|(?:22|3[2-5]|[47][1-35]|5[1-3578]|6[13-57]|8[1-9]|9[2458])\\d{7}", , , , "221234567", , , [9]], [, , "(?:123|8)00\\d{6}", , , , "800123456", , , [9, 11]], [
         ,
-        "(\\d)(\\d{4})(\\d{4})",
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        [-1]
+      ], [, , "600\\d{7,8}", , , , "6001234567", , , [10, 11]], [, , , , , , , , , [-1]], [, , "44\\d{7}", , , , "441234567", , , [9]], "CL", 56, "(?:0|1(?:1[0-69]|2[02-5]|5[13-58]|69|7[0167]|8[018]))0", , , , , , , , [[, "(\\d{4})", "$1", ["1(?:[03-589]|21)|[29]0|78"]], [, "(\\d{5})(\\d{4})", "$1 $2", ["219", "2196"], "($1)"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["60|809"]], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["44"]], [, "(\\d)(\\d{4})(\\d{4})", "$1 $2 $3", ["2[1-36]"], "($1)"], [, "(\\d)(\\d{4})(\\d{4})", "$1 $2 $3", ["9(?:10|[2-9])"]], [
+        ,
+        "(\\d{2})(\\d{3})(\\d{4})",
         "$1 $2 $3",
-        ["2[1-36]"],
+        ["3[2-5]|[47]|5[1-3578]|6[13-57]|8(?:0[1-8]|[1-9])"],
         "($1)"
-      ], [, "(\\d)(\\d{4})(\\d{4})", "$1 $2 $3", ["9(?:10|[2-9])"]], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["3[2-5]|[47]|5[1-3578]|6[13-57]|8(?:0[1-8]|[1-9])"], "($1)"], [, "(\\d{3})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["60|8"]], [, "(\\d{4})(\\d{3})(\\d{4})", "$1 $2 $3", ["1"]], [, "(\\d{3})(\\d{3})(\\d{2})(\\d{3})", "$1 $2 $3 $4", ["60"]]], [[, "(\\d{5})(\\d{4})", "$1 $2", ["219", "2196"], "($1)"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["60|809"]], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["44"]], [
+      ], [, "(\\d{3})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["60|8"]], [, "(\\d{4})(\\d{3})(\\d{4})", "$1 $2 $3", ["1"]], [, "(\\d{3})(\\d{3})(\\d{2})(\\d{3})", "$1 $2 $3 $4", ["60"]]], [[, "(\\d{5})(\\d{4})", "$1 $2", ["219", "2196"], "($1)"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["60|809"]], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["44"]], [, "(\\d)(\\d{4})(\\d{4})", "$1 $2 $3", ["2[1-36]"], "($1)"], [, "(\\d)(\\d{4})(\\d{4})", "$1 $2 $3", ["9(?:10|[2-9])"]], [
         ,
-        "(\\d)(\\d{4})(\\d{4})",
+        "(\\d{2})(\\d{3})(\\d{4})",
         "$1 $2 $3",
-        ["2[1-36]"],
+        ["3[2-5]|[47]|5[1-3578]|6[13-57]|8(?:0[1-8]|[1-9])"],
         "($1)"
-      ], [, "(\\d)(\\d{4})(\\d{4})", "$1 $2 $3", ["9(?:10|[2-9])"]], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["3[2-5]|[47]|5[1-3578]|6[13-57]|8(?:0[1-8]|[1-9])"], "($1)"], [, "(\\d{3})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["60|8"]], [, "(\\d{4})(\\d{3})(\\d{4})", "$1 $2 $3", ["1"]], [, "(\\d{3})(\\d{3})(\\d{2})(\\d{3})", "$1 $2 $3 $4", ["60"]]], [, , , , , , , , , [-1]], , , [, , "600\\d{7,8}", , , , , , , [10, 11]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      CM: [, [, , "[26]\\d{8}|88\\d{6,7}", , , , , , , [8, 9]], [
+      ], [, "(\\d{3})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["60|8"]], [, "(\\d{4})(\\d{3})(\\d{4})", "$1 $2 $3", ["1"]], [, "(\\d{3})(\\d{3})(\\d{2})(\\d{3})", "$1 $2 $3 $4", ["60"]]], [, , , , , , , , , [-1]], , , [, , "600\\d{7,8}", , , , , , , [10, 11]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      CM: [
         ,
-        ,
-        "2(?:22|33)\\d{6}",
-        ,
-        ,
-        ,
-        "222123456",
-        ,
-        ,
-        [9]
-      ], [, , "(?:24[23]|6(?:[25-9]\\d|40))\\d{6}", , , , "671234567", , , [9]], [, , "88\\d{6,7}", , , , "88012345"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "CM", 237, "00", , , , , , , , [[, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["88"]], [, "(\\d)(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4 $5", ["[26]|88"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      CN: [, [
-        ,
-        ,
-        "(?:(?:1[03-689]|2\\d)\\d\\d|6)\\d{8}|1\\d{10}|[126]\\d{6}(?:\\d(?:\\d{2})?)?|86\\d{5,6}|(?:[3-579]\\d|8[0-57-9])\\d{5,9}",
+        [, , "[26]\\d{8}|88\\d{6,7}", , , , , , , [8, 9]],
+        [, , "2(?:22|33)\\d{6}", , , , "222123456", , , [9]],
+        [, , "(?:24[23]|6(?:[25-9]\\d|4[0-2]))\\d{6}", , , , "671234567", , , [9]],
+        [, , "88\\d{6,7}", , , , "88012345"],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        "CM",
+        237,
+        "00",
         ,
         ,
         ,
         ,
         ,
         ,
-        [7, 8, 9, 10, 11, 12],
-        [5, 6]
-      ], [
+        ,
+        [[, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["88"]], [, "(\\d)(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4 $5", ["[26]|88"]]],
+        ,
+        [, , , , , , , , , [-1]],
+        ,
+        ,
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        ,
+        ,
+        [, , , , , , , , , [-1]]
+      ],
+      CN: [, [, , "(?:(?:1[03-689]|2\\d)\\d\\d|6)\\d{8}|1\\d{10}|[126]\\d{6}(?:\\d(?:\\d{2})?)?|86\\d{5,6}|(?:[3-579]\\d|8[0-57-9])\\d{5,9}", , , , , , , [7, 8, 9, 10, 11, 12], [5, 6]], [
         ,
         ,
         "(?:10(?:[02-79]\\d\\d|[18](?:0[1-9]|[1-9]\\d))|2(?:[02-57-9]\\d{3}|1(?:[18](?:0[1-9]|[1-9]\\d)|[2-79]\\d\\d))|(?:41[03]|8078|9(?:78|94))\\d\\d)\\d{5}|(?:10|2[0-57-9])(?:1(?:00|23)\\d\\d|95\\d{3,4})|(?:41[03]|9(?:78|94))(?:100\\d\\d|95\\d{3,4})|8078123|(?:43[35]|754|851)\\d{7,8}|(?:43[35]|754|851)(?:1(?:00\\d|23)\\d|95\\d{3,4})|(?:3(?:11|7[179])|4(?:[15]1|3[12])|5(?:1\\d|2[37]|3[12]|51|7[13-79]|9[15])|7(?:[39]1|5[57]|6[09])|8(?:71|98))(?:[02-8]\\d{7}|1(?:0(?:0\\d\\d(?:\\d{3})?|[1-9]\\d{5})|[13-9]\\d{6}|2(?:[0-24-9]\\d{5}|3\\d(?:\\d{4})?))|9(?:[0-46-9]\\d{6}|5\\d{3}(?:\\d(?:\\d{2})?)?))|(?:3(?:1[02-9]|35|49|5\\d|7[02-68]|9[1-68])|4(?:1[24-9]|2[179]|3[46-9]|5[2-9]|6[47-9]|7\\d|8[23])|5(?:3[03-9]|4[36]|5[02-9]|6[1-46]|7[028]|80|9[2-46-9])|6(?:3[1-5]|6[0238]|9[12])|7(?:01|[17]\\d|2[248]|3[04-9]|4[3-6]|5[0-3689]|6[2368]|9[02-9])|8(?:1[236-8]|2[5-7]|3\\d|5[2-9]|7[02-9]|8[36-8]|9[1-7])|9(?:0[1-3689]|1[1-79]|3\\d|4[13]|5[1-5]|7[0-79]|9[0-35-9]))(?:[02-8]\\d{6}|1(?:0(?:0\\d\\d(?:\\d{2})?|[1-9]\\d{4})|[13-9]\\d{5}|2(?:[0-24-9]\\d{4}|3\\d(?:\\d{3})?))|9(?:[0-46-9]\\d{5}|5\\d{3,5}))",
@@ -5941,7 +6581,7 @@ var factoryOutput = (() => {
         ,
         [7, 8, 9, 10, 11],
         [5, 6]
-      ], [, , "1740[0-5]\\d{6}|1(?:[38]\\d|4[57]|[59][0-35-9]|6[25-7]|7[0-35-8])\\d{8}", , , , "13123456789", , , [11]], [, , "(?:(?:10|21)8|8)00\\d{7}", , , , "8001234567", , , [10, 12]], [, , "16[08]\\d{5}", , , , "16812345", , , [8]], [
+      ], [, , "1(?:610\\d|740[0-5])\\d{6}|1(?:[38]\\d|4[57]|[59][0-35-9]|6[25-7]|7[0-35-8])\\d{8}", , , , "13123456789", , , [11]], [, , "(?:(?:10|21)8|8)00\\d{7}", , , , "8001234567", , , [10, 12]], [, , "16[08]\\d{5}", , , , "16812345", , , [8]], [
         ,
         ,
         "10(?:10\\d{4}|96\\d{3,4})|400\\d{7}|950\\d{7,8}|(?:2[0-57-9]|3(?:[157]\\d|35|49|9[1-68])|4(?:[17]\\d|2[179]|[35][1-9]|6[47-9]|8[23])|5(?:[1357]\\d|2[37]|4[36]|6[1-46]|80|9[1-9])|6(?:3[1-5]|6[0238]|9[12])|7(?:01|[1579]\\d|2[248]|3[014-9]|4[3-6]|6[023689])|8(?:1[236-8]|2[5-7]|[37]\\d|5[14-9]|8[36-8]|9[1-8])|9(?:0[1-3689]|1[1-79]|[379]\\d|4[13]|5[1-5]))96\\d{3,4}",
@@ -6138,12 +6778,12 @@ var factoryOutput = (() => {
         ,
         ,
         [9]
-      ], [, , "7(?:060\\d|19(?:[0-5]\\d|6[0-6]))\\d{4}|(?:60[1-8]|7(?:0[2-5]|[2379]\\d))\\d{6}", , , , "601123456", , , [9]], [, , "800\\d{6}", , , , "800123456", , , [9]], [, , "9(?:0[05689]|76)\\d{6}", , , , "900123456", , , [9]], [, , "8[134]\\d{7}", , , , "811234567", , , [9]], [, , "70[01]\\d{6}", , , , "700123456", , , [9]], [, , "9[17]0\\d{6}", , , , "910123456", , , [9]], "CZ", 420, "00", , , , , , , , [[, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[2-8]|9[015-7]"]], [, "(\\d{2})(\\d{3})(\\d{3})(\\d{2})", "$1 $2 $3 $4", ["96"]], [
+      ], [, , "7060\\d{5}|(?:60[1-8]|7(?:0[2-5]|19|[2379]\\d))\\d{6}", , , , "601123456", , , [9]], [, , "800\\d{6}", , , , "800123456", , , [9]], [, , "9(?:0[05689]|76)\\d{6}", , , , "900123456", , , [9]], [, , "8[134]\\d{7}", , , , "811234567", , , [9]], [, , "70[01]\\d{6}", , , , "700123456", , , [9]], [, , "9[17]0\\d{6}", , , , "910123456", , , [9]], "CZ", 420, "00", , , , , , , , [[, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[2-8]|9[015-7]"]], [, "(\\d{2})(\\d{3})(\\d{3})(\\d{2})", "$1 $2 $3 $4", ["96"]], [, "(\\d{2})(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3 $4", ["9"]], [
         ,
-        "(\\d{2})(\\d{3})(\\d{3})(\\d{3})",
+        "(\\d{3})(\\d{3})(\\d{3})(\\d{3})",
         "$1 $2 $3 $4",
         ["9"]
-      ], [, "(\\d{3})(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3 $4", ["9"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "9(?:5\\d|7[2-4])\\d{6}", , , , "972123456", , , [9]], , , [, , "9(?:3\\d{9}|6\\d{7,10})", , , , "93123456789"]],
+      ]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "9(?:5\\d|7[2-4])\\d{6}", , , , "972123456", , , [9]], , , [, , "9(?:3\\d{9}|6\\d{7,10})", , , , "93123456789"]],
       DE: [, [, , "[2579]\\d{5,14}|49(?:[34]0|69|8\\d)\\d\\d?|49(?:37|49|60|7[089]|9\\d)\\d{1,3}|49(?:2[024-9]|3[2-689]|7[1-7])\\d{1,8}|(?:1|[368]\\d|4[0-8])\\d{3,13}|49(?:[015]\\d|2[13]|31|[46][1-8])\\d{1,9}", , , , , , , [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], [2, 3]], [
         ,
         ,
@@ -6156,14 +6796,8 @@ var factoryOutput = (() => {
         ,
         [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
         [2, 3, 4]
-      ], [, , "1(?:(?:5(?:[0-25-9]\\d\\d|3(?:10|33))|7[26-9]\\d\\d)\\d{6}|6[023]\\d{7,8})|17\\d{8}", , , , "15123456789", , , [10, 11]], [, , "800\\d{7,12}", , , , "8001234567890", , , [10, 11, 12, 13, 14, 15]], [, , "(?:137[7-9]|900(?:[135]|9\\d))\\d{6}", , , , "9001234567", , , [10, 11]], [, , "180\\d{5,11}|13(?:7[1-6]\\d\\d|8)\\d{4}", , , , "18012345", , , [7, 8, 9, 10, 11, 12, 13, 14]], [, , "700\\d{8}", , , , "70012345678", , , [11]], [, , , , , , , , , [-1]], "DE", 49, "00", "0", , , "0", , , , [
-        [
-          ,
-          "(\\d{2})(\\d{3,13})",
-          "$1 $2",
-          ["3[02]|40|[68]9"],
-          "0$1"
-        ],
+      ], [, , "1(?:6[023]|7\\d)\\d{7,8}|15(?:[0-25-9]\\d\\d|3(?:10|33))\\d{6}", , , , "15123456789", , , [10, 11]], [, , "800\\d{7,12}", , , , "8001234567890", , , [10, 11, 12, 13, 14, 15]], [, , "(?:137[7-9]|900(?:[135]|9\\d))\\d{6}", , , , "9001234567", , , [10, 11]], [, , "180\\d{5,11}|13(?:7[1-6]\\d\\d|8)\\d{4}", , , , "18012345", , , [7, 8, 9, 10, 11, 12, 13, 14]], [, , "700\\d{8}", , , , "70012345678", , , [11]], [, , , , , , , , , [-1]], "DE", 49, "00", "0", , , "0", , , , [
+        [, "(\\d{2})(\\d{3,13})", "$1 $2", ["3[02]|40|[68]9"], "0$1"],
         [, "(\\d{6})", "$1", ["227", "2277"]],
         [, "(\\d{3})(\\d{3,12})", "$1 $2", ["2(?:0[1-389]|1[124]|2[18]|3[14])|3(?:[35-9][15]|4[015])|906|(?:2[4-9]|4[2-9]|[579][1-9]|[68][1-8])1", "2(?:0[1-389]|12[0-8])|3(?:[35-9][15]|4[015])|906|2(?:[13][14]|2[18])|(?:2[4-9]|4[2-9]|[579][1-9]|[68][1-8])1"], "0$1"],
         [
@@ -6330,8 +6964,8 @@ var factoryOutput = (() => {
       DZ: [
         ,
         [, , "(?:[1-4]|[5-79]\\d|80)\\d{7}", , , , , , , [8, 9]],
-        [, , "9619\\d{5}|(?:1\\d|2[013-79]|3[0-8]|4[013-689])\\d{6}", , , , "12345678"],
-        [, , "(?:5(?:4[0-29]|5\\d|6[0-3])|6(?:[569]\\d|7[0-6])|7[7-9]\\d)\\d{6}", , , , "551234567", , , [9]],
+        [, , "9619\\d{5}|(?:[1-3]\\d|4[013-689])\\d{6}", , , , "12345678"],
+        [, , "5(?:4[0-29]|6[0-4])\\d{6}|(?:55|6\\d|7[7-9])\\d{7}", , , , "551234567", , , [9]],
         [, , "800\\d{6}", , , , "800123456", , , [9]],
         [, , "80[3-689]1\\d{5}", , , , "808123456", , , [9]],
         [, , "80[12]1\\d{5}", , , , "801123456", , , [9]],
@@ -6433,7 +7067,7 @@ var factoryOutput = (() => {
         ,
         [, , "[5-8]\\d{8}", , , , , , , [9]],
         [, , "528[89]\\d{5}", , , , "528812345"],
-        [, , "(?:6(?:[0-79]\\d|8[0-247-9])|7(?:[016-8]\\d|2[0-8]|5[0-5]))\\d{6}", , , , "650123456"],
+        [, , "(?:6(?:[0-79]\\d|8[0-247-9])|7(?:[016-8]\\d|2[0-8]|3[01]|5[0-5]))\\d{6}", , , , "650123456"],
         [, , "80[0-7]\\d{6}", , , , "801234567"],
         [, , "89\\d{7}", , , , "891234567"],
         [, , , , , , , , , [-1]],
@@ -6467,50 +7101,16 @@ var factoryOutput = (() => {
         ["[178]"],
         "0$1"
       ]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      ES: [
+      ES: [, [, , "(?:400|[5-9]\\d\\d)\\d{6}", , , , , , , [9]], [, , "96906(?:0[0-8]|1[1-9]|[2-9]\\d)\\d\\d|9(?:69(?:0[0-57-9]|[1-9]\\d)|73(?:[0-8]\\d|9[1-9]))\\d{4}|(?:400|8(?:[1356]\\d|[28][0-8]|[47][1-9])|9(?:[135]\\d|[268][0-8]|4[1-9]|7[124-9]))\\d{6}", , , , "810123456"], [, , "96906(?:09|10)\\d\\d|(?:590(?:10[0-2]|600)|97390\\d)\\d{3}|(?:6\\d|7[1-48])\\d{7}", , , , "612345678"], [, , "[89]00\\d{6}", , , , "800123456"], [
         ,
-        [, , "[5-9]\\d{8}", , , , , , , [9]],
-        [, , "96906(?:0[0-8]|1[1-9]|[2-9]\\d)\\d\\d|9(?:69(?:0[0-57-9]|[1-9]\\d)|73(?:[0-8]\\d|9[1-9]))\\d{4}|(?:8(?:[1356]\\d|[28][0-8]|[47][1-9])|9(?:[135]\\d|[268][0-8]|4[1-9]|7[124-9]))\\d{6}", , , , "810123456"],
-        [, , "96906(?:09|10)\\d\\d|(?:590(?:10[0-2]|600)|97390\\d)\\d{3}|(?:6\\d|7[1-48])\\d{7}", , , , "612345678"],
-        [, , "[89]00\\d{6}", , , , "800123456"],
-        [, , "80[367]\\d{6}", , , , "803123456"],
-        [, , "90[12]\\d{6}", , , , "901123456"],
-        [, , "70\\d{7}", , , , "701234567"],
-        [, , , , , , , , , [-1]],
-        "ES",
-        34,
-        "00",
+        ,
+        "80[367]\\d{6}",
         ,
         ,
         ,
-        ,
-        ,
-        ,
-        ,
-        [[, "(\\d{4})", "$1", ["905"]], [, "(\\d{6})", "$1", ["[79]9"]], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[89]00"]], [, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[5-9]"]]],
-        [[, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[89]00"]], [, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[5-9]"]]],
-        [, , , , , , , , , [-1]],
-        ,
-        ,
-        [, , , , , , , , , [-1]],
-        [, , "51\\d{7}", , , , "511234567"],
-        ,
-        ,
-        [, , , , , , , , , [-1]]
-      ],
-      ET: [, [
-        ,
-        ,
-        "(?:11|[2-579]\\d)\\d{7}",
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        [9],
-        [7]
-      ], [
+        "803123456"
+      ], [, , "90[12]\\d{6}", , , , "901123456"], [, , "70\\d{7}", , , , "701234567"], [, , , , , , , , , [-1]], "ES", 34, "00", , , , , , , , [[, "(\\d{4})", "$1", ["905", "905[124578]"]], [, "(\\d{6})", "$1", ["[79]9"]], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[89]00"]], [, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[4-9]"]]], [[, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[89]00"]], [, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[4-9]"]]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "51\\d{7}", , , , "511234567"], , , [, , , , , , , , , [-1]]],
+      ET: [, [, , "(?:11|[2-57-9]\\d)\\d{7}", , , , , , , [9], [7]], [
         ,
         ,
         "(?:11(?:[124]\\d\\d|3(?:[0-79]\\d|8[0-7])|5(?:[02-9]\\d|1[0-57-9])|6(?:[02-79]\\d|1[0-57-9]|8[0-8]))|2(?:2(?:11[1-9]|22[0-7]|33\\d|44[1467]|66[1-68])|5(?:11[124-6]|33[2-8]|44[1467]|55[14]|66[1-3679]|77[124-79]|880))|3(?:3(?:11[0-46-8]|(?:22|55)[0-6]|33[0134689]|44[04]|66[01467])|4(?:44[0-8]|55[0-69]|66[0-3]|77[1-5]))|4(?:6(?:119|22[0-24-7]|33[1-5]|44[13-69]|55[14-689]|660|88[1-4])|7(?:(?:11|22)[1-9]|33[13-7]|44[13-6]|55[1-689]))|5(?:7(?:227|55[05]|(?:66|77)[14-8])|8(?:11[149]|22[013-79]|33[0-68]|44[013-8]|550|66[1-5]|77\\d)))\\d{4}",
@@ -6522,7 +7122,7 @@ var factoryOutput = (() => {
         ,
         ,
         [7]
-      ], [, , "700[1-9]\\d{5}|(?:7(?:0[1-9]|1[0-8]|2[1-35-79]|3\\d|77|86|99)|9\\d\\d)\\d{6}", , , , "911234567"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "ET", 251, "00", "0", , , "0", , , , [[, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["[1-579]"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      ], [, , "700[1-9]\\d{5}|(?:7(?:0[1-9]|1[0-8]|2[1-35-79]|3\\d|77|86|99)|(?:8[01]|9\\d)\\d)\\d{6}", , , , "911234567"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "ET", 251, "00", "0", , , "0", , , , [[, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["[1-57-9]"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
       FI: [
         ,
         [, , "[1-35689]\\d{4}|7\\d{10,11}|(?:[124-7]\\d|3[0-46-9])\\d{8}|[1-9]\\d{5,8}", , , , , , , [5, 6, 7, 8, 9, 10, 11, 12]],
@@ -6574,7 +7174,7 @@ var factoryOutput = (() => {
       FJ: [
         ,
         [, , "45\\d{5}|(?:0800\\d|[235-9])\\d{6}", , , , , , , [7, 11]],
-        [, , "603\\d{4}|(?:3[0-5]|6[25-7]|8[58])\\d{5}", , , , "3212345", , , [7]],
+        [, , "603\\d{4}|(?:3[0-6]|6[25-7]|8[58])\\d{5}", , , , "3212345", , , [7]],
         [, , "(?:[279]\\d|45|5[01568]|8[034679])\\d{5}", , , , "7012345", , , [7]],
         [, , "0800\\d{7}", , , , "08001234567", , , [11]],
         [, , , , , , , , , [-1]],
@@ -6620,7 +7220,7 @@ var factoryOutput = (() => {
         ,
         ,
         "901123"
-      ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "(?:6[0-36]|88)\\d{4}", , , , "601234"], "FO", 298, "00", , , , "(10(?:01|[12]0|88))", , , , [[, "(\\d{6})", "$1", ["[2-9]"], , "$CC $1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "6[0-36]\\d{4}", , , , "601234"], "FO", 298, "00", , , , "(10(?:01|[12]0|88))", , , , [[, "(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3", ["[2-9]"], , "$CC $1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
       FR: [, [, , "[1-9]\\d{8}", , , , , , , [9]], [, , "(?:26[013-9]|59[1-35-9])\\d{6}|(?:[13]\\d|2[0-57-9]|4[1-9]|5[0-8])\\d{7}", , , , "123456789"], [, , "(?:6(?:[0-24-8]\\d|3[0-8]|9[589])|7[3-9]\\d)\\d{6}", , , , "612345678"], [, , "80[0-5]\\d{6}", , , , "801234567"], [
         ,
         ,
@@ -6704,54 +7304,30 @@ var factoryOutput = (() => {
       GE: [, [, , "(?:[3-57]\\d\\d|800)\\d{6}", , , , , , , [9], [6, 7]], [, , "(?:3(?:[256]\\d|4[124-9]|7[0-4])|4(?:1\\d|2[2-7]|3[1-79]|4[2-8]|7[239]|9[1-7]))\\d{6}", , , , "322123456", , , , [6, 7]], [
         ,
         ,
-        "5(?:(?:(?:0555|1(?:[17]77|555))[5-9]|757(?:7[7-9]|8[01]))\\d|22252[0-4])\\d\\d|5(?:0(?:0(?:1[09]|70)|505)|1(?:0[01]0|1(?:07|33|51))|2(?:0[02]0|2[25]2)|3(?:0[03]0|3[35]3)|(?:40[04]|900)0|5222)[0-4]\\d{3}|(?:5(?:0(?:0(?:0\\d|1[12]|22|3[0-6]|44|5[05]|77|88|9[09])|(?:[14]\\d|77)\\d|22[02])|1(?:1(?:[03][01]|[124]\\d|5[2-6]|7[0-6])|4\\d\\d)|[23]555|4(?:4\\d\\d|555)|5(?:[0157-9]\\d\\d|200|333|444)|6[89]\\d\\d|7(?:(?:[0147-9]\\d|22)\\d|5(?:00|[57]5))|8(?:0(?:[018]\\d|2[0-4])|5(?:55|8[89])|8(?:55|88))|9(?:090|[1-35-9]\\d\\d))|790\\d\\d)\\d{4}",
+        "5(?:(?:(?:0555|1(?:[17]77|555))[5-9]|757(?:7[7-9]|8[01]))\\d|22252[0-4])\\d\\d|5(?:0(?:0(?:1[09]|70)|505)|1(?:0[01]0|1(?:07|33|51))|2(?:0[02]0|2[25]2)|3(?:0[03]0|3[35]3)|4(?:0[04]0|411)|5222|9000)[0-4]\\d{3}|(?:5(?:0(?:0(?:0\\d|1[12]|2[02]|3[0-6]|4[04]|5[05]|77|88|9[09])|(?:[14]\\d|77)\\d|22[02])|1(?:1(?:[03][01]|[124]\\d|5[02-6]|7[0-6])|4\\d\\d)|2(?:228|555)|3555|4(?:4(?:[02-9]\\d|14)|555)|5(?:[0157-9]\\d\\d|200|333|4(?:44|55))|6[89]\\d\\d|7(?:(?:[0147-9]\\d|22)\\d|5(?:00|[57]5))|8(?:0(?:[018]\\d|2[0-4])|5(?:55|8[89])|8(?:55|88))|9(?:090|[1-35-9]\\d\\d))|790\\d\\d)\\d{4}",
         ,
         ,
         ,
         "555123456"
       ], [, , "800\\d{6}", , , , "800123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "70[67]\\d{6}", , , , "706123456"], "GE", 995, "00", "0", , , "0", , , , [[, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["70"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["32"], "0$1"], [, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[57]"]], [, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[348]"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , "70[67]\\d{6}"], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      GF: [
-        ,
-        [
-          ,
-          ,
-          "7093\\d{5}|(?:[56]94|[89]\\d\\d)\\d{6}",
-          ,
-          ,
-          ,
-          ,
-          ,
-          ,
-          [9]
-        ],
-        [, , "(?:594(?:[02-49]\\d|1[0-5]|5[6-9]|6[0-3]|80)|80[6-9]\\d\\d)\\d{4}", , , , "594101234"],
-        [, , "(?:694(?:[0-249]\\d|3[0-8])|7093[0-3])\\d{4}", , , , "694201234"],
-        [, , "80[0-5]\\d{6}", , , , "800012345"],
-        [, , "8[129]\\d{7}", , , , "890123456"],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , "9(?:(?:396|76\\d)\\d|476[0-6])\\d{4}", , , , "976012345"],
-        "GF",
-        594,
-        "00",
-        "0",
+      GF: [, [
         ,
         ,
-        "0",
+        "(?:694\\d|7093)\\d{5}|(?:59|[89]\\d)\\d{7}",
         ,
         ,
         ,
-        [[, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[5-7]|80[6-9]|9[47]"], "0$1"], [, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[89]"], "0$1"]],
-        ,
-        [, , , , , , , , , [-1]],
         ,
         ,
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
         ,
+        [9]
+      ], [, , "(?:59(?:4(?:[02-49]\\d|1[0-5]|5[6-9]|6[0-3]|80)|88\\d)|80[6-9]\\d\\d)\\d{4}", , , , "594101234"], [, , "(?:694(?:[0-249]\\d|3[0-8])|7093[0-3])\\d{4}", , , , "694201234"], [, , "80[0-5]\\d{6}", , , , "800012345"], [, , "8[129]\\d{7}", , , , "890123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "9(?:(?:396|76\\d)\\d|476[0-6])\\d{4}", , , , "976012345"], "GF", 594, "00", "0", , , "0", , , , [[, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[5-7]|80[6-9]|9[47]"], "0$1"], [
         ,
-        [, , , , , , , , , [-1]]
-      ],
+        "(\\d{3})(\\d{2})(\\d{2})(\\d{2})",
+        "$1 $2 $3 $4",
+        ["[89]"],
+        "0$1"
+      ]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
       GG: [
         ,
         [, , "(?:1481|[357-9]\\d{3})\\d{6}|8\\d{6}(?:\\d{2})?", , , , , , , [7, 9, 10], [6]],
@@ -6783,49 +7359,23 @@ var factoryOutput = (() => {
         ,
         [, , , , , , , , , [-1]]
       ],
-      GH: [
-        ,
-        [, , "(?:[235]\\d{3}|800)\\d{5}", , , , , , , [8, 9], [7]],
-        [
-          ,
-          ,
-          "3082[0-5]\\d{4}|3(?:0(?:[237]\\d|8[01])|[167](?:2[0-6]|7\\d|80)|2(?:2[0-5]|7\\d|80)|3(?:2[0-3]|7\\d|80)|4(?:2[013-9]|3[01]|7\\d|80)|5(?:2[0-7]|7\\d|80)|8(?:2[0-2]|7\\d|80)|9(?:[28]0|7\\d))\\d{5}",
-          ,
-          ,
-          ,
-          "302345678",
-          ,
-          ,
-          [9],
-          [7]
-        ],
-        [, , "(?:2(?:[0346-9]\\d|5[67])|5(?:[03-7]\\d|9[1-9]))\\d{6}", , , , "231234567", , , [9]],
-        [, , "800\\d{5}", , , , "80012345", , , [8]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        "GH",
-        233,
-        "00",
-        "0",
+      GH: [, [, , "[235]\\d{8}|800\\d{5,6}", , , , , , , [8, 9], [7]], [
         ,
         ,
-        "0",
+        "3082[0-5]\\d{4}|3(?:0(?:[237]\\d|8[01])|[167](?:2[0-6]|7\\d|80)|2(?:2[0-5]|7\\d|80)|3(?:2[0-3]|7\\d|80)|4(?:2[013-9]|3[01]|7\\d|80)|5(?:2[0-7]|7\\d|80)|8(?:2[0-2]|7\\d|80)|9(?:[28]0|7\\d))\\d{5}",
         ,
         ,
         ,
-        [[, "(\\d{3})(\\d{4})", "$1 $2", ["[237]|8[0-2]"]], [, "(\\d{3})(\\d{5})", "$1 $2", ["8"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["[235]"], "0$1"]],
-        [[, "(\\d{3})(\\d{5})", "$1 $2", ["8"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["[235]"], "0$1"]],
-        [, , , , , , , , , [-1]],
+        "302345678",
         ,
         ,
-        [, , "800\\d{5}", , , , , , , [8]],
-        [, , , , , , , , , [-1]],
+        [9],
+        [7]
+      ], [, , "(?:2(?:[0346-9]\\d|5[67])|5(?:[03-7]\\d|9[1-9]))\\d{6}", , , , "231234567", , , [9]], [, , "800\\d{5,6}", , , , "80012345"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "GH", 233, "00", "0", , , "0", , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[237]|8[0-2]"]], [, "(\\d{3})(\\d{5})", "$1 $2", ["8"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["[2358]"], "0$1"]], [[, "(\\d{3})(\\d{5})", "$1 $2", ["8"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["[2358]"], "0$1"]], [, , , , , , , , , [-1]], , , [
         ,
         ,
-        [, , , , , , , , , [-1]]
-      ],
+        "800\\d{5,6}"
+      ], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
       GI: [, [, , "(?:[25]\\d|60)\\d{6}", , , , , , , [8]], [, , "2190[0-2]\\d{3}|2(?:0(?:[02]\\d|3[01])|16[24-9]|2[2-5]\\d)\\d{4}", , , , "20012345"], [, , "5251[0-4]\\d{3}|(?:5(?:[146-8]\\d\\d|250)|60(?:1[01]|6\\d))\\d{4}", , , , "57123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "GI", 350, "00", , , , , , , , [[, "(\\d{3})(\\d{5})", "$1 $2", ["2"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
       GL: [, [
         ,
@@ -6839,27 +7389,48 @@ var factoryOutput = (() => {
         ,
         [6]
       ], [, , "(?:19|3[1-7]|[68][1-9]|70|9\\d)\\d{4}", , , , "321000"], [, , "[245]\\d{5}", , , , "221234"], [, , "80\\d{4}", , , , "801234"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "3[89]\\d{4}", , , , "381234"], "GL", 299, "00", , , , , , , , [[, "(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3", ["19|[2-9]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      GM: [, [, , "[2-9]\\d{6}", , , , , , , [7]], [
+      GM: [, [, , "[48]\\d{8}|[2-9]\\d{6}", , , , , , , [7, 9]], [
         ,
         ,
-        "(?:4(?:[23]\\d\\d|4(?:1[024679]|[6-9]\\d))|5(?:5(?:3\\d|4[0-7])|6[67]\\d|7(?:1[04]|2[035]|3[58]|48))|8[0-589]\\d\\d)\\d{3}",
+        "(?:4(?:[23]\\d\\d|4(?:1[024679]|(?:4(?:[237-9]\\d|4[14-9])|8[0-389]\\d)\\d|5(?:5(?:3\\d|4[0-7])|[67]\\d\\d)))|5(?:5(?:3\\d|4[0-7])|6[67]\\d|7(?:1[04]|2[035]|3[58]|48))|8[0-389]\\d\\d)\\d{3}|44[6-9]\\d{4}",
         ,
         ,
         ,
         "5661234"
-      ], [, , "556\\d{4}|(?:[23679]\\d|4[015]|5[0-489]|8[67])\\d{5}", , , , "3012345"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "GM", 220, "00", , , , , , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[2-9]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      GN: [
+      ], [, , "(?:(?:[23679]\\d|4[015]|8(?:(?:3[35]|6[68]|99)\\d|7(?:[27]\\d|4[015])))\\d|5(?:[0-489]\\d|56))\\d{4}|8[4-7]\\d{5}", , , , "3012345"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "GM", 220, "00", , , , , , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[235-9]|4(?:[0-35]|4[16-9])"]], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["[48]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      GN: [, [, , "722\\d{6}|(?:3|6\\d)\\d{7}", , , , , , , [8, 9]], [
         ,
-        [, , "722\\d{6}|(?:3|6\\d)\\d{7}", , , , , , , [8, 9]],
-        [, , "3(?:0(?:24|3[12]|4[1-35-7]|5[13]|6[189]|[78]1|9[1478])|1\\d\\d)\\d{4}", , , , "30241234", , , [8]],
-        [, , "6[0-356]\\d{7}", , , , "601123456", , , [9]],
+        ,
+        "3(?:0(?:24|3[12]|4[1-35-7]|5[13]|6[189]|[78]1|9[1478])|1\\d\\d)\\d{4}",
+        ,
+        ,
+        ,
+        "30241234",
+        ,
+        ,
+        [8]
+      ], [, , "6[0-356]\\d{7}", , , , "601123456", , , [9]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "722\\d{6}", , , , "722123456", , , [9]], "GN", 224, "00", , , , , , , , [[, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["3"]], [, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[67]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      GP: [, [, , "7090\\d{5}|(?:[56]9|[89]\\d)\\d{7}", , , , , , , [9]], [
+        ,
+        ,
+        "(?:59(?:0(?:0[1-68]|[14][0-24-9]|2[0-68]|3[1-9]|5[3-579]|[68][0-689]|7[08]|9\\d)|87\\d)|80[6-9]\\d\\d)\\d{4}",
+        ,
+        ,
+        ,
+        "590201234"
+      ], [, , "(?:69(?:0\\d\\d|1(?:2[2-9]|3[0-5]))|7090[0-4])\\d{4}", , , , "690001234"], [, , "80[0-5]\\d{6}", , , , "800012345"], [, , "8[129]\\d{7}", , , , "810123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "9(?:(?:39[5-7]|76[018])\\d|475[0-6])\\d{4}", , , , "976012345"], "GP", 590, "00", "0", , , "0", , , , [[, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[5-79]|80[6-9]"], "0$1"], [, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["8"], "0$1"]], , [, , , , , , , , , [-1]], 1, , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      GQ: [
+        ,
+        [, , "222\\d{6}|(?:3\\d|55|[89]0)\\d{7}", , , , , , , [9]],
+        [, , "33[0-24-9]\\d[46]\\d{4}|3(?:33|5\\d)\\d[7-9]\\d{4}", , , , "333091234"],
+        [, , "(?:222|55\\d)\\d{6}", , , , "222123456"],
+        [, , "80\\d[1-9]\\d{5}", , , , "800123456"],
+        [, , "90\\d[1-9]\\d{5}", , , , "900123456"],
         [, , , , , , , , , [-1]],
         [, , , , , , , , , [-1]],
         [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , "722\\d{6}", , , , "722123456", , , [9]],
-        "GN",
-        224,
+        "GQ",
+        240,
         "00",
         ,
         ,
@@ -6868,7 +7439,7 @@ var factoryOutput = (() => {
         ,
         ,
         ,
-        [[, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["3"]], [, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[67]"]]],
+        [[, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[235]"]], [, "(\\d{3})(\\d{6})", "$1 $2", ["[89]"]]],
         ,
         [, , , , , , , , , [-1]],
         ,
@@ -6879,51 +7450,76 @@ var factoryOutput = (() => {
         ,
         [, , , , , , , , , [-1]]
       ],
-      GP: [, [, , "(?:590\\d|7090)\\d{5}|(?:69|[89]\\d)\\d{7}", , , , , , , [9]], [, , "590(?:0[1-68]|[14][0-24-9]|2[0-68]|3[1-9]|5[3-579]|[68][0-689]|7[08]|9\\d)\\d{4}", , , , "590201234"], [
+      GR: [
+        ,
+        [
+          ,
+          ,
+          "5005000\\d{3}|8\\d{9,11}|(?:[269]\\d|70)\\d{8}",
+          ,
+          ,
+          ,
+          ,
+          ,
+          ,
+          [10, 11, 12]
+        ],
+        [, , "2(?:1\\d\\d|2(?:2[1-46-9]|[36][1-8]|4[1-7]|5[1-4]|7[1-5]|[89][1-9])|3(?:1\\d|2[1-57]|[35][1-3]|4[13]|7[1-7]|8[124-6]|9[1-79])|4(?:1\\d|2[1-8]|3[1-4]|4[13-5]|6[1-578]|9[1-5])|5(?:1\\d|[29][1-4]|3[1-5]|4[124]|5[1-6])|6(?:1\\d|[269][1-6]|3[1245]|4[1-7]|5[13-9]|7[14]|8[1-5])|7(?:1\\d|2[1-5]|3[1-6]|4[1-7]|5[1-57]|6[135]|9[125-7])|8(?:1\\d|2[1-5]|[34][1-4]|9[1-57]))\\d{6}", , , , "2123456789", , , [10]],
+        [, , "68[57-9]\\d{7}|(?:69|94)\\d{8}", , , , "6912345678", , , [10]],
+        [, , "800\\d{7,9}", , , , "8001234567"],
+        [, , "90[19]\\d{7}", , , , "9091234567", , , [10]],
+        [, , "8(?:0[16]|12|[27]5|50)\\d{7}", , , , "8011234567", , , [10]],
+        [, , "70\\d{8}", , , , "7012345678", , , [10]],
+        [, , , , , , , , , [-1]],
+        "GR",
+        30,
+        "00",
         ,
         ,
-        "(?:69(?:0\\d\\d|1(?:2[2-9]|3[0-5])|4(?:0[89]|1[2-6]|9\\d)|6(?:1[016-9]|5[0-4]|[67]\\d))|7090[0-4])\\d{4}",
         ,
         ,
         ,
-        "690001234"
-      ], [, , "80\\d{7}", , , , "800012345"], [, , "8[129]\\d{7}", , , , "810123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "9(?:(?:39[5-7]|76[018])\\d|475[0-6])\\d{4}", , , , "976012345"], "GP", 590, "00", "0", , , "0", , , , [[, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[5-79]"], "0$1"], [, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["8"], "0$1"]], , [, , , , , , , , , [-1]], 1, , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      GQ: [, [, , "222\\d{6}|(?:3\\d|55|[89]0)\\d{7}", , , , , , , [9]], [
         ,
         ,
-        "33[0-24-9]\\d[46]\\d{4}|3(?:33|5\\d)\\d[7-9]\\d{4}",
+        [[, "(\\d{2})(\\d{4})(\\d{4})", "$1 $2 $3", ["21|7"]], [, "(\\d{4})(\\d{6})", "$1 $2", ["2(?:2|3[2-57-9]|4[2-469]|5[2-59]|6[2-9]|7[2-69]|8[2-49])|5"]], [, "(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3", ["[2689]"]], [, "(\\d{3})(\\d{3,4})(\\d{5})", "$1 $2 $3", ["8"]]],
+        ,
+        [, , , , , , , , , [-1]],
+        ,
+        ,
+        [, , , , , , , , , [-1]],
+        [, , "5005000\\d{3}", , , , "5005000123", , , [10]],
+        ,
+        ,
+        [
+          ,
+          ,
+          ,
+          ,
+          ,
+          ,
+          ,
+          ,
+          ,
+          [-1]
+        ]
+      ],
+      GT: [, [, , "80\\d{6}|(?:1\\d{3}|[2-7])\\d{7}", , , , , , , [8, 11]], [, , "[267][2-9]\\d{6}", , , , "22456789", , , [8]], [, , "(?:[3-5]\\d\\d|80[0-4])\\d{5}", , , , "51234567", , , [8]], [, , "18[01]\\d{8}", , , , "18001112222", , , [11]], [, , "19\\d{9}", , , , "19001112222", , , [11]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "GT", 502, "00", , , , , , , , [[, "(\\d{4})(\\d{4})", "$1 $2", ["[2-8]"]], [, "(\\d{4})(\\d{3})(\\d{4})", "$1 $2 $3", ["1"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      GU: [, [
+        ,
+        ,
+        "(?:[58]\\d\\d|671|900)\\d{7}",
         ,
         ,
         ,
-        "333091234"
-      ], [, , "(?:222|55\\d)\\d{6}", , , , "222123456"], [, , "80\\d[1-9]\\d{5}", , , , "800123456"], [, , "90\\d[1-9]\\d{5}", , , , "900123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "GQ", 240, "00", , , , , , , , [[, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[235]"]], [, "(\\d{3})(\\d{6})", "$1 $2", ["[89]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      GR: [, [, , "5005000\\d{3}|8\\d{9,11}|(?:[269]\\d|70)\\d{8}", , , , , , , [10, 11, 12]], [
-        ,
-        ,
-        "2(?:1\\d\\d|2(?:2[1-46-9]|[36][1-8]|4[1-7]|5[1-4]|7[1-5]|[89][1-9])|3(?:1\\d|2[1-57]|[35][1-3]|4[13]|7[1-7]|8[124-6]|9[1-79])|4(?:1\\d|2[1-8]|3[1-4]|4[13-5]|6[1-578]|9[1-5])|5(?:1\\d|[29][1-4]|3[1-5]|4[124]|5[1-6])|6(?:1\\d|[269][1-6]|3[1245]|4[1-7]|5[13-9]|7[14]|8[1-5])|7(?:1\\d|2[1-5]|3[1-6]|4[1-7]|5[1-57]|6[135]|9[125-7])|8(?:1\\d|2[1-5]|[34][1-4]|9[1-57]))\\d{6}",
         ,
         ,
         ,
-        "2123456789",
+        [10],
+        [7]
+      ], [, , "671(?:2\\d\\d|3(?:00|3[39]|4[349]|55|6[26])|4(?:00|56|7[1-9]|8[02-9])|5(?:55|6[2-5]|88)|6(?:3[2-578]|4[24-9]|5[34]|78|8[235-9])|7(?:[0479]7|2[0167]|3[45]|8[7-9])|8(?:[2-57-9]8|6[478])|9(?:2[29]|6[79]|7[1279]|8[7-9]|9[16-9]))\\d{4}", , , , "6713001234", , , , [7]], [
         ,
         ,
-        [10]
-      ], [, , "68[57-9]\\d{7}|(?:69|94)\\d{8}", , , , "6912345678", , , [10]], [, , "800\\d{7,9}", , , , "8001234567"], [, , "90[19]\\d{7}", , , , "9091234567", , , [10]], [, , "8(?:0[16]|12|[27]5|50)\\d{7}", , , , "8011234567", , , [10]], [, , "70\\d{8}", , , , "7012345678", , , [10]], [, , , , , , , , , [-1]], "GR", 30, "00", , , , , , , , [[, "(\\d{2})(\\d{4})(\\d{4})", "$1 $2 $3", ["21|7"]], [, "(\\d{4})(\\d{6})", "$1 $2", ["2(?:2|3[2-57-9]|4[2-469]|5[2-59]|6[2-9]|7[2-69]|8[2-49])|5"]], [, "(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3", ["[2689]"]], [
-        ,
-        "(\\d{3})(\\d{3,4})(\\d{5})",
-        "$1 $2 $3",
-        ["8"]
-      ]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "5005000\\d{3}", , , , "5005000123", , , [10]], , , [, , , , , , , , , [-1]]],
-      GT: [, [, , "80\\d{6}|(?:1\\d{3}|[2-7])\\d{7}", , , , , , , [8, 11]], [, , "[267][2-9]\\d{6}", , , , "22456789", , , [8]], [, , "(?:[3-5]\\d\\d|80[0-4])\\d{5}", , , , "51234567", , , [8]], [, , "18[01]\\d{8}", , , , "18001112222", , , [11]], [, , "19\\d{9}", , , , "19001112222", , , [11]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "GT", 502, "00", , , , , , , , [[, "(\\d{4})(\\d{4})", "$1 $2", ["[2-8]"]], [
-        ,
-        "(\\d{4})(\\d{3})(\\d{4})",
-        "$1 $2 $3",
-        ["1"]
-      ]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      GU: [, [, , "(?:[58]\\d\\d|671|900)\\d{7}", , , , , , , [10], [7]], [, , "671(?:2\\d\\d|3(?:00|3[39]|4[349]|55|6[26])|4(?:00|56|7[1-9]|8[02-9])|5(?:55|6[2-5]|88)|6(?:3[2-578]|4[24-9]|5[34]|78|8[235-9])|7(?:[0479]7|2[0167]|3[45]|8[7-9])|8(?:[2-57-9]8|6[478])|9(?:2[29]|6[79]|7[1279]|8[7-9]|9[78]))\\d{4}", , , , "6713001234", , , , [7]], [
-        ,
-        ,
-        "671(?:2\\d\\d|3(?:00|3[39]|4[349]|55|6[26])|4(?:00|56|7[1-9]|8[02-9])|5(?:55|6[2-5]|88)|6(?:3[2-578]|4[24-9]|5[34]|78|8[235-9])|7(?:[0479]7|2[0167]|3[45]|8[7-9])|8(?:[2-57-9]8|6[478])|9(?:2[29]|6[79]|7[1279]|8[7-9]|9[78]))\\d{4}",
+        "671(?:2\\d\\d|3(?:00|3[39]|4[349]|55|6[26])|4(?:00|56|7[1-9]|8[02-9])|5(?:55|6[2-5]|88)|6(?:3[2-578]|4[24-9]|5[34]|78|8[235-9])|7(?:[0479]7|2[0167]|3[45]|8[7-9])|8(?:[2-57-9]8|6[478])|9(?:2[29]|6[79]|7[1279]|8[7-9]|9[16-9]))\\d{4}",
         ,
         ,
         ,
@@ -6953,64 +7549,45 @@ var factoryOutput = (() => {
         ,
         ,
         "2201234"
-      ], [, , "(?:51[01]|6\\d\\d|7(?:[0-5]\\d|6[0-79]|70))\\d{4}", , , , "6091234"], [, , "(?:289|8(?:00|6[28]|88|99))\\d{4}", , , , "2891234"], [, , "9008\\d{3}", , , , "9008123"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "515\\d{4}", , , , "5151234"], "GY", 592, "001", , , , , , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[2-9]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      HK: [
+      ], [, , "(?:51[01]|6\\d\\d|7(?:[0-5]\\d|6[0-79]|70|8[067]))\\d{4}", , , , "6091234"], [, , "(?:289|8(?:00|6[28]|88|99))\\d{4}", , , , "2891234"], [, , "9008\\d{3}", , , , "9008123"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "515\\d{4}", , , , "5151234"], "GY", 592, "001", , , , , , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[2-9]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      HK: [, [, , "8[0-46-9]\\d{6,7}|9\\d{4,7}|(?:[2-7]|9\\d{3})\\d{7}", , , , , , , [5, 6, 7, 8, 9, 11]], [
         ,
-        [, , "8[0-46-9]\\d{6,7}|9\\d{4,7}|(?:[2-7]|9\\d{3})\\d{7}", , , , , , , [5, 6, 7, 8, 9, 11]],
-        [
-          ,
-          ,
-          "(?:2(?:[13-9]\\d|2[013-9])\\d|3(?:(?:[1569][0-24-9]|4[0-246-9]|7[0-24-69])\\d|8(?:4[0-8]|[579]\\d|6[0-5]))|58(?:0[1-9]|1[2-9]))\\d{4}",
-          ,
-          ,
-          ,
-          "21234567",
-          ,
-          ,
-          [8]
-        ],
-        [, , "(?:4(?:(?:09|24)[3-6]|44[0-35-9]|6(?:4[0-57-9]|6[0-6])|7(?:4[0-48]|6[0-5]))|5(?:25[3-7]|35[4-8]|73[0-6]|95[0-8])|6(?:26[013-8]|(?:66|78)[0-5])|70(?:7[1-8]|8[0-8])|84(?:4[0-2]|8[0-35-9])|9(?:29[013-9]|39[014-9]|59[0-467]|899))\\d{4}|(?:4(?:4[0-35-9]|6[0-357-9]|7[0-35])|5(?:[1-59][0-46-9]|6[0-4689]|7[0-246-9])|6(?:0[1-9]|[13-59]\\d|[268][0-57-9]|7[0-79])|70[1-59]|84[0-39]|9(?:0[1-9]|1[02-9]|[2358][0-8]|[467]\\d))\\d{5}", , , , "51234567", , , [8]],
-        [, , "800\\d{6}", , , , "800123456", , , [9]],
-        [, , "900(?:[0-24-9]\\d{7}|3\\d{1,4})", , , , "90012345678", , , [5, 6, 7, 8, 11]],
-        [, , , , , , , , , [-1]],
-        [, , "8(?:1[0-4679]\\d|2(?:[0-36]\\d|7[0-4])|3(?:[034]\\d|2[09]|70))\\d{4}", , , , "81123456", , , [8]],
-        [, , , , , , , , , [-1]],
-        "HK",
-        852,
-        "00(?:30|5[09]|[126-9]?)",
+        ,
+        "(?:2(?:[13-9]\\d|2[013-9])\\d|3(?:(?:[1569][0-24-9]|4[0-246-9]|7[0-24-69])\\d|8(?:4[0-8]|[579]\\d|6[0-5]))|58(?:0[1-9]|1[2-9]))\\d{4}",
         ,
         ,
         ,
+        "21234567",
         ,
         ,
-        "00",
-        ,
-        [[, "(\\d{3})(\\d{2,5})", "$1 $2", ["900", "9003"]], [, "(\\d{4})(\\d{4})", "$1 $2", ["[2-7]|8[1-4]|9(?:0[1-9]|[1-8])"]], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["8"]], [, "(\\d{3})(\\d{2})(\\d{3})(\\d{3})", "$1 $2 $3 $4", ["9"]]],
-        ,
-        [
-          ,
-          ,
-          "7(?:1(?:0[0-38]|1[0-3679]|3[013]|69|9[0136])|2(?:[02389]\\d|1[18]|7[27-9])|3(?:[0-38]\\d|7[0-369]|9[2357-9])|47\\d|5(?:[178]\\d|5[0-5])|6(?:0[0-7]|2[236-9]|[35]\\d)|7(?:[27]\\d|8[7-9])|8(?:[23689]\\d|7[1-9])|9(?:[025]\\d|6[0-246-8]|7[0-36-9]|8[238]))\\d{4}",
-          ,
-          ,
-          ,
-          "71123456",
-          ,
-          ,
-          [8]
-        ],
+        [8]
+      ], [, , "(?:4(?:0(?:6[0-3]|9[3-6])|24[3-6]|44[0-35-9]|6(?:4[0-57-9]|6[0-6])|7(?:4[0-48]|6[0-5]))|5(?:25[3-7]|35[4-8]|73[0-6]|95[0-8])|6(?:26[013-8]|(?:66|78)[0-5])|7(?:0(?:7[1-8]|8[0-8])|10[1-4])|84(?:4[0-2]|8[0-35-9])|9(?:29[013-9]|39[014-9]|59[0-467]|899))\\d{4}|(?:4(?:4[0-35-9]|6[0-357-9]|7[0-35])|5(?:[1-59][0-46-9]|6[0-4689]|7[0-246-9])|6(?:0[1-9]|[13-59]\\d|[268][0-57-9]|7[0-79])|70[1-59]|84[0-39]|9(?:0[1-9]|1[02-9]|[2358][0-8]|[467]\\d))\\d{5}", , , , "51234567", , , [8]], [
         ,
         ,
-        [, , , , , , , , , [-1]],
-        [, , "30(?:0[1-9]|[15-7]\\d|2[047]|89)\\d{4}", , , , "30161234", , , [8]],
+        "800\\d{6}",
         ,
         ,
-        [, , , , , , , , , [-1]]
-      ],
+        ,
+        "800123456",
+        ,
+        ,
+        [9]
+      ], [, , "900(?:[0-24-9]\\d{7}|3\\d{1,4})", , , , "90012345678", , , [5, 6, 7, 8, 11]], [, , , , , , , , , [-1]], [, , "8(?:1[0-4679]\\d|2(?:[0-36]\\d|7[0-4])|3(?:[034]\\d|2[09]|70))\\d{4}", , , , "81123456", , , [8]], [, , , , , , , , , [-1]], "HK", 852, "00(?:30|5[09]|[126-9]?)", , , , , , "00", , [[, "(\\d{3})(\\d{2,5})", "$1 $2", ["900", "9003"]], [, "(\\d{4})(\\d{4})", "$1 $2", ["[2-7]|8[1-4]|9(?:0[1-9]|[1-8])"]], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["8"]], [, "(\\d{3})(\\d{2})(\\d{3})(\\d{3})", "$1 $2 $3 $4", ["9"]]], , [
+        ,
+        ,
+        "7(?:1(?:0[08]|1[0-3679]|3[013]|69|9[0136])|2(?:[02389]\\d|1[18]|7[27-9])|3(?:[0-38]\\d|7[0-369]|9[2357-9])|47\\d|5(?:[178]\\d|5[0-5])|6(?:0[0-7]|2[236-9]|[35]\\d)|7(?:[27]\\d|8[7-9])|8(?:[23689]\\d|7[1-9])|9(?:[025]\\d|6[0-246-8]|7[0-36-9]|8[238]))\\d{4}",
+        ,
+        ,
+        ,
+        "71123456",
+        ,
+        ,
+        [8]
+      ], , , [, , , , , , , , , [-1]], [, , "30(?:0[1-9]|[15-7]\\d|2[047]|89)\\d{4}", , , , "30161234", , , [8]], , , [, , , , , , , , , [-1]]],
       HN: [, [, , "8\\d{10}|[237-9]\\d{7}", , , , , , , [8, 11]], [
         ,
         ,
-        "2(?:2(?:0[0-59]|1[1-9]|[23]\\d|4[02-7]|5[57]|6[245]|7[0135689]|8[01346-9]|9[0-2])|4(?:0[578]|2[3-59]|3[13-9]|4[0-68]|5[1-3589])|5(?:0[2357-9]|1[1-356]|4[03-5]|5\\d|6[014-69]|7[04]|80)|6(?:[056]\\d|17|2[067]|3[047]|4[0-378]|[78][0-8]|9[01])|7(?:0[5-79]|6[46-9]|7[02-9]|8[034]|91)|8(?:79|8[0-357-9]|9[1-57-9]))\\d{4}",
+        "2(?:2(?:0[0-59]|1[1-9]|[23]\\d|4[02-8]|5[57]|6[2458]|7[0135689]|8[01346-9]|9[0-2])|4(?:0[578]|2[3-59]|3[13-9]|4[0-68]|5[1-3589]|80)|5(?:0[2357-9]|1[1-6]|4[03-58]|5\\d|6[014-69]|7[04]|80)|6(?:[056]\\d|17|2[067]|3[047]|4[0-378]|[78][0-8]|9[01])|7(?:0[5-79]|2[01]|6[46-9]|7[02-9]|8[034]|91)|8(?:79|8[0-357-9]|9[1-57-9]))\\d{4}",
         ,
         ,
         ,
@@ -7128,71 +7705,62 @@ var factoryOutput = (() => {
         ["81"],
         "(0$1)"
       ], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["[78]"], "0$1"], [, "(\\d{4})(\\d{3})(\\d{3})", "$1 $2 $3", ["1"]], [, "(\\d{2})(\\d{4})(\\d{4})", "$1 $2 $3", ["4"], "(0$1)"], [, "(\\d{2})(\\d)(\\d{3})(\\d{4})", "$1 $2 $3 $4", ["8"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , "18[59]0\\d{6}", , , , , , , [10]], [, , "818\\d{6}", , , , "818123456", , , [9]], , , [, , "88210[1-9]\\d{4}|8(?:[35-79]5\\d\\d|8(?:[013-9]\\d\\d|2(?:[01][1-9]|[2-9]\\d)))\\d{5}", , , , "8551234567", , , [10]]],
-      IL: [, [, , "1\\d{6}(?:\\d{3,5})?|[57]\\d{8}|[1-489]\\d{7}", , , , , , , [
-        7,
-        8,
-        9,
-        10,
-        11,
-        12
-      ]], [, , "153\\d{8,9}|29[1-9]\\d{5}|(?:2[0-8]|[3489]\\d)\\d{6}", , , , "21234567", , , [8, 11, 12], [7]], [, , "55(?:4(?:0[0-2]|[16]0)|57[0-289])\\d{4}|5(?:(?:[0-2][02-9]|[36]\\d|[49][2-9]|8[3-7])\\d|5(?:01|2\\d|3[0-3]|4[3-5]|5[0-25689]|6[6-8]|7[0-267]|8[7-9]|9[1-9]))\\d{5}", , , , "502345678", , , [9]], [, , "1(?:255|80[019]\\d{3})\\d{3}", , , , "1800123456", , , [7, 10]], [, , "1212\\d{4}|1(?:200|9(?:0[0-2]|19))\\d{6}", , , , "1919123456", , , [8, 10]], [, , "1700\\d{6}", , , , "1700123456", , , [10]], [, , , , , , , , , [-1]], [
+      IL: [
         ,
-        ,
-        "7(?:38(?:[05]\\d|8[0138])|8(?:33|55|77|81)\\d)\\d{4}|7(?:18|2[23]|3[237]|47|6[258]|7\\d|82|9[2-9])\\d{6}",
-        ,
-        ,
-        ,
-        "771234567",
-        ,
-        ,
-        [9]
-      ], "IL", 972, "0(?:0|1[2-9])", "0", , , "0", , , , [[, "(\\d{4})(\\d{3})", "$1-$2", ["125"]], [, "(\\d{4})(\\d{2})(\\d{2})", "$1-$2-$3", ["121"]], [, "(\\d)(\\d{3})(\\d{4})", "$1-$2-$3", ["[2-489]"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{4})", "$1-$2-$3", ["[57]"], "0$1"], [, "(\\d{4})(\\d{3})(\\d{3})", "$1-$2-$3", ["12"]], [, "(\\d{4})(\\d{6})", "$1-$2", ["159"]], [, "(\\d)(\\d{3})(\\d{3})(\\d{3})", "$1-$2-$3-$4", ["1[7-9]"]], [, "(\\d{3})(\\d{1,2})(\\d{3})(\\d{4})", "$1-$2 $3-$4", ["15"]]], , [, , , , , , , , , [-1]], , , [
-        ,
-        ,
-        "1700\\d{6}",
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        [10]
-      ], [, , "1599\\d{6}", , , , "1599123456", , , [10]], , , [, , "151\\d{8,9}", , , , "15112340000", , , [11, 12]]],
-      IM: [
-        ,
-        [, , "1624\\d{6}|(?:[3578]\\d|90)\\d{8}", , , , , , , [10], [6]],
-        [, , "1624(?:230|[5-8]\\d\\d)\\d{3}", , , , "1624756789", , , , [6]],
-        [, , "76245[06]\\d{4}|7(?:4576|[59]24\\d|624[0-4689])\\d{5}", , , , "7924123456"],
-        [, , "808162\\d{4}", , , , "8081624567"],
-        [, , "8(?:440[49]06|72299\\d)\\d{3}|(?:8(?:45|70)|90[0167])624\\d{4}", , , , "9016247890"],
+        [, , "1\\d{6}(?:\\d{3,5})?|[57]\\d{8}|[1-489]\\d{7}", , , , , , , [
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]],
+        [, , "153\\d{8,9}|29[1-9]\\d{5}|(?:2[0-8]|[3489]\\d)\\d{6}", , , , "21234567", , , [8, 11, 12], [7]],
+        [, , "55(?:4(?:0[0-3]|10|6[015-9])|57[0-289]|8[06][0-2])\\d{4}|5(?:(?:[0-2][02-9]|[36]\\d|[49][2-9]|8[3-7])\\d|5(?:01|2\\d|3[0-3]|4[3-5]|5[0-25689]|6[6-8]|7[0-267]|8[7-9]|9[1-9]))\\d{5}", , , , "502345678", , , [9]],
+        [, , "1(?:255|80[019]\\d{3})\\d{3}", , , , "1800123456", , , [7, 10]],
+        [, , "1212\\d{4}|1(?:200|9(?:0[0-2]|19|9\\d))\\d{6}", , , , "1919123456", , , [8, 10]],
+        [, , "1700\\d{6}", , , , "1700123456", , , [10]],
         [, , , , , , , , , [-1]],
-        [, , "70\\d{8}", , , , "7012345678"],
-        [, , "56\\d{8}", , , , "5612345678"],
-        "IM",
-        44,
-        "00",
+        [, , "7(?:280[01]|38(?:[05]\\d|8[01358])|8(?:33|55|77|81)\\d)\\d{4}|7(?:18|2[23]|3[237]|47|6[258]|7\\d|82|9[2-9])\\d{6}", , , , "771234567", , , [9]],
+        "IL",
+        972,
+        "0(?:0|1(?:05|[2-9]))",
         "0",
         ,
         ,
-        "([25-8]\\d{5})$|0|180020",
-        "1624$1",
+        "0",
         ,
         ,
         ,
+        [[, "(\\d{4})(\\d{3})", "$1-$2", ["125"]], [, "(\\d{4})(\\d{2})(\\d{2})", "$1-$2-$3", ["121"]], [, "(\\d)(\\d{3})(\\d{4})", "$1-$2-$3", ["[2-489]"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{4})", "$1-$2-$3", ["[57]"], "0$1"], [, "(\\d{4})(\\d{3})(\\d{3})", "$1-$2-$3", ["12"]], [, "(\\d{4})(\\d{6})", "$1-$2", ["159"]], [
+          ,
+          "(\\d)(\\d{3})(\\d{3})(\\d{3})",
+          "$1-$2-$3-$4",
+          ["1[7-9]"]
+        ], [, "(\\d{3})(\\d{1,2})(\\d{3})(\\d{4})", "$1-$2 $3-$4", ["15"]]],
         ,
         [, , , , , , , , , [-1]],
         ,
-        "74576|(?:16|7[56])24",
-        [, , , , , , , , , [-1]],
-        [, , "3440[49]06\\d{3}|(?:3(?:08162|3\\d{4}|45624|7(?:0624|2299))|55\\d{4})\\d{4}", , , , "5512345678"],
+        ,
+        [, , "1700\\d{6}", , , , , , , [10]],
+        [, , "1599\\d{6}", , , , "1599123456", , , [10]],
         ,
         ,
-        [, , , , , , , , , [-1]]
+        [, , "151\\d{8,9}", , , , "15112340000", , , [11, 12]]
       ],
+      IM: [, [, , "1624\\d{6}|(?:[3578]\\d|90)\\d{8}", , , , , , , [10], [6]], [, , "1624(?:230|[5-8]\\d\\d)\\d{3}", , , , "1624756789", , , , [6]], [, , "76245[06]\\d{4}|7(?:4576|[59]24\\d|624[0-4689])\\d{5}", , , , "7924123456"], [, , "808162\\d{4}", , , , "8081624567"], [
+        ,
+        ,
+        "8(?:440[49]06|72299\\d)\\d{3}|(?:8(?:45|70)|90[0167])624\\d{4}",
+        ,
+        ,
+        ,
+        "9016247890"
+      ], [, , , , , , , , , [-1]], [, , "70\\d{8}", , , , "7012345678"], [, , "56\\d{8}", , , , "5612345678"], "IM", 44, "00", "0", , , "([25-8]\\d{5})$|0|180020", "1624$1", , , , , [, , , , , , , , , [-1]], , "74576|(?:16|7[56])24", [, , , , , , , , , [-1]], [, , "3440[49]06\\d{3}|(?:3(?:08162|3\\d{4}|45624|7(?:0624|2299))|55\\d{4})\\d{4}", , , , "5512345678"], , , [, , , , , , , , , [-1]]],
       IN: [, [, , "(?:000800|[2-9]\\d\\d)\\d{7}|1\\d{7,12}", , , , , , , [8, 9, 10, 11, 12, 13], [6, 7]], [
         ,
         ,
-        "(?:2717(?:[2-7]\\d|95)|6828[235-7]\\d)\\d{4}|(?:170[24]|280[13468]|4(?:20[24]|72[2-8])|552[1-7])\\d{6}|(?:271[0-689]|682[0-79]|782[0-6])[2-7]\\d{5}|(?:2(?:[02][2-79]|90)|3(?:23|80)|683|79[1-7])\\d{7}|(?:11|33|4[04]|80)[2-7]\\d{7}|(?:342|674|788)(?:[0189][2-7]|[2-7]\\d)\\d{5}|(?:1(?:2[0-249]|3[0-25]|4[145]|[59][14]|6[014]|7[1257]|8[01346])|2(?:1[257]|3[013]|4[01]|5[0137]|6[0158]|78|8[1568]|9[14])|3(?:26|4[13]|5[34]|6[01489]|7[02-46]|8[159])|4(?:1[36]|2[1-47]|3[15]|5[12]|6[0-26-9]|7[014-9]|8[013-57]|9[014-7])|5(?:1[025]|22|[36][25]|4[28]|[578]1|9[15])|6(?:12|[2-47]1|5[17]|6[13]|80)|7(?:12|2[14]|3[134]|4[47]|5[15]|[67]1)|8(?:16|2[014]|3[126]|6[136]|7[078]|8[34]|91))[2-7]\\d{6}|(?:1(?:2[35-8]|3[346-9]|4[236-9]|[59][0235-9]|6[235-9]|7[34689]|8[257-9])|2(?:1[134689]|3[24-8]|4[2-8]|5[25689]|6[2-4679]|7[3-79]|8[2-479]|9[235-9])|3(?:01|1[79]|2[1245]|4[5-8]|5[125689]|6[235-7]|7[157-9]|8[2-46-8])|4(?:1[14578]|2[5689]|3[2-467]|5[4-7]|6[35]|73|8[2689]|9[2389])|5(?:[16][146-9]|2[14-8]|3[1346]|4[14-69]|5[46]|7[2-4]|8[2-8]|9[246])|6(?:1[1358]|2[2457]|3[2-4]|4[235-7]|5[2-689]|6[24578]|7[235689]|8[14-6])|7(?:1[013-9]|2[0235-9]|3[2679]|4[1-35689]|5[2-46-9]|[67][02-9]|8[013-7]|9[089])|8(?:1[1357-9]|2[235-8]|3[03-57-9]|4[0-24-9]|5\\d|6[2457-9]|7[1-6]|8[1256]|9[2-4]))\\d[2-7]\\d{5}",
+        "(?:2717(?:[2-7]\\d|95)|6828[235-7]\\d)\\d{4}|(?:170[24]|280[13468]|4(?:20[24]|72[2-8])|552[1-7])\\d{6}|(?:271[0-689]|682[0-79]|782[0-6])[2-7]\\d{5}|(?:2(?:[02][2-79]|90)|3(?:23|80)|683|79[1-6])\\d{7}|(?:11|33|4[04]|80)[2-7]\\d{7}|(?:342|674|788)(?:[0189][2-7]|[2-7]\\d)\\d{5}|(?:1(?:2[0-249]|3[0-25]|4[145]|[59][14]|6[014]|7[1257]|8[01346])|2(?:1[257]|3[013]|4[01]|5[0137]|6[0158]|78|8[1568]|9[14])|3(?:26|4[13]|5[34]|6[01489]|7[02-46]|8[159])|4(?:1[36]|2[1-47]|3[15]|5[12]|6[0-26-9]|7[014-9]|8[013-57]|9[014-7])|5(?:1[025]|22|[36][25]|4[28]|[578]1|9[15])|6(?:12|[2-47]1|5[17]|6[13]|80)|7(?:12|2[14]|3[134]|4[47]|5[15]|[67]1)|8(?:16|2[014]|3[126]|6[136]|7[078]|8[34]|91))[2-7]\\d{6}|(?:1(?:2[35-8]|3[346-9]|4[236-9]|[59][0235-9]|6[235-9]|7[34689]|8[257-9])|2(?:1[134689]|3[24-8]|4[2-8]|5[25689]|6[2-4679]|7[3-79]|8[2-479]|9[235-9])|3(?:01|1[79]|2[1245]|4[5-8]|5[125689]|6[235-7]|7[157-9]|8[2-46-8])|4(?:1[14578]|2[5689]|3[2-467]|5[4-7]|6[35]|73|8[2689]|9[2389])|5(?:[16][146-9]|2[14-8]|3[1346]|4[14-69]|5[46]|7[2-4]|8[2-8]|9[246])|6(?:1[1358]|2[2457]|3[2-4]|4[235-7]|5[2-689]|6[24578]|7[235689]|8[14-6])|7(?:1[013-9]|2[0235-9]|3[2679]|4[1-35689]|5[2-46-9]|[67][02-9]|8[013-7]|90)|8(?:1[1357-9]|2[235-8]|3[03-57-9]|4[0-24-9]|5\\d|6[2457-9]|7[1-6]|8[1256]|9[2-4]))\\d[2-7]\\d{5}",
         ,
         ,
         ,
@@ -7204,7 +7772,7 @@ var factoryOutput = (() => {
       ], [
         ,
         ,
-        "(?:6(?:1279|828[01489])|7(?:887[02-9]|9(?:313|79[07-9]))|8(?:079[04-9]|(?:84|91)7[02-8]))\\d{5}|(?:160[01]|6(?:12|[2-47]1|5[17]|6[13]|80)[0189]|7(?:1(?:2[0189]|9[0-5])|2(?:[14][017-9]|8[0-59])|3(?:2[5-8]|[34][017-9]|9[016-9])|4(?:1[015-9]|[29][89]|39|8[389])|5(?:[15][017-9]|2[04-9]|9[7-9])|6(?:0[0-47]|1[0-257-9]|2[0-4]|3[19]|5[4589])|70[0289]|88[089]|97[02-8])|8(?:0(?:6[67]|7[02-8])|70[017-9]|84[01489]|91[0-289]))\\d{6}|(?:7(?:31|4[47])|8(?:16|2[014]|3[126]|6[136]|7[78]|83))(?:[0189]\\d|7[02-8])\\d{5}|(?:6(?:[09]\\d|1[04679]|2[03689]|3[05-9]|4[0489]|50|6[069]|7[07]|8[7-9])|7(?:0\\d|2[0235-79]|3[05-8]|40|5[0346-8]|6[6-9]|7[1-9]|8[0-79]|9[089])|8(?:0[01589]|1[0-57-9]|2[235-9]|3[03-57-9]|[45]\\d|6[02457-9]|7[1-69]|8[0-25-9]|9[02-9])|9\\d\\d)\\d{7}|(?:6(?:(?:1[1358]|2[2457]|3[2-4]|4[235-7]|5[2-689]|6[24578])\\d|7(?:[235689]\\d|4[0189])|8(?:[14-6]\\d|2[0-79]))|7(?:1(?:[013-8]\\d|9[6-9])|28[6-8]|3(?:2[0-49]|9[2-5])|4(?:1[2-4]|[29][0-7]|3[0-8]|[56]\\d|8[0-24-7])|5(?:2[1-3]|9[0-6])|6(?:0[5689]|2[5-9]|3[02-8]|4\\d|5[0-367])|70[13-7]|881))[0189]\\d{5}",
+        "(?:6(?:1279|828[01489])|7(?:887[02-9]|9313)|8(?:079[04-9]|(?:84|91)7[02-8]))\\d{5}|(?:160[01]|6(?:(?:12|[2-4]1|5[17]|6[13]|80)[0189]|7(?:1[0189]|86))|7(?:1(?:2[0189]|9[0-5])|3(?:2[5-8]|[34][017-9]|9[016-9])|5(?:[15][017-9]|2[04-9]|9[7-9])|6(?:0[0-47]|1[0-257-9]|2[0-4]|3[19]|5[4589])|70[0289]|88[089])|8(?:0(?:6[67]|7[02-8])|70[017-9]|84[01489]|91[0-289]))\\d{6}|(?:731|8(?:16|2[014]|3[126]|6[136]|7[78]|83))(?:[0189]\\d|7[02-8])\\d{5}|(?:6(?:(?:1[1358]|2[2457]|3[2-4]|4[235-7]|5[2-689]|6[24578])\\d|7(?:[23569]\\d|4[0189]|8[0-57-9])|8(?:[14-6]\\d|2[0-79]))|7(?:1(?:[013-8]\\d|9[6-9])|3(?:2[0-49]|9[2-5])|5(?:2[1-3]|9[0-6])|6(?:0[5689]|2[5-9]|3[02-8]|4\\d|5[0-367])|70[13-7]|881))[0189]\\d{5}|(?:6(?:[09]\\d|1[04679]|2[03689]|3[05-9]|4[0489]|50|6[069]|7[07]|8[7-9])|7(?:[024]\\d|3[05-8]|5[0346-8]|6[6-9]|7[1-9]|8[0-79]|9[07-9])|8(?:0[01589]|1[0-57-9]|2[235-9]|3[03-57-9]|[45]\\d|6[02457-9]|7[1-69]|8[0-25-9]|9[02-9])|9\\d\\d)\\d{7}",
         ,
         ,
         ,
@@ -7220,49 +7788,57 @@ var factoryOutput = (() => {
         ,
         ,
         1
-      ], [, "(\\d{2})(\\d{4})(\\d{4})", "$1 $2 $3", ["11|2[02]|33|4[04]|79[1-7]|80[2-46]", "11|2[02]|33|4[04]|79(?:[1-6]|7[19])|80(?:[2-4]|6[0-589])", "11|2[02]|33|4[04]|79(?:[124-6]|3(?:[02-9]|1[0-24-9])|7(?:1|9[1-6]))|80(?:[2-4]|6[0-589])"], "0$1", , 1], [
+      ], [, "(\\d{2})(\\d{4})(\\d{4})", "$1 $2 $3", ["11|2[02]|33|4[04]|79[1-6]|80[2-46]", "11|2[02]|33|4[04]|79[1-6]|80(?:[2-4]|6[0-589])", "11|2[02]|33|4[04]|79(?:[124-6]|3(?:[02-9]|1[0-24-9]))|80(?:[2-4]|6[0-589])"], "0$1", , 1], [
         ,
         "(\\d{3})(\\d{3})(\\d{4})",
         "$1 $2 $3",
         [
-          "1(?:2[0-249]|3[0-25]|4[145]|[68]|7[1257])|2(?:1[257]|3[013]|4[01]|5[0137]|6[0158]|78|8[1568])|3(?:26|4[1-3]|5[34]|6[01489]|7[02-46]|8[159])|4(?:1[36]|2[1-47]|5[12]|6[0-26-9]|7[0-24-9]|8[013-57]|9[014-7])|5(?:1[025]|22|[36][25]|4[28]|5[12]|[78]1)|6(?:12|[2-4]1|5[17]|6[13]|80)|7(?:12|3[134]|4[47]|61|88)|8(?:16|2[014]|3[126]|6[136]|7[078]|8[34]|91)|(?:43|59|75)[15]|(?:1[59]|29|67|72)[14]",
-          "1(?:2[0-24]|3[0-25]|4[145]|[59][14]|6[1-9]|7[1257]|8[1-57-9])|2(?:1[257]|3[013]|4[01]|5[0137]|6[058]|78|8[1568]|9[14])|3(?:26|4[1-3]|5[34]|6[01489]|7[02-46]|8[159])|4(?:1[36]|2[1-47]|3[15]|5[12]|6[0-26-9]|7[0-24-9]|8[013-57]|9[014-7])|5(?:1[025]|22|[36][25]|4[28]|[578]1|9[15])|674|7(?:(?:2[14]|3[34]|5[15])[2-6]|61[346]|88[0-8])|8(?:70[2-6]|84[235-7]|91[3-7])|(?:1(?:29|60|8[06])|261|552|6(?:12|[2-47]1|5[17]|6[13]|80)|7(?:12|31|4[47])|8(?:16|2[014]|3[126]|6[136]|7[78]|83))[2-7]",
-          "1(?:2[0-24]|3[0-25]|4[145]|[59][14]|6[1-9]|7[1257]|8[1-57-9])|2(?:1[257]|3[013]|4[01]|5[0137]|6[058]|78|8[1568]|9[14])|3(?:26|4[1-3]|5[34]|6[01489]|7[02-46]|8[159])|4(?:1[36]|2[1-47]|3[15]|5[12]|6[0-26-9]|7[0-24-9]|8[013-57]|9[014-7])|5(?:1[025]|22|[36][25]|4[28]|[578]1|9[15])|6(?:12(?:[2-6]|7[0-8])|74[2-7])|7(?:(?:2[14]|5[15])[2-6]|3171|61[346]|88(?:[2-7]|82))|8(?:70[2-6]|84(?:[2356]|7[19])|91(?:[3-6]|7[19]))|73[134][2-6]|(?:74[47]|8(?:16|2[014]|3[126]|6[136]|7[78]|83))(?:[2-6]|7[19])|(?:1(?:29|60|8[06])|261|552|6(?:[2-4]1|5[17]|6[13]|7(?:1|4[0189])|80)|7(?:12|88[01]))[2-7]"
+          "1(?:2[0-249]|3[0-25]|4[145]|[68]|7[1257])|2(?:1[257]|3[013]|4[01]|5[0137]|6[0158]|78|8[1568])|3(?:26|4[1-3]|5[34]|6[01489]|7[02-46]|8[159])|4(?:1[36]|2[1-47]|5[12]|6[0-26-9]|7[0-24-9]|8[013-57]|9[014-7])|5(?:1[025]|22|[36][25]|4[28]|5[12]|[78]1)|6(?:12|[2-4]1|5[17]|6[13]|80)|7(?:12|3[134]|61|88)|8(?:16|2[014]|3[126]|6[136]|7[078]|8[34]|91)|(?:43|59|75)[15]|(?:1[59]|29|67)[14]",
+          "1(?:2[0-24]|3[0-25]|4[145]|[59][14]|6[1-9]|7[1257]|8[1-57-9])|2(?:1[257]|3[013]|4[01]|5[0137]|6[058]|78|8[1568]|9[14])|3(?:26|4[1-3]|5[34]|6[01489]|7[02-46]|8[159])|4(?:1[36]|2[1-47]|3[15]|5[12]|6[0-26-9]|7[0-24-9]|8[013-57]|9[014-7])|5(?:1[025]|22|[36][25]|4[28]|[578]1|9[15])|674|7(?:(?:3[34]|5[15])[2-6]|61[346]|88[0-8])|8(?:70[2-6]|84[235-7]|91[3-7])|(?:1(?:29|60|8[06])|261|552|6(?:12|[2-47]1|5[17]|6[13]|80)|7(?:12|31)|8(?:16|2[014]|3[126]|6[136]|7[78]|83))[2-7]",
+          "1(?:2[0-24]|3[0-25]|4[145]|[59][14]|6[1-9]|7[1257]|8[1-57-9])|2(?:1[257]|3[013]|4[01]|5[0137]|6[058]|78|8[1568]|9[14])|3(?:26|4[1-3]|5[34]|6[01489]|7[02-46]|8[159])|4(?:1[36]|2[1-47]|3[15]|5[12]|6[0-26-9]|7[0-24-9]|8[013-57]|9[014-7])|5(?:1[025]|22|[36][25]|4[28]|[578]1|9[15])|6(?:12(?:[2-6]|7[0-8])|74[2-7])|7(?:3171|5[15][2-6]|61[346]|88(?:[2-7]|82))|8(?:70[2-6]|84(?:[2356]|7[19])|91(?:[3-6]|7[19]))|73[134][2-6]|8(?:16|2[014]|3[126]|6[136]|7[78]|83)(?:[2-6]|7[19])|(?:1(?:29|60|8[06])|261|552|6(?:[2-4]1|5[17]|6[13]|7(?:1|4[0189])|80)|7(?:12|88[01]))[2-7]"
         ],
         "0$1",
         ,
         1
-      ], [, "(\\d{4})(\\d{3})(\\d{3})", "$1 $2 $3", [
-        "1(?:[2-479]|5[0235-9])|[2-5]|6(?:1[1358]|2[2457-9]|3[2-5]|4[235-7]|5[2-689]|6[24578]|7[235689]|8[1-6])|7(?:1[013-9]|28|3[129]|4[1-35689]|5[29]|6[02-5]|70)|807",
-        "1(?:[2-479]|5[0235-9])|[2-5]|6(?:1[1358]|2(?:[2457]|84|95)|3(?:[2-4]|55)|4[235-7]|5[2-689]|6[24578]|7[235689]|8[1-6])|7(?:1(?:[013-8]|9[6-9])|28[6-8]|3(?:17|2[0-49]|9[2-57])|4(?:1[2-4]|[29][0-7]|3[0-8]|[56]|8[0-24-7])|5(?:2[1-3]|9[0-6])|6(?:0[5689]|2[5-9]|3[02-8]|4|5[0-367])|70[13-7])|807[19]",
-        "1(?:[2-479]|5(?:[0236-9]|5[013-9]))|[2-5]|6(?:2(?:84|95)|355|8(?:28[235-7]|3))|73179|807(?:1|9[1-3])|(?:1552|6(?:(?:1[1358]|2[2457]|3[2-4]|4[235-7]|5[2-689]|6[24578]|7[235689])\\d|8(?:[14-6]\\d|2[0-79]))|7(?:1(?:[013-8]\\d|9[6-9])|28[6-8]|3(?:2[0-49]|9[2-57])|4(?:1[2-4]|[29][0-7]|3[0-8]|[56]\\d|8[0-24-7])|5(?:2[1-3]|9[0-6])|6(?:0[5689]|2[5-9]|3[02-8]|4\\d|5[0-367])|70[13-7]))[2-7]"
-      ], "0$1", , 1], [, "(\\d{5})(\\d{5})", "$1 $2", ["16|[6-9]"], "0$1", , 1], [, "(\\d{4})(\\d{2,4})(\\d{4})", "$1 $2 $3", [
-        "18[06]",
-        "18[06]0"
-      ], , , 1], [, "(\\d{3})(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3 $4", ["0"]], [, "(\\d{4})(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3 $4", ["18"], , , 1]], [[, "(\\d{8})", "$1", ["5(?:0|2[23]|3[03]|[67]1|88)", "5(?:0|2(?:21|3)|3(?:0|3[23])|616|717|888)", "5(?:0|2(?:21|3)|3(?:0|3[23])|616|717|8888)"], , , 1], [, "(\\d{4})(\\d{4,5})", "$1 $2", ["180", "1800"], , , 1], [, "(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3", ["140"], , , 1], [, "(\\d{2})(\\d{4})(\\d{4})", "$1 $2 $3", [
-        "11|2[02]|33|4[04]|79[1-7]|80[2-46]",
-        "11|2[02]|33|4[04]|79(?:[1-6]|7[19])|80(?:[2-4]|6[0-589])",
-        "11|2[02]|33|4[04]|79(?:[124-6]|3(?:[02-9]|1[0-24-9])|7(?:1|9[1-6]))|80(?:[2-4]|6[0-589])"
-      ], "0$1", , 1], [
+      ], [
         ,
-        "(\\d{3})(\\d{3})(\\d{4})",
+        "(\\d{4})(\\d{3})(\\d{3})",
         "$1 $2 $3",
-        [
-          "1(?:2[0-249]|3[0-25]|4[145]|[68]|7[1257])|2(?:1[257]|3[013]|4[01]|5[0137]|6[0158]|78|8[1568])|3(?:26|4[1-3]|5[34]|6[01489]|7[02-46]|8[159])|4(?:1[36]|2[1-47]|5[12]|6[0-26-9]|7[0-24-9]|8[013-57]|9[014-7])|5(?:1[025]|22|[36][25]|4[28]|5[12]|[78]1)|6(?:12|[2-4]1|5[17]|6[13]|80)|7(?:12|3[134]|4[47]|61|88)|8(?:16|2[014]|3[126]|6[136]|7[078]|8[34]|91)|(?:43|59|75)[15]|(?:1[59]|29|67|72)[14]",
-          "1(?:2[0-24]|3[0-25]|4[145]|[59][14]|6[1-9]|7[1257]|8[1-57-9])|2(?:1[257]|3[013]|4[01]|5[0137]|6[058]|78|8[1568]|9[14])|3(?:26|4[1-3]|5[34]|6[01489]|7[02-46]|8[159])|4(?:1[36]|2[1-47]|3[15]|5[12]|6[0-26-9]|7[0-24-9]|8[013-57]|9[014-7])|5(?:1[025]|22|[36][25]|4[28]|[578]1|9[15])|674|7(?:(?:2[14]|3[34]|5[15])[2-6]|61[346]|88[0-8])|8(?:70[2-6]|84[235-7]|91[3-7])|(?:1(?:29|60|8[06])|261|552|6(?:12|[2-47]1|5[17]|6[13]|80)|7(?:12|31|4[47])|8(?:16|2[014]|3[126]|6[136]|7[78]|83))[2-7]",
-          "1(?:2[0-24]|3[0-25]|4[145]|[59][14]|6[1-9]|7[1257]|8[1-57-9])|2(?:1[257]|3[013]|4[01]|5[0137]|6[058]|78|8[1568]|9[14])|3(?:26|4[1-3]|5[34]|6[01489]|7[02-46]|8[159])|4(?:1[36]|2[1-47]|3[15]|5[12]|6[0-26-9]|7[0-24-9]|8[013-57]|9[014-7])|5(?:1[025]|22|[36][25]|4[28]|[578]1|9[15])|6(?:12(?:[2-6]|7[0-8])|74[2-7])|7(?:(?:2[14]|5[15])[2-6]|3171|61[346]|88(?:[2-7]|82))|8(?:70[2-6]|84(?:[2356]|7[19])|91(?:[3-6]|7[19]))|73[134][2-6]|(?:74[47]|8(?:16|2[014]|3[126]|6[136]|7[78]|83))(?:[2-6]|7[19])|(?:1(?:29|60|8[06])|261|552|6(?:[2-4]1|5[17]|6[13]|7(?:1|4[0189])|80)|7(?:12|88[01]))[2-7]"
-        ],
+        ["1(?:[2-479]|5[0235-9])|[2-5]|6(?:1[1358]|2[2457-9]|3[2-5]|4[235-7]|5[2-689]|6[24578]|7[235689]|8[1-6])|7(?:1[013-9]|3[129]|5[29]|6[02-5]|70)|807", "1(?:[2-479]|5[0235-9])|[2-5]|6(?:1[1358]|2(?:[2457]|84|95)|3(?:[2-4]|55)|4[235-7]|5[2-689]|6[24578]|7(?:[23569]|8[0-57-9])|8[1-6])|7(?:1(?:[013-8]|9[6-9])|3(?:17|2[0-49]|9[2-57])|5(?:2[1-3]|9[0-6])|6(?:0[5689]|2[5-9]|3[02-8]|4|5[0-367])|70[13-7])|807[19]", "1(?:[2-479]|5(?:[0236-9]|5[013-9]))|[2-5]|6(?:2(?:84|95)|355|8(?:28[235-7]|3))|73179|807(?:1|9[1-3])|(?:1552|6(?:(?:1[1358]|2[2457]|3[2-4]|4[235-7]|5[2-689]|6[24578])\\d|7(?:[23569]\\d|8[0-57-9])|8(?:[14-6]\\d|2[0-79]))|7(?:1(?:[013-8]\\d|9[6-9])|3(?:2[0-49]|9[2-57])|5(?:2[1-3]|9[0-6])|6(?:0[5689]|2[5-9]|3[02-8]|4\\d|5[0-367])|70[13-7]))[2-7]"],
         "0$1",
         ,
         1
-      ], [, "(\\d{4})(\\d{3})(\\d{3})", "$1 $2 $3", [
-        "1(?:[2-479]|5[0235-9])|[2-5]|6(?:1[1358]|2[2457-9]|3[2-5]|4[235-7]|5[2-689]|6[24578]|7[235689]|8[1-6])|7(?:1[013-9]|28|3[129]|4[1-35689]|5[29]|6[02-5]|70)|807",
-        "1(?:[2-479]|5[0235-9])|[2-5]|6(?:1[1358]|2(?:[2457]|84|95)|3(?:[2-4]|55)|4[235-7]|5[2-689]|6[24578]|7[235689]|8[1-6])|7(?:1(?:[013-8]|9[6-9])|28[6-8]|3(?:17|2[0-49]|9[2-57])|4(?:1[2-4]|[29][0-7]|3[0-8]|[56]|8[0-24-7])|5(?:2[1-3]|9[0-6])|6(?:0[5689]|2[5-9]|3[02-8]|4|5[0-367])|70[13-7])|807[19]",
-        "1(?:[2-479]|5(?:[0236-9]|5[013-9]))|[2-5]|6(?:2(?:84|95)|355|8(?:28[235-7]|3))|73179|807(?:1|9[1-3])|(?:1552|6(?:(?:1[1358]|2[2457]|3[2-4]|4[235-7]|5[2-689]|6[24578]|7[235689])\\d|8(?:[14-6]\\d|2[0-79]))|7(?:1(?:[013-8]\\d|9[6-9])|28[6-8]|3(?:2[0-49]|9[2-57])|4(?:1[2-4]|[29][0-7]|3[0-8]|[56]\\d|8[0-24-7])|5(?:2[1-3]|9[0-6])|6(?:0[5689]|2[5-9]|3[02-8]|4\\d|5[0-367])|70[13-7]))[2-7]"
-      ], "0$1", , 1], [, "(\\d{5})(\\d{5})", "$1 $2", ["16|[6-9]"], "0$1", , 1], [, "(\\d{4})(\\d{2,4})(\\d{4})", "$1 $2 $3", [
-        "18[06]",
-        "18[06]0"
-      ], , , 1], [, "(\\d{4})(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3 $4", ["18"], , , 1]], [, , , , , , , , , [-1]], , , [, , "1800\\d{4,9}|(?:000800|18(?:03\\d\\d|6(?:0|[12]\\d\\d)))\\d{7}"], [, , "140\\d{7}", , , , "1409305260", , , [10]], , , [, , , , , , , , , [-1]]],
+      ], [, "(\\d{5})(\\d{5})", "$1 $2", ["16|[6-9]"], "0$1", , 1], [, "(\\d{4})(\\d{2,4})(\\d{4})", "$1 $2 $3", ["18[06]", "18[06]0"], , , 1], [, "(\\d{3})(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3 $4", ["0"]], [, "(\\d{4})(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3 $4", ["18"], , , 1]], [
+        [, "(\\d{8})", "$1", ["5(?:0|2[23]|3[03]|[67]1|88)", "5(?:0|2(?:21|3)|3(?:0|3[23])|616|717|888)", "5(?:0|2(?:21|3)|3(?:0|3[23])|616|717|8888)"], , , 1],
+        [, "(\\d{4})(\\d{4,5})", "$1 $2", ["180", "1800"], , , 1],
+        [, "(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3", ["140"], , , 1],
+        [, "(\\d{2})(\\d{4})(\\d{4})", "$1 $2 $3", ["11|2[02]|33|4[04]|79[1-6]|80[2-46]", "11|2[02]|33|4[04]|79[1-6]|80(?:[2-4]|6[0-589])", "11|2[02]|33|4[04]|79(?:[124-6]|3(?:[02-9]|1[0-24-9]))|80(?:[2-4]|6[0-589])"], "0$1", , 1],
+        [
+          ,
+          "(\\d{3})(\\d{3})(\\d{4})",
+          "$1 $2 $3",
+          [
+            "1(?:2[0-249]|3[0-25]|4[145]|[68]|7[1257])|2(?:1[257]|3[013]|4[01]|5[0137]|6[0158]|78|8[1568])|3(?:26|4[1-3]|5[34]|6[01489]|7[02-46]|8[159])|4(?:1[36]|2[1-47]|5[12]|6[0-26-9]|7[0-24-9]|8[013-57]|9[014-7])|5(?:1[025]|22|[36][25]|4[28]|5[12]|[78]1)|6(?:12|[2-4]1|5[17]|6[13]|80)|7(?:12|3[134]|61|88)|8(?:16|2[014]|3[126]|6[136]|7[078]|8[34]|91)|(?:43|59|75)[15]|(?:1[59]|29|67)[14]",
+            "1(?:2[0-24]|3[0-25]|4[145]|[59][14]|6[1-9]|7[1257]|8[1-57-9])|2(?:1[257]|3[013]|4[01]|5[0137]|6[058]|78|8[1568]|9[14])|3(?:26|4[1-3]|5[34]|6[01489]|7[02-46]|8[159])|4(?:1[36]|2[1-47]|3[15]|5[12]|6[0-26-9]|7[0-24-9]|8[013-57]|9[014-7])|5(?:1[025]|22|[36][25]|4[28]|[578]1|9[15])|674|7(?:(?:3[34]|5[15])[2-6]|61[346]|88[0-8])|8(?:70[2-6]|84[235-7]|91[3-7])|(?:1(?:29|60|8[06])|261|552|6(?:12|[2-47]1|5[17]|6[13]|80)|7(?:12|31)|8(?:16|2[014]|3[126]|6[136]|7[78]|83))[2-7]",
+            "1(?:2[0-24]|3[0-25]|4[145]|[59][14]|6[1-9]|7[1257]|8[1-57-9])|2(?:1[257]|3[013]|4[01]|5[0137]|6[058]|78|8[1568]|9[14])|3(?:26|4[1-3]|5[34]|6[01489]|7[02-46]|8[159])|4(?:1[36]|2[1-47]|3[15]|5[12]|6[0-26-9]|7[0-24-9]|8[013-57]|9[014-7])|5(?:1[025]|22|[36][25]|4[28]|[578]1|9[15])|6(?:12(?:[2-6]|7[0-8])|74[2-7])|7(?:3171|5[15][2-6]|61[346]|88(?:[2-7]|82))|8(?:70[2-6]|84(?:[2356]|7[19])|91(?:[3-6]|7[19]))|73[134][2-6]|8(?:16|2[014]|3[126]|6[136]|7[78]|83)(?:[2-6]|7[19])|(?:1(?:29|60|8[06])|261|552|6(?:[2-4]1|5[17]|6[13]|7(?:1|4[0189])|80)|7(?:12|88[01]))[2-7]"
+          ],
+          "0$1",
+          ,
+          1
+        ],
+        [
+          ,
+          "(\\d{4})(\\d{3})(\\d{3})",
+          "$1 $2 $3",
+          ["1(?:[2-479]|5[0235-9])|[2-5]|6(?:1[1358]|2[2457-9]|3[2-5]|4[235-7]|5[2-689]|6[24578]|7[235689]|8[1-6])|7(?:1[013-9]|3[129]|5[29]|6[02-5]|70)|807", "1(?:[2-479]|5[0235-9])|[2-5]|6(?:1[1358]|2(?:[2457]|84|95)|3(?:[2-4]|55)|4[235-7]|5[2-689]|6[24578]|7(?:[23569]|8[0-57-9])|8[1-6])|7(?:1(?:[013-8]|9[6-9])|3(?:17|2[0-49]|9[2-57])|5(?:2[1-3]|9[0-6])|6(?:0[5689]|2[5-9]|3[02-8]|4|5[0-367])|70[13-7])|807[19]", "1(?:[2-479]|5(?:[0236-9]|5[013-9]))|[2-5]|6(?:2(?:84|95)|355|8(?:28[235-7]|3))|73179|807(?:1|9[1-3])|(?:1552|6(?:(?:1[1358]|2[2457]|3[2-4]|4[235-7]|5[2-689]|6[24578])\\d|7(?:[23569]\\d|8[0-57-9])|8(?:[14-6]\\d|2[0-79]))|7(?:1(?:[013-8]\\d|9[6-9])|3(?:2[0-49]|9[2-57])|5(?:2[1-3]|9[0-6])|6(?:0[5689]|2[5-9]|3[02-8]|4\\d|5[0-367])|70[13-7]))[2-7]"],
+          "0$1",
+          ,
+          1
+        ],
+        [, "(\\d{5})(\\d{5})", "$1 $2", ["16|[6-9]"], "0$1", , 1],
+        [, "(\\d{4})(\\d{2,4})(\\d{4})", "$1 $2 $3", ["18[06]", "18[06]0"], , , 1],
+        [, "(\\d{4})(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3 $4", ["18"], , , 1]
+      ], [, , , , , , , , , [-1]], , , [, , "1800\\d{4,9}|(?:000800|18(?:03\\d\\d|6(?:0|[12]\\d\\d)))\\d{7}"], [, , "140\\d{7}", , , , "1409305260", , , [10]], , , [, , , , , , , , , [-1]]],
       IO: [
         ,
         [, , "3\\d{6}", , , , , , , [7]],
@@ -7294,41 +7870,17 @@ var factoryOutput = (() => {
         ,
         [, , , , , , , , , [-1]]
       ],
-      IQ: [
+      IQ: [, [, , "(?:1|7\\d\\d)\\d{7}|[2-6]\\d{7,8}", , , , , , , [8, 9, 10], [6, 7]], [, , "1\\d{7}|(?:2[13-5]|3[02367]|4[023]|5[03]|6[026])\\d{6,7}", , , , "12345678", , , [8, 9], [6, 7]], [, , "7[3-9]\\d{8}", , , , "7912345678", , , [10]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "IQ", 964, "00", "0", , , "0", , , , [[, "(\\d)(\\d{3})(\\d{4})", "$1 $2 $3", ["1"], "0$1"], [
         ,
-        [, , "(?:1|7\\d\\d)\\d{7}|[2-6]\\d{7,8}", , , , , , , [8, 9, 10], [6, 7]],
-        [, , "1\\d{7}|(?:2[13-5]|3[02367]|4[023]|5[03]|6[026])\\d{6,7}", , , , "12345678", , , [8, 9], [6, 7]],
-        [, , "7[3-9]\\d{8}", , , , "7912345678", , , [10]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        "IQ",
-        964,
-        "00",
-        "0",
-        ,
-        ,
-        "0",
-        ,
-        ,
-        ,
-        [[, "(\\d)(\\d{3})(\\d{4})", "$1 $2 $3", ["1"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["[2-6]"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3", ["7"], "0$1"]],
-        ,
-        [, , , , , , , , , [-1]],
-        ,
-        ,
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        ,
-        ,
-        [, , , , , , , , , [-1]]
-      ],
+        "(\\d{2})(\\d{3})(\\d{3,4})",
+        "$1 $2 $3",
+        ["[2-6]"],
+        "0$1"
+      ], [, "(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3", ["7"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
       IR: [, [, , "[1-9]\\d{9}|(?:[1-8]\\d\\d|9)\\d{3,4}", , , , , , , [4, 5, 6, 7, 10], [8]], [, , "(?:1[137]|2[13-68]|3[1458]|4[145]|5[1468]|6[16]|7[1467]|8[13467])(?:[03-57]\\d{7}|[16]\\d{3}(?:\\d{4})?|[289]\\d{3}(?:\\d(?:\\d{3})?)?)|94(?:000[09]|(?:12\\d|30[0-2])\\d|2(?:[02689]0\\d|121)|4(?:111|40\\d))\\d{4}", , , , "2123456789", , , [6, 7, 10], [4, 5, 8]], [
         ,
         ,
-        "9(?:(?:0[0-5]|[13]\\d|2[0-3])\\d\\d|9(?:[0-46]\\d\\d|5(?:10|5\\d)|8(?:[12]\\d|88)|9(?:[01359]\\d|21|69|77|8[7-9])))\\d{5}",
+        "9(?:(?:0[0-5]|[13]\\d|2[0-3])\\d\\d|9(?:[0-46]\\d\\d|5(?:10|5\\d)|8(?:[12]\\d|3[0-2]|88)|9(?:[01359]\\d|21|69|77|8[7-9])))\\d{5}",
         ,
         ,
         ,
@@ -7436,7 +7988,7 @@ var factoryOutput = (() => {
         ,
         ,
         [8]
-      ], [, , "(?:427|7(?:[78][0-25-9]|9\\d))\\d{6}", , , , "790123456", , , [9]], [, , "80\\d{6}", , , , "80012345", , , [8]], [, , "9\\d{7}", , , , "90012345", , , [8]], [, , "85\\d{6}", , , , "85012345", , , [8]], [, , "70\\d{7}", , , , "700123456", , , [9]], [, , , , , , , , , [-1]], "JO", 962, "00", "0", , , "0", , , , [[, "(\\d)(\\d{3})(\\d{4})", "$1 $2 $3", ["[2356]|87"], "(0$1)"], [, "(\\d{3})(\\d{5,6})", "$1 $2", ["[89]"], "0$1"], [, "(\\d{2})(\\d{7})", "$1 $2", ["70"], "0$1"], [, "(\\d)(\\d{4})(\\d{4})", "$1 $2 $3", ["[47]"], "0$1"]], , [
+      ], [, , "(?:427|7(?:11|[29]\\d|[78][0-25-9]))\\d{6}", , , , "790123456", , , [9]], [, , "80\\d{6}", , , , "80012345", , , [8]], [, , "9\\d{7}", , , , "90012345", , , [8]], [, , "85\\d{6}", , , , "85012345", , , [8]], [, , "70\\d{7}", , , , "700123456", , , [9]], [, , , , , , , , , [-1]], "JO", 962, "00", "0", , , "0", , , , [[, "(\\d)(\\d{3})(\\d{4})", "$1 $2 $3", ["[2356]|87"], "(0$1)"], [, "(\\d{3})(\\d{5,6})", "$1 $2", ["[89]"], "0$1"], [, "(\\d{2})(\\d{7})", "$1 $2", ["70"], "0$1"], [, "(\\d)(\\d{4})(\\d{4})", "$1 $2 $3", ["[47]"], "0$1"]], , [
         ,
         ,
         "74(?:66|77)\\d{5}",
@@ -7455,7 +8007,7 @@ var factoryOutput = (() => {
         [
           ,
           ,
-          "(?:601[0-4]0|[7-9]0[1-9]\\d\\d)\\d{5}",
+          "[6-9]0[1-9]\\d{7}",
           ,
           ,
           ,
@@ -7539,31 +8091,38 @@ var factoryOutput = (() => {
         ,
         ,
         [7, 8, 9]
-      ], [, , "(?:1(?:0[0-8]|1\\d|2[014]|[34]0)|7\\d\\d)\\d{6}", , , , "712123456", , , [9]], [, , "800[02-8]\\d{5,6}", , , , "800223456", , , [9, 10]], [, , "900[02-9]\\d{5}", , , , "900223456", , , [9]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "KE", 254, "000", "0", , , "0", , , , [[, "(\\d{2})(\\d{5,7})", "$1 $2", ["[24-6]"], "0$1"], [, "(\\d{3})(\\d{6})", "$1 $2", ["[17]"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["[89]"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      KG: [, [
+      ], [, , "(?:1(?:0[0-8]|[18]\\d|2[014]|30|4[0-5])|7\\d\\d)\\d{6}", , , , "712123456", , , [9]], [, , "800[02-8]\\d{5,6}", , , , "800223456", , , [9, 10]], [, , "900[02-9]\\d{5}", , , , "900223456", , , [9]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "KE", 254, "000", "0", , , "0", , , , [[, "(\\d{2})(\\d{5,7})", "$1 $2", ["[24-6]"], "0$1"], [, "(\\d{3})(\\d{6})", "$1 $2", ["[17]"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["[89]"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      KG: [
+        ,
+        [, , "8\\d{9}|[235-9]\\d{8}", , , , , , , [9, 10], [5, 6]],
+        [, , "312(?:5[0-79]\\d|9(?:[0-689]\\d|7[0-24-9]))\\d{3}|(?:3(?:1(?:2[0-46-8]|3[1-9]|47|[56]\\d)|2(?:22|3[0-479]|6[0-7])|4(?:22|5[6-9]|6\\d)|5(?:22|3[4-7]|59|6\\d)|6(?:22|5[35-7]|6\\d)|7(?:22|3[468]|4[1-9]|59|[67]\\d)|9(?:22|4[1-8]|6\\d))|6(?:09|12|2[2-4])\\d)\\d{5}", , , , "312123456", , , [9], [5, 6]],
+        [, , "312(?:58\\d|973)\\d{3}|(?:2(?:0[0-35]|2\\d)|5[0-24-7]\\d|600|7(?:[07]\\d|55)|88[08]|9(?:12|9[05-9]))\\d{6}", , , , "700123456", , , [9]],
+        [, , "800\\d{6,7}", , , , "800123456"],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        "KG",
+        996,
+        "00",
+        "0",
         ,
         ,
-        "8\\d{9}|[235-9]\\d{8}",
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        [9, 10],
-        [5, 6]
-      ], [, , "312(?:5[0-79]\\d|9(?:[0-689]\\d|7[0-24-9]))\\d{3}|(?:3(?:1(?:2[0-46-8]|3[1-9]|47|[56]\\d)|2(?:22|3[0-479]|6[0-7])|4(?:22|5[6-9]|6\\d)|5(?:22|3[4-7]|59|6\\d)|6(?:22|5[35-7]|6\\d)|7(?:22|3[468]|4[1-9]|59|[67]\\d)|9(?:22|4[1-8]|6\\d))|6(?:09|12|2[2-4])\\d)\\d{5}", , , , "312123456", , , [9], [5, 6]], [, , "312(?:58\\d|973)\\d{3}|(?:2(?:0[0-35]|2\\d)|5[0-24-7]\\d|600|7(?:[07]\\d|55)|88[08]|9(?:12|9[05-9]))\\d{6}", , , , "700123456", , , [9]], [, , "800\\d{6,7}", , , , "800123456"], [, , , , , , , , , [-1]], [
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
+        "0",
         ,
         ,
         ,
-        [-1]
-      ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "KG", 996, "00", "0", , , "0", , , , [[, "(\\d{4})(\\d{5})", "$1 $2", ["3(?:1[346]|[24-79])"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[235-79]|88"], "0$1"], [, "(\\d{3})(\\d{3})(\\d)(\\d{2,3})", "$1 $2 $3 $4", ["8"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+        [[, "(\\d{4})(\\d{5})", "$1 $2", ["3(?:1[346]|[24-79])"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[235-79]|88"], "0$1"], [, "(\\d{3})(\\d{3})(\\d)(\\d{2,3})", "$1 $2 $3 $4", ["8"], "0$1"]],
+        ,
+        [, , , , , , , , , [-1]],
+        ,
+        ,
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        ,
+        ,
+        [, , , , , , , , , [-1]]
+      ],
       KH: [
         ,
         [, , "1\\d{9}|[1-9]\\d{7,8}", , , , , , , [8, 9, 10], [6, 7]],
@@ -7766,7 +8325,7 @@ var factoryOutput = (() => {
         ,
         "5002345678"
       ], [, , , , , , , , , [-1]], "LC", 1, "011", "1", , , "([2-8]\\d{6})$|1", "758$1", , , , , [, , , , , , , , , [-1]], , "758", [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      LI: [, [, , "[68]\\d{8}|(?:[2378]\\d|90)\\d{5}", , , , , , , [7, 9]], [, , "(?:2(?:01|1[27]|2[024]|3\\d|6[02-578]|96)|3(?:[24]0|33|7[0135-7]|8[048]|9[0269]))\\d{4}", , , , "2345678", , , [7]], [, , "(?:6(?:(?:4[5-9]|5\\d)\\d|6(?:[024-68]\\d|1[01]|3[7-9]|70))\\d|7(?:[37-9]\\d|42|56))\\d{4}", , , , "660234567"], [, , "8002[28]\\d\\d|80(?:05\\d|9)\\d{4}", , , , "8002222"], [
+      LI: [, [, , "[68]\\d{8}|(?:[2378]\\d|90)\\d{5}", , , , , , , [7, 9]], [, , "(?:2(?:01|1[27]|2[024]|3\\d|6[02-578]|96)|3(?:[24]0|33|7[0135-7]|8[048]|9[0269]))\\d{4}", , , , "2345678", , , [7]], [, , "(?:6(?:(?:4[5-9]|5\\d)\\d|6(?:[024-68]\\d|1[01]|3[7-9]|7[02]))\\d|7(?:[37-9]\\d|42|56))\\d{4}", , , , "660234567"], [, , "8002[28]\\d\\d|80(?:05\\d|9)\\d{4}", , , , "8002222"], [
         ,
         ,
         "90(?:02[258]|1(?:23|3[14])|66[136])\\d\\d",
@@ -7900,7 +8459,7 @@ var factoryOutput = (() => {
       MA: [, [, , "[5-8]\\d{8}", , , , , , , [9]], [, , "5(?:(?:18|4[0679]|5[03])\\d|2(?:[0-25-79]\\d|3[1-578]|4[02-46-8]|8[0235-9])|3(?:[0-47]\\d|5[02-9]|6[02-8]|8[014-9]|9[3-9]))\\d{5}", , , , "520123456"], [
         ,
         ,
-        "(?:6(?:[0-79]\\d|8[0-247-9])|7(?:[016-8]\\d|2[0-8]|5[0-5]))\\d{6}",
+        "(?:6(?:[0-79]\\d|8[0-247-9])|7(?:[016-8]\\d|2[0-8]|3[01]|5[0-5]))\\d{6}",
         ,
         ,
         ,
@@ -7910,7 +8469,7 @@ var factoryOutput = (() => {
         ,
         [, , "(?:[3489]|[67]\\d)\\d{7}", , , , , , , [8, 9]],
         [, , "(?:870|9[2-47-9]\\d)\\d{5}", , , , "99123456", , , [8]],
-        [, , "4(?:[469]\\d|5[1-9])\\d{5}|(?:3|[67]\\d)\\d{7}", , , , "612345678"],
+        [, , "4(?:[46]\\d|5[1-9])\\d{5}|(?:3|[67]\\d)\\d{7}", , , , "612345678"],
         [, , "(?:800|90\\d)\\d{5}", , , , "90123456", , , [8]],
         [, , , , , , , , , [-1]],
         [, , , , , , , , , [-1]],
@@ -7974,31 +8533,18 @@ var factoryOutput = (() => {
         ,
         [, , , , , , , , , [-1]]
       ],
-      ME: [, [, , "(?:20|[3-79]\\d)\\d{6}|80\\d{6,7}", , , , , , , [8, 9], [6]], [
+      ME: [
         ,
-        ,
-        "(?:20[2-8]|3(?:[0-2][2-7]|3[24-7])|4(?:0[2-467]|1[2467])|5(?:0[2467]|1[24-7]|2[2-467]))\\d{5}",
-        ,
-        ,
-        ,
-        "30234567",
-        ,
-        ,
-        [8],
-        [6]
-      ], [, , "6(?:[07-9]\\d|3[024]|6[0-25])\\d{5}", , , , "60123456", , , [8]], [, , "80(?:[0-2578]|9\\d)\\d{5}", , , , "80080002"], [, , "9(?:4[1568]|5[178])\\d{5}", , , , "94515151", , , [8]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "78[1-49]\\d{5}", , , , "78108780", , , [8]], "ME", 382, "00", "0", , , "0", , , , [[, "(\\d{2})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["[2-9]"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "77[1-9]\\d{5}", , , , "77273012", , , [8]], , , [, , , , , , , , , [-1]]],
-      MF: [
-        ,
-        [, , "(?:590\\d|7090)\\d{5}|(?:69|[89]\\d)\\d{7}", , , , , , , [9]],
-        [, , "590(?:0[079]|[14]3|[27][79]|3[03-7]|5[0-268]|87)\\d{4}", , , , "590271234"],
-        [, , "(?:69(?:0\\d\\d|1(?:2[2-9]|3[0-5])|4(?:0[89]|1[2-6]|9\\d)|6(?:1[016-9]|5[0-4]|[67]\\d))|7090[0-4])\\d{4}", , , , "690001234"],
-        [, , "80\\d{7}", , , , "800012345"],
-        [, , "8[129]\\d{7}", , , , "810123456"],
+        [, , "(?:20|[3-79]\\d)\\d{6}|80\\d{6,7}", , , , , , , [8, 9], [6]],
+        [, , "(?:20[2-8]|3(?:[0-2][2-7]|3[24-7])|4(?:0[2-467]|1[2467])|5(?:0[2467]|1[24-7]|2[2-467]))\\d{5}", , , , "30234567", , , [8], [6]],
+        [, , "6(?:[07-9]\\d|3[024]|6[0-25])\\d{5}", , , , "60123456", , , [8]],
+        [, , "80(?:[0-2578]|9\\d)\\d{5}", , , , "80080002"],
+        [, , "9(?:4[1568]|5[178])\\d{5}", , , , "94515151", , , [8]],
         [, , , , , , , , , [-1]],
         [, , , , , , , , , [-1]],
-        [, , "9(?:(?:39[5-7]|76[018])\\d|475[0-6])\\d{4}", , , , "976012345"],
-        "MF",
-        590,
+        [, , "78[1-49]\\d{5}", , , , "78108780", , , [8]],
+        "ME",
+        382,
         "00",
         "0",
         ,
@@ -8007,61 +8553,47 @@ var factoryOutput = (() => {
         ,
         ,
         ,
+        [[, "(\\d{2})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["[2-9]"], "0$1"]],
+        ,
+        [, , , , , , , , , [-1]],
         ,
         ,
         [, , , , , , , , , [-1]],
-        ,
-        ,
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
+        [, , "77[1-9]\\d{5}", , , , "77273012", , , [8]],
         ,
         ,
         [, , , , , , , , , [-1]]
       ],
-      MG: [, [, , "[23]\\d{8}", , , , , , , [9], [7]], [
+      MF: [, [, , "7090\\d{5}|(?:[56]9|[89]\\d)\\d{7}", , , , , , , [9]], [
         ,
         ,
-        "2072[29]\\d{4}|20(?:2\\d|4[47]|5[3467]|6[279]|7[356]|8[268]|9[2457])\\d{5}",
-        ,
-        ,
-        ,
-        "202123456",
+        "(?:59(?:0(?:0[079]|[14]3|[27][79]|3[03-7]|5[0-268]|87)|87\\d)|80[6-9]\\d\\d)\\d{4}",
         ,
         ,
         ,
-        [7]
-      ], [, , "3[2-9]\\d{7}", , , , "321234567"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "22\\d{7}", , , , "221234567"], "MG", 261, "00", "0", , , "([24-9]\\d{6})$|0", "20$1", , , [[, "(\\d{2})(\\d{2})(\\d{3})(\\d{2})", "$1 $2 $3 $4", ["[23]"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      MH: [
-        ,
-        [, , "329\\d{4}|(?:[256]\\d|45)\\d{5}", , , , , , , [7]],
-        [, , "(?:247|528|625)\\d{4}", , , , "2471234"],
-        [, , "(?:(?:23|54)5|329|45[35-8])\\d{4}", , , , "2351234"],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , "635\\d{4}", , , , "6351234"],
-        "MH",
-        692,
-        "011",
-        "1",
+        "590271234"
+      ], [, , "(?:69(?:0\\d\\d|1(?:2[2-9]|3[0-5]))|7090[0-4])\\d{4}", , , , "690001234"], [, , "80[0-5]\\d{6}", , , , "800012345"], [, , "8[129]\\d{7}", , , , "810123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "9(?:(?:39[5-7]|76[018])\\d|475[0-6])\\d{4}", , , , "976012345"], "MF", 590, "00", "0", , , "0", , , , , , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      MG: [, [, , "[23]\\d{8}", , , , , , , [9], [7]], [, , "2072[29]\\d{4}|20(?:2\\d|4[47]|5[3467]|6[279]|7[356]|8[268]|9[2457])\\d{5}", , , , "202123456", , , , [7]], [
         ,
         ,
-        "1",
+        "3[2-9]\\d{7}",
         ,
         ,
         ,
-        [[, "(\\d{3})(\\d{4})", "$1-$2", ["[2-6]"]]],
-        ,
-        [, , , , , , , , , [-1]],
-        ,
-        ,
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
+        "321234567"
+      ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "22\\d{7}", , , , "221234567"], "MG", 261, "00", "0", , , "([24-9]\\d{6})$|0", "20$1", , , [[, "(\\d{2})(\\d{2})(\\d{3})(\\d{2})", "$1 $2 $3 $4", ["[23]"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      MH: [, [, , "329\\d{4}|(?:[256]\\d|45)\\d{5}", , , , , , , [7]], [, , "(?:247|528|625)\\d{4}", , , , "2471234"], [, , "(?:(?:23|54)5|329|45[35-8])\\d{4}", , , , "2351234"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [
         ,
         ,
-        [, , , , , , , , , [-1]]
-      ],
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        [-1]
+      ], [, , "635\\d{4}", , , , "6351234"], "MH", 692, "011", "1", , , "1", , , , [[, "(\\d{3})(\\d{4})", "$1-$2", ["[2-6]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
       MK: [, [, , "[2-578]\\d{7}", , , , , , , [8], [6, 7]], [, , "(?:(?:2(?:62|77)0|3444)\\d|4[56]440)\\d{3}|(?:34|4[357])700\\d{3}|(?:2(?:[0-3]\\d|5[0-578]|6[01]|82)|3(?:1[3-68]|[23][2-68]|4[23568])|4(?:[23][2-68]|4[3-68]|5[2568]|6[25-8]|7[24-68]|8[4-68]))\\d{5}", , , , "22012345", , , , [6, 7]], [
         ,
         ,
@@ -8074,7 +8606,7 @@ var factoryOutput = (() => {
       ML: [, [, , "[24-9]\\d{7}", , , , , , , [8]], [
         ,
         ,
-        "2(?:07[0-8]|12[67])\\d{4}|(?:2(?:02|1[4-689])|4(?:0[0-4]|4[1-59]))\\d{5}",
+        "2(?:07[0-8]|12[67])\\d{4}|(?:2(?:02|1[4-689])|4(?:0[0-4]|4[1-69]))\\d{5}",
         ,
         ,
         ,
@@ -8135,43 +8667,61 @@ var factoryOutput = (() => {
         ,
         [, , , , , , , , , [-1]]
       ],
-      MN: [, [, , "[12]\\d{7,9}|[5-9]\\d{7}", , , , , , , [8, 9, 10], [4, 5, 6]], [, , "[12]2[1-3]\\d{5,6}|(?:(?:[12](?:1|27)|5[368])\\d\\d|7(?:0(?:[0-5]\\d|7[078]|80)|128))\\d{4}|[12](?:3[2-8]|4[2-68]|5[1-4689])\\d{6,7}", , , , "53123456", , , , [4, 5, 6]], [, , "92[0139]\\d{5}|(?:5[05]|6[069]|7[28]|8[0135689]|9[013-9])\\d{6}", , , , "88123456", , , [8]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [
-        ,
-        ,
-        "712[0-79]\\d{4}|7(?:1[013-9]|[5-79]\\d)\\d{5}",
+      MN: [, [, , "[12]\\d{7,9}|[5-9]\\d{7}", , , , , , , [8, 9, 10], [4, 5, 6]], [, , "[12](?:2[1-3]|(?:3[2-8]|4[2-68]|5[1-4689])\\d)\\d{5,6}|7(?:0(?:[0-5]\\d|7[078]|80)|128)\\d{4}|[12]27\\d{6}|(?:11|2[16]|5[368])\\d{6}", , , , "53123456", , , , [4, 5, 6]], [, , "(?:87[01]|92[0139])\\d{5}|(?:5[05]|6[069]|7[28]|8[0135689]|9[013-9])\\d{6}", , , , "88123456", , , [8]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [
         ,
         ,
         ,
-        "75123456",
-        ,
-        ,
-        [8]
-      ], "MN", 976, "001", "0", , , "0", , , , [[, "(\\d{2})(\\d{2})(\\d{4})", "$1 $2 $3", ["[12]1"], "0$1"], [, "(\\d{4})(\\d{4})", "$1 $2", ["[5-9]"]], [, "(\\d{3})(\\d{5,6})", "$1 $2", ["[12]2[1-3]"], "0$1"], [, "(\\d{4})(\\d{5,6})", "$1 $2", ["[12](?:27|3[2-8]|4[2-68]|5[1-4689])", "[12](?:27|3[2-8]|4[2-68]|5[1-4689])[0-3]"], "0$1"], [, "(\\d{5})(\\d{4,5})", "$1 $2", ["[12]"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      MO: [, [, , "0800\\d{3}|(?:28|[68]\\d)\\d{6}", , , , , , , [7, 8]], [
-        ,
-        ,
-        "(?:28[2-9]|8(?:11|[2-57-9]\\d))\\d{5}",
         ,
         ,
         ,
-        "28212345",
-        ,
-        ,
-        [8]
-      ], [, , "6800[0-79]\\d{3}|6(?:[235]\\d\\d|6(?:0[0-5]|[1-9]\\d)|8(?:0[1-9]|[14-8]\\d|2[5-9]|[39][0-4]))\\d{4}", , , , "66123456", , , [8]], [, , "0800\\d{3}", , , , "0800501", , , [7]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "MO", 853, "00", , , , , , , , [[, "(\\d{4})(\\d{3})", "$1 $2", ["0"]], [, "(\\d{4})(\\d{4})", "$1 $2", ["[268]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      MP: [, [, , "[58]\\d{9}|(?:67|90)0\\d{7}", , , , , , , [10], [7]], [
-        ,
-        ,
-        "670(?:2(?:3[3-7]|56|8[4-8])|32[1-38]|4(?:33|8[348])|5(?:32|55|88)|6(?:64|70|82)|78[3589]|8[3-9]8|989)\\d{4}",
         ,
         ,
         ,
-        "6702345678",
+        [-1]
+      ], [, , "712[0-79]\\d{4}|7(?:1[013-9]|[5-79]\\d)\\d{5}", , , , "75123456", , , [8]], "MN", 976, "001", "0", , , "0", , , , [[, "(\\d{2})(\\d{2})(\\d{4})", "$1 $2 $3", ["11|2[16]"], "0$1"], [, "(\\d{4})(\\d{4})", "$1 $2", ["[5-9]"]], [, "(\\d{3})(\\d{5,6})", "$1 $2", ["[12]2[1-3]"], "0$1"], [, "(\\d{4})(\\d{5,6})", "$1 $2", ["[12](?:27|3[2-8]|4[2-68]|5[1-4689])", "[12](?:27|3[2-8]|4[2-68]|5[1-4689])[0-3]"], "0$1"], [, "(\\d{5})(\\d{4,5})", "$1 $2", ["[12]"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      MO: [
+        ,
+        [, , "0800\\d{3}|(?:28|[68]\\d)\\d{6}", , , , , , , [7, 8]],
+        [, , "(?:28[2-9]|8(?:11|[2-57-9]\\d))\\d{5}", , , , "28212345", , , [8]],
+        [, , "6800[0-79]\\d{3}|6(?:[235]\\d\\d|6(?:0[0-5]|[1-9]\\d)|8(?:0[1-9]|[14-8]\\d|2[5-9]|[39][0-4]))\\d{4}", , , , "66123456", , , [8]],
+        [, , "0800\\d{3}", , , , "0800501", , , [7]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        "MO",
+        853,
+        "00",
         ,
         ,
         ,
-        [7]
-      ], [, , "670(?:2(?:3[3-7]|56|8[4-8])|32[1-38]|4(?:33|8[348])|5(?:32|55|88)|6(?:64|70|82)|78[3589]|8[3-9]8|989)\\d{4}", , , , "6702345678", , , , [7]], [, , "8(?:00|33|44|55|66|77|88)[2-9]\\d{6}", , , , "8002123456"], [, , "900[2-9]\\d{6}", , , , "9002123456"], [, , , , , , , , , [-1]], [
+        ,
+        ,
+        ,
+        ,
+        [[, "(\\d{4})(\\d{3})", "$1 $2", ["0"]], [, "(\\d{4})(\\d{4})", "$1 $2", ["[268]"]]],
+        ,
+        [, , , , , , , , , [-1]],
+        ,
+        ,
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        ,
+        ,
+        [
+          ,
+          ,
+          ,
+          ,
+          ,
+          ,
+          ,
+          ,
+          ,
+          [-1]
+        ]
+      ],
+      MP: [, [, , "[58]\\d{9}|(?:67|90)0\\d{7}", , , , , , , [10], [7]], [, , "670(?:2(?:3[3-7]|56|8[4-8])|32[1-38]|4(?:33|8[348])|5(?:32|55|88)|6(?:64|70|82)|78[3589]|8[3-9]8|989)\\d{4}", , , , "6702345678", , , , [7]], [, , "670(?:2(?:3[3-7]|56|8[4-8])|32[1-38]|4(?:33|8[348])|5(?:32|55|88)|6(?:64|70|82)|78[3589]|8[3-9]8|989)\\d{4}", , , , "6702345678", , , , [7]], [, , "8(?:00|33|44|55|66|77|88)[2-9]\\d{6}", , , , "8002123456"], [, , "900[2-9]\\d{6}", , , , "9002123456"], [, , , , , , , , , [-1]], [
         ,
         ,
         "52(?:3(?:[2-46-9][02-9]\\d|5(?:[02-46-9]\\d|5[0-46-9]))|4(?:[2-478][02-9]\\d|5(?:[034]\\d|2[024-9]|5[0-46-9])|6(?:0[1-9]|[2-9]\\d)|9(?:[05-9]\\d|2[0-5]|49)))\\d{4}|52[34][2-9]1[02-9]\\d{4}|5(?:00|2[125-9]|3[23]|44|66|77|88)[2-9]\\d{6}",
@@ -8180,7 +8730,7 @@ var factoryOutput = (() => {
         ,
         "5002345678"
       ], [, , , , , , , , , [-1]], "MP", 1, "011", "1", , , "([2-9]\\d{6})$|1", "670$1", , 1, , , [, , , , , , , , , [-1]], , "670", [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      MQ: [, [, , "(?:596\\d|7091)\\d{5}|(?:69|[89]\\d)\\d{7}", , , , , , , [9]], [, , "(?:596(?:[03-7]\\d|1[05]|2[7-9]|8[0-39]|9[04-9])|80[6-9]\\d\\d|9(?:477[6-9]|767[4589]))\\d{4}", , , , "596301234"], [, , "(?:69[67]\\d\\d|7091[0-3])\\d{4}", , , , "696201234"], [, , "80[0-5]\\d{6}", , , , "800012345"], [, , "8[129]\\d{7}", , , , "810123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [
+      MQ: [, [, , "7091\\d{5}|(?:[56]9|[89]\\d)\\d{7}", , , , , , , [9]], [, , "(?:59(?:6(?:[03-7]\\d|1[05]|2[7-9]|8[0-39]|9[04-9])|89\\d)|80[6-9]\\d\\d|9(?:477[6-9]|767[4589]))\\d{4}", , , , "596301234"], [, , "(?:69[67]\\d\\d|7091[0-3])\\d{4}", , , , "696201234"], [, , "80[0-5]\\d{6}", , , , "800012345"], [, , "8[129]\\d{7}", , , , "810123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [
         ,
         ,
         "9(?:397[0-3]|477[0-5]|76(?:6\\d|7[0-367]))\\d{4}",
@@ -8254,54 +8804,36 @@ var factoryOutput = (() => {
         7,
         10
       ]], [, , "(?:3(?:0[0-4]|3[0-59])|6(?:[58][024689]|6[024-68]|7[02468]))\\d{4}", , , , "6701234", , , [7]], [, , "(?:46[46]|[79]\\d\\d)\\d{4}", , , , "7712345", , , [7]], [, , "800\\d{7}", , , , "8001234567", , , [10]], [, , "900\\d{7}", , , , "9001234567", , , [10]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "MV", 960, "0(?:0|19)", , , , , , "00", , [[, "(\\d{3})(\\d{4})", "$1-$2", ["[34679]"]], [, "(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3", ["[89]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "4(?:0[01]|50)\\d{4}", , , , "4001234", , , [7]], , , [, , , , , , , , , [-1]]],
-      MW: [
-        ,
-        [, , "(?:[1289]\\d|31|77)\\d{7}|1\\d{6}", , , , , , , [7, 9]],
-        [, , "(?:1[2-9]|2[12]\\d\\d)\\d{5}", , , , "1234567"],
-        [, , "111\\d{6}|(?:31|77|[89][89])\\d{7}", , , , "991234567", , , [9]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        "MW",
-        265,
-        "00",
-        "0",
-        ,
-        ,
-        "0",
-        ,
-        ,
-        ,
-        [[, "(\\d)(\\d{3})(\\d{3})", "$1 $2 $3", ["1[2-9]"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["2"], "0$1"], [, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[137-9]"], "0$1"]],
-        ,
-        [, , , , , , , , , [-1]],
-        ,
-        ,
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        ,
-        ,
-        [, , , , , , , , , [-1]]
-      ],
+      MW: [, [, , "(?:[1289]\\d|31|77)\\d{7}|1\\d{6}", , , , , , , [7, 9]], [, , "1[2-9]\\d{5}", , , , "1234567", , , [7]], [, , "111\\d{6}|(?:2[12]|31|77|[89][89])\\d{7}", , , , "991234567", , , [9]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "MW", 265, "00", "0", , , "0", , , , [[, "(\\d)(\\d{3})(\\d{3})", "$1 $2 $3", ["1[2-9]"], "0$1"], [, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[1-37-9]"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
       MX: [
         ,
-        [, , "[2-9]\\d{9}", , , , , , , [10], [7, 8]],
         [
           ,
           ,
-          "(?:2(?:0[01]|2\\d|3[1-35-8]|4[13-9]|7[1-689]|8[1-578]|9[467])|3(?:1[1-79]|[2458][1-9]|3\\d|7[1-8]|9[1-5])|4(?:1[1-57-9]|[267][1-9]|3[1-8]|[45]\\d|8[1-35-9]|9[2-689])|5(?:[56]\\d|88|9[1-79])|6(?:1[2-68]|[2-4][1-9]|5[1-36-9]|6[0-57-9]|7[1-7]|8[67]|9[4-8])|7(?:[1346][1-9]|[27]\\d|5[13-9]|8[1-69]|9[17])|8(?:1\\d|2[13-689]|3[1-6]|4[124-6]|6[1246-9]|7[0-378]|9[12479])|9(?:1[346-9]|2[1-4]|3[2-46-8]|5[1348]|[69]\\d|7[12]|8[1-8]))\\d{7}",
+          "[2-9]\\d{9}",
           ,
           ,
           ,
-          "2001234567",
+          ,
+          ,
+          ,
+          [10],
+          [7, 8]
+        ],
+        [, , "(?:2(?:0[01]|2\\d|3[1-35-8]|4[13-9]|7[1-689]|8[1-578]|9[467])|3(?:1[1-79]|[2458][1-9]|3\\d|7[1-8]|9[1-5])|4(?:1[1-57-9]|[267][1-9]|3[1-8]|[45]\\d|8[1-35-9]|9[2-689])|5(?:[56]\\d|88|9[1-79])|6(?:1[2-68]|[2-4][1-9]|5[1-36-9]|6[0-57-9]|7[1-7]|8[67]|9[4-8])|7(?:[1346][1-9]|[27]\\d|5[13-9]|8[1-69]|9[17])|8(?:1\\d|2[13-689]|3[1-6]|4[124-6]|6[1246-9]|7[0-378]|9[12479])|9(?:1[346-9]|2[1-4]|3[2-46-8]|5[1348]|[69]\\d|7[12]|8[1-8]))\\d{7}", , , , "2001234567", , , , [7, 8]],
+        [
+          ,
+          ,
+          "(?:2(?:2\\d|3[1-35-8]|4[13-9]|7[1-689]|8[1-578]|9[467])|3(?:1[1-79]|[2458][1-9]|3\\d|7[1-8]|9[1-5])|4(?:1[1-57-9]|[267][1-9]|3[1-8]|[45]\\d|8[1-35-9]|9[2-689])|5(?:[56]\\d|88|9[1-79])|6(?:1[2-68]|[2-4][1-9]|5[1-36-9]|6[0-57-9]|7[1-7]|8[67]|9[4-8])|7(?:[1346][1-9]|[27]\\d|5[13-9]|8[1-69]|9[17])|8(?:1\\d|2[13-689]|3[1-6]|4[124-6]|6[1246-9]|7[0-378]|9[12479])|9(?:1[346-9]|2[1-4]|3[2-46-8]|5[1348]|[69]\\d|7[12]|8[1-8]))\\d{7}",
+          ,
+          ,
+          ,
+          "2221234567",
           ,
           ,
           ,
           [7, 8]
         ],
-        [, , "(?:2(?:2\\d|3[1-35-8]|4[13-9]|7[1-689]|8[1-578]|9[467])|3(?:1[1-79]|[2458][1-9]|3\\d|7[1-8]|9[1-5])|4(?:1[1-57-9]|[267][1-9]|3[1-8]|[45]\\d|8[1-35-9]|9[2-689])|5(?:[56]\\d|88|9[1-79])|6(?:1[2-68]|[2-4][1-9]|5[1-36-9]|6[0-57-9]|7[1-7]|8[67]|9[4-8])|7(?:[1346][1-9]|[27]\\d|5[13-9]|8[1-69]|9[17])|8(?:1\\d|2[13-689]|3[1-6]|4[124-6]|6[1246-9]|7[0-378]|9[12479])|9(?:1[346-9]|2[1-4]|3[2-46-8]|5[1348]|[69]\\d|7[12]|8[1-8]))\\d{7}", , , , "2221234567", , , , [7, 8]],
         [, , "8(?:00|88)\\d{7}", , , , "8001234567"],
         [, , "900\\d{7}", , , , "9001234567"],
         [, , "300\\d{7}", , , , "3001234567"],
@@ -8328,22 +8860,10 @@ var factoryOutput = (() => {
         ,
         [, , , , , , , , , [-1]]
       ],
-      MY: [, [
+      MY: [, [, , "1\\d{8,9}|(?:3\\d|[4-9])\\d{7}", , , , , , , [8, 9, 10], [6, 7]], [, , "427[01]\\d{4}|(?:3(?:2[0-36-9]|3[0-368]|4[0-278]|5[0-24-8]|6[0-467]|7[1246-9]|8\\d|9[0-57])\\d|4(?:2[0-689]|[3-79]\\d|8[1-35689])|5(?:2[0-589]|[3468]\\d|5[0-489]|7[1-9]|9[23])|6(?:2[2-9]|3[1357-9]|[46]\\d|5[0-6]|7[0-35-9]|85|9[015-8])|7(?:[2579]\\d|3[03-68]|4[0-8]|6[5-9]|8[0-35-9])|8(?:[24][2-8]|3[2-5]|5[2-7]|6[2-589]|7[2-578]|[89][2-9])|9(?:0[57]|13|[25-7]\\d|[3489][0-8]))\\d{5}", , , , "323856789", , , [8, 9], [6, 7]], [
         ,
         ,
-        "1\\d{8,9}|(?:3\\d|[4-9])\\d{7}",
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        [8, 9, 10],
-        [6, 7]
-      ], [, , "427[01]\\d{4}|(?:3(?:2[0-36-9]|3[0-368]|4[0-278]|5[0-24-8]|6[0-467]|7[1246-9]|8\\d|9[0-57])\\d|4(?:2[0-689]|[3-79]\\d|8[1-35689])|5(?:2[0-589]|[3468]\\d|5[0-489]|7[1-9]|9[23])|6(?:2[2-9]|3[1357-9]|[46]\\d|5[0-6]|7[0-35-9]|85|9[015-8])|7(?:[2579]\\d|3[03-68]|4[0-8]|6[5-9]|8[0-35-9])|8(?:[24][2-8]|3[2-5]|5[2-7]|6[2-589]|7[2-578]|[89][2-9])|9(?:0[57]|13|[25-7]\\d|[3489][0-8]))\\d{5}", , , , "323856789", , , [8, 9], [6, 7]], [
-        ,
-        ,
-        "1(?:1888[689]|4400|8(?:47|8[27])[0-4])\\d{4}|1(?:0(?:[23568]\\d|4[0-6]|7[016-9]|9[0-8])|1(?:[1-5]\\d\\d|6(?:0[5-9]|[1-9]\\d)|7(?:[0-4]\\d|5[0-79]|6[02-4]))|(?:[269]\\d|[37][1-9]|4[235-9])\\d|5(?:31|9\\d\\d)|8(?:1[23]|[236]\\d|4[06]|5(?:46|[7-9])|7[016-9]|8[01]|9[0-8]))\\d{5}",
+        "1(?:(?:1888[689]|4400|8(?:47|8[27])[0-4])\\d{4}|9\\d{7,8})|1(?:0(?:[23568]\\d|4[0-6]|7[016-9]|9[0-8])|1(?:[1-5]\\d\\d|6(?:0[5-9]|[1-9]\\d)|7(?:[0-4]\\d|5[0-79]|6[02-4]|8[02-5]))|(?:[26]\\d|[37][1-9]|4[235-9])\\d|5(?:31|9\\d\\d)|8(?:1[23]|[236]\\d|4[06]|5(?:46|[7-9])|7[016-9]|8[01]|9[0-8]))\\d{5}",
         ,
         ,
         ,
@@ -8351,177 +8871,191 @@ var factoryOutput = (() => {
         ,
         ,
         [9, 10]
-      ], [, , "1[378]00\\d{6}", , , , "1300123456", , , [10]], [, , "1600\\d{6}", , , , "1600123456", , , [10]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "15(?:4(?:6[0-4]\\d|8(?:0[125]|[17]\\d|21|3[01]|4[01589]|5[014]|6[02]))|6(?:32[0-6]|78\\d))\\d{4}", , , , "1546012345", , , [10]], "MY", 60, "00", "0", , , "0", , , , [[, "(\\d)(\\d{3})(\\d{4})", "$1-$2 $3", ["[4-79]"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{3,4})", "$1-$2 $3", ["1(?:[02469]|[378][1-9]|53)|8", "1(?:[02469]|[37][1-9]|53|8(?:[1-46-9]|5[7-9]))|8"], "0$1"], [
+      ], [, , "1[378]00\\d{6}", , , , "1300123456", , , [10]], [, , "1600\\d{6}", , , , "1600123456", , , [10]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [
         ,
-        "(\\d)(\\d{4})(\\d{4})",
-        "$1-$2 $3",
-        ["3"],
-        "0$1"
-      ], [, "(\\d)(\\d{3})(\\d{2})(\\d{4})", "$1-$2-$3-$4", ["1(?:[367]|80)"]], [, "(\\d{3})(\\d{3})(\\d{4})", "$1-$2 $3", ["15"], "0$1"], [, "(\\d{2})(\\d{4})(\\d{4})", "$1-$2 $3", ["1"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      MZ: [
         ,
-        [, , "(?:2|8\\d)\\d{7}", , , , , , , [8, 9]],
-        [, , "2(?:[1346]\\d|5[0-2]|[78][12]|93)\\d{5}", , , , "21123456", , , [8]],
-        [, , "8[2-79]\\d{7}", , , , "821234567", , , [9]],
-        [, , "800\\d{6}", , , , "800123456", , , [9]],
+        "15(?:4(?:6[0-4]\\d|8(?:0[125]|[17]\\d|21|3[01]|4[01589]|5[014]|6[02]))|6(?:32[0-6]|78\\d))\\d{4}",
+        ,
+        ,
+        ,
+        "1546012345",
+        ,
+        ,
+        [10]
+      ], "MY", 60, "00", "0", , , "0", , , , [[, "(\\d)(\\d{3})(\\d{4})", "$1-$2 $3", ["[4-79]"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{3,4})", "$1-$2 $3", ["1(?:[02469]|[378][1-9]|53)|8", "1(?:[02469]|[37][1-9]|53|8(?:[1-46-9]|5[7-9]))|8"], "0$1"], [, "(\\d)(\\d{4})(\\d{4})", "$1-$2 $3", ["3"], "0$1"], [, "(\\d)(\\d{3})(\\d{2})(\\d{4})", "$1-$2-$3-$4", ["1(?:[367]|80)"]], [, "(\\d{3})(\\d{3})(\\d{4})", "$1-$2 $3", ["15"], "0$1"], [, "(\\d{2})(\\d{4})(\\d{4})", "$1-$2 $3", ["1"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        [-1]
+      ], , , [, , , , , , , , , [-1]]],
+      MZ: [, [, , "(?:2|8\\d)\\d{7}", , , , , , , [8, 9]], [, , "2(?:[1346]\\d|5[0-2]|[78][12]|93)\\d{5}", , , , "21123456", , , [8]], [, , "8[2-9]\\d{7}", , , , "821234567", , , [9]], [, , "800\\d{6}", , , , "800123456", , , [9]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "MZ", 258, "00", , , , , , , , [[, "(\\d{2})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["2|8[2-9]"]], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["8"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      NA: [, [
+        ,
+        ,
+        "[68]\\d{7,8}",
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        [8, 9]
+      ], [, , "64426\\d{3}|6(?:1(?:2[2-7]|3[01378]|4[0-4])|254|32[0237]|4(?:27|41|5[25])|52[236-8]|626|7(?:2[2-4]|30))\\d{4,5}|6(?:1(?:(?:0\\d|2[0189]|3[24-69]|4[5-9])\\d|17|69|7[014])|2(?:17|5[0-36-8]|69|70)|3(?:17|2[14-689]|34|6[289]|7[01]|81)|4(?:17|2[0-2]|4[06]|5[0137]|69|7[01])|5(?:17|2[0459]|69|7[01])|6(?:17|25|38|42|69|7[01])|7(?:17|2[569]|3[13]|6[89]|7[01]))\\d{4}", , , , "61221234"], [, , "(?:60|8[1245])\\d{7}", , , , "811234567", , , [9]], [, , "80\\d{7}", , , , "800123456", , , [9]], [
+        ,
+        ,
+        "8701\\d{5}",
+        ,
+        ,
+        ,
+        "870123456",
+        ,
+        ,
+        [9]
+      ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "8(?:3\\d\\d|86)\\d{5}", , , , "88612345"], "NA", 264, "00", "0", , , "0", , , , [[, "(\\d{2})(\\d{3})(\\d{3})", "$1 $2 $3", ["88"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["6"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["87"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["8"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      NC: [, [, , "(?:050|[2-57-9]\\d\\d)\\d{3}", , , , , , , [6]], [, , "(?:2[03-9]|3[0-5]|4[1-7]|88)\\d{4}", , , , "201234"], [
+        ,
+        ,
+        "(?:[579]\\d|8[0-79])\\d{4}",
+        ,
+        ,
+        ,
+        "751234"
+      ], [, , "050\\d{3}", , , , "050012"], [, , "36\\d{4}", , , , "366711"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "NC", 687, "00", , , , , , , , [[, "(\\d{3})", "$1", ["5[6-8]"]], [, "(\\d{2})(\\d{2})(\\d{2})", "$1.$2.$3", ["[02-57-9]"]]], [[, "(\\d{2})(\\d{2})(\\d{2})", "$1.$2.$3", ["[02-57-9]"]]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      NE: [, [, , "[027-9]\\d{7}", , , , , , , [8]], [
+        ,
+        ,
+        "2(?:0(?:20|3[1-8]|4[13-5]|5[14]|6[14578]|7[1-578])|1(?:4[145]|5[14]|6[14-68]|7[169]|88))\\d{4}",
+        ,
+        ,
+        ,
+        "20201234"
+      ], [, , "(?:23|7[0467]|[89]\\d)\\d{6}", , , , "93123456"], [, , "08\\d{6}", , , , "08123456"], [, , "09\\d{6}", , , , "09123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "NE", 227, "00", , , , , , , , [[, "(\\d{2})(\\d{3})(\\d{3})", "$1 $2 $3", ["08"]], [, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[089]|2[013]|7[0467]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      NF: [, [, , "[13]\\d{5}", , , , , , , [6], [5]], [, , "(?:1(?:06|17|28|39)|3[0-2]\\d)\\d{3}", , , , "106609", , , , [5]], [
+        ,
+        ,
+        "(?:14|3[58])\\d{4}",
+        ,
+        ,
+        ,
+        "381234",
+        ,
+        ,
+        ,
+        [5]
+      ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "NF", 672, "00", , , , "([0-258]\\d{4})$", "3$1", , , [[, "(\\d{2})(\\d{4})", "$1 $2", ["1[0-3]"]], [, "(\\d)(\\d{5})", "$1 $2", ["[13]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      NG: [
+        ,
+        [, , "(?:20|9\\d)\\d{8}|[78]\\d{9,13}", , , , , , , [10, 11, 12, 13, 14], [6, 7]],
+        [, , "20(?:[1259]\\d|3[013-9]|4[1-8]|6[024-689]|7[1-79]|8[2-9])\\d{6}", , , , "2033123456", , , [10], [6, 7]],
+        [
+          ,
+          ,
+          "(?:702[0-24-9]|819[01])\\d{6}|(?:7(?:0[13-9]|[12]\\d)|8(?:0[1-9]|1[0-8])|9(?:0[1-9]|1[1-6]))\\d{7}",
+          ,
+          ,
+          ,
+          "8021234567",
+          ,
+          ,
+          [10]
+        ],
+        [, , "800\\d{7,11}", , , , "80017591759"],
         [, , , , , , , , , [-1]],
         [, , , , , , , , , [-1]],
         [, , , , , , , , , [-1]],
         [, , , , , , , , , [-1]],
-        "MZ",
-        258,
-        "00",
+        "NG",
+        234,
+        "009",
+        "0",
+        ,
+        ,
+        "0",
         ,
         ,
         ,
-        ,
-        ,
-        ,
-        ,
-        [[, "(\\d{2})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["2|8[2-79]"]], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["8"]]],
-        ,
-        [, , , , , , , , , [-1]],
-        ,
+        [[, "(\\d{3})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["[7-9]"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3", ["20[129]"], "0$1"], [, "(\\d{4})(\\d{2})(\\d{4})", "$1 $2 $3", ["2"], "0$1"], [, "(\\d{3})(\\d{4})(\\d{4,5})", "$1 $2 $3", ["[78]"], "0$1"], [, "(\\d{3})(\\d{5})(\\d{5,6})", "$1 $2 $3", ["[78]"], "0$1"]],
         ,
         [, , , , , , , , , [-1]],
+        ,
+        ,
         [, , , , , , , , , [-1]],
+        [, , "700\\d{7,11}", , , , "7001234567"],
         ,
         ,
         [, , , , , , , , , [-1]]
       ],
-      NA: [, [, , "[68]\\d{7,8}", , , , , , , [8, 9]], [
+      NI: [, [, , "(?:1800|[25-8]\\d{3})\\d{4}", , , , , , , [8]], [, , "2\\d{7}", , , , "21234567"], [, , "(?:5(?:5[0-7]|[78]\\d)|6(?:20|3[035]|4[045]|5[05]|77|8[1-9]|9[059])|(?:7[5-8]|8\\d)\\d)\\d{5}", , , , "81234567"], [, , "1800\\d{4}", , , , "18001234"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "NI", 505, "00", , , , , , , , [[, "(\\d{4})(\\d{4})", "$1 $2", ["[125-8]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      NL: [, [
         ,
         ,
-        "64426\\d{3}|6(?:1(?:2[2-7]|3[01378]|4[0-4])|254|32[0237]|4(?:27|41|5[25])|52[236-8]|626|7(?:2[2-4]|30))\\d{4,5}|6(?:1(?:(?:0\\d|2[0189]|3[24-69]|4[5-9])\\d|17|69|7[014])|2(?:17|5[0-36-8]|69|70)|3(?:17|2[14-689]|34|6[289]|7[01]|81)|4(?:17|2[0-2]|4[06]|5[0137]|69|7[01])|5(?:17|2[0459]|69|7[01])|6(?:17|25|38|42|69|7[01])|7(?:17|2[569]|3[13]|6[89]|7[01]))\\d{4}",
-        ,
-        ,
-        ,
-        "61221234"
-      ], [, , "(?:60|8[1245])\\d{7}", , , , "811234567", , , [9]], [, , "80\\d{7}", , , , "800123456", , , [9]], [, , "8701\\d{5}", , , , "870123456", , , [9]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "8(?:3\\d\\d|86)\\d{5}", , , , "88612345"], "NA", 264, "00", "0", , , "0", , , , [[, "(\\d{2})(\\d{3})(\\d{3})", "$1 $2 $3", ["88"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["6"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["87"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["8"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [
+        "(?:[124-7]\\d\\d|3(?:[02-9]\\d|1[0-8]))\\d{6}|8\\d{6,9}|9\\d{6,10}|1\\d{4,5}",
         ,
         ,
         ,
         ,
         ,
         ,
+        [5, 6, 7, 8, 9, 10, 11]
+      ], [, , "(?:1(?:[035]\\d|1[13-578]|6[124-8]|7[24]|8[0-467])|2(?:[0346]\\d|2[2-46-9]|5[125]|9[479])|3(?:[03568]\\d|1[3-8]|2[01]|4[1-8])|4(?:[0356]\\d|1[1-368]|7[58]|8[15-8]|9[23579])|5(?:[0358]\\d|[19][1-9]|2[1-57-9]|4[13-8]|6[126]|7[0-3578])|7\\d\\d)\\d{6}", , , , "101234567", , , [9]], [, , "(?:6[1-58]|970\\d)\\d{7}", , , , "612345678", , , [9, 11]], [, , "800\\d{4,7}", , , , "8001234", , , [7, 8, 9, 10]], [, , "90[069]\\d{4,7}", , , , "9061234", , , [7, 8, 9, 10]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [
+        ,
+        ,
+        "(?:85|91)\\d{7}",
         ,
         ,
         ,
-        [-1]
-      ], , , [, , , , , , , , , [-1]]],
-      NC: [, [, , "(?:050|[2-57-9]\\d\\d)\\d{3}", , , , , , , [6]], [, , "(?:2[03-9]|3[0-5]|4[1-7]|88)\\d{4}", , , , "201234"], [, , "(?:[579]\\d|8[0-79])\\d{4}", , , , "751234"], [, , "050\\d{3}", , , , "050012"], [, , "36\\d{4}", , , , "366711"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "NC", 687, "00", , , , , , , , [[, "(\\d{3})", "$1", ["5[6-8]"]], [, "(\\d{2})(\\d{2})(\\d{2})", "$1.$2.$3", ["[02-57-9]"]]], [[, "(\\d{2})(\\d{2})(\\d{2})", "$1.$2.$3", ["[02-57-9]"]]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        [-1]
-      ]],
-      NE: [, [, , "[027-9]\\d{7}", , , , , , , [8]], [, , "2(?:0(?:20|3[1-8]|4[13-5]|5[14]|6[14578]|7[1-578])|1(?:4[145]|5[14]|6[14-68]|7[169]|88))\\d{4}", , , , "20201234"], [, , "(?:23|7[0467]|[89]\\d)\\d{6}", , , , "93123456"], [, , "08\\d{6}", , , , "08123456"], [, , "09\\d{6}", , , , "09123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "NE", 227, "00", , , , , , , , [[, "(\\d{2})(\\d{3})(\\d{3})", "$1 $2 $3", ["08"]], [, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[089]|2[013]|7[0467]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        [-1]
-      ], , , [, , , , , , , , , [-1]]],
-      NF: [, [, , "[13]\\d{5}", , , , , , , [6], [5]], [, , "(?:1(?:06|17|28|39)|3[0-2]\\d)\\d{3}", , , , "106609", , , , [5]], [, , "(?:14|3[58])\\d{4}", , , , "381234", , , , [5]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "NF", 672, "00", , , , "([0-258]\\d{4})$", "3$1", , , [[, "(\\d{2})(\\d{4})", "$1 $2", ["1[0-3]"]], [, "(\\d)(\\d{5})", "$1 $2", ["[13]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      NG: [, [, , "(?:20|9\\d)\\d{8}|[78]\\d{9,13}", , , , , , , [
-        10,
-        11,
-        12,
-        13,
-        14
-      ], [6, 7]], [, , "20(?:[1259]\\d|3[013-9]|4[1-8]|6[024-689]|7[1-79]|8[2-9])\\d{6}", , , , "2033123456", , , [10], [6, 7]], [, , "(?:702[0-24-9]|819[01])\\d{6}|(?:7(?:0[13-9]|[12]\\d)|8(?:0[1-9]|1[0-8])|9(?:0[1-9]|1[1-6]))\\d{7}", , , , "8021234567", , , [10]], [, , "800\\d{7,11}", , , , "80017591759"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "NG", 234, "009", "0", , , "0", , , , [[, "(\\d{3})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["[7-9]"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3", ["20[129]"], "0$1"], [
-        ,
-        "(\\d{4})(\\d{2})(\\d{4})",
-        "$1 $2 $3",
-        ["2"],
-        "0$1"
-      ], [, "(\\d{3})(\\d{4})(\\d{4,5})", "$1 $2 $3", ["[78]"], "0$1"], [, "(\\d{3})(\\d{5})(\\d{5,6})", "$1 $2 $3", ["[78]"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "700\\d{7,11}", , , , "7001234567"], , , [, , , , , , , , , [-1]]],
-      NI: [, [, , "(?:1800|[25-8]\\d{3})\\d{4}", , , , , , , [8]], [, , "2\\d{7}", , , , "21234567"], [, , "(?:5(?:5[0-7]|[78]\\d)|6(?:20|3[035]|4[045]|5[05]|77|8[1-9]|9[059])|(?:7[5-8]|8\\d)\\d)\\d{5}", , , , "81234567"], [, , "1800\\d{4}", , , , "18001234"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        [-1]
-      ], "NI", 505, "00", , , , , , , , [[, "(\\d{4})(\\d{4})", "$1 $2", ["[125-8]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      NL: [, [, , "(?:[124-7]\\d\\d|3(?:[02-9]\\d|1[0-8]))\\d{6}|8\\d{6,9}|9\\d{6,10}|1\\d{4,5}", , , , , , , [5, 6, 7, 8, 9, 10, 11]], [
-        ,
-        ,
-        "(?:1(?:[035]\\d|1[13-578]|6[124-8]|7[24]|8[0-467])|2(?:[0346]\\d|2[2-46-9]|5[125]|9[479])|3(?:[03568]\\d|1[3-8]|2[01]|4[1-8])|4(?:[0356]\\d|1[1-368]|7[58]|8[15-8]|9[23579])|5(?:[0358]\\d|[19][1-9]|2[1-57-9]|4[13-8]|6[126]|7[0-3578])|7\\d\\d)\\d{6}",
-        ,
-        ,
-        ,
-        "101234567",
+        "851234567",
         ,
         ,
         [9]
-      ], [, , "(?:6[1-58]|970\\d)\\d{7}", , , , "612345678", , , [9, 11]], [, , "800\\d{4,7}", , , , "8001234", , , [7, 8, 9, 10]], [, , "90[069]\\d{4,7}", , , , "9061234", , , [7, 8, 9, 10]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "(?:85|91)\\d{7}", , , , "851234567", , , [9]], "NL", 31, "00", "0", , , "0", , , , [[, "(\\d{4})", "$1", ["1[238]|[34]"]], [, "(\\d{2})(\\d{3,4})", "$1 $2", ["14"]], [, "(\\d{6})", "$1", ["1"]], [, "(\\d{3})(\\d{4,7})", "$1 $2", ["[89]0"], "0$1"], [, "(\\d{2})(\\d{7})", "$1 $2", ["66"], "0$1"], [, "(\\d)(\\d{8})", "$1 $2", ["6"], "0$1"], [
+      ], "NL", 31, "00", "0", , , "0", , , , [[, "(\\d{4})", "$1", ["1[238]|[34]"]], [, "(\\d{2})(\\d{3,4})", "$1 $2", ["14"]], [, "(\\d{6})", "$1", ["1"]], [, "(\\d{3})(\\d{4,7})", "$1 $2", ["[89]0"], "0$1"], [, "(\\d{2})(\\d{7})", "$1 $2", ["66"], "0$1"], [, "(\\d)(\\d{8})", "$1 $2", ["6"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["1[16-8]|2[259]|3[124]|4[17-9]|5[124679]"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["[1-578]|91"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{5})", "$1 $2 $3", ["9"], "0$1"]], [[
         ,
-        "(\\d{3})(\\d{3})(\\d{3})",
-        "$1 $2 $3",
-        ["1[16-8]|2[259]|3[124]|4[17-9]|5[124679]"],
+        "(\\d{3})(\\d{4,7})",
+        "$1 $2",
+        ["[89]0"],
         "0$1"
-      ], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["[1-578]|91"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{5})", "$1 $2 $3", ["9"], "0$1"]], [[, "(\\d{3})(\\d{4,7})", "$1 $2", ["[89]0"], "0$1"], [, "(\\d{2})(\\d{7})", "$1 $2", ["66"], "0$1"], [, "(\\d)(\\d{8})", "$1 $2", ["6"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["1[16-8]|2[259]|3[124]|4[17-9]|5[124679]"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["[1-578]|91"], "0$1"], [
+      ], [, "(\\d{2})(\\d{7})", "$1 $2", ["66"], "0$1"], [, "(\\d)(\\d{8})", "$1 $2", ["6"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["1[16-8]|2[259]|3[124]|4[17-9]|5[124679]"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["[1-578]|91"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{5})", "$1 $2 $3", ["9"], "0$1"]], [, , "66\\d{7}", , , , "662345678", , , [9]], , , [, , "140(?:1[035]|2[0346]|3[03568]|4[0356]|5[0358]|8[458])|140(?:1[16-8]|2[259]|3[124]|4[17-9]|5[124679]|7)\\d", , , , , , , [5, 6]], [
         ,
-        "(\\d{3})(\\d{3})(\\d{5})",
+        ,
+        "140(?:1[035]|2[0346]|3[03568]|4[0356]|5[0358]|8[458])|(?:140(?:1[16-8]|2[259]|3[124]|4[17-9]|5[124679]|7)|8[478]\\d{6})\\d",
+        ,
+        ,
+        ,
+        "14020",
+        ,
+        ,
+        [5, 6, 9]
+      ], , , [, , , , , , , , , [-1]]],
+      NO: [, [, , "(?:0|[2-9]\\d{3})\\d{4}", , , , , , , [5, 8]], [, , "(?:2[1-4]|3[1-3578]|5[1-35-7]|6[1-46-9]|7[0-8])\\d{6}", , , , "21234567", , , [8]], [, , "45(?:[0-24-9]\\d|3[0-57-9])\\d{4}|(?:4[016-8]|9\\d)\\d{6}", , , , "40612345", , , [8]], [, , "80[01]\\d{5}", , , , "80012345", , , [8]], [, , "82[09]\\d{5}", , , , "82012345", , , [8]], [, , "810(?:0[0-6]|[2-8]\\d)\\d{3}", , , , "81021234", , , [8]], [, , "880\\d{5}", , , , "88012345", , , [8]], [, , "85[0-5]\\d{5}", , , , "85012345", , , [8]], "NO", 47, "00", , , , , , , , [[
+        ,
+        "(\\d{3})(\\d{2})(\\d{3})",
         "$1 $2 $3",
-        ["9"],
-        "0$1"
-      ]], [, , "66\\d{7}", , , , "662345678", , , [9]], , , [, , "140(?:1[035]|2[0346]|3[03568]|4[0356]|5[0358]|8[458])|140(?:1[16-8]|2[259]|3[124]|4[17-9]|5[124679]|7)\\d", , , , , , , [5, 6]], [, , "140(?:1[035]|2[0346]|3[03568]|4[0356]|5[0358]|8[458])|(?:140(?:1[16-8]|2[259]|3[124]|4[17-9]|5[124679]|7)|8[478]\\d{6})\\d", , , , "14020", , , [5, 6, 9]], , , [, , , , , , , , , [-1]]],
-      NO: [, [, , "(?:0|[2-9]\\d{3})\\d{4}", , , , , , , [5, 8]], [, , "(?:2[1-4]|3[1-3578]|5[1-35-7]|6[1-4679]|7[0-8])\\d{6}", , , , "21234567", , , [8]], [
+        ["8"]
+      ], [, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[2-79]"]]], , [, , , , , , , , , [-1]], 1, "[02-689]|7[0-8]", [, , , , , , , , , [-1]], [, , "(?:0[235-9]|81(?:0(?:0[7-9]|1\\d)|5\\d\\d))\\d{3}", , , , "02000"], , , [, , "81[23]\\d{5}", , , , "81212345", , , [8]]],
+      NP: [, [, , "(?:1\\d|9)\\d{9}|[1-9]\\d{7}", , , , , , , [8, 10, 11], [6, 7]], [, , "(?:1[0-6]\\d|99[02-6])\\d{5}|(?:2[13-79]|3[135-8]|4[146-9]|5[135-7]|6[13-9]|7[15-9]|8[1-46-9]|9[1-7])[2-6]\\d{5}", , , , "14567890", , , [8], [6, 7]], [
         ,
         ,
-        "(?:4[015-8]|9\\d)\\d{6}",
-        ,
-        ,
-        ,
-        "40612345",
-        ,
-        ,
-        [8]
-      ], [, , "80[01]\\d{5}", , , , "80012345", , , [8]], [, , "82[09]\\d{5}", , , , "82012345", , , [8]], [, , "810(?:0[0-6]|[2-8]\\d)\\d{3}", , , , "81021234", , , [8]], [, , "880\\d{5}", , , , "88012345", , , [8]], [, , "85[0-5]\\d{5}", , , , "85012345", , , [8]], "NO", 47, "00", , , , , , , , [[, "(\\d{3})(\\d{2})(\\d{3})", "$1 $2 $3", ["8"]], [, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[2-79]"]]], , [, , , , , , , , , [-1]], 1, "[02-689]|7[0-8]", [, , , , , , , , , [-1]], [, , "(?:0[235-9]|81(?:0(?:0[7-9]|1\\d)|5\\d\\d))\\d{3}", , , , "02000"], , , [
-        ,
-        ,
-        "81[23]\\d{5}",
+        "9(?:00|6[0-3]|7[0-24-6]|8[0-24-68])\\d{7}",
         ,
         ,
         ,
-        "81212345",
+        "9841234567",
         ,
         ,
-        [8]
-      ]],
-      NP: [, [, , "(?:1\\d|9)\\d{9}|[1-9]\\d{7}", , , , , , , [8, 10, 11], [6, 7]], [, , "(?:1[0-6]\\d|99[02-6])\\d{5}|(?:2[13-79]|3[135-8]|4[146-9]|5[135-7]|6[13-9]|7[15-9]|8[1-46-9]|9[1-7])[2-6]\\d{5}", , , , "14567890", , , [8], [6, 7]], [, , "9(?:00|6[0-3]|7[0-24-6]|8[0-24-68])\\d{7}", , , , "9841234567", , , [10]], [, , "1(?:66001|800\\d\\d)\\d{5}", , , , "16600101234", , , [11]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "NP", 977, "00", "0", , , "0", , , , [[, "(\\d)(\\d{7})", "$1-$2", ["1[2-6]"], "0$1"], [
+        [10]
+      ], [, , "1(?:66001|800\\d\\d)\\d{5}", , , , "16600101234", , , [11]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "NP", 977, "00", "0", , , "0", , , , [[, "(\\d)(\\d{7})", "$1-$2", ["1[2-6]"], "0$1"], [, "(\\d{2})(\\d{6})", "$1-$2", ["1[01]|[2-8]|9(?:[1-59]|[67][2-6])"], "0$1"], [, "(\\d{3})(\\d{7})", "$1-$2", ["9"]], [, "(\\d{4})(\\d{2})(\\d{5})", "$1-$2-$3", ["1"]]], [[, "(\\d)(\\d{7})", "$1-$2", ["1[2-6]"], "0$1"], [, "(\\d{2})(\\d{6})", "$1-$2", ["1[01]|[2-8]|9(?:[1-59]|[67][2-6])"], "0$1"], [
         ,
-        "(\\d{2})(\\d{6})",
+        "(\\d{3})(\\d{7})",
         "$1-$2",
-        ["1[01]|[2-8]|9(?:[1-59]|[67][2-6])"],
-        "0$1"
-      ], [, "(\\d{3})(\\d{7})", "$1-$2", ["9"]], [, "(\\d{4})(\\d{2})(\\d{5})", "$1-$2-$3", ["1"]]], [[, "(\\d)(\\d{7})", "$1-$2", ["1[2-6]"], "0$1"], [, "(\\d{2})(\\d{6})", "$1-$2", ["1[01]|[2-8]|9(?:[1-59]|[67][2-6])"], "0$1"], [, "(\\d{3})(\\d{7})", "$1-$2", ["9"]]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      NR: [, [, , "(?:222|444|(?:55|8\\d)\\d|666|777|999)\\d{4}", , , , , , , [7]], [, , "444\\d{4}", , , , "4441234"], [
-        ,
-        ,
-        "(?:222|55[3-9]|666|777|8\\d\\d|999)\\d{4}",
-        ,
-        ,
-        ,
-        "5551234"
-      ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "NR", 674, "00", , , , , , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[24-9]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+        ["9"]
+      ]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      NR: [, [, , "(?:222|444|(?:55|8\\d)\\d|666|777|999)\\d{4}", , , , , , , [7]], [, , "444\\d{4}", , , , "4441234"], [, , "(?:222|55[3-9]|666|777|8\\d\\d|999)\\d{4}", , , , "5551234"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "NR", 674, "00", , , , , , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[24-9]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
       NU: [
         ,
         [, , "(?:[4-7]|888\\d)\\d{3}", , , , , , , [4, 7]],
@@ -8553,53 +9087,40 @@ var factoryOutput = (() => {
         ,
         [, , , , , , , , , [-1]]
       ],
-      NZ: [
-        ,
-        [, , "[1289]\\d{9}|50\\d{5}(?:\\d{2,3})?|[27-9]\\d{7,8}|(?:[34]\\d|6[0-35-9])\\d{6}|8\\d{4,6}", , , , , , , [5, 6, 7, 8, 9, 10]],
-        [, , "240\\d{5}|(?:3[2-79]|[49][2-9]|6[235-9]|7[2-57-9])\\d{6}", , , , "32345678", , , [8], [7]],
-        [, , "2(?:[0-27-9]\\d|6)\\d{6,7}|2(?:1\\d|75)\\d{5}", , , , "211234567", , , [8, 9, 10]],
-        [, , "508\\d{6,7}|80\\d{6,8}", , , , "800123456", , , [8, 9, 10]],
-        [, , "(?:1[13-57-9]\\d{5}|50(?:0[08]|30|66|77|88))\\d{3}|90\\d{6,8}", , , , "900123456", , , [7, 8, 9, 10]],
-        [, , , , , , , , , [-1]],
-        [, , "70\\d{7}", , , , "701234567", , , [9]],
-        [, , , , , , , , , [-1]],
-        "NZ",
-        64,
-        "0(?:0|161)",
-        "0",
+      NZ: [, [, , "[1289]\\d{9}|50\\d{5}(?:\\d{2,3})?|[27-9]\\d{7,8}|(?:[34]\\d|6[0-35-9])\\d{6}|8\\d{4,6}", , , , , , , [5, 6, 7, 8, 9, 10]], [, , "240\\d{5}|(?:3[2-79]|[49][2-9]|6[235-9]|7[2-57-9])\\d{6}", , , , "32345678", , , [8], [7]], [
         ,
         ,
-        "0",
-        ,
-        "00",
-        ,
-        [[, "(\\d{2})(\\d{3,8})", "$1 $2", ["8[1-79]"], "0$1"], [, "(\\d{3})(\\d{2})(\\d{2,3})", "$1 $2 $3", ["50[036-8]|8|90", "50(?:[0367]|88)|8|90"], "0$1"], [, "(\\d)(\\d{3})(\\d{4})", "$1 $2 $3", ["24|[346]|7[2-57-9]|9[2-9]"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["2(?:10|74)|[589]"], "0$1"], [, "(\\d{2})(\\d{3,4})(\\d{4})", "$1 $2 $3", ["1|2[028]"], "0$1"], [
-          ,
-          "(\\d{2})(\\d{3})(\\d{3,5})",
-          "$1 $2 $3",
-          ["2(?:[169]|7[0-35-9])|7"],
-          "0$1"
-        ]],
-        ,
-        [, , , , , , , , , [-1]],
+        "2(?:[0-27-9]\\d|6)\\d{6,7}|2(?:1\\d|75)\\d{5}",
         ,
         ,
-        [, , , , , , , , , [-1]],
-        [, , "8(?:1[16-9]|22|3\\d|4[045]|5[459]|6[235-9]|7[0-3579]|90)\\d{2,7}", , , , "83012378"],
+        ,
+        "211234567",
         ,
         ,
-        [, , , , , , , , , [-1]]
-      ],
-      OM: [, [, , "(?:1505|[279]\\d{3}|500)\\d{4}|800\\d{5,6}", , , , , , , [7, 8, 9]], [, , "2[1-6]\\d{6}", , , , "23123456", , , [8]], [, , "(?:1505|90[1-9]\\d)\\d{4}|(?:7[124-9]|9[1-9])\\d{6}", , , , "92123456", , , [8]], [, , "8007\\d{4,5}|(?:500|800[05])\\d{4}", , , , "80071234"], [, , "900\\d{5}", , , , "90012345", , , [8]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "OM", 968, "00", , , , , , , , [[
+        [8, 9, 10]
+      ], [, , "508\\d{6,7}|80\\d{6,8}", , , , "800123456", , , [8, 9, 10]], [, , "(?:1[13-57-9]\\d{5}|50(?:0[08]|30|66|77|88))\\d{3}|90\\d{6,8}", , , , "900123456", , , [7, 8, 9, 10]], [, , , , , , , , , [-1]], [, , "70\\d{7}", , , , "701234567", , , [9]], [, , , , , , , , , [-1]], "NZ", 64, "0(?:0|161)", "0", , , "0", , "00", , [[, "(\\d{2})(\\d{3,8})", "$1 $2", ["8[1-79]"], "0$1"], [, "(\\d{3})(\\d{2})(\\d{2,3})", "$1 $2 $3", ["50[036-8]|8|90", "50(?:[0367]|88)|8|90"], "0$1"], [, "(\\d)(\\d{3})(\\d{4})", "$1 $2 $3", ["24|[346]|7[2-57-9]|9[2-9]"], "0$1"], [
         ,
-        "(\\d{3})(\\d{4,6})",
-        "$1 $2",
-        ["[58]"]
-      ], [, "(\\d{2})(\\d{6})", "$1 $2", ["2"]], [, "(\\d{4})(\\d{4})", "$1 $2", ["[179]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+        "(\\d{3})(\\d{3})(\\d{3,4})",
+        "$1 $2 $3",
+        ["2(?:10|74)|[589]"],
+        "0$1"
+      ], [, "(\\d{2})(\\d{3,4})(\\d{4})", "$1 $2 $3", ["1|2[028]"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{3,5})", "$1 $2 $3", ["2(?:[169]|7[0-35-9])|7"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "8(?:1[16-9]|22|3\\d|4[045]|5[459]|6[235-9]|7[0-3579]|90)\\d{2,7}", , , , "83012378"], , , [, , , , , , , , , [-1]]],
+      OM: [, [, , "(?:1505|[279]\\d{3}|500)\\d{4}|800\\d{5,6}", , , , , , , [7, 8, 9]], [, , "2[1-6]\\d{6}", , , , "23123456", , , [8]], [
+        ,
+        ,
+        "(?:1505|90[1-9]\\d)\\d{4}|(?:7[124-9]|9[1-9])\\d{6}",
+        ,
+        ,
+        ,
+        "92123456",
+        ,
+        ,
+        [8]
+      ], [, , "8007\\d{4,5}|(?:500|800[05])\\d{4}", , , , "80071234"], [, , "900\\d{5}", , , , "90012345", , , [8]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "OM", 968, "00", , , , , , , , [[, "(\\d{3})(\\d{4,6})", "$1 $2", ["[58]"]], [, "(\\d{2})(\\d{6})", "$1 $2", ["2"]], [, "(\\d{4})(\\d{4})", "$1 $2", ["[179]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
       PA: [, [, , "(?:00800|8\\d{3})\\d{6}|[68]\\d{7}|[1-57-9]\\d{6}", , , , , , , [7, 8, 10, 11]], [
         ,
         ,
-        "(?:1(?:0\\d|1[0479]|2[37]|3[0137]|4[147]|5[05]|6[058]|7[0167]|8[2358]|9[1389])|2(?:[0235-79]\\d|1[0-7]|4[013-9]|8[02-9])|3(?:[0147-9]\\d|[25][0-5]|33|6[068])|4(?:00|3[0-579]|4\\d|7[0-57-9])|5(?:[01]\\d|2[0-7]|[56]0|79)|7(?:0[09]|2[0-26-8]|3[03]|4[04]|5[05-9]|6[0156]|7[0-24-9]|8[4-9]|90)|8(?:09|2[89]|3\\d|4[0-24-689]|5[014]|8[02])|9(?:0[5-9]|1[0135-8]|2[036-9]|3[35-79]|40|5[0457-9]|6[05-9]|7[04-9]|8[35-8]|9\\d))\\d{4}",
+        "(?:1(?:0\\d|1[0479]|2[37]|3[0137]|4[147]|5[05]|6[058]|7[0167]|8[2358]|9[1389])|2(?:[0235-79]\\d|1[0-7]|4[013-9]|8[02-9])|3(?:[0147-9]\\d|[25][0-5]|33|6[068])|4(?:00|3[0-579]|4\\d|7[0-57-9])|5(?:[01]\\d|2[0-7]|[56]0|79)|7(?:0[09]|2[0-26-8]|3[03]|4[04]|5[05-9]|6[0156]|7[0-24-9]|8[4-9]|90)|8(?:09|2[89]|3\\d|4[0-24-689]|5[014]|8[02])|9(?:0[5-9]|1[0135-8]|2[036-9]|3[35-79]|40|5[0457-9]|6[05-9]|7[04-9]|8[235-8]|9\\d))\\d{4}",
         ,
         ,
         ,
@@ -8620,7 +9141,7 @@ var factoryOutput = (() => {
         ,
         [8, 9],
         [6, 7]
-      ], [, , "(?:(?:(?:4[34]|5[14])[0-8]|687)\\d|7(?:173|(?:3[0-8]|55)\\d)|8(?:10[05689]|6(?:0[06-9]|1[6-9]|29)|7(?:0[0569]|[56]0)))\\d{4}|(?:1[0-8]|4[12]|5[236]|6[1-7]|7[246]|8[2-4])\\d{6}", , , , "11234567", , , [8], [6, 7]], [, , "9\\d{8}", , , , "912345678", , , [9]], [, , "800\\d{5}", , , , "80012345", , , [8]], [, , "805\\d{5}", , , , "80512345", , , [8]], [, , "801\\d{5}", , , , "80112345", , , [8]], [, , "80[24]\\d{5}", , , , "80212345", , , [8]], [, , , , , , , , , [-1]], "PE", 51, "00|19(?:1[124]|77|90)00", "0", " Anexo ", , "0", , "00", , [[
+      ], [, , "(?:(?:19[02-68]|(?:4[34]|5[14])[0-8]|687)\\d|7(?:173|(?:3[0-8]|55)\\d)|8(?:10[05689]|6(?:0[06-9]|1[6-9]|29)|7(?:0[0569]|[56]0)))\\d{4}|(?:1[0-8]|4[12]|5[236]|6[1-7]|7[246]|8[2-4])\\d{6}", , , , "11234567", , , [8], [6, 7]], [, , "9\\d{8}", , , , "912345678", , , [9]], [, , "800\\d{5}", , , , "80012345", , , [8]], [, , "805\\d{5}", , , , "80512345", , , [8]], [, , "801\\d{5}", , , , "80112345", , , [8]], [, , "80[24]\\d{5}", , , , "80212345", , , [8]], [, , , , , , , , , [-1]], "PE", 51, "00|19(?:1[124]|77|90)00", "0", " Anexo ", , "0", , "00", , [[
         ,
         "(\\d{3})(\\d{5})",
         "$1 $2",
@@ -8658,7 +9179,7 @@ var factoryOutput = (() => {
         ,
         [, , , , , , , , , [-1]]
       ],
-      PG: [, [, , "(?:180|[78]\\d{3})\\d{4}|(?:[2-589]\\d|64)\\d{5}", , , , , , , [7, 8]], [, , "(?:(?:3[0-2]|4[257]|5[34]|9[78])\\d|64[1-9]|85[02-46-9])\\d{4}", , , , "3123456", , , [7]], [, , "(?:7\\d|8[1-48])\\d{6}", , , , "70123456", , , [8]], [
+      PG: [, [, , "(?:180|[78]\\d{3})\\d{4}|(?:[2-589]\\d|64)\\d{5}", , , , , , , [7, 8]], [, , "(?:(?:3[0-2]|4[257]|5[34]|9[78])\\d|64[1-9]|85[02-46-9])\\d{4}", , , , "3123456", , , [7]], [, , "(?:7\\d|8[1-58])\\d{6}", , , , "70123456", , , [8]], [
         ,
         ,
         "180\\d{4}",
@@ -8669,7 +9190,7 @@ var factoryOutput = (() => {
         ,
         ,
         [7]
-      ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "2(?:0[0-57]|7[568])\\d{4}", , , , "2751234", , , [7]], "PG", 675, "00|140[1-3]", , , , , , "00", , [[, "(\\d{3})(\\d{4})", "$1 $2", ["18|[2-69]|85"]], [, "(\\d{4})(\\d{4})", "$1 $2", ["[78]"]]], , [, , "27[01]\\d{4}", , , , "2700123", , , [7]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "2(?:0[0-57]|7[568])\\d{4}", , , , "2751234", , , [7]], "PG", 675, "00|140[1-3]", , , , , , "00", , [[, "(\\d{3})(\\d{4})", "$1 $2", ["18|[2-69]|85[02-46-9]"]], [, "(\\d{4})(\\d{4})", "$1 $2", ["[78]"]]], , [, , "27[01]\\d{4}", , , , "2700123", , , [7]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
       PH: [, [, , "(?:[2-7]|9\\d)\\d{8}|2\\d{5}|(?:1800|8)\\d{7,9}", , , , , , , [6, 8, 9, 10, 11, 12, 13], [4, 5, 7]], [
         ,
         ,
@@ -8793,7 +9314,7 @@ var factoryOutput = (() => {
         [, , "2(?:[12]\\d|3[1-689]|4[1-59]|[57][1-9]|6[1-35689]|8[1-69]|9[1256])\\d{6}", , , , "212345678"],
         [, , "6(?:[06]92(?:30|9\\d)|[35]92(?:[049]\\d|3[034]))\\d{3}|(?:(?:16|6[0356])93|9(?:[1-36]\\d\\d|480))\\d{5}", , , , "912345678"],
         [, , "80[02]\\d{6}", , , , "800123456"],
-        [, , "(?:6(?:0[178]|4[68])\\d|76(?:0[1-57]|1[2-47]|2[237]))\\d{5}", , , , "760123456"],
+        [, , "(?:6(?:0[178]|4[68])\\d|76(?:0[1-57]|1[2-47]|2[1-37]))\\d{5}", , , , "760123456"],
         [, , "80(?:8\\d|9[1579])\\d{5}", , , , "808123456"],
         [, , "884[0-4689]\\d{5}", , , , "884123456"],
         [, , "30\\d{7}", , , , "301234567"],
@@ -8867,7 +9388,7 @@ var factoryOutput = (() => {
       RE: [, [, , "709\\d{6}|(?:26|[689]\\d)\\d{7}", , , , , , , [9]], [
         ,
         ,
-        "26(?:2\\d\\d|3(?:0\\d|1[0-6]))\\d{4}",
+        "2631[0-6]\\d{4}|26(?:2\\d|30|88)\\d{5}",
         ,
         ,
         ,
@@ -9004,7 +9525,7 @@ var factoryOutput = (() => {
         ,
         ,
         [7, 8, 9]
-      ], [, , "7[02369]\\d{7}", , , , "701234567", , , [9]], [, , "20\\d{4,7}", , , , "20123456", , , [6, 7, 8, 9]], [, , "649\\d{6}|99[1-59]\\d{4}(?:\\d{3})?|9(?:00|39|44)[1-8]\\d{3,6}", , , , "9001234567", , , [7, 8, 9, 10]], [, , "77[0-7]\\d{6}", , , , "771234567", , , [9]], [, , "75[1-8]\\d{6}", , , , "751234567", , , [9]], [, , , , , , , , , [-1]], "SE", 46, "00", "0", , , "0", , , , [[, "(\\d{2})(\\d{2,3})(\\d{2})", "$1-$2 $3", ["20"], "0$1"], [, "(\\d{3})(\\d{4})", "$1-$2", ["9(?:00|39|44|9)"], "0$1"], [
+      ], [, , "7[023689]\\d{7}", , , , "701234567", , , [9]], [, , "20\\d{4,7}", , , , "20123456", , , [6, 7, 8, 9]], [, , "649\\d{6}|99[1-59]\\d{4}(?:\\d{3})?|9(?:00|39|44)[1-8]\\d{3,6}", , , , "9001234567", , , [7, 8, 9, 10]], [, , "77[0-7]\\d{6}", , , , "771234567", , , [9]], [, , "75[1-8]\\d{6}", , , , "751234567", , , [9]], [, , , , , , , , , [-1]], "SE", 46, "00", "0", , , "0", , , , [[, "(\\d{2})(\\d{2,3})(\\d{2})", "$1-$2 $3", ["20"], "0$1"], [, "(\\d{3})(\\d{4})", "$1-$2", ["9(?:00|39|44|9)"], "0$1"], [
         ,
         "(\\d{2})(\\d{3})(\\d{2})",
         "$1-$2 $3",
@@ -9038,56 +9559,48 @@ var factoryOutput = (() => {
         ,
         ,
         [8]
-      ], [, , "89(?:8[02-9]|9[0-6])\\d{4}|(?:8(?:0[1-9]|[1-8]\\d|9[0-7])|9[0-8]\\d)\\d{5}", , , , "81234567", , , [8]], [, , "(?:18|8)00\\d{7}", , , , "18001234567", , , [10, 11]], [, , "1900\\d{7}", , , , "19001234567", , , [11]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "(?:3[12]\\d|666)\\d{5}", , , , "31234567", , , [8]], "SG", 65, "0[0-3]\\d", , , , , , , , [[, "(\\d{4,5})", "$1", ["1[013-9]|77", "1(?:[013-8]|9(?:0[1-9]|[1-9]))|77"]], [, "(\\d{4})(\\d{4})", "$1 $2", ["[369]|8(?:0[1-9]|[1-9])"]], [, "(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3", ["8"]], [
+      ], [, , "80[1-9]\\d{5}|(?:8[1-9]|9[0-8])\\d{6}", , , , "81234567", , , [8]], [, , "(?:18|8)00\\d{7}", , , , "18001234567", , , [10, 11]], [, , "1900\\d{7}", , , , "19001234567", , , [11]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "(?:3[12]\\d|666)\\d{5}", , , , "31234567", , , [8]], "SG", 65, "0[0-3]\\d", , , , , , , , [[, "(\\d{4,5})", "$1", ["1[013-9]|77", "1(?:[013-8]|9(?:0[1-9]|[1-9]))|77"]], [, "(\\d{4})(\\d{4})", "$1 $2", ["[369]|8(?:0[1-9]|[1-9])"]], [, "(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3", ["8"]], [
         ,
         "(\\d{4})(\\d{4})(\\d{3})",
         "$1 $2 $3",
         ["7"]
       ], [, "(\\d{4})(\\d{3})(\\d{4})", "$1 $2 $3", ["1"]]], [[, "(\\d{4})(\\d{4})", "$1 $2", ["[369]|8(?:0[1-9]|[1-9])"]], [, "(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3", ["8"]], [, "(\\d{4})(\\d{4})(\\d{3})", "$1 $2 $3", ["7"]], [, "(\\d{4})(\\d{3})(\\d{4})", "$1 $2 $3", ["1"]]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "7000\\d{7}", , , , "70001234567", , , [11]], , , [, , , , , , , , , [-1]]],
-      SH: [, [, , "(?:[256]\\d|8)\\d{3}", , , , , , , [4, 5]], [, , "2(?:[0-57-9]\\d|6[4-9])\\d\\d", , , , "22158"], [
-        ,
-        ,
-        "[56]\\d{4}",
+      SH: [, [, , "(?:[256]\\d|8)\\d{3}", , , , , , , [4, 5]], [, , "2(?:[0-57-9]\\d|6[4-9])\\d\\d", , , , "22158"], [, , "[56]\\d{4}", , , , "51234", , , [5]], [, , , , , , , , , [-1]], [
         ,
         ,
         ,
-        "51234",
         ,
         ,
-        [5]
-      ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "262\\d\\d", , , , "26212", , , [5]], "SH", 290, "00", , , , , , , , , , [, , , , , , , , , [-1]], 1, "[256]", [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      SI: [
-        ,
-        [, , "[1-7]\\d{7}|8\\d{4,7}|90\\d{4,6}", , , , , , , [5, 6, 7, 8]],
-        [, , "(?:[1-357][2-8]|4[24-8])\\d{6}", , , , "12345678", , , [8], [7]],
-        [, , "65(?:[178]\\d|5[56]|6[01])\\d{4}|(?:[37][01]|4[0139]|51|6[489])\\d{6}", , , , "31234567", , , [8]],
-        [, , "80\\d{4,6}", , , , "80123456", , , [6, 7, 8]],
-        [, , "89[1-3]\\d{2,5}|90\\d{4,6}", , , , "90123456"],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , "(?:59\\d\\d|8(?:1(?:[67]\\d|8[0-589])|2(?:0\\d|2[0-37-9]|8[0-2489])|3[389]\\d))\\d{4}", , , , "59012345", , , [8]],
-        "SI",
-        386,
-        "00|10(?:22|66|88|99)",
-        "0",
         ,
         ,
-        "0",
-        ,
-        "00",
-        ,
-        [[, "(\\d{2})(\\d{3,6})", "$1 $2", ["8[09]|9"], "0$1"], [, "(\\d{3})(\\d{5})", "$1 $2", ["59|8"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{3})", "$1 $2 $3", ["[37][01]|4[0139]|51|6"], "0$1"], [, "(\\d)(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[1-57]"], "(0$1)"]],
-        ,
-        [, , , , , , , , , [-1]],
         ,
         ,
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
+        [-1]
+      ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "262\\d\\d", , , , "26212", , , [5]], "SH", 290, "00", , , , , , , , , , [, , , , , , , , , [-1]], 1, "[256]", [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      SI: [, [, , "[1-7]\\d{7}|8\\d{4,7}|90\\d{4,6}", , , , , , , [5, 6, 7, 8]], [, , "(?:[1-357][2-8]|4[24-8])\\d{6}", , , , "12345678", , , [8], [7]], [, , "65(?:[178]\\d|5[56]|6[01])\\d{4}|(?:[37][01]|4[013]|51|6[489])\\d{6}", , , , "31234567", , , [8]], [, , "80\\d{4,6}", , , , "80123456", , , [6, 7, 8]], [, , "89[1-3]\\d{2,5}|90\\d{4,6}", , , , "90123456"], [, , , , , , , , , [-1]], [
         ,
         ,
-        [, , , , , , , , , [-1]]
-      ],
-      SJ: [, [, , "0\\d{4}|(?:[489]\\d|79)\\d{6}", , , , , , , [5, 8]], [, , "79\\d{6}", , , , "79123456", , , [8]], [, , "(?:4[015-8]|9\\d)\\d{6}", , , , "41234567", , , [8]], [, , "80[01]\\d{5}", , , , "80012345", , , [8]], [, , "82[09]\\d{5}", , , , "82012345", , , [8]], [, , "810(?:0[0-6]|[2-8]\\d)\\d{3}", , , , "81021234", , , [8]], [, , "880\\d{5}", , , , "88012345", , , [8]], [, , "85[0-5]\\d{5}", , , , "85012345", , , [8]], "SJ", 47, "00", , , , , , , , , , [, , , , , , , , , [-1]], , "79", [, , , , , , , , , [-1]], [, , "(?:0[235-9]|81(?:0(?:0[7-9]|1\\d)|5\\d\\d))\\d{3}", , , , "02000"], , , [
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        [-1]
+      ], [, , "(?:59\\d\\d|8(?:1(?:[67]\\d|8[0-589])|2(?:0\\d|2[0-37-9]|8[0-2489])|3[389]\\d))\\d{4}", , , , "59012345", , , [8]], "SI", 386, "00|10(?:22|66|88|99)", "0", , , "0", , "00", , [[, "(\\d{2})(\\d{3,6})", "$1 $2", ["8[09]|9"], "0$1"], [, "(\\d{3})(\\d{5})", "$1 $2", ["59|8"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{3})", "$1 $2 $3", ["[37][01]|4[013]|51|6"], "0$1"], [, "(\\d)(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[1-57]"], "(0$1)"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      SJ: [, [
+        ,
+        ,
+        "0\\d{4}|(?:[489]\\d|79)\\d{6}",
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        [5, 8]
+      ], [, , "79\\d{6}", , , , "79123456", , , [8]], [, , "45(?:[0-24-9]\\d|3[0-57-9])\\d{4}|(?:4[016-8]|9\\d)\\d{6}", , , , "41234567", , , [8]], [, , "80[01]\\d{5}", , , , "80012345", , , [8]], [, , "82[09]\\d{5}", , , , "82012345", , , [8]], [, , "810(?:0[0-6]|[2-8]\\d)\\d{3}", , , , "81021234", , , [8]], [, , "880\\d{5}", , , , "88012345", , , [8]], [, , "85[0-5]\\d{5}", , , , "85012345", , , [8]], "SJ", 47, "00", , , , , , , , , , [, , , , , , , , , [-1]], , "79", [, , , , , , , , , [-1]], [, , "(?:0[235-9]|81(?:0(?:0[7-9]|1\\d)|5\\d\\d))\\d{3}", , , , "02000"], , , [
         ,
         ,
         "81[23]\\d{5}",
@@ -9119,11 +9632,11 @@ var factoryOutput = (() => {
         ,
         ,
         ,
-        [[, "(\\d)(\\d{2})(\\d{3,4})", "$1 $2 $3", ["21"], "0$1"], [, "(\\d{2})(\\d{2})(\\d{2,3})", "$1 $2 $3", ["[3-5][1-8]1", "[3-5][1-8]1[67]"], "0$1"], [, "(\\d{4})(\\d{3})", "$1 $2", ["909", "9090"], "0$1"], [, "(\\d)(\\d{3})(\\d{3})(\\d{2})", "$1/$2 $3 $4", ["2"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[689]"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{2})(\\d{2})", "$1/$2 $3 $4", ["[3-5]"], "0$1"]],
+        [[, "(\\d)(\\d{2})(\\d{3,4})", "$1 $2 $3", ["21"], "0$1"], [, "(\\d{2})(\\d{2})(\\d{2,3})", "$1 $2 $3", ["[3-5][1-8]1", "[3-5][1-8]1[67]"], "0$1"], [, "(\\d{4})(\\d{3})", "$1 $2", ["909", "9090"], "0$1"], [, "(\\d)(\\d{3})(\\d{3})(\\d{2})", "$1 $2 $3 $4", ["2"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[689]"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[3-5]"], "0$1"]],
         [[, "(\\d)(\\d{2})(\\d{3,4})", "$1 $2 $3", ["21"], "0$1"], [, "(\\d{2})(\\d{2})(\\d{2,3})", "$1 $2 $3", [
           "[3-5][1-8]1",
           "[3-5][1-8]1[67]"
-        ], "0$1"], [, "(\\d)(\\d{3})(\\d{3})(\\d{2})", "$1/$2 $3 $4", ["2"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[689]"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{2})(\\d{2})", "$1/$2 $3 $4", ["[3-5]"], "0$1"]],
+        ], "0$1"], [, "(\\d)(\\d{3})(\\d{3})(\\d{2})", "$1 $2 $3 $4", ["2"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[689]"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[3-5]"], "0$1"]],
         [, , "9090\\d{3}", , , , "9090123", , , [7]],
         ,
         ,
@@ -9154,15 +9667,37 @@ var factoryOutput = (() => {
         ,
         [8]
       ], "SM", 378, "00", , , , "([89]\\d{5})$", "0549$1", , , [[, "(\\d{6})", "$1", ["[89]"]], [, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[5-7]"]], [, "(\\d{4})(\\d{6})", "$1 $2", ["0"]]], [[, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[5-7]"]], [, "(\\d{4})(\\d{6})", "$1 $2", ["0"]]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      SN: [, [, , "(?:[378]\\d|93)\\d{7}", , , , , , , [9]], [, , "3(?:0(?:1[0-2]|80)|282|3(?:8[1-9]|9[3-9])|611)\\d{5}", , , , "301012345"], [
+      SN: [
+        ,
+        [, , "(?:[378]\\d|93)\\d{7}", , , , , , , [9]],
+        [, , "3(?:[026]\\d|3[89])\\d{6}", , , , "301012345"],
+        [, , "7(?:[015-8]\\d|21|90)\\d{6}", , , , "701234567"],
+        [, , "800\\d{6}", , , , "800123456"],
+        [, , "88[4689]\\d{6}", , , , "884123456"],
+        [, , "81[02468]\\d{6}", , , , "810123456"],
+        [, , , , , , , , , [-1]],
+        [, , "(?:39|93)\\d{7}", , , , "933301234"],
+        "SN",
+        221,
+        "00",
         ,
         ,
-        "7(?:[015-8]\\d|21|90)\\d{6}",
         ,
         ,
         ,
-        "701234567"
-      ], [, , "800\\d{6}", , , , "800123456"], [, , "88[4689]\\d{6}", , , , "884123456"], [, , "81[02468]\\d{6}", , , , "810123456"], [, , , , , , , , , [-1]], [, , "(?:3(?:392|9[01]\\d)\\d|93(?:3[13]0|929))\\d{4}", , , , "933301234"], "SN", 221, "00", , , , , , , , [[, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["8"]], [, "(\\d{2})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[379]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+        ,
+        ,
+        [[, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["8"]], [, "(\\d{2})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[379]"]]],
+        ,
+        [, , , , , , , , , [-1]],
+        ,
+        ,
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        ,
+        ,
+        [, , , , , , , , , [-1]]
+      ],
       SO: [, [, , "[346-9]\\d{8}|[12679]\\d{7}|[1-5]\\d{6}|[1348]\\d{5}", , , , , , , [6, 7, 8, 9]], [
         ,
         ,
@@ -9174,61 +9709,44 @@ var factoryOutput = (() => {
         ,
         ,
         [6, 7]
-      ], [, , "(?:(?:15|(?:3[59]|4[89]|6\\d|7[679]|8[08])\\d|9(?:0\\d|[2-9]))\\d|2(?:4\\d|8))\\d{5}|(?:[67]\\d\\d|904)\\d{5}", , , , "71123456", , , [7, 8, 9]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "SO", 252, "00", "0", , , "0", , , , [[, "(\\d{2})(\\d{4})", "$1 $2", ["8[125]"]], [, "(\\d{6})", "$1", ["[134]"]], [, "(\\d)(\\d{6})", "$1 $2", ["[15]|2[0-79]|3[0-46-8]|4[0-7]"]], [
+      ], [, , "(?:(?:15|(?:3[59]|4[89]|6\\d|7[0-35-9]|8[08])\\d|9(?:0\\d|[2-9]))\\d|2(?:4\\d|8))\\d{5}|(?:[67]\\d\\d|904)\\d{5}", , , , "71123456", , , [7, 8, 9]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "SO", 252, "00", "0", , , "0", , , , [[, "(\\d{2})(\\d{4})", "$1 $2", ["8[125]"]], [, "(\\d{6})", "$1", ["[134]"]], [, "(\\d)(\\d{6})", "$1 $2", ["[15]|2[0-79]|3[0-46-8]|4[0-7]"]], [, "(\\d{2})(\\d{5,7})", "$1 $2", ["1|28|9[2-9]"]], [, "(\\d)(\\d{7})", "$1 $2", ["[267]|904"]], [
         ,
-        "(\\d)(\\d{7})",
-        "$1 $2",
-        ["(?:2|90)4|[67]"]
-      ], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[348]|64|79|90"]], [, "(\\d{2})(\\d{5,7})", "$1 $2", ["1|28|6[0-35-9]|7[67]|9[2-9]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      SR: [, [, , "(?:[2-5]|[6-8]\\d|90)\\d{5}", , , , , , , [6, 7]], [, , "(?:2[1-3]|3[0-7]|4\\d|5[2-58])\\d{4}", , , , "211234", , , [6]], [, , "(?:6[08]|7[124-7]|8[1-9])\\d{5}", , , , "7412345", , , [7]], [, , "80\\d{5}", , , , "8012345", , , [7]], [, , "90\\d{5}", , , , "9012345", , , [7]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [
-        ,
-        ,
-        "56\\d{4}",
-        ,
-        ,
-        ,
-        "561234",
-        ,
-        ,
-        [6]
-      ], "SR", 597, "00", , , , , , , , [[, "(\\d{2})(\\d{2})(\\d{2})", "$1-$2-$3", ["56"]], [, "(\\d{3})(\\d{3})", "$1-$2", ["[2-5]"]], [, "(\\d{3})(\\d{4})", "$1-$2", ["[6-9]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      SS: [, [, , "[19]\\d{8}", , , , , , , [9]], [, , "1[89]\\d{7}", , , , "181234567"], [, , "(?:12|9[1257-9])\\d{7}", , , , "977123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "SS", 211, "00", "0", , , "0", , , , [[
-        ,
-        "(\\d{3})(\\d{3})(\\d{3})",
+        "(\\d{2})(\\d{3})(\\d{4})",
         "$1 $2 $3",
-        ["[19]"],
-        "0$1"
+        ["[346-9]"]
       ]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      ST: [, [, , "(?:22|9\\d)\\d{5}", , , , , , , [7]], [, , "22\\d{5}", , , , "2221234"], [, , "900[5-9]\\d{3}|9(?:0[1-9]|[89]\\d)\\d{4}", , , , "9812345"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "ST", 239, "00", , , , , , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[29]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      SV: [, [, , "[25-7]\\d{7}|(?:80\\d|900)\\d{4}(?:\\d{4})?", , , , , , , [7, 8, 11]], [
+      SR: [, [, , "(?:[2-5]|[6-9]\\d)\\d{5}", , , , , , , [6, 7]], [, , "(?:2[1-3]|3[0-7]|4\\d|5[2-578])\\d{4}", , , , "211234", , , [6]], [, , "(?:6[08]|7[1-7]|8[1-9])\\d{5}", , , , "7412345", , , [7]], [, , "80\\d{5}", , , , "8012345", , , [7]], [, , "90\\d{5}", , , , "9012345", , , [7]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "(?:56|91\\d)\\d{4}", , , , "561234"], "SR", 597, "00", , , , , , , , [
+        [, "(\\d{2})(\\d{2})(\\d{2})", "$1-$2-$3", ["56"]],
+        [, "(\\d{3})(\\d{3})", "$1-$2", ["[2-5]"]],
+        [, "(\\d{3})(\\d{4})", "$1-$2", ["[6-9]"]]
+      ], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      SS: [, [, , "[19]\\d{8}", , , , , , , [9]], [, , "1[89]\\d{7}", , , , "181234567"], [, , "(?:12|9[1257-9])\\d{7}", , , , "977123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "SS", 211, "00", "0", , , "0", , , , [[, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[19]"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      ST: [, [, , "(?:22|9\\d)\\d{5}", , , , , , , [7]], [
         ,
         ,
-        "2(?:79(?:0[0347-9]|[1-9]\\d)|89(?:0[024589]|[1-9]\\d))\\d{3}|2(?:[1-69]\\d|[78][0-8])\\d{5}",
+        "22\\d{5}",
         ,
         ,
         ,
-        "21234567",
+        "2221234"
+      ], [, , "900[5-9]\\d{3}|9(?:0[1-9]|[89]\\d)\\d{4}", , , , "9812345"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "ST", 239, "00", , , , , , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[29]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      SV: [, [, , "[25-7]\\d{7}|(?:80\\d|900)\\d{4}(?:\\d{4})?", , , , , , , [7, 8, 11]], [, , "2(?:79(?:0[0347-9]|[1-9]\\d)|89(?:0[024589]|[1-9]\\d))\\d{3}|2(?:[1-69]\\d|[78][0-8])\\d{5}", , , , "21234567", , , [8]], [
+        ,
+        ,
+        "[5-7]\\d{7}",
+        ,
+        ,
+        ,
+        "70123456",
         ,
         ,
         [8]
-      ], [, , "[5-7]\\d{7}", , , , "70123456", , , [8]], [, , "800\\d{8}|80[01]\\d{4}", , , , "8001234", , , [7, 11]], [, , "900\\d{4}(?:\\d{4})?", , , , "9001234", , , [7, 11]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "SV", 503, "00", , , , , , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[89]"]], [, "(\\d{4})(\\d{4})", "$1 $2", ["[25-7]"]], [, "(\\d{3})(\\d{4})(\\d{4})", "$1 $2 $3", ["[89]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      ], [, , "800\\d{8}|80[01]\\d{4}", , , , "8001234", , , [7, 11]], [, , "900\\d{4}(?:\\d{4})?", , , , "9001234", , , [7, 11]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "SV", 503, "00", , , , , , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[89]"]], [, "(\\d{4})(\\d{4})", "$1 $2", ["[25-7]"]], [, "(\\d{3})(\\d{4})(\\d{4})", "$1 $2 $3", ["[89]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
       SX: [
         ,
         [, , "7215\\d{6}|(?:[58]\\d\\d|900)\\d{7}", , , , , , , [10], [7]],
-        [
-          ,
-          ,
-          "7215(?:4[2-8]|8[239]|9[056])\\d{4}",
-          ,
-          ,
-          ,
-          "7215425678",
-          ,
-          ,
-          ,
-          [7]
-        ],
-        [, , "7215(?:1[02]|2\\d|5[034679]|8[014-8])\\d{4}", , , , "7215205678", , , , [7]],
+        [, , "7215(?:4[2-8]|8[39]|9[056])\\d{4}", , , , "7215425678", , , , [7]],
+        [, , "7215(?:1[02]|2\\d|5[034679]|8[0-24-8])\\d{4}", , , , "7215205678", , , , [7]],
         [, , "8(?:00|33|44|55|66|77|88)[2-9]\\d{6}", , , , "8002123456"],
         [, , "900[2-9]\\d{6}", , , , "9002123456"],
         [, , , , , , , , , [-1]],
@@ -9255,7 +9773,7 @@ var factoryOutput = (() => {
         ,
         [, , , , , , , , , [-1]]
       ],
-      SY: [, [, , "[1-359]\\d{8}|[1-5]\\d{7}", , , , , , , [8, 9], [6, 7]], [, , "21\\d{6,7}|(?:1(?:[14]\\d|[2356])|2[235]|3(?:[13]\\d|4)|4[134]|5[1-3])\\d{6}", , , , "112345678", , , , [6, 7]], [, , "(?:50|9[1-9])\\d{7}", , , , "944567890", , , [9]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "SY", 963, "00", "0", , , "0", , , , [[, "(\\d{2})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["[1-4]|5[1-3]"], "0$1", , 1], [
+      SY: [, [, , "[1-359]\\d{8}|[1-5]\\d{7}", , , , , , , [8, 9], [6, 7]], [, , "(?:1(?:[1478]\\d|[2356])|21\\d|3(?:[13]\\d|4)|4[134]|5[1-3])\\d{6}|2[1-5]\\d{6}", , , , "112345678", , , , [6, 7]], [, , "(?:50|9[03-689])\\d{7}", , , , "944567890", , , [9]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "SY", 963, "00", "0", , , "0", , , , [[, "(\\d{2})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["[1-4]|5[1-3]"], "0$1", , 1], [
         ,
         "(\\d{3})(\\d{3})(\\d{3})",
         "$1 $2 $3",
@@ -9277,204 +9795,216 @@ var factoryOutput = (() => {
         [8]
       ], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
       TA: [, [, , "8\\d{3}", , , , , , , [4]], [, , "8\\d{3}", , , , "8999"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "TA", 290, "00", , , , , , , , , , [, , , , , , , , , [-1]], , "8", [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      TC: [
+      TC: [, [, , "(?:[58]\\d\\d|649|900)\\d{7}", , , , , , , [10], [7]], [, , "649(?:266|712|9(?:4\\d|50))\\d{4}", , , , "6497121234", , , , [7]], [, , "649(?:2(?:3[129]|4[1-79])|3\\d\\d|4[34][1-3])\\d{4}", , , , "6492311234", , , , [7]], [
         ,
-        [, , "(?:[58]\\d\\d|649|900)\\d{7}", , , , , , , [10], [7]],
-        [, , "649(?:266|712|9(?:4\\d|50))\\d{4}", , , , "6497121234", , , , [7]],
-        [, , "649(?:2(?:3[129]|4[1-79])|3\\d\\d|4[34][1-3])\\d{4}", , , , "6492311234", , , , [7]],
-        [, , "8(?:00|33|44|55|66|77|88)[2-9]\\d{6}", , , , "8002345678"],
+        ,
+        "8(?:00|33|44|55|66|77|88)[2-9]\\d{6}",
+        ,
+        ,
+        ,
+        "8002345678"
+      ], [, , "900[2-9]\\d{6}", , , , "9002345678"], [, , , , , , , , , [-1]], [, , "52(?:3(?:[2-46-9][02-9]\\d|5(?:[02-46-9]\\d|5[0-46-9]))|4(?:[2-478][02-9]\\d|5(?:[034]\\d|2[024-9]|5[0-46-9])|6(?:0[1-9]|[2-9]\\d)|9(?:[05-9]\\d|2[0-5]|49)))\\d{4}|52[34][2-9]1[02-9]\\d{4}|5(?:00|2[125-9]|3[23]|44|66|77|88)[2-9]\\d{6}", , , , "5002345678"], [, , "649(?:71[01]|966)\\d{4}", , , , "6497101234", , , , [7]], "TC", 1, "011", "1", , , "([2-479]\\d{6})$|1", "649$1", , , , , [, , , , , , , , , [-1]], , "649", [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      TD: [, [, , "(?:22|[3689]\\d|77)\\d{6}", , , , , , , [8]], [, , "22(?:[37-9]0|5[0-5]|6[89])\\d{4}", , , , "22501234"], [, , "(?:3[01]|[69]\\d|77|8[5-7])\\d{6}", , , , "63012345"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "TD", 235, "00|16", , , , , , "00", , [[, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[236-9]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      TG: [, [, , "[279]\\d{7}", , , , , , , [8]], [, , "2(?:2[2-7]|3[23]|4[45]|55|6[67]|77)\\d{5}", , , , "22212345"], [
+        ,
+        ,
+        "(?:7[0-389]|9[0-36-9])\\d{6}",
+        ,
+        ,
+        ,
+        "90112345"
+      ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "TG", 228, "00", , , , , , , , [[, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[279]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      TH: [, [, , "(?:001800|[2-57]|[689]\\d)\\d{7}|1\\d{7,9}", , , , , , , [8, 9, 10, 13]], [, , "(?:1[0689]|2\\d|3[2-9]|4[2-5]|5[2-6]|7[3-7])\\d{6}", , , , "21234567", , , [8]], [, , "(?:(?:14|[89]\\d)\\d\\d|6(?:[1-6]\\d\\d|7(?:1[0-8]|2[4-7]|3[1-6])))\\d{5}", , , , "812345678", , , [9]], [
+        ,
+        ,
+        "(?:001800\\d|1800)\\d{6}",
+        ,
+        ,
+        ,
+        "1800123456",
+        ,
+        ,
+        [10, 13]
+      ], [, , "1900\\d{6}", , , , "1900123456", , , [10]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "6[08]\\d{7}", , , , "601234567", , , [9]], "TH", 66, "00[1-9]", "0", , , "0", , , , [[, "(\\d)(\\d{3})(\\d{4})", "$1 $2 $3", ["2"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["[13-9]"], "0$1"], [, "(\\d{4})(\\d{3})(\\d{3})", "$1 $2 $3", ["1"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      TJ: [
+        ,
+        [, , "(?:[0-57-9]\\d|66)\\d{7}", , , , , , , [9], [3, 5, 6, 7]],
+        [
+          ,
+          ,
+          "(?:3(?:1[3-5]|2[245]|3[12]|4[24-7]|5[25]|72)|4(?:46|74|87))\\d{6}",
+          ,
+          ,
+          ,
+          "372123456",
+          ,
+          ,
+          ,
+          [3, 5, 6, 7]
+        ],
+        [, , "(?:33[03-9]|4(?:1[18]|4[02-479])|81[1-9])\\d{6}|(?:[09]\\d|1[0-27-9]|2[0-27]|3[08]|40|5[05]|66|7[0157-9]|8[07-9])\\d{7}", , , , "917123456"],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        "TJ",
+        992,
+        "810",
+        ,
+        ,
+        ,
+        ,
+        ,
+        "8~10",
+        ,
+        [[, "(\\d{6})(\\d)(\\d{2})", "$1 $2 $3", ["331", "3317"]], [, "(\\d{3})(\\d{2})(\\d{4})", "$1 $2 $3", ["44[02-479]|[34]7"]], [, "(\\d{4})(\\d)(\\d{4})", "$1 $2 $3", ["3(?:[1245]|3[12])"]], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["\\d"]]],
+        ,
+        [, , , , , , , , , [-1]],
+        ,
+        ,
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        ,
+        ,
+        [, , , , , , , , , [-1]]
+      ],
+      TK: [, [, , "[2-47]\\d{3,6}", , , , , , , [4, 5, 6, 7]], [, , "(?:2[2-4]|[34]\\d)\\d{2,5}", , , , "3101"], [, , "7[2-4]\\d{2,5}", , , , "7290"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "TK", 690, "00", , , , , , , , , , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      TL: [, [, , "7\\d{7}|(?:[2-47]\\d|[89]0)\\d{5}", , , , , , , [7, 8]], [, , "(?:2[1-5]|3[1-9]|4[1-4])\\d{5}", , , , "2112345", , , [7]], [
+        ,
+        ,
+        "7[2-8]\\d{6}",
+        ,
+        ,
+        ,
+        "77212345",
+        ,
+        ,
+        [8]
+      ], [, , "80\\d{5}", , , , "8012345", , , [7]], [, , "90\\d{5}", , , , "9012345", , , [7]], [, , , , , , , , , [-1]], [, , "70\\d{5}", , , , "7012345", , , [7]], [, , , , , , , , , [-1]], "TL", 670, "00", , , , , , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[2-489]|70"]], [, "(\\d{4})(\\d{4})", "$1 $2", ["7"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      TM: [, [, , "[1-7]\\d{7}", , , , , , , [8]], [, , "(?:1(?:2\\d|3[1-9])|2(?:22|4[0-35-8])|3(?:22|4[03-9])|4(?:22|3[128]|4\\d|6[15])|5(?:22|5[7-9]|6[014-689]))\\d{5}", , , , "12345678"], [
+        ,
+        ,
+        "(?:6\\d|7[12])\\d{6}",
+        ,
+        ,
+        ,
+        "66123456"
+      ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "TM", 993, "810", "8", , , "8", , "8~10", , [[, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2-$3-$4", ["12"], "(8 $1)"], [, "(\\d{3})(\\d)(\\d{2})(\\d{2})", "$1 $2-$3-$4", ["[1-5]"], "(8 $1)"], [, "(\\d{2})(\\d{6})", "$1 $2", ["[67]"], "8 $1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      TN: [, [, , "[2-57-9]\\d{7}", , , , , , , [8]], [, , "81200\\d{3}|(?:3[0-2]|7\\d)\\d{6}", , , , "30010123"], [
+        ,
+        ,
+        "3(?:001|[12]40)\\d{4}|(?:(?:[259]\\d|4[0-8])\\d|3(?:1[1-35]|6[0-4]|91))\\d{5}",
+        ,
+        ,
+        ,
+        "20123456"
+      ], [, , "8010\\d{4}", , , , "80101234"], [, , "88\\d{6}", , , , "88123456"], [, , "8[12]10\\d{4}", , , , "81101234"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "TN", 216, "00", , , , , , , , [[, "(\\d{2})(\\d{3})(\\d{3})", "$1 $2 $3", ["[2-57-9]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      TO: [, [, , "(?:0800|(?:[5-8]\\d\\d|999)\\d)\\d{3}|[2-8]\\d{4}", , , , , , , [5, 7]], [, , "(?:2\\d|3[0-8]|4[0-4]|50|6[09]|7[0-24-69]|8[05])\\d{3}", , , , "20123", , , [5]], [
+        ,
+        ,
+        "(?:5(?:4[0-5]|5[4-6])|6(?:[09]\\d|3[02]|8[15-9])|(?:7\\d|8[46-9])\\d|999)\\d{4}",
+        ,
+        ,
+        ,
+        "7715123",
+        ,
+        ,
+        [7]
+      ], [, , "0800\\d{3}", , , , "0800222", , , [7]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "55[0-37-9]\\d{4}", , , , "5510123", , , [7]], "TO", 676, "00", , , , , , , , [[, "(\\d{2})(\\d{3})", "$1-$2", ["[2-4]|50|6[09]|7[0-24-69]|8[05]"]], [, "(\\d{4})(\\d{3})", "$1 $2", ["0"]], [, "(\\d{3})(\\d{4})", "$1 $2", ["[5-9]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      TR: [
+        ,
+        [, , "4\\d{6}|8\\d{11,12}|(?:[2-58]\\d\\d|900)\\d{7}", , , , , , , [7, 10, 12, 13]],
+        [
+          ,
+          ,
+          "(?:2(?:1[26]|[28][2468]|[3-5][268]|[67][246])|3(?:[13][28]|[24-6][2468]|[78][02468]|92)|4(?:[16][246]|[23578][2468]|4[26]))\\d{7}",
+          ,
+          ,
+          ,
+          "2123456789",
+          ,
+          ,
+          [10]
+        ],
+        [, , "5(?:61(?:011|61\\d)|82[2-5]\\d\\d)\\d{4}|5(?:[03-5]\\d|1[06]|24|6[24]|7[245]|9[46])\\d{7}", , , , "5012345678", , , [10]],
+        [, , "8(?:00\\d{7}(?:\\d{2,3})?|11\\d{7})", , , , "8001234567", , , [10, 12, 13]],
+        [, , "(?:8[89]8|900)\\d{7}", , , , "9001234567", , , [10]],
+        [, , , , , , , , , [-1]],
+        [, , "592(?:21[12]|461)\\d{4}", , , , "5922121234", , , [10]],
+        [, , "850\\d{7}", , , , "8500123456", , , [10]],
+        "TR",
+        90,
+        "00",
+        "0",
+        ,
+        ,
+        "0",
+        ,
+        ,
+        ,
+        [[, "(\\d{3})(\\d)(\\d{3})", "$1 $2 $3", ["444"], , , 1], [
+          ,
+          "(\\d{3})(\\d{3})(\\d{4})",
+          "$1 $2 $3",
+          ["512|8[01589]|90"],
+          "0$1",
+          ,
+          1
+        ], [, "(\\d{3})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["5"], "0$1", , 1], [, "(\\d{3})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[24][1-8]|3[1-9]"], "(0$1)", , 1], [, "(\\d{3})(\\d{3})(\\d{6,7})", "$1 $2 $3", ["80"], "0$1", , 1]],
+        [[, "(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3", ["512|8[01589]|90"], "0$1", , 1], [, "(\\d{3})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["5"], "0$1", , 1], [, "(\\d{3})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[24][1-8]|3[1-9]"], "(0$1)", , 1], [, "(\\d{3})(\\d{3})(\\d{6,7})", "$1 $2 $3", ["80"], "0$1", , 1]],
+        [, , "512\\d{7}", , , , "5123456789", , , [10]],
+        ,
+        ,
+        [, , "(?:444|811\\d{3})\\d{4}", , , , , , , [7, 10]],
+        [, , "444\\d{4}", , , , "4441444", , , [7]],
+        ,
+        ,
+        [, , , , , , , , , [-1]]
+      ],
+      TT: [
+        ,
+        [, , "(?:[58]\\d\\d|900)\\d{7}", , , , , , , [10], [7]],
+        [, , "868(?:2(?:01|1[5-9]|[23]\\d|4[0-2])|6(?:0[7-9]|1[02-8]|2[1-9]|[3-69]\\d|7[0-79])|82[124])\\d{4}", , , , "8682211234", , , , [7]],
+        [, , "868(?:(?:2[5-9]|3\\d)\\d|4(?:3[0-6]|[6-9]\\d)|6(?:20|78|8\\d)|7(?:0[1-9]|1[02-9]|[2-9]\\d))\\d{4}", , , , "8682911234", , , , [7]],
+        [, , "868800\\d{4}|8(?:00|33|44|55|66|77|88)[2-9]\\d{6}", , , , "8002345678"],
         [, , "900[2-9]\\d{6}", , , , "9002345678"],
         [, , , , , , , , , [-1]],
         [, , "52(?:3(?:[2-46-9][02-9]\\d|5(?:[02-46-9]\\d|5[0-46-9]))|4(?:[2-478][02-9]\\d|5(?:[034]\\d|2[024-9]|5[0-46-9])|6(?:0[1-9]|[2-9]\\d)|9(?:[05-9]\\d|2[0-5]|49)))\\d{4}|52[34][2-9]1[02-9]\\d{4}|5(?:00|2[125-9]|3[23]|44|66|77|88)[2-9]\\d{6}", , , , "5002345678"],
-        [, , "649(?:71[01]|966)\\d{4}", , , , "6497101234", , , , [7]],
-        "TC",
+        [, , , , , , , , , [-1]],
+        "TT",
         1,
         "011",
         "1",
         ,
         ,
-        "([2-479]\\d{6})$|1",
-        "649$1",
+        "([2-46-8]\\d{6})$|1",
+        "868$1",
         ,
         ,
         ,
         ,
         [, , , , , , , , , [-1]],
         ,
-        "649",
-        [
-          ,
-          ,
-          ,
-          ,
-          ,
-          ,
-          ,
-          ,
-          ,
-          [-1]
-        ],
+        "868",
+        [, , , , , , , , , [-1]],
         [, , , , , , , , , [-1]],
         ,
         ,
-        [, , , , , , , , , [-1]]
+        [, , "868619\\d{4}", , , , "8686191234", , , , [7]]
       ],
-      TD: [, [, , "(?:22|30|[689]\\d|77)\\d{6}", , , , , , , [8]], [, , "22(?:[37-9]0|5[0-5]|6[89])\\d{4}", , , , "22501234"], [, , "(?:30|[69]\\d|77|8[5-7])\\d{6}", , , , "63012345"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "TD", 235, "00|16", , , , , , "00", , [[, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[236-9]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      TG: [, [, , "[279]\\d{7}", , , , , , , [8]], [
+      TV: [, [
         ,
         ,
-        "2(?:2[2-7]|3[23]|4[45]|55|6[67]|77)\\d{5}",
+        "(?:2|7\\d\\d|90)\\d{4}",
         ,
         ,
         ,
-        "22212345"
-      ], [, , "(?:7[0-289]|9[0-36-9])\\d{6}", , , , "90112345"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "TG", 228, "00", , , , , , , , [[, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[279]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      TH: [, [, , "(?:001800|[2-57]|[689]\\d)\\d{7}|1\\d{7,9}", , , , , , , [8, 9, 10, 13]], [, , "(?:1[0689]|2\\d|3[2-9]|4[2-5]|5[2-6]|7[3-7])\\d{6}", , , , "21234567", , , [8]], [
         ,
         ,
-        "67(?:1[0-8]|2[4-7])\\d{5}|(?:14|6[1-6]|[89]\\d)\\d{7}",
         ,
-        ,
-        ,
-        "812345678",
-        ,
-        ,
-        [9]
-      ], [, , "(?:001800\\d|1800)\\d{6}", , , , "1800123456", , , [10, 13]], [, , "1900\\d{6}", , , , "1900123456", , , [10]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "6[08]\\d{7}", , , , "601234567", , , [9]], "TH", 66, "00[1-9]", "0", , , "0", , , , [[, "(\\d)(\\d{3})(\\d{4})", "$1 $2 $3", ["2"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["[13-9]"], "0$1"], [, "(\\d{4})(\\d{3})(\\d{3})", "$1 $2 $3", ["1"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      TJ: [, [, , "(?:[0-57-9]\\d|66)\\d{7}", , , , , , , [9], [
-        3,
-        5,
-        6,
-        7
-      ]], [, , "(?:3(?:1[3-5]|2[245]|3[12]|4[24-7]|5[25]|72)|4(?:46|74|87))\\d{6}", , , , "372123456", , , , [3, 5, 6, 7]], [, , "(?:33[03-9]|4(?:1[18]|4[02-479])|81[1-9])\\d{6}|(?:[09]\\d|1[0-27-9]|2[0-27]|3[08]|40|5[05]|66|7[01578]|8[078])\\d{7}", , , , "917123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "TJ", 992, "810", , , , , , "8~10", , [[, "(\\d{6})(\\d)(\\d{2})", "$1 $2 $3", ["331", "3317"]], [, "(\\d{3})(\\d{2})(\\d{4})", "$1 $2 $3", ["44[02-479]|[34]7"]], [
-        ,
-        "(\\d{4})(\\d)(\\d{4})",
-        "$1 $2 $3",
-        ["3(?:[1245]|3[12])"]
-      ], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["\\d"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      TK: [, [, , "[2-47]\\d{3,6}", , , , , , , [4, 5, 6, 7]], [, , "(?:2[2-4]|[34]\\d)\\d{2,5}", , , , "3101"], [, , "7[2-4]\\d{2,5}", , , , "7290"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "TK", 690, "00", , , , , , , , , , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      TL: [, [, , "7\\d{7}|(?:[2-47]\\d|[89]0)\\d{5}", , , , , , , [7, 8]], [
-        ,
-        ,
-        "(?:2[1-5]|3[1-9]|4[1-4])\\d{5}",
-        ,
-        ,
-        ,
-        "2112345",
-        ,
-        ,
-        [7]
-      ], [, , "7[2-8]\\d{6}", , , , "77212345", , , [8]], [, , "80\\d{5}", , , , "8012345", , , [7]], [, , "90\\d{5}", , , , "9012345", , , [7]], [, , , , , , , , , [-1]], [, , "70\\d{5}", , , , "7012345", , , [7]], [, , , , , , , , , [-1]], "TL", 670, "00", , , , , , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[2-489]|70"]], [, "(\\d{4})(\\d{4})", "$1 $2", ["7"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      TM: [, [, , "(?:[1-6]\\d|71)\\d{6}", , , , , , , [8]], [
-        ,
-        ,
-        "(?:1(?:2\\d|3[1-9])|2(?:22|4[0-35-8])|3(?:22|4[03-9])|4(?:22|3[128]|4\\d|6[15])|5(?:22|5[7-9]|6[014-689]))\\d{5}",
-        ,
-        ,
-        ,
-        "12345678"
-      ], [, , "(?:6\\d|71)\\d{6}", , , , "66123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "TM", 993, "810", "8", , , "8", , "8~10", , [[, "(\\d{2})(\\d{2})(\\d{2})(\\d{2})", "$1 $2-$3-$4", ["12"], "(8 $1)"], [, "(\\d{3})(\\d)(\\d{2})(\\d{2})", "$1 $2-$3-$4", ["[1-5]"], "(8 $1)"], [, "(\\d{2})(\\d{6})", "$1 $2", ["[67]"], "8 $1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      TN: [
-        ,
-        [, , "[2-57-9]\\d{7}", , , , , , , [8]],
-        [, , "81200\\d{3}|(?:3[0-2]|7\\d)\\d{6}", , , , "30010123"],
-        [, , "3(?:001|[12]40)\\d{4}|(?:(?:[259]\\d|4[0-8])\\d|3(?:1[1-35]|6[0-4]|91))\\d{5}", , , , "20123456"],
-        [, , "8010\\d{4}", , , , "80101234"],
-        [, , "88\\d{6}", , , , "88123456"],
-        [, , "8[12]10\\d{4}", , , , "81101234"],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        "TN",
-        216,
-        "00",
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        [[, "(\\d{2})(\\d{3})(\\d{3})", "$1 $2 $3", ["[2-57-9]"]]],
-        ,
-        [, , , , , , , , , [-1]],
-        ,
-        ,
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        ,
-        ,
-        [, , , , , , , , , [-1]]
-      ],
-      TO: [, [, , "(?:0800|(?:[5-8]\\d\\d|999)\\d)\\d{3}|[2-8]\\d{4}", , , , , , , [5, 7]], [
-        ,
-        ,
-        "(?:2\\d|3[0-8]|4[0-4]|50|6[09]|7[0-24-69]|8[05])\\d{3}",
-        ,
-        ,
-        ,
-        "20123",
-        ,
-        ,
-        [5]
-      ], [, , "(?:5(?:4[0-5]|5[4-6])|6(?:[09]\\d|3[02]|8[15-9])|(?:7\\d|8[46-9])\\d|999)\\d{4}", , , , "7715123", , , [7]], [, , "0800\\d{3}", , , , "0800222", , , [7]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "55[0-37-9]\\d{4}", , , , "5510123", , , [7]], "TO", 676, "00", , , , , , , , [[, "(\\d{2})(\\d{3})", "$1-$2", ["[2-4]|50|6[09]|7[0-24-69]|8[05]"]], [, "(\\d{4})(\\d{3})", "$1 $2", ["0"]], [, "(\\d{3})(\\d{4})", "$1 $2", ["[5-9]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      TR: [, [
-        ,
-        ,
-        "4\\d{6}|8\\d{11,12}|(?:[2-58]\\d\\d|900)\\d{7}",
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        [7, 10, 12, 13]
-      ], [, , "(?:2(?:[13][26]|[28][2468]|[45][268]|[67][246])|3(?:[13][28]|[24-6][2468]|[78][02468]|92)|4(?:[16][246]|[23578][2468]|4[26]))\\d{7}", , , , "2123456789", , , [10]], [, , "561(?:011|61\\d)\\d{4}|5(?:0[15-7]|1[06]|[27]4|[34]\\d|5[1-59]|9[46])\\d{7}", , , , "5012345678", , , [10]], [, , "8(?:00\\d{7}(?:\\d{2,3})?|11\\d{7})", , , , "8001234567", , , [10, 12, 13]], [, , "(?:8[89]8|900)\\d{7}", , , , "9001234567", , , [10]], [, , , , , , , , , [-1]], [, , "592(?:21[12]|461)\\d{4}", , , , "5922121234", , , [10]], [
-        ,
-        ,
-        "850\\d{7}",
-        ,
-        ,
-        ,
-        "8500123456",
-        ,
-        ,
-        [10]
-      ], "TR", 90, "00", "0", , , "0", , , , [[, "(\\d{3})(\\d)(\\d{3})", "$1 $2 $3", ["444"], , , 1], [, "(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3", ["512|8[01589]|90"], "0$1", , 1], [, "(\\d{3})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["5(?:[0-579]|61)", "5(?:[0-579]|61[06])", "5(?:[0-579]|61[06]1)"], "0$1", , 1], [, "(\\d{3})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[24][1-8]|3[1-9]"], "(0$1)", , 1], [, "(\\d{3})(\\d{3})(\\d{6,7})", "$1 $2 $3", ["80"], "0$1", , 1]], [[, "(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3", ["512|8[01589]|90"], "0$1", , 1], [
-        ,
-        "(\\d{3})(\\d{3})(\\d{2})(\\d{2})",
-        "$1 $2 $3 $4",
-        ["5(?:[0-579]|61)", "5(?:[0-579]|61[06])", "5(?:[0-579]|61[06]1)"],
-        "0$1",
-        ,
-        1
-      ], [, "(\\d{3})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["[24][1-8]|3[1-9]"], "(0$1)", , 1], [, "(\\d{3})(\\d{3})(\\d{6,7})", "$1 $2 $3", ["80"], "0$1", , 1]], [, , "512\\d{7}", , , , "5123456789", , , [10]], , , [, , "(?:444|811\\d{3})\\d{4}", , , , , , , [7, 10]], [, , "444\\d{4}", , , , "4441444", , , [7]], , , [, , , , , , , , , [-1]]],
-      TT: [, [, , "(?:[58]\\d\\d|900)\\d{7}", , , , , , , [10], [7]], [
-        ,
-        ,
-        "868(?:2(?:01|1[5-9]|[23]\\d|4[0-2])|6(?:0[7-9]|1[02-8]|2[1-9]|[3-69]\\d|7[0-79])|82[124])\\d{4}",
-        ,
-        ,
-        ,
-        "8682211234",
-        ,
-        ,
-        ,
-        [7]
-      ], [, , "868(?:(?:2[5-9]|3\\d)\\d|4(?:3[0-6]|[6-9]\\d)|6(?:20|78|8\\d)|7(?:0[1-9]|1[02-9]|[2-9]\\d))\\d{4}", , , , "8682911234", , , , [7]], [, , "868800\\d{4}|8(?:00|33|44|55|66|77|88)[2-9]\\d{6}", , , , "8002345678"], [, , "900[2-9]\\d{6}", , , , "9002345678"], [, , , , , , , , , [-1]], [
-        ,
-        ,
-        "52(?:3(?:[2-46-9][02-9]\\d|5(?:[02-46-9]\\d|5[0-46-9]))|4(?:[2-478][02-9]\\d|5(?:[034]\\d|2[024-9]|5[0-46-9])|6(?:0[1-9]|[2-9]\\d)|9(?:[05-9]\\d|2[0-5]|49)))\\d{4}|52[34][2-9]1[02-9]\\d{4}|5(?:00|2[125-9]|3[23]|44|66|77|88)[2-9]\\d{6}",
-        ,
-        ,
-        ,
-        "5002345678"
-      ], [, , , , , , , , , [-1]], "TT", 1, "011", "1", , , "([2-46-8]\\d{6})$|1", "868$1", , , , , [, , , , , , , , , [-1]], , "868", [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , "868619\\d{4}", , , , "8686191234", , , , [7]]],
-      TV: [, [, , "(?:2|7\\d\\d|90)\\d{4}", , , , , , , [5, 6, 7]], [, , "2[02-9]\\d{3}", , , , "20123", , , [5]], [, , "(?:7[01]\\d|90)\\d{4}", , , , "901234", , , [6, 7]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "TV", 688, "00", , , , , , , , [[, "(\\d{2})(\\d{3})", "$1 $2", ["2"]], [, "(\\d{2})(\\d{4})", "$1 $2", ["90"]], [
-        ,
-        "(\\d{2})(\\d{5})",
-        "$1 $2",
-        ["7"]
-      ]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+        [5, 6, 7]
+      ], [, , "2[02-9]\\d{3}", , , , "20123", , , [5]], [, , "(?:7[01]\\d|90)\\d{4}", , , , "901234", , , [6, 7]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "TV", 688, "00", , , , , , , , [[, "(\\d{2})(\\d{3})", "$1 $2", ["2"]], [, "(\\d{2})(\\d{4})", "$1 $2", ["90"]], [, "(\\d{2})(\\d{5})", "$1 $2", ["7"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
       TW: [, [, , "[2-689]\\d{8}|7\\d{9,10}|[2-8]\\d{7}|2\\d{6}", , , , , , , [7, 8, 9, 10, 11]], [
         ,
         ,
@@ -9486,92 +10016,101 @@ var factoryOutput = (() => {
         ,
         ,
         [8, 9]
-      ], [, , "(?:40001[0-2]|9[0-8]\\d{4})\\d{3}", , , , "912345678", , , [9]], [, , "80[0-79]\\d{6}|800\\d{5}", , , , "800123456", , , [8, 9]], [, , "20(?:[013-9]\\d\\d|2)\\d{4}", , , , "203123456", , , [7, 9]], [, , , , , , , , , [-1]], [, , "99\\d{7}", , , , "990123456", , , [9]], [, , "7010(?:[0-2679]\\d|3[0-7]|8[0-5])\\d{5}|70\\d{8}", , , , "7012345678", , , [10, 11]], "TW", 886, "0(?:0[25-79]|19)", "0", "#", , "0", , , , [[, "(\\d{2})(\\d)(\\d{4})", "$1 $2 $3", ["202"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["[258]0"], "0$1"], [
+      ], [, , "(?:40001[0-2]|9[0-8]\\d{4})\\d{3}", , , , "912345678", , , [9]], [, , "80[0-79]\\d{6}|800\\d{5}", , , , "800123456", , , [8, 9]], [, , "20(?:[013-9]\\d\\d|2)\\d{4}", , , , "203123456", , , [7, 9]], [, , , , , , , , , [-1]], [, , "99\\d{7}", , , , "990123456", , , [9]], [, , "7010(?:[0-2679]\\d|3[0-7]|8[0-5])\\d{5}|70\\d{8}", , , , "7012345678", , , [10, 11]], "TW", 886, "0(?:0[25-79]|19)", "0", "#", , "0", , , , [[, "(\\d{2})(\\d)(\\d{4})", "$1 $2 $3", ["202"], "0$1"], [, "(\\d{3})(\\d{5})", "$1 $2", ["826"], "0$1"], [
         ,
-        "(\\d)(\\d{3,4})(\\d{4})",
+        "(\\d{3})(\\d{2})(\\d{3})",
         "$1 $2 $3",
-        ["[23568]|4(?:0[02-48]|[1-47-9])|7[1-9]", "[23568]|4(?:0[2-48]|[1-47-9])|(?:400|7)[1-9]"],
+        ["83"],
         "0$1"
-      ], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[49]"], "0$1"], [, "(\\d{2})(\\d{4})(\\d{4,5})", "$1 $2 $3", ["7"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "50[0-46-9]\\d{6}", , , , "500123456", , , [9]], , , [, , , , , , , , , [-1]]],
-      TZ: [
+      ], [, "(\\d{2})(\\d{2})(\\d{4})", "$1 $2 $3", ["82"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["[25]0|37|49|8[09]"], "0$1"], [, "(\\d)(\\d{3,4})(\\d{4})", "$1 $2 $3", ["[23568]|4(?:0[02-48]|[1-478])|7[1-9]", "[23568]|4(?:0[2-48]|[1-478])|(?:400|7)[1-9]"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[49]"], "0$1"], [, "(\\d{2})(\\d{4})(\\d{4,5})", "$1 $2 $3", ["7"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "50[0-46-9]\\d{6}", , , , "500123456", , , [9]], , , [, , , , , , , , , [-1]]],
+      TZ: [, [
         ,
-        [, , "(?:[25-8]\\d|41|90)\\d{7}", , , , , , , [9]],
-        [, , "2[2-8]\\d{7}", , , , "222345678"],
-        [, , "(?:6[1-35-9]|7[013-9])\\d{7}", , , , "621234567"],
-        [, , "80[08]\\d{6}", , , , "800123456"],
-        [, , "90\\d{7}", , , , "900123456"],
-        [, , "8(?:40|6[01])\\d{6}", , , , "840123456"],
+        ,
+        "(?:[25-8]\\d|41|90)\\d{7}",
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        [9]
+      ], [, , "2[2-8]\\d{7}", , , , "222345678"], [, , "(?:6[0-35-9]|7\\d)\\d{7}", , , , "621234567"], [, , "80[08]\\d{6}", , , , "800123456"], [, , "90\\d{7}", , , , "900123456"], [, , "8(?:40|6[01])\\d{6}", , , , "840123456"], [, , , , , , , , , [-1]], [, , "41\\d{7}", , , , "412345678"], "TZ", 255, "00[056]", "0", , , "0", , , , [[, "(\\d{3})(\\d{2})(\\d{4})", "$1 $2 $3", ["[89]"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["[24]"], "0$1"], [, "(\\d{2})(\\d{7})", "$1 $2", ["5"]], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[67]"], "0$1"]], , [, , , , , , , , , [-1]], , , [
+        ,
+        ,
+        "(?:8(?:[04]0|6[01])|90\\d)\\d{6}"
+      ], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      UA: [
+        ,
+        [, , "[89]\\d{9}|[3-9]\\d{8}", , , , , , , [9, 10], [5, 6, 7]],
+        [, , "(?:3[1-8]|4[13-8]|5[1-7]|6[12459])\\d{7}", , , , "311234567", , , [9], [5, 6, 7]],
+        [, , "790\\d{6}|(?:39|50|6[36-8]|7[1-357]|9[1-9])\\d{7}", , , , "501234567", , , [9]],
+        [, , "800[1-8]\\d{5,6}", , , , "800123456"],
+        [, , "900[239]\\d{5,6}", , , , "900212345"],
         [, , , , , , , , , [-1]],
-        [, , "41\\d{7}", , , , "412345678"],
-        "TZ",
-        255,
-        "00[056]",
+        [, , , , , , , , , [-1]],
+        [, , "89[1-579]\\d{6}", , , , "891234567", , , [9]],
+        "UA",
+        380,
+        "00",
         "0",
         ,
         ,
         "0",
         ,
+        "0~0",
         ,
-        ,
-        [[, "(\\d{3})(\\d{2})(\\d{4})", "$1 $2 $3", ["[89]"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["[24]"], "0$1"], [, "(\\d{2})(\\d{7})", "$1 $2", ["5"]], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[67]"], "0$1"]],
+        [[
+          ,
+          "(\\d{3})(\\d{3})(\\d{3})",
+          "$1 $2 $3",
+          ["6[12][29]|(?:3[1-8]|4[136-8]|5[12457]|6[49])2|(?:56|65)[24]", "6[12][29]|(?:35|4[1378]|5[12457]|6[49])2|(?:56|65)[24]|(?:3[1-46-8]|46)2[013-9]"],
+          "0$1"
+        ], [, "(\\d{4})(\\d{5})", "$1 $2", ["3[1-8]|4(?:[1367]|[45][6-9]|8[4-6])|5(?:[1-5]|6[0135689]|7[4-6])|6(?:[12][3-7]|[459])", "3[1-8]|4(?:[1367]|[45][6-9]|8[4-6])|5(?:[1-5]|6(?:[015689]|3[02389])|7[4-6])|6(?:[12][3-7]|[459])"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["[3-7]|89|9[1-9]"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["[89]"], "0$1"]],
         ,
         [, , , , , , , , , [-1]],
         ,
         ,
-        [, , "(?:8(?:[04]0|6[01])|90\\d)\\d{6}"],
+        [, , , , , , , , , [-1]],
         [, , , , , , , , , [-1]],
         ,
         ,
         [, , , , , , , , , [-1]]
       ],
-      UA: [, [, , "[89]\\d{9}|[3-9]\\d{8}", , , , , , , [9, 10], [5, 6, 7]], [
+      UG: [
+        ,
+        [, , "800\\d{6}|(?:[29]0|[347]\\d)\\d{7}", , , , , , , [9], [5, 6, 7]],
+        [, , "20(?:(?:24[09]|30[67])\\d|6(?:00[0-2]|30[0-4]))\\d{3}|(?:20(?:[017]\\d|2[5-9]|3[1-4]|5[0-4]|6[15-9])|[34]\\d{3})\\d{5}", , , , "312345678", , , , [5, 6, 7]],
+        [, , "7(?:28|34)0\\d{5}|7(?:[014-8]\\d|2[01467]|3[0167]|9[0-589])\\d{6}", , , , "712345678"],
+        [, , "800[1-3]\\d{5}", , , , "800123456"],
+        [, , "90[1-3]\\d{6}", , , , "901123456"],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        "UG",
+        256,
+        "00[057]",
+        "0",
         ,
         ,
-        "(?:3[1-8]|4[13-8]|5[1-7]|6[12459])\\d{7}",
-        ,
-        ,
-        ,
-        "311234567",
-        ,
-        ,
-        [9],
-        [5, 6, 7]
-      ], [, , "790\\d{6}|(?:39|50|6[36-8]|7[1-357]|9[1-9])\\d{7}", , , , "501234567", , , [9]], [, , "800[1-8]\\d{5,6}", , , , "800123456"], [, , "900[239]\\d{5,6}", , , , "900212345"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "89[1-579]\\d{6}", , , , "891234567", , , [9]], "UA", 380, "00", "0", , , "0", , "0~0", , [[, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["6[12][29]|(?:3[1-8]|4[136-8]|5[12457]|6[49])2|(?:56|65)[24]", "6[12][29]|(?:35|4[1378]|5[12457]|6[49])2|(?:56|65)[24]|(?:3[1-46-8]|46)2[013-9]"], "0$1"], [
-        ,
-        "(\\d{4})(\\d{5})",
-        "$1 $2",
-        ["3[1-8]|4(?:[1367]|[45][6-9]|8[4-6])|5(?:[1-5]|6[0135689]|7[4-6])|6(?:[12][3-7]|[459])", "3[1-8]|4(?:[1367]|[45][6-9]|8[4-6])|5(?:[1-5]|6(?:[015689]|3[02389])|7[4-6])|6(?:[12][3-7]|[459])"],
-        "0$1"
-      ], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["[3-7]|89|9[1-9]"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["[89]"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      UG: [, [, , "800\\d{6}|(?:[29]0|[347]\\d)\\d{7}", , , , , , , [9], [5, 6, 7]], [
-        ,
-        ,
-        "20(?:(?:240|30[67])\\d|6(?:00[0-2]|30[0-4]))\\d{3}|(?:20(?:[017]\\d|2[5-9]|3[1-4]|5[0-4]|6[15-9])|[34]\\d{3})\\d{5}",
+        "0",
         ,
         ,
         ,
-        "312345678",
+        [[, "(\\d{4})(\\d{5})", "$1 $2", ["202", "2024", "20240"], "0$1"], [, "(\\d{3})(\\d{6})", "$1 $2", ["20[0-35-7]|4(?:6[45]|[7-9])|[7-9]", "20(?:[0135-7]|2[5-9])|4(?:6[45]|[7-9])|[7-9]"], "0$1"], [, "(\\d{2})(\\d{7})", "$1 $2", ["[2-4]"], "0$1"]],
+        ,
+        [, , , , , , , , , [-1]],
         ,
         ,
-        ,
-        [5, 6, 7]
-      ], [, , "72[48]0\\d{5}|7(?:[014-8]\\d|2[0167]|3[06]|9[0-3589])\\d{6}", , , , "712345678"], [, , "800[1-3]\\d{5}", , , , "800123456"], [, , "90[1-3]\\d{6}", , , , "901123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "UG", 256, "00[057]", "0", , , "0", , , , [[, "(\\d{4})(\\d{5})", "$1 $2", ["202", "2024"], "0$1"], [, "(\\d{3})(\\d{6})", "$1 $2", ["[27-9]|4(?:6[45]|[7-9])"], "0$1"], [, "(\\d{2})(\\d{7})", "$1 $2", ["[34]"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      US: [, [
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
         ,
         ,
-        "[2-9]\\d{9}|3\\d{6}",
+        [, , , , , , , , , [-1]]
+      ],
+      US: [, [, , "[2-9]\\d{9}|3\\d{6}", , , , , , , [10], [7]], [
         ,
         ,
-        ,
-        ,
-        ,
-        ,
-        [10],
-        [7]
-      ], [
-        ,
-        ,
-        "(?:274[27]|(?:472|983)[2-47-9])\\d{6}|(?:2(?:0[1-35-9]|1[02-9]|2[03-57-9]|3[1459]|4[08]|5[1-46]|6[0279]|7[0269]|8[13])|3(?:0[1-57-9]|1[02-9]|2[013-79]|3[0-24679]|4[167]|5[0-3]|6[01349]|8[056])|4(?:0[124-9]|1[02-579]|2[3-5]|3[0245]|4[023578]|58|6[349]|7[0589]|8[04])|5(?:0[1-57-9]|1[0235-8]|20|3[0149]|4[01]|5[179]|6[1-47]|7[0-5]|8[0256])|6(?:0[1-35-9]|1[024-9]|2[03689]|3[016]|4[0156]|5[01679]|6[0-279]|78|8[0-269])|7(?:0[1-46-8]|1[2-9]|2[04-8]|3[0-247]|4[0378]|5[47]|6[02359]|7[0-59]|8[156])|8(?:0[1-68]|1[02-8]|2[0168]|3[0-2589]|4[03578]|5[046-9]|6[02-5]|7[028])|9(?:0[1346-9]|1[02-9]|2[0589]|3[0146-8]|4[01357-9]|5[12469]|7[0-3589]|8[04-69]))[2-9]\\d{6}",
+        "(?:472[2-47-9]|983[2-57-9])\\d{6}|(?:2(?:0[1-35-9]|1[02-9]|2[03-57-9]|3[1459]|4[08]|5[1-46]|6[0279]|7[02469]|8[13])|3(?:0[1-57-9]|1[02-9]|2[013-79]|3[0-24679]|4[167]|5[0-3]|6[01349]|8[056])|4(?:0[124-9]|1[02-579]|2[3-5]|3[0245]|4[023578]|58|6[349]|7[0589]|8[04])|5(?:0[1-57-9]|1[0235-8]|20|3[0149]|4[01]|5[179]|6[1-47]|7[0-5]|8[0256])|6(?:0[1-35-9]|1[024-9]|2[03689]|3[016]|4[0156]|5[01679]|6[0-279]|78|8[0-269])|7(?:0[1-46-8]|1[2-9]|2[04-8]|3[0-2478]|4[0378]|5[47]|6[02359]|7[0-59]|8[156])|8(?:0[1-68]|1[02-8]|2[0168]|3[0-2589]|4[03578]|5[046-9]|6[02-5]|7[028])|9(?:0[1346-9]|1[02-9]|2[0589]|3[0146-8]|4[01357-9]|5[12469]|7[0-3589]|8[04-69]))[2-9]\\d{6}",
         ,
         ,
         ,
@@ -9583,7 +10122,7 @@ var factoryOutput = (() => {
       ], [
         ,
         ,
-        "(?:274[27]|(?:472|983)[2-47-9])\\d{6}|(?:2(?:0[1-35-9]|1[02-9]|2[03-57-9]|3[1459]|4[08]|5[1-46]|6[0279]|7[0269]|8[13])|3(?:0[1-57-9]|1[02-9]|2[013-79]|3[0-24679]|4[167]|5[0-3]|6[01349]|8[056])|4(?:0[124-9]|1[02-579]|2[3-5]|3[0245]|4[023578]|58|6[349]|7[0589]|8[04])|5(?:0[1-57-9]|1[0235-8]|20|3[0149]|4[01]|5[179]|6[1-47]|7[0-5]|8[0256])|6(?:0[1-35-9]|1[024-9]|2[03689]|3[016]|4[0156]|5[01679]|6[0-279]|78|8[0-269])|7(?:0[1-46-8]|1[2-9]|2[04-8]|3[0-247]|4[0378]|5[47]|6[02359]|7[0-59]|8[156])|8(?:0[1-68]|1[02-8]|2[0168]|3[0-2589]|4[03578]|5[046-9]|6[02-5]|7[028])|9(?:0[1346-9]|1[02-9]|2[0589]|3[0146-8]|4[01357-9]|5[12469]|7[0-3589]|8[04-69]))[2-9]\\d{6}",
+        "(?:472[2-47-9]|983[2-57-9])\\d{6}|(?:2(?:0[1-35-9]|1[02-9]|2[03-57-9]|3[1459]|4[08]|5[1-46]|6[0279]|7[02469]|8[13])|3(?:0[1-57-9]|1[02-9]|2[013-79]|3[0-24679]|4[167]|5[0-3]|6[01349]|8[056])|4(?:0[124-9]|1[02-579]|2[3-5]|3[0245]|4[023578]|58|6[349]|7[0589]|8[04])|5(?:0[1-57-9]|1[0235-8]|20|3[0149]|4[01]|5[179]|6[1-47]|7[0-5]|8[0256])|6(?:0[1-35-9]|1[024-9]|2[03689]|3[016]|4[0156]|5[01679]|6[0-279]|78|8[0-269])|7(?:0[1-46-8]|1[2-9]|2[04-8]|3[0-2478]|4[0378]|5[47]|6[02359]|7[0-59]|8[156])|8(?:0[1-68]|1[02-8]|2[0168]|3[0-2589]|4[03578]|5[046-9]|6[02-5]|7[028])|9(?:0[1346-9]|1[02-9]|2[0589]|3[0146-8]|4[01357-9]|5[12469]|7[0-3589]|8[04-69]))[2-9]\\d{6}",
         ,
         ,
         ,
@@ -9621,7 +10160,7 @@ var factoryOutput = (() => {
         ,
         [-1]
       ], , , [, , , , , , , , , [-1]], [, , "21\\d{2,3}", , , , "21123", , , [4, 5]], , , [, , , , , , , , , [-1]]],
-      UZ: [, [, , "(?:20|33|[5-9]\\d)\\d{7}", , , , , , , [9]], [, , "(?:55\\d\\d|6(?:1(?:22|3[124]|4[1-4]|5[1-3578]|64)|2(?:22|3[0-57-9]|41)|5(?:22|3[3-7]|5[024-8])|[69]\\d\\d|7(?:[23]\\d|7[69]))|7(?:0(?:5[4-9]|6[0146]|7[124-6]|9[135-8])|[168]\\d\\d|2(?:22|3[13-57-9]|4[1-3579]|5[14])|3(?:2\\d|3[1578]|4[1-35-7]|5[1-57]|61)|4(?:2\\d|3[1-579]|7[1-79])|5(?:22|5[1-9]|6[1457])|9(?:22|5[1-9])))\\d{5}", , , , "669050123"], [
+      UZ: [, [, , "(?:20|33|[5-9]\\d)\\d{7}", , , , , , , [9]], [, , "(?:55\\d\\d|6(?:1(?:22|3[124]|4[1-4]|5[1-3578]|64)|2(?:22|3[0-57-9]|41)|5(?:22|3[3-7]|5[024-8])|[69]\\d\\d|7(?:[23]\\d|7[69]))|7(?:[168]\\d\\d|2(?:22|3[13-57-9]|4[1-3579]|5[14])|3(?:2\\d|3[1578]|4[1-35-7]|5[1-57]|61)|4(?:2\\d|3[1-579]|7[1-79])|5(?:22|5[1-9]|6[1457])|9(?:22|5[1-9])))\\d{5}", , , , "669050123"], [
         ,
         ,
         "(?:(?:[25]0|33|8[078]|9[0-57-9])\\d{3}|6(?:1(?:2(?:2[01]|98)|35[0-4]|50\\d|61[23]|7(?:[01][017]|4\\d|55|9[5-9]))|2(?:(?:11|7\\d)\\d|2(?:[12]1|9[01379])|5(?:[126]\\d|3[0-4]))|5(?:19[01]|2(?:27|9[26])|(?:30|59|7\\d)\\d)|6(?:2(?:1[5-9]|2[0367]|38|41|52|60)|(?:3[79]|9[0-3])\\d|4(?:56|83)|7(?:[07]\\d|1[017]|3[07]|4[047]|5[057]|67|8[0178]|9[79]))|7(?:2(?:24|3[237]|4[5-9]|7[15-8])|5(?:7[12]|8[0589])|7(?:0\\d|[39][07])|9(?:0\\d|7[079])))|7(?:[07]\\d{3}|2(?:2(?:2[79]|95)|3(?:2[5-9]|6[0-6])|57\\d|7(?:0\\d|1[17]|2[27]|3[37]|44|5[057]|66|88))|3(?:2(?:1[0-6]|21|3[469]|7[159])|(?:33|9[4-6])\\d|5(?:0[0-4]|5[579]|9\\d)|7(?:[0-3579]\\d|4[0467]|6[67]|8[078]))|4(?:2(?:29|5[0257]|6[0-7]|7[1-57])|5(?:1[0-4]|8\\d|9[5-9])|7(?:0\\d|1[024589]|2[0-27]|3[0137]|[46][07]|5[01]|7[5-9]|9[079])|9(?:7[015-9]|[89]\\d))|5(?:112|2(?:0\\d|2[29]|[49]4)|3[1568]\\d|52[6-9]|7(?:0[01578]|1[017]|[23]7|4[047]|[5-7]\\d|8[78]|9[079]))|9(?:22[128]|3(?:2[0-4]|7\\d)|57[02569]|7(?:2[05-9]|3[37]|4\\d|60|7[2579]|87|9[07]))))\\d{4}",
@@ -9742,7 +10281,7 @@ var factoryOutput = (() => {
         ,
         "5002345678"
       ], [, , , , , , , , , [-1]], "VI", 1, "011", "1", , , "([2-9]\\d{6})$|1", "340$1", , 1, , , [, , , , , , , , , [-1]], , "340", [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      VN: [, [, , "[12]\\d{9}|[135-9]\\d{8}|[16]\\d{7}|[16-8]\\d{6}", , , , , , , [7, 8, 9, 10]], [, , "2(?:0[3-9]|1[0-689]|2[0-25-9]|[38][2-9]|4[2-8]|5[124-9]|6[0-39]|7[0-7]|9[0-4679])\\d{7}", , , , "2101234567", , , [10]], [, , "(?:5(?:2[238]|59)|89[6-9]|99[013-9])\\d{6}|(?:3\\d|5[1689]|7[06-9]|8[1-8]|9[0-8])\\d{7}", , , , "912345678", , , [9]], [
+      VN: [, [, , "[12]\\d{9}|[135-9]\\d{8}|[16]\\d{6,7}|7\\d{6}", , , , , , , [7, 8, 9, 10]], [, , "2(?:0[3-9]|1[0-689]|2[0-25-9]|[38][2-9]|4[2-8]|5[124-9]|6[0-39]|7[0-7]|9[0-4679])\\d{7}", , , , "2101234567", , , [10]], [, , "121[0-3]\\d{5}|(?:160|(?:3\\d|7[06-9])\\d|5(?:[1689]\\d|2[238]|59)|8(?:[1-8]\\d|9[6-9])|9(?:[0-8]\\d|9[013-9]))\\d{6}", , , , "912345678", , , [9]], [
         ,
         ,
         "1800\\d{4,6}|12(?:0[13]|28)\\d{4}",
@@ -9753,7 +10292,7 @@ var factoryOutput = (() => {
         ,
         ,
         [8, 9, 10]
-      ], [, , "1900\\d{4,6}", , , , "1900123456", , , [8, 9, 10]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "672\\d{6}", , , , "672012345", , , [9]], "VN", 84, "00", "0", , , "0", , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[17]99"], "0$1", , 1], [, "(\\d{2})(\\d{5})", "$1 $2", ["80"], "0$1", , 1], [, "(\\d{3})(\\d{4,5})", "$1 $2", ["69"], "0$1", , 1], [, "(\\d{4})(\\d{4,6})", "$1 $2", ["1"], , , 1], [, "(\\d{2})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["6"], "0$1", , 1], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[357-9]"], "0$1", , 1], [
+      ], [, , "1900\\d{4,6}", , , , "1900123456", , , [8, 9, 10]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "672\\d{6}", , , , "672012345", , , [9]], "VN", 84, "00", "0", , , "0", , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[17]99"], "0$1", , 1], [, "(\\d{3})(\\d{4,5})", "$1 $2", ["69"], "0$1", , 1], [, "(\\d{4})(\\d{4,6})", "$1 $2", ["1(?:2[02]|[89])"], , , 1], [, "(\\d{2})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["1[26]|6"], "0$1", , 1], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[357-9]"], "0$1", , 1], [
         ,
         "(\\d{2})(\\d{4})(\\d{4})",
         "$1 $2 $3",
@@ -9761,19 +10300,33 @@ var factoryOutput = (() => {
         "0$1",
         ,
         1
-      ], [, "(\\d{3})(\\d{4})(\\d{3})", "$1 $2 $3", ["2"], "0$1", , 1]], [[, "(\\d{2})(\\d{5})", "$1 $2", ["80"], "0$1", , 1], [, "(\\d{4})(\\d{4,6})", "$1 $2", ["1"], , , 1], [, "(\\d{2})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["6"], "0$1", , 1], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[357-9]"], "0$1", , 1], [, "(\\d{2})(\\d{4})(\\d{4})", "$1 $2 $3", ["2[48]"], "0$1", , 1], [, "(\\d{3})(\\d{4})(\\d{3})", "$1 $2 $3", ["2"], "0$1", , 1]], [, , , , , , , , , [-1]], , , [, , "[17]99\\d{4}|69\\d{5,6}", , , , , , , [7, 8]], [
+      ], [, "(\\d{3})(\\d{4})(\\d{3})", "$1 $2 $3", ["2"], "0$1", , 1]], [[, "(\\d{4})(\\d{4,6})", "$1 $2", ["1(?:2[02]|[89])"], , , 1], [, "(\\d{2})(\\d{3})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["1[26]|6"], "0$1", , 1], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[357-9]"], "0$1", , 1], [, "(\\d{2})(\\d{4})(\\d{4})", "$1 $2 $3", ["2[48]"], "0$1", , 1], [, "(\\d{3})(\\d{4})(\\d{3})", "$1 $2 $3", ["2"], "0$1", , 1]], [, , , , , , , , , [-1]], , , [, , "[17]99\\d{4}|69\\d{5,6}", , , , , , , [7, 8]], [, , "[17]99\\d{4}|69\\d{5,6}", , , , "1992000", , , [7, 8]], , , [, , , , , , , , , [-1]]],
+      VU: [, [, , "[57-9]\\d{6}|(?:[238]\\d|48)\\d{3}", , , , , , , [5, 7]], [, , "(?:38[0-8]|48[4-9])\\d\\d|(?:2[02-9]|3[4-7]|88)\\d{3}", , , , "22123", , , [5]], [, , "(?:[58]\\d|7[0-7])\\d{5}", , , , "5912345", , , [7]], [, , "81[18]\\d\\d", , , , "81123", , , [5]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "9(?:0[1-9]|1[01])\\d{4}", , , , "9010123", , , [7]], "VU", 678, "00", , , , , , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[57-9]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "(?:3[03]|900\\d)\\d{3}", , , , "30123"], , , [, , , , , , , , , [-1]]],
+      WF: [, [
         ,
         ,
-        "(?:[17]99|80\\d)\\d{4}|69\\d{5,6}",
+        "(?:40|72|8\\d{4})\\d{4}|[89]\\d{5}",
         ,
         ,
         ,
-        "1992000",
         ,
         ,
-        [7, 8]
-      ], , , [, , , , , , , , , [-1]]],
-      VU: [, [, , "[57-9]\\d{6}|(?:[238]\\d|48)\\d{3}", , , , , , , [5, 7]], [, , "(?:38[0-8]|48[4-9])\\d\\d|(?:2[02-9]|3[4-7]|88)\\d{3}", , , , "22123", , , [5]], [, , "(?:[58]\\d|7[0-7])\\d{5}", , , , "5912345", , , [7]], [, , "81[18]\\d\\d", , , , "81123", , , [5]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "9(?:0[1-9]|1[01])\\d{4}", , , , "9010123", , , [7]], "VU", 678, "00", , , , , , , , [[, "(\\d{3})(\\d{4})", "$1 $2", ["[57-9]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "(?:3[03]|900\\d)\\d{3}", , , , "30123"], , , [
+        ,
+        [6, 9]
+      ], [, , "72\\d{4}", , , , "721234", , , [6]], [, , "(?:72|8[23])\\d{4}", , , , "821234", , , [6]], [, , "80[0-5]\\d{6}", , , , "800012345", , , [9]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "9[23]\\d{4}", , , , "921234", , , [6]], "WF", 681, "00", , , , , , , , [[, "(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3", ["[47-9]"]], [, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["8"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , "[48]0\\d{4}", , , , "401234", , , [6]]],
+      WS: [, [, , "(?:[2-6]|8\\d{5})\\d{4}|[78]\\d{6}|[68]\\d{5}", , , , , , , [
+        5,
+        6,
+        7,
+        10
+      ]], [, , "6[1-9]\\d{3}|(?:[2-5]|60)\\d{4}", , , , "22123", , , [5, 6]], [, , "(?:7[1-35-8]|8(?:[3-7]|9\\d{3}))\\d{5}", , , , "7212345", , , [7, 10]], [, , "800\\d{3}", , , , "800123", , , [6]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "WS", 685, "0", , , , , , , , [[, "(\\d{5})", "$1", ["[2-5]|6[1-9]"]], [, "(\\d{3})(\\d{3,7})", "$1 $2", ["[68]"]], [, "(\\d{2})(\\d{5})", "$1 $2", ["7"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      XK: [, [, , "2\\d{7,8}|3\\d{7,11}|(?:4\\d\\d|[89]00)\\d{5}", , , , , , , [
+        8,
+        9,
+        10,
+        11,
+        12
+      ]], [, , "38\\d{6,10}|(?:2[89]|39)(?:0\\d{5,6}|[1-9]\\d{5})", , , , "28012345"], [, , "4[3-9]\\d{6}", , , , "43201234", , , [8]], [, , "800\\d{5}", , , , "80001234", , , [8]], [, , "900\\d{5}", , , , "90001234", , , [8]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "XK", 383, "00", "0", , , "0", , , , [[, "(\\d{3})(\\d{5})", "$1 $2", ["[89]"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{3})", "$1 $2 $3", ["[2-4]"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["2|39"], "0$1"], [, "(\\d{2})(\\d{7,10})", "$1 $2", ["3"], "0$1"]], , [, , , , , , , , , [-1]], , , [
         ,
         ,
         ,
@@ -9784,21 +10337,8 @@ var factoryOutput = (() => {
         ,
         ,
         [-1]
-      ]],
-      WF: [, [, , "(?:40|72|8\\d{4})\\d{4}|[89]\\d{5}", , , , , , , [6, 9]], [, , "72\\d{4}", , , , "721234", , , [6]], [, , "(?:72|8[23])\\d{4}", , , , "821234", , , [6]], [, , "80[0-5]\\d{6}", , , , "800012345", , , [9]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "9[23]\\d{4}", , , , "921234", , , [6]], "WF", 681, "00", , , , , , , , [[, "(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3", ["[47-9]"]], [, "(\\d{3})(\\d{2})(\\d{2})(\\d{2})", "$1 $2 $3 $4", ["8"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , "[48]0\\d{4}", , , , "401234", , , [6]]],
-      WS: [
-        ,
-        [, , "(?:[2-6]|8\\d{5})\\d{4}|[78]\\d{6}|[68]\\d{5}", , , , , , , [5, 6, 7, 10]],
-        [, , "6[1-9]\\d{3}|(?:[2-5]|60)\\d{4}", , , , "22123", , , [5, 6]],
-        [, , "(?:7[1-35-8]|8(?:[3-7]|9\\d{3}))\\d{5}", , , , "7212345", , , [7, 10]],
-        [, , "800\\d{3}", , , , "800123", , , [6]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        "WS",
-        685,
-        "0",
+      ], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      YE: [, [, , "(?:1|7\\d)\\d{7}|[1-7]\\d{6}", , , , , , , [7, 8, 9], [6]], [, , "78[0-7]\\d{4}|17\\d{6}|(?:[12][2-68]|3[2358]|4[2-58]|5[2-6]|6[3-58]|7[24-6])\\d{5}", , , , "1234567", , , [7, 8], [6]], [, , "7[01378]\\d{7}", , , , "712345678", , , [9]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "YE", 967, "00", "0", , , "0", , , , [[, "(\\d)(\\d{3})(\\d{3,4})", "$1 $2 $3", ["[1-6]|7(?:[24-6]|8[0-7])"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["7"], "0$1"]], , [
         ,
         ,
         ,
@@ -9806,157 +10346,85 @@ var factoryOutput = (() => {
         ,
         ,
         ,
-        [[, "(\\d{5})", "$1", ["[2-5]|6[1-9]"]], [, "(\\d{3})(\\d{3,7})", "$1 $2", ["[68]"]], [, "(\\d{2})(\\d{5})", "$1 $2", ["7"]]],
-        ,
-        [, , , , , , , , , [-1]],
         ,
         ,
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        ,
-        ,
-        [, , , , , , , , , [-1]]
-      ],
-      XK: [
-        ,
-        [, , "2\\d{7,8}|3\\d{7,11}|(?:4\\d\\d|[89]00)\\d{5}", , , , , , , [8, 9, 10, 11, 12]],
-        [, , "38\\d{6,10}|(?:2[89]|39)(?:0\\d{5,6}|[1-9]\\d{5})", , , , "28012345"],
-        [, , "4[3-9]\\d{6}", , , , "43201234", , , [8]],
-        [, , "800\\d{5}", , , , "80001234", , , [8]],
-        [, , "900\\d{5}", , , , "90001234", , , [8]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        "XK",
-        383,
-        "00",
-        "0",
-        ,
-        ,
-        "0",
-        ,
-        ,
-        ,
-        [[, "(\\d{3})(\\d{5})", "$1 $2", ["[89]"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{3})", "$1 $2 $3", ["[2-4]"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["2|39"], "0$1"], [
-          ,
-          "(\\d{2})(\\d{7,10})",
-          "$1 $2",
-          ["3"],
-          "0$1"
-        ]],
-        ,
-        [, , , , , , , , , [-1]],
-        ,
-        ,
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        ,
-        ,
-        [, , , , , , , , , [-1]]
-      ],
-      YE: [, [, , "(?:1|7\\d)\\d{7}|[1-7]\\d{6}", , , , , , , [7, 8, 9], [6]], [, , "78[0-7]\\d{4}|17\\d{6}|(?:[12][2-68]|3[2358]|4[2-58]|5[2-6]|6[3-58]|7[24-6])\\d{5}", , , , "1234567", , , [7, 8], [6]], [, , "7[01378]\\d{7}", , , , "712345678", , , [9]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "YE", 967, "00", "0", , , "0", , , , [[, "(\\d)(\\d{3})(\\d{3,4})", "$1 $2 $3", ["[1-6]|7(?:[24-6]|8[0-7])"], "0$1"], [
-        ,
-        "(\\d{3})(\\d{3})(\\d{3})",
-        "$1 $2 $3",
-        ["7"],
-        "0$1"
-      ]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      YT: [
-        ,
-        [, , "7093\\d{5}|(?:80|9\\d)\\d{7}|(?:26|63)9\\d{6}", , , , , , , [9]],
-        [, , "269(?:0[0-467]|15|5[0-4]|6\\d|[78]0)\\d{4}", , , , "269601234"],
-        [, , "(?:639(?:0[0-79]|1[019]|[267]\\d|3[09]|40|5[05-9]|9[04-79])|7093[5-7])\\d{4}", , , , "639012345"],
-        [, , "80\\d{7}", , , , "801234567"],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        [, , "9(?:(?:39|47)8[01]|769\\d)\\d{4}", , , , "939801234"],
-        "YT",
-        262,
-        "00",
-        "0",
-        ,
-        ,
-        "0",
+        [-1]
+      ], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      YT: [, [, , "(?:639\\d|7093)\\d{5}|(?:26|80|9\\d)\\d{7}", , , , , , , [9]], [, , "26(?:89\\d|9(?:0[0-467]|15|5[0-4]|6\\d|[78]0))\\d{4}", , , , "269601234"], [, , "(?:639(?:0[0-79]|1[019]|[267]\\d|3[09]|40|5[05-9]|9[04-79])|7093[5-7])\\d{4}", , , , "639012345"], [, , "80\\d{7}", , , , "801234567"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "9(?:(?:39|47)8[01]|769\\d)\\d{4}", , , , "939801234"], "YT", 262, "00", "0", , , "0", , , , , , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [
         ,
         ,
         ,
         ,
         ,
-        [, , , , , , , , , [-1]],
-        ,
-        ,
-        [, , , , , , , , , [-1]],
-        [, , , , , , , , , [-1]],
-        ,
-        ,
-        [, , , , , , , , , [-1]]
-      ],
-      ZA: [, [, , "[1-79]\\d{8}|8\\d{4,9}", , , , , , , [5, 6, 7, 8, 9, 10]], [, , "(?:2(?:0330|4302)|52087)0\\d{3}|(?:1[0-8]|2[1-378]|3[1-69]|4\\d|5[1346-8])\\d{7}", , , , "101234567", , , [9]], [
-        ,
-        ,
-        "(?:1(?:3492[0-25]|4495[0235]|549(?:20|5[01]))|4[34]492[01])\\d{3}|8[1-4]\\d{3,7}|(?:2[27]|47|54)4950\\d{3}|(?:1(?:049[2-4]|9[12]\\d\\d)|(?:50[0-2]|[67]\\d\\d)\\d\\d|8(?:5\\d{3}|7(?:08[67]|158|28[5-9]|310)))\\d{4}|(?:1[6-8]|28|3[2-69]|4[025689]|5[36-8])4920\\d{3}|(?:12|[2-5]1)492\\d{4}",
         ,
         ,
         ,
-        "711234567",
         ,
-        ,
-        [5, 6, 7, 8, 9]
-      ], [, , "80\\d{7}", , , , "801234567", , , [9]], [, , "(?:86[2-9]|9[0-2]\\d)\\d{6}", , , , "862345678", , , [9]], [, , "860\\d{6}", , , , "860123456", , , [9]], [, , , , , , , , , [-1]], [, , "87(?:08[0-589]|15[0-79]|28[0-4]|31[1-9])\\d{4}|87(?:[02][0-79]|1[0-46-9]|3[02-9]|[4-9]\\d)\\d{5}", , , , "871234567", , , [9]], "ZA", 27, "00", "0", , , "0", , , , [[, "(\\d{2})(\\d{3,4})", "$1 $2", ["8[1-4]"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{2,3})", "$1 $2 $3", ["8[1-4]"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["860"], "0$1"], [
+        [-1]
+      ], , , [, , , , , , , , , [-1]]],
+      ZA: [, [, , "[1-79]\\d{8}|8\\d{4,9}", , , , , , , [5, 6, 7, 8, 9, 10]], [, , "(?:2(?:0330|4302)|52087)0\\d{3}|(?:1[0-8]|2[1-378]|3[1-69]|4\\d|5[1346-8])\\d{7}", , , , "101234567", , , [9]], [, , "(?:1(?:3492[0-25]|4495[0235]|549(?:20|5[01]))|4[34]492[01])\\d{3}|8[1-4]\\d{3,7}|(?:2[27]|47|54)4950\\d{3}|(?:1(?:049[2-4]|9[12]\\d\\d)|(?:50[0-2]|[67]\\d\\d)\\d\\d|8(?:5\\d{3}|7(?:08[67]|158|28[5-9]|310)))\\d{4}|(?:1[6-8]|28|3[2-69]|4[025689]|5[36-8])4920\\d{3}|(?:12|[2-5]1)492\\d{4}", , , , "711234567", , , [
+        5,
+        6,
+        7,
+        8,
+        9
+      ]], [, , "80\\d{7}", , , , "801234567", , , [9]], [, , "(?:86[2-9]|9[0-2]\\d)\\d{6}", , , , "862345678", , , [9]], [, , "860\\d{6}", , , , "860123456", , , [9]], [, , , , , , , , , [-1]], [, , "87(?:08[0-589]|15[0-79]|28[0-4]|31[1-9])\\d{4}|87(?:[02][0-79]|1[0-46-9]|3[02-9]|[4-9]\\d)\\d{5}", , , , "871234567", , , [9]], "ZA", 27, "00", "0", , , "0", , , , [[, "(\\d{2})(\\d{3,4})", "$1 $2", ["8[1-4]"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{2,3})", "$1 $2 $3", ["8[1-4]"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["860"], "0$1"], [
         ,
         "(\\d{2})(\\d{3})(\\d{4})",
         "$1 $2 $3",
         ["[1-9]"],
         "0$1"
       ], [, "(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3", ["8"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "861\\d{6,7}", , , , "861123456", , , [9, 10]], , , [, , , , , , , , , [-1]]],
-      ZM: [, [, , "800\\d{6}|(?:21|[579]\\d|63)\\d{7}", , , , , , , [9], [6]], [, , "21[1-8]\\d{6}", , , , "211234567", , , , [6]], [, , "(?:[59][5-8]|7[5-9])\\d{7}", , , , "955123456"], [, , "800\\d{6}", , , , "800123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "63\\d{7}", , , , "630123456"], "ZM", 260, "00", "0", , , "0", , , , [
-        [, "(\\d{3})(\\d{3})", "$1 $2", ["[1-9]"]],
-        [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[28]"], "0$1"],
-        [, "(\\d{2})(\\d{7})", "$1 $2", ["[579]"], "0$1"]
-      ], [[, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[28]"], "0$1"], [, "(\\d{2})(\\d{7})", "$1 $2", ["[579]"], "0$1"]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      ZW: [, [, , "2(?:[0-57-9]\\d{6,8}|6[0-24-9]\\d{6,7})|[38]\\d{9}|[35-8]\\d{8}|[3-6]\\d{7}|[1-689]\\d{6}|[1-3569]\\d{5}|[1356]\\d{4}", , , , , , , [5, 6, 7, 8, 9, 10], [3, 4]], [
+      ZM: [, [, , "800\\d{6}|(?:21|[579]\\d|63)\\d{7}", , , , , , , [9], [6]], [, , "21[1-8]\\d{6}", , , , "211234567", , , , [6]], [, , "(?:[59][5-8]|7[5-9])\\d{7}", , , , "955123456"], [, , "800\\d{6}", , , , "800123456"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "63\\d{7}", , , , "630123456"], "ZM", 260, "00", "0", , , "0", , , , [[, "(\\d{3})(\\d{3})", "$1 $2", ["[1-9]"]], [
+        ,
+        "(\\d{3})(\\d{3})(\\d{3})",
+        "$1 $2 $3",
+        ["[28]"],
+        "0$1"
+      ], [, "(\\d{2})(\\d{7})", "$1 $2", ["[579]"], "0$1"]], [[, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[28]"], "0$1"], [, "(\\d{2})(\\d{7})", "$1 $2", ["[579]"], "0$1"]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      ZW: [, [, , "(?:13|8\\d{4})\\d{5}|[235-8]\\d{8}|[2-689]\\d{6}", , , , , , , [7, 9, 10], [3, 4, 5, 6]], [
         ,
         ,
-        "(?:1(?:(?:3\\d|9)\\d|[4-8])|2(?:(?:(?:0(?:2[014]|5)|(?:2[0157]|31|84|9)\\d\\d|[56](?:[14]\\d\\d|20)|7(?:[089]|2[03]|[35]\\d\\d))\\d|4(?:2\\d\\d|8))\\d|1(?:2|[39]\\d{4}))|3(?:(?:123|(?:29\\d|92)\\d)\\d\\d|7(?:[19]|[56]\\d))|5(?:0|1[2-478]|26|[37]2|4(?:2\\d{3}|83)|5(?:25\\d\\d|[78])|[689]\\d)|6(?:(?:[16-8]21|28|52[013])\\d\\d|[39])|8(?:[1349]28|523)\\d\\d)\\d{3}|(?:4\\d\\d|9[2-9])\\d{4,5}|(?:(?:2(?:(?:(?:0|8[146])\\d|7[1-7])\\d|2(?:[278]\\d|92)|58(?:2\\d|3))|3(?:[26]|9\\d{3})|5(?:4\\d|5)\\d\\d)\\d|6(?:(?:(?:[0-246]|[78]\\d)\\d|37)\\d|5[2-8]))\\d\\d|(?:2(?:[569]\\d|8[2-57-9])|3(?:[013-59]\\d|8[37])|6[89]8)\\d{3}",
+        "(?:2(?:(?:(?:02[014]|72[03])\\d|48)\\d|2(?:[278]\\d|92)|583)|(?:37[56]|6[78]21\\d)\\d|5(?:483|525\\d\\d))\\d{3}|(?:2(?:0\\d|7[1-7])|(?:55|6[78])\\d)\\d{4}|(?:13|2(?:(?:42|9\\d)\\d|[56]20)|3(?:123|92\\d)|(?:4|542)\\d|6(?:[16]21|52[013])|8(?:[1349]28|523)|9[2-9])\\d{5}",
         ,
         ,
         ,
         "1312345",
         ,
         ,
+        [7, 9],
+        [3, 4, 5, 6]
+      ], [, , "7(?:[1278]\\d|3[1-9]|9[01])\\d{6}", , , , "712345678", , , [9]], [, , "80(?:[01]\\d|20|8[0-8])\\d{3}", , , , "8001234", , , [7]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "86(?:1[12]|22|30|44|55|77|8[368])\\d{6}", , , , "8686123456", , , [10]], "ZW", 263, "00", "0", , , "0", , , , [[, "(\\d{2})(\\d{3,5})", "$1 $2", ["1|2(?:0[0-36-9]|29|58)|67[0-46-9]|(?:55|68)[0-69]"], "0$1"], [, "(\\d{3})(\\d{3,5})", "$1 $2", ["2(?:0[45]|[27]|48)|37|675|(?:55|68)[78]"], "0$1"], [
         ,
-        [3, 4]
-      ], [, , "7(?:[1278]\\d|3[1-9])\\d{6}", , , , "712345678", , , [9]], [, , "80(?:[01]\\d|20|8[0-8])\\d{3}", , , , "8001234", , , [7]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "86(?:1[12]|22|30|44|55|77|8[368])\\d{6}", , , , "8686123456", , , [10]], "ZW", 263, "00", "0", , , "0", , , , [
-        [, "(\\d{3})(\\d{3,5})", "$1 $2", ["2(?:0[45]|2[278]|[49]8)|3(?:[09]8|17)|6(?:[29]8|37|75)|[23][78]|(?:33|5[15]|6[68])[78]"], "0$1"],
-        [, "(\\d)(\\d{3})(\\d{2,4})", "$1 $2 $3", ["[49]"], "0$1"],
-        [, "(\\d{3})(\\d{4})", "$1 $2", ["80"], "0$1"],
-        [, "(\\d{2})(\\d{7})", "$1 $2", ["24|8[13-59]|(?:2[05-79]|39|5[45]|6[15-8])2", "2(?:02[014]|4|[56]20|[79]2)|392|5(?:42|525)|6(?:[16-8]21|52[013])|8[13-59]"], "(0$1)"],
-        [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["7"], "0$1"],
-        [, "(\\d{3})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["2(?:1[39]|2[0157]|[378]|[56][14])|3(?:12|29)", "2(?:1[39]|2[0157]|[378]|[56][14])|3(?:123|29)"], "0$1"],
-        [, "(\\d{4})(\\d{6})", "$1 $2", ["8"], "0$1"],
-        [
-          ,
-          "(\\d{2})(\\d{3,5})",
-          "$1 $2",
-          ["1|2(?:0[0-36-9]|12|29|[56])|3(?:1[0-689]|[24-6])|5(?:[0236-9]|1[2-4])|6(?:[013-59]|7[0-46-9])|(?:33|55|6[68])[0-69]|(?:29|3[09]|62)[0-79]"],
-          "0$1"
-        ],
-        [, "(\\d{2})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["29[013-9]|39|54"], "0$1"],
-        [, "(\\d{4})(\\d{3,5})", "$1 $2", ["(?:25|54)8", "258|5483"], "0$1"]
-      ], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      800: [
+        "(\\d)(\\d{3})(\\d{2,4})",
+        "$1 $2 $3",
+        ["[49]"],
+        "0$1"
+      ], [, "(\\d{3})(\\d{4})", "$1 $2", ["80"], "0$1"], [, "(\\d{4})(\\d{3,5})", "$1 $2", ["548"], "0$1"], [, "(\\d{2})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["29[013-9]"], "0$1"], [, "(\\d{2})(\\d{7})", "$1 $2", ["[256]|39|8[13-59]"], "(0$1)"], [, "(\\d{2})(\\d{3})(\\d{4})", "$1 $2 $3", ["7"], "0$1"], [, "(\\d{3})(\\d{3})(\\d{3,4})", "$1 $2 $3", ["3"], "0$1"], [, "(\\d{4})(\\d{6})", "$1 $2", ["8"], "0$1"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      800: [, [, , "(?:00|[1-9]\\d)\\d{6}", , , , , , , [8]], [
         ,
-        [, , "(?:00|[1-9]\\d)\\d{6}", , , , , , , [8]],
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        [-1]
+      ], [, , , , , , , , , [-1]], [, , "(?:00|[1-9]\\d)\\d{6}", , , , "12345678"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "001", 800, , , , , , , , 1, [[, "(\\d{4})(\\d{4})", "$1 $2", ["\\d"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      808: [
+        ,
+        [, , "[1-9]\\d{7}", , , , , , , [8]],
         [, , , , , , , , , [-1]],
         [, , , , , , , , , [-1]],
-        [, , "(?:00|[1-9]\\d)\\d{6}", , , , "12345678"],
         [, , , , , , , , , [-1]],
         [, , , , , , , , , [-1]],
+        [, , "[1-9]\\d{7}", , , , "12345678"],
         [, , , , , , , , , [-1]],
         [, , , , , , , , , [-1]],
         "001",
-        800,
+        808,
         ,
         ,
         ,
@@ -9965,7 +10433,7 @@ var factoryOutput = (() => {
         ,
         ,
         1,
-        [[, "(\\d{4})(\\d{4})", "$1 $2", ["\\d"]]],
+        [[, "(\\d{4})(\\d{4})", "$1 $2", ["[1-9]"]]],
         ,
         [, , , , , , , , , [-1]],
         ,
@@ -9976,59 +10444,8 @@ var factoryOutput = (() => {
         ,
         [, , , , , , , , , [-1]]
       ],
-      808: [, [, , "[1-9]\\d{7}", , , , , , , [8]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "[1-9]\\d{7}", , , , "12345678"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "001", 808, , , , , , , , 1, [[, "(\\d{4})(\\d{4})", "$1 $2", ["[1-9]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      870: [, [, , "7\\d{11}|[235-7]\\d{8}", , , , , , , [9, 12]], [, , , , , , , , , [-1]], [, , "(?:[356]|774[45])\\d{8}|7[6-8]\\d{7}", , , , "301234567"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [
-        ,
-        ,
-        "2\\d{8}",
-        ,
-        ,
-        ,
-        "201234567",
-        ,
-        ,
-        [9]
-      ], "001", 870, , , , , , , , , [[, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[235-7]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      878: [, [, , "10\\d{10}", , , , , , , [12]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "10\\d{10}", , , , "101234567890"], "001", 878, , , , , , , , 1, [[, "(\\d{2})(\\d{5})(\\d{5})", "$1 $2 $3", ["1"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      881: [, [
-        ,
-        ,
-        "6\\d{9}|[0-36-9]\\d{8}",
-        ,
-        ,
-        ,
-        ,
-        ,
-        ,
-        [9, 10]
-      ], [, , , , , , , , , [-1]], [, , "6\\d{9}|[0-36-9]\\d{8}", , , , "612345678"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "001", 881, , , , , , , , , [[, "(\\d)(\\d{3})(\\d{5})", "$1 $2 $3", ["[0-37-9]"]], [, "(\\d)(\\d{3})(\\d{5,6})", "$1 $2 $3", ["6"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      882: [, [, , "[13]\\d{6}(?:\\d{2,5})?|[19]\\d{7}|(?:[25]\\d\\d|4)\\d{7}(?:\\d{2})?", , , , , , , [7, 8, 9, 10, 11, 12]], [, , , , , , , , , [-1]], [
-        ,
-        ,
-        "342\\d{4}|(?:337|49)\\d{6}|(?:3(?:2|47|7\\d{3})|5(?:0\\d{3}|2[0-2]))\\d{7}",
-        ,
-        ,
-        ,
-        "3421234",
-        ,
-        ,
-        [7, 8, 9, 10, 12]
-      ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "1(?:3(?:0[0347]|[13][0139]|2[035]|4[013568]|6[0459]|7[06]|8[15-8]|9[0689])\\d{4}|6\\d{5,10})|(?:345\\d|9[89])\\d{6}|(?:10|2(?:3|85\\d)|3(?:[15]|[69]\\d\\d)|4[15-8]|51)\\d{8}", , , , "390123456789"], "001", 882, , , , , , , , , [[, "(\\d{2})(\\d{5})", "$1 $2", ["16|342"]], [, "(\\d{2})(\\d{6})", "$1 $2", ["49"]], [, "(\\d{2})(\\d{2})(\\d{4})", "$1 $2 $3", ["1[36]|9"]], [, "(\\d{2})(\\d{4})(\\d{3})", "$1 $2 $3", ["3[23]"]], [
-        ,
-        "(\\d{2})(\\d{3,4})(\\d{4})",
-        "$1 $2 $3",
-        ["16"]
-      ], [, "(\\d{2})(\\d{4})(\\d{4})", "$1 $2 $3", ["10|23|3(?:[15]|4[57])|4|5[12]"]], [, "(\\d{3})(\\d{4})(\\d{4})", "$1 $2 $3", ["34"]], [, "(\\d{2})(\\d{4,5})(\\d{5})", "$1 $2 $3", ["[1-35]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , "348[57]\\d{7}", , , , "34851234567", , , [11]]],
-      883: [, [, , "(?:[1-4]\\d|51)\\d{6,10}", , , , , , , [8, 9, 10, 11, 12]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [
-        ,
-        ,
-        "(?:2(?:00\\d\\d|10)|(?:370[1-9]|51\\d0)\\d)\\d{7}|51(?:00\\d{5}|[24-9]0\\d{4,7})|(?:1[0-79]|2[24-689]|3[02-689]|4[0-4])0\\d{5,9}",
-        ,
-        ,
-        ,
-        "510012345"
-      ], "001", 883, , , , , , , , 1, [[, "(\\d{3})(\\d{3})(\\d{2,8})", "$1 $2 $3", ["[14]|2[24-689]|3[02-689]|51[24-9]"]], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["510"]], [, "(\\d{3})(\\d{3})(\\d{4})", "$1 $2 $3", ["21"]], [, "(\\d{4})(\\d{4})(\\d{4})", "$1 $2 $3", ["51[13]"]], [, "(\\d{3})(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3 $4", ["[235]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
-      888: [, [, , "\\d{11}", , , , , , , [11]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [
+      870: [, [, , "7\\d{11}|[235-7]\\d{8}", , , , , , , [9, 12]], [, , , , , , , , , [-1]], [, , "(?:[356]|774[45])\\d{8}|7[6-8]\\d{7}", , , , "301234567"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "2\\d{8}", , , , "201234567", , , [9]], "001", 870, , , , , , , , , [[, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["[235-7]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      878: [, [, , "10\\d{10}", , , , , , , [12]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [
         ,
         ,
         ,
@@ -10039,17 +10456,99 @@ var factoryOutput = (() => {
         ,
         ,
         [-1]
-      ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "001", 888, , , , , , , , 1, [[, "(\\d{3})(\\d{3})(\\d{5})", "$1 $2 $3"]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , "\\d{11}", , , , "12345678901"], , , [, , , , , , , , , [-1]]],
+      ], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "10\\d{10}", , , , "101234567890"], "001", 878, , , , , , , , 1, [[, "(\\d{2})(\\d{5})(\\d{5})", "$1 $2 $3", ["1"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      881: [, [, , "6\\d{9}|[0-36-9]\\d{8}", , , , , , , [9, 10]], [, , , , , , , , , [-1]], [, , "6\\d{9}|[0-36-9]\\d{8}", , , , "612345678"], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "001", 881, , , , , , , , , [[, "(\\d)(\\d{3})(\\d{5})", "$1 $2 $3", ["[0-37-9]"]], [
+        ,
+        "(\\d)(\\d{3})(\\d{5,6})",
+        "$1 $2 $3",
+        ["6"]
+      ]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      882: [
+        ,
+        [, , "[13]\\d{6}(?:\\d{2,5})?|[19]\\d{7}|(?:[25]\\d\\d|4)\\d{7}(?:\\d{2})?", , , , , , , [7, 8, 9, 10, 11, 12]],
+        [, , , , , , , , , [-1]],
+        [, , "342\\d{4}|(?:337|49)\\d{6}|(?:3(?:2|47|7\\d{3})|5(?:0\\d{3}|2[0-2]))\\d{7}", , , , "3421234", , , [7, 8, 9, 10, 12]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        [
+          ,
+          ,
+          "1(?:3(?:0[0347]|[13][0139]|2[035]|4[013568]|6[0459]|7[06]|8[15-8]|9[0689])\\d{4}|6\\d{5,10})|(?:345\\d|9[89])\\d{6}|(?:10|2(?:3|85\\d)|3(?:[15]|[69]\\d\\d)|4[15-8]|51)\\d{8}",
+          ,
+          ,
+          ,
+          "390123456789"
+        ],
+        "001",
+        882,
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        [[, "(\\d{2})(\\d{5})", "$1 $2", ["16|342"]], [, "(\\d{2})(\\d{6})", "$1 $2", ["49"]], [, "(\\d{2})(\\d{2})(\\d{4})", "$1 $2 $3", ["1[36]|9"]], [, "(\\d{2})(\\d{4})(\\d{3})", "$1 $2 $3", ["3[23]"]], [, "(\\d{2})(\\d{3,4})(\\d{4})", "$1 $2 $3", ["16"]], [, "(\\d{2})(\\d{4})(\\d{4})", "$1 $2 $3", ["10|23|3(?:[15]|4[57])|4|5[12]"]], [, "(\\d{3})(\\d{4})(\\d{4})", "$1 $2 $3", ["34"]], [, "(\\d{2})(\\d{4,5})(\\d{5})", "$1 $2 $3", ["[1-35]"]]],
+        ,
+        [, , , , , , , , , [-1]],
+        ,
+        ,
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        ,
+        ,
+        [, , "348[57]\\d{7}", , , , "34851234567", , , [11]]
+      ],
+      883: [, [, , "(?:[1-4]\\d|51)\\d{6,10}", , , , , , , [8, 9, 10, 11, 12]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "(?:2(?:00\\d\\d|10)|(?:370[1-9]|51\\d0)\\d)\\d{7}|51(?:00\\d{5}|[24-9]0\\d{4,7})|(?:1[0-79]|2[24-689]|3[02-689]|4[0-4])0\\d{5,9}", , , , "510012345"], "001", 883, , , , , , , , 1, [[, "(\\d{3})(\\d{3})(\\d{2,8})", "$1 $2 $3", ["[14]|2[24-689]|3[02-689]|51[24-9]"]], [, "(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3", ["510"]], [
+        ,
+        "(\\d{3})(\\d{3})(\\d{4})",
+        "$1 $2 $3",
+        ["21"]
+      ], [, "(\\d{4})(\\d{4})(\\d{4})", "$1 $2 $3", ["51[13]"]], [, "(\\d{3})(\\d{3})(\\d{3})(\\d{3})", "$1 $2 $3 $4", ["[235]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]],
+      888: [
+        ,
+        [, , "\\d{11}", , , , , , , [11]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        [, , , , , , , , , [-1]],
+        "001",
+        888,
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        1,
+        [[, "(\\d{3})(\\d{3})(\\d{5})", "$1 $2 $3"]],
+        ,
+        [, , , , , , , , , [-1]],
+        ,
+        ,
+        [, , , , , , , , , [-1]],
+        [, , "\\d{11}", , , , "12345678901"],
+        ,
+        ,
+        [, , , , , , , , , [-1]]
+      ],
       979: [, [, , "[1359]\\d{8}", , , , , , , [9], [8]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , "[1359]\\d{8}", , , , "123456789", , , , [8]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], "001", 979, , , , , , , , 1, [[, "(\\d)(\\d{4})(\\d{4})", "$1 $2 $3", ["[1359]"]]], , [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]], [, , , , , , , , , [-1]], , , [, , , , , , , , , [-1]]]
     };
-    function K() {
+    function J() {
       this.g = {};
     }
-    K.h = void 0;
-    K.g = function() {
-      return K.h ? K.h : K.h = new K();
+    J.h = void 0;
+    J.g = function() {
+      return J.h ? J.h : J.h = new J();
     };
-    var Ea = { 0: "0", 1: "1", 2: "2", 3: "3", 4: "4", 5: "5", 6: "6", 7: "7", 8: "8", 9: "9", "\uFF10": "0", "\uFF11": "1", "\uFF12": "2", "\uFF13": "3", "\uFF14": "4", "\uFF15": "5", "\uFF16": "6", "\uFF17": "7", "\uFF18": "8", "\uFF19": "9", "\u0660": "0", "\u0661": "1", "\u0662": "2", "\u0663": "3", "\u0664": "4", "\u0665": "5", "\u0666": "6", "\u0667": "7", "\u0668": "8", "\u0669": "9", "\u06F0": "0", "\u06F1": "1", "\u06F2": "2", "\u06F3": "3", "\u06F4": "4", "\u06F5": "5", "\u06F6": "6", "\u06F7": "7", "\u06F8": "8", "\u06F9": "9" }, Fa = {
+    var Fa = { 0: "0", 1: "1", 2: "2", 3: "3", 4: "4", 5: "5", 6: "6", 7: "7", 8: "8", 9: "9", "\uFF10": "0", "\uFF11": "1", "\uFF12": "2", "\uFF13": "3", "\uFF14": "4", "\uFF15": "5", "\uFF16": "6", "\uFF17": "7", "\uFF18": "8", "\uFF19": "9", "\u0660": "0", "\u0661": "1", "\u0662": "2", "\u0663": "3", "\u0664": "4", "\u0665": "5", "\u0666": "6", "\u0667": "7", "\u0668": "8", "\u0669": "9", "\u06F0": "0", "\u06F1": "1", "\u06F2": "2", "\u06F3": "3", "\u06F4": "4", "\u06F5": "5", "\u06F6": "6", "\u06F7": "7", "\u06F8": "8", "\u06F9": "9" }, Ga = {
       0: "0",
       1: "1",
       2: "2",
@@ -10063,7 +10562,7 @@ var factoryOutput = (() => {
       "+": "+",
       "*": "*",
       "#": "#"
-    }, Ga = {
+    }, Ha = {
       0: "0",
       1: "1",
       2: "2",
@@ -10130,56 +10629,60 @@ var factoryOutput = (() => {
       X: "9",
       Y: "9",
       Z: "9"
-    }, Ha = RegExp("[+\uFF0B]+"), L = RegExp("^[+\uFF0B]+"), Ia = RegExp("([0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9])"), Ja = RegExp("[+\uFF0B0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]"), Ka = /[\\\/] *x/, La = RegExp("[^0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9A-Za-z#]+$"), Ma = /(?:.*?[A-Za-z]){3}.*/, Na = RegExp("^\\+([0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]|[\\-\\.\\(\\)]?)*[0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]([0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]|[\\-\\.\\(\\)]?)*$"), Oa = RegExp("^([A-Za-z0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]+((\\-)*[A-Za-z0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9])*\\.)*[A-Za-z]+((\\-)*[A-Za-z0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9])*\\.?$");
-    function M(a) {
+    }, Ia = RegExp("[+\uFF0B]+"), K = RegExp("^[+\uFF0B]+"), Ja = RegExp("([0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9])"), Ka = RegExp("[+\uFF0B0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]"), La = /[\\\/] *x/, Ma = RegExp("[^0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9A-Za-z#]+$"), Na = /(?:.*?[A-Za-z]){3}.*/, Oa = RegExp("^\\+([0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]|[\\-\\.\\(\\)]?)*[0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]([0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]|[\\-\\.\\(\\)]?)*$"), Pa = RegExp("^([A-Za-z0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]+((\\-)*[A-Za-z0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9])*\\.)*[A-Za-z]+((\\-)*[A-Za-z0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9])*\\.?$");
+    function L(a) {
       return "([0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]{1," + a + "})";
     }
-    function Pa() {
-      return ";ext=" + M("20") + "|[ \xA0\\t,]*(?:e?xt(?:ensi(?:o\u0301?|\xF3))?n?|\uFF45?\uFF58\uFF54\uFF4E?|\u0434\u043E\u0431|anexo)[:\\.\uFF0E]?[ \xA0\\t,-]*" + (M("20") + "#?|[ \xA0\\t,]*(?:[x\uFF58#\uFF03~\uFF5E]|int|\uFF49\uFF4E\uFF54)[:\\.\uFF0E]?[ \xA0\\t,-]*") + (M("9") + "#?|[- ]+") + (M("6") + "#|[ \xA0\\t]*(?:,{2}|;)[:\\.\uFF0E]?[ \xA0\\t,-]*") + (M("15") + "#?|[ \xA0\\t]*(?:,)+[:\\.\uFF0E]?[ \xA0\\t,-]*") + (M("9") + "#?");
+    function Qa() {
+      return ";ext=" + L("20") + "|[ \xA0\\t,]*(?:e?xt(?:ensi(?:o\u0301?|\xF3))?n?|\uFF45?\uFF58\uFF54\uFF4E?|\u0434\u043E\u0431|anexo)[:\\.\uFF0E]?[ \xA0\\t,-]*" + (L("20") + "#?|[ \xA0\\t,]*(?:[x\uFF58#\uFF03~\uFF5E]|int|\uFF49\uFF4E\uFF54)[:\\.\uFF0E]?[ \xA0\\t,-]*") + (L("9") + "#?|[- ]+") + (L("6") + "#|[ \xA0\\t]*(?:,{2}|;)[:\\.\uFF0E]?[ \xA0\\t,-]*") + (L("15") + "#?|[ \xA0\\t]*(?:,)+[:\\.\uFF0E]?[ \xA0\\t,-]*") + (L("9") + "#?");
     }
-    var Qa = new RegExp("(?:" + Pa() + ")$", "i"), Ra = new RegExp("^[0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]{2}$|^[+\uFF0B]*(?:[-x\u2010-\u2015\u2212\u30FC\uFF0D-\uFF0F \xA0\xAD\u200B\u2060\u3000()\uFF08\uFF09\uFF3B\uFF3D.\\[\\]/~\u2053\u223C\uFF5E*]*[0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]){3,}[-x\u2010-\u2015\u2212\u30FC\uFF0D-\uFF0F \xA0\xAD\u200B\u2060\u3000()\uFF08\uFF09\uFF3B\uFF3D.\\[\\]/~\u2053\u223C\uFF5E*A-Za-z0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]*(?:" + Pa() + ")?$", "i"), Sa = /(\$\d)/, Ta = /^\(?\$1\)?$/;
-    function Ua(a) {
-      return 2 > a.length ? false : N(Ra, a);
-    }
+    var Ra = new RegExp("(?:" + Qa() + ")$", "i"), Sa = new RegExp("^[0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]{2}$|^[+\uFF0B]*(?:[-x\u2010-\u2015\u2212\u30FC\uFF0D-\uFF0F \xA0\xAD\u200B\u2060\u3000()\uFF08\uFF09\uFF3B\uFF3D.\\[\\]/~\u2053\u223C\uFF5E*]*[0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]){3,}[-x\u2010-\u2015\u2212\u30FC\uFF0D-\uFF0F \xA0\xAD\u200B\u2060\u3000()\uFF08\uFF09\uFF3B\uFF3D.\\[\\]/~\u2053\u223C\uFF5E*A-Za-z0-9\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]*(?:" + Qa() + ")?$", "i"), Ta = /(\$\d)/, Ua = /^\(?\$1\)?$/;
     function Va(a) {
-      return N(Ma, a) ? O(a, Ga) : O(a, Ea);
+      return a.length < 2 ? false : M(Sa, a);
     }
     function Wa(a) {
-      var b = Va(a.toString());
-      E(a);
-      a.g(b);
+      return M(Na, a) ? N(a, Ha) : N(a, Fa);
     }
     function Xa(a) {
-      return null != a && (1 != x(a, 9) || -1 != u(a, 9)[0]);
-    }
-    function O(a, b) {
-      for (var c = new D(), d, e = a.length, f = 0; f < e; ++f) d = a.charAt(f), d = b[d.toUpperCase()], null != d && c.g(d);
-      return c.toString();
+      var b = Wa(a.toString());
+      C(a);
+      a.g(b);
     }
     function Ya(a) {
-      return 0 == a.length || Ta.test(a);
+      return a != null && (w(a, 9) != 1 || F(a)[0] != -1);
     }
-    function P(a) {
-      return null != a && isNaN(a) && a.toUpperCase() in Da;
+    function N(a, b) {
+      for (var c = new B(), d, e = a.length, f = 0; f < e; ++f) d = a.charAt(f), d = b[d.toUpperCase()], d != null && c.g(d);
+      return c.toString();
     }
-    K.prototype.format = function(a, b) {
-      if (0 == r(a, 2) && q(a, 5)) {
-        var c = w(a, 5);
-        if (0 < c.length) return c;
+    function Za(a) {
+      return a.length == 0 || Ua.test(a);
+    }
+    function O(a) {
+      return a != null && isNaN(a) && a.toUpperCase() in Ea;
+    }
+    J.prototype.format = function(a, b) {
+      if (r(a, 2) == 0 && q(a, 5)) {
+        var c = v(a, 5);
+        if (c.length > 0 && q(a, 1) && r(a, 6) == 20 && b == 0) return a = v(a, 1), $a(a, b, c, "");
+        if (c.length > 0 || !q(a, 1)) return c;
       }
-      c = w(a, 1);
-      var d = Q(a);
-      if (0 == b) return Za(c, 0, d, "");
-      if (!(c in J)) return d;
-      var e = R(this, c, S(c));
-      a = q(a, 3) && 0 != r(a, 3).length ? 3 == b ? ";ext=" + r(a, 3) : q(e, 13) ? r(e, 13) + w(a, 3) : " ext. " + w(a, 3) : "";
+      c = v(a, 1);
+      var d = P(a);
+      if (b == 0) return $a(c, 0, d, "");
+      if (!(c in I)) return d;
+      var e = Q(this, c, R(c));
+      a = q(a, 3) && r(a, 3).length != 0 ? b == 3 ? ";ext=" + r(a, 3) : q(e, 13) ? r(e, 13) + v(a, 3) : " ext. " + v(a, 3) : "";
       a: {
-        e = 0 == u(e, 20).length || 2 == b ? u(e, 19) : u(e, 20);
+        e = (u(e, 20) || []).length == 0 || b == 2 ? u(e, 19) || [] : u(e, 20) || [];
         for (var f, g = e.length, h = 0; h < g; ++h) {
           f = e[h];
-          var l = x(f, 3);
-          if (0 == l || 0 == d.search(r(f, 3, l - 1))) {
-            if (l = new RegExp(r(f, 1)), N(l, d)) {
+          var l = w(f, 3);
+          if (l == 0 || d.search(r(f, 3, l - 1)) == 0) {
+            if (l = new RegExp(r(
+              f,
+              1
+            )), M(l, d)) {
               e = f;
               break a;
             }
@@ -10187,21 +10690,23 @@ var factoryOutput = (() => {
         }
         e = null;
       }
-      null != e && (g = e, e = w(g, 2), f = new RegExp(r(g, 1)), w(
-        g,
-        5
-      ), g = w(g, 4), d = 2 == b && null != g && 0 < g.length ? d.replace(f, e.replace(Sa, g)) : d.replace(f, e), 3 == b && (d = d.replace(RegExp("^[-x\u2010-\u2015\u2212\u30FC\uFF0D-\uFF0F \xA0\xAD\u200B\u2060\u3000()\uFF08\uFF09\uFF3B\uFF3D.\\[\\]/~\u2053\u223C\uFF5E]+"), ""), d = d.replace(RegExp("[-x\u2010-\u2015\u2212\u30FC\uFF0D-\uFF0F \xA0\xAD\u200B\u2060\u3000()\uFF08\uFF09\uFF3B\uFF3D.\\[\\]/~\u2053\u223C\uFF5E]+", "g"), "-")));
-      return Za(c, b, d, a);
+      e != null && (g = e, e = v(g, 2), f = new RegExp(r(g, 1)), v(g, 5), g = v(g, 4), d = b == 2 && g != null && g.length > 0 ? d.replace(f, e.replace(Ta, g)) : d.replace(f, e), b == 3 && (d = d.replace(RegExp("^[-x\u2010-\u2015\u2212\u30FC\uFF0D-\uFF0F \xA0\xAD\u200B\u2060\u3000()\uFF08\uFF09\uFF3B\uFF3D.\\[\\]/~\u2053\u223C\uFF5E]+"), ""), d = d.replace(RegExp("[-x\u2010-\u2015\u2212\u30FC\uFF0D-\uFF0F \xA0\xAD\u200B\u2060\u3000()\uFF08\uFF09\uFF3B\uFF3D.\\[\\]/~\u2053\u223C\uFF5E]+", "g"), "-")));
+      return $a(
+        c,
+        b,
+        d,
+        a
+      );
     };
-    function R(a, b, c) {
-      return "001" == c ? T(a, "" + b) : T(a, c);
+    function Q(a, b, c) {
+      return "001" == c ? S(a, "" + b) : S(a, c);
     }
-    function Q(a) {
+    function P(a) {
       if (!q(a, 2)) return "";
       var b = "" + r(a, 2);
-      return q(a, 4) && r(a, 4) && 0 < w(a, 8) ? Array(w(a, 8) + 1).join("0") + b : b;
+      return q(a, 4) && r(a, 4) && v(a, 8) > 0 ? Array(v(a, 8) + 1).join("0") + b : b;
     }
-    function Za(a, b, c, d) {
+    function $a(a, b, c, d) {
       switch (b) {
         case 0:
           return "+" + a + c + d;
@@ -10213,7 +10718,7 @@ var factoryOutput = (() => {
           return c + d;
       }
     }
-    function U(a, b) {
+    function T(a, b) {
       switch (b) {
         case 4:
           return r(a, 5);
@@ -10240,56 +10745,56 @@ var factoryOutput = (() => {
           return r(a, 1);
       }
     }
-    function $a(a, b) {
-      var c = ab(a, b);
-      a = R(a, w(b, 1), c);
-      if (null == a) return -1;
-      b = Q(b);
-      return bb(b, a);
+    function ab(a, b) {
+      var c = bb(a, b);
+      a = Q(a, v(b, 1), c);
+      if (a == null) return -1;
+      b = P(b);
+      return cb(b, a);
     }
-    function bb(a, b) {
-      return V(a, r(b, 1)) ? V(a, r(b, 5)) ? 4 : V(a, r(b, 4)) ? 3 : V(a, r(b, 6)) ? 5 : V(a, r(b, 8)) ? 6 : V(a, r(b, 7)) ? 7 : V(a, r(b, 21)) ? 8 : V(a, r(b, 25)) ? 9 : V(a, r(b, 28)) ? 10 : V(a, r(b, 2)) ? r(b, 18) || V(a, r(b, 3)) ? 2 : 0 : !r(b, 18) && V(a, r(b, 3)) ? 1 : -1 : -1;
+    function cb(a, b) {
+      return U(a, r(b, 1)) ? U(a, r(b, 5)) ? 4 : U(a, r(b, 4)) ? 3 : U(a, r(b, 6)) ? 5 : U(a, r(b, 8)) ? 6 : U(a, r(b, 7)) ? 7 : U(a, r(b, 21)) ? 8 : U(a, r(b, 25)) ? 9 : U(a, r(b, 28)) ? 10 : U(a, r(b, 2)) ? r(b, 18) || U(a, r(b, 3)) ? 2 : 0 : !r(b, 18) && U(a, r(b, 3)) ? 1 : -1 : -1;
     }
-    function T(a, b) {
-      if (null == b) return null;
+    function S(a, b) {
+      if (b == null) return null;
       b = b.toUpperCase();
       var c = a.g[b];
-      if (null == c) {
-        c = Da[b];
-        if (null == c) return null;
-        c = new C().g(H.m(), c);
+      if (c == null) {
+        c = Ea[b];
+        if (c == null) return null;
+        c = new z().g(G.m(), c);
         a.g[b] = c;
       }
       return c;
     }
-    function V(a, b) {
+    function U(a, b) {
       var c = a.length;
-      return 0 < x(b, 9) && -1 == u(b, 9).indexOf(c) ? false : N(w(b, 2), a);
+      return w(b, 9) > 0 && F(b).indexOf(c) == -1 ? false : M(v(b, 2), a);
     }
-    function cb(a, b) {
-      var c = ab(a, b);
-      var d = w(b, 1);
-      var e = R(a, d, c);
-      null == e || "001" != c && d != db(a, c) ? e = false : (a = Q(b), e = -1 != bb(a, e));
+    function db(a, b) {
+      var c = bb(a, b);
+      var d = v(b, 1);
+      var e = Q(a, d, c);
+      e == null || "001" != c && d != eb(a, c) ? e = false : (a = P(b), e = cb(a, e) != -1);
       return e;
     }
-    function ab(a, b) {
-      if (null == b) return null;
-      var c = w(b, 1);
-      c = J[c];
-      if (null == c) a = null;
-      else if (1 == c.length) a = c[0];
+    function bb(a, b) {
+      if (b == null) return null;
+      var c = v(b, 1);
+      c = I[c];
+      if (c == null) a = null;
+      else if (c.length == 1) a = c[0];
       else a: {
-        b = Q(b);
+        b = P(b);
         for (var d, e = c.length, f = 0; f < e; f++) {
           d = c[f];
-          var g = T(a, d);
+          var g = S(a, d);
           if (q(g, 23)) {
-            if (0 == b.search(r(g, 23))) {
+            if (b.search(r(g, 23)) == 0) {
               a = d;
               break a;
             }
-          } else if (-1 != bb(b, g)) {
+          } else if (cb(b, g) != -1) {
             a = d;
             break a;
           }
@@ -10298,118 +10803,119 @@ var factoryOutput = (() => {
       }
       return a;
     }
-    function S(a) {
-      a = J[a];
-      return null == a ? "ZZ" : a[0];
-    }
-    function db(a, b) {
-      a = T(a, b);
-      if (null == a) throw Error("Invalid region code: " + b);
-      return w(a, 10);
-    }
-    function W(a, b, c, d) {
-      var e = U(c, d), f = 0 == x(e, 9) ? u(r(c, 1), 9) : u(e, 9);
-      e = u(e, 10);
-      if (2 == d) if (Xa(U(c, 0))) a = U(c, 1), Xa(a) && (f = f.concat(0 == x(a, 9) ? u(r(c, 1), 9) : u(a, 9)), f.sort(), 0 == e.length ? e = u(a, 10) : (e = e.concat(u(a, 10)), e.sort()));
-      else return W(a, b, c, 1);
-      if (-1 == f[0]) return 5;
-      b = b.length;
-      if (-1 < e.indexOf(b)) return 4;
-      c = f[0];
-      return c == b ? 0 : c > b ? 2 : f[f.length - 1] < b ? 3 : -1 < f.indexOf(b, 1) ? 0 : 5;
-    }
-    function X(a, b, c) {
-      var d = Q(b);
-      b = w(b, 1);
-      if (!(b in J)) return 1;
-      b = R(a, b, S(b));
-      return W(a, d, b, c);
+    function R(a) {
+      a = I[a];
+      return a == null ? "ZZ" : a[0];
     }
     function eb(a, b) {
+      a = S(a, b);
+      if (a == null) throw Error("Invalid region code: " + b);
+      return v(a, 10);
+    }
+    function V(a, b, c, d) {
+      var e = T(c, d), f = w(e, 9) == 0 ? F(r(c, 1)) : F(e);
+      e = u(e, 10) || [];
+      if (d == 2) if (Ya(T(c, 0))) a = T(c, 1), Ya(a) && (f = f.concat(w(a, 9) == 0 ? F(r(c, 1)) : F(a)), f.sort(), e.length == 0 ? e = u(a, 10) || [] : (e = e.concat(u(a, 10) || []), e.sort()));
+      else return V(a, b, c, 1);
+      if (f[0] == -1) return 5;
+      b = b.length;
+      if (e.indexOf(b) > -1) return 4;
+      c = f[0];
+      return c == b ? 0 : c > b ? 2 : f[f.length - 1] < b ? 3 : f.indexOf(b, 1) > -1 ? 0 : 5;
+    }
+    function W(a, b, c) {
+      var d = P(b);
+      b = v(b, 1);
+      if (!(b in I)) return 1;
+      b = Q(a, b, R(b));
+      return V(a, d, b, c);
+    }
+    function fb(a, b) {
       a = a.toString();
-      if (0 == a.length || "0" == a.charAt(0)) return 0;
-      for (var c, d = a.length, e = 1; 3 >= e && e <= d; ++e) if (c = parseInt(a.substring(0, e), 10), c in J) return b.g(a.substring(e)), c;
+      if (a.length == 0 || a.charAt(0) == "0") return 0;
+      for (var c, d = a.length, e = 1; e <= 3 && e <= d; ++e) if (c = parseInt(a.substring(0, e), 10), c in I) return b.g(a.substring(e)), c;
       return 0;
     }
-    function fb(a, b, c, d, e, f) {
-      if (0 == b.length) return 0;
-      b = new D(b);
+    function gb(a, b, c, d, e, f) {
+      if (b.length == 0) return 0;
+      b = new B(b);
       var g;
-      null != c && (g = r(c, 11));
-      null == g && (g = "NonMatch");
+      c != null && (g = r(c, 11));
+      g == null && (g = "NonMatch");
       var h = b.toString();
-      if (0 == h.length) g = 20;
-      else if (L.test(h)) h = h.replace(L, ""), E(b), b.g(Va(h)), g = 1;
+      if (h.length == 0) g = 20;
+      else if (K.test(h)) h = h.replace(K, ""), C(b), b.g(Wa(h)), g = 1;
       else {
         h = new RegExp(g);
-        Wa(b);
+        Xa(b);
         g = b.toString();
-        if (0 == g.search(h)) {
+        if (g.search(h) == 0) {
           h = g.match(h)[0].length;
-          var l = g.substring(h).match(Ia);
-          l && null != l[1] && 0 < l[1].length && "0" == O(l[1], Ea) ? g = false : (E(b), b.g(g.substring(h)), g = true);
+          var l = g.substring(h).match(Ja);
+          l && l[1] != null && l[1].length > 0 && N(l[1], Fa) == "0" ? g = false : (C(b), b.g(g.substring(h)), g = true);
         } else g = false;
         g = g ? 5 : 20;
       }
       e && t(f, 6, g);
-      if (20 != g) {
-        if (2 >= b.h.length) throw Error("Phone number too short after IDD");
-        a = eb(b, d);
-        if (0 != a) return t(f, 1, a), a;
+      if (g != 20) {
+        if (b.h.length <= 2) throw Error("Phone number too short after IDD");
+        a = fb(b, d);
+        if (a != 0) return t(f, 1, a), a;
         throw Error("Invalid country calling code");
       }
-      if (null != c && (g = w(c, 10), h = "" + g, l = b.toString(), 0 == l.lastIndexOf(h, 0) && (h = new D(l.substring(h.length)), l = r(c, 1), l = new RegExp(w(l, 2)), gb(h, c, null), h = h.toString(), !N(l, b.toString()) && N(l, h) || 3 == W(a, b.toString(), c, -1)))) return d.g(h), e && t(f, 6, 10), t(f, 1, g), g;
+      if (c != null && (g = v(c, 10), h = "" + g, l = b.toString(), l.lastIndexOf(h, 0) == 0 && (h = new B(l.substring(h.length)), l = r(c, 1), l = new RegExp(v(l, 2)), hb(h, c, null), h = h.toString(), !M(l, b.toString()) && M(l, h) || V(a, b.toString(), c, -1) == 3))) return d.g(h), e && t(f, 6, 10), t(f, 1, g), g;
       t(f, 1, 0);
       return 0;
     }
-    function gb(a, b, c) {
+    function hb(a, b, c) {
       var d = a.toString(), e = d.length, f = r(b, 15);
-      if (0 != e && null != f && 0 != f.length) {
-        var g = new RegExp("^(?:" + f + ")");
-        if (e = g.exec(d)) {
-          f = new RegExp(w(r(b, 1), 2));
-          var h = N(f, d), l = e.length - 1;
-          b = r(b, 16);
-          if (null == b || 0 == b.length || null == e[l] || 0 == e[l].length) {
-            if (!h || N(f, d.substring(e[0].length))) null != c && 0 < l && null != e[l] && c.g(e[1]), a.set(d.substring(e[0].length));
-          } else if (d = d.replace(g, b), !h || N(f, d)) null != c && 0 < l && c.g(e[1]), a.set(d);
-        }
+      if (e != 0 && f != null && f.length != 0 && (f = new RegExp("^(?:" + f + ")"), e = f.exec(d))) {
+        var g = RegExp;
+        var h = r(b, 1);
+        h = v(h, 2);
+        g = new g(h);
+        h = M(g, d);
+        var l = e.length - 1;
+        b = r(b, 16);
+        if (b == null || b.length == 0 || e[l] == null || e[l].length == 0) {
+          if (!h || M(g, d.substring(e[0].length))) c != null && l > 0 && e[l] != null && c.g(e[1]), a.set(d.substring(e[0].length));
+        } else if (d = d.replace(f, b), !h || M(g, d)) c != null && l > 0 && c.g(e[1]), a.set(d);
       }
     }
-    function Y(a, b, c) {
-      if (!P(c) && 0 < b.length && "+" != b.charAt(0)) throw Error("Invalid country calling code");
-      return hb(a, b, c, true);
+    function X(a, b, c) {
+      if (!O(c) && b.length > 0 && b.charAt(0) != "+") throw Error("Invalid country calling code");
+      return ib(a, b, c, true);
     }
-    function hb(a, b, c, d) {
-      if (null == b) throw Error("The string supplied did not seem to be a phone number");
-      if (250 < b.length) throw Error("The string supplied is too long to be a phone number");
-      var e = new D();
+    function ib(a, b, c, d) {
+      if (b == null) throw Error("The string supplied did not seem to be a phone number");
+      if (b.length > 250) throw Error("The string supplied is too long to be a phone number");
+      var e = new B();
       var f = b.indexOf(";phone-context=");
-      if (-1 === f) f = null;
+      if (f === -1) f = null;
       else if (f += 15, f >= b.length) f = "";
       else {
         var g = b.indexOf(";", f);
-        f = -1 !== g ? b.substring(f, g) : b.substring(f);
+        f = g !== -1 ? b.substring(f, g) : b.substring(f);
       }
       var h = f;
-      null == h ? g = true : 0 === h.length ? g = false : (g = Na.exec(h), h = Oa.exec(h), g = null !== g || null !== h);
+      h == null ? g = true : h.length === 0 ? g = false : (g = Oa.exec(h), h = Pa.exec(h), g = g !== null || h !== null);
       if (!g) throw Error("The string supplied did not seem to be a phone number");
-      null != f ? ("+" === f.charAt(0) && e.g(f), f = b.indexOf("tel:"), e.g(b.substring(0 <= f ? f + 4 : 0, b.indexOf(";phone-context=")))) : (f = e.g, g = b ?? "", h = g.search(Ja), 0 <= h ? (g = g.substring(h), g = g.replace(La, ""), h = g.search(Ka), 0 <= h && (g = g.substring(0, h))) : g = "", f.call(e, g));
+      f != null ? (f.charAt(0) === "+" && e.g(f), f = b.indexOf("tel:"), e.g(b.substring(f >= 0 ? f + 4 : 0, b.indexOf(";phone-context=")))) : (f = e.g, g = b ?? "", h = g.search(Ka), h >= 0 ? (g = g.substring(h), g = g.replace(Ma, ""), h = g.search(La), h >= 0 && (g = g.substring(0, h))) : g = "", f.call(e, g));
       f = e.toString();
       g = f.indexOf(";isub=");
-      0 < g && (E(e), e.g(f.substring(0, g)));
-      if (!Ua(e.toString())) throw Error("The string supplied did not seem to be a phone number");
+      g > 0 && (C(e), e.g(f.substring(0, g)));
+      if (!Va(e.toString())) throw Error("The string supplied did not seem to be a phone number");
       f = e.toString();
-      if (!(P(c) || null != f && 0 < f.length && L.test(f))) throw Error("Invalid country calling code");
-      f = new I();
+      if (!(O(c) || f != null && f.length > 0 && K.test(f))) throw Error("Invalid country calling code");
+      f = new H();
       d && t(f, 5, b);
       a: {
         b = e.toString();
-        g = b.search(Qa);
-        if (0 <= g && Ua(b.substring(0, g))) {
-          h = b.match(Qa);
-          for (var l = h.length, A = 1; A < l; ++A) if (null != h[A] && 0 < h[A].length) {
-            E(e);
+        g = b.search(Ra);
+        if (g >= 0 && Va(b.substring(0, g))) {
+          h = b.match(Ra);
+          for (var l = h.length, A = 1; A < l; ++A) if (h[A] != null && h[A].length > 0) {
+            C(e);
             e.g(b.substring(0, g));
             b = h[A];
             break a;
@@ -10417,242 +10923,263 @@ var factoryOutput = (() => {
         }
         b = "";
       }
-      0 < b.length && t(f, 3, b);
-      g = T(a, c);
-      b = new D();
+      b.length > 0 && t(f, 3, b);
+      g = S(a, c);
+      b = new B();
       h = 0;
       l = e.toString();
       try {
-        h = fb(a, l, g, b, d, f);
-      } catch (ca) {
-        if ("Invalid country calling code" == ca.message && L.test(l)) {
-          if (l = l.replace(L, ""), h = fb(a, l, g, b, d, f), 0 == h) throw ca;
-        } else throw ca;
+        h = gb(a, l, g, b, d, f);
+      } catch (ea) {
+        if (ea.message == "Invalid country calling code" && K.test(l)) {
+          if (l = l.replace(K, ""), h = gb(a, l, g, b, d, f), h == 0) throw ea;
+        } else throw ea;
       }
-      0 != h ? (e = S(h), e != c && (g = R(a, h, e))) : (Wa(e), b.g(e.toString()), null != c ? (h = w(g, 10), t(
+      h != 0 ? (e = R(h), e != c && (g = Q(a, h, e))) : (Xa(e), b.g(e.toString()), c != null ? (h = v(g, 10), t(
         f,
         1,
         h
       )) : d && (delete f.h[6], f.g && delete f.g[6]));
-      if (2 > b.h.length) throw Error("The string supplied is too short to be a phone number");
-      null != g && (c = new D(), e = new D(b.toString()), gb(e, g, c), a = W(a, e.toString(), g, -1), 2 != a && 4 != a && 5 != a && (b = e, d && 0 < c.toString().length && t(f, 7, c.toString())));
+      if (b.h.length < 2) throw Error("The string supplied is too short to be a phone number");
+      g != null && (c = new B(), e = new B(b.toString()), hb(e, g, c), a = V(a, e.toString(), g, -1), a != 2 && a != 4 && a != 5 && (b = e, d && c.toString().length > 0 && t(f, 7, c.toString())));
       d = b.toString();
       a = d.length;
-      if (2 > a) throw Error("The string supplied is too short to be a phone number");
-      if (17 < a) throw Error("The string supplied is too long to be a phone number");
-      if (1 < d.length && "0" == d.charAt(0)) {
+      if (a < 2) throw Error("The string supplied is too short to be a phone number");
+      if (a > 17) throw Error("The string supplied is too long to be a phone number");
+      if (d.length > 1 && d.charAt(0) == "0") {
         t(f, 4, true);
-        for (a = 1; a < d.length - 1 && "0" == d.charAt(a); ) a++;
-        1 != a && t(f, 8, a);
+        for (a = 1; a < d.length - 1 && d.charAt(a) == "0"; ) a++;
+        a != 1 && t(f, 8, a);
       }
       t(f, 2, parseInt(d, 10));
       return f;
     }
-    function N(a, b) {
-      return (a = b.match(new RegExp("^(?:" + ("string" == typeof a ? a : a.source) + ")$", "i"))) && a[0].length == b.length ? true : false;
+    function M(a, b) {
+      return (a = b.match(new RegExp("^(?:" + (typeof a == "string" ? a : a.source) + ")$", "i"))) && a[0].length == b.length ? true : false;
     }
     ;
-    function ib(a) {
-      this.fa = RegExp("\u2008");
-      this.ja = "";
-      this.v = new D();
-      this.da = "";
-      this.s = new D();
-      this.ba = new D();
-      this.u = true;
-      this.ea = this.ca = this.la = false;
-      this.ga = K.g();
-      this.$ = 0;
-      this.h = new D();
-      this.ha = false;
+    function jb(a) {
+      this.ga = RegExp("\u2008");
+      this.ka = "";
+      this.$ = new B();
+      this.ea = "";
+      this.u = new B();
+      this.da = new B();
+      this.v = true;
+      this.fa = this.aa = this.ma = false;
+      this.ha = J.g();
+      this.ba = 0;
+      this.h = new B();
+      this.ia = false;
       this.o = "";
-      this.g = new D();
+      this.g = new B();
       this.j = [];
-      this.ka = a;
-      this.l = jb(this, this.ka);
+      this.la = a;
+      this.l = kb(this, this.la);
     }
-    var kb = new H();
-    t(kb, 11, "NA");
-    var lb = RegExp("^[-x\u2010-\u2015\u2212\u30FC\uFF0D-\uFF0F \xA0\xAD\u200B\u2060\u3000()\uFF08\uFF09\uFF3B\uFF3D.\\[\\]/~\u2053\u223C\uFF5E]*\\$1[-x\u2010-\u2015\u2212\u30FC\uFF0D-\uFF0F \xA0\xAD\u200B\u2060\u3000()\uFF08\uFF09\uFF3B\uFF3D.\\[\\]/~\u2053\u223C\uFF5E]*(\\$\\d[-x\u2010-\u2015\u2212\u30FC\uFF0D-\uFF0F \xA0\xAD\u200B\u2060\u3000()\uFF08\uFF09\uFF3B\uFF3D.\\[\\]/~\u2053\u223C\uFF5E]*)*$"), mb = /[- ]/;
-    function jb(a, b) {
-      var c = a.ga;
-      b = P(b) ? db(c, b) : 0;
-      a = T(a.ga, S(b));
-      return null != a ? a : kb;
+    var lb = new G();
+    t(lb, 11, "NA");
+    var mb = RegExp("^[-x\u2010-\u2015\u2212\u30FC\uFF0D-\uFF0F \xA0\xAD\u200B\u2060\u3000()\uFF08\uFF09\uFF3B\uFF3D.\\[\\]/~\u2053\u223C\uFF5E]*\\$1[-x\u2010-\u2015\u2212\u30FC\uFF0D-\uFF0F \xA0\xAD\u200B\u2060\u3000()\uFF08\uFF09\uFF3B\uFF3D.\\[\\]/~\u2053\u223C\uFF5E]*(\\$\\d[-x\u2010-\u2015\u2212\u30FC\uFF0D-\uFF0F \xA0\xAD\u200B\u2060\u3000()\uFF08\uFF09\uFF3B\uFF3D.\\[\\]/~\u2053\u223C\uFF5E]*)*$"), nb = /[- ]/;
+    function kb(a, b) {
+      var c = a.ha;
+      b = O(b) ? eb(c, b) : 0;
+      a = S(a.ha, R(b));
+      return a != null ? a : lb;
     }
-    function nb(a) {
+    function ob(a) {
       for (var b = a.j.length, c = 0; c < b; ++c) {
-        var d = a.j[c], e = w(d, 1);
-        if (a.da == e) return false;
+        var d = a.j[c], e = v(d, 1);
+        if (a.ea == e) return false;
         var f = a;
-        var g = d, h = w(g, 1);
-        E(f.v);
+        var g = d, h = v(g, 1);
+        C(f.$);
         var l = f;
-        g = w(g, 2);
+        g = v(g, 2);
         var A = "999999999999999".match(h)[0];
         A.length < l.g.h.length ? l = "" : (l = A.replace(new RegExp(h, "g"), g), l = l.replace(RegExp("9", "g"), "\u2008"));
-        0 < l.length ? (f.v.g(l), f = true) : f = false;
-        if (f) return a.da = e, a.ha = mb.test(r(d, 4)), a.$ = 0, true;
+        l.length > 0 ? (f.$.g(l), f = true) : f = false;
+        if (f) return a.ea = e, a.ia = nb.test(r(d, 4)), a.ba = 0, true;
       }
-      return a.u = false;
+      return a.v = false;
     }
-    function ob(a, b) {
+    function pb(a, b) {
       for (var c = [], d = b.length - 3, e = a.j.length, f = 0; f < e; ++f) {
         var g = a.j[f];
-        0 == x(g, 3) ? c.push(a.j[f]) : (g = r(g, 3, Math.min(d, x(g, 3) - 1)), 0 == b.search(g) && c.push(a.j[f]));
+        w(g, 3) == 0 ? c.push(a.j[f]) : (g = r(g, 3, Math.min(d, w(g, 3) - 1)), b.search(g) == 0 && c.push(a.j[f]));
       }
       a.j = c;
     }
-    function pb(a, b) {
-      a.s.g(b);
+    function qb(a, b) {
+      a.u.g(b);
       var c = b;
-      Ia.test(c) || 1 == a.s.h.length && Ha.test(c) ? ("+" == b ? (c = b, a.ba.g(b)) : (c = Ea[b], a.ba.g(c), a.g.g(c)), b = c) : (a.u = false, a.la = true);
-      if (!a.u) {
-        if (!a.la) {
-          if (qb(a)) {
-            if (rb(a)) return sb(a);
-          } else if (0 < a.o.length && (b = a.g.toString(), E(a.g), a.g.g(a.o), a.g.g(b), b = a.h.toString(), c = b.lastIndexOf(a.o), E(a.h), a.h.g(b.substring(0, c))), a.o != tb(a)) return a.h.g(" "), sb(a);
+      Ja.test(c) || a.u.h.length == 1 && Ia.test(c) ? (b == "+" ? (c = b, a.da.g(b)) : (c = Fa[b], a.da.g(c), a.g.g(c)), b = c) : (a.v = false, a.ma = true);
+      if (!a.v) {
+        if (!a.ma) {
+          if (rb(a)) {
+            if (sb(a)) return tb(a);
+          } else if (a.o.length > 0 && (b = a.g.toString(), C(a.g), a.g.g(a.o), a.g.g(b), b = a.h.toString(), c = b.lastIndexOf(a.o), C(a.h), a.h.g(b.substring(0, c))), a.o != ub(a)) return a.h.g(" "), tb(a);
         }
-        return a.s.toString();
+        return a.u.toString();
       }
-      switch (a.ba.h.length) {
+      switch (a.da.h.length) {
         case 0:
         case 1:
         case 2:
-          return a.s.toString();
+          return a.u.toString();
         case 3:
-          if (qb(a)) a.ea = true;
-          else return a.o = tb(a), ub(a);
+          if (rb(a)) a.fa = true;
+          else return a.o = ub(a), vb(a);
         default:
-          if (a.ea) return rb(a) && (a.ea = false), a.h.toString() + a.g.toString();
-          if (0 < a.j.length) {
-            b = vb(a, b);
-            c = wb(a);
-            if (0 < c.length) return c;
-            ob(a, a.g.toString());
-            return nb(a) ? xb(a) : a.u ? Z(a, b) : a.s.toString();
+          if (a.fa) return sb(a) && (a.fa = false), a.h.toString() + a.g.toString();
+          if (a.j.length > 0) {
+            b = wb(a, b);
+            c = xb(a);
+            if (c.length > 0) return c;
+            pb(a, a.g.toString());
+            return ob(a) ? yb(a) : a.v ? Y(a, b) : a.u.toString();
           }
-          return ub(a);
+          return vb(a);
       }
     }
-    function sb(a) {
-      a.u = true;
-      a.ea = false;
+    function tb(a) {
+      a.v = true;
+      a.fa = false;
       a.j = [];
-      a.$ = 0;
-      E(a.v);
-      a.da = "";
-      return ub(a);
+      a.ba = 0;
+      C(a.$);
+      a.ea = "";
+      return vb(a);
     }
-    function wb(a) {
+    function xb(a) {
       for (var b = a.g.toString(), c = a.j.length, d = 0; d < c; ++d) {
-        var e = a.j[d], f = w(e, 1);
-        if (new RegExp("^(?:" + f + ")$").test(b) && (a.ha = mb.test(r(e, 4)), e = b.replace(new RegExp(f, "g"), r(e, 2)), e = Z(a, e), O(e, Fa) == a.ba)) return e;
+        var e = a.j[d], f = v(e, 1);
+        if (new RegExp("^(?:" + f + ")$").test(b) && (a.ia = nb.test(r(e, 4)), e = b.replace(new RegExp(f, "g"), r(e, 2)), e = Y(a, e), N(e, Ga) == a.da)) return e;
       }
       return "";
     }
-    function Z(a, b) {
+    function Y(a, b) {
       var c = a.h.h.length;
-      return a.ha && 0 < c && " " != a.h.toString().charAt(c - 1) ? a.h + " " + b : a.h + b;
+      return a.ia && c > 0 && a.h.toString().charAt(c - 1) != " " ? a.h + " " + b : a.h + b;
     }
-    function ub(a) {
+    function vb(a) {
       var b = a.g.toString();
-      if (3 <= b.length) {
-        for (var c = a.ca && 0 == a.o.length && 0 < x(a.l, 20) ? u(a.l, 20) : u(a.l, 19), d = c.length, e = 0; e < d; ++e) {
+      if (b.length >= 3) {
+        for (var c = a.aa && a.o.length == 0 && w(a.l, 20) > 0 ? u(a.l, 20) || [] : u(a.l, 19) || [], d = c.length, e = 0; e < d; ++e) {
           var f = c[e];
-          0 < a.o.length && Ya(w(f, 4)) && !r(f, 6) && !q(f, 5) || (0 != a.o.length || a.ca || Ya(w(f, 4)) || r(f, 6)) && lb.test(w(f, 2)) && a.j.push(f);
+          a.o.length > 0 && Za(v(f, 4)) && !r(f, 6) && !q(f, 5) || (a.o.length != 0 || a.aa || Za(v(f, 4)) || r(f, 6)) && mb.test(v(f, 2)) && a.j.push(f);
         }
-        ob(a, b);
-        b = wb(a);
-        return 0 < b.length ? b : nb(a) ? xb(a) : a.s.toString();
+        pb(a, b);
+        b = xb(a);
+        return b.length > 0 ? b : ob(a) ? yb(a) : a.u.toString();
       }
-      return Z(a, b);
+      return Y(a, b);
     }
-    function xb(a) {
+    function yb(a) {
       var b = a.g.toString(), c = b.length;
-      if (0 < c) {
-        for (var d = "", e = 0; e < c; e++) d = vb(a, b.charAt(e));
-        return a.u ? Z(a, d) : a.s.toString();
+      if (c > 0) {
+        for (var d = "", e = 0; e < c; e++) d = wb(a, b.charAt(e));
+        return a.v ? Y(a, d) : a.u.toString();
       }
       return a.h.toString();
     }
-    function tb(a) {
+    function ub(a) {
       var b = a.g.toString(), c = 0;
-      if (1 != r(a.l, 10)) var d = false;
-      else d = a.g.toString(), d = "1" == d.charAt(0) && "0" != d.charAt(1) && "1" != d.charAt(1);
-      d ? (c = 1, a.h.g("1").g(" "), a.ca = true) : q(a.l, 15) && (d = new RegExp("^(?:" + r(a.l, 15) + ")"), d = b.match(d), null != d && null != d[0] && 0 < d[0].length && (a.ca = true, c = d[0].length, a.h.g(b.substring(0, c))));
-      E(a.g);
+      if (r(a.l, 10) != 1) var d = false;
+      else d = a.g.toString(), d = d.charAt(0) == "1" && d.charAt(1) != "0" && d.charAt(1) != "1";
+      d ? (c = 1, a.h.g("1").g(" "), a.aa = true) : q(a.l, 15) && (d = new RegExp("^(?:" + r(a.l, 15) + ")"), d = b.match(d), d != null && d[0] != null && d[0].length > 0 && (a.aa = true, c = d[0].length, a.h.g(b.substring(0, c))));
+      C(a.g);
       a.g.g(b.substring(c));
       return b.substring(0, c);
     }
-    function qb(a) {
-      var b = a.ba.toString(), c = new RegExp("^(?:\\+|" + r(a.l, 11) + ")");
-      c = b.match(c);
-      return null != c && null != c[0] && 0 < c[0].length ? (a.ca = true, c = c[0].length, E(a.g), a.g.g(b.substring(c)), E(a.h), a.h.g(b.substring(0, c)), "+" != b.charAt(0) && a.h.g(" "), true) : false;
-    }
     function rb(a) {
-      if (0 == a.g.h.length) return false;
-      var b = new D(), c = eb(a.g, b);
-      if (0 == c) return false;
-      E(a.g);
+      var b = a.da.toString(), c = new RegExp("^(?:\\+|" + r(a.l, 11) + ")");
+      c = b.match(c);
+      return c != null && c[0] != null && c[0].length > 0 ? (a.aa = true, c = c[0].length, C(a.g), a.g.g(b.substring(c)), C(a.h), a.h.g(b.substring(0, c)), b.charAt(0) != "+" && a.h.g(" "), true) : false;
+    }
+    function sb(a) {
+      if (a.g.h.length == 0) return false;
+      var b = new B(), c = fb(a.g, b);
+      if (c == 0) return false;
+      C(a.g);
       a.g.g(b.toString());
-      b = S(c);
-      "001" == b ? a.l = T(a.ga, "" + c) : b != a.ka && (a.l = jb(a, b));
+      b = R(c);
+      "001" == b ? a.l = S(a.ha, "" + c) : b != a.la && (a.l = kb(a, b));
       a.h.g("" + c).g(" ");
       a.o = "";
       return true;
     }
-    function vb(a, b) {
-      var c = a.v.toString();
-      if (0 <= c.substring(a.$).search(a.fa)) {
-        var d = c.search(a.fa);
-        b = c.replace(a.fa, b);
-        E(a.v);
-        a.v.g(b);
-        a.$ = d;
-        return b.substring(0, a.$ + 1);
+    function wb(a, b) {
+      var c = a.$.toString();
+      if (c.substring(a.ba).search(a.ga) >= 0) {
+        var d = c.search(a.ga);
+        b = c.replace(a.ga, b);
+        C(a.$);
+        a.$.g(b);
+        a.ba = d;
+        return b.substring(0, a.ba + 1);
       }
-      1 == a.j.length && (a.u = false);
-      a.da = "";
-      return a.s.toString();
+      a.j.length == 1 && (a.v = false);
+      a.ea = "";
+      return a.u.toString();
     }
     ;
-    const yb = (a) => {
+    const zb = {};
+    ["E164", "INTERNATIONAL", "NATIONAL", "RFC3966"].forEach((a, b) => {
+      zb[a] = b;
+    });
+    const Z = {};
+    "FIXED_LINE MOBILE FIXED_LINE_OR_MOBILE TOLL_FREE PREMIUM_RATE SHARED_COST VOIP PERSONAL_NUMBER PAGER UAN VOICEMAIL UNKNOWN".split(" ").forEach((a, b) => {
+      Z[a] = b;
+    });
+    Z.UNKNOWN = -1;
+    const Ab = {};
+    "IS_POSSIBLE INVALID_COUNTRY_CODE TOO_SHORT TOO_LONG IS_POSSIBLE_LOCAL_ONLY INVALID_LENGTH".split(" ").forEach((a, b) => {
+      Ab[a] = b;
+    });
+    const Bb = {};
+    Object.keys(Z).forEach((a) => {
+      Bb[Z[a]] = a;
+    });
+    const Cb = {};
+    Object.keys(Ab).forEach((a) => {
+      Cb[Ab[a]] = a;
+    });
+    const Db = (a) => {
       const b = [];
       a.includes("FIXED_LINE_OR_MOBILE") ? (a.includes("MOBILE") || b.push("MOBILE"), a.includes("FIXED_LINE") || b.push("FIXED_LINE")) : (a.includes("MOBILE") || a.includes("FIXED_LINE")) && b.push("FIXED_LINE_OR_MOBILE");
       return a.concat(b);
-    }, zb = { FIXED_LINE: 0, MOBILE: 1, FIXED_LINE_OR_MOBILE: 2, TOLL_FREE: 3, PREMIUM_RATE: 4, SHARED_COST: 5, VOIP: 6, PERSONAL_NUMBER: 7, PAGER: 8, UAN: 9, VOICEMAIL: 10, UNKNOWN: -1 };
-    m("intlTelInputUtilsTemp", {});
-    m("intlTelInputUtilsTemp.formatNumberAsYouType", (a, b) => {
+    };
+    m("utils", {});
+    m("utils.formatNumberAsYouType", (a, b) => {
       try {
-        const c = a.replace(/[^+0-9]/g, ""), d = new ib(b);
+        const c = a.replace(/[^+0-9]/g, ""), d = new jb(b);
         b = "";
-        for (let e = 0; e < c.length; e++) d.ja = pb(d, c.charAt(e)), b = d.ja;
+        for (let e = 0; e < c.length; e++) d.ka = qb(d, c.charAt(e)), b = d.ka;
         return b;
       } catch {
         return a;
       }
     });
-    m("intlTelInputUtilsTemp.formatNumber", (a, b, c) => {
+    m("utils.formatNumber", (a, b, c) => {
       try {
-        const e = K.g(), f = Y(e, a, b);
-        var d = X(e, f, -1);
-        return 0 == d || 4 == d ? e.format(f, "undefined" === typeof c ? 0 : c) : a;
+        const e = J.g(), f = X(e, a, b);
+        var d = W(e, f, -1);
+        return d == 0 || d == 4 ? e.format(f, typeof c === "undefined" ? 0 : zb[c]) : a;
       } catch {
         return a;
       }
     });
-    m("intlTelInputUtilsTemp.getExampleNumber", (a, b, c, d) => {
+    m("utils.getExampleNumber", (a, b, c) => {
       try {
-        const l = K.g();
+        const l = J.g();
         a: {
-          var e = l;
-          if (P(a)) {
-            var f = U(T(e, a), c);
+          var d = l, e = Z[b];
+          if (O(a)) {
+            var f = T(S(d, a), e);
             try {
               if (q(f, 6)) {
                 var g = r(f, 6);
-                var h = hb(e, g, a, false);
+                var h = ib(d, g, a, false);
                 break a;
               }
             } catch (A) {
@@ -10660,82 +11187,75 @@ var factoryOutput = (() => {
           }
           h = null;
         }
-        return l.format(h, d ? 0 : b ? 2 : 1);
+        return l.format(h, zb[c]);
       } catch {
         return "";
       }
     });
-    m("intlTelInputUtilsTemp.getExtension", (a, b) => {
+    m("utils.getExtension", (a, b) => {
       try {
-        return r(Y(K.g(), a, b), 3);
+        var c = X(J.g(), a, b);
+        return r(c, 3);
       } catch {
         return "";
       }
     });
-    m("intlTelInputUtilsTemp.getNumberType", (a, b) => {
+    m("utils.getNumberType", (a, b) => {
       try {
-        const c = K.g(), d = Y(c, a, b);
-        return $a(c, d);
+        const c = J.g(), d = X(c, a, b), e = ab(c, d);
+        return Bb[e] || null;
       } catch {
-        return -99;
+        return null;
       }
     });
-    m("intlTelInputUtilsTemp.getValidationError", (a, b) => {
-      if (!b) return 1;
+    m("utils.getValidationError", (a, b) => {
+      if (!b) return "INVALID_COUNTRY_CODE";
       try {
-        const c = K.g(), d = Y(c, a, b);
-        return X(c, d, -1);
+        const c = J.g(), d = X(c, a, b), e = W(c, d, -1);
+        return Cb[e] || null;
       } catch (c) {
-        return "Invalid country calling code" === c.message ? 1 : 3 >= a.length || "Phone number too short after IDD" === c.message || "The string supplied is too short to be a phone number" === c.message ? 2 : "The string supplied is too long to be a phone number" === c.message ? 3 : -99;
+        return c.message === "Invalid country calling code" ? "INVALID_COUNTRY_CODE" : a.length <= 3 || c.message === "Phone number too short after IDD" || c.message === "The string supplied is too short to be a phone number" ? "TOO_SHORT" : c.message === "The string supplied is too long to be a phone number" ? "TOO_LONG" : null;
       }
     });
-    m("intlTelInputUtilsTemp.isValidNumber", (a, b, c) => {
+    m("utils.isValidNumber", (a, b, c) => {
       try {
-        const d = K.g(), e = Y(d, a, b), f = cb(d, e);
+        const d = J.g(), e = X(d, a, b);
         if (c) {
-          const g = yb(c).map((h) => zb[h]);
-          return f && g.includes($a(d, e));
+          const f = Db(c);
+          for (let g of f) if (W(d, e, Z[g]) === 0) return true;
+          return false;
+        }
+        return W(d, e, -1) === 0;
+      } catch {
+        return false;
+      }
+    });
+    m("utils.isValidNumberPrecise", (a, b, c) => {
+      try {
+        const d = J.g(), e = X(d, a, b), f = db(d, e);
+        if (c) {
+          const g = Db(c).map((h) => Z[h]);
+          return f && g.includes(ab(d, e));
         }
         return f;
       } catch {
         return false;
       }
     });
-    m("intlTelInputUtilsTemp.isPossibleNumber", (a, b, c) => {
+    m("utils.getCoreNumber", (a, b) => {
       try {
-        const d = K.g(), e = Y(d, a, b);
-        if (c) {
-          const f = yb(c);
-          for (let g of f) if (0 === X(d, e, zb[g])) return true;
-          return false;
-        }
-        return 0 === X(d, e, -1);
-      } catch {
-        return false;
-      }
-    });
-    m("intlTelInputUtilsTemp.getCoreNumber", (a, b) => {
-      try {
-        return r(Y(K.g(), a, b), 2).toString();
+        var c = X(J.g(), a, b);
+        return r(c, 2).toString();
       } catch {
         return "";
       }
     });
-    m("intlTelInputUtilsTemp.numberFormat", { E164: 0, INTERNATIONAL: 1, NATIONAL: 2, RFC3966: 3 });
-    m("intlTelInputUtilsTemp.numberType", zb);
-    m("intlTelInputUtilsTemp.validationError", { IS_POSSIBLE: 0, INVALID_COUNTRY_CODE: 1, TOO_SHORT: 2, TOO_LONG: 3, IS_POSSIBLE_LOCAL_ONLY: 4, INVALID_LENGTH: 5 });
-  })();
-  var globalContext = typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : void 0;
-  var utils = globalContext.intlTelInputUtilsTemp;
-  delete globalContext.intlTelInputUtilsTemp;
-  var utils_default = utils;
+  }).call(_scope);
+  var utils_default = _scope.utils;
 
-  // src/js/intl-tel-input/intlTelInputWithUtils.ts
-  intl_tel_input_default.utils = utils_default;
-  var intlTelInputWithUtils_default = intl_tel_input_default;
+  // packages/core/src/js/intlTelInputWithUtils.ts
+  intlTelInput_default.utils = utils_default;
+  var intlTelInputWithUtils_default = intlTelInput_default;
   return __toCommonJS(intlTelInputWithUtils_exports);
 })();
-
-// UMD
-  return factoryOutput.default;
-}));
+var intlTelInput = _factory.default;

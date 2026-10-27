@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.3.2 (2026-01-14)
+ * TinyMCE version 8.9.1 (2026-09-09)
  */
 
 (function () {
@@ -634,13 +634,17 @@
         }
     };
 
+    const PLUGIN_CODE = 'quickbars';
     var Plugin = () => {
-        global$1.add('quickbars', (editor) => {
+        global$1.add(PLUGIN_CODE, (editor) => {
             register(editor);
             register$1(editor);
             setupButtons(editor);
             addToEditor$1(editor);
             addToEditor(editor);
+            return {
+                getMetadata: () => ({ name: 'Quick Toolbars', type: 'opensource', slug: PLUGIN_CODE })
+            };
         });
     };
 

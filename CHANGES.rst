@@ -5,6 +5,38 @@ Changelog
 ------------------
 
 - #2931 Fix address widget labels for countries with mixed subdivision types
+- #3039 Do not reset the laboratory name when the setup profile is imported again
+- #3038 Answer a refused JSON API request with its own status
+- #3036 Fix setting a sample's specification through the API
+- #3062 Allow to make Sample Condition required
+- #3047 Fix ASTM import crashing on a sender with null components
+- #3035 Drop the stale marker behavior from the Setup FTI
+- #3034 Store the ID formatting rows as unicode
+- #3033 Give the immediate results entry setting a default
+- #3030 Fix the missing signature in the worksheet print view
+- #3029 Let the worksheet pick the slot for reference analyses
+- #3028 Offer every valid reference sample when adding one to a worksheet
+- #3060 Fix empty link text in the Client share field
+- #3059 Fix Indian Rupee symbol displayed as raw CLDR choice pattern
+- #3053 Fix TypeError when saving a Method with empty Instruments
+- #3023 Return a 404 when at_download is traversed on non-Archetypes content
+- #3022 Build the JavaScript bundles in CI
+- #3020 Use UnorderedOrdering for Instruments to avoid ZODB conflicts
+- #3021 Update JavaScript dependencies
+- #3019 Fix traceback in the user profile after visiting the add user form
+- #3017 Stop the datetime API doctest from leaking the process timezone
+- #3016 Localize the dashboard date to the active language
+- #3015 Fix analyses with empty multi-valued results can be submitted
+- #3014 Fix AT to DX upgrade failing with undefined property 'add_permission'
+- #3001 Skip read-only fields when validating objects on create/update
+- #2994 Migrate Method content type to Dexterity
+- #2991 Replace the jQuery DataGrid handler with a ReactJS widget
+- #2990 Vendor the datagrid widget and drop collective.z3cform.datagridfield
+- #2998 Stop leaking exception tracebacks in JSON API error responses
+- #2980 Migrate AuditLog to Dexterity and move audit log machinery to senaite.core
+- #2979 Show precise element-level audit log diffs for lists and record fields
+- #3013 Add a doctest for api.get_uid_catalog_path
+- #3012 Remove stale uid_catalog records that break lookups by UID
 - #2995 Add interactive upgrade, catalog and user console scripts
 - #3008 Filter sidebar root folders by permission instead of by catalog
 - #3007 Fix empty sticker template selection when printing stickers from a listing
