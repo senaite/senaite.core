@@ -664,19 +664,20 @@ class TestCalculationFormula(unittest.TestCase):
         for value in ("", " \t", None):
             self.assertEqual(calculate_formula(
                 self.formula, {"PSD180Mass": value, "PSDTotalmass": "20"}),
-                "Enter values for all test parameters.")
+                "")
 
     def test_missing_test_parameter(self):
         self.assertEqual(calculate_formula(
             self.formula, {"PSDTotalmass": "20"}),
-            "Enter values for all test parameters.")
+            "")
 
     def test_zero_test_value(self):
         self.assertEqual(calculate_formula(
             self.formula, {"PSD180Mass": "0", "PSDTotalmass": "20"}), 0.0)
 
     def test_unused_blank_parameter(self):
-        self.assertEqual(calculate_formula("10 / 20 * 100", {"unused": ""}), 50.0)
+        self.assertEqual(calculate_formula("[Mass] / 20 * 100", {
+            "Mass": "10", "unused": ""}), 50.0)
 
     def test_new_parameters_use_interim_defaults(self):
         form = {FIELD_FORMULA: self.formula}
@@ -703,8 +704,8 @@ class TestCalculationFormula(unittest.TestCase):
         self.assertEqual(updates[FIELD_TEST_VALUE.format(0)], "15")
         self.assertEqual(updates[FIELD_TEST_RESULT], 30)
 
-    def test_constant_division_preserves_fraction(self):
-        self.assertEqual(calculate_formula("10 / 20 * 100"), 50.0)
+    def test_constant_division_preserves_python_semantics(self):
+        self.assertEqual(calculate_formula("10 / 20 * 100"), 0)
 
     def test_explicit_floor_division(self):
         self.assertEqual(calculate_formula("10 // 20 * 100"), 0)

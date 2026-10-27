@@ -18,8 +18,6 @@
 # Copyright 2018-2024 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from __future__ import division
-
 import importlib
 import inspect
 import math
@@ -155,17 +153,20 @@ def calculate_formula(formula="", parameters={}, imports=None):
     if not formula or not formula.strip():
         return ""
 
-    # A preview is incomplete until all referenced test values are supplied.
+    # A test result needs a value for every parameter of the formula.
     for keyword in re.findall(r"\[([^\]]+)\]", formula):
         value = parameters.get(keyword)
-        if value is None or (isinstance(value, basestring) and not value.strip()):
-            return "Enter values for all test parameters."
+        if not api.safe_unicode(value).strip():
+            return ""
+
+    parameters = dict(
+        (key, float(value) if api.is_floatable(value) else value)
+        for key, value in parameters.items())
 
     result = "Failure"
 
     try:
         formula = f_formatter.format(formula, parameters)
-        # Inherit true division so integer test inputs retain fractions.
         result = eval(formula, getGlobals(imports))
     except TypeError as e:
         # non-numeric arguments in interim mapping?

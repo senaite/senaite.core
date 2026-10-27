@@ -136,6 +136,8 @@ class EditForm(EditFormAdapterBase):
         return self.data
 
     def get_interim_values(self, data):
+        """Return interim field keywords mapped to their form values.
+        """
         form = data.get("form", {})
         values = {}
         for name, keyword in form.items():
