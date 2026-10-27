@@ -3,6 +3,15 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Reindex Sample Point sample type titles"
+      description="Populate sampletype_title for existing Sample Points so
+                   sorting and filtering by Sample Type work."
+      source="2760"
+      destination="2761"
+      handler=".v02_07_000.reindex_samplepoint_sampletype_title"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Drop the stale marker behavior from the Setup FTI"
       description="The FTI lists a marker interface among the type's
                    behaviors. It is not a registered behavior, so looking the
