@@ -4,6 +4,8 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #2789 Number of batch samples
+
 - #3039 Do not reset the laboratory name when the setup profile is imported again
 - #3038 Answer a refused JSON API request with its own status
 - #3036 Fix setting a sample's specification through the API

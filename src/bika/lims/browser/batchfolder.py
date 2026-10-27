@@ -84,7 +84,8 @@ class BatchFolderContentsView(ListingView):
                 "title": _("Client Batch ID"),
                 "index": "getClientBatchID", }),
             ("getNumberOfSamples", {
-                "title": _("Samples"), }),
+                "title": _("Samples"),
+                "sortable": False, }),
             ("state_title", {
                 "title": _("State"),
                 "sortable": False, }),

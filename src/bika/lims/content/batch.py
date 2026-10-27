@@ -271,12 +271,9 @@ class Batch(ATFolder, ClientAwareMixin):
         return total_progress
 
     def getNumberOfSamples(self):
+        """Returns the number of samples, without partitions
         """
-        Returns the number of samples.
-        :returns: number of samples
-        :rtype: integer
-        """
-        samples = self.getAnalysisRequestsBrains()
+        samples = self.getAnalysisRequestsBrains(isRootAncestor=True)
         return len(samples)
 
 
