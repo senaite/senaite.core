@@ -108,6 +108,24 @@ Auto Log Off:
     >>> bikasetup.getAutoLogOff() == senaite_setup.getAutoLogOff()
     True
 
+The value is stored as the plone.session cookie ``timeout`` (in seconds), and
+the plugin's ``refresh_interval`` is kept strictly below it, so an active
+user's cookie is refreshed by the beacon before it can expire:
+
+    >>> session = portal.acl_users.session
+    >>> session.timeout
+    3600
+    >>> 0 < session.refresh_interval < session.timeout
+    True
+
+Setting it to 0 disables auto log-off (the cookie never expires):
+
+    >>> senaite_setup.setAutoLogOff(0)
+    >>> senaite_setup.getAutoLogOff()
+    0
+    >>> session.timeout
+    0
+
 Restrict Worksheet Users Access:
 
     >>> senaite_setup.setRestrictWorksheetUsersAccess(True)

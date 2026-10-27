@@ -1343,8 +1343,11 @@ class window.AnalysisRequestAdd
       name_el = $("div.service-title", $service)
       name = name_el.html().toLowerCase()
 
-      # hide service if no match found and not checked for any sample
-      if name.indexOf(term) isnt -1
+      # get the service keyword
+      keyword = ($service.data("keyword") or "").toString().toLowerCase()
+
+      # match against the human name or the keyword
+      if name.indexOf(term) isnt -1 or keyword.indexOf(term) isnt -1
         matches.push service_uid
 
     return matches

@@ -199,6 +199,11 @@ class DynamicResultsRange(object):
                 continue
             # set the range value
             rr[key] = value
+
+        comment = spec.get("rangecomment", marker)
+        if comment and api.is_string(comment):
+            rr["rangecomment"] = comment.strip()
+
         # return the updated result range
         return rr
 

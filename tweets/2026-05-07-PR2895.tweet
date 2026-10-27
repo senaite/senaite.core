@@ -1,4 +1,0 @@
-SENAITE samples can now be duplicated in one click — a new
-workflow transition creates a fresh sibling sample, ready for
-new results, with full lineage tracked back to the source.
-https://github.com/senaite/senaite.core/pull/2895

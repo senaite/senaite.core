@@ -19,15 +19,17 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from senaite.core.registry import get_registry_record
 
 
 def on_client_created(client, event):
     """Event handler when a new Client was created
+
+    Access for client users is granted dynamically via the
+    ILocalRoleProvider adapter registered on IClient (and
+    IClientAwareMixin). No persistent group or local role is created
+    here; the user's `linked_client_uid` member property (set when a
+    contact is linked) is what authorises access at query time.
     """
-    if get_registry_record("auto_create_client_group", True):
-        # create a new client group
-        client.create_group()
 
 
 def on_attachments_deleted(container, event):

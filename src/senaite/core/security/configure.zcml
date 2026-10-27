@@ -1,0 +1,26 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope">
+
+  <!-- Dynamic Owner role for client users: grant Owner on a client
+       tree to any user whose `linked_client_uid` member property
+       matches the client's UID. -->
+  <adapter
+      factory=".clientrole.ClientLinkRoleProvider"
+      name="senaite.core.clientrole.aware"
+      />
+
+  <adapter
+      factory=".clientrole.ClientRoleProvider"
+      name="senaite.core.clientrole.client"
+      />
+
+  <!-- Global `Client` role for linked client users: grants the role on
+       the site root so local-role acquisition propagates it
+       everywhere. Restores the global grant the per-client group used
+       to provide before #2938. -->
+  <adapter
+      factory=".clientrole.GlobalClientRoleProvider"
+      name="senaite.core.clientrole.global"
+      />
+
+</configure>

@@ -29,11 +29,11 @@ from Products.Archetypes.public import DisplayList
 
 def checkUserAccess(worksheet, request, redirect=True):
     """ Checks if the current user has granted access to the worksheet.
-        If the user is an analyst without LabManager, LabClerk and
-        RegulatoryInspector roles and the option 'Allow analysts
-        only to access to the Worksheets on which they are assigned' is
-        ticked and the above condition is true, it will redirect to
-        the main Worksheets view.
+        If the user is an analyst without LabManager and LabClerk
+        roles and the option 'Allow analysts only to access to the
+        Worksheets on which they are assigned' is ticked and the above
+        condition is true, it will redirect to the main Worksheets
+        view.
         Returns False if the user has no access, otherwise returns True
     """
     # Deny access to foreign analysts

@@ -68,7 +68,6 @@
       <permission-role>Manager</permission-role>
       <permission-role>Preserver</permission-role>
       <permission-role>Publisher</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
@@ -82,7 +81,6 @@
       <permission-role>Manager</permission-role>
       <permission-role>Preserver</permission-role>
       <permission-role>Publisher</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>

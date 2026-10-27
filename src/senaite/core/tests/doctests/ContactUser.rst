@@ -114,18 +114,108 @@ Linking the user to a client contact grants access to this client::
     True
     >>> transaction.commit()
 
-Linking a user adds this user to the `Client` group::
+Linking a user records the linked client's UID on the user profile.
+The dynamic local-role provider grants access on the client tree
+from that property; no per-client group is created and no local
+role is persisted on the client folder::
 
-    >>> client_group = client1.get_group()
-    >>> user1.getId() in client_group.getAllGroupMemberIds()
+    >>> portal_groups = portal.portal_groups
+    >>> portal_groups.getGroupById(client1.getId()) is None
     True
 
-This gives the user the global `Client` role::
+    >>> portal_user1 = portal.acl_users.getUserById(user1.getId())
+    >>> portal_user1.getProperty("linked_client_uid") == client1.UID()
+    True
+
+Linking also writes the back-reference to the linked contact on
+the user profile, so a logged-in user can be resolved back to its
+contact via the `linked_contact_uid` property::
+
+    >>> portal_user1.getProperty("linked_contact_uid") == contact1.UID()
+    True
+
+Both keys are registered on portal_memberdata the first time a
+contact is linked. The write goes through the mutable_properties
+plugin, which reads its schema from portal_memberdata on every
+call, so the property is persisted even when it was registered in
+the same request as the user was created::
+
+    >>> portal_memberdata = portal.portal_memberdata
+    >>> bool(portal_memberdata.hasProperty("linked_contact_uid"))
+    True
+    >>> bool(portal_memberdata.hasProperty("linked_client_uid"))
+    True
+
+The property is persisted by the mutable_properties PAS plugin
+(not by an in-memory sheet from another property plugin). Reading
+the property sheet back directly proves the value lives there::
+
+    >>> mutable_properties = portal.acl_users.mutable_properties
+    >>> sheet = mutable_properties.getPropertiesForUser(portal_user1)
+    >>> sheet.getProperty("linked_client_uid") == client1.UID()
+    True
+    >>> sheet.getProperty("linked_contact_uid") == contact1.UID()
+    True
+
+The dynamic role provider works alongside a catalog-side token: the
+client and every IClientAwareMixin descendant carry a stable
+`client:<client_uid>` entry in `allowedRolesAndUsers`, so a linked
+client user can find their content without any persisted local
+role::
+
+    >>> from senaite.core.catalog import CLIENT_CATALOG
+    >>> client_brain = portal[CLIENT_CATALOG](UID=client1.UID())[0]
+    >>> ("client:" + client1.UID()) in client_brain.allowedRolesAndUsers
+    True
+
+`BaseCatalog._listAllowedRolesAndUsers` injects the matching token
+for any user whose `linked_client_uid` is set. The injection is
+what closes the loop with the indexer above — a catalog query by
+the linked user picks up the client's content while no other
+client's token is added::
+
+    >>> catalog = portal[CLIENT_CATALOG]
+    >>> tokens = catalog._listAllowedRolesAndUsers(portal_user1)
+    >>> ("client:" + client1.UID()) in tokens
+    True
+    >>> ("client:" + client2.UID()) in tokens
+    False
+
+A user without a linked client gets no `client:` token at all, so
+the runtime cost of the override is one member-property read per
+query::
+
+    >>> portal_user2 = portal.acl_users.getUserById(user2.getId())
+    >>> tokens2 = catalog._listAllowedRolesAndUsers(portal_user2)
+    >>> [t for t in tokens2 if t.startswith("client:")]
+    []
+
+The `senaite.core: View Navigation` permission gates the sidebar
+viewlet. It is granted to the `Client` role, and the global
+provider's role grant must reach the portal root, otherwise linked
+client users would have no navigation panel after login. Asserting
+the permission resolves for the linked user is the regression
+sentinel that protects the sidebar render::
+
+    >>> from AccessControl import getSecurityManager
+    >>> from AccessControl.SecurityManagement import newSecurityManager
+    >>> from AccessControl.SecurityManagement import setSecurityManager
+    >>> previous_sm = getSecurityManager()
+    >>> newSecurityManager(None, portal_user1)
+    >>> bool(getSecurityManager().checkPermission(
+    ...     "senaite.core: View Navigation", portal))
+    True
+    >>> setSecurityManager(previous_sm)
+
+The user does not get the `Client` role globally; the role is
+granted dynamically on the client tree only::
 
     >>> sorted(ploneapi.user.get_roles(user=user1))
-    ['Authenticated', 'Client', 'Member']
+    ['Authenticated', 'Member']
 
-It also grants local `Owner` role on the client object::
+In the context of the client, both `Owner` and `Client` are
+granted dynamically by the ILocalRoleProvider on IClient /
+IClientAwareMixin::
 
     >>> sorted(ploneapi.user.get_roles(user=user1, obj=client1))
     ['Authenticated', 'Client', 'Member', 'Owner']
@@ -171,6 +261,16 @@ The user has no local owner role anymore on the client::
     Traceback (most recent call last):
     ...
     Unauthorized: ...
+
+Both linked-UID properties on the user are cleared by unlinkUser,
+so the dynamic role provider no longer grants any role and a
+re-link starts from a clean state::
+
+    >>> portal_user1 = portal.acl_users.getUserById(user1.getId())
+    >>> portal_user1.getProperty("linked_client_uid", "")
+    ''
+    >>> portal_user1.getProperty("linked_contact_uid", "")
+    ''
 
 LabContact users
 ----------------

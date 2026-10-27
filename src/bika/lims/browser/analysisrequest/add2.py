@@ -60,6 +60,7 @@ from senaite.core.api.analysisservice import get_calculation_dependencies_for
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.contact import IContactSchema
+from senaite.core.i18n import get_currency_symbol
 from senaite.core.interfaces import IAfterCreateSampleHook
 from senaite.core.p3compat import cmp
 from senaite.core.permissions import TransitionMultiResults
@@ -110,7 +111,7 @@ ALLOW_MULTI_PASTE_WIDGET_TYPES = [
     "Products.Archetypes.Widget.StringWidget",
     "Products.Archetypes.Widget.BooleanWidget",
     "bika.lims.browser.widgets.priorityselectionwidget.PrioritySelectionWidget",  # noqa
-    "bika.lims.browser.widgets.remarkswidget.RemarksWidget",
+    "senaite.core.browser.widgets.remarkswidget.RemarksWidget",
     "bika.lims.browser.widgets.selectionwidget.SelectionWidget",
 ]
 
@@ -259,6 +260,12 @@ class AnalysisRequestAddView(BrowserView):
         currency = setup.getCurrency()
         currencies = locales.getLocale("en").numbers.currencies
         return currencies[currency]
+
+    def get_currency_symbol(self):
+        """Returns the symbol of the configured currency
+        """
+        setup = api.get_senaite_setup()
+        return get_currency_symbol(setup.getCurrency())
 
     def get_ar_count(self):
         """Return the ar_count request paramteter
@@ -1189,7 +1196,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "methods": map(self.get_method_info, obj.getMethods()),
             "calculation": self.get_calculation_info(obj.getCalculation()),
             "price": obj.getPrice(),
-            "currency_symbol": self.get_currency().symbol,
+            "currency_symbol": self.get_currency_symbol(),
             "accredited": obj.getAccredited(),
             "category": obj.getCategoryTitle(),
             "poc": obj.getPointOfCapture(),

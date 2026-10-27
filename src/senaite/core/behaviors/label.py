@@ -28,10 +28,11 @@ from plone.dexterity.behavior import DexterityBehaviorAssignable
 from plone.dexterity.schema import SCHEMA_CACHE
 from plone.supermodel import model
 from plone.supermodel.directives import fieldset
-from Products.CMFCore import permissions
 from senaite.core.api import label as label_api
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.interfaces import ICanHaveLabels
+from senaite.core.permissions import ManageLabels
+from senaite.core.permissions import ViewLabels
 from senaite.core.z3cform.widgets.queryselect import QuerySelectWidgetFactory
 from zope import schema
 from zope.component import adapter
@@ -86,6 +87,13 @@ class ILabelSchema(model.Schema):
         label=u"Labels",
         fields=["Labels"])
 
+    # Gate the inline Labels chooser on the edit form by the same
+    # permissions used for chip visibility (ViewLabels) and chip
+    # add/remove (ManageLabels). Client users without ViewLabels
+    # neither see the field nor receive the chooser in form data.
+    directives.read_permission(Labels=ViewLabels)
+    directives.write_permission(Labels=ManageLabels)
+
     directives.widget(
         "Labels",
         QuerySelectWidgetFactory,
@@ -131,11 +139,11 @@ class LabelSchema(object):
     def __init__(self, context):
         self.context = context
 
-    @security.protected(permissions.View)
+    @security.protected(ViewLabels)
     def getLabels(self):
         return label_api.get_obj_labels(self.context)
 
-    @security.protected(permissions.ModifyPortalContent)
+    @security.protected(ManageLabels)
     def setLabels(self, value):
         labels = label_api.to_labels(value)
         return label_api.set_obj_labels(self.context, labels)

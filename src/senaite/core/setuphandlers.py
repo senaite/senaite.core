@@ -81,9 +81,11 @@ class HiddenProfiles(object):
             "Products.TextIndexNG3:default",
             "archetypes.multilingual:default",
             "archetypes.referencebrowserwidget:default",
-            "collective.js.jqueryui:default"
+            "collective.js.jqueryui:base",
+            "collective.js.jqueryui:bbb",
+            "collective.js.jqueryui:default",
+            "plone.app.caching:default",
             "plone.app.iterate:default",
-            "plone.app.iterate:plone.app.iterate",
             "plone.app.iterate:test",
             "plone.app.iterate:uninstall",
             "plone.app.jquery:default",
@@ -264,9 +266,15 @@ def add_senaite_setup_items(portal):
         ("worksheettemplates", "Worksheet Templates", "WorksheetTemplates"),
         ("laboratory", "Laboratory", "Laboratory"),
         ("calculations", "Calculations", "Calculations"),
+        ("methods", "Methods", "Methods"),
+        ("auditlog", "Audit Log", "AuditLog"),
     ]
     setup = api.get_senaite_setup()
-    add_dexterity_items(setup, items)
+    # The laboratory is a single object rather than a folder, and its
+    # title is the laboratory's name as entered by the lab. Resetting it
+    # like the folder titles would rename the lab back to "Laboratory"
+    # on every profile import.
+    add_dexterity_items(setup, items, keep_title=("laboratory",))
 
 
 def add_dexterity_portal_items(portal):
@@ -290,17 +298,23 @@ def add_dexterity_portal_items(portal):
     portal.plone_utils.reindexOnReorder(portal)
 
 
-def add_dexterity_items(container, items):
+def add_dexterity_items(container, items, keep_title=()):
     """Adds a dexterity item, usually a folder in the container
+
+    The title of an existing item is reset to the given one, so that a
+    renamed folder label reaches existing sites. Items listed in
+    `keep_title` are only titled when they are created.
+
     :param container: container of the items to add
     :param items: tuple of Id, Title, FTI
+    :param keep_title: ids of items whose existing title is user data
     """
     for id, title, fti in items:
         obj = container.get(id)
         if obj is None:
             with temporary_allow_type(container, fti) as ct:
                 obj = api.create(ct, fti, id=id, title=title)
-        else:
+        elif id not in keep_title:
             obj.setTitle(title)
         obj.reindexObject()
 

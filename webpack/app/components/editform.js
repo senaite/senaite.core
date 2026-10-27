@@ -8,6 +8,9 @@
 // needed for Bootstrap toasts
 import $ from "jquery";
 
+// debounce interval (ms) to coalesce rapid DOM mutations before processing
+const MUTATION_DEBOUNCE = 100;
+
 
 class EditForm {
 
@@ -19,8 +22,13 @@ class EditForm {
 
     this.hooked_fields = [];
 
+    // queued DOM mutations, processed debounced in `flush_mutations`
+    this.mutation_queue = [];
+    this.mutation_timer = null;
+
     // bind event handlers
     this.on_mutated = this.on_mutated.bind(this);
+    this.flush_mutations = this.flush_mutations.bind(this);
     this.on_modified = this.on_modified.bind(this);
     this.on_submit = this.on_submit.bind(this);
     this.on_blur = this.on_blur.bind(this);
@@ -959,19 +967,41 @@ class EditForm {
   }
   /**
    * event handler for `mutated` event
+   *
+   * Queues the mutations and debounces their processing. ReactJS widgets
+   * (e.g. the remarks widget) re-render on each keystroke, which would
+   * otherwise trigger a server notification and a "Loading" flicker per key.
    */
   on_mutated(event) {
     console.debug("EditForm::on_mutated");
-    let form = event.detail.form;
-    let mutations = event.detail.mutations;
+    this.mutation_queue.push({
+      form: event.detail.form,
+      mutations: event.detail.mutations || [],
+    });
+    if (this.mutation_timer) {
+      clearTimeout(this.mutation_timer);
+    }
+    this.mutation_timer = setTimeout(this.flush_mutations, MUTATION_DEBOUNCE);
+  }
+
+  /**
+   * process the queued DOM mutations (debounced)
+   */
+  flush_mutations() {
+    this.mutation_timer = null;
+    let queue = this.mutation_queue;
+    this.mutation_queue = [];
     // reduce multiple mutations on the same node to one
     let seen = [];
-    for (const mutation of mutations) {
-      if (seen.indexOf(mutation.target) > -1) {
-        continue;
+    for (const entry of queue) {
+      let form = entry.form;
+      for (const mutation of entry.mutations) {
+        if (seen.indexOf(mutation.target) > -1) {
+          continue;
+        }
+        seen = seen.concat(mutation.target);
+        this.handle_mutation(form, mutation);
       }
-      seen = seen.concat(mutation.target);
-      this.handle_mutation(form, mutation);
     }
   }
 

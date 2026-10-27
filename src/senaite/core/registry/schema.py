@@ -39,23 +39,8 @@ class IClientRegistry(ISenaiteRegistry):
         label=_(u"Client Settings"),
         description=_("Settings for Clients"),
         fields=[
-            "auto_create_client_group",
             "client_landing_page",
         ],
-    )
-
-    auto_create_client_group = schema.Bool(
-        title=_("Automatically Create Client Group"),
-        description=_("Automatically create a new global client group when a "
-                      "new client is created. If this is disabled, a client "
-                      "group is still created when a client contact is linked "
-                      "to a user account. Therefore, disabling this option "
-                      "makes only sense if you do not plan to link client "
-                      "contacts to user accounts and you want to keep your "
-                      "groups clean."
-                      ),
-        default=True,
-        required=False,
     )
 
     client_landing_page = schema.Choice(

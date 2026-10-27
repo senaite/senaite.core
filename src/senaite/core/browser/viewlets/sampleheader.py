@@ -91,7 +91,18 @@ class SampleHeaderViewlet(ViewletBase):
 
             # process the value as the widget would usually do
             process_value = field.widget.process_form
-            value, msgs = process_value(self.context, field, form_values)
+            result = process_value(self.context, field, form_values)
+
+            # Archetypes widgets are allowed to return the bare
+            # `empty_marker` (typically `None`) to signal "no change
+            # for this field", instead of a `(value, msgs)` tuple.
+            # File/Image widgets do this when no new upload was
+            # posted. Skip the field in that case so its current
+            # value on the context is preserved.
+            if not isinstance(result, tuple):
+                continue
+
+            value, msgs = result
 
             # Keep track of field-values
             field_values.update({name: value})
@@ -137,6 +148,16 @@ class SampleHeaderViewlet(ViewletBase):
         prominent_fields = filter(is_visible, settings.get("prominent_fields"))
         standard_fields = filter(is_visible, settings.get("standard_fields"))
 
+        # filter out fields the current user has no read or write
+        # permission on, so neither the field's label cell nor an
+        # empty value cell render. Note: required for fields with a
+        # `read_permission` other than the default View permission
+        # (e.g. Labels, gated by ViewLabels).
+        prominent_fields = filter(self._user_can_see_field,
+                                  prominent_fields)
+        standard_fields = filter(self._user_can_see_field,
+                                 standard_fields)
+
         config = {}
         config.update(settings)
         config["prominent_fields"] = prominent_fields
@@ -181,6 +202,18 @@ class SampleHeaderViewlet(ViewletBase):
         """
         for chunk in iter(lambda it=iter(iterable): list(islice(it, n)), []):
             yield chunk
+
+    def _user_can_see_field(self, name):
+        """True if the current user has read or write permission on
+        the named field. Used to filter out fields entirely from the
+        header table (label cell + value cell) when the user is not
+        allowed to see them.
+        """
+        field = self.fields.get(name)
+        if field is None:
+            return False
+        return (field.checkPermission("view", self.context)
+                or field.checkPermission("edit", self.context))
 
     def get_field_info(self, name):
         """Return field information required for the template
@@ -239,13 +272,22 @@ class SampleHeaderViewlet(ViewletBase):
 
           - edit: field is rendered in edit mode
           - view: field is rendered in view mode
+          - <default>: hidden — user has neither write nor read
+            permission, so the field is not rendered at all
         """
-        mode = "view"
         if field.checkPermission("edit", self.context):
             mode = "edit"
             self.show_save = True
         elif field.checkPermission("view", self.context):
             mode = "view"
+        else:
+            # No permission to write *or* read — hide the field
+            # entirely. Without this branch the initial mode='view'
+            # leaked through and the field rendered in view mode
+            # regardless of the field's read_permission, defeating
+            # any per-field gating (e.g. the Labels field's
+            # ViewLabels / ManageLabels guards).
+            return default
 
         widget = self.get_widget(field)
         mode_vis = widget.isVisible(self.context, mode=mode, field=field)

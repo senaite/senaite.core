@@ -19,11 +19,12 @@
 # Some rights reserved, see README and LICENSE.
 
 HIDDEN_ROLES = [
-    "Owner",
+    "Client",
     "ClientGuest",
     "Contributor",
     "Editor",
     "Member",
+    "Owner",
     "Reader",
     "Reviewer",
     "Site Administrator",

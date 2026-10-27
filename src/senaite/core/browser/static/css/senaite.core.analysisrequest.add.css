@@ -114,6 +114,7 @@
 }
 .service-info-table {
     width: 100%;
+    max-width: 40em;
     font-size: 85%;
     text-align: left;
 }
@@ -125,7 +126,9 @@
     display: none;
 }
 .service-info-table td.service-info-key {
-    width: 33%!important;
+    width: 12em!important;
+    white-space: nowrap;
+    font-weight: 600;
 }
 .service-info-table td.service-info-value {
     text-align: left;

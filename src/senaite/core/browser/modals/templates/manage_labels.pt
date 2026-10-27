@@ -1,0 +1,117 @@
+<div class="manage-labels-modal modal-dialog modal-dialog-centered">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" i18n:translate="">Manage labels</h5>
+      <button type="button" class="close" data-dismiss="modal"
+              aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form name="manage-labels-form"
+            class="form manage-labels-form"
+            method="POST"
+            enctype="multipart/form-data"
+            tal:attributes="action string:${here/absolute_url}/manage_labels_modal">
+
+        <!-- Existing labels — clickable chip grid.
+
+             Labels currently set on at least one of the selected
+             samples come pre-selected. Click toggles selection;
+             un-toggling a pre-selected chip removes that label on
+             submit. -->
+        <div class="form-group form-group-sm mb-3"
+             tal:define="
+               labels view/get_available_labels;
+               initial view/get_union_labels">
+          <label class="mr-2 small text-muted"
+                 i18n:translate="">
+            Choose existing labels (click to toggle, applied labels
+            are pre-selected; un-toggle to remove)
+          </label>
+          <div class="sample-labels manage-labels-grid"
+               tal:condition="labels">
+            <tal:chips repeat="label labels">
+              <button type="button"
+                      class="sample-label manage-labels-toggle"
+                      tal:define="
+                        name python:label['name'];
+                        color python:label['color'];
+                        is_initial python:name in initial;
+                        style python:view.chip_style(color)"
+                      tal:attributes="
+                        data-label python:name;
+                        data-selected python:'1' if is_initial else '0';
+                        style python:style or None"
+                      tal:content="python:name" />
+            </tal:chips>
+          </div>
+          <p class="small text-muted mt-1"
+             tal:condition="not:labels"
+             i18n:translate="">
+            No labels yet. Type a new one below.
+          </p>
+        </div>
+
+        <!-- New label — free text + color -->
+        <div class="form-group form-group-sm mb-3 manage-labels-new">
+          <label class="mr-2 small text-muted"
+                 for="manage-labels-new"
+                 i18n:translate="">
+            Add a new label
+          </label>
+          <div class="d-flex" style="gap: .5rem">
+            <input type="text"
+                   id="manage-labels-new"
+                   class="form-control form-control-sm"
+                   name="new_label"
+                   placeholder="label name"
+                   autocomplete="off"
+                   i18n:attributes="placeholder" />
+            <input type="color"
+                   id="manage-labels-new-color"
+                   class="manage-labels-color"
+                   name="new_label_color"
+                   tal:attributes="value view/default_new_label_color" />
+            <button type="button"
+                    class="btn btn-sm btn-outline-secondary manage-labels-random"
+                    title="Random color"
+                    i18n:attributes="title">
+              &#x1F3B2;
+            </button>
+          </div>
+          <div class="manage-labels-presets mt-2"
+               tal:define="presets view/get_color_presets">
+            <button type="button"
+                    class="manage-labels-preset"
+                    tal:repeat="preset presets"
+                    tal:attributes="
+                      data-color python:preset['color'];
+                      style python:view.swatch_style(preset['color']);
+                      title python:preset['name']" />
+          </div>
+        </div>
+
+        <div class="form-group mt-3">
+          <input class="btn btn-sm btn-primary"
+                 type="submit"
+                 name="manage_labels"
+                 value="Apply labels"
+                 i18n:attributes="value" />
+        </div>
+
+        <input type="hidden" name="submitted" value="1" />
+        <input type="hidden" name="selected_labels" value=""
+               tal:attributes="value python:','.join(view.get_union_labels())" />
+        <input type="hidden" name="initial_labels" value=""
+               tal:attributes="value python:','.join(view.get_union_labels())" />
+        <input tal:replace="structure context/@@authenticator/authenticator" />
+        <input type="hidden" name="uids" value=""
+               tal:attributes="value request/uids" />
+      </form>
+    </div>
+  </div>
+
+  <script type="text/javascript"
+          tal:attributes="src string:${context/portal_url}/++plone++senaite.core.static/js/senaite.core.modal.manage_labels.js"></script>
+</div>

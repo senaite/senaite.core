@@ -35,7 +35,6 @@ from Products.CMFPlone.controlpanel.browser.usergroups_usersoverview import \
     UsersOverviewControlPanel
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.core.catalog import CLIENT_CATALOG
 from senaite.core.config.groups import HIDDEN_GROUPS
 from senaite.core.p3compat import cmp
 
@@ -78,26 +77,14 @@ class ContactLoginDetailsView(BrowserView):
         users_view = UsersOverviewControlPanel(self.context, self.request)
         return users_view.doSearch("")
 
-    @view.memoize
-    def get_clients_groups(self):
-        """Returns the client-specific groups
-        """
-        groups = []
-        cat = api.get_tool(CLIENT_CATALOG)
-        for brain in cat(portal_type="Client"):
-            if brain.getGroupId:
-                groups.append(brain.getGroupId)
-        return groups
-
     def get_laboratory_groups(self):
         """Return the groups available for laboratory users
         """
         gtool = api.get_tool("portal_groups")
         groups = gtool.listGroupIds()
 
-        # exclude hidden (Administrators, etc.) and client-specific groups
-        to_skip = HIDDEN_GROUPS + self.get_clients_groups()
-        groups = filter(lambda group: group not in to_skip, groups)
+        # exclude hidden (Administrators, etc.)
+        groups = filter(lambda group: group not in HIDDEN_GROUPS, groups)
 
         # sort them
         return sorted(groups)
@@ -115,9 +102,20 @@ class ContactLoginDetailsView(BrowserView):
         out = {}
         plone_user = user.getUser()
         userid = plone_user.getId()
+        # Merge property sheets in "first non-empty wins" order. PAS
+        # lists sheets in plugin priority order (highest first); a
+        # blind ``out.update(dict(ps.propertyItems()))`` lets a later,
+        # lower-priority sheet (e.g. ``mutable_properties`` with an
+        # empty ``email`` for a linked LDAP user) clobber the value
+        # from a higher-priority sheet (e.g. ``pasldap``). That's the
+        # opposite of how ``member.getProperty`` resolves the same
+        # lookup. Mirror PAS semantics here instead.
         for sheet in plone_user.listPropertysheets():
             ps = plone_user.getPropertysheet(sheet)
-            out.update(dict(ps.propertyItems()))
+            for key, value in ps.propertyItems():
+                if value in (None, ""):
+                    continue
+                out.setdefault(key, value)
 
         portal = api.get_portal()
         mtool = getToolByName(self.context, "portal_membership")
@@ -210,16 +208,29 @@ class ContactLoginDetailsView(BrowserView):
         """Link an existing user to the current Contact
         """
         # check if we have a selected user from the search-list
-        if userid:
-            try:
-                self.context.setUser(userid)
-                self.add_status_message(
-                    _("User linked to this Contact"), "info")
-            except ValueError as e:
-                self.add_status_message(e, "error")
-        else:
+        if not userid:
             self.add_status_message(
                 _("Please select a User from the list"), "info")
+            return
+        try:
+            self.context.setUser(userid)
+        except ValueError as exc:
+            self.add_status_message(exc, "error")
+            return
+        except RuntimeError as exc:
+            # `_set_user_property` raises when no PAS plugin can
+            # persist the linked_*_uid properties. The link is then
+            # half-applied (Username set, but the dynamic role
+            # provider has no property to read) — surface the
+            # failure instead of telling the user it worked.
+            logger.exception("Failed to persist linked user properties")
+            self.add_status_message(
+                _("Could not link User: ${error}",
+                  mapping={"error": safe_unicode(str(exc))}),
+                "error")
+            return
+        self.add_status_message(
+            _("User linked to this Contact"), "info")
 
     def _unlink_user(self):
         """Unlink and delete the User from the current Contact

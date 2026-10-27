@@ -172,6 +172,47 @@
     filterInstruments();
   }
 
+  /**
+   * Toggle manual result text input for select result options.
+   *
+   * The selected option controls the visibility by the
+   * "data-manual-entry" option attribute.
+   */
+  function bindResultManualEntry() {
+    var selects = document.querySelectorAll(
+      "#edit-analysis-result-select"
+    );
+    if (!selects.length) {
+      return;
+    }
+
+    selects.forEach(function(select) {
+      var form = select.closest("form");
+      if (!form) {
+        return;
+      }
+      var input = form.querySelector(
+        "#edit-analysis-result-other"
+      );
+      if (!input) {
+        return;
+      }
+
+      function toggle() {
+        var opt = select.options[select.selectedIndex];
+        var show = !!opt
+          && opt.getAttribute("data-manual-entry") === "1";
+        input.style.display = show ? "" : "none";
+        if (!show) {
+          input.value = "";
+        }
+      }
+
+      select.addEventListener("change", toggle);
+      toggle();
+    });
+  }
+
   // Initialize multiselect-duplicates
   document.querySelectorAll(".multiselect-duplicates")
     .forEach(function(el) {
@@ -192,4 +233,7 @@
 
   // Initialize method-instrument filtering
   bindMethodInstrumentFilter();
+
+  // Initialize manual-entry toggle for select results
+  bindResultManualEntry();
 })();

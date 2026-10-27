@@ -33,5 +33,4 @@ class SamplesView(BaseView):
             "getBatchUID": api.get_uid(self.context),
             "sort_on": "created",
             "sort_order": "reverse",
-            "isRootAncestor": True,  # only root ancestors
         }

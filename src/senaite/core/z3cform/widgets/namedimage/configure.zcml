@@ -1,0 +1,21 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
+    i18n_domain="z3c.form">
+
+  <!--
+    Override the default plone.formwidget.namedfile display template
+    so that NamedImage fields render a scaled image via the @@images
+    traverser instead of the full-size original. Without this the
+    rendered <img> carries the original pixel dimensions and the
+    browser shows it at full size (e.g. the laboratory's accreditation
+    logo on the Accreditation tab).
+  -->
+  <z3c:widgetTemplate
+      mode="display"
+      widget="plone.formwidget.namedfile.interfaces.INamedImageWidget"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      template="display.pt"
+      />
+
+</configure>

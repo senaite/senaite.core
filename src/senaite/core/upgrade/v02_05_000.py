@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 import transaction
-from Acquisition import aq_base
 from bika.lims import api
 from bika.lims.api import security
 from bika.lims.interfaces import IReceived
@@ -40,7 +39,6 @@ from senaite.core.config import PROJECTNAME as product
 from senaite.core.config.registry import CLIENT_LANDING_PAGE
 from senaite.core.permissions import ManageBika
 from senaite.core.permissions import TransitionReceiveSample
-from senaite.core.registry import get_registry_record
 from senaite.core.registry import set_registry_record
 from senaite.core.setuphandlers import _run_import_step
 from senaite.core.setuphandlers import add_dexterity_items
@@ -276,95 +274,24 @@ def import_registry(tool):
 
 
 def create_client_groups(tool):
-    """Create for all Clients an explicit Group
+    """No-op. Pre-2.7 SENAITE created a group per Client to carry the
+    'Client' role + Owner local role. With #2934/#2938 access is granted
+    dynamically by `senaite.core.security.clientrole`, so creating the
+    legacy groups would only generate work for `remove_legacy_client_groups`
+    to undo at the 2.7 step.
     """
-    logger.info("Create client groups ...")
-    clients = api.search({"portal_type": "Client"}, CLIENT_CATALOG)
-    total = len(clients)
-    for num, client in enumerate(clients):
-        obj = api.get_object(client)
-        logger.info("Processing client %s/%s: %s"
-                    % (num+1, total, obj.getName()))
-
-        # recreate the group
-        obj.remove_group()
-
-        # skip group creation
-        if not get_registry_record("auto_create_client_group", True):
-            logger.info("Auto group creation is disabled in registry. "
-                        "Skipping group creation ...")
-            continue
-
-        group = obj.create_group()
-        # add all linked client contacts to the group
-        for contact in obj.getContacts():
-            user = contact.getUser()
-            if not user:
-                continue
-            logger.info("Adding user '%s' to the client group '%s'"
-                        % (user.getId(), group.getId()))
-            obj.add_user_to_group(user)
-
-    logger.info("Create client groups [DONE]")
+    logger.info("Skipping legacy per-client group creation; "
+                "client access is now granted dynamically.")
 
 
 def reindex_client_security(tool):
-    """Reindex client object security to grant the owner role for the client
-       group to all contents
+    """No-op. The persisted Owner local role this step refreshed was
+    removed by `remove_legacy_client_groups` in 2.7, and the
+    `allowedRolesAndUsers` index is rebuilt with the new `client:<uid>`
+    token by `switch_to_dynamic_client_roles`.
     """
-    logger.info("Reindex client security ...")
-
-    clients = api.search({"portal_type": "Client"}, CLIENT_CATALOG)
-    total = len(clients)
-    for num, client in enumerate(clients):
-        obj = api.get_object(client)
-        logger.info("Processing client %s/%s: %s"
-                    % (num+1, total, obj.getName()))
-
-        if not obj.get_group():
-            logger.info("No client group exists for client %s. "
-                        "Skipping reindexing ..." % obj.getName())
-            continue
-
-        _recursive_reindex_object_security(obj)
-
-        logger.info("Commiting client %s/%s" % (num+1, total))
-        transaction.commit()
-        logger.info("Commit done")
-
-        # Flush the object from memory
-        obj._p_deactivate()
-
-    logger.info("Reindex client security [DONE]")
-
-
-def _recursive_reindex_object_security(obj):
-    """Recursively reindex object security for the given object
-    """
-    if hasattr(aq_base(obj), "objectValues"):
-        children = obj.objectValues()
-        for num, child_obj in enumerate(children):
-            if num and num % 100 == 0:
-                path = api.get_path(obj)
-                logger.info("{}: committing children {} ...".format(path, num))
-                transaction.commit()
-            _recursive_reindex_object_security(child_obj)
-
-    # We don't do obj.reindexObject(idxs=["allowedRolesAndUsers"]) because
-    # the function reindex the whole object (metadata included) if the catalog
-    # does not contain the index 'allowedRolesAndUsers'. This makes the system
-    # to consume a lot of RAM when thousands of objects need to be processed.
-    # Also, the function does other stuff like refreshing Etag and so on, that
-    # are things that we are not interested at all, actually. We just want the
-    # index allowedRolesAndUsers to be updated, nothing else
-    idx = "allowedRolesAndUsers"
-    for cat in api.get_catalogs_for(obj):
-        if idx not in cat.indexes():
-            continue
-        path = api.get_path(obj)
-        cat.catalog_object(obj, path, idxs=[idx], update_metadata=0)
-
-    obj._p_deactivate()
+    logger.info("Skipping legacy client security reindex; "
+                "the dynamic role provider handles this in 2.7.")
 
 
 def add_content_actions(tool):

@@ -61,10 +61,6 @@ GROUPS = [
         "title": "Samplers",
         "roles": ["Sampler"],
     }, {
-        "id": "RegulatoryInspectors",
-        "title": "Regulatory Inspectors",
-        "roles": ["RegulatoryInspector"],
-    }, {
         "id": "SamplingCoordinators",
         "title": "Sampling Coordinator",
         "roles": ["SamplingCoordinator"],

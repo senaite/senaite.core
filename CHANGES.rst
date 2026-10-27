@@ -4,6 +4,103 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3039 Do not reset the laboratory name when the setup profile is imported again
+- #3038 Answer a refused JSON API request with its own status
+- #3036 Fix setting a sample's specification through the API
+- #3062 Allow to make Sample Condition required
+- #3047 Fix ASTM import crashing on a sender with null components
+- #3035 Drop the stale marker behavior from the Setup FTI
+- #3034 Store the ID formatting rows as unicode
+- #3033 Give the immediate results entry setting a default
+- #3030 Fix the missing signature in the worksheet print view
+- #3029 Let the worksheet pick the slot for reference analyses
+- #3028 Offer every valid reference sample when adding one to a worksheet
+- #3060 Fix empty link text in the Client share field
+- #3059 Fix Indian Rupee symbol displayed as raw CLDR choice pattern
+- #3053 Fix TypeError when saving a Method with empty Instruments
+- #3023 Return a 404 when at_download is traversed on non-Archetypes content
+- #3022 Build the JavaScript bundles in CI
+- #3020 Use UnorderedOrdering for Instruments to avoid ZODB conflicts
+- #3021 Update JavaScript dependencies
+- #3019 Fix traceback in the user profile after visiting the add user form
+- #3017 Stop the datetime API doctest from leaking the process timezone
+- #3016 Localize the dashboard date to the active language
+- #3015 Fix analyses with empty multi-valued results can be submitted
+- #3014 Fix AT to DX upgrade failing with undefined property 'add_permission'
+- #3001 Skip read-only fields when validating objects on create/update
+- #2994 Migrate Method content type to Dexterity
+- #2991 Replace the jQuery DataGrid handler with a ReactJS widget
+- #2990 Vendor the datagrid widget and drop collective.z3cform.datagridfield
+- #2998 Stop leaking exception tracebacks in JSON API error responses
+- #2980 Migrate AuditLog to Dexterity and move audit log machinery to senaite.core
+- #2979 Show precise element-level audit log diffs for lists and record fields
+- #3013 Add a doctest for api.get_uid_catalog_path
+- #3012 Remove stale uid_catalog records that break lookups by UID
+- #2995 Add interactive upgrade, catalog and user console scripts
+- #3008 Filter sidebar root folders by permission instead of by catalog
+- #3007 Fix empty sticker template selection when printing stickers from a listing
+- #3003 Fix colliding reference analyses group IDs within the same transaction
+- #3000 Validate inter-field limits from the instance when there is no form
+- #2999 Pin plone.jsonapi.core to 0.8.0 and add find-links for its sdist
+- #2997 Fix listing widget doctest for the new data-catalog table attribute
+- #2996 Fix missing Dexterity FTI utility registration on typeinfo import
+- #2993 Sync translations and add complete German, Dutch and Spanish translations
+- #2993 Make the dashboard fully translatable
+- #2992 Fix UnicodeEncodeError in Organization.getPrintAddress with non-ASCII address
+- #2988 Fix worksheet template analysis filtering for selected samples
+- #2985 Add a SENAITE-specific Manage Viewlets view
+- #2971 Make the Sample Dispatch workflow optional and lock analyses on dispatch
+- #2970 Add an optional Sample Dispose workflow
+- #2986 Fix UnicodeDecodeError from non-ASCII organisation titles in the title index
+- #2979 Show precise element-level audit log diffs for lists and record fields
+- #2984 Hide the Manage Portlets menu from the toolbar
+- #2983 Fix HiddenProfiles list to actually hide bundled add-on profiles
+- #2981 Forward results override flags to custom auto-import adapters
+- #2962 Remove the obsolete RegulatoryInspector role
+- #2976 Surface orphaned sample partitions as top-level rows in listings
+- #2982 Fix auto log-off logging out active users (session refresh interval)
+- #2978 Move front page and landing page fields to the Appearance fieldset
+- #2973 Add PublishTraverseView/JSONView base browser views for AJAX endpoints
+- #2974 Do not offer all sticker templates to content types without a sticker adapter
+- #2970 Add an optional Sample Dispose workflow
+- #2969 Speed up the getClientTitle reindex upgrade step with partial metadata refresh
+- #2977 Fix KeyError on AllowManualEntry when importing result options without the column
+- #2968 Support partial catalog metadata refresh and quiet per-object multiplex logging
+- #2965 Filter samples by their analyses in the samples listing
+- #2975 Fix ExpressionError in edit-analysis modal
+- #2898 Add AllowManualEntry for select result options
+- #2967 Fix My Organization menu action hidden for client users
+- #2966 Fix UnicodeDecodeError when filtering samples by a non-ASCII client name
+- #2964 Improve dashboard panel links, tooltips, and workflow-ordered chart legends
+- #2963 Show analysis service keyword as code across service listings
+- #2959 Refactor Remarks into a reusable React widget with edit and version history
+- #2961 Expose React and ReactDOM globally for SENAITE add-ons
+- #2960 Set multipart enctype on the sample header form so file uploads persist
+- #2957 Harmonize form input widths via tunable CSS variables
+- #2956 Restrict client discount fields to lab staff
+- #2958 Add labels with colors, filtering, and bulk-manage modal for samples
+- #2953 Fix IClientAwareMixin interface mismatch breaking client access on DX content
+- #2955 Defer workflow transition lookup with a React content-menu component
+- #2954 Declare i18n:domain on duration widget templates
+- #2952 Skip fields whose widget returns empty_marker in sample header submit
+- #2951 Remove twitter-together workflow and tweet drafts
+- #2949 Render NamedImage display widget at a scaled size via @@images
+- #2948 Fix UnicodeDecodeError in get_link when href contains non-ASCII bytes
+- #2945 Merge linked-user property sheets in first-non-empty-wins order
+- #2944 Cover catalog token and sidebar grant for linked client users
+- #2943 Polish client-role upgrade steps
+- #2942 Harden contact-to-user link path
+- #2941 Remove leftover per-client-group code paths
+- #2932 Fix validation for formulas with duplicate keywords
+- #2945 Add rangecomment support to dynamic results ranges
+- #2950 Add translations for new senaite.app.listing UI strings
+- #2947 Fix barcodes missing from PDFs behind a virtual-host path
+- #2940 Grant the global 'Client' role to users with linked_client_uid set
+- #2939 Persist linked user properties through the mutable properties plugin
+- #2938 Remove legacy per-client groups and persisted Owner local roles
+- #2937 Disable @@sharing on the client tree
+- #2934 Grant client access via a dynamic local-role provider instead of per-client groups
+- #2933 Hide 'Client' role column and strip direct Client role assignments
 - #2928 Fix ASTM consumer boundary bugs (sender shape, instrument cascade, sample fallback)
 - #2925 Add 'reattach' workflow transition to re-link detached partitions to their primary
 - #2926 Strip surrounding whitespace from analysis unit choices so configuration typos don't break the round-trip

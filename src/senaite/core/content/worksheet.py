@@ -617,8 +617,21 @@ class Worksheet(Container):
         if not IReferenceSample.providedBy(reference):
             # Not a ReferenceSample, so this is a duplicate
             prefix = reference.id + "-D"
-        cat = api.get_tool(ANALYSIS_CATALOG)
-        ids = cat.Indexes["getReferenceAnalysesGroupID"].uniqueValues()
+
+        # Search for the group IDs in use for this reference sample. Note we
+        # rely on a catalog search here, and not on the unique values of the
+        # index, cause the latter bypasses the indexing queue and therefore it
+        # does not see the reference analyses created within this transaction.
+        # Note as well that ":" is the character that comes right after "9", so
+        # the range covers all the group IDs made of this prefix and digits
+        query = {
+            "getReferenceAnalysesGroupID": {
+                "query": [prefix, prefix + ":"],
+                "range": "min:max",
+            },
+        }
+        brains = api.search(query, ANALYSIS_CATALOG)
+        ids = set([brain.getReferenceAnalysesGroupID for brain in brains])
         rr = re.compile("^" + prefix + r"[\d+]+$")
         ids = [int(i.split(prefix)[1]) for i in ids if i and rr.match(i)]
         ids.sort()

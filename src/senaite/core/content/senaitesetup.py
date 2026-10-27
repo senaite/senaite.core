@@ -25,6 +25,7 @@ import six
 from AccessControl import ClassSecurityInfo
 from bika.lims import _
 from bika.lims import api
+from bika.lims import logger
 from plone.app.textfield import IRichTextValue
 from plone.app.textfield.widget import RichTextFieldWidget  # TBD: port to core
 from plone.autoform import directives
@@ -80,104 +81,104 @@ def default_email_from_sample_publication(context):
 
 DEFAULT_ID_FORMATTING = [
     {
-        "form": "B-{seq:03d}",
-        "portal_type": "Batch",
-        "prefix": "batch",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"B-{seq:03d}",
+        u"portal_type": u"Batch",
+        u"prefix": u"batch",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
     {
-        "form": "D-{seq:03d}",
-        "portal_type": "DuplicateAnalysis",
-        "prefix": "duplicate",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"D-{seq:03d}",
+        u"portal_type": u"DuplicateAnalysis",
+        u"prefix": u"duplicate",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
     {
-        "form": "I-{seq:03d}",
-        "portal_type": "Invoice",
-        "prefix": "invoice",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"I-{seq:03d}",
+        u"portal_type": u"Invoice",
+        u"prefix": u"invoice",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
     {
-        "form": "QC-{seq:03d}",
-        "portal_type": "ReferenceSample",
-        "prefix": "refsample",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"QC-{seq:03d}",
+        u"portal_type": u"ReferenceSample",
+        u"prefix": u"refsample",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
     {
-        "form": "SA-{seq:03d}",
-        "portal_type": "ReferenceAnalysis",
-        "prefix": "refanalysis",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"SA-{seq:03d}",
+        u"portal_type": u"ReferenceAnalysis",
+        u"prefix": u"refanalysis",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
     {
-        "form": "WS-{seq:03d}",
-        "portal_type": "Worksheet",
-        "prefix": "worksheet",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"WS-{seq:03d}",
+        u"portal_type": u"Worksheet",
+        u"prefix": u"worksheet",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
     {
-        "form": "{sampleType}-{seq:04d}",
-        "portal_type": "AnalysisRequest",
-        "prefix": "analysisrequest",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"{sampleType}-{seq:04d}",
+        u"portal_type": u"AnalysisRequest",
+        u"prefix": u"analysisrequest",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
     {
-        "form": "{parent_ar_id}-P{partition_count:02d}",
-        "portal_type": "AnalysisRequestPartition",
-        "prefix": "analysisrequestpartition",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"{parent_ar_id}-P{partition_count:02d}",
+        u"portal_type": u"AnalysisRequestPartition",
+        u"prefix": u"analysisrequestpartition",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
     {
-        "form": "{parent_base_id}-R{retest_count:02d}",
-        "portal_type": "AnalysisRequestRetest",
-        "prefix": "analysisrequestretest",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"{parent_base_id}-R{retest_count:02d}",
+        u"portal_type": u"AnalysisRequestRetest",
+        u"prefix": u"analysisrequestretest",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
     {
-        "form": "{parent_ar_id}-S{secondary_count:02d}",
-        "portal_type": "AnalysisRequestSecondary",
-        "prefix": "analysisrequestsecondary",
-        "sequence_type": "generated",
-        "context": "",
-        "counter_type": "",
-        "counter_reference": "",
-        "split_length": 1
+        u"form": u"{parent_ar_id}-S{secondary_count:02d}",
+        u"portal_type": u"AnalysisRequestSecondary",
+        u"prefix": u"analysisrequestsecondary",
+        u"sequence_type": u"generated",
+        u"context": u"",
+        u"counter_type": u"",
+        u"counter_reference": u"",
+        u"split_length": 1
     },
 ]
 
@@ -332,6 +333,7 @@ class ISetupSchema(model.Schema):
             "creation, e.g. to enter field results immediately, or lab "
             "results, when the automatic sample reception is activated."
         ),
+        default=False,
     )
 
     categorize_sample_analyses = schema.Bool(
@@ -390,6 +392,18 @@ class ISetupSchema(model.Schema):
                     u"when 'Sampling workflow' is not active"
         ),
         default=True,
+    )
+
+    sample_condition_required = schema.Bool(
+        title=_(
+            u"title_senaitesetup_sample_condition_required",
+            default=u"Sample Condition required"),
+        description=_(
+            u"description_senaitesetup_sample_condition_required",
+            default=u"Select this to make the Sample Condition field "
+                    u"required"
+        ),
+        default=False,
     )
 
     show_lab_name_in_login = schema.Bool(
@@ -921,7 +935,7 @@ class ISetupSchema(model.Schema):
             vocabulary="senaite.core.vocabularies.top_level_folders"
         ),
         required=False,
-        default=("clients", "samples", "methods", "batches", "worksheets"),
+        default=("clients", "samples", "batches", "worksheets"),
     )
 
     sidebar_navigation_depth = schema.Int(
@@ -981,6 +995,28 @@ class ISetupSchema(model.Schema):
             u"Select this to allow the user to set an additional 'Printed' "
             u"status to those Analysis Requests that have been Published. "
             u"Disabled by default."
+        ),
+        default=False,
+    )
+
+    dispose_workflow_enabled = schema.Bool(
+        title=_(u"Enable the Sample Dispose workflow"),
+        description=_(
+            u"Select this to allow disposing samples through the 'dispose' "
+            u"transition and to enable the additional 'disposed' status. "
+            u"Disabled by default."
+        ),
+        default=False,
+    )
+
+    dispatch_workflow_enabled = schema.Bool(
+        title=_(u"Enable the Sample Dispatch workflow"),
+        description=_(
+            u"Select this to allow dispatching samples through the 'dispatch' "
+            u"transition and to enable the additional 'dispatched' status. "
+            u"The analyses of a dispatched sample become read-only and are "
+            u"brought back to their previous status when the sample is "
+            u"restored. Disabled by default."
         ),
         default=False,
     )
@@ -1321,6 +1357,8 @@ class ISetupSchema(model.Schema):
         "appearance",
         label=_(u"Appearance"),
         fields=[
+            "dashboard_by_default",
+            "landing_page",
             "worksheet_layout",
             "show_partitions",
             "site_logo",
@@ -1338,9 +1376,12 @@ class ISetupSchema(model.Schema):
         fields=[
             "sample_duplicate_enabled",
             "printing_workflow_enabled",
+            "dispose_workflow_enabled",
+            "dispatch_workflow_enabled",
             "sampling_workflow_enabled",
             "schedule_sampling_enabled",
             "date_sampled_required",
+            "sample_condition_required",
             "autoreceive_samples",
             "sample_preservation_enabled",
             "workdays",
@@ -1598,6 +1639,20 @@ class Setup(Container):
         return mutator(self, value)
 
     @security.protected(permissions.View)
+    def getSampleConditionRequired(self):
+        """Returns whether the Sample Condition field is required
+        """
+        accessor = self.accessor("sample_condition_required")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setSampleConditionRequired(self, value):
+        """Sets whether the Sample Condition field is required
+        """
+        mutator = self.mutator("sample_condition_required")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
     def getShowLabNameInLogin(self):
         """Returns if the laboratory name has to be displayed in login page
         """
@@ -1684,6 +1739,15 @@ class Setup(Container):
     @security.protected(permissions.ModifyPortalContent)
     def setAutoLogOff(self, value):
         """Set session lifetime in minutes
+
+        Writes the plone.session cookie `timeout` (in seconds) and keeps the
+        plugin's `refresh_interval` strictly below `timeout`, so that an
+        *active* user's session cookie is renewed by the refresh beacon before
+        it expires. plone.session does not refresh the ticket on regular
+        requests, so it treats `timeout` as an absolute lifetime from login;
+        without this a short auto log-off would log out users while they are
+        actively working, not only when idle. A value of 0 disables auto
+        log-off (the cookie never expires).
         """
         value = api.to_int(value, default=0)
         if value < 0:
@@ -1691,8 +1755,18 @@ class Setup(Container):
         value = value * 60
         acl = api.get_tool("acl_users")
         session = acl.get("session")
-        if session:
+        if session is None:
+            logger.warn(
+                "No 'session' plugin found in acl_users. Cannot set the "
+                "auto log-off timeout (%s seconds)" % value)
+        else:
             session.timeout = value
+            # Keep the refresh beacon ahead of expiry. Only adjust when the
+            # current interval would defeat the timeout (disabled, or >=
+            # timeout), so a manually-tuned lower interval is preserved.
+            if value and (session.refresh_interval < 0
+                          or session.refresh_interval >= value):
+                session.refresh_interval = max(60, value // 2)
         mutator = self.mutator("auto_log_off")
         return mutator(self, value // 60)
 
@@ -2214,6 +2288,34 @@ class Setup(Container):
         """Set printing workflow enabled setting
         """
         mutator = self.mutator("printing_workflow_enabled")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getDisposeWorkflowEnabled(self):
+        """Get dispose workflow enabled setting
+        """
+        accessor = self.accessor("dispose_workflow_enabled")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setDisposeWorkflowEnabled(self, value):
+        """Set dispose workflow enabled setting
+        """
+        mutator = self.mutator("dispose_workflow_enabled")
+        return mutator(self, value)
+
+    @security.protected(permissions.View)
+    def getDispatchWorkflowEnabled(self):
+        """Get dispatch workflow enabled setting
+        """
+        accessor = self.accessor("dispatch_workflow_enabled")
+        return accessor(self)
+
+    @security.protected(permissions.ModifyPortalContent)
+    def setDispatchWorkflowEnabled(self, value):
+        """Set dispatch workflow enabled setting
+        """
+        mutator = self.mutator("dispatch_workflow_enabled")
         return mutator(self, value)
 
     @security.protected(permissions.View)

@@ -44,18 +44,15 @@ def create_worksheet(analyst, instrument=None, template=None, analyses=None):
                     instrument=instrument,
                     results_layout=layout)
 
-    unassigned_analyses = []
-    analyses = api.to_list(analyses)
-    analyses = list(filter(None, analyses))
-    for analysis in analyses:
-        an = api.get_object(analysis)
-        ws_uid = an.getWorksheetUID()
-        # collect all unassigned analyses
-        if not all([ws_uid, api.is_uid(ws_uid)]):
-            unassigned_analyses.append(an)
-        ws.addAnalysis(an)
-    if template is not None:
-        ws.applyWorksheetTemplate(template, analyses=unassigned_analyses)
+    if analyses is not None:
+        analyses = api.to_list(analyses)
+        analyses = list(filter(None, analyses))
+    if template:
+        # Let the template filter the selected analyses by service, method and
+        # instrument before they are assigned to the worksheet.
+        ws.applyWorksheetTemplate(template, analyses=analyses)
+    else:
+        ws.addAnalyses(analyses or [])
 
     ws.reindexObject()
     return ws

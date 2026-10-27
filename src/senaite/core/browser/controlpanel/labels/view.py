@@ -19,10 +19,11 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
+from cgi import escape as html_escape
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import get_link_for
+from senaite.core.api import label as label_api
 from senaite.core.browser.controlpanel.listing import ControlPanelListingView
 from senaite.core.catalog import SETUP_CATALOG
 
@@ -84,18 +85,27 @@ class LabelsView(ControlPanelListingView):
         ]
 
     def folderitem(self, obj, item, index):
-        """Service triggered each time an item is iterated in folderitems.
-        The use of this service prevents the extra-loops in child objects.
-        :obj: the instance of the class to be foldered
-        :item: dict containing the properties of the object to be used by
-            the template
-        :index: current index of the item
-        """
+        # Always wake the object: we need Title / URL / Description
+        # anyway, so the brain-metadata shortcut would not save a wake.
         obj = api.get_object(obj)
+        color = getattr(obj, "color", u"") or u""
+        if not label_api.is_safe_color(color):
+            color = u""
 
-        item["replace"]["Title"] = get_link_for(obj)
+        title = api.safe_unicode(api.get_title(obj))
+        url = api.safe_unicode(api.get_url(obj))
+        style = label_api.chip_style(color)
+        style_attr = u' style="{}"'.format(style) if style else u""
+
+        item["replace"]["Title"] = (
+            u'<a class="sample-label" href="{url}"{style}>'
+            u'<span class="sample-label-text">{title}</span></a>'
+        ).format(
+            url=html_escape(url, quote=True),
+            style=style_attr,
+            title=html_escape(title),
+        )
         item["Description"] = api.get_description(obj)
-
         return item
 
     def folderitems(self):

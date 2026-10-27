@@ -30,8 +30,8 @@ portal root in `SidebarViewletManager.available()`.
 
 Granted to all SENAITE roles in `rolemap.xml` with `acquire=False`:
 - Analyst, Client, LabClerk, LabManager, Manager
-- Preserver, Publisher, RegulatoryInspector
-- Sampler, SamplingCoordinator, Verifier
+- Preserver, Publisher, Sampler
+- SamplingCoordinator, Verifier
 
 Users with only `Member` or `Authenticated` roles (no SENAITE role)
 will not see the sidebar.

@@ -32,7 +32,7 @@ from bika.lims.utils import logged_in_client
 from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.i18n import translate as t
-from zope.i18n.locales import locales
+from senaite.core.i18n import get_currency_symbol
 
 DETACHED_STATES = ["cancelled", "rejected", "retracted"]
 
@@ -74,6 +74,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 "title": _("Service"),
                 "index": "sortable_title",
                 "sortable": False}),
+            ("Keyword", {
+                "title": _("Keyword"),
+                "sortable": False}),
             ("ResultUnit", {
                 "title": _("Unit"),
                 "sortable": False}),
@@ -94,7 +97,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 "title": _("Max")}),
         ))
 
-        columns = ["Title", "Unit", "Hidden", ]
+        columns = ["Title", "Keyword", "Unit", "Hidden", ]
         if self.show_prices():
             columns.append("Price")
         if self.show_ar_specs():
@@ -168,10 +171,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
     def get_currency_symbol(self):
         """Get the currency Symbol
         """
-        locale = locales.getLocale('en')
         setup = api.get_senaite_setup()
         currency = setup.getCurrency()
-        return locale.numbers.currencies[currency].symbol
+        return get_currency_symbol(currency)
 
     @view.memoize
     def get_logged_in_client(self):
@@ -238,6 +240,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
         spec = rr.get(keyword, ResultsRangeDict())
 
         item["Title"] = obj.Title()
+        item["Keyword"] = keyword
+        item["replace"]["Keyword"] = "<code>{}</code>".format(keyword)
         item["ResultUnit"] = obj.getUnit()
         item["Price"] = price
         item["before"]["Price"] = self.get_currency_symbol()

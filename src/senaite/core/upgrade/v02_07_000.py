@@ -22,14 +22,19 @@
 import json
 from datetime import timedelta
 
+import six
 import transaction
 from bika.lims import api
 from bika.lims.api import safe_unicode as u
 from bika.lims.api import snapshot as snap_api
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
+from bika.lims.browser.fields.uidreferencefield import \
+    get_storage as get_at_backref_storage
 from bika.lims.interfaces import IAuditable
 from bika.lims.interfaces import IDetachedPartition
 from bika.lims.interfaces import IInvalidated
+from bika.lims.workflow.analysisrequest import do_action_to_analyses
+from senaite.core.interfaces import IDispatched
 from bika.lims.utils import tmpID
 from persistent.list import PersistentList
 from plone.app.blob.field import BlobWrapper
@@ -69,10 +74,14 @@ from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import blob_to_named_file
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
+from senaite.core.upgrade.utils import import_typeinfo
+from senaite.core.upgrade.utils import is_stale_uid_catalog_path
 from senaite.core.upgrade.utils import iter_senaite_catalogs
 from senaite.core.upgrade.utils import permanently_allow_type_for
 from senaite.core.upgrade.utils import rebuild_index
 from senaite.core.upgrade.utils import remove_at_portal_types
+from senaite.core.upgrade.utils import repair_uid_catalog_path
+from senaite.core.upgrade.utils import temporary_allow_type
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.v02_06_000 import get_setup_folder
 from zope.annotation.interfaces import IAnnotations
@@ -85,10 +94,13 @@ profile = "profile-{0}:default".format(product)
 
 REMOVE_AT_TYPES = [
     "ARReport",
+    "AuditLog",
     "Contact",
     "Laboratory",
     "Calculation",
     "Calculations",
+    "Method",
+    "Methods",
     "Multifile",
     "Worksheet",
     "WorksheetFolder",
@@ -98,6 +110,197 @@ PORTAL_FOLDER_ITEMS = {
     # ID: ID, Title, FTI
     "worksheets": ("worksheets", "Worksheets", "Worksheets"),
 }
+
+
+EXCLUDE_FROM_NAV_BEHAVIOR = (
+    "plone.app.dexterity.behaviors.exclfromnav.IExcludeFromNavigationDefault"
+)
+
+
+@upgradestep(product, version)
+def drop_setup_marker_behavior(tool):
+    """Drop the exclude-from-navigation marker from the Setup FTI.
+
+    It is a marker interface, not a registered behavior, so every lookup
+    of the type's behaviors raises BehaviorRegistrationNotFound. That is
+    enough to refuse any update of the Setup object through the API.
+    The profile no longer ships the line; an existing site keeps it in
+    its FTI until it is removed here.
+    """
+    portal_types = api.get_tool("portal_types")
+    fti = portal_types.getTypeInfo("Setup")
+    if fti is None:
+        logger.warning("Setup type not found [SKIP]")
+        return
+    behaviors = list(fti.behaviors)
+    if EXCLUDE_FROM_NAV_BEHAVIOR not in behaviors:
+        logger.info("Setup FTI has no stale marker behavior [SKIP]")
+        return
+    behaviors.remove(EXCLUDE_FROM_NAV_BEHAVIOR)
+    fti.behaviors = tuple(behaviors)
+    logger.info("Removed the stale marker behavior from the Setup FTI")
+
+
+@upgradestep(product, version)
+def normalize_id_formatting_rows(tool):
+    """Store the ID formatting rows as unicode.
+
+    The rows came over from the Archetypes RecordsField as native
+    strings, and the Dexterity subfields are TextLine, which only
+    accepts unicode. Validating the Setup object therefore fails with
+    WrongContainedType over a field nobody edited, and because the
+    JSON API validates the whole object before saving it, every
+    programmatic update of the setup is refused.
+    """
+    setup = api.get_senaite_setup()
+    if setup is None:
+        logger.warning("SenaiteSetup not found [SKIP]")
+        return
+    # Read the stored value, not the field default: a site that has
+    # never saved the ID server tab has no value of its own, and the
+    # default is unicode already. Writing it out here would pin today's
+    # defaults into that site's database for good.
+    rows = setup.__dict__.get("id_formatting")
+    if not rows:
+        logger.info("No stored ID formatting rows to normalize [SKIP]")
+        return
+    setup.id_formatting = [normalized_row(row) for row in rows]
+    logger.info("Normalized %s ID formatting row(s)" % len(rows))
+
+
+def normalized_row(row):
+    """Return the row with its string values as unicode."""
+    return dict(
+        (u(key), u(value) if isinstance(value, six.string_types) else value)
+        for key, value in row.items())
+
+
+@upgradestep(product, version)
+def remove_stale_uid_catalog_records(tool):
+    """Remove uid_catalog records that sit under the wrong path
+
+    The AT to DX migrations created the Dexterity object first, which
+    `plone.app.referenceablebehavior` catalogs under the absolute path with
+    the throwaway uuid of `createContent`, and copied the UID of the
+    Archetypes source only afterwards. The `uncatalog_object` of that time
+    only tried the relative path, so the record under the absolute path
+    survived, carrying a UID that belongs to nothing.
+
+    Such a record stays unnoticed until the object is edited: the Dexterity
+    modified handler then re-catalogs it under the absolute path, now with
+    the real UID. From that moment on `uid_catalog(UID=...)` returns two
+    brains, `api.get_brain_by_uid` cannot tell them apart and returns
+    nothing, and every lookup through the SuperModel fails.
+
+    Records are matched against the path convention of their object, so
+    both halves of an already collided pair and the ones still waiting to
+    collide are cleaned up.
+    """
+    logger.info("Removing stale uid_catalog records ...")
+
+    portal = tool.aq_inner.aq_parent
+    catalog = api.get_tool("uid_catalog", context=portal)
+    types_tool = api.get_tool("portal_types", context=portal)
+
+    # take a snapshot, the catalog is modified while repairing
+    records = list(catalog._catalog.uids.items())
+    total = len(records)
+    stale = []
+    skipped = 0
+
+    for num, (path, rid) in enumerate(records):
+        if num and num % 10000 == 0:
+            logger.info("Checking uid_catalog record %s/%s" % (num, total))
+        is_stale = is_stale_uid_catalog_path(types_tool, catalog, path, rid)
+        if is_stale is None:
+            skipped += 1
+        elif is_stale:
+            stale.append(path)
+
+    logger.info("Found %s stale records out of %s" % (len(stale), total))
+    if skipped:
+        logger.info("Skipped %s records of an unknown portal type" % skipped)
+
+    for path in stale:
+        repair_uid_catalog_path(portal, catalog, path)
+
+    logger.info("Removing stale uid_catalog records [DONE]")
+
+
+@upgradestep(product, version)
+def hide_legacy_viewlets(tool):
+    """Hide the analytics, keywords, next/previous navigation and related
+    items viewlets, which are not used in SENAITE, by reimporting the
+    viewlets step.
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    logger.info("Hiding unused viewlets ...")
+    setup.runImportStepFromProfile(profile, "viewlets")
+    logger.info("Hiding unused viewlets [DONE]")
+
+
+@upgradestep(product, version)
+def remove_regulatory_inspector_role(tool):
+    """Remove the obsolete 'RegulatoryInspector' role and group.
+
+    The RegulatoryInspector role and the RegulatoryInspectors group are
+    no longer used by SENAITE. This step removes them from existing
+    installations:
+
+    1. Drop the role from the portal_role_manager, which also clears
+       every direct assignment of the role to a principal.
+    2. Remove the RegulatoryInspectors group from portal_groups.
+    3. Drop the role from the portal's known roles (`__ac_roles__`).
+
+    Stale references left behind in workflow definitions or permission
+    maps are inert once the role no longer exists.
+    """
+    role = "RegulatoryInspector"
+    group_id = "RegulatoryInspectors"
+    logger.info("Removing obsolete '%s' role ..." % role)
+
+    # 1. drop the role + its assignments from the role manager
+    acl = api.get_tool("acl_users")
+    prm = getattr(acl, "portal_role_manager", None)
+    if prm is not None and role in prm.listRoleIds():
+        prm.removeRole(role)
+        logger.info("Removed role '%s' from portal_role_manager" % role)
+
+    # 2. remove the group
+    portal_groups = api.get_tool("portal_groups")
+    if portal_groups.getGroupById(group_id) is not None:
+        portal_groups.removeGroup(group_id)
+        logger.info("Removed group '%s'" % group_id)
+
+    # 3. drop the role from the portal's known roles
+    portal = api.get_portal()
+    roles = list(portal.__ac_roles__)
+    if role in roles:
+        roles.remove(role)
+        portal.__ac_roles__ = tuple(roles)
+        logger.info("Removed role '%s' from portal roles" % role)
+
+
+@upgradestep(product, version)
+def reindex_organisation_title(tool):
+    """Rebuild the `title` index in the setup and client catalogs with
+    unicode keys.
+
+    The organisation `title` indexer returned the raw `Name`, so a non-ASCII
+    organisation name (Client, Supplier, Manufacturer, Laboratory) ended up as
+    a byte-string key in the shared `title` FieldIndex. Any query on `title`
+    then raised a UnicodeDecodeError when comparing the unicode query value
+    against those keys. The indexer now normalizes to unicode; the index BTree
+    must be cleared before reindexing (a plain per-object reindex would insert
+    a unicode key next to the old byte-string keys and hit the same error), so
+    `rebuild_index` clears and repopulates it with unicode keys only.
+    """
+    for catalog_id in [SETUP_CATALOG, CLIENT_CATALOG]:
+        catalog = api.get_tool(catalog_id)
+        logger.info("Rebuilding 'title' index on %s ..." % catalog_id)
+        rebuild_index(catalog, "title")
+    logger.info("Rebuilding 'title' index [DONE]")
 
 
 @upgradestep(product, version)
@@ -119,21 +322,76 @@ def upgrade(tool):
     return True
 
 
-def drop_client_ordering_annotations(tool):
-    """Remove the legacy IOrdering annotations from every Client.
+def migrate_auditlog_to_dx(tool):
+    """Move the AuditLog folder to the SENAITE setup as a Dexterity folder
 
-    Clients now use `plone.folder.unordered.UnorderedOrdering` as
-    their `IOrdering` adapter, so the previous default-ordering
-    annotations are no longer maintained:
+    The AuditLog folder never holds content on its own: it only backs the
+    audit log listing view. The audit snapshots live as annotations on the
+    audited objects and are looked up through the auditlog catalog, not
+    through this folder. It is therefore recreated rather than migrated:
+    the legacy AT folder in `bika_setup` is removed and a fresh DX folder
+    is created in the new SENAITE setup. The legacy AT `AuditLog` class is
+    kept as a stub (`bika.lims.controlpanel.auditlog`) so the old folder
+    still loads as a regular object and deletes cleanly here.
+
+    Traversal to `setup/auditlog` returns this folder: BTreeFolder2 exposes
+    its children via `__getattr__`, so the contained object is resolved
+    before the per-object `auditlog` view. The per-object audit trail stays
+    reachable through the explicit `@@auditlog` form.
+    """
+    logger.info("Convert AuditLog to Dexterity ...")
+
+    # Flush *all* pending AT FTIs, not only the AuditLog one: the typeinfo
+    # step below imports every type of the profile, and applying a DX FTI
+    # over a type that is still Archetypes in the database fails with
+    # `ValueError: undefined property 'add_permission'`
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
+
+    # re-import the DX FTIs
+    import_typeinfo(tool, profile)
+
+    # the legacy AT folder lived in `bika_setup`; the DX one now lives in
+    # the new SENAITE setup
+    bika_setup = api.get_setup()
+    setup = api.get_senaite_setup()
+
+    # remove the old AT folder and any half-created DX folder
+    for container in [bika_setup, setup]:
+        if "auditlog" in container.objectIds():
+            auditlog = container._getOb("auditlog")
+            uncatalog_object(auditlog)
+            delete_object(auditlog)
+
+    # create the new DX folder in the SENAITE setup. The type is only
+    # allowed temporarily, so AuditLog does not show up in the setup's
+    # "add" menu afterwards.
+    with temporary_allow_type(setup, "AuditLog") as container:
+        auditlog = api.create(
+            container, "AuditLog", id="auditlog", title="Audit Log")
+    auditlog.reindexObject()
+
+    logger.info("Convert AuditLog to Dexterity [DONE]")
+
+
+ORDERING_ORDER_KEY = "plone.folder.ordered.order"
+ORDERING_POS_KEY = "plone.folder.ordered.pos"
+
+
+def drop_ordering_annotations(portal_type, catalog, label):
+    """Remove the legacy IOrdering annotations from every object of the
+    given portal type.
+
+    Types switched to `plone.folder.unordered.UnorderedOrdering` no
+    longer maintain the default-ordering annotations:
 
       - `plone.folder.ordered.order` — a `PersistentList` of every
         child id, mutated on every `_setObject` via
-        `DefaultOrdering.notifyAdded`. On a Client with thousands of
-        children this list grows to many tens of thousands of entries
-        and, because `PersistentList` has no `_p_resolveConflict()`,
-        every concurrent registration on the same Client collided on
-        it and the conflict propagated all the way to the
-        publisher's retry loop.
+        `DefaultOrdering.notifyAdded`. On a container with thousands
+        of children this list grows to many tens of thousands of
+        entries and, because `PersistentList` has no
+        `_p_resolveConflict()`, every concurrent add collided on it
+        and the conflict propagated all the way to the publisher's
+        retry loop.
 
       - `plone.folder.ordered.pos` — companion `OIBTree` mapping
         child id -> position. No longer read by anything once the
@@ -144,36 +402,56 @@ def drop_client_ordering_annotations(tool):
     the ZODB cache. The adapter override is what stops new writes
     from touching them; this step is hygiene.
     """
-    ORDER_KEY = "plone.folder.ordered.order"
-    POS_KEY = "plone.folder.ordered.pos"
-
-    query = {"portal_type": "Client"}
-    brains = api.search(query, CLIENT_CATALOG)
+    brains = api.search({"portal_type": portal_type}, catalog)
     total = len(brains)
     logger.info(
-        "Dropping IOrdering annotations from {} clients".format(total))
+        "Dropping IOrdering annotations from {} {}".format(total, label))
 
     cleaned = 0
     for num, brain in enumerate(brains, start=1):
-        client = api.get_object(brain)
-        ann = IAnnotations(client)
-        had_order = ORDER_KEY in ann
-        had_pos = POS_KEY in ann
+        obj = api.get_object(brain)
+        ann = IAnnotations(obj)
+        had_order = ORDERING_ORDER_KEY in ann
+        had_pos = ORDERING_POS_KEY in ann
         if not (had_order or had_pos):
             continue
-        ann.pop(ORDER_KEY, None)
-        ann.pop(POS_KEY, None)
-        client._p_changed = True
+        ann.pop(ORDERING_ORDER_KEY, None)
+        ann.pop(ORDERING_POS_KEY, None)
+        obj._p_changed = True
         cleaned += 1
         if num % 100 == 0:
             logger.info(
-                "  ... processed {}/{} clients ({} cleaned)".format(
-                    num, total, cleaned))
+                "  ... processed {}/{} {} ({} cleaned)".format(
+                    num, total, label, cleaned))
             transaction.savepoint()
 
     logger.info(
-        "Dropped IOrdering annotations from {}/{} clients".format(
-            cleaned, total))
+        "Dropped IOrdering annotations from {}/{} {}".format(
+            cleaned, total, label))
+
+
+def drop_client_ordering_annotations(tool):
+    """Remove the legacy IOrdering annotations from every Client.
+
+    See `drop_ordering_annotations` for the rationale. Clients were
+    switched to `UnorderedOrdering` earlier in 2.7.0.
+    """
+    drop_ordering_annotations("Client", CLIENT_CATALOG, "clients")
+
+
+def drop_instrument_ordering_annotations(tool):
+    """Remove the legacy IOrdering annotations from every Instrument.
+
+    Instruments hold one `AutoImportLog` per results import: both
+    `senaite.core.astm.importer` and
+    `senaite.core.exportimport.auto_import_results` create them
+    inside the instrument. On a deployment with an active ASTM or
+    auto-import feed the ordering annotation therefore grows without
+    bound and is appended to on every single import.
+
+    See `drop_ordering_annotations` for the rationale.
+    """
+    drop_ordering_annotations("Instrument", SETUP_CATALOG, "instruments")
 
 
 @upgradestep(product, version)
@@ -302,6 +580,68 @@ def setup_duplicate_sample_transition(tool):
 
 
 @upgradestep(product, version)
+def setup_dispose_transition(tool):
+    """Register the new 'dispose' workflow transition and 'disposed' state.
+
+    Re-imports the rolemap (new "Dispose Sample" permission, granted to
+    LabManager and Manager) and the workflows so existing instances pick up
+    the 'dispose' transition, the 'disposed' state and the matching
+    exit-transitions on the live sample states, plus the generic 'locked'
+    state and the 'lock'/'unlock' transitions of the analysis workflow. The
+    transition stays unavailable until the 'Dispose workflow' is enabled in
+    the setup.
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+
+    setup.runImportStepFromProfile(profile, "rolemap")
+    setup.runImportStepFromProfile(profile, "workflow")
+
+
+@upgradestep(product, version)
+def setup_dispatch_workflow(tool):
+    """Set up the now-optional dispatch workflow for existing installations.
+
+    Dispatch used to be always available. The workflow is now optional and
+    disabled by default. Only if the installation already has dispatched
+    samples we enable the workflow (to preserve the current behavior), mark
+    those samples with the IDispatched marker interface (the dispatched
+    viewlet and the analysis lock guard rely on it instead of the sample
+    review_state) and lock their analyses, as a fresh dispatch would.
+    """
+    query = {
+        "portal_type": "AnalysisRequest",
+        "review_state": "dispatched",
+    }
+    brains = api.search(query, SAMPLE_CATALOG)
+    total = len(brains)
+    if not total:
+        # No dispatched samples: leave the workflow disabled (opt-in)
+        logger.info("No dispatched samples found, dispatch workflow stays "
+                    "disabled")
+        return
+
+    # Enable the dispatch workflow to preserve the current behavior
+    setup = api.get_senaite_setup()
+    if setup:
+        setup.setDispatchWorkflowEnabled(True)
+
+    # Mark the dispatched samples and lock their analyses
+    logger.info("Processing dispatched samples: {} to process".format(total))
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Processing dispatched samples {}/{}"
+                        .format(num, total))
+        sample = api.get_object(brain)
+        # Mark the sample first so the analysis lock guard allows the lock
+        if not IDispatched.providedBy(sample):
+            alsoProvides(sample, IDispatched)
+        # Lock the analyses of the sample (as a fresh dispatch would)
+        do_action_to_analyses(sample, "lock")
+    logger.info("Processing dispatched samples [DONE]")
+
+
+@upgradestep(product, version)
 def remove_dashboard_registry_visibility(tool):
     """Remove legacy registry-based dashboard panel visibility
 
@@ -410,7 +750,7 @@ def migrate_calculations_to_dx(tool):
     remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
     tool.runImportStepFromProfile(profile, "workflow")
 
     # get the old container
@@ -772,7 +1112,7 @@ def migrate_contacts_to_dx(tool):
     remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
 
     # Find all Contact objects (excluding LabContact and SupplierContact)
     query = {
@@ -918,7 +1258,7 @@ def migrate_multifiles_to_dx(tool):
     remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
 
     # Find all Multifile objects
     query = {
@@ -1058,7 +1398,7 @@ def migrate_laboratory_to_dx(tool):
     remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
 
     portal_type = "Laboratory"
     query = {
@@ -1304,7 +1644,7 @@ def repair_laboratory_migration(tool):
     logger.info("Repair laboratory migration ...")
 
     # Re-import typeinfo so the FTI picks up IMultiCatalogBehavior
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
 
     setup = api.get_senaite_setup()
     laboratory = setup.get("laboratory") if setup else None
@@ -1362,7 +1702,7 @@ def create_setup_contacts_folder(tool):
     remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
     tool.runImportStepFromProfile(profile, "actions")
 
     setup = api.get_senaite_setup()
@@ -1393,7 +1733,7 @@ def setup_custom_image_and_file_types(tool):
     # Ensure old AT types are flushed first
     remove_at_portal_types(tool, REMOVE_AT_TYPES)
     portal = tool.aq_inner.aq_parent
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
     tool.runImportStepFromProfile(profile, "workflow")
     # Needed for the updated Client.xml action
     _run_import_step(portal, "typeinfo", "profile-bika.lims:default")
@@ -1619,7 +1959,7 @@ def migrate_arreport_to_resultsreport(tool):
 
     # Remove AT portal type and install DX portal type
     remove_at_portal_types(tool, REMOVE_AT_TYPES)
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
     tool.runImportStepFromProfile(profile, "workflow")
 
     # Update AnalysisRequest to allow ResultsReport as subobject
@@ -1849,7 +2189,7 @@ def migrate_worksheets_to_dx(tool):
     remove_at_portal_types(tool, REMOVE_AT_TYPES)
 
     # run required import steps
-    tool.runImportStepFromProfile(profile, "typeinfo")
+    import_typeinfo(tool, profile)
     tool.runImportStepFromProfile(profile, "workflow")
     tool.runImportStepFromProfile(profile, "rolemap")
     tool.runImportStepFromProfile(profile, "plone.app.registry")
@@ -2182,6 +2522,115 @@ def cleanup_sample_catalog(tool):
 
 
 @upgradestep(product, version)
+def setup_delete_remarks_permission(tool):
+    """Register the new `senaite.core: Delete Remarks` permission by
+    reimporting the rolemap. It is granted to LabManager / Manager (not
+    LabClerk) and gates the deletion and restoration of sample remarks.
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+    logger.info("Importing rolemap for 'Delete Remarks' permission ...")
+    setup.runImportStepFromProfile(profile, "rolemap")
+    logger.info("Importing rolemap for 'Delete Remarks' permission [DONE]")
+
+
+@upgradestep(product, version)
+def setup_sample_labels(tool):
+    """Register ManageLabels permission and add labels KeywordIndex to
+    senaite_catalog_sample. Reindex so labels on existing samples are
+    queryable via the new index.
+    """
+    portal = tool.aq_inner.aq_parent
+    setup = portal.portal_setup
+
+    logger.info("Importing rolemap for ManageLabels permission ...")
+    setup.runImportStepFromProfile(profile, "rolemap")
+
+    logger.info("Adding 'labels' index to sample catalog ...")
+    catalog = api.get_tool(SAMPLE_CATALOG)
+    if add_catalog_index(catalog, "labels", "", "KeywordIndex"):
+        logger.info("Reindexing 'labels' in sample catalog ...")
+        reindex_index(SAMPLE_CATALOG, "labels")
+        logger.info("Reindexing 'labels' in sample catalog [DONE]")
+
+    logger.info("Adding 'getLabels' column to sample catalog ...")
+    add_catalog_column(catalog, "getLabels")
+
+    logger.info("Adding 'getColor' column to setup catalog ...")
+    setup_catalog = api.get_tool(SETUP_CATALOG)
+    add_catalog_column(setup_catalog, "getColor")
+    # The pre-release of this PR used a bare 'color' attribute column;
+    # drop it if present so the catalog reflects the final method-call
+    # convention.
+    if "color" in setup_catalog.schema():
+        del_column(setup_catalog, "color")
+    label_brains = setup_catalog(portal_type="Label")
+    logger.info("Refreshing %s Label brains for color metadata "
+                "and seeding rename-cascade baseline ..."
+                % len(label_brains))
+    # The label rename subscriber reads `PREVIOUS_TITLE_KEY` from
+    # each Label's annotations to detect title changes; seed it for
+    # every pre-existing Label so the *first* post-upgrade rename
+    # actually cascades rather than being treated as the baseline.
+    from senaite.core.config.labels import PREVIOUS_TITLE_KEY
+    from zope.annotation.interfaces import IAnnotations
+    for brain in label_brains:
+        obj = api.get_object(brain, default=None)
+        if obj is None:
+            logger.warn("Could not wake Label brain '%s'" % brain.UID)
+            continue
+        # No idxs= so the metadata columns get refreshed too.
+        obj.reindexObject()
+        annotations = IAnnotations(obj)
+        if PREVIOUS_TITLE_KEY not in annotations:
+            annotations[PREVIOUS_TITLE_KEY] = api.safe_unicode(
+                obj.title or u"")
+
+    logger.info("Setup sample labels [DONE]")
+
+
+@upgradestep(product, version)
+def reindex_client_title(tool):
+    """Reindex getClientTitle in the sample catalog with unicode keys
+
+    getClientTitle is now normalized to unicode by an indexer adapter so the
+    FieldIndex can be queried with non-ASCII values (e.g. accented client
+    names) without raising a UnicodeDecodeError on Python 2.
+
+    The index BTree must be cleared *before* reindexing. `manage_reindexIndex`
+    and a plain per-object reindex both only re-catalog each object, so a
+    unicode key gets inserted into an index that still holds the old
+    byte-string keys, and comparing the two key types raises a
+    UnicodeDecodeError. With the index emptied first, each object repopulates
+    it with unicode keys only.
+
+    Only the getClientTitle metadata column is refreshed (via the partial
+    update_metadata support in BaseCatalog) instead of recomputing the whole
+    record, which would re-run expensive accessors like getProgress and
+    getAnalysesNum on every sample.
+    """
+    catalog = api.get_tool(SAMPLE_CATALOG)
+
+    # Clear the index BTree so the old byte-string keys are dropped; the
+    # per-object reindex below then fills it with unicode keys only.
+    catalog._catalog.getIndex("getClientTitle").clear()
+
+    brains = catalog(portal_type="AnalysisRequest")
+    total = len(brains)
+    logger.info("Reindexing getClientTitle of %s samples ..." % total)
+    for num, brain in enumerate(brains):
+        if num and num % 1000 == 0:
+            logger.info("Reindexed %s/%s samples ..." % (num, total))
+        obj = api.get_object(brain, default=None)
+        if obj is None:
+            continue
+        catalog.catalog_object(obj, api.get_path(obj),
+                               idxs=["getClientTitle"],
+                               update_metadata=["getClientTitle"])
+    logger.info("Reindexing getClientTitle [DONE]")
+
+
+@upgradestep(product, version)
 def add_sample_catalog_indexes(tool):
     """Add new indexes to senaite_catalog_sample
 
@@ -2209,3 +2658,564 @@ def add_sample_catalog_indexes(tool):
             )
 
     logger.info("Adding new indexes to sample catalog [DONE]")
+
+
+@upgradestep(product, version)
+def add_sample_analyses_keywords_metadata(tool):
+    """Expose getAnalysesKeywords as metadata in senaite_catalog_sample
+
+    The getAnalysesKeywords KeywordIndex was added earlier. Storing the same
+    value as metadata lets the samples listing display the contained analysis
+    keywords (and host the keyword filter) without waking up each object.
+    Refresh the metadata of existing samples so the column is populated.
+    """
+    catalog = api.get_tool(SAMPLE_CATALOG)
+    if not add_catalog_column(catalog, "getAnalysesKeywords"):
+        return
+
+    brains = catalog(portal_type="AnalysisRequest")
+    total = len(brains)
+    logger.info("Refreshing getAnalysesKeywords metadata of %s samples ..."
+                % total)
+    for num, brain in enumerate(brains):
+        if num and num % 1000 == 0:
+            logger.info("Refreshed %s/%s samples ..." % (num, total))
+        obj = api.get_object(brain, default=None)
+        if obj is None:
+            continue
+        # Refresh only the getAnalysesKeywords metadata column via the partial
+        # update_metadata support in BaseCatalog, instead of recomputing the
+        # whole record (which re-runs expensive accessors like getProgress and
+        # getAnalysesNum). idxs=[] means "no index": the getAnalysesKeywords
+        # index already exists and its value is unchanged.
+        catalog.catalog_object(obj, api.get_path(obj), idxs=[],
+                               update_metadata=["getAnalysesKeywords"])
+    logger.info("Refreshing getAnalysesKeywords metadata [DONE]")
+
+
+@upgradestep(product, version)
+def strip_global_client_role(tool):
+    """Remove directly-assigned global 'Client' role from users.
+
+    The 'Client' role is now granted dynamically by the
+    ILocalRoleProvider in `senaite.core.security.clientrole` based on
+    the user's `linked_client_uid` member property. A user with the
+    role assigned directly through the portal role manager but no
+    contact link has the Client landing page but no Owner role on any
+    client folder, which is a half-configured state with no useful
+    access.
+
+    Iterate the principals assigned the 'Client' role via the portal
+    role manager and remove the direct assignment. Users keep the
+    role dynamically wherever their `linked_client_uid` matches.
+    """
+    logger.info("Stripping global 'Client' role from users ...")
+    acl = api.get_tool("acl_users")
+    prm = getattr(acl, "portal_role_manager", None)
+    if prm is None:
+        logger.warn(
+            "No portal_role_manager available; nothing to strip")
+        return
+
+    principals = prm.listAssignedPrincipals("Client")
+    total = len(principals)
+    logger.info(
+        "Found %s principals with directly-assigned 'Client' role"
+        % total)
+
+    removed = 0
+    for principal_id, _title in principals:
+        try:
+            prm.removeRoleFromPrincipal("Client", principal_id)
+        except KeyError:
+            logger.warn(
+                "Could not remove 'Client' from '%s'" % principal_id)
+            continue
+        removed += 1
+        logger.info(
+            "Removed direct 'Client' role from '%s'" % principal_id)
+
+    logger.info(
+        "Stripped global 'Client' role from %s/%s principals"
+        % (removed, total))
+
+
+CLIENT_TREE_CATALOGS = (
+    "senaite_catalog_sample",
+    "senaite_catalog_analysis",
+    "senaite_catalog",
+    "senaite_catalog_report",
+    "senaite_catalog_attachments",
+    "senaite_catalog_client",
+    "senaite_catalog_setup",
+    "senaite_catalog_worksheet",
+)
+
+
+@upgradestep(product, version)
+def reindex_dx_client_aware_allowed_roles(tool):
+    """Re-run `reindex_client_tree_allowed_roles` after the
+    `IClientAwareMixin` interface mismatch was fixed.
+
+    #2934 wired the new `allowedRolesAndUsers` indexer, the
+    dynamic client-role provider, and this very reindex step
+    against `bika.lims.interfaces.IClientAwareMixin` (the AT
+    marker). The DX `ClientAwareMixin` base class in
+    `senaite.core.content.mixins`, however, implements the
+    separate `senaite.core.interfaces.IClientAwareMixin`. The
+    `providedBy` check in the original step therefore
+    silently rejected every DX descendant -- including
+    `SamplePoint`, `SampleType`, and `AnalysisProfile` -- and
+    none of them ever received the new `client:<uid>` token.
+    Catalog queries from client users (e.g. the Excel-import
+    sample-point lookup) returned no hits even though the
+    objects exist and direct traversal works via the dynamic
+    role provider.
+
+    All four call sites now import `IClientAwareMixin` from
+    `senaite.core.interfaces`; this follow-up step iterates
+    the client-tree catalogs again so every DX descendant
+    picks up the missing token.
+    """
+    reindex_client_tree_allowed_roles()
+
+
+@upgradestep(product, version)
+def switch_to_dynamic_client_roles(tool):
+    """Migrate persistent group/local-role access to the dynamic
+    ILocalRoleProvider model.
+
+    Three idempotent passes:
+
+    1. Reindex `allowedRolesAndUsers` on every client-tree object so it
+       picks up the new stable `client:<client_uid>` token.
+    2. Backfill the `linked_client_uid` member property for every
+       already-linked client contact, so the dynamic role provider can
+       authorise those users without having to walk the catalog.
+    3. Remove the orphan `auto_create_client_group` registry record
+       (the field has been dropped from `IClientRegistry`).
+
+    Existing per-client groups and persisted Owner local roles on the
+    client folders are left untouched here; they are removed by the
+    follow-up cleanup upgrade step.
+    """
+    portal = tool.aq_inner.aq_parent
+    reindex_client_tree_allowed_roles()
+    backfill_linked_client_uid()
+    drop_auto_create_client_group_record(portal)
+
+
+REINDEX_BATCH_SIZE = 100
+
+
+def reindex_client_tree_allowed_roles():
+    """Reindex `allowedRolesAndUsers` on every IClient + IClientAware
+    object so they carry the new `client:<uid>` token.
+
+    Bypasses `reindexObject` (and therefore the
+    `CatalogMultiplexProcessor` queue) and writes the single index
+    directly on every catalog the object lives in. Without this,
+    the queue would re-fan the reindex to every mapped catalog at
+    transaction-commit time, redo work that has just been done, and
+    dominate the upgrade-step runtime on production-size datasets.
+
+    Per-object: deactivate from the ZODB cache after the write to
+    keep the cache from filling up over very large catalogs;
+    savepoint every 5000 instead of every 500 because each item is
+    a single index write with no metadata refresh.
+    """
+    from bika.lims.interfaces import IClient
+    from senaite.core.interfaces import IClientAwareMixin
+
+    logger.info("Reindexing allowedRolesAndUsers on client-tree content ...")
+    seen = set()
+    total = 0
+    for catalog_id in CLIENT_TREE_CATALOGS:
+        catalog = api.get_tool(catalog_id, default=None)
+        if catalog is None:
+            continue
+        brains = catalog.unrestrictedSearchResults({})
+        for brain in brains:
+            uid = getattr(brain, "UID", None)
+            if uid and uid in seen:
+                continue
+            try:
+                obj = brain.getObject()
+            except (AttributeError, KeyError):
+                continue
+            if obj is None:
+                continue
+            if not (IClient.providedBy(obj)
+                    or IClientAwareMixin.providedBy(obj)):
+                continue
+            for cat in api.get_catalogs_for(obj):
+                cat.catalog_object(
+                    obj,
+                    idxs=["allowedRolesAndUsers"],
+                    update_metadata=False)
+            try:
+                obj._p_deactivate()
+            except Exception as exc:
+                # `_p_deactivate` is a cache-eviction optimisation;
+                # failures here are non-fatal and the reindex above
+                # has already persisted. Log at debug for
+                # troubleshooting but do not interrupt the upgrade.
+                logger.debug(
+                    "_p_deactivate failed on %r: %s" % (obj, exc))
+            if uid:
+                seen.add(uid)
+            total += 1
+            if total % REINDEX_BATCH_SIZE == 0:
+                transaction.savepoint(optimistic=True)
+            if total % 500 == 0:
+                logger.info("  ... reindexed %s objects" % total)
+            if total % 5000 == 0:
+                transaction.savepoint(optimistic=True)
+    logger.info(
+        "Reindexed allowedRolesAndUsers on %s client-tree objects" % total)
+
+
+def backfill_linked_client_uid():
+    """Set the `linked_client_uid` and `linked_contact_uid` user
+    properties for every existing client contact already linked to a
+    user account.
+
+    Both properties drive different parts of the runtime: the client
+    UID is what the dynamic local-role provider in
+    `senaite.core.security.clientrole` reads to grant access on the
+    client tree, while the contact UID is the back-reference that
+    resolves a logged-in user to their contact object. The link path
+    in `Contact._linkUser` writes both, so existing links must carry
+    both for parity.
+    """
+    from bika.lims.interfaces import IClient
+    from senaite.core.content.contact import CLIENT_UID_KEY
+    from senaite.core.content.contact import CONTACT_UID_KEY
+    from senaite.core.content.contact import _set_user_property
+
+    logger.info(
+        "Backfilling `linked_client_uid` and `linked_contact_uid` "
+        "on linked users ...")
+    contacts = api.search({"portal_type": "Contact"}, CONTACT_CATALOG)
+    updated = 0
+    for brain in contacts:
+        contact = api.get_object(brain)
+        parent = contact.aq_parent
+        if not IClient.providedBy(parent):
+            continue
+        user = contact.getUser()
+        if user is None:
+            continue
+        _set_user_property(user, CLIENT_UID_KEY, api.get_uid(parent))
+        _set_user_property(user, CONTACT_UID_KEY, api.get_uid(contact))
+        updated += 1
+    logger.info(
+        "Backfilled linked UID properties on %s users" % updated)
+
+
+def drop_auto_create_client_group_record(portal):
+    """Delete the obsolete `auto_create_client_group` registry record.
+
+    The setting moved out of the registry when client access switched
+    to the dynamic role provider. Leaving the record behind would
+    only confuse future readers.
+    """
+    registry = api.get_tool("portal_registry", default=None)
+    if registry is None:
+        return
+    key = ("senaite.core.registry.schema.IClientRegistry."
+           "auto_create_client_group")
+    if key in registry.records:
+        del registry.records[key]
+        logger.info("Removed orphan registry record '%s'" % key)
+
+
+@upgradestep(product, version)
+def remove_client_manage_access_action(tool):
+    """Drop the `manage_access` action from the Client FTI.
+
+    The action linked to @@sharing on every Client; sharing on the
+    client tree is now disabled because access is granted dynamically
+    by the ILocalRoleProvider. Removing the action prevents admins
+    from clicking through to the (now NotFound) view.
+    """
+    types_tool = api.get_tool("portal_types")
+    fti = types_tool.getTypeInfo("Client")
+    if fti is None:
+        return
+    actions = list(fti.listActions())
+    target_indices = [str(i) for i, a in enumerate(actions)
+                      if a.id == "manage_access"]
+    if not target_indices:
+        return
+    fti.deleteActions(target_indices)
+    logger.info("Removed 'manage_access' action from Client FTI")
+
+
+@upgradestep(product, version)
+def remove_legacy_client_groups(tool):
+    """Remove the per-client group + Owner local-role grant on every
+    Client.
+
+    Pre-2.7 SENAITE auto-created a group per Client (`Client.GROUP_KEY`
+    stored the id on the client object) and granted that group the
+    local Owner role on the client folder. With #2934 client users get
+    Owner + Client dynamically via the ILocalRoleProvider, so the
+    legacy group and its persisted local-role grant are dead weight.
+
+    For each Client:
+
+    1. Find the stored group id and the matching group in
+       portal_groups. Skip the client if no id is stored or the group
+       no longer exists.
+    2. Skip the client if the persisted group id no longer matches the
+       client's own stored ``_client_group_id`` — protects against an
+       admin who renamed the group manually.
+    3. Remove the corresponding entry from ``__ac_local_roles__`` on
+       the client folder via ``manage_delLocalRoles``. This triggers
+       ``reindexObjectSecurity`` recursively so the stale
+       ``user:<group_id>`` token drops out of ``allowedRolesAndUsers``
+       on every descendant. One-time cost; the new ``client:<uid>``
+       token added by #2934 already carries client access from here on.
+    4. Remove the group from portal_groups.
+    5. Clear the ``_client_group_id`` attribute on the client.
+    """
+    portal_groups = api.get_tool("portal_groups")
+    clients = api.search({"portal_type": "Client"}, CLIENT_CATALOG)
+    total = len(clients)
+    removed_groups = 0
+    cleared_local_roles = 0
+    for num, brain in enumerate(clients, start=1):
+        client = api.get_object(brain)
+        if num % 50 == 0:
+            logger.info("Cleaning client groups: %s/%s" % (num, total))
+        group_id = getattr(client, "_client_group_id", None)
+        if not group_id:
+            continue
+        if group_id in (client.__ac_local_roles__ or {}):
+            client.manage_delLocalRoles([group_id])
+            # `manage_delLocalRoles` only mutates `__ac_local_roles__`;
+            # the catalog still carries the stale `user:<group_id>`
+            # token on every descendant until reindexObjectSecurity
+            # walks the subtree. Paying the cost once here is the whole
+            # point of this upgrade step.
+            client.reindexObjectSecurity()
+            cleared_local_roles += 1
+            logger.info(
+                "Cleared Owner local role for group '%s' on client '%s'"
+                % (group_id, client.getName()))
+        group = portal_groups.getGroupById(group_id)
+        if group is not None:
+            portal_groups.removeGroup(group_id)
+            removed_groups += 1
+            logger.info(
+                "Removed legacy client group '%s' for client '%s'"
+                % (group_id, client.getName()))
+        try:
+            delattr(client, "_client_group_id")
+        except AttributeError:
+            pass
+    logger.info(
+        "Legacy client-group cleanup: %s groups removed, "
+        "%s local-role grants cleared on %s clients"
+        % (removed_groups, cleared_local_roles, total))
+
+
+@upgradestep(product, version)
+def drop_client_catalog_group_id_column(tool):
+    """Drop the `getGroupId` metadata column from `senaite_catalog_client`.
+
+    The column mirrored the legacy per-client group id. After the
+    dynamic role provider replaces the group mechanism, the column is
+    dead weight and every brain that still carries a stale value
+    misleads any code that reads it.
+    """
+    catalog = api.get_tool("senaite_catalog_client", default=None)
+    if catalog is None:
+        return
+    if del_column(catalog, "getGroupId"):
+        logger.info(
+            "Dropped 'getGroupId' column from senaite_catalog_client")
+
+
+@upgradestep(product, version)
+def remove_client_sharing_alias(tool):
+    """Drop the `sharing` method alias from the Client FTI.
+
+    The alias used to route `/<client>/sharing` to `@@sharing`. The
+    `manage_access` action that exposed it was removed by
+    `remove_client_manage_access_action`, but the alias itself kept
+    the view reachable by direct URL. Sharing on the client tree is
+    redundant now that access is granted dynamically.
+    """
+    types_tool = api.get_tool("portal_types")
+    fti = types_tool.getTypeInfo("Client")
+    if fti is None:
+        return
+    aliases = dict(fti.getMethodAliases() or {})
+    if "sharing" not in aliases:
+        return
+    del aliases["sharing"]
+    fti.setMethodAliases(aliases)
+    logger.info("Removed 'sharing' method alias from Client FTI")
+
+
+def remove_methods_from_sidebar():
+    """Drop the `methods` folder from the sidebar navigation folders.
+
+    The methods folder is moved from the portal root into the setup folder,
+    so it is no longer a top-level folder eligible for the sidebar.
+    """
+    setup = api.get_senaite_setup()
+    folders = list(setup.getSidebarFolders() or [])
+    if "methods" not in folders:
+        return
+    folders = [folder for folder in folders if folder != "methods"]
+    setup.setSidebarFolders(tuple(folders))
+    logger.info("Removed 'methods' from the sidebar navigation folders")
+
+
+@upgradestep(product, version)
+def migrate_methods_to_dx(tool):
+    """Converts existing methods to Dexterity and moves them from the portal
+    root into the setup folder
+    """
+    logger.info("Convert Methods to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
+
+    # run required import steps
+    import_typeinfo(tool, profile)
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # the methods folder is no longer a top-level sidebar folder
+    remove_methods_from_sidebar()
+
+    # get the old container from the portal root
+    portal = api.get_portal()
+    origin = portal.get("methods")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container (under the new setup folder)
+    destination = get_setup_folder("methods")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # copy items from old -> new container
+    objects = origin.objectValues()
+    for num, src in enumerate(objects, start=1):
+        migrate_method_to_dx(src, destination)
+        if num % 100 == 0:
+            transaction.savepoint()
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert Methods to Dexterity [DONE]")
+
+
+def migrate_method_to_dx(src, destination):
+    """Migrate an AT Method to DX in the destination folder
+
+    :param src: The source AT object
+    :param destination: The destination folder
+    """
+    portal_type = "Method"
+
+    if not api.is_at_content(src):
+        # already migrated -> just move it to the new folder
+        api.move_object(src, destination, check_constraints=False)
+        logger.info("Already migrated: {}".format(api.get_path(src)))
+        return
+
+    if api.get_portal_type(src) != portal_type:
+        logger.error("Not a '{}' object: {}".format(portal_type, src))
+        return
+
+    # origin and destination are different folders, so we can keep the ID
+    src_id = src.getId()
+    target = destination.get(src_id)
+    if not target:
+        # Don't use the api to skip the auto-id generation
+        target = createContent(portal_type, id=src_id)
+        destination._setObject(src_id, target)
+        target = destination._getOb(src_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = api.safe_unicode(src.Title() or "")
+    target.description = api.safe_unicode(src.Description() or "")
+    target.setMethodID(src.getMethodID() or "")
+    target.setAccredited(src.getAccredited())
+    target.setCalculations(src.getRawCalculations() or [])
+    target.setCalculation(src.getRawCalculation())
+
+    # instructions (AT html text -> DX rich text). The DX setter wraps plain
+    # (html) strings into a rich text value.
+    instructions = src.getInstructions()
+    if instructions:
+        target.setInstructions(api.safe_unicode(instructions))
+
+    # method document (AT blob file -> DX named blob file)
+    method_document = src.getMethodDocument()
+    if method_document:
+        named_file = blob_to_named_file(method_document)
+        if named_file:
+            target.setMethodDocument(named_file)
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter((src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID (keeps references from services/worksheets/instruments
+    # valid)
+    migrator.copy_uid(src, target)
+
+    # Copy the Instrument back-references (relationship "InstrumentMethods").
+    # They live in an annotation on the method and are NOT carried over by
+    # `copy_attributes`, so `getRawInstruments` would otherwise return empty.
+    src_backref_storage = get_at_backref_storage(src)
+    if src_backref_storage:
+        target_backref_storage = get_at_backref_storage(target)
+        for relationship, uids in src_backref_storage.items():
+            target_backref_storage[relationship] = PersistentList(uids)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    target.reindexObject()
+
+    logger.info("Migrated Method from %s -> %s" % (src, target))

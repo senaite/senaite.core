@@ -34,13 +34,19 @@ SAMPLE_ANALYSIS_DERIVED_IDXS = [
 
 
 def reindex_parent_analysis_derived(analysis):
-    """Reindex the indexes / columns on the parent sample that are
-    derived from the analysis set.
+    """Reindex the indexes / columns derived from the analysis set on the
+    sample that holds the analysis and on all of its ancestors.
+
+    getAnalysesKeywords aggregates the keywords of the sample and its
+    descendants, so when an analysis is added to or removed from a partition
+    the ancestors (e.g. the primary sample) must be refreshed too.
     """
     request = analysis.getRequest()
     if request is None:
         return
-    request.reindexObject(idxs=SAMPLE_ANALYSIS_DERIVED_IDXS)
+    samples = [request] + request.getAncestors(all_ancestors=True)
+    for sample in samples:
+        sample.reindexObject(idxs=SAMPLE_ANALYSIS_DERIVED_IDXS)
 
 
 def ObjectInitializedEventHandler(analysis, event):

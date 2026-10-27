@@ -228,7 +228,15 @@
                                                checked python:service_uid in template.get('analyses', {}).get(partition, [])"/>
                                 </td>
                                 <td class="text-info">
+                                  <a class="overlay_panel me-1"
+                                     tal:attributes="href string:${ar/url}/analysisservice_info?service_uid=${analysis/service_uid}">
+                                    <i class="fas fa-info-circle"></i>
+                                  </a>
                                   <span tal:content="analysis/title"/>
+                                  <span tal:condition="analysis/keyword"
+                                        tal:omit-tag="">
+                                    (<code tal:content="analysis/keyword"/>)
+                                  </span>
                                 </td>
                               </tr>
                             </table>
@@ -272,16 +280,18 @@
       </div>
       <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", () => {
-          $(".partition-body").on("show.bs.collapse", function(event) {
-            let el = event.currentTarget;
-            let partition = el.dataset.partition;
-            $("#" + partition + "-toggle-icon").toggleClass("fa-caret-right fa-caret-down");
-          });
-          $(".partition-body").on("hide.bs.collapse", function(event) {
-            let el = event.currentTarget;
-            let partition = el.dataset.partition;
-            $("#" + partition + "-toggle-icon").toggleClass("fa-caret-down fa-caret-right");
-          });
+          // Toggle the caret icon when a partition is expanded/collapsed.
+          // Bind defensively (namespaced + off before on): opening a service
+          // info overlay re-dispatches DOMContentLoaded, which would
+          // otherwise stack duplicate handlers and cancel out the toggle.
+          $(".partition-body")
+            .off("show.bs.collapse.partition hide.bs.collapse.partition")
+            .on("show.bs.collapse.partition hide.bs.collapse.partition",
+                function(event) {
+                  let partition = event.currentTarget.dataset.partition;
+                  $("#" + partition + "-toggle-icon")
+                    .toggleClass("fa-caret-right fa-caret-down");
+                });
         });
       </script>
     </metal:core>

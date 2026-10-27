@@ -19,17 +19,21 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.api.snapshot import pause_snapshots_for
+from bika.lims.api.snapshot import resume_snapshots_for
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces import IRejected
 from bika.lims.interfaces import IRetracted
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
+from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysis import create_retest
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow.analysis import STATE_REJECTED
 from bika.lims.workflow.analysis import STATE_RETRACTED
 from DateTime import DateTime
+from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.interface import alsoProvides
 
 
@@ -123,6 +127,23 @@ def after_reinstate(analysis):
     """Function triggered after a "reinstate" transition is performed.
     """
     pass
+
+
+def after_unlock(analysis):
+    """Function triggered after an "unlock" transition is performed.
+
+    Rolls the analysis back to the status it had before it was locked. The
+    "unlock" transition keeps the analysis in the "locked" state (empty
+    new_state), so the previous status is resolved from the review history
+    here and applied with `changeWorkflowState`.
+    """
+    previous_state = api.get_previous_worfklow_status_of(
+        analysis, skip=["locked"], default="unassigned")
+    # Note: we pause the snapshots here because events are fired next
+    pause_snapshots_for(analysis)
+    changeWorkflowState(analysis, ANALYSIS_WORKFLOW, previous_state)
+    resume_snapshots_for(analysis)
+    analysis.reindexObject()
 
 
 def after_submit(analysis):

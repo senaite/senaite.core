@@ -1,0 +1,14 @@
+/* Reusable round avatar component */
+
+.senaite-avatar {
+  flex: 0 0 auto;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  user-select: none;
+}

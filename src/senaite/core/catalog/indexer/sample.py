@@ -109,6 +109,20 @@ def getAnalysesKeywords(instance):
 
 
 @indexer(IAnalysisRequest)
+def getClientTitle(instance):
+    """Returns the title of the client the sample belongs to, normalized to
+    unicode.
+
+    The FieldIndex would otherwise store the raw (UTF-8 encoded) title
+    returned by `Client.Title()`, which makes the index keys byte strings.
+    Querying such an index with a unicode value (as the listing column filter
+    does) raises a UnicodeDecodeError on Python 2 when a key contains
+    non-ASCII characters. Returning unicode keeps the index keys unicode.
+    """
+    return api.safe_unicode(instance.getClientTitle())
+
+
+@indexer(IAnalysisRequest)
 def is_received(instance):
     """Returns whether the Analysis Request has been received
     """

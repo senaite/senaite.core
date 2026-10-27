@@ -18,7 +18,7 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from collective.z3cform.datagridfield.interfaces import IDataGridField
+from senaite.core.z3cform.datagridfield.interfaces import IDataGridField
 from z3c.form.interfaces import IObjectWidget
 from z3c.form.interfaces import ISequenceWidget
 from z3c.form.interfaces import IWidget
@@ -62,6 +62,11 @@ class IAddressWidget(IObjectWidget):
 
 class IPhoneWidget(IWidget):
     """Input type "phone" widget
+    """
+
+
+class IColorWidget(IWidget):
+    """Input type "color" widget — renders the native HTML5 picker.
     """
 
 

@@ -18,6 +18,8 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import re
+
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.api import create
@@ -31,14 +33,46 @@ from Products.CMFPlone.utils import classDoesNotImplement
 from Products.CMFPlone.utils import classImplements
 from senaite.core.catalog import LABEL_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.config.labels import LABEL_STORAGE
 from senaite.core.interfaces import ICanHaveLabels
 from senaite.core.interfaces import IHaveLabels
 from senaite.core.interfaces import ILabel
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
 
-LABEL_STORAGE = "senaite.core.labels"
 BEHAVIOR_ID = ICanHaveLabels.__identifier__
+
+# 6-digit hex color string `#rrggbb`. Used to validate the optional
+# `color` attribute of a Label and to filter user-supplied values
+# before they are inlined into `style=""` attributes anywhere chips
+# are rendered.
+HEX_COLOR_RE = re.compile(r"^#[0-9a-fA-F]{6}$")
+
+
+def is_safe_color(value):
+    """Return True if `value` is a 6-digit hex color (`#rrggbb`).
+
+    Empty / None values are treated as unsafe so callers can fall
+    back to the default chip styling.
+    """
+    if not value:
+        return False
+    return bool(HEX_COLOR_RE.match(value))
+
+
+def chip_style(color):
+    """Inline CSS for a colored label chip, or empty string.
+
+    Returned string contains `;` separators, so callers that embed
+    it via Chameleon `tal:attributes` must go through a view method
+    (semicolons collide with TAL's attribute separator) rather than
+    inlining the expression directly.
+    """
+    if not is_safe_color(color):
+        return u""
+    return (
+        u"background-color: {c}; border-color: {c}; color: #fff"
+    ).format(c=color)
 
 
 def get_storage(obj, default=None):
@@ -84,7 +118,11 @@ def get_label_by_name(name, inactive=True):
     :param name: Name of the label
     :returns: Label object or None
     """
-    found = query_labels(title=name)
+    # The setup catalog's `title` FieldIndex stores unicode keys
+    # (post #2901 rebuild). Form-submitted names arrive as utf-8
+    # byte strings, so coerce before querying or the index raises
+    # `UnicodeDecodeError` on ASCII comparison.
+    found = query_labels(title=api.safe_unicode(name))
     if len(found) == 0:
         return None
     elif len(found) > 1:
@@ -202,6 +240,28 @@ def add_obj_labels(obj, labels):
     return get_obj_labels(obj)
 
 
+def parse_label_csv(raw):
+    """Parse a comma-separated label string (or list of strings) into a
+    sorted unique list of unicode names. Whitespace is stripped,
+    empties dropped.
+
+    Accepts the two shapes that come over HTTP:
+    - a single string `"foo, bar"`
+    - a list of strings `["foo", "bar,baz"]` (repeated query params)
+
+    Values are coerced to unicode because the setup catalog's `title`
+    FieldIndex expects unicode keys; comparing utf-8 bytes against
+    unicode raises `UnicodeDecodeError` inside `PluginIndexes`.
+    """
+    if isinstance(raw, (list, tuple)):
+        values = []
+        for entry in raw:
+            values.extend(api.safe_unicode(entry or u"").split(u","))
+    else:
+        values = api.safe_unicode(raw or u"").split(u",")
+    return sorted({v.strip() for v in values if v and v.strip()})
+
+
 def del_obj_labels(obj, labels):
     """Remove labels from the object
 
@@ -217,6 +277,34 @@ def del_obj_labels(obj, labels):
     # set the new labels
     set_obj_labels(obj, new_labels)
     return get_obj_labels(obj)
+
+
+def get_label_colors(names=None):
+    """Return a `{label_name: color}` map for the given label names.
+
+    When `names` is None, returns the map for all active labels.
+    Colors are read from the brain `color` metadata column to avoid
+    waking the Label objects. Empty / missing colors are omitted.
+    """
+    query = {"portal_type": "Label"}
+    if names:
+        query["title"] = list(names)
+    brains = search(query, catalog=SETUP_CATALOG)
+    out = {}
+    for brain in brains:
+        # Prefer the `getColor` metadata column — populated by the
+        # 2.7 upgrade step `setup_sample_labels`. Falls back to
+        # waking the Label and reading the attribute directly for
+        # instances where the catalog rebuild has not yet run
+        # (e.g. between code deploy and `portal_setup` re-import).
+        color = getattr(brain, "getColor", None)
+        if not color:
+            obj = api.get_object(brain, default=None)
+            if obj is not None:
+                color = getattr(obj, "color", None)
+        if color:
+            out[api.safe_unicode(brain.Title)] = api.safe_unicode(color)
+    return out
 
 
 def search_objects_by_label(label, **kw):

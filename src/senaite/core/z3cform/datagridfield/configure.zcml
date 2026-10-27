@@ -1,0 +1,28 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="senaite.core">
+
+  <!-- Vendored datagrid widget machinery (from
+       collective.z3cform.datagridfield). The z3c.form widget templates are
+       NOT registered here: senaite.core provides its own on ISenaiteFormLayer
+       (see ../widgets/datagrid/configure.zcml). -->
+
+  <!-- Allow public access to the multi widget interface -->
+  <class class=".datagridfield.DataGridField">
+    <require
+        permission="zope.Public"
+        interface=".interfaces.IDataGridField"
+        />
+  </class>
+
+  <!-- Subform factory that builds the row sub-forms. Registered for the
+       specific DataGridFieldObject widget, so the generic
+       AutoExtensibleSubformAdapter (used by no other senaite.core widget) is
+       intentionally not registered here. -->
+  <adapter factory=".datagridfield.DataGridFieldSubformAdapter" />
+
+  <!-- Data converter and validator for the grid field -->
+  <adapter factory=".datagridfield.GridDataConverter" />
+  <adapter factory=".datagridfield.DataGridValidator" />
+
+</configure>

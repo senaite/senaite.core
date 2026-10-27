@@ -1285,8 +1285,12 @@ class InlineFieldValidator:
 
     def __call__(self, value, *args, **kwargs):
         field = kwargs['field']
-        request = kwargs['REQUEST']
+        request = kwargs.get('REQUEST')
         instance = kwargs['instance']
+
+        # skip inter-field validation when REQUEST is not available (API context)
+        if request is None:
+            return
 
         # extract the request values
         data = request.get(field.getName())
@@ -1469,6 +1473,22 @@ class ServiceConditionsValidator(object):
 validation.register(ServiceConditionsValidator())
 
 
+def get_sibling_value(instance, request, field_name):
+    """Return a sibling field's value for inter-field validation.
+
+    Prefer the value submitted in the form: during an interactive edit
+    the form holds the new values while the instance still holds the old
+    ones. Fall back to the instance's current value when there is no form
+    -- e.g. the JSON API or scripts, where the instance already holds the
+    new value by the time validation runs.
+    """
+    form = getattr(request, "form", None) or {}
+    if field_name in form:
+        return form.get(field_name)
+    field = instance.getField(field_name)
+    return field.get(instance) if field else None
+
+
 class LowerLimitOfDetectionValidator(object):
     """Validates that the Lower Limit of Detection (LLOD) is lower than or
     equal to the Lower Limit of Quantification (LLOQ)
@@ -1484,8 +1504,8 @@ class LowerLimitOfDetectionValidator(object):
         default = instance.getField(field_name).getDefault(instance)
         llod = api.to_float(value, default)
 
-        form = kwargs["REQUEST"].form
-        lloq = form.get("LowerLimitOfQuantification", None)
+        lloq = get_sibling_value(
+            instance, kwargs.get("REQUEST"), "LowerLimitOfQuantification")
         lloq = api.to_float(lloq, llod)
         if llod > lloq:
             return _t(_(
@@ -1511,9 +1531,8 @@ class LowerLimitOfQuantificationValidator(object):
         default = instance.getField(field_name).getDefault(instance)
         lloq = api.to_float(value, default)
 
-        # compare with the lower limit of detection
-        form = kwargs["REQUEST"].form
-        uloq = form.get("UpperLimitOfQuantification", None)
+        uloq = get_sibling_value(
+            instance, kwargs.get("REQUEST"), "UpperLimitOfQuantification")
         uloq = api.to_float(uloq, lloq)
         if lloq >= uloq:
             return _t(_(
@@ -1539,9 +1558,8 @@ class UpperLimitOfQuantificationValidator(object):
         default = instance.getField(field_name).getDefault(instance)
         uloq = api.to_float(value, default)
 
-        # compare with the lower limit of detection
-        form = kwargs["REQUEST"].form
-        ulod = form.get("UpperDetectionLimit", None)
+        ulod = get_sibling_value(
+            instance, kwargs.get("REQUEST"), "UpperDetectionLimit")
         ulod = api.to_float(ulod, uloq)
         if uloq > ulod:
             return _t(_(

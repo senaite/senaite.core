@@ -56,6 +56,7 @@ COLUMNS = BASE_COLUMNS + [
     # attribute name
     "Description",
     "Type",
+    "getColor",  # Label color (used by chip rendering)
     "description",
     "getCategoryUID",
     "getClientUID",

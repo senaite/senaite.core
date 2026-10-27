@@ -27,13 +27,13 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
 from senaite.core.permissions import FieldEditProfiles
+from senaite.core.i18n import get_currency_symbol
 from bika.lims.utils import format_supsub
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from plone.memoize import view
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
-from zope.i18n.locales import locales
 
 
 # XXX: To be removed
@@ -150,10 +150,9 @@ class AnalysisProfileAnalysesView(BikaListingView):
     def get_currency_symbol(self):
         """Get the currency Symbol
         """
-        locale = locales.getLocale("en")
         setup = api.get_senaite_setup()
         currency = setup.getCurrency()
-        return locale.numbers.currencies[currency].symbol
+        return get_currency_symbol(currency)
 
     @view.memoize
     def get_decimal_mark(self):
@@ -225,7 +224,9 @@ class AnalysisProfileAnalysesView(BikaListingView):
         item["selected"] = False
         item["Hidden"] = hidden
         item["selected"] = uid in self.configuration
-        item["Keyword"] = obj.getKeyword()
+        keyword = obj.getKeyword()
+        item["Keyword"] = keyword
+        item["replace"]["Keyword"] = "<code>{}</code>".format(keyword)
 
         # Add methods
         methods = obj.getMethods()

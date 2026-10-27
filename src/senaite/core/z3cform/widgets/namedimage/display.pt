@@ -1,0 +1,22 @@
+<span i18n:domain="plone"
+      tal:define="value python:view.value;
+                  fieldname python:getattr(view.field, '__name__', None);
+                  context python:view.context;
+                  scales python:context.restrictedTraverse('@@images', None)
+                          if (value is not None and fieldname and context is not None)
+                          else None;
+                  scale python:scales.scale(fieldname, scale='mini')
+                         if scales is not None else None"
+      tal:attributes="id view/id;
+                      class view/klass;
+                      style view/style;
+                      title view/title;
+                      lang view/lang">
+    <tal:img tal:condition="scale"
+             tal:replace="structure python:scale.tag()" />
+    <span tal:condition="python:value is None"
+          class="discreet"
+          i18n:translate="no_image">
+        No image
+    </span>
+</span>
