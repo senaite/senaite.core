@@ -1,11 +1,14 @@
 import $ from "jquery";
+import { flushSync } from "react-dom";
 
 class CalculationEditForm {
 
     constructor() {
         this.DataGrid = null;
-        this.testParamTable = null;
         this.rawTestValue = null;
+        this.initialized = false;
+        this.initializeFrame = null;
+        this.initialize = this.initialize.bind(this);
         this.rawTestInput = document.getElementById("form-widgets-raw_test_keywords");
         if (this.rawTestInput) {
             this.load();
@@ -17,6 +20,69 @@ class CalculationEditForm {
         this.makeReadonlyTestKeywords();
         this.hideAAField();
         this.wrapRawTestInput(this);
+        document.addEventListener("senaite.core.widgets:loaded", this.initialize);
+        this.initialize();
+
+        // Update parameters while typing, without waiting for the field to blur.
+        const formula = document.getElementById("form-widgets-formula");
+        if (formula) {
+            let timer;
+            formula.addEventListener("input", () => {
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    formula.dispatchEvent(new Event("change", {bubbles: true}));
+                }, 250);
+            });
+            formula.addEventListener("change", () => clearTimeout(timer));
+        }
+    }
+
+    // The first datagrid to mount can be the interim grid. Wait until the
+    // test grid is ready, and replay keywords received before our setter existed.
+    initialize() {
+        if (this.initialized || this.initializeFrame !== null) return;
+        this.initializeFrame = requestAnimationFrame(() => {
+            this.initializeFrame = null;
+            if (this.updateTestParameters(this.rawTestValue)) {
+                this.initialized = true;
+                document.removeEventListener("senaite.core.widgets:loaded", this.initialize);
+            }
+        });
+    }
+
+    updateTestParameters(newValue) {
+        const keywords = newValue.split(",").filter(k => k);
+        const table = this.getTestParamTable();
+        if (!table) return false;
+        const visibleRows = this.getDataGridWidget().get_visible_rows(table);
+        if (!visibleRows.length) return false;
+        // The callback serializes the DOM, so commit React rows first.
+        flushSync(() => {
+            if (keywords.length === 0) {
+                for (let i = 0; i < visibleRows.length - 1; i++) {
+                    this.getDataGridWidget().remove_row(visibleRows[i]);
+                }
+            } else if (keywords.length > (visibleRows.length - 1)) {
+                let newRows = keywords.length - visibleRows.length + 1;
+                for (let i = 0; i < newRows; i++) {
+                    this.getDataGridWidget().auto_append_row(table);
+                }
+            } else if (keywords.length < visibleRows.length - 1) {
+                for (let i = 0; i < visibleRows.length - 1; i++) {
+                    let row = $(visibleRows[i]).find("input[id$='-widgets-keyword']");
+                    if (row) {
+                        if (!keywords.includes(row?.val())) {
+                            this.getDataGridWidget().remove_row(visibleRows[i]);
+                        }
+                    }
+                }
+            }
+        });
+
+        this.hideAAField();
+        this.getDataGridWidget().trigger_custom_event("update_test_parameters", keywords);
+        this.makeReadonlyTestKeywords();
+        return true;
     }
 
     getDataGridWidget() {
@@ -27,10 +93,7 @@ class CalculationEditForm {
     }
 
     getTestParamTable() {
-        if (!this.testParamTable) {
-            this.testParamTable = $("tbody[data-name_prefix='form.widgets.test_parameters']")[0];
-        }
-        return this.testParamTable;
+        return $("tbody[data-name_prefix='form.widgets.test_parameters']")[0];
     }
 
     makeReadonlyTestKeywords() {
@@ -66,32 +129,7 @@ class CalculationEditForm {
                 // prevent maximum call stack size exceeded error by using the native setter
                 nativeSetter.call(this, newValue);
                 parent.rawTestValue = newValue;
-                const keywords = newValue.split(",").filter(k => k);
-                const table = parent.getTestParamTable();
-                const visibleRows = parent.getDataGridWidget().get_visible_rows(table);
-                if (keywords.length === 0) {
-                    for (let i = 0; i < visibleRows.length - 1; i++) {
-                        parent.getDataGridWidget().remove_row(visibleRows[i]);
-                    }
-                } else if (keywords.length > (visibleRows.length - 1)) {
-                    let newRows = keywords.length - visibleRows.length + 1;
-                    for (let i = 0; i < newRows; i++) {
-                        parent.getDataGridWidget().auto_append_row(table);
-                    }
-                } else if (keywords.length < visibleRows.length - 1) {
-                    for (let i = 0; i < visibleRows.length - 1; i++) {
-                        let row = $(visibleRows[i]).find("input[id$='-widgets-keyword']");
-                        if (row) {
-                            if (!keywords.includes(row?.val())) {
-                                parent.getDataGridWidget().remove_row(visibleRows[i]);
-                            }
-                        }
-                    }
-                }
-
-                parent.hideAAField();
-                parent.getDataGridWidget().trigger_custom_event("update_test_parameters", keywords);
-                parent.makeReadonlyTestKeywords();
+                parent.updateTestParameters(newValue);
             },
             get: function() {
                 return parent.rawTestValue;

@@ -150,6 +150,19 @@ f_formatter = FormulaFormatter()
 
 
 def calculate_formula(formula="", parameters={}, imports=None):
+    if not formula or not formula.strip():
+        return ""
+
+    # A test result needs a value for every parameter of the formula.
+    for keyword in re.findall(r"\[([^\]]+)\]", formula):
+        value = parameters.get(keyword)
+        if not api.safe_unicode(value).strip():
+            return ""
+
+    parameters = dict(
+        (key, float(value) if api.is_floatable(value) else value)
+        for key, value in parameters.items())
+
     result = "Failure"
 
     try:
