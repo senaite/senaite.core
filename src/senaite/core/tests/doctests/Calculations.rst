@@ -135,18 +135,18 @@ Test a new `Formula`.
     >>> calc.setTestResult(form_value)
     >>> calc.getTestResult()
     'uncertain'
-    
+
     >>> form_value = [{"keyword": "Ca", "value": 5}, {"keyword": "Mg", "value": 5}, {"keyword": "Comment", "value": "'certain'"},]
     >>> calc.setTestParameters(form_value)
     >>> calc.setTestResult(form_value)
     >>> calc.getTestResult()
-    '10'
+    '10.0'
 
     >>> form_value = [{"keyword": "Ca", "value": 5}, {"keyword": "Mg", "value": 5}, {"keyword": "Comment", "value": 10},]
     >>> calc.setTestParameters(form_value)
     >>> calc.setTestResult(form_value)
     >>> calc.getTestResult()
-    '10'
+    '10.0'
 
 
 A `Calculation` can therefore dynamically get a module and a member::
