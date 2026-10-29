@@ -209,6 +209,24 @@ Test get/set methods:
     >>> len(template1.getPartitions())
     2
 
+The references come back as the UIDs they went in as, no matter which of
+the two shapes they were given in:
+
+    >>> part1, part2 = template1.getPartitions()
+    >>> part1["container"] == part2["container"] == api.get_uid(container)
+    True
+    >>> part1["preservation"] == api.get_uid(preservation)
+    True
+    >>> part1["sampletype"] == api.get_uid(sampletype)
+    True
+
+And the stored records satisfy the field, which they do not when a single
+valued reference is stored as the bare UID instead of a list of one:
+
+    >>> from senaite.core.content.sampletemplate import ISampleTemplateSchema
+    >>> field = ISampleTemplateSchema["partitions"]
+    >>> field.validate(field.get(template1))
+
 
 Auto Partition
 ^^^^^^^^^^^^^^
@@ -294,10 +312,12 @@ Check if a specific analysis service is configured as "hidden":
     >>> template1.isAnalysisServiceHidden(Au)
     True
 
-Get the partition ID for a given service:
+Get the partition ID for a given service. It comes back as the text the
+record schema holds, while a service that is not assigned falls back to
+the empty native string:
 
     >>> template1.getAnalysisServicePartitionID(Au)
-    'part-2'
+    u'part-2'
 
     >>> template1.getAnalysisServicePartitionID(Zn)
     ''
