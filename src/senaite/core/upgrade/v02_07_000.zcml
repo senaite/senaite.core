@@ -3,6 +3,16 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate SupplierContact to Dexterity"
+      description="Convert the Archetypes SupplierContact content type to
+                   Dexterity. The contacts stay inside their Supplier, that is
+                   Dexterity already, so nothing is moved."
+      source="2761"
+      destination="2762"
+      handler=".v02_07_000.migrate_suppliercontacts_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Reindex Sample Point sample type titles"
       description="Populate sampletype_title for existing Sample Points so
                    sorting and filtering by Sample Type work."
