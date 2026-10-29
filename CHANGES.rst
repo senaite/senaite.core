@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3055 Gate the reading JSON API routes with a new Read JSON API permission
 - #3027 Fix Sample Points sorting and filtering by Sample Type
 - #3039 Do not reset the laboratory name when the setup profile is imported again
 - #3038 Answer a refused JSON API request with its own status

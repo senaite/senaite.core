@@ -3,6 +3,16 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add the Read JSON API permission"
+      description="Import rolemap for the new Read JSON API permission, which
+                   gates the reading routes of the legacy JSON API against
+                   anonymous callers."
+      source="2761"
+      destination="2762"
+      handler=".v02_07_000.import_rolemap"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Reindex Sample Point sample type titles"
       description="Populate sampletype_title for existing Sample Points so
                    sorting and filtering by Sample Type work."
