@@ -20,7 +20,7 @@
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.controlpanel.bika_analysisspecs import AnalysisSpecsView
+from senaite.core.browser.controlpanel.analysisspecs.view import AnalysisSpecsView
 from senaite.core.permissions import AddAnalysisSpec
 
 
