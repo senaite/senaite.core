@@ -118,6 +118,15 @@ EXCLUDE_FROM_NAV_BEHAVIOR = (
 
 
 @upgradestep(product, version)
+def reindex_samplepoint_sampletype_title(tool):
+    """Index the sample type titles of all sample points.
+    """
+    catalog = api.get_tool(SETUP_CATALOG)
+    for brain in catalog(portal_type="SamplePoint"):
+        api.get_object(brain).reindexObject(idxs=["sampletype_title"])
+
+
+@upgradestep(product, version)
 def drop_setup_marker_behavior(tool):
     """Drop the exclude-from-navigation marker from the Setup FTI.
 

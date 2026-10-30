@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #3054 Fix Date Sampled incorrectly required when the sampling workflow is enabled
+- #2893 Name Partitions as per Sample Template
+- #3027 Fix Sample Points sorting and filtering by Sample Type
 - #3039 Do not reset the laboratory name when the setup profile is imported again
 - #3038 Answer a refused JSON API request with its own status
 - #3036 Fix setting a sample's specification through the API

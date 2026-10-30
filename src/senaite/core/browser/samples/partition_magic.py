@@ -262,11 +262,11 @@ class PartitionMagicView(BrowserView):
             for part in template.getPartitions():
                 partition = part.get("part_id")
                 partitions.append(partition)
-                sampletype_uid = part.get('sampletype', ar_sampletype_uid)
+                sampletype_uid = part.get("sampletype") or ar_sampletype_uid
                 sampletypes_by_partition[partition] = sampletype_uid
-                container_uid = part.get("container", ar_container_uid)
+                container_uid = part.get("container") or ar_container_uid
                 containers_by_partition[partition] = container_uid
-                preserv_uid = part.get("preservation", ar_preservation_uid)
+                preserv_uid = part.get("preservation") or ar_preservation_uid
                 preservations_by_partition[partition] = preserv_uid
                 internal_use = part.get("internal_use", ar.getInternalUse())
                 internal_use_by_partition[partition] = internal_use
