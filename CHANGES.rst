@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3054 Fix Date Sampled incorrectly required when the sampling workflow is enabled
 - #2893 Name Partitions as per Sample Template
 - #3027 Fix Sample Points sorting and filtering by Sample Type
 - #3039 Do not reset the laboratory name when the setup profile is imported again

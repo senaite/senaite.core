@@ -227,3 +227,89 @@ Disabling the setting makes the field optional again::
     'visible'
     >>> field.required
     False
+
+
+Date Sampled requirements with the sampling workflow (#2771)
+............................................................
+
+With Sampling workflow enabled, a new sample has no collection date yet::
+
+    >>> from bika.lims.adapters.widgetvisibility import SamplingFieldsVisibility
+    >>> setup.setSamplingWorkflowEnabled(True)
+    >>> sampling_values = values.copy()
+    >>> del sampling_values["DateSampled"]
+    >>> pending = create_analysisrequest(client, request, sampling_values, service_uids)
+    >>> pending.getDateSampled() is None
+    True
+
+The Date Sampled field is shared between samples. Viewing a received sample
+makes it required, including on the sample awaiting sampling::
+
+    >>> date_sampled = pending.getField("DateSampled")
+    >>> date_sampled is ar1.getField("DateSampled")
+    True
+    >>> SamplingFieldsVisibility(ar1).isVisible(date_sampled, "edit")
+    'visible'
+    >>> date_sampled.required
+    True
+
+The add form must hide Date Sampled and clear that shared requirement::
+
+    >>> visibility = SamplingFieldsVisibility(pending)
+    >>> visibility.isVisible(date_sampled, "add")
+    'invisible'
+    >>> date_sampled.required
+    False
+
+Editing a sample awaiting sampling must also clear that requirement::
+
+    >>> SamplingFieldsVisibility(ar1).isVisible(date_sampled, "edit")
+    'visible'
+    >>> visibility.isVisible(date_sampled, "edit")
+    'visible'
+    >>> date_sampled.required
+    False
+
+Without Sampling workflow, the setup setting determines whether the date is
+required. Enabling Sampling workflow must clear this requirement even when the
+setting is on::
+
+    >>> setup.setSamplingWorkflowEnabled(False)
+    >>> setup.setDateSampledRequired(True)
+    >>> SamplingFieldsVisibility(ar).isVisible(date_sampled, "add")
+    'visible'
+    >>> date_sampled.required
+    True
+    >>> setup.setSamplingWorkflowEnabled(True)
+    >>> visibility.isVisible(date_sampled, "add")
+    'invisible'
+    >>> date_sampled.required
+    False
+    >>> setup.setDateSampledRequired(False)
+    >>> setup.setSamplingWorkflowEnabled(False)
+    >>> SamplingFieldsVisibility(ar).isVisible(date_sampled, "add")
+    'visible'
+    >>> date_sampled.required
+    False
+
+Received samples still require Date Sampled::
+
+    >>> SamplingFieldsVisibility(ar1).isVisible(date_sampled, "edit")
+    'visible'
+    >>> date_sampled.required
+    True
+
+A sample awaiting receipt with a collection date must keep it required in edit
+mode::
+
+    >>> setup.setSamplingWorkflowEnabled(True)
+    >>> pending.setDateSampled(DateTime())
+    >>> visibility.isVisible(date_sampled, "edit")
+    'visible'
+    >>> date_sampled.required
+    True
+    >>> setup.setSamplingWorkflowEnabled(False)
+
+Reset the shared field, it outlives this test::
+
+    >>> date_sampled.required = False
