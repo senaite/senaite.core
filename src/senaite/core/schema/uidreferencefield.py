@@ -113,6 +113,27 @@ def get_backref_storage(context):
     return annotation[BACKREFS_STORAGE]
 
 
+def to_uid_list(value):
+    """Normalize a single reference to the list this field stores it in
+
+    A UIDReferenceField derives from `zope.schema.List` and holds a
+    list even where it references a single object, so a sub-field of a
+    datagrid row is refused on validation when the bare UID is stored
+    instead. See https://github.com/senaite/senaite.core/pull/2630
+
+    :param value: object, UID or a list of either, may be empty
+    :type value: Any
+    :returns: list with the UID of the referenced object, or an empty
+        list
+    :rtype: list
+    """
+    if isinstance(value, (list, tuple)):
+        value = value[0] if value else None
+    if not value:
+        return []
+    return [api.get_uid(value)]
+
+
 @implementer(IUIDReferenceField)
 class UIDReferenceField(List, BaseField):
     """Stores UID references to other objects
