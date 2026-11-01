@@ -629,6 +629,29 @@ class CoordinateValidator:
 validation.register(CoordinateValidator())
 
 
+def get_sibling_records(kwargs):
+    """Return every record of the field the validated row belongs to
+
+    A uniqueness check needs the other rows. The records field hands
+    them over; a caller that predates that falls back to the request,
+    and a value set through the API has neither, which used to raise a
+    TypeError on None instead of validating.
+
+    :param kwargs: the keyword arguments the subfield validator got
+    :returns: a list of records, empty when there are none to compare
+    """
+    records = kwargs.get("records")
+    if records is not None:
+        return records
+    instance = kwargs.get("instance")
+    field = kwargs.get("field")
+    if instance is None or field is None:
+        return []
+    request = getattr(instance, "REQUEST", None)
+    form = getattr(request, "form", None) or {}
+    return form.get(field.getName()) or []
+
+
 class ResultOptionsValueValidator(object):
     """Validator for the subfield "ResultValue" of ResultOptions field
     """
@@ -641,13 +664,8 @@ class ResultOptionsValueValidator(object):
         if not api.is_floatable(value):
             return _t(_("Result Value must be a number"))
 
-        # Get all records
-        instance = kwargs['instance']
-        field_name = kwargs['field'].getName()
-        request = instance.REQUEST
-        records = request.form.get(field_name)
-
         # Result values must be unique
+        records = get_sibling_records(kwargs)
         value = api.to_float(value)
         values = map(lambda ro: ro.get("ResultValue"), records)
         values = filter(api.is_floatable, values)
@@ -674,13 +692,8 @@ class ResultOptionsTextValidator(object):
         if not value or not value.strip():
             return _t(_("Display Value is required"))
 
-        # Get all records
-        instance = kwargs['instance']
-        field_name = kwargs['field'].getName()
-        request = instance.REQUEST
-        records = request.form.get(field_name)
-
         # Result Text must be unique
+        records = get_sibling_records(kwargs)
         original_texts = map(lambda ro: ro.get("ResultText"), records)
         duplicates = filter(lambda text: text == value, original_texts)
         if len(duplicates) > 1:
@@ -753,8 +766,8 @@ class PrePreservationValidator:
 
         instance = kwargs['instance']
         # fieldname = kwargs['field'].getName()
-        request = kwargs.get('REQUEST', {})
-        form = request.form
+        request = kwargs.get('REQUEST') or {}
+        form = getattr(request, "form", {})
         preservation = form.get('Preservation')
 
         if type(preservation) in (list, tuple):
@@ -915,7 +928,9 @@ class UncertaintiesValidator:
     def __call__(self, subf_value, *args, **kwargs):
 
         instance = kwargs['instance']
-        request = kwargs.get('REQUEST', {})
+        # Whole-object validation passes REQUEST explicitly as None, so a
+        # default for the missing key is not enough here
+        request = kwargs.get('REQUEST') or {}
         fieldname = kwargs['field'].getName()
         translate = getToolByName(instance, 'translation_service').translate
 
@@ -926,7 +941,15 @@ class UncertaintiesValidator:
         if instance.REQUEST.get(key, False):
             return True
 
-        for i, value in enumerate(request[fieldname]):
+        # A sub-field validator is handed one cell at a time, so this one
+        # reads the whole records value back out of the form. There is no
+        # form when the field is set programmatically, through the API or
+        # an import, and the validator then has nothing to check.
+        records = request.get(fieldname)
+        if records is None:
+            return True
+
+        for i, value in enumerate(records):
 
             # Values must be numbers
             try:
@@ -1288,9 +1311,16 @@ class InlineFieldValidator:
         request = kwargs.get('REQUEST')
         instance = kwargs['instance']
 
-        # skip inter-field validation when REQUEST is not available (API context)
+        # Inter-field validation needs the request, which an API call
+        # does not have. Answer True rather than None: a validation
+        # chain reads None as "no opinion" and keeps whatever an
+        # earlier validator said, and these subfields sit behind an
+        # isEmpty/V_SUFFICIENT that fails for every value that is not
+        # empty. The address subfields guarded this way (country,
+        # state, district) were therefore impossible to set over the
+        # JSON API, each one refused with "'<value>' is not empty".
         if request is None:
-            return
+            return True
 
         # extract the request values
         data = request.get(field.getName())
@@ -1367,7 +1397,7 @@ class DefaultResultValidator(object):
     name = "service_defaultresult_validator"
 
     def __call__(self, value, **kwargs):
-        request = kwargs.get('REQUEST', {})
+        request = kwargs.get('REQUEST') or {}
         field_name = kwargs['field'].getName()
 
         default_result = request.get(field_name, None)
@@ -1407,7 +1437,7 @@ class ServiceConditionsValidator(object):
 
     def __call__(self, field_value, **kwargs):
         instance = kwargs["instance"]
-        request = kwargs.get("REQUEST", {})
+        request = kwargs.get("REQUEST") or {}
         translate = getToolByName(instance, "translation_service").translate
         field_name = kwargs["field"].getName()
 
