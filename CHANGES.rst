@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3056 Let a reference sample inherit the expected values of its definition
 - #3052 Keep the listing search box on one line as a field widget
 - #3050 Do not fail a validator when there is no form
 - #3049 Fix sample template records stored in types the schema refuses
