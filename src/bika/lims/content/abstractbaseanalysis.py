@@ -1032,22 +1032,28 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """Get the lower detection limit
         """
         field = self.getField("LowerDetectionLimit")
-        value = field.get(self)
-        # cut off trailing zeros
-        if "." in value:
-            value = value.rstrip("0").rstrip(".")
-        return value
+        return api.strip_trailing_zeros(field.get(self))
 
     @security.public
     def getUpperDetectionLimit(self):
         """Get the upper detection limit
         """
         field = self.getField("UpperDetectionLimit")
-        value = field.get(self)
-        # cut off trailing zeros
-        if "." in value:
-            value = value.rstrip("0").rstrip(".")
-        return value
+        return api.strip_trailing_zeros(field.get(self))
+
+    @security.public
+    def getLowerLimitOfQuantification(self):
+        """Get the lower limit of quantification
+        """
+        field = self.getField("LowerLimitOfQuantification")
+        return api.strip_trailing_zeros(field.get(self))
+
+    @security.public
+    def getUpperLimitOfQuantification(self):
+        """Get the upper limit of quantification
+        """
+        field = self.getField("UpperLimitOfQuantification")
+        return api.strip_trailing_zeros(field.get(self))
 
     @security.public
     def setLowerLimitOfQuantification(self, value):

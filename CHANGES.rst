@@ -5,6 +5,21 @@ Changelog
 ------------------
 
 - #3063 Remove the unused front page settings from the setup
+- #3045 Store a UID in one type and refuse what is not one
+- #3061 Set the instruments a method is created with once it has a UID
+- #3058 Fix the sample progress and analyses count lagging by one analysis
+- #3057 Fix address subfields that cannot be set through the API
+- #3056 Let a reference sample inherit the expected values of its definition
+- #3052 Keep the listing search box on one line as a field widget
+- #3050 Do not fail a validator when there is no form
+- #3049 Fix sample template records stored in types the schema refuses
+- #3048 Write the four analysis limits without trailing zeros
+- #3044 Show the analysis profile as a position on the invoice
+- #3043 Store a calculation's test parameters as unicode
+- #3042 Fix result options not settable outside a browser form
+- #3041 Support the documented key:value form for analysis conditions
+- #2893 Name Partitions as per Sample Template
+- #3027 Fix Sample Points sorting and filtering by Sample Type
 - #3039 Do not reset the laboratory name when the setup profile is imported again
 - #3038 Answer a refused JSON API request with its own status
 - #3036 Fix setting a sample's specification through the API

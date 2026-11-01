@@ -75,11 +75,14 @@
                             name="conditions.value:records">
                       <option tal:condition="not:required"/>
                       <tal:option repeat="option options">
-                        <option tal:content="option"
-                                tal:condition="python:option == value"
+                        <option tal:attributes="value option/value"
+                                tal:content="option/text"
+                                tal:condition="python:option['value'] == value"
                                 selected="selected"/>
-                        <option tal:content="option"
-                                tal:condition="python:option != value" />
+                        <option tal:attributes="value option/value"
+                                tal:content="option/text"
+                                tal:condition="python:option['value'] != value"
+                                />
                       </tal:option>
                     </select>
 
