@@ -23,7 +23,6 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser.fields import DurationField
-from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.browser.widgets.decimal import DecimalWidget
@@ -59,7 +58,6 @@ from Products.Archetypes.Widget import StringWidget
 from Products.CMFCore.utils import getToolByName
 from senaite.core.api import geo
 from senaite.core.browser.fields.records import RecordsField
-from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.interfaces import IHideActionsMenu
 from senaite.core.p3compat import cmp
 from zope.interface import implements
@@ -580,57 +578,6 @@ schema = BikaFolderSchema.copy() + Schema((
                           "in rows."),
             format='select',
         )
-    ),
-    BooleanField(
-        'DashboardByDefault',
-        schemata="Appearance",
-        default=True,
-        accessor="getDashboardByDefault",
-        edit_accessor="getDashboardByDefault",
-        mutator="setDashboardByDefault",
-        widget=BooleanWidget(
-            label=_("Use Dashboard as default front page"),
-            description=_("Select this to activate the dashboard as a default front page.")
-        ),
-    ),
-    UIDReferenceField(
-        "LandingPage",
-        schemata="Appearance",
-        required=0,
-        allowed_types=(
-            "Document",
-            "Client",
-            "ClientFolder",
-            "Samples",
-            "WorksheetFolder",
-        ),
-        mode="rw",
-        multiValued=0,
-        relationship="SetupLandingPage",
-        accessor="getLandingPage",
-        edit_accessor="getLandingPage",
-        mutator="setLandingPage",
-        widget=ReferenceWidget(
-            label=_(
-                "label_setup_landingpage",
-                default="Landing Page"),
-            description=_(
-                "description_setup_landingpage",
-                default="The landing page is shown for non-authenticated users "
-                "if the Dashboard is not selected as the default front page. "
-                "If no landing page is selected, the default frontpage is displayed."),
-            catalog=["uid_catalog"],
-            query={
-                "is_active": True,
-                "sort_on": "id",
-                "sort_order": "ascending"
-            },
-            columns=[
-                {"name": "Title", "label": _("Title")},
-                {"name": "portal_type", "label": _("Type")},
-            ],
-
-        ),
     ),
     BooleanField(
         'PrintingWorkflowEnabled',
