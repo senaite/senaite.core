@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3045 Store a UID in one type and refuse what is not one
 - #3061 Set the instruments a method is created with once it has a UID
 - #3058 Fix the sample progress and analyses count lagging by one analysis
 - #3057 Fix address subfields that cannot be set through the API
