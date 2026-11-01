@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3052 Keep the listing search box on one line as a field widget
 - #3050 Do not fail a validator when there is no form
 - #3049 Fix sample template records stored in types the schema refuses
 - #3048 Write the four analysis limits without trailing zeros
