@@ -32,6 +32,7 @@ from senaite.core.content.mixins import ClientAwareMixin
 from senaite.core.interfaces import ISampleTemplate
 from senaite.core.schema import UIDReferenceField
 from senaite.core.schema.fields import DataGridRow
+from senaite.core.schema.uidreferencefield import to_uid_list
 from senaite.core.z3cform.widgets.datagrid import DataGridWidgetFactory
 from senaite.core.z3cform.widgets.listing.widget import ListingWidgetFactory
 from senaite.core.z3cform.widgets.uidreference import UIDReferenceWidgetFactory
@@ -402,24 +403,11 @@ class SampleTemplate(Container, ClientAwareMixin):
             value = [value]
         records = []
         for v in value:
-            part_id = v.get("part_id", "")
-            container = v.get("container", "")
-            preservation = v.get("preservation", "")
-            sampletype = v.get("sampletype", "")
-
-            # ensure UIDs for reference fields
-            if container:
-                container = api.get_uid(container)
-            if preservation:
-                preservation = api.get_uid(preservation)
-            if sampletype:
-                sampletype = api.get_uid(sampletype)
-
             records.append({
-                "part_id": part_id,
-                "container": container,
-                "preservation": preservation,
-                "sampletype": sampletype,
+                "part_id": api.safe_unicode(v.get("part_id") or ""),
+                "container": to_uid_list(v.get("container")),
+                "preservation": to_uid_list(v.get("preservation")),
+                "sampletype": to_uid_list(v.get("sampletype")),
             })
         mutator = self.mutator("partitions")
         mutator(self, records)
@@ -507,7 +495,7 @@ class SampleTemplate(Container, ClientAwareMixin):
             records.append({
                 "uid": uid,
                 "hidden": hidden,
-                "part_id": part_id,
+                "part_id": api.safe_unicode(part_id or ""),
             })
 
         if keep_inactive:
