@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3043 Store a calculation's test parameters as unicode
 - #3042 Fix result options not settable outside a browser form
 - #3041 Support the documented key:value form for analysis conditions
 - #2893 Name Partitions as per Sample Template
