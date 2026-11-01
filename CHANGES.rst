@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #3051 Draw section headings inside a fieldset
+- #3055 Gate the reading JSON API routes with a new Read JSON API permission
 - #3063 Remove the unused front page settings from the setup
 - #3045 Store a UID in one type and refuse what is not one
 - #3061 Set the instruments a method is created with once it has a UID
