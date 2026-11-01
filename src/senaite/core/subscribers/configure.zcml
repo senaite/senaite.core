@@ -63,6 +63,12 @@
     provides="senaite.core.interfaces.IAfterCreateSampleHook"
     factory=".sample.AfterCreateSampleHook"/>
 
+  <!-- Set the instruments a method was created with, once it has a UID -->
+  <subscriber
+    for="senaite.core.interfaces.IMethod
+         zope.lifecycleevent.interfaces.IObjectAddedEvent"
+    handler=".method.on_method_added"/>
+
   <!-- MultiUpload field processing after object is added (DX) -->
   <subscriber
     for="plone.dexterity.interfaces.IDexterityContent
