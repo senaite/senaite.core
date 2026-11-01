@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3058 Fix the sample progress and analyses count lagging by one analysis
 - #3057 Fix address subfields that cannot be set through the API
 - #3056 Let a reference sample inherit the expected values of its definition
 - #3052 Keep the listing search box on one line as a field widget
