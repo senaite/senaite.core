@@ -49,6 +49,7 @@ from senaite.core import logger
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.content.calculation import calculate_formula
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -360,23 +361,8 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         if not formula:
             return test_result_field.set(self, "")
 
-        formula = formula.replace('[', '{').replace(']', '}').replace('  ', '')
-        result = 'Failure'
-
-        try:
-            formula = formula.format(**mapping)
-            result = eval(formula, self._getGlobals())
-        except TypeError as e:
-            # non-numeric arguments in interim mapping?
-            result = "TypeError: {}".format(str(e.args[0]))
-        except ZeroDivisionError as e:
-            result = "Division by 0: {}".format(str(e.args[0]))
-        except KeyError as e:
-            result = "Key Error: {}".format(str(e.args[0]))
-        except ImportError as e:
-            result = "Import Error: {}".format(str(e.args[0]))
-        except Exception as e:
-            result = "Unspecified exception: {}".format(str(e.args[0]))
+        imports = self.getPythonImports()
+        result = calculate_formula(formula, mapping, imports)
         test_result_field.set(self, str(result))
 
     def _getGlobals(self, **kwargs):

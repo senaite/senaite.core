@@ -21,7 +21,6 @@
 import cgi
 import copy
 import json
-import math
 from decimal import Decimal
 
 from AccessControl import ClassSecurityInfo
@@ -52,7 +51,7 @@ from Products.Archetypes.Schema import Schema
 from Products.CMFCore.permissions import View
 from senaite.core.api import dtime
 from senaite.core.browser.fields.datetime import DateTimeField
-from senaite.core.content.calculation import getGlobals
+from senaite.core.content.calculation import evaluate_formula
 from senaite.core.i18n import translate as t
 from senaite.core.i18n import get_dt_format
 from senaite.core.permissions import FieldEditAnalysisResult
@@ -727,16 +726,19 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not formula:
             return False
 
-        # Include the current context UID in the mapping, so it can be passed
-        # as a param in built-in functions, like 'get_result(%(context_uid)s)'
-        mapping = {"context_uid": '"{}"'.format(self.UID())}
+        # The current context UID can be passed as a param in built-in
+        # functions, like 'get_result(%(context_uid)s)'
+        values = {"context_uid": self.UID()}
 
         # Interim fields are frozen into the analysis at linking time by
         # setCalculation, so self.getInterimFields() already contains both
         # the calculation defaults and any per-analysis overrides.
         interims = self.getInterimFields()
 
-        # Add interims to mapping
+        # Add interims to the values. The values are bound to the formula as
+        # data (see evaluate_formula), never spliced into its text, so a
+        # value cannot add code to the formula.
+        invalid = False
         for i in interims:
 
             interim_keyword = i.get("keyword")
@@ -748,35 +750,17 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             if interim_value == "":
                 continue
 
-            # Convert to floatable if necessary
             if api.is_floatable(interim_value):
-                interim_value = float(interim_value)
+                values[interim_keyword] = float(interim_value)
+            elif i.get("result_type"):
+                # A string interim, e.g. for
+                # '"ok" if [var] == "example_value" else "not ok"'
+                values[interim_keyword] = api.safe_unicode(interim_value)
             else:
-                # If the interim value is a string, since the formula is also a string,
-                # it is needed to wrap the string interim values in between inverted commas.
-                #
-                # E.g. formula = '"ok" if %(var)s == "example_value" else "not ok"'
-                #
-                # if interim_value = "example_value" after
-                # formula = eval("'%s'%%mapping" % formula, {'mapping': {'var': interim_value}})
-                # print(formula)
-                # > '"ok" if example_value == "example_value" else "not ok"' -> Error
-                #
-                # else if interim_value ='"example_value"' after
-                # formula = eval("'%s'%%mapping" % formula, {'mapping': {'var': interim_value}})
-                # print(formula)
-                # > '"ok" if "example_value" == "example_value" else "not ok"' -> Correct
-                interim_value = '"{}"'.format(interim_value)
+                # A numeric interim with a value that is not a number
+                invalid = True
 
-            # Convert 'Numeric' interim values using `float`. Convert the rest using `str`
-            converter = "s" if i.get("result_type") else "f"
-            formula = formula.replace(
-                "[" + interim_keyword + "]", "%(" + interim_keyword + ")" + converter
-            )
-
-            mapping[interim_keyword] = interim_value
-
-        # Add dependencies results to mapping
+        # Add dependencies results to the values
         dependencies = self.getDependencies()
         for dependency in dependencies:
             result = dependency.getResult()
@@ -792,9 +776,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
             if result:
                 try:
-                    # we need to quote a string result because of the `eval` below
-                    result = '"%s"' % result if str_result else float(str(result))
-                    key = dependency.getKeyword()
+                    if str_result:
+                        result = api.safe_unicode(result)
+                    else:
+                        result = float(str(result))
                     ldl = dependency.getLowerDetectionLimit()
                     udl = dependency.getUpperDetectionLimit()
                     lloq = dependency.getLowerLimitOfQuantification()
@@ -803,25 +788,23 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                     adl = dependency.isAboveUpperDetectionLimit()
                     bloq = dependency.isBelowLimitOfQuantification()
                     aloq = dependency.isAboveLimitOfQuantification()
-                    mapping[key] = result
-                    mapping['%s.%s' % (key, 'RESULT')] = result
-                    mapping['%s.%s' % (key, 'LDL')] = api.to_float(ldl, 0.0)
-                    mapping['%s.%s' % (key, 'UDL')] = api.to_float(udl, 0.0)
-                    mapping['%s.%s' % (key, 'LOQ')] = api.to_float(lloq, 0.0)
-                    mapping['%s.%s' % (key, 'LLOQ')] = api.to_float(lloq, 0.0)
-                    mapping['%s.%s' % (key, 'ULOQ')] = api.to_float(uloq, 0.0)
-                    mapping['%s.%s' % (key, 'BELOWLDL')] = int(bdl)
-                    mapping['%s.%s' % (key, 'ABOVEUDL')] = int(adl)
-                    mapping['%s.%s' % (key, 'BELOWLOQ')] = int(bloq)
-                    mapping['%s.%s' % (key, 'BELOWLLOQ')] = int(bloq)
-                    mapping['%s.%s' % (key, 'ABOVEULOQ')] = int(aloq)
+                    values[keyword] = result
+                    values['%s.%s' % (keyword, 'RESULT')] = result
+                    values['%s.%s' % (keyword, 'LDL')] = api.to_float(ldl, 0.0)
+                    values['%s.%s' % (keyword, 'UDL')] = api.to_float(udl, 0.0)
+                    values['%s.%s' % (keyword, 'LOQ')] = api.to_float(
+                        lloq, 0.0)
+                    values['%s.%s' % (keyword, 'LLOQ')] = api.to_float(
+                        lloq, 0.0)
+                    values['%s.%s' % (keyword, 'ULOQ')] = api.to_float(
+                        uloq, 0.0)
+                    values['%s.%s' % (keyword, 'BELOWLDL')] = int(bdl)
+                    values['%s.%s' % (keyword, 'ABOVEUDL')] = int(adl)
+                    values['%s.%s' % (keyword, 'BELOWLOQ')] = int(bloq)
+                    values['%s.%s' % (keyword, 'BELOWLLOQ')] = int(bloq)
+                    values['%s.%s' % (keyword, 'ABOVEULOQ')] = int(aloq)
                 except (TypeError, ValueError):
                     return False
-
-                # replace placeholder -> formatting string
-                # https://docs.python.org/2.7/library/stdtypes.html?highlight=built#string-formatting-operations
-                converter = "s" if str_result else "f"
-                formula = formula.replace("[" + keyword + "]", "%(" + keyword + ")" + converter)
             else:
                 # flush eventual previously set result
                 if self.getResult():
@@ -830,18 +813,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
                 return False
 
-        # convert any remaining placeholders, e.g. from interims etc.
-        # NOTE: we assume remaining values are all floatable!
-        formula = formula.replace("[", "%(").replace("]", ")f")
-
         # Calculate
         try:
-            formula = eval("'%s'%%mapping" % formula,
-                           {"__builtins__": None,
-                            'math': math,
-                            'context': self},
-                           {'mapping': mapping})
-            result = eval(formula, getGlobals(self.getCalculationImports()))
+            if invalid:
+                raise TypeError("an interim value is not a number")
+            result = evaluate_formula(
+                formula, values, self.getCalculationImports())
         except ZeroDivisionError:
             self.setResult('0/0')
             return True

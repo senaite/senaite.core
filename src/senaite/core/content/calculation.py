@@ -22,7 +22,6 @@ import importlib
 import inspect
 import math
 import re
-import string
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
@@ -124,37 +123,96 @@ def getModuleMember(dotted_name, member):
     return members.get(member)
 
 
-class FormulaFormatter(string.Formatter):
-    """Helper class to remove spaces, tabs and etc.
+# A placeholder of a formula: a keyword in square brackets, e.g. [Ca] or
+# [Ca.LDL]
+PLACEHOLDER = re.compile(r"\[([^\[\]]+)\]")
 
-    Replaces square brackets and correctly substitute dotted parameters (e.g.
-    AnalysisService wildcards)
+# A placeholder of the string formatting formulas were evaluated with
+# before, e.g. %(context_uid)s; formulas may still use it
+NAMED_PLACEHOLDER = re.compile(r"%\(([^()]+)\)[sf]")
+
+# Characters a stored formula may hold that mean nothing to it
+FORMULA_NOISE = re.compile(r"[\n\t\r]")
+
+
+def bind_values(formula, values):
+    """Replace the placeholders of a formula by variables
+
+    The values never become part of the formula's text: each placeholder
+    is replaced by the name of a variable, and the value is bound to that
+    name. A value therefore cannot add code to the formula, whatever text
+    it holds.
+
+    :param formula: the formula, with placeholders such as `[Ca]`
+    :param values: mapping of placeholder keys to their values
+    :returns: tuple of the expression to evaluate and its variables
+    :raises KeyError: when a placeholder has no value
     """
+    names = {}
+    variables = {}
 
-    def __init__(self):
-        super(FormulaFormatter, self).__init__()
-        self.trans = {ord(s): api.safe_unicode(d) for s, d in zip("[]", "{}")}
-        for c in "\n\t\r":
-            self.trans[ord(c)] = u""
+    def to_variable(match):
+        key = match.group(1).strip()
+        if key not in values:
+            raise KeyError(key)
+        if key not in names:
+            name = "_value{}".format(len(names))
+            names[key] = name
+            variables[name] = values[key]
+        return names[key]
 
-    def format(self, formula, params):
-        formula = api.safe_unicode(formula)
-        formula = formula.translate(self.trans)
-        return self.vformat(formula, [], params)
-
-    def get_field(self, field_name, args, kwargs):
-        return (self.get_value(field_name, args, kwargs), field_name)
+    expression = NAMED_PLACEHOLDER.sub(to_variable, formula)
+    expression = PLACEHOLDER.sub(to_variable, expression)
+    return expression, variables
 
 
-f_formatter = FormulaFormatter()
+def evaluate_formula(formula, values, imports=None):
+    """Evaluate a formula with the values of its placeholders
+
+    :param formula: the formula, with placeholders such as `[Ca]`
+    :param values: mapping of placeholder keys to their values
+    :param imports: the Python imports the formula may use
+    :returns: the result of the formula
+    """
+    expression, variables = bind_values(
+        FORMULA_NOISE.sub("", formula), values)
+    namespace = getGlobals(imports)
+    namespace.update(variables)
+    return eval(expression, namespace)
+
+
+def unquote(text):
+    """The text without the quotes a test value may be written in
+    """
+    if len(text) > 1 and text[0] == text[-1] and text[0] in "'\"":
+        return text[1:-1]
+    return text
+
+
+def to_test_value(value):
+    """The value of a test parameter as the formula reads it
+
+    A number stays a number, whole numbers as integers like they were
+    written; anything else is text.
+    """
+    if isinstance(value, (int, long, float)):
+        return value
+    text = api.safe_unicode(value).strip()
+    for convert in (int, float):
+        try:
+            return convert(text)
+        except ValueError:
+            continue
+    return unquote(text)
 
 
 def calculate_formula(formula="", parameters={}, imports=None):
     result = "Failure"
+    values = {key: to_test_value(value)
+              for key, value in (parameters or {}).items()}
 
     try:
-        formula = f_formatter.format(formula, parameters)
-        result = eval(formula, getGlobals(imports))
+        result = evaluate_formula(formula, values, imports)
     except TypeError as e:
         # non-numeric arguments in interim mapping?
         result = "TypeError: {}".format(str(e.args[0]))
