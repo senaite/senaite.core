@@ -31,6 +31,16 @@ form[name='edit_form'] div.listing-container {
         @extend .form-control;
         width: 100%!important;
     }
+
+    /* An input-group is a row of its own, and Bootstrap sizes the field
+       inside it with width:1% so that the prepend and the append sit
+       beside it rather than under it. The rule above is !important and
+       beats that, which is why the listing's own search box came out as
+       three stacked rows wherever a listing is used as a field widget. */
+    .input-group > input,
+    .input-group > select {
+        width: 1%!important;
+    }
 }
 
 /* Default widths for form inputs.
