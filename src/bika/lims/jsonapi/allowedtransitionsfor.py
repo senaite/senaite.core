@@ -20,6 +20,7 @@
 
 import json
 
+from bika.lims.jsonapi import check_jsonapi_read_permission
 from Products.CMFCore.utils import getToolByName
 from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
@@ -52,6 +53,9 @@ class allowedTransitionsFor(object):
         Required parameters:
             - uid: uids of the objects to get the allowed transitions from
         """
+        # normal permissions still apply for this user
+        check_jsonapi_read_permission(context)
+
         wftool = getToolByName(context, "portal_workflow")
         uc = getToolByName(context, 'uid_catalog')
         uids = json.loads(request.get('uid', '[]'))
