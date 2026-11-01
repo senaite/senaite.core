@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3048 Write the four analysis limits without trailing zeros
 - #3044 Show the analysis profile as a position on the invoice
 - #3043 Store a calculation's test parameters as unicode
 - #3042 Fix result options not settable outside a browser form
