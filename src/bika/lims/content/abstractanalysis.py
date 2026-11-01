@@ -552,7 +552,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         the result respects the detection threshold
         """
         llod = self.getLowerDetectionLimit()
-        lloq = self.getField("LowerLimitOfQuantification").get(self)
+        lloq = api.strip_trailing_zeros(
+            self.getField("LowerLimitOfQuantification").get(self))
         return llod if api.to_float(lloq) < api.to_float(llod) else lloq
 
     @security.public
@@ -563,7 +564,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         the result respects the detection threshold
         """
         ulod = self.getUpperDetectionLimit()
-        uloq = self.getField("UpperLimitOfQuantification").get(self)
+        uloq = api.strip_trailing_zeros(
+            self.getField("UpperLimitOfQuantification").get(self))
         return ulod if api.to_float(uloq) > api.to_float(ulod) else uloq
 
     @security.public

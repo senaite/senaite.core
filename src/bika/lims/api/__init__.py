@@ -2116,11 +2116,31 @@ def float_to_string(value, default=_marker):
         # positive numbers, e.g. 1e+16 don't need a fractional part
         str_value = "{:.0f}".format(value)
 
-    # cut off trailing zeros
-    if "." in str_value:
-        str_value = str_value.rstrip("0").rstrip(".")
+    return strip_trailing_zeros(str_value)
 
-    return str_value
+
+def strip_trailing_zeros(value):
+    """Return a decimal number written without its trailing zeros
+
+    The counterpart of `float_to_string`, which writes a float out in
+    full: this writes it short again, so that "1000000000.0" reads as
+    "1000000000" and "0.0500" as "0.05".
+
+    A value with no fraction, and anything that is not a string, is
+    returned unchanged. `float_to_string` hands a floatable string back
+    as it was given, so a number stored as a string keeps its trailing
+    zeros until it passes through here.
+
+    :param value: the number as it is written
+    :type value: str
+    :returns: the same number, written short
+    :rtype: str
+    """
+    if not isinstance(value, six.string_types):
+        return value
+    if "." not in value:
+        return value
+    return value.rstrip("0").rstrip(".")
 
 
 def to_searchable_text_metadata(value):

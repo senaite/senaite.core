@@ -328,6 +328,28 @@ class ReferenceSample(BaseFolder):
         self.setDateDisposed(DateTime())
         self.reindexObject()
 
+    def getReferenceResults(self):
+        """Get the effective expected values
+
+        A reference sample that was given a definition and no values of
+        its own takes the definition's. The edit form copies them over
+        as soon as the definition is picked, so a sample made through
+        that form has its own set; one made any other way, through the
+        API or a setup data import, used to end up linking a definition
+        and supporting no service at all.
+
+        :returns: Sample-level overrides if set, otherwise the values
+                  inherited from the reference definition
+        :rtype: list
+        """
+        own = self.getField("ReferenceResults").get(self)
+        if own:
+            return list(own)
+        definition = self.getReferenceDefinition()
+        if definition:
+            return list(definition.getReferenceResults() or [])
+        return []
+
     def getHazardCategories(self):
         """Get the effective hazard categories
 
