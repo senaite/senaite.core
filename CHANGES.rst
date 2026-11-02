@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3066 Pass interim and dependency values to a formula as data
 - #3055 Gate the reading JSON API routes with a new Read JSON API permission
 - #3063 Remove the unused front page settings from the setup
 - #3045 Store a UID in one type and refuse what is not one
