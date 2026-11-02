@@ -20,10 +20,10 @@
 
 import unittest
 
-from senaite.core.content.calculation import bind_values
-from senaite.core.content.calculation import calculate_formula
-from senaite.core.content.calculation import evaluate_formula
-from senaite.core.content.calculation import to_test_value
+from senaite.core.api.calculation import bind_values
+from senaite.core.api.calculation import calculate_formula
+from senaite.core.api.calculation import evaluate_formula
+from senaite.core.api.calculation import to_test_value
 
 # Values that would add code to a formula they were spliced into
 INJECTIONS = [

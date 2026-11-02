@@ -50,8 +50,8 @@ from Products.Archetypes.Field import StringField
 from Products.Archetypes.Schema import Schema
 from Products.CMFCore.permissions import View
 from senaite.core.api import dtime
+from senaite.core.api.calculation import evaluate_formula
 from senaite.core.browser.fields.datetime import DateTimeField
-from senaite.core.content.calculation import evaluate_formula
 from senaite.core.i18n import translate as t
 from senaite.core.i18n import get_dt_format
 from senaite.core.permissions import FieldEditAnalysisResult

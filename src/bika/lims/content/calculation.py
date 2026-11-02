@@ -46,10 +46,10 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core import logger
+from senaite.core.api.calculation import calculate_formula
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.catalog import SETUP_CATALOG
-from senaite.core.content.calculation import calculate_formula
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
