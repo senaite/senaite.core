@@ -211,6 +211,39 @@ schema = schema.copy() + Schema((
 ))
 
 
+def get_dependency_values(dependency, result):
+    """The values of a dependency a formula may refer to
+
+    A formula refers to the result of a dependency by its keyword, e.g.
+    `[Ca]`, and to its limits by a suffix, e.g. `[Ca.LDL]`.
+
+    :param dependency: the analysis the formula depends on
+    :param result: the result of the dependency, as the formula reads it
+    :returns: mapping of placeholder keys to their values
+    """
+    lloq = api.to_float(dependency.getLowerLimitOfQuantification(), 0.0)
+    below_loq = int(dependency.isBelowLimitOfQuantification())
+    suffixes = {
+        "RESULT": result,
+        "LDL": api.to_float(dependency.getLowerDetectionLimit(), 0.0),
+        "UDL": api.to_float(dependency.getUpperDetectionLimit(), 0.0),
+        "LOQ": lloq,
+        "LLOQ": lloq,
+        "ULOQ": api.to_float(
+            dependency.getUpperLimitOfQuantification(), 0.0),
+        "BELOWLDL": int(dependency.isBelowLowerDetectionLimit()),
+        "ABOVEUDL": int(dependency.isAboveUpperDetectionLimit()),
+        "BELOWLOQ": below_loq,
+        "BELOWLLOQ": below_loq,
+        "ABOVEULOQ": int(dependency.isAboveLimitOfQuantification()),
+    }
+    keyword = dependency.getKeyword()
+    values = {"{}.{}".format(keyword, suffix): value
+              for suffix, value in suffixes.items()}
+    values[keyword] = result
+    return values
+
+
 def _normalize_interim(interim):
     """Normalize an interim dict for storage in an AT analysis field.
 
@@ -766,7 +799,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             result = dependency.getResult()
             # check if the dependency is a string result
             str_result = dependency.getStringResult()
-            keyword = dependency.getKeyword()
 
             # Dependency without results found
             if not result and cascade:
@@ -780,29 +812,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                         result = api.safe_unicode(result)
                     else:
                         result = float(str(result))
-                    ldl = dependency.getLowerDetectionLimit()
-                    udl = dependency.getUpperDetectionLimit()
-                    lloq = dependency.getLowerLimitOfQuantification()
-                    uloq = dependency.getUpperLimitOfQuantification()
-                    bdl = dependency.isBelowLowerDetectionLimit()
-                    adl = dependency.isAboveUpperDetectionLimit()
-                    bloq = dependency.isBelowLimitOfQuantification()
-                    aloq = dependency.isAboveLimitOfQuantification()
-                    values[keyword] = result
-                    values['%s.%s' % (keyword, 'RESULT')] = result
-                    values['%s.%s' % (keyword, 'LDL')] = api.to_float(ldl, 0.0)
-                    values['%s.%s' % (keyword, 'UDL')] = api.to_float(udl, 0.0)
-                    values['%s.%s' % (keyword, 'LOQ')] = api.to_float(
-                        lloq, 0.0)
-                    values['%s.%s' % (keyword, 'LLOQ')] = api.to_float(
-                        lloq, 0.0)
-                    values['%s.%s' % (keyword, 'ULOQ')] = api.to_float(
-                        uloq, 0.0)
-                    values['%s.%s' % (keyword, 'BELOWLDL')] = int(bdl)
-                    values['%s.%s' % (keyword, 'ABOVEUDL')] = int(adl)
-                    values['%s.%s' % (keyword, 'BELOWLOQ')] = int(bloq)
-                    values['%s.%s' % (keyword, 'BELOWLLOQ')] = int(bloq)
-                    values['%s.%s' % (keyword, 'ABOVEULOQ')] = int(aloq)
+                    values.update(get_dependency_values(dependency, result))
                 except (TypeError, ValueError):
                     return False
             else:
@@ -820,7 +830,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             result = evaluate_formula(
                 formula, values, self.getCalculationImports())
         except ZeroDivisionError:
-            self.setResult('0/0')
+            self.setResult("0/0")
             return True
         except (KeyError, TypeError, ImportError) as e:
             msg = "Cannot eval formula ({}): {}".format(e.message, formula)

@@ -352,10 +352,10 @@ class Calculation(BaseFolder, HistoryAwareMixin):
          TestResult field.
         """
         # Create mapping from TestParameters
-        mapping = {x['keyword']: x['value'] for x in self.getTestParameters()}
+        mapping = {x["keyword"]: x["value"] for x in self.getTestParameters()}
         # Gather up and parse formula
         formula = self.getMinifiedFormula()
-        test_result_field = self.Schema().getField('TestResult')
+        test_result_field = self.Schema().getField("TestResult")
 
         # Flush the TestResult field and return
         if not formula:

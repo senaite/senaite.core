@@ -99,9 +99,9 @@ def getGlobals(imports=None, **kwargs):
 def getModuleMember(dotted_name, member):
     """Get the member object of a module.
 
-    :param dotted_name: The dotted name of the module, e.g. 'scipy.special'
+    :param dotted_name: The dotted name of the module, e.g. `scipy.special`
     :type dotted_name: string
-    :param member: The name of the member function, e.g. 'gammaincinv'
+    :param member: The name of the member function, e.g. `gammaincinv`
     :type member: string
     :returns: member object or None
     """
