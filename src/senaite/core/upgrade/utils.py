@@ -285,21 +285,25 @@ def del_metadata(catalog_id, column):
 
 
 @contextmanager
-def temporary_type_info(type_name, meta_type):
-    """Provide a type information for the type while the block runs
+def temporary_type_info(type_name, meta_type, product="bika.lims"):
+    """Provide an AT type information for the type while the block runs
 
     Renaming or moving an object whose type has no type information is
-    refused, even for a manager. Migrations that removed an AT type before
-    they moved its content away use this to keep the content movable.
+    refused, even for a manager, and the catalogs of the object cannot be
+    looked up to unindex it. Migrations that removed an AT type before they
+    moved its content away use this to keep the content movable.
 
     :param type_name: the portal type of the object to move
     :param meta_type: the meta type of the object to move
+    :param product: the product of the AT type, which marks the type
+        information as AT for the catalog lookup
     """
     pt = api.get_tool("portal_types")
     if pt.getTypeInfo(type_name) is not None:
         yield
         return
-    fti = FactoryTypeInformation(type_name, content_meta_type=meta_type)
+    fti = FactoryTypeInformation(
+        type_name, content_meta_type=meta_type, product=product)
     pt._setObject(type_name, fti)
     try:
         yield
