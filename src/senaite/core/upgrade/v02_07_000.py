@@ -120,6 +120,23 @@ EXCLUDE_FROM_NAV_BEHAVIOR = (
     "plone.app.dexterity.behaviors.exclfromnav.IExcludeFromNavigationDefault"
 )
 
+# Setup fields that 2.6.0 already stored in the senaite setup: their AT
+# accessors forward to it, and the AT storage only holds the values from
+# before. Migrating them would overwrite the current settings with these
+SETUP_FIELDS_IN_DX = (
+    "AllowManualResultCaptureDate",
+    "AlwaysCCResponsiblesInReportEmail",
+    "CategorizeSampleAnalyses",
+    "DateSampledRequired",
+    "EmailBodySamplePublication",
+    "EmailFromSamplePublication",
+    "EnableGlobalAuditlog",
+    "ImmediateResultsEntry",
+    "MaxNumberOfSamplesAdd",
+    "SampleAnalysesRequired",
+    "ShowLabNameInLogin",
+)
+
 
 @upgradestep(product, version)
 def reindex_client_tree_allowed_roles_again(tool):
@@ -1888,6 +1905,13 @@ def migrate_setup_fields_to_dx(tool):
         at_field_name = field_info[0]
         dx_field_name = field_info[1]
         converter = field_info[2] if len(field_info) > 2 else None
+
+        # Keep the current value of fields that are in the DX setup already
+        if at_field_name in SETUP_FIELDS_IN_DX:
+            logger.info("Field {} is in the senaite setup already "
+                        "[SKIP]".format(at_field_name))
+            skipped += 1
+            continue
 
         # Get the AT field
         at_field = bika_setup.getField(at_field_name)
