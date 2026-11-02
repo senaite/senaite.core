@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3067 Allow calculations to import only from the modules the site allows
 - #3066 Pass values to a formula as data and refuse unsafe formulas
 - #3064 Fix client contacts do not find older content of their client
 - #3055 Gate the reading JSON API routes with a new Read JSON API permission
