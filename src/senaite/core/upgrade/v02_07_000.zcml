@@ -3,6 +3,17 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add the client token to older client content"
+      description="The earlier reindex of allowedRolesAndUsers searched the
+                   catalogs with an empty query and reached no object, so
+                   client contacts do not find content that was not modified
+                   since."
+      source="2763"
+      destination="2764"
+      handler=".v02_07_000.reindex_client_tree_allowed_roles_again"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Add the Read JSON API permission"
       description="Import rolemap for the new Read JSON API permission, which
                    gates the reading routes of the legacy JSON API against
