@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3032 Publish the samples when the results report is stored
 - #3064 Fix client contacts do not find older content of their client
 - #3055 Gate the reading JSON API routes with a new Read JSON API permission
 - #3063 Remove the unused front page settings from the setup
