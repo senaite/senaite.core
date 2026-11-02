@@ -364,11 +364,14 @@ def setup_core_catalogs(portal, catalog_classes=None, reindex=True):
         catalog_columns = module.COLUMNS
         catalog_types = module.TYPES
 
-        catalog = getattr(aq_base(portal), catalog_id, None)
-        if catalog is None:
+        if getattr(aq_base(portal), catalog_id, None) is None:
             catalog = cls()
             catalog._setId(catalog_id)
             portal._setObject(catalog_id, catalog)
+
+        # The catalog needs its acquisition context to resolve the paths of
+        # its entries when a new index is reindexed
+        catalog = portal._getOb(catalog_id)
 
         # catalog indexes
         for idx_id, idx_attr, idx_type in catalog_indexes:
