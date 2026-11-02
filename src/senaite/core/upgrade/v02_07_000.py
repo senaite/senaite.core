@@ -123,6 +123,18 @@ EXCLUDE_FROM_NAV_BEHAVIOR = (
 
 
 @upgradestep(product, version)
+def reindex_client_tree_allowed_roles_again(tool):
+    """Add the `client:<uid>` token to the client-tree content again.
+
+    The earlier steps searched the catalogs with an empty query, which
+    returns nothing, so only content modified since carries the token.
+    Client contacts do not find older samples and analyses of their
+    client in the catalogs.
+    """
+    reindex_client_tree_allowed_roles()
+
+
+@upgradestep(product, version)
 def reindex_samplepoint_sampletype_title(tool):
     """Index the sample type titles of all sample points.
     """
@@ -2960,7 +2972,8 @@ def reindex_client_tree_allowed_roles():
         catalog = api.get_tool(catalog_id, default=None)
         if catalog is None:
             continue
-        brains = catalog.unrestrictedSearchResults({})
+        # An empty query returns no results at all, list every entry
+        brains = catalog.searchAll()
         for brain in brains:
             uid = getattr(brain, "UID", None)
             if uid and uid in seen:

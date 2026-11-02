@@ -7,9 +7,20 @@
       description="Convert the Archetypes SupplierContact content type to
                    Dexterity. The contacts stay inside their Supplier, that is
                    Dexterity already, so nothing is moved."
+      source="2764"
+      destination="2765"
+      handler=".v02_07_000.migrate_suppliercontacts_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add the client token to older client content"
+      description="The earlier reindex of allowedRolesAndUsers searched the
+                   catalogs with an empty query and reached no object, so
+                   client contacts do not find content that was not modified
+                   since."
       source="2763"
       destination="2764"
-      handler=".v02_07_000.migrate_suppliercontacts_to_dx"
+      handler=".v02_07_000.reindex_client_tree_allowed_roles_again"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
