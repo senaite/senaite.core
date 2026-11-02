@@ -27,11 +27,18 @@ keyword of an interim field or of a service in square brackets, e.g.
 its text, so a value cannot add code to the formula (see `bind_values`).
 """
 
+import ast
 import importlib
 import math
 import re
 
 from bika.lims import api
+
+
+class UnsafeFormula(ValueError):
+    """A formula uses what a formula must not
+    """
+
 
 # A placeholder of a formula: a keyword in square brackets, e.g. [Ca] or
 # [Ca.LDL]
@@ -95,12 +102,22 @@ FORMULA_ERRORS = (
 
 # The text a test result shows for an error, the most specific one first
 ERROR_LABELS = (
+    (UnsafeFormula, "Unsafe formula"),
     (ZeroDivisionError, "Division by 0"),
     (KeyError, "Key Error"),
     (ImportError, "Import Error"),
     (SyntaxError, "Syntax Error"),
     (TypeError, "TypeError"),
 )
+
+# A formula must not reach the internals of Python objects: the way out of
+# the restricted globals goes through attributes such as `__class__` or
+# `__subclasses__`. Attributes starting with this are refused
+PRIVATE_PREFIX = "_"
+
+# Names starting with this are refused; the variables of the values start
+# with a single underscore
+DUNDER_PREFIX = "__"
 
 # The values of a dependency a formula may refer to by a suffix
 DEPENDENCY_SUFFIXES = (
@@ -198,6 +215,52 @@ def get_globals(imports=None, **kwargs):
     return globs
 
 
+def get_unsafe_name(node):
+    """The name a node of a formula must not use, or None
+
+    :param node: a node of the syntax tree of a formula
+    :returns: the attribute or name, or None when the node is fine
+    """
+    if isinstance(node, ast.Attribute):
+        if node.attr.startswith(PRIVATE_PREFIX):
+            return node.attr
+    elif isinstance(node, ast.Name):
+        if node.id.startswith(DUNDER_PREFIX):
+            return node.id
+    return None
+
+
+def check_expression(expression):
+    """Refuse an expression that reaches the internals of Python objects
+
+    :param expression: a Python expression, e.g. a formula with its values
+        bound to variables (see `bind_values`)
+    :raises SyntaxError: when the expression is not valid Python
+    :raises UnsafeFormula: when the expression uses a private attribute or
+        a dunder name
+    """
+    tree = ast.parse(expression, mode="eval")
+    for node in ast.walk(tree):
+        name = get_unsafe_name(node)
+        if name:
+            raise UnsafeFormula(
+                "A formula must not use {}".format(name))
+
+
+def check_formula(formula):
+    """Refuse a formula that reaches the internals of Python objects
+
+    :param formula: the formula, with placeholders such as `[Ca]`
+    :raises SyntaxError: when the formula is not valid
+    :raises UnsafeFormula: when the formula uses a private attribute or a
+        dunder name
+    """
+    expression = minify_formula(formula)
+    expression = NAMED_PLACEHOLDER.sub("_value", expression)
+    expression = PLACEHOLDER.sub("_value", expression)
+    check_expression(expression)
+
+
 def bind_values(formula, values):
     """Replace the placeholders of a formula by variables
 
@@ -236,9 +299,12 @@ def evaluate_formula(formula, values, imports=None):
     :param values: mapping of placeholder keys to their values
     :param imports: the imports of the calculation the formula may use
     :returns: the result of the formula
-    :raises: one of `FORMULA_ERRORS` when the formula fails
+    :raises: one of `FORMULA_ERRORS` when the formula fails, among them
+        `UnsafeFormula` for a formula that reaches the internals of Python
+        objects
     """
     expression, variables = bind_values(minify_formula(formula), values)
+    check_expression(expression)
     namespace = get_globals(imports)
     namespace.update(variables)
     return eval(expression, namespace)

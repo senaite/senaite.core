@@ -215,6 +215,62 @@ A formula that fails raises one of `FORMULA_ERRORS`:
     TypeError
 
 
+What a formula must not do
+..........................
+
+The globals of a formula hold no builtins of Python, but that alone does not
+keep a formula in: through the internals of any object, e.g. `__class__` or
+`__subclasses__`, a formula could reach the whole interpreter.
+`check_formula` refuses a formula that uses an attribute starting with an
+underscore or a name starting with two:
+
+    >>> check_formula("[Ca] + [Mg]")
+
+    >>> check_formula("().__class__.__bases__[0].__subclasses__()")
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A formula must not use __subclasses__
+
+    >>> check_formula("[Ca]._module")
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A formula must not use _module
+
+    >>> check_formula("__import__('os')")
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A formula must not use __import__
+
+A formula with placeholders, the older named placeholders, imports and the
+attributes of a module stays allowed:
+
+    >>> check_formula("floor([Ca] * math.pi) + get_result(%(context_uid)s)")
+
+A formula that is not valid is a syntax error:
+
+    >>> check_formula("[Ca] +")
+    Traceback (most recent call last):
+    ...
+    SyntaxError: unexpected EOF while parsing
+
+`evaluate_formula` checks every formula before it evaluates it, also one that
+was stored before the check existed:
+
+    >>> evaluate_formula("[a] if ().__class__ else 0", {"a": 1})
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A formula must not use __class__
+
+`UnsafeFormula` is a `ValueError`, so it is one of `FORMULA_ERRORS` and an
+analysis with such a formula gets no result instead of an error page:
+
+    >>> issubclass(UnsafeFormula, FORMULA_ERRORS)
+    True
+
+    >>> calculate_formula("().__class__", {})
+    'Unsafe formula: A formula must not use __class__'
+
+
 Values of an analysis
 .....................
 
