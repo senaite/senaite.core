@@ -29,8 +29,9 @@ from plone.autoform import directives
 from plone.supermodel import model
 from Products.CMFCore import permissions
 from senaite.core.api.calculation import calculate_formula
-from senaite.core.api.calculation import getGlobals
-from senaite.core.api.calculation import getModuleMember
+from senaite.core.api.calculation import get_globals
+from senaite.core.api.calculation import get_module_member
+from senaite.core.api.calculation import minify_formula
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.interfaces import ICalculation
@@ -51,6 +52,10 @@ from zope import component
 from zope import schema
 from zope.interface import Interface
 from zope.interface import implementer
+
+# BBB: the helpers for formulas moved to senaite.core.api.calculation
+getGlobals = get_globals
+getModuleMember = get_module_member
 
 
 class IImportRecord(Interface):
@@ -251,10 +256,10 @@ class Calculation(Container):
     security = ClassSecurityInfo()
 
     def _getGlobals(self):
-        return getGlobals(self.getPythonImports())
+        return get_globals(self.getPythonImports())
 
     def _getModuleMember(self, dotted_name, member):
-        return getModuleMember(dotted_name, member)
+        return get_module_member(dotted_name, member)
 
     @security.protected(permissions.View)
     def getInterimFields(self):
@@ -390,8 +395,7 @@ class Calculation(Container):
         """Return the current formula value as text.
         The result will have newlines and additional spaces stripped out.
         """
-        value = " ".join(self.getFormula().splitlines())
-        return value
+        return minify_formula(self.getFormula())
 
     @security.protected(permissions.ModifyPortalContent)
     def setFormula(self, value):

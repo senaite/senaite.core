@@ -50,7 +50,10 @@ from Products.Archetypes.Field import StringField
 from Products.Archetypes.Schema import Schema
 from Products.CMFCore.permissions import View
 from senaite.core.api import dtime
+from senaite.core.api.calculation import FORMULA_ERRORS
 from senaite.core.api.calculation import evaluate_formula
+from senaite.core.api.calculation import get_dependency_values
+from senaite.core.api.calculation import get_interim_value
 from senaite.core.browser.fields.datetime import DateTimeField
 from senaite.core.i18n import translate as t
 from senaite.core.i18n import get_dt_format
@@ -209,39 +212,6 @@ schema = schema.copy() + Schema((
     InterimFields,
     ResultsRange,
 ))
-
-
-def get_dependency_values(dependency, result):
-    """The values of a dependency a formula may refer to
-
-    A formula refers to the result of a dependency by its keyword, e.g.
-    `[Ca]`, and to its limits by a suffix, e.g. `[Ca.LDL]`.
-
-    :param dependency: the analysis the formula depends on
-    :param result: the result of the dependency, as the formula reads it
-    :returns: mapping of placeholder keys to their values
-    """
-    lloq = api.to_float(dependency.getLowerLimitOfQuantification(), 0.0)
-    below_loq = int(dependency.isBelowLimitOfQuantification())
-    suffixes = {
-        "RESULT": result,
-        "LDL": api.to_float(dependency.getLowerDetectionLimit(), 0.0),
-        "UDL": api.to_float(dependency.getUpperDetectionLimit(), 0.0),
-        "LOQ": lloq,
-        "LLOQ": lloq,
-        "ULOQ": api.to_float(
-            dependency.getUpperLimitOfQuantification(), 0.0),
-        "BELOWLDL": int(dependency.isBelowLowerDetectionLimit()),
-        "ABOVEUDL": int(dependency.isAboveUpperDetectionLimit()),
-        "BELOWLOQ": below_loq,
-        "BELOWLLOQ": below_loq,
-        "ABOVEULOQ": int(dependency.isAboveLimitOfQuantification()),
-    }
-    keyword = dependency.getKeyword()
-    values = {"{}.{}".format(keyword, suffix): value
-              for suffix, value in suffixes.items()}
-    values[keyword] = result
-    return values
 
 
 def _normalize_interim(interim):
@@ -765,33 +735,20 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # Interim fields are frozen into the analysis at linking time by
         # setCalculation, so self.getInterimFields() already contains both
-        # the calculation defaults and any per-analysis overrides.
-        interims = self.getInterimFields()
-
-        # Add interims to the values. The values are bound to the formula as
-        # data (see evaluate_formula), never spliced into its text, so a
-        # value cannot add code to the formula.
-        invalid = False
-        for i in interims:
-
-            interim_keyword = i.get("keyword")
-            if not interim_keyword:
+        # the calculation defaults and any per-analysis overrides. Their
+        # values are bound to the formula as data (see evaluate_formula).
+        invalid = None
+        for interim in self.getInterimFields():
+            keyword = interim.get("keyword")
+            if not keyword:
                 continue
-
-            # skip unset values
-            interim_value = i.get("value", "")
-            if interim_value == "":
+            try:
+                value = get_interim_value(interim)
+            except ValueError as error:
+                invalid = error
                 continue
-
-            if api.is_floatable(interim_value):
-                values[interim_keyword] = float(interim_value)
-            elif i.get("result_type"):
-                # A string interim, e.g. for
-                # '"ok" if [var] == "example_value" else "not ok"'
-                values[interim_keyword] = api.safe_unicode(interim_value)
-            else:
-                # A numeric interim with a value that is not a number
-                invalid = True
+            if value is not None:
+                values[keyword] = value
 
         # Add dependencies results to the values
         dependencies = self.getDependencies()
@@ -826,15 +783,15 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # Calculate
         try:
             if invalid:
-                raise TypeError("an interim value is not a number")
+                raise invalid
             result = evaluate_formula(
                 formula, values, self.getCalculationImports())
         except ZeroDivisionError:
             self.setResult("0/0")
             return True
-        except (KeyError, TypeError, ImportError) as e:
-            msg = "Cannot eval formula ({}): {}".format(e.message, formula)
-            logger.error(msg)
+        except FORMULA_ERRORS as error:
+            logger.error("Cannot eval formula ({}): {}".format(
+                error, formula))
             self.setResult("NA")
             return True
 

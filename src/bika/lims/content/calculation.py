@@ -47,6 +47,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core import logger
 from senaite.core.api.calculation import calculate_formula
+from senaite.core.api.calculation import minify_formula
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.catalog import SETUP_CATALOG
@@ -246,8 +247,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         """Return the current formula value as text.
         The result will have newlines and additional spaces stripped out.
         """
-        value = " ".join(self.getFormula().splitlines())
-        return value
+        return minify_formula(self.getFormula())
 
     def getCalculationDependencies(self, flat=False, deps=None):
         """ Recursively calculates all dependencies of this calculation.

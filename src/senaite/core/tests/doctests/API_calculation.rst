@@ -2,9 +2,11 @@ API Calculation
 ---------------
 
 The calculation API evaluates the formulas of calculations. A formula refers
-to the values it is calculated with by placeholders, e.g. `[Ca] + [Mg]`. The
-values are bound to the formula as data and never become part of its text,
-so a value cannot add code to the formula.
+to the values it is calculated with by placeholders: the keyword of an interim
+field or of a service in square brackets, e.g. `[Ca] + [Mg]`, optionally with
+the suffix of a value of a dependency, e.g. `[Ca.LDL]`. The values are bound
+to the formula as data and never become part of its text, so a value cannot
+add code to the formula.
 
 Running this test from the buildout directory::
 
@@ -19,18 +21,52 @@ Needed Imports:
     >>> from senaite.core.api.calculation import *
 
 
+Reading a formula
+.................
+
+A formula may be stored on several lines. `minify_formula` puts it on one line;
+spaces within the formula, e.g. in a string, stay as they are:
+
+    >>> minify_formula("[Ca]\n+\t[Mg]")
+    '[Ca] + [Mg]'
+
+    >>> minify_formula('"a  b" if [x] else ""')
+    '"a  b" if [x] else ""'
+
+`get_placeholders` returns the keys of the placeholders of a formula, each once
+and in their order:
+
+    >>> get_placeholders("[Ca] + [Ca.LDL] + [Mg] * [Ca]")
+    ['Ca', 'Ca.LDL', 'Mg']
+
+    >>> get_placeholders("1 + 2")
+    []
+
+`get_keyword` returns the keyword of a placeholder, without the suffix of a
+value of a dependency:
+
+    >>> get_keyword("Ca.LDL")
+    'Ca'
+
+    >>> get_keyword("Ca")
+    'Ca'
+
+`get_keywords` returns the keywords of the interim fields and services a
+formula refers to:
+
+    >>> get_keywords("[Ca] + [Ca.LDL] + [Mg]")
+    ['Ca', 'Mg']
+
+
 Globals of a formula
 ....................
 
 A formula is evaluated without the builtins of Python, only with a set of
 harmless functions and the `math` module:
 
-    >>> globs = getGlobals()
+    >>> globs = get_globals()
     >>> globs["__builtins__"] is None
     True
-
-    >>> sorted(globs)[:6]
-    ['__builtins__', 'all', 'any', 'bool', 'chr', 'cmp']
 
     >>> globs["math"]
     <module 'math' from '...'>
@@ -38,33 +74,49 @@ harmless functions and the `math` module:
     >>> "__import__" in globs or "open" in globs or "eval" in globs
     False
 
+The globals are a new mapping each time, so a change does not leak into the
+next formula:
+
+    >>> globs["min"] = None
+    >>> get_globals()["min"]
+    <built-in function min>
+
 Keyword arguments are added to the globals:
 
-    >>> getGlobals(answer=42)["answer"]
+    >>> get_globals(answer=42)["answer"]
     42
 
 The Python imports of a calculation add a member of a module:
 
     >>> imports = [{"module": "math", "function": "floor"}]
-    >>> getGlobals(imports)["floor"]
+    >>> get_globals(imports)["floor"]
     <built-in function floor>
 
-An import that does not exist is an error:
+`get_import` returns the member of one import, and an import that does not
+exist is an error:
 
-    >>> getGlobals([{"module": "math", "function": "nope"}])
+    >>> get_import({"module": "math", "function": "ceil"})
+    <built-in function ceil>
+
+    >>> get_globals([{"module": "math", "function": "nope"}])
     Traceback (most recent call last):
     ...
     ImportError: Could not find member nope of module math
 
-`getModuleMember` returns the member of a module, or `None`:
+`get_module_member` returns the member of a module, or `None`:
 
-    >>> getModuleMember("math", "ceil")
+    >>> get_module_member("math", "ceil")
     <built-in function ceil>
 
-    >>> getModuleMember("math", "nope") is None
+    >>> get_module_member("math", "nope") is None
     True
 
-    >>> getModuleMember("no.such.module", "ceil") is None
+    >>> get_module_member("no.such.module", "ceil") is None
+    True
+
+The names these helpers had before are still there:
+
+    >>> getGlobals is get_globals and getModuleMember is get_module_member
     True
 
 
@@ -87,9 +139,9 @@ A placeholder used twice is one variable:
     >>> expression
     '_value0 * _value0'
 
-Dotted placeholders refer to a value of a dependency, e.g. its detection
-limit, and the named placeholders of the string formatting formulas were
-evaluated with before still work:
+Dotted placeholders refer to a value of a dependency, and the named
+placeholders of the string formatting formulas were evaluated with before
+still work:
 
     >>> expression, variables = bind_values(
     ...     "[Ca.LDL] + get_result(%(context_uid)s)",
@@ -145,10 +197,79 @@ The Python imports of the calculation are available to the formula:
     >>> evaluate_formula("floor([Ca] + [Mg])", {"Ca": 5.6, "Mg": 3.3}, imports)
     8.0
 
-Line breaks and tabs in a stored formula mean nothing:
+A formula stored on several lines is evaluated on one:
 
-    >>> evaluate_formula("[a]\n+\t[b]\r", {"a": 1, "b": 2})
+    >>> evaluate_formula("[a]\n+\t[b]", {"a": 1, "b": 2})
     3
+
+A formula that fails raises one of `FORMULA_ERRORS`:
+
+    >>> for formula in ("[a] / 0", "[a] +", "nope([a])", "[a] + 'x'"):
+    ...     try:
+    ...         evaluate_formula(formula, {"a": 1})
+    ...     except FORMULA_ERRORS as error:
+    ...         print(type(error).__name__)
+    ZeroDivisionError
+    SyntaxError
+    NameError
+    TypeError
+
+
+Values of an analysis
+.....................
+
+`get_interim_value` returns the value of an interim field as a formula reads
+it: a number, a text for an interim of a string type, or `None` when the
+interim has no value:
+
+    >>> get_interim_value({"keyword": "a", "value": "1.5"})
+    1.5
+
+    >>> get_interim_value({"keyword": "a", "value": "ok", "result_type": "string"})
+    u'ok'
+
+    >>> get_interim_value({"keyword": "a", "value": ""}) is None
+    True
+
+The value of a numeric interim must be a number:
+
+    >>> get_interim_value({"keyword": "a", "value": "ok"})
+    Traceback (most recent call last):
+    ...
+    ValueError: The value of a is not a number
+
+`get_dependency_values` returns the result of a dependency and its limits, by
+the keys a formula refers to them:
+
+    >>> class Dependency(object):
+    ...     def getKeyword(self): return "Ca"
+    ...     def getLowerDetectionLimit(self): return "0.1"
+    ...     def getUpperDetectionLimit(self): return "100"
+    ...     def getLowerLimitOfQuantification(self): return "0.5"
+    ...     def getUpperLimitOfQuantification(self): return "90"
+    ...     def isBelowLowerDetectionLimit(self): return False
+    ...     def isAboveUpperDetectionLimit(self): return False
+    ...     def isBelowLimitOfQuantification(self): return True
+    ...     def isAboveLimitOfQuantification(self): return False
+
+    >>> values = get_dependency_values(Dependency(), 0.3)
+    >>> for key in sorted(values):
+    ...     print("{} {}".format(key, values[key]))
+    Ca 0.3
+    Ca.ABOVEUDL 0
+    Ca.ABOVEULOQ 0
+    Ca.BELOWLDL 0
+    Ca.BELOWLLOQ 1
+    Ca.BELOWLOQ 1
+    Ca.LDL 0.1
+    Ca.LLOQ 0.5
+    Ca.LOQ 0.5
+    Ca.RESULT 0.3
+    Ca.UDL 100.0
+    Ca.ULOQ 90.0
+
+    >>> evaluate_formula("[Ca] * 2 if [Ca.BELOWLOQ] else [Ca]", values)
+    0.6
 
 
 Test parameters
@@ -206,3 +327,10 @@ Errors are returned as text, for the test result field to show:
 
     >>> calculate_formula("[Ca] +", {"Ca": "1"})
     'Syntax Error: unexpected EOF while parsing'
+
+    >>> calculate_formula("nope([Ca])", {"Ca": "1"})
+    "Unspecified exception: name 'nope' is not defined"
+
+    >>> calculate_formula("floor([Ca])", {"Ca": "1"},
+    ...                   [{"module": "math", "function": "nope"}])
+    'Import Error: Could not find member nope of module math'

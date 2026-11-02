@@ -20,13 +20,14 @@
 
 """Evaluate the formulas of calculations
 
-A formula refers to the values it is calculated with by placeholders, e.g.
-`[Ca] + [Mg]`. The values are bound to the formula as data, never spliced
-into its text (see `evaluate_formula`).
+A formula refers to the values it is calculated with by placeholders: the
+keyword of an interim field or of a service in square brackets, e.g.
+`[Ca] + [Mg]`, optionally with the suffix of a value of a dependency, e.g.
+`[Ca.LDL]`. The values are bound to the formula as data, never spliced into
+its text, so a value cannot add code to the formula (see `bind_values`).
 """
 
 import importlib
-import inspect
 import math
 import re
 
@@ -40,78 +41,161 @@ PLACEHOLDER = re.compile(r"\[([^\[\]]+)\]")
 # before, e.g. %(context_uid)s; formulas may still use it
 NAMED_PLACEHOLDER = re.compile(r"%\(([^()]+)\)[sf]")
 
-# Characters a stored formula may hold that mean nothing to it
-FORMULA_NOISE = re.compile(r"[\n\t\r]")
+# Separates the keyword of a placeholder from the suffix of a value of a
+# dependency, e.g. [Ca.LDL]
+SUFFIX_SEPARATOR = "."
+
+# What a formula may use besides its values and imports: no builtins of
+# Python, only harmless functions and the math module
+FORMULA_GLOBALS = {
+    "__builtins__": None,
+    "all": all,
+    "any": any,
+    "bool": bool,
+    "chr": chr,
+    "cmp": cmp,
+    "complex": complex,
+    "divmod": divmod,
+    "enumerate": enumerate,
+    "float": float,
+    "format": format,
+    "frozenset": frozenset,
+    "hex": hex,
+    "int": int,
+    "len": len,
+    "list": list,
+    "long": long,
+    "math": math,
+    "max": max,
+    "min": min,
+    "oct": oct,
+    "ord": ord,
+    "pow": pow,
+    "range": range,
+    "reversed": reversed,
+    "round": round,
+    "str": str,
+    "sum": sum,
+    "tuple": tuple,
+    "xrange": xrange,
+}
+
+# The errors a formula may fail with: a wrong formula, a missing value or
+# import, a value of the wrong type, a division by zero
+FORMULA_ERRORS = (
+    ArithmeticError,
+    AttributeError,
+    ImportError,
+    LookupError,
+    NameError,
+    SyntaxError,
+    TypeError,
+    ValueError,
+)
+
+# The text a test result shows for an error, the most specific one first
+ERROR_LABELS = (
+    (ZeroDivisionError, "Division by 0"),
+    (KeyError, "Key Error"),
+    (ImportError, "Import Error"),
+    (SyntaxError, "Syntax Error"),
+    (TypeError, "TypeError"),
+)
+
+# The values of a dependency a formula may refer to by a suffix
+DEPENDENCY_SUFFIXES = (
+    "RESULT", "LDL", "UDL", "LOQ", "LLOQ", "ULOQ", "BELOWLDL", "ABOVEUDL",
+    "BELOWLOQ", "BELOWLLOQ", "ABOVEULOQ",
+)
 
 
-def getGlobals(imports=None, **kwargs):
-    """Return the globals dictionary for the formula calculation
+def unique(items):
+    """The items without repetitions, in the order they come first
     """
-    # Default globals
-    globs = {
-        "__builtins__": None,
-        "all": all,
-        "any": any,
-        "bool": bool,
-        "chr": chr,
-        "cmp": cmp,
-        "complex": complex,
-        "divmod": divmod,
-        "enumerate": enumerate,
-        "float": float,
-        "format": format,
-        "frozenset": frozenset,
-        "hex": hex,
-        "int": int,
-        "len": len,
-        "list": list,
-        "long": long,
-        "math": math,
-        "max": max,
-        "min": min,
-        "oct": oct,
-        "ord": ord,
-        "pow": pow,
-        "range": range,
-        "reversed": reversed,
-        "round": round,
-        "str": str,
-        "sum": sum,
-        "tuple": tuple,
-        "xrange": xrange,
-    }
-    # Update with keyword arguments
-    globs.update(kwargs)
-    # Update with additional Python libraries
-    imports = imports or []
-    for imp in imports:
-        mod = imp["module"]
-        func = imp["function"]
-        member = getModuleMember(mod, func)
-        if member is None:
-            raise ImportError(
-                "Could not find member {} of module {}".format(
-                    func, mod))
-        globs[func] = member
-    return globs
+    seen = set()
+    return [item for item in items if not (item in seen or seen.add(item))]
 
 
-def getModuleMember(dotted_name, member):
-    """Get the member object of a module.
+def minify_formula(formula):
+    """The formula on one line
 
-    :param dotted_name: The dotted name of the module, e.g. `scipy.special`
-    :type dotted_name: string
-    :param member: The name of the member function, e.g. `gammaincinv`
-    :type member: string
-    :returns: member object or None
+    Line breaks and tabs become spaces; spaces within the formula, e.g. in
+    a string, stay as they are.
+
+    :param formula: the formula as it is stored
+    :returns: the formula on one line
+    """
+    return " ".join(formula.splitlines()).replace("\t", " ")
+
+
+def get_placeholders(formula):
+    """The keys of the placeholders of a formula, in their order
+
+    :param formula: the formula, e.g. `[Ca] + [Ca.LDL] + [Mg]`
+    :returns: list of keys, e.g. `["Ca", "Ca.LDL", "Mg"]`
+    """
+    return unique(key.strip() for key in PLACEHOLDER.findall(formula))
+
+
+def get_keyword(placeholder):
+    """The keyword of a placeholder key, without the suffix of a value
+
+    :param placeholder: the key of a placeholder, e.g. `Ca.LDL`
+    :returns: the keyword, e.g. `Ca`
+    """
+    return placeholder.split(SUFFIX_SEPARATOR, 1)[0]
+
+
+def get_keywords(formula):
+    """The keywords of the interim fields and services a formula refers to
+
+    :param formula: the formula, e.g. `[Ca] + [Ca.LDL] + [Mg]`
+    :returns: list of keywords, e.g. `["Ca", "Mg"]`
+    """
+    return unique(map(get_keyword, get_placeholders(formula)))
+
+
+def get_module_member(dotted_name, member):
+    """The member of a module, or None
+
+    :param dotted_name: the dotted name of the module, e.g. `scipy.special`
+    :param member: the name of the member, e.g. `gammaincinv`
+    :returns: the member, or None when the module or member is missing
     """
     try:
-        mod = importlib.import_module(dotted_name)
+        module = importlib.import_module(dotted_name)
     except ImportError:
         return None
+    return getattr(module, member, None)
 
-    members = dict(inspect.getmembers(mod))
-    return members.get(member)
+
+def get_import(record):
+    """The member of a module a calculation imports
+
+    :param record: an import of a calculation, `{"module", "function"}`
+    :returns: the member
+    :raises ImportError: when the module or member is missing
+    """
+    module, member = record["module"], record["function"]
+    found = get_module_member(module, member)
+    if found is None:
+        raise ImportError("Could not find member {} of module {}".format(
+            member, module))
+    return found
+
+
+def get_globals(imports=None, **kwargs):
+    """The globals a formula is evaluated with
+
+    :param imports: the imports of a calculation, `[{"module", "function"}]`
+    :param kwargs: further globals
+    :returns: a new mapping of names to what they stand for
+    :raises ImportError: when an import is missing
+    """
+    globs = dict(FORMULA_GLOBALS, **kwargs)
+    for record in imports or []:
+        globs[record["function"]] = get_import(record)
+    return globs
 
 
 def bind_values(formula, values):
@@ -150,14 +234,66 @@ def evaluate_formula(formula, values, imports=None):
 
     :param formula: the formula, with placeholders such as `[Ca]`
     :param values: mapping of placeholder keys to their values
-    :param imports: the Python imports the formula may use
+    :param imports: the imports of the calculation the formula may use
     :returns: the result of the formula
+    :raises: one of `FORMULA_ERRORS` when the formula fails
     """
-    expression, variables = bind_values(
-        FORMULA_NOISE.sub("", formula), values)
-    namespace = getGlobals(imports)
+    expression, variables = bind_values(minify_formula(formula), values)
+    namespace = get_globals(imports)
     namespace.update(variables)
     return eval(expression, namespace)
+
+
+def get_interim_value(interim):
+    """The value of an interim field as a formula reads it
+
+    :param interim: an interim field, `{"keyword", "value", "result_type"}`
+    :returns: a number, a text for an interim of a string type, or None
+        when the interim has no value
+    :raises ValueError: when the value of a numeric interim is no number
+    """
+    value = interim.get("value", "")
+    if value == "":
+        return None
+    if api.is_floatable(value):
+        return float(value)
+    if interim.get("result_type"):
+        return api.safe_unicode(value)
+    raise ValueError("The value of {} is not a number".format(
+        interim.get("keyword")))
+
+
+def get_dependency_values(dependency, result):
+    """The values of a dependency a formula may refer to
+
+    A formula refers to the result of a dependency by its keyword, e.g.
+    `[Ca]`, and to its limits by a suffix, e.g. `[Ca.LDL]`.
+
+    :param dependency: the analysis the formula depends on
+    :param result: the result of the dependency, as the formula reads it
+    :returns: mapping of placeholder keys to their values
+    """
+    lloq = api.to_float(dependency.getLowerLimitOfQuantification(), 0.0)
+    below_loq = int(dependency.isBelowLimitOfQuantification())
+    suffixes = {
+        "RESULT": result,
+        "LDL": api.to_float(dependency.getLowerDetectionLimit(), 0.0),
+        "UDL": api.to_float(dependency.getUpperDetectionLimit(), 0.0),
+        "LOQ": lloq,
+        "LLOQ": lloq,
+        "ULOQ": api.to_float(
+            dependency.getUpperLimitOfQuantification(), 0.0),
+        "BELOWLDL": int(dependency.isBelowLowerDetectionLimit()),
+        "ABOVEUDL": int(dependency.isAboveUpperDetectionLimit()),
+        "BELOWLOQ": below_loq,
+        "BELOWLLOQ": below_loq,
+        "ABOVEULOQ": int(dependency.isAboveLimitOfQuantification()),
+    }
+    keyword = dependency.getKeyword()
+    values = {SUFFIX_SEPARATOR.join([keyword, suffix]): suffixes[suffix]
+              for suffix in DEPENDENCY_SUFFIXES}
+    values[keyword] = result
+    return values
 
 
 def unquote(text):
@@ -185,25 +321,34 @@ def to_test_value(value):
     return unquote(text)
 
 
-def calculate_formula(formula="", parameters={}, imports=None):
-    result = "Failure"
+def get_error_text(error):
+    """The text a test result shows for an error of a formula
+    """
+    label = "Unspecified exception"
+    for error_type, error_label in ERROR_LABELS:
+        if isinstance(error, error_type):
+            label = error_label
+            break
+    detail = error.args[0] if error.args else ""
+    return "{}: {}".format(label, detail)
+
+
+def calculate_formula(formula="", parameters=None, imports=None):
+    """The test result of a formula, or the text of its error
+
+    :param formula: the formula, with placeholders such as `[Ca]`
+    :param parameters: mapping of placeholder keys to the test values
+    :param imports: the imports of the calculation the formula may use
+    :returns: the result, or the text of the error the formula failed with
+    """
     values = {key: to_test_value(value)
               for key, value in (parameters or {}).items()}
-
     try:
-        result = evaluate_formula(formula, values, imports)
-    except TypeError as e:
-        # non-numeric arguments in interim mapping?
-        result = "TypeError: {}".format(str(e.args[0]))
-    except ZeroDivisionError as e:
-        result = "Division by 0: {}".format(str(e.args[0]))
-    except KeyError as e:
-        result = "Key Error: {}".format(str(e.args[0]))
-    except ImportError as e:
-        result = "Import Error: {}".format(str(e.args[0]))
-    except SyntaxError as e:
-        result = "Syntax Error: {}".format(str(e.args[0]))
-    except Exception as e:
-        result = "Unspecified exception: {}".format(str(e.args[0]))
+        return evaluate_formula(formula, values, imports)
+    except FORMULA_ERRORS as error:
+        return get_error_text(error)
 
-    return result
+
+# BBB: the names of the content module these helpers were moved from
+getGlobals = get_globals
+getModuleMember = get_module_member
