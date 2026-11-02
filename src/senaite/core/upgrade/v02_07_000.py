@@ -41,9 +41,12 @@ from plone.app.blob.field import BlobWrapper
 from plone.dexterity.utils import createContent
 from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.interfaces import INamed
+from plone.registry.interfaces import IRegistry
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.api import dtime
+from senaite.core.api.calculation import IMPORT_MODULES_RECORD
+from senaite.core.api.calculation import is_forbidden_module
 from senaite.core.api.catalog import add_column
 from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
@@ -58,6 +61,7 @@ from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
 from senaite.core.catalog.client_catalog import CATALOG_ID as CLIENT_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
+from senaite.core.registry.schema import ICalculationImportsRegistry
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
 from senaite.core.schema.addressfield import BILLING_ADDRESS
 from senaite.core.schema.addressfield import NAIVE_ADDRESS
@@ -86,6 +90,7 @@ from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.v02_06_000 import get_setup_folder
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getMultiAdapter
+from zope.component import getUtility
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
 
@@ -119,6 +124,44 @@ PORTAL_FOLDER_ITEMS = {
 EXCLUDE_FROM_NAV_BEHAVIOR = (
     "plone.app.dexterity.behaviors.exclfromnav.IExcludeFromNavigationDefault"
 )
+
+
+def get_calculation_import_modules(calculation):
+    """The modules the Python imports of a calculation name
+    """
+    imports = calculation.getPythonImports() or []
+    return [record["module"].strip() for record in imports
+            if (record.get("module") or "").strip()]
+
+
+@upgradestep(product, version)
+def allow_calculation_imports(tool):
+    """Allow the modules calculations import from, and no more.
+
+    The Python imports of a calculation may name only the modules the site
+    allows. The record starts with the mathematical modules and the ones
+    the calculations of the site already use, so that their formulas keep
+    working. A module that reaches the system, the interpreter or the
+    database is left out even when a calculation uses it; that calculation
+    gives no result until its import is changed.
+    """
+    registry = getUtility(IRegistry)
+    registry.registerInterface(ICalculationImportsRegistry)
+    modules = set(registry[IMPORT_MODULES_RECORD] or [])
+    catalog = api.get_tool(SETUP_CATALOG)
+    for brain in catalog(portal_type="Calculation"):
+        calculation = api.get_object(brain)
+        for module in get_calculation_import_modules(calculation):
+            if is_forbidden_module(module):
+                logger.warn(
+                    "Calculation {} imports from {}, which calculations "
+                    "must not use any more".format(
+                        api.get_path(calculation), module))
+                continue
+            modules.add(module)
+    registry[IMPORT_MODULES_RECORD] = sorted(modules)
+    logger.info("Calculations may import from: {}".format(
+        ", ".join(sorted(modules))))
 
 
 @upgradestep(product, version)

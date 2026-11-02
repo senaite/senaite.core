@@ -28,6 +28,8 @@ from Products.validation import validation as validationService
 from senaite.core.content.calculation import ICalculationSchema
 from senaite.core.tests.base import DataTestCase
 from senaite.core.validators.formula import FormulaValidator
+from senaite.core.validators.imports import ImportsValidator
+from zope.interface import Invalid
 from senaite.core.validators.interimfields import InterimFieldsValidator
 from z3c.form.error import MultipleErrors
 
@@ -284,6 +286,39 @@ class Tests(DataTestCase):
                 ICalculationSchema,
                 None).validate(self.portal.REQUEST.form)[0].message,
             "The formula is not allowed: A formula must not use __bases__")
+
+    def test_ImportsValidator(self):
+        login(self.portal, TEST_USER_NAME)
+        calc1 = self.portal.setup.calculations["calculation-1"]
+
+        def validate(imports):
+            validator = ImportsValidator(
+                calc1, self.portal.REQUEST, None,
+                ICalculationSchema["imports"], None)
+            try:
+                validator.validate(imports)
+            except Invalid as error:
+                return error.args[0]
+            return None
+
+        # A mathematical module is allowed
+        self.assertIsNone(
+            validate([{"module": u"math", "function": u"floor"}]))
+
+        # A module that reaches the system is refused before it is imported
+        self.assertIn(
+            "Calculations must not import from 'os'",
+            validate([{"module": u"os", "function": u"system"}]))
+
+        # A module the site does not allow is refused
+        self.assertIn(
+            "Calculations must not import from 'json'",
+            validate([{"module": u"json", "function": u"dumps"}]))
+
+        # A private member is refused
+        self.assertIn(
+            "Calculations must not import '__doc__'",
+            validate([{"module": u"math", "function": u"__doc__"}]))
 
 
 def test_suite():

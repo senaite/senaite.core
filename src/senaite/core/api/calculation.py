@@ -33,6 +33,11 @@ import math
 import re
 
 from bika.lims import api
+from plone.registry.interfaces import IRegistry
+from senaite.core.config.registry import CALCULATION_IMPORT_MODULES
+from senaite.core.config.registry import FORBIDDEN_CALCULATION_IMPORT_MODULES
+from senaite.core.registry.schema import ICalculationImportsRegistry
+from zope.component import queryUtility
 
 
 class UnsafeFormula(ValueError):
@@ -119,6 +124,13 @@ PRIVATE_PREFIX = "_"
 # with a single underscore
 DUNDER_PREFIX = "__"
 
+# The registry record of the modules a calculation may import from
+IMPORT_MODULES_RECORD = "{}.calculation_import_modules".format(
+    ICalculationImportsRegistry.__identifier__)
+
+# Separates the parts of the dotted name of a module
+MODULE_SEPARATOR = "."
+
 # The values of a dependency a formula may refer to by a suffix
 DEPENDENCY_SUFFIXES = (
     "RESULT", "LDL", "UDL", "LOQ", "LLOQ", "ULOQ", "BELOWLDL", "ABOVEUDL",
@@ -186,13 +198,70 @@ def get_module_member(dotted_name, member):
     return getattr(module, member, None)
 
 
+def get_allowed_modules():
+    """The modules the Python imports of a calculation may name
+
+    :returns: the dotted names the site allows, or the default ones when
+        the site has no record for them yet
+    """
+    registry = queryUtility(IRegistry)
+    modules = registry.get(IMPORT_MODULES_RECORD) if registry else None
+    if modules is None:
+        modules = CALCULATION_IMPORT_MODULES
+    return [module.strip() for module in modules if module.strip()]
+
+
+def is_forbidden_module(module):
+    """Whether a calculation may never import from the module
+
+    :param module: the dotted name of a module, e.g. `os.path`
+    :returns: True for a forbidden module or a submodule of one
+    """
+    for forbidden in FORBIDDEN_CALCULATION_IMPORT_MODULES:
+        if module == forbidden or module.startswith(
+                forbidden + MODULE_SEPARATOR):
+            return True
+    return False
+
+
+def is_allowed_module(module):
+    """Whether the Python imports of a calculation may name the module
+
+    :param module: the dotted name of a module, e.g. `math`
+    :returns: True when the site allows the module and it is not forbidden
+    """
+    if is_forbidden_module(module):
+        return False
+    return module in get_allowed_modules()
+
+
+def check_import(record):
+    """Refuse an import a calculation must not use
+
+    Checked before anything is imported: importing a module runs its code.
+
+    :param record: an import of a calculation, `{"module", "function"}`
+    :raises UnsafeFormula: when the module is not allowed or the member is
+        private
+    """
+    module, member = record["module"], record["function"]
+    if not is_allowed_module(module):
+        raise UnsafeFormula(
+            "A calculation must not import from {}".format(module))
+    if member.startswith(PRIVATE_PREFIX):
+        raise UnsafeFormula(
+            "A calculation must not import {}".format(member))
+
+
 def get_import(record):
     """The member of a module a calculation imports
 
     :param record: an import of a calculation, `{"module", "function"}`
     :returns: the member
+    :raises UnsafeFormula: when the import is not allowed
     :raises ImportError: when the module or member is missing
     """
+    check_import(record)
     module, member = record["module"], record["function"]
     found = get_module_member(module, member)
     if found is None:
