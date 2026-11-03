@@ -3343,6 +3343,11 @@ def rename_attachments_catalog(tool):
     catalog = api.get_tool(ATTACHMENTS_CATALOG)
 
     if old_catalog is None:
+        if len(catalog):
+            # this step ran already and the entries are in the new catalog
+            logger.info("No '%s' to rename [SKIP]" % old_catalog_id)
+            return
+
         # nothing to carry over, so the site walk is the only way to fill it
         logger.info("No '%s' to rename, rebuilding '%s' instead"
                     % (old_catalog_id, ATTACHMENTS_CATALOG))
