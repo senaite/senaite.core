@@ -2703,7 +2703,9 @@ def add_sample_analyses_keywords_metadata(tool):
     catalog = api.get_tool(SAMPLE_CATALOG)
     add_catalog_column(catalog, "getAnalysesKeywords")
 
-    brains = catalog(portal_type="AnalysisRequest")
+    # whoever runs the upgrade, every sample counts
+    query = {"portal_type": "AnalysisRequest"}
+    brains = catalog.unrestrictedSearchResults(query)
     total = len(brains)
     logger.info("Refreshing getAnalysesKeywords metadata of %s samples ..."
                 % total)
@@ -2714,8 +2716,9 @@ def add_sample_analyses_keywords_metadata(tool):
         # the column of a sample without a value holds `Missing.Value`
         if isinstance(brain.getAnalysesKeywords, (list, tuple)):
             continue
-        obj = api.get_object(brain, default=None)
-        if obj is None:
+        try:
+            obj = brain._unrestrictedGetObject()
+        except (AttributeError, KeyError):
             continue
         # Refresh only the getAnalysesKeywords metadata column via the partial
         # update_metadata support in BaseCatalog, instead of recomputing the
