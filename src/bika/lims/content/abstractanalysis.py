@@ -54,6 +54,7 @@ from senaite.core.api.calculation import FORMULA_ERRORS
 from senaite.core.api.calculation import evaluate_formula
 from senaite.core.api.calculation import get_dependency_values
 from senaite.core.api.calculation import get_interim_value
+from senaite.core.api.calculation import get_placeholders
 from senaite.core.browser.fields.datetime import DateTimeField
 from senaite.core.i18n import translate as t
 from senaite.core.i18n import get_dt_format
@@ -737,6 +738,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # setCalculation, so self.getInterimFields() already contains both
         # the calculation defaults and any per-analysis overrides. Their
         # values are bound to the formula as data (see evaluate_formula).
+        # A value that is no number fails the calculation only when the
+        # formula uses the interim field
+        used = get_placeholders(formula)
         invalid = None
         for interim in self.getInterimFields():
             keyword = interim.get("keyword")
@@ -745,7 +749,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             try:
                 value = get_interim_value(interim)
             except ValueError as error:
-                invalid = error
+                if keyword in used:
+                    invalid = error
                 continue
             if value is not None:
                 values[keyword] = value
