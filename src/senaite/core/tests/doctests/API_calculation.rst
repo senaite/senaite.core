@@ -193,16 +193,16 @@ the expression together with its variables:
 
     >>> expression, variables = bind_values("[Ca] + [Mg]", {"Ca": 1.0, "Mg": 2.0})
     >>> expression
-    '_value0 + _value1'
+    'formula_value0 + formula_value1'
 
     >>> sorted(variables.items())
-    [('_value0', 1.0), ('_value1', 2.0)]
+    [('formula_value0', 1.0), ('formula_value1', 2.0)]
 
 A placeholder used twice is one variable:
 
     >>> expression, variables = bind_values("[Ca] * [Ca]", {"Ca": 3.0})
     >>> expression
-    '_value0 * _value0'
+    'formula_value0 * formula_value0'
 
 Dotted placeholders refer to a value of a dependency, and the named
 placeholders of the string formatting formulas were evaluated with before
@@ -212,10 +212,10 @@ still work:
     ...     "[Ca.LDL] + get_result(%(context_uid)s)",
     ...     {"Ca.LDL": 0.5, "context_uid": "abc"})
     >>> expression
-    '_value1 + get_result(_value0)'
+    'formula_value1 + get_result(formula_value0)'
 
     >>> sorted(variables.items())
-    [('_value0', 'abc'), ('_value1', 0.5)]
+    [('formula_value0', 'abc'), ('formula_value1', 0.5)]
 
 A placeholder without a value is an error:
 
@@ -305,6 +305,61 @@ underscore or a name starting with two:
     Traceback (most recent call last):
     ...
     UnsafeFormula: A formula must not use __import__
+
+Neither may a formula use the attributes that lead from an object to the
+frames, the code or the globals of the interpreter, e.g. of a generator, a
+frame or a function:
+
+    >>> check_formula("[x for x in [1]].gi_frame")
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A formula must not use gi_frame
+
+    >>> check_formula("floor.f_back")
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A formula must not use f_back
+
+    >>> check_formula("floor.func_globals")
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A formula must not use func_globals
+
+    >>> check_formula("floor.im_func")
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A formula must not use im_func
+
+`evaluate_formula` compiles a formula with RestrictedPython, so every
+attribute a formula reads at all goes through `get_formula_attribute`, which
+refuses the same attributes, whatever way a formula gets to them:
+
+    >>> get_formula_attribute(math, "func_globals")
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A formula must not use func_globals
+
+    >>> get_formula_attribute(math, "pi") == math.pi
+    True
+
+The `format` method of a text reads attributes itself, without any check,
+so a formula must not use it:
+
+    >>> evaluate_formula("'{}'.format([a])", {"a": 1})
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A formula must not use format
+
+Lambdas, comprehensions and the functions of a module keep working:
+
+    >>> evaluate_formula("sum([v * 2 for v in [[a], [b]]])", {"a": 1, "b": 2})
+    6
+
+    >>> evaluate_formula("(lambda v: v + 1)([a])", {"a": 1})
+    2
+
+    >>> evaluate_formula("round(math.sqrt([a]), 2)", {"a": 2})
+    1.41
 
 A formula with placeholders, the older named placeholders, imports and the
 attributes of a module stays allowed:

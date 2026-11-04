@@ -34,6 +34,12 @@ import re
 
 from bika.lims import api
 from plone.registry.interfaces import IRegistry
+from RestrictedPython import compile_restricted_eval
+from RestrictedPython.Eval import default_guarded_getitem
+from RestrictedPython.Eval import default_guarded_getiter
+from RestrictedPython.Guards import guarded_iter_unpack_sequence
+from RestrictedPython.Guards import guarded_unpack_sequence
+from RestrictedPython.transformer import INSPECT_ATTRIBUTES
 from senaite.core.config.registry import CALCULATION_IMPORT_MODULES
 from senaite.core.config.registry import FORBIDDEN_CALCULATION_IMPORT_MODULES
 from senaite.core.registry.schema import ICalculationImportsRegistry
@@ -120,8 +126,7 @@ ERROR_LABELS = (
 # `__subclasses__`. Attributes starting with this are refused
 PRIVATE_PREFIX = "_"
 
-# Names starting with this are refused; the variables of the values start
-# with a single underscore
+# Names starting with this are refused
 DUNDER_PREFIX = "__"
 
 # The registry record of the modules a calculation may import from
@@ -130,6 +135,31 @@ IMPORT_MODULES_RECORD = "{}.calculation_import_modules".format(
 
 # Separates the parts of the dotted name of a module
 MODULE_SEPARATOR = "."
+
+# The variables a formula reads its values from: `formula_value0`, ...
+VALUE_PREFIX = "formula_value"
+
+# Attributes that lead from an object to the frames, code and globals of the
+# interpreter: the ones RestrictedPython refuses, and the internals of
+# functions and methods of Python 2, which it does not know
+UNSAFE_ATTRIBUTES = INSPECT_ATTRIBUTES | frozenset([
+    "f_lasti",
+    "f_lineno",
+    "func_closure",
+    "func_code",
+    "func_defaults",
+    "func_dict",
+    "func_globals",
+    "gi_running",
+    "im_class",
+    "im_func",
+    "im_self",
+    "mro",
+])
+
+# Attributes of a text that may not be used: `format` reads attributes
+# itself, without any check
+UNSAFE_TEXT_ATTRIBUTES = ("format", "format_map")
 
 # The values of a dependency a formula may refer to by a suffix
 DEPENDENCY_SUFFIXES = (
@@ -284,6 +314,48 @@ def get_globals(imports=None, **kwargs):
     return globs
 
 
+def is_unsafe_attribute(name):
+    """Whether a formula must not use the attribute
+
+    :param name: the name of an attribute
+    """
+    return name.startswith(PRIVATE_PREFIX) or name in UNSAFE_ATTRIBUTES
+
+
+def get_formula_attribute(obj, name, *default):
+    """The attribute of an object, as a formula may read it
+
+    The evaluation of a formula reads every attribute through this.
+
+    :param obj: the object
+    :param name: the name of the attribute
+    :param default: what to return when the object has no such attribute
+    :raises UnsafeFormula: when a formula must not use the attribute
+    """
+    if is_unsafe_attribute(name):
+        raise UnsafeFormula("A formula must not use {}".format(name))
+    if name in UNSAFE_TEXT_ATTRIBUTES and isinstance(obj, basestring):
+        raise UnsafeFormula("A formula must not use {}".format(name))
+    return getattr(obj, name, *default)
+
+
+def apply_function(function, *args, **kwargs):
+    """Call a function with the arguments a formula unpacked
+    """
+    return function(*args, **kwargs)
+
+
+# The guards RestrictedPython calls in the code of a formula
+FORMULA_GUARDS = {
+    "_apply_": apply_function,
+    "_getattr_": get_formula_attribute,
+    "_getitem_": default_guarded_getitem,
+    "_getiter_": default_guarded_getiter,
+    "_iter_unpack_sequence_": guarded_iter_unpack_sequence,
+    "_unpack_sequence_": guarded_unpack_sequence,
+}
+
+
 def get_unsafe_name(node):
     """The name a node of a formula must not use, or None
 
@@ -291,7 +363,7 @@ def get_unsafe_name(node):
     :returns: the attribute or name, or None when the node is fine
     """
     if isinstance(node, ast.Attribute):
-        if node.attr.startswith(PRIVATE_PREFIX):
+        if is_unsafe_attribute(node.attr):
             return node.attr
     elif isinstance(node, ast.Name):
         if node.id.startswith(DUNDER_PREFIX):
@@ -325,8 +397,8 @@ def check_formula(formula):
         dunder name
     """
     expression = minify_formula(formula)
-    expression = NAMED_PLACEHOLDER.sub("_value", expression)
-    expression = PLACEHOLDER.sub("_value", expression)
+    expression = NAMED_PLACEHOLDER.sub(VALUE_PREFIX, expression)
+    expression = PLACEHOLDER.sub(VALUE_PREFIX, expression)
     check_expression(expression)
 
 
@@ -351,7 +423,7 @@ def bind_values(formula, values):
         if key not in values:
             raise KeyError(key)
         if key not in names:
-            name = "_value{}".format(len(names))
+            name = "{}{}".format(VALUE_PREFIX, len(names))
             names[key] = name
             variables[name] = values[key]
         return names[key]
@@ -374,9 +446,14 @@ def evaluate_formula(formula, values, imports=None):
     """
     expression, variables = bind_values(minify_formula(formula), values)
     check_expression(expression)
-    namespace = get_globals(imports)
+    # compile the formula so that every attribute, item and iteration goes
+    # through a guard, which refuses what the check above cannot see
+    compiled = compile_restricted_eval(expression)
+    if compiled.errors:
+        raise UnsafeFormula("; ".join(compiled.errors))
+    namespace = get_globals(imports, **FORMULA_GUARDS)
     namespace.update(variables)
-    return eval(expression, namespace)
+    return eval(compiled.code, namespace)
 
 
 def get_interim_value(interim):
