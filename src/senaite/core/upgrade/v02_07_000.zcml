@@ -8,8 +8,8 @@
                    allows. Allow the mathematical ones and the ones the
                    calculations of the site already use, except modules that
                    reach the system, the interpreter or the database."
-      source="2764"
-      destination="2765"
+      source="2765"
+      destination="2766"
       handler=".v02_07_000.allow_calculation_imports"
       profile="senaite.core:default"/>
 
