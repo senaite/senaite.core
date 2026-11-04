@@ -23,6 +23,7 @@ from plone.namedfile.field import NamedBlobImage
 from plone.rfc822.interfaces import IPrimaryField
 from plone.supermodel import model
 from Products.CMFCore import permissions
+from senaite.core.catalog import ATTACHMENTS_CATALOG
 from senaite.core.content.base import Item
 from senaite.core.content.mixins import ClientAwareMixin
 from senaite.core.interfaces import ISimpleImage
@@ -67,7 +68,7 @@ class SimpleImage(Item, ClientAwareMixin):
     Owner/Client to the linked client contact.
     """
 
-    _catalogs = ["senaite_attachments_catalog"]
+    _catalogs = [ATTACHMENTS_CATALOG]
     security = ClassSecurityInfo()
 
     @property
