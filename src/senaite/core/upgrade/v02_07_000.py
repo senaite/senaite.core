@@ -124,6 +124,50 @@ EXCLUDE_FROM_NAV_BEHAVIOR = (
     "plone.app.dexterity.behaviors.exclfromnav.IExcludeFromNavigationDefault"
 )
 
+# Indexes the 2.7.0 upgrade adds to existing core catalogs. Before #3068 the
+# upgrade left them without the existing content
+NEW_CORE_INDEXES = (
+    (SAMPLE_CATALOG, "getAnalysesKeywords"),
+    (SAMPLE_CATALOG, "getSamplePointUID"),
+    (SAMPLE_CATALOG, "getSampleTypeUID"),
+    (SAMPLE_CATALOG, "labels"),
+    (ANALYSIS_CATALOG, "has_calculation"),
+)
+
+
+@upgradestep(product, version)
+def reindex_new_core_indexes(tool):
+    """Index the existing content in the indexes the upgrade added.
+
+    `setup_core_catalogs` reindexed a new index through a catalog without
+    acquisition context, so no catalog entry could be resolved and the
+    index stayed empty or held only part of the content.
+    """
+    for catalog_id, index in NEW_CORE_INDEXES:
+        reindex_empty_index(catalog_id, index)
+
+
+def reindex_empty_index(catalog_id, index):
+    """Reindex the index when it holds no object at all
+
+    An index does not hold the objects without a value, e.g. the samples
+    without a label, so it may hold fewer objects than its catalog although
+    it is complete. The upgrade left the new indexes empty, so an index
+    that holds any object was filled already.
+    """
+    catalog = api.get_tool(catalog_id)
+    if index not in catalog.indexes():
+        logger.info("No index '%s' in '%s' [SKIP]" % (index, catalog_id))
+        return
+    if catalog._catalog.getIndex(index).numObjects():
+        logger.info("Index '%s' in '%s' holds objects already [SKIP]"
+                    % (index, catalog_id))
+        return
+    logger.info("Reindexing '%s' in '%s' (%s objects) ..."
+                % (index, catalog_id, len(catalog)))
+    reindex_index(catalog, index)
+    logger.info("Reindexing '%s' in '%s' [DONE]" % (index, catalog_id))
+
 
 @upgradestep(product, version)
 def reindex_client_tree_allowed_roles_again(tool):
