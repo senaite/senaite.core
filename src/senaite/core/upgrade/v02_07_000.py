@@ -131,10 +131,22 @@ EXCLUDE_FROM_NAV_BEHAVIOR = (
 
 def get_calculation_import_modules(calculation):
     """The modules the Python imports of a calculation name
+
+    The registry record holds ASCII text, while the records of an import
+    hold unicode, so the names are converted. A name that is no ASCII text
+    cannot be the name of a module and is left out.
     """
-    imports = calculation.getPythonImports() or []
-    return [record["module"].strip() for record in imports
-            if (record.get("module") or "").strip()]
+    modules = []
+    for record in calculation.getPythonImports() or []:
+        module = (record.get("module") or "").strip()
+        if not module:
+            continue
+        try:
+            modules.append(str(module))
+        except UnicodeEncodeError:
+            logger.warn("Calculation {} imports from {!r}, which is no "
+                        "module".format(api.get_path(calculation), module))
+    return modules
 
 
 @upgradestep(product, version)
@@ -152,8 +164,10 @@ def allow_calculation_imports(tool):
     registry.registerInterface(ICalculationImportsRegistry)
     modules = set(registry[IMPORT_MODULES_RECORD] or [])
     catalog = api.get_tool(SETUP_CATALOG)
-    for brain in catalog(portal_type="Calculation"):
-        calculation = api.get_object(brain)
+    # whoever runs the upgrade, every calculation counts
+    query = {"portal_type": "Calculation"}
+    for brain in catalog.unrestrictedSearchResults(query):
+        calculation = brain._unrestrictedGetObject()
         for module in get_calculation_import_modules(calculation):
             if is_forbidden_module(module):
                 logger.warn(
