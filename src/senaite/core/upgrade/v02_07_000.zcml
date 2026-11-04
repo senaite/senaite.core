@@ -7,8 +7,8 @@
       description="The upgrade added indexes to the sample and analysis
                    catalogs without the existing content, so filters and
                    searches on them missed older samples and analyses."
-      source="2764"
-      destination="2765"
+      source="2765"
+      destination="2766"
       handler=".v02_07_000.reindex_new_core_indexes"
       profile="senaite.core:default"/>
 
