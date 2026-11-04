@@ -1302,13 +1302,15 @@ def migrate_suppliercontacts_to_dx(tool):
     # run required import steps
     import_typeinfo(tool, profile)
 
+    # whoever runs the upgrade, every supplier contact is migrated
     query = {"portal_type": "SupplierContact"}
-    brains = api.search(query, CONTACT_CATALOG)
+    catalog = api.get_tool(CONTACT_CATALOG)
+    brains = catalog.unrestrictedSearchResults(query)
     total = len(brains)
     logger.info("Found {} Supplier Contacts to migrate".format(total))
 
     for num, brain in enumerate(brains, start=1):
-        contact = api.get_object(brain)
+        contact = brain._unrestrictedGetObject()
 
         if num % 100 == 0:
             logger.info("Progress: {}/{} supplier contacts migrated".format(
