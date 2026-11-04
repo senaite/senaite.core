@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #3068 Fix new indexes of the core catalogs stay empty after an upgrade
+- #3065 Check whether a user may use a form before its adapter is called
 - #3074 Rename the attachments catalog to senaite_catalog_attachments
 - #3064 Fix client contacts do not find older content of their client
 - #3055 Gate the reading JSON API routes with a new Read JSON API permission
