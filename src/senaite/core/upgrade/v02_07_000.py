@@ -49,12 +49,15 @@ from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import ATTACHMENTS_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
+from senaite.core.catalog.attachments_catalog import AttachmentsCatalog
+from senaite.core.catalog.attachments_catalog import TYPES as ATTACHMENTS_TYPES
 from senaite.core.catalog.client_catalog import CATALOG_ID as CLIENT_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
@@ -119,6 +122,50 @@ PORTAL_FOLDER_ITEMS = {
 EXCLUDE_FROM_NAV_BEHAVIOR = (
     "plone.app.dexterity.behaviors.exclfromnav.IExcludeFromNavigationDefault"
 )
+
+# Indexes the 2.7.0 upgrade adds to existing core catalogs. Before #3068 the
+# upgrade left them without the existing content
+NEW_CORE_INDEXES = (
+    (SAMPLE_CATALOG, "getAnalysesKeywords"),
+    (SAMPLE_CATALOG, "getSamplePointUID"),
+    (SAMPLE_CATALOG, "getSampleTypeUID"),
+    (SAMPLE_CATALOG, "labels"),
+    (ANALYSIS_CATALOG, "has_calculation"),
+)
+
+
+@upgradestep(product, version)
+def reindex_new_core_indexes(tool):
+    """Index the existing content in the indexes the upgrade added.
+
+    `setup_core_catalogs` reindexed a new index through a catalog without
+    acquisition context, so no catalog entry could be resolved and the
+    index stayed empty or held only part of the content.
+    """
+    for catalog_id, index in NEW_CORE_INDEXES:
+        reindex_empty_index(catalog_id, index)
+
+
+def reindex_empty_index(catalog_id, index):
+    """Reindex the index when it holds no object at all
+
+    An index does not hold the objects without a value, e.g. the samples
+    without a label, so it may hold fewer objects than its catalog although
+    it is complete. The upgrade left the new indexes empty, so an index
+    that holds any object was filled already.
+    """
+    catalog = api.get_tool(catalog_id)
+    if index not in catalog.indexes():
+        logger.info("No index '%s' in '%s' [SKIP]" % (index, catalog_id))
+        return
+    if catalog._catalog.getIndex(index).numObjects():
+        logger.info("Index '%s' in '%s' holds objects already [SKIP]"
+                    % (index, catalog_id))
+        return
+    logger.info("Reindexing '%s' in '%s' (%s objects) ..."
+                % (index, catalog_id, len(catalog)))
+    reindex_index(catalog, index)
+    logger.info("Reindexing '%s' in '%s' [DONE]" % (index, catalog_id))
 
 
 @upgradestep(product, version)
@@ -1274,6 +1321,7 @@ def migrate_contact_to_dx(src, destination=None):
     logger.info("Migrated Contact from %s -> %s" % (src, target))
 
 
+@upgradestep(product, version)
 def migrate_multifiles_to_dx(tool):
     """Migrate Multifile objects from Archetypes to Dexterity
     """
@@ -1312,7 +1360,6 @@ def migrate_multifiles_to_dx(tool):
     logger.info("Migrating Multifiles to Dexterity [DONE]")
 
 
-@upgradestep(product, version)
 def migrate_multifile_to_dx(src, destination=None):
     """Migrate an AT multifile to DX in the destination folder
 
@@ -2796,11 +2843,14 @@ def reindex_dx_client_aware_allowed_roles(tool):
     role provider.
 
     All four call sites now import `IClientAwareMixin` from
-    `senaite.core.interfaces`; this follow-up step iterates
-    the client-tree catalogs again so every DX descendant
-    picks up the missing token.
+    `senaite.core.interfaces`.
+
+    The reindex itself is left to `reindex_client_tree_allowed_roles_again`
+    at the end of the upgrade: it visits every client-tree object, which
+    takes long on a large site, and only its last run matters.
     """
-    reindex_client_tree_allowed_roles()
+    logger.info("Reindex of the client tree runs at the end of the "
+                "upgrade [SKIP]")
 
 
 @upgradestep(product, version)
@@ -2810,8 +2860,10 @@ def switch_to_dynamic_client_roles(tool):
 
     Three idempotent passes:
 
-    1. Reindex `allowedRolesAndUsers` on every client-tree object so it
-       picks up the new stable `client:<client_uid>` token.
+    1. Reindexing `allowedRolesAndUsers` on every client-tree object, so
+       that it picks up the new stable `client:<client_uid>` token, is
+       left to `reindex_client_tree_allowed_roles_again` at the end of
+       the upgrade: only its last run matters.
     2. Backfill the `linked_client_uid` member property for every
        already-linked client contact, so the dynamic role provider can
        authorise those users without having to walk the catalog.
@@ -2823,7 +2875,6 @@ def switch_to_dynamic_client_roles(tool):
     follow-up cleanup upgrade step.
     """
     portal = tool.aq_inner.aq_parent
-    reindex_client_tree_allowed_roles()
     backfill_linked_client_uid()
     drop_auto_create_client_group_record(portal)
 
@@ -3314,3 +3365,68 @@ def fix_sampletemplate_records(tool):
             template.services = fixed_services
 
     logger.info("Fixing the records of sample templates [DONE]")
+
+
+@upgradestep(product, version)
+def rename_attachments_catalog(tool):
+    """Rename `senaite_attachments_catalog` to `senaite_catalog_attachments`.
+
+    Every other SENAITE catalog is named `senaite_catalog_<name>`; this one
+    was the only one that read `senaite_<name>_catalog`. The odd name was
+    not only cosmetic: `CLIENT_TREE_CATALOGS` spelled it the regular way,
+    so `api.get_tool` returned nothing for it and the client-tree reindex
+    silently skipped the attachments of every client.
+
+    The entries are carried over from the old catalog rather than rebuilt
+    by walking the site: the objects to index are exactly the ones the old
+    catalog holds, and a full walk would visit every object in the database
+    to find a handful of attachments.
+    """
+    portal = api.get_portal()
+    old_catalog_id = "senaite_attachments_catalog"
+    old_catalog = portal.get(old_catalog_id)
+
+    # create the new catalog with its indexes, columns and type mappings
+    setup_core_catalogs(portal, catalog_classes=(AttachmentsCatalog,))
+    catalog = api.get_tool(ATTACHMENTS_CATALOG)
+
+    if old_catalog is None:
+        if len(catalog):
+            # this step ran already and the entries are in the new catalog
+            logger.info("No '%s' to rename [SKIP]" % old_catalog_id)
+            return
+
+        # nothing to carry over, so the site walk is the only way to fill it
+        logger.info("No '%s' to rename, rebuilding '%s' instead"
+                    % (old_catalog_id, ATTACHMENTS_CATALOG))
+        catalog.clearFindAndRebuild()
+        return
+
+    logger.info("Moving the entries of '%s' to '%s' ..."
+                % (old_catalog_id, ATTACHMENTS_CATALOG))
+    total = 0
+    for brain in old_catalog.searchAll():
+        obj = api.get_object(brain, default=None)
+        if obj is None:
+            # a stale entry of the catalog being dropped
+            continue
+        catalog.catalog_object(obj)
+        obj._p_deactivate()
+        total += 1
+        if total % 500 == 0:
+            logger.info("  ... indexed %s objects" % total)
+            transaction.savepoint(optimistic=True)
+
+    # drop the old name from the type mappings before the catalog itself
+    archetype_tool = api.get_tool("archetype_tool")
+    for portal_type in ATTACHMENTS_TYPES:
+        mapped = archetype_tool.getCatalogsByType(portal_type)
+        mapped = [cat.getId() for cat in mapped]
+        if old_catalog_id not in mapped:
+            continue
+        mapped.remove(old_catalog_id)
+        archetype_tool.setCatalogsByType(portal_type, mapped)
+
+    portal.manage_delObjects([old_catalog_id])
+    logger.info("Moved %s objects to '%s' and removed '%s'"
+                % (total, ATTACHMENTS_CATALOG, old_catalog_id))

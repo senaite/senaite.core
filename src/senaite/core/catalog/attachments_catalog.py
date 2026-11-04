@@ -23,7 +23,7 @@ from senaite.core.catalog.base_catalog import COLUMNS as BASE_COLUMNS
 from senaite.core.catalog.base_catalog import INDEXES as BASE_INDEXES
 from senaite.core.catalog.base_catalog import BaseCatalog
 
-CATALOG_ID = "senaite_attachments_catalog"
+CATALOG_ID = "senaite_catalog_attachments"
 CATALOG_TITLE = "Senaite Attachments Catalog"
 
 INDEXES = BASE_INDEXES + [
