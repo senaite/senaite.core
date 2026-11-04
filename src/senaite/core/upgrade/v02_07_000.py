@@ -143,24 +143,27 @@ def reindex_new_core_indexes(tool):
     index stayed empty or held only part of the content.
     """
     for catalog_id, index in NEW_CORE_INDEXES:
-        reindex_incomplete_index(catalog_id, index)
+        reindex_empty_index(catalog_id, index)
 
 
-def reindex_incomplete_index(catalog_id, index):
-    """Reindex the index when it holds fewer objects than the catalog
+def reindex_empty_index(catalog_id, index):
+    """Reindex the index when it holds no object at all
+
+    An index does not hold the objects without a value, e.g. the samples
+    without a label, so it may hold fewer objects than its catalog although
+    it is complete. The upgrade left the new indexes empty, so an index
+    that holds any object was filled already.
     """
     catalog = api.get_tool(catalog_id)
     if index not in catalog.indexes():
         logger.info("No index '%s' in '%s' [SKIP]" % (index, catalog_id))
         return
-    indexed = catalog._catalog.getIndex(index).numObjects()
-    total = len(catalog)
-    if indexed >= total:
-        logger.info("Index '%s' in '%s' holds all %s objects [SKIP]"
-                    % (index, catalog_id, total))
+    if catalog._catalog.getIndex(index).numObjects():
+        logger.info("Index '%s' in '%s' holds objects already [SKIP]"
+                    % (index, catalog_id))
         return
-    logger.info("Reindexing '%s' in '%s' (%s of %s objects) ..."
-                % (index, catalog_id, indexed, total))
+    logger.info("Reindexing '%s' in '%s' (%s objects) ..."
+                % (index, catalog_id, len(catalog)))
     reindex_index(catalog, index)
     logger.info("Reindexing '%s' in '%s' [DONE]" % (index, catalog_id))
 
