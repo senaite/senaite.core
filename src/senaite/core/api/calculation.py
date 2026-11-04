@@ -322,6 +322,16 @@ def is_unsafe_attribute(name):
     return name.startswith(PRIVATE_PREFIX) or name in UNSAFE_ATTRIBUTES
 
 
+def is_text(obj):
+    """Whether the object is a text or a text type
+
+    :param obj: the object
+    """
+    if isinstance(obj, type):
+        return issubclass(obj, basestring)
+    return isinstance(obj, basestring)
+
+
 def get_formula_attribute(obj, name, *default):
     """The attribute of an object, as a formula may read it
 
@@ -334,7 +344,7 @@ def get_formula_attribute(obj, name, *default):
     """
     if is_unsafe_attribute(name):
         raise UnsafeFormula("A formula must not use {}".format(name))
-    if name in UNSAFE_TEXT_ATTRIBUTES and isinstance(obj, basestring):
+    if name in UNSAFE_TEXT_ATTRIBUTES and is_text(obj):
         raise UnsafeFormula("A formula must not use {}".format(name))
     return getattr(obj, name, *default)
 

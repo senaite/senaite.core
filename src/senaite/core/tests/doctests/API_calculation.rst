@@ -350,6 +350,13 @@ so a formula must not use it:
     ...
     UnsafeFormula: A formula must not use format
 
+Neither through the text type, which takes the text as its first argument:
+
+    >>> evaluate_formula('str.format("{0.__class__}", [a])', {"a": 1})
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A formula must not use format
+
 Lambdas, comprehensions and the functions of a module keep working:
 
     >>> evaluate_formula("sum([v * 2 for v in [[a], [b]]])", {"a": 1, "b": 2})
