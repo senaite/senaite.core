@@ -2843,11 +2843,14 @@ def reindex_dx_client_aware_allowed_roles(tool):
     role provider.
 
     All four call sites now import `IClientAwareMixin` from
-    `senaite.core.interfaces`; this follow-up step iterates
-    the client-tree catalogs again so every DX descendant
-    picks up the missing token.
+    `senaite.core.interfaces`.
+
+    The reindex itself is left to `reindex_client_tree_allowed_roles_again`
+    at the end of the upgrade: it visits every client-tree object, which
+    takes long on a large site, and only its last run matters.
     """
-    reindex_client_tree_allowed_roles()
+    logger.info("Reindex of the client tree runs at the end of the "
+                "upgrade [SKIP]")
 
 
 @upgradestep(product, version)
@@ -2857,8 +2860,10 @@ def switch_to_dynamic_client_roles(tool):
 
     Three idempotent passes:
 
-    1. Reindex `allowedRolesAndUsers` on every client-tree object so it
-       picks up the new stable `client:<client_uid>` token.
+    1. Reindexing `allowedRolesAndUsers` on every client-tree object, so
+       that it picks up the new stable `client:<client_uid>` token, is
+       left to `reindex_client_tree_allowed_roles_again` at the end of
+       the upgrade: only its last run matters.
     2. Backfill the `linked_client_uid` member property for every
        already-linked client contact, so the dynamic role provider can
        authorise those users without having to walk the catalog.
@@ -2870,7 +2875,6 @@ def switch_to_dynamic_client_roles(tool):
     follow-up cleanup upgrade step.
     """
     portal = tool.aq_inner.aq_parent
-    reindex_client_tree_allowed_roles()
     backfill_linked_client_uid()
     drop_auto_create_client_group_record(portal)
 
