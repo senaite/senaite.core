@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<metadata>
+  <version>2766</version>
+  <dependencies>
+    <dependency>profile-Products.ATContentTypes:base</dependency>
+    <dependency>profile-senaite.impress:default</dependency>
+    <dependency>profile-senaite.app.listing:default</dependency>
+    <dependency>profile-senaite.app.spotlight:default</dependency>
+  </dependencies>
+</metadata>
