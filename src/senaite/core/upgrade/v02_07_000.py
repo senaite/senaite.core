@@ -49,12 +49,15 @@ from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import ATTACHMENTS_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
+from senaite.core.catalog.attachments_catalog import AttachmentsCatalog
+from senaite.core.catalog.attachments_catalog import TYPES as ATTACHMENTS_TYPES
 from senaite.core.catalog.client_catalog import CATALOG_ID as CLIENT_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
@@ -3318,3 +3321,68 @@ def fix_sampletemplate_records(tool):
             template.services = fixed_services
 
     logger.info("Fixing the records of sample templates [DONE]")
+
+
+@upgradestep(product, version)
+def rename_attachments_catalog(tool):
+    """Rename `senaite_attachments_catalog` to `senaite_catalog_attachments`.
+
+    Every other SENAITE catalog is named `senaite_catalog_<name>`; this one
+    was the only one that read `senaite_<name>_catalog`. The odd name was
+    not only cosmetic: `CLIENT_TREE_CATALOGS` spelled it the regular way,
+    so `api.get_tool` returned nothing for it and the client-tree reindex
+    silently skipped the attachments of every client.
+
+    The entries are carried over from the old catalog rather than rebuilt
+    by walking the site: the objects to index are exactly the ones the old
+    catalog holds, and a full walk would visit every object in the database
+    to find a handful of attachments.
+    """
+    portal = api.get_portal()
+    old_catalog_id = "senaite_attachments_catalog"
+    old_catalog = portal.get(old_catalog_id)
+
+    # create the new catalog with its indexes, columns and type mappings
+    setup_core_catalogs(portal, catalog_classes=(AttachmentsCatalog,))
+    catalog = api.get_tool(ATTACHMENTS_CATALOG)
+
+    if old_catalog is None:
+        if len(catalog):
+            # this step ran already and the entries are in the new catalog
+            logger.info("No '%s' to rename [SKIP]" % old_catalog_id)
+            return
+
+        # nothing to carry over, so the site walk is the only way to fill it
+        logger.info("No '%s' to rename, rebuilding '%s' instead"
+                    % (old_catalog_id, ATTACHMENTS_CATALOG))
+        catalog.clearFindAndRebuild()
+        return
+
+    logger.info("Moving the entries of '%s' to '%s' ..."
+                % (old_catalog_id, ATTACHMENTS_CATALOG))
+    total = 0
+    for brain in old_catalog.searchAll():
+        obj = api.get_object(brain, default=None)
+        if obj is None:
+            # a stale entry of the catalog being dropped
+            continue
+        catalog.catalog_object(obj)
+        obj._p_deactivate()
+        total += 1
+        if total % 500 == 0:
+            logger.info("  ... indexed %s objects" % total)
+            transaction.savepoint(optimistic=True)
+
+    # drop the old name from the type mappings before the catalog itself
+    archetype_tool = api.get_tool("archetype_tool")
+    for portal_type in ATTACHMENTS_TYPES:
+        mapped = archetype_tool.getCatalogsByType(portal_type)
+        mapped = [cat.getId() for cat in mapped]
+        if old_catalog_id not in mapped:
+            continue
+        mapped.remove(old_catalog_id)
+        archetype_tool.setCatalogsByType(portal_type, mapped)
+
+    portal.manage_delObjects([old_catalog_id])
+    logger.info("Moved %s objects to '%s' and removed '%s'"
+                % (total, ATTACHMENTS_CATALOG, old_catalog_id))
