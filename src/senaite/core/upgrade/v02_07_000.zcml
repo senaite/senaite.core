@@ -7,8 +7,8 @@
       description="Convert the Archetypes SupplierContact content type to
                    Dexterity. The contacts stay inside their Supplier, that is
                    Dexterity already, so nothing is moved."
-      source="2764"
-      destination="2765"
+      source="2765"
+      destination="2766"
       handler=".v02_07_000.migrate_suppliercontacts_to_dx"
       profile="senaite.core:default"/>
 
