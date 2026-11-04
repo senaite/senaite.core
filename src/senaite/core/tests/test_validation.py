@@ -273,6 +273,18 @@ class Tests(DataTestCase):
                 ICalculationSchema,
                 None).validate(self.portal.REQUEST.form))
 
+        # A formula must not reach the internals of Python objects
+        self.portal.REQUEST.form["formula"] = (
+            "[TV] if ().__class__.__bases__ else [TF]")
+        self.assertEqual(
+            FormulaValidator(
+                calc1,
+                self.portal.REQUEST,
+                None,
+                ICalculationSchema,
+                None).validate(self.portal.REQUEST.form)[0].message,
+            "The formula is not allowed: A formula must not use __bases__")
+
 
 def test_suite():
     suite = unittest.TestSuite()

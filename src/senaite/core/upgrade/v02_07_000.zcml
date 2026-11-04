@@ -3,6 +3,16 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Index the existing content in new indexes"
+      description="The upgrade added indexes to the sample and analysis
+                   catalogs without the existing content, so filters and
+                   searches on them missed older samples and analyses."
+      source="2765"
+      destination="2766"
+      handler=".v02_07_000.reindex_new_core_indexes"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Add the client token to older client content"
       description="The earlier reindex of allowedRolesAndUsers searched the
                    catalogs with an empty query and reached no object, so
