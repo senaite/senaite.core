@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3073 Fix the upgrade step events fire for every migrated multifile
 - #3072 Reindex the client tree only once in the 2.7.0 upgrade
 - #3066 Pass values to a formula as data and refuse unsafe formulas
 - #3068 Fix new indexes of the core catalogs stay empty after an upgrade
