@@ -272,21 +272,39 @@ def is_text(obj):
     return isinstance(obj, basestring)
 
 
+def get_unsafe_field(text):
+    """The field of a format text that reads an attribute or an item, or None
+
+    :param text: the text to format, e.g. `"{:.0f} / {:.0f}"`
+    :returns: the field, e.g. `0.__class__` or `0[0]`, or None when the text
+        is fine or no valid format text
+    """
+    try:
+        parsed = list(Formatter().parse(text))
+    except ValueError:
+        # an invalid format text fails when the formula is evaluated
+        return None
+    for literal, field, spec, conversion in parsed:
+        if field and any(char in field for char in UNSAFE_FIELD_CHARACTERS):
+            return field
+        # the format spec may hold fields itself, e.g. `"{:{}}"`
+        unsafe = spec and get_unsafe_field(spec)
+        if unsafe:
+            return unsafe
+    return None
+
+
 def check_format_text(text):
     """Refuse a format text whose fields read attributes or items
 
     :param text: the text to format, e.g. `"{:.0f} / {:.0f}"`
     :raises UnsafeFormula: when a field reads an attribute or an item, e.g.
         `"{0.__class__}"` or `"{0[0]}"`
-    :raises ValueError: when the text is no valid format text
     """
-    for literal, field, spec, conversion in Formatter().parse(text):
-        if field and any(char in field for char in UNSAFE_FIELD_CHARACTERS):
-            raise UnsafeFormula(
-                "A formula must not use the field {}".format(field))
-        # the format spec may hold fields itself, e.g. `"{:{}}"`
-        if spec:
-            check_format_text(spec)
+    field = get_unsafe_field(text)
+    if field:
+        raise UnsafeFormula(
+            "A formula must not use the field {}".format(field))
 
 
 def format_text(text, *args, **kwargs):
@@ -353,14 +371,35 @@ def get_unsafe_name(node):
     return None
 
 
+def get_format_text(node):
+    """The literal text a node of a formula formats, or None
+
+    :param node: a node of the syntax tree of a formula
+    :returns: the text of `"...".format(...)` or `str.format("...", ...)`
+    """
+    if not isinstance(node, ast.Call):
+        return None
+    function = node.func
+    if not isinstance(function, ast.Attribute):
+        return None
+    if function.attr != FORMAT_ATTRIBUTE:
+        return None
+    if isinstance(function.value, ast.Str):
+        return function.value.s
+    # the text type takes the text as its first argument
+    if node.args and isinstance(node.args[0], ast.Str):
+        return node.args[0].s
+    return None
+
+
 def check_expression(expression):
     """Refuse an expression that reaches the internals of Python objects
 
     :param expression: a Python expression, e.g. a formula with its values
         bound to variables (see `bind_values`)
     :raises SyntaxError: when the expression is not valid Python
-    :raises UnsafeFormula: when the expression uses a private attribute or
-        a dunder name
+    :raises UnsafeFormula: when the expression uses a private attribute, a
+        dunder name or a field of a format text that reads an attribute
     """
     tree = ast.parse(expression, mode="eval")
     for node in ast.walk(tree):
@@ -368,6 +407,9 @@ def check_expression(expression):
         if name:
             raise UnsafeFormula(
                 "A formula must not use {}".format(name))
+        text = get_format_text(node)
+        if text is not None:
+            check_format_text(text)
 
 
 def check_formula(formula):

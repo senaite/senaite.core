@@ -305,6 +305,22 @@ the check refuses it as well:
     ...
     UnsafeFormula: A formula must not use the field 0[0]
 
+The check of a formula, as the calculation runs it when it is saved,
+refuses such a field already:
+
+    >>> from senaite.core.api.calculation import check_formula
+    >>> check_formula('"{0.real}".format([a])')
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A formula must not use the field 0.real
+
+    >>> check_formula('"{:.0f} / {:.0f}".format([a], [b])')
+
+An invalid format text is no unsafe one, it fails when the formula is
+evaluated:
+
+    >>> check_formula('"{".format([a])')
+
 Neither through the text type, which takes the text as its first argument,
 nor in a field of the format spec:
 
