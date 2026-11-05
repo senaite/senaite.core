@@ -255,3 +255,115 @@ Search with special characters:
 
     >>> capi.to_searchable_text_qs("H2O NOT 11")
     u'H2O* AND NOT* AND 11*'
+
+
+Loading the object of a catalog entry
+.....................................
+
+`get_loaded_object` returns the object of a catalog entry with its stored
+state loaded:
+
+    >>> brain = capi.get_catalog(SETUP_CATALOG).searchAll()[0]
+    >>> obj = capi.get_loaded_object(brain)
+    >>> obj == brain.getObject()
+    True
+
+The stored state of an object can be damaged, so that loading it fails. The
+catalog entry still returns the object, as an unloaded ghost, and the error
+only shows when the first attribute is read. `get_loaded_object` loads the
+state, logs the object and returns `None` instead:
+
+    >>> class StoredObject(object):
+    ...     def __init__(self, error=None):
+    ...         self.error = error
+    ...     def _p_activate(self):
+    ...         if self.error:
+    ...             raise self.error
+
+    >>> class Brain(object):
+    ...     def __init__(self, obj):
+    ...         self.obj = obj
+    ...     def getObject(self):
+    ...         if self.obj is None:
+    ...             raise KeyError("W-0001")
+    ...         return self.obj
+    ...     def getPath(self):
+    ...         return "/plone/clients/client-1/W-0001"
+
+    >>> damaged = AttributeError("'dict' object has no attribute 'append'")
+    >>> capi.get_loaded_object(Brain(StoredObject(damaged))) is None
+    True
+
+    >>> from ZODB.POSException import POSKeyError
+    >>> capi.get_loaded_object(Brain(StoredObject(POSKeyError("0x01")))) is None
+    True
+
+The objects that could not be loaded in the current request are listed,
+with the reason:
+
+    >>> capi.get_damaged_objects()
+    [('/plone/clients/client-1/W-0001', "AttributeError: 'dict' object has no attribute 'append'"), ('/plone/clients/client-1/W-0001', "POSKeyError: '0x01'")]
+
+An object that is gone, the catalog entry is stale, returns `None` as well,
+without a log entry:
+
+    >>> capi.get_loaded_object(Brain(None)) is None
+    True
+
+A conflict is no damage, the transaction has to be retried, so it is
+raised:
+
+    >>> from ZODB.POSException import ReadConflictError
+    >>> capi.get_loaded_object(Brain(StoredObject(ReadConflictError())))
+    Traceback (most recent call last):
+    ...
+    ReadConflictError: database read conflict error
+
+
+Damaged objects in an upgrade step
+..................................
+
+Every upgrade step of senaite.core lists the objects it skipped because they
+cannot be loaded, when it is done. The list starts empty with each step:
+
+    >>> import logging
+    >>> from senaite.core import logger
+    >>> from senaite.core.events import AfterUpgradeStepEvent
+    >>> from senaite.core.events import BeforeUpgradeStepEvent
+    >>> from zope.event import notify
+
+    >>> class Messages(logging.Handler):
+    ...     def __init__(self):
+    ...         logging.Handler.__init__(self)
+    ...         self.messages = []
+    ...     def emit(self, record):
+    ...         self.messages.append(record.getMessage())
+    >>> messages = Messages()
+    >>> logger.addHandler(messages)
+
+    >>> notify(BeforeUpgradeStepEvent(portal))
+    >>> capi.get_damaged_objects()
+    []
+
+    >>> capi.get_loaded_object(Brain(StoredObject(damaged))) is None
+    True
+
+    >>> del messages.messages[:]
+    >>> notify(AfterUpgradeStepEvent(portal))
+    >>> for message in messages.messages:
+    ...     print(message)
+    The upgrade step skipped 1 objects that cannot be loaded:
+      /plone/clients/client-1/W-0001 (AttributeError: 'dict' object has no attribute 'append')
+
+    >>> capi.get_damaged_objects()
+    []
+
+A step without damaged objects lists nothing:
+
+    >>> notify(BeforeUpgradeStepEvent(portal))
+    >>> del messages.messages[:]
+    >>> notify(AfterUpgradeStepEvent(portal))
+    >>> messages.messages
+    []
+
+    >>> logger.removeHandler(messages)
