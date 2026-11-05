@@ -7,9 +7,19 @@
       description="Convert the Archetypes SupplierContact content type to
                    Dexterity. The contacts stay inside their Supplier, that is
                    Dexterity already, so nothing is moved."
+      source="2766"
+      destination="2767"
+      handler=".v02_07_000.migrate_suppliercontacts_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Index the existing content in new indexes"
+      description="The upgrade added indexes to the sample and analysis
+                   catalogs without the existing content, so filters and
+                   searches on them missed older samples and analyses."
       source="2765"
       destination="2766"
-      handler=".v02_07_000.migrate_suppliercontacts_to_dx"
+      handler=".v02_07_000.reindex_new_core_indexes"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

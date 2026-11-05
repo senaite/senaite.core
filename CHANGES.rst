@@ -5,6 +5,12 @@ Changelog
 ------------------
 
 - #3031 Migrate SupplierContact to Dexterity
+- #3051 Draw section headings inside a fieldset
+- #3073 Fix the upgrade step events fire for every migrated multifile
+- #3072 Reindex the client tree only once in the 2.7.0 upgrade
+- #3066 Pass values to a formula as data and refuse unsafe formulas
+- #3068 Fix new indexes of the core catalogs stay empty after an upgrade
+- #3065 Check whether a user may use a form before its adapter is called
 - #3074 Rename the attachments catalog to senaite_catalog_attachments
 - #3064 Fix client contacts do not find older content of their client
 - #3055 Gate the reading JSON API routes with a new Read JSON API permission
