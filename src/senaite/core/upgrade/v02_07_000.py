@@ -85,6 +85,7 @@ from senaite.core.upgrade.utils import rebuild_index
 from senaite.core.upgrade.utils import remove_at_portal_types
 from senaite.core.upgrade.utils import repair_uid_catalog_path
 from senaite.core.upgrade.utils import temporary_allow_type
+from senaite.core.upgrade.utils import temporary_type_info
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.v02_06_000 import get_setup_folder
 from zope.annotation.interfaces import IAnnotations
@@ -2247,8 +2248,10 @@ def migrate_worksheets_to_dx(tool):
         if portal_type not in type_info.allowed_content_types:
             type_info.allowed_content_types = allowed_types + (portal_type,)
 
-        # Rename old AT worksheets folder
-        portal.manage_renameObject("worksheets", "worksheets-old")
+        # Rename old AT worksheets folder. Earlier steps may have removed
+        # the AT type already, without it the folder cannot be renamed
+        with temporary_type_info(portal_type, ws_container.meta_type):
+            portal.manage_renameObject("worksheets", "worksheets-old")
 
         # restore the allowed_types
         type_info.allowed_content_types = allowed_types
