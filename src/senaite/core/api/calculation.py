@@ -31,6 +31,8 @@ import ast
 import importlib
 import math
 import re
+from functools import partial
+from string import Formatter
 
 from bika.lims import api
 from RestrictedPython import compile_restricted_eval
@@ -145,9 +147,16 @@ UNSAFE_ATTRIBUTES = INSPECT_ATTRIBUTES | frozenset([
     "mro",
 ])
 
-# Attributes of a text that may not be used: `format` reads attributes
+# The attribute of a text that formats it. A formula may use it, but its
+# fields must not read attributes or items, see `format_text`
+FORMAT_ATTRIBUTE = "format"
+
+# Attributes of a text that may not be used: `format_map` reads attributes
 # itself, without any check
-UNSAFE_TEXT_ATTRIBUTES = ("format", "format_map")
+UNSAFE_TEXT_ATTRIBUTES = ("format_map",)
+
+# Characters of a field of a format text that read an attribute or an item
+UNSAFE_FIELD_CHARACTERS = (".", "[")
 
 # The values of a dependency a formula may refer to by a suffix
 DEPENDENCY_SUFFIXES = (
@@ -263,6 +272,33 @@ def is_text(obj):
     return isinstance(obj, basestring)
 
 
+def check_format_text(text):
+    """Refuse a format text whose fields read attributes or items
+
+    :param text: the text to format, e.g. `"{:.0f} / {:.0f}"`
+    :raises UnsafeFormula: when a field reads an attribute or an item, e.g.
+        `"{0.__class__}"` or `"{0[0]}"`
+    :raises ValueError: when the text is no valid format text
+    """
+    for literal, field, spec, conversion in Formatter().parse(text):
+        if field and any(char in field for char in UNSAFE_FIELD_CHARACTERS):
+            raise UnsafeFormula(
+                "A formula must not use the field {}".format(field))
+        # the format spec may hold fields itself, e.g. `"{:{}}"`
+        if spec:
+            check_format_text(spec)
+
+
+def format_text(text, *args, **kwargs):
+    """Format a text like its `format` method, as a formula may
+
+    :param text: the text to format
+    :raises UnsafeFormula: when a field reads an attribute or an item
+    """
+    check_format_text(text)
+    return text.format(*args, **kwargs)
+
+
 def get_formula_attribute(obj, name, *default):
     """The attribute of an object, as a formula may read it
 
@@ -277,6 +313,11 @@ def get_formula_attribute(obj, name, *default):
         raise UnsafeFormula("A formula must not use {}".format(name))
     if name in UNSAFE_TEXT_ATTRIBUTES and is_text(obj):
         raise UnsafeFormula("A formula must not use {}".format(name))
+    if name == FORMAT_ATTRIBUTE and is_text(obj):
+        # the text type takes the text as its first argument
+        if isinstance(obj, type):
+            return format_text
+        return partial(format_text, obj)
     return getattr(obj, name, *default)
 
 

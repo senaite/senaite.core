@@ -277,20 +277,46 @@ refuses the same attributes, whatever way a formula gets to them:
     >>> get_formula_attribute(math, "pi") == math.pi
     True
 
-The `format` method of a text reads attributes itself, without any check,
-so a formula must not use it:
+A formula may format a text, e.g. to put several results into one:
 
-    >>> evaluate_formula("'{}'.format([a])", {"a": 1})
+    >>> evaluate_formula('"{:.0f} / {:.0f}".format([a], [b])', {"a": 370.4, "b": 0})
+    '370 / 0'
+
+    >>> evaluate_formula('"{0} {x:.1f}".format([a], x=[b])', {"a": 1, "b": 2})
+    '1 2.0'
+
+    >>> evaluate_formula('str.format("{:.2f}", [a])', {"a": 1})
+    '1.00'
+
+But the fields of the text must not read attributes or items, because the
+`format` method reads them itself, without any check:
+
+    >>> evaluate_formula('"{0.__class__}".format([a])', {"a": 1})
     Traceback (most recent call last):
     ...
-    UnsafeFormula: A formula must not use format
+    UnsafeFormula: A formula must not use the field 0.__class__
 
-Neither through the text type, which takes the text as its first argument:
+A formula cannot write an item field, its brackets are a placeholder, but
+the check refuses it as well:
+
+    >>> from senaite.core.api.calculation import format_text
+    >>> format_text("{0[0]}", "text")
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A formula must not use the field 0[0]
+
+Neither through the text type, which takes the text as its first argument,
+nor in a field of the format spec:
 
     >>> evaluate_formula('str.format("{0.__class__}", [a])', {"a": 1})
     Traceback (most recent call last):
     ...
-    UnsafeFormula: A formula must not use format
+    UnsafeFormula: A formula must not use the field 0.__class__
+
+    >>> evaluate_formula('"{:{0.__class__}}".format([a])', {"a": 1})
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A formula must not use the field 0.__class__
 
 Lambdas, comprehensions and the functions of a module keep working:
 
