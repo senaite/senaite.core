@@ -25,3 +25,47 @@ WS_PRINT_TMPL_RECORD = "worksheet_print_templates_order"
 SKIP_ANALYSES_STATES_ON_COPY = ["rejected"]
 
 RR_SCINOTATION_RECORD = "scientific_notation_report"
+
+# Modules the Python imports of a calculation may name on a new site: the
+# mathematical ones. A site manager may allow more.
+CALCULATION_IMPORT_MODULES = [
+    "cmath",
+    "decimal",
+    "fractions",
+    "math",
+    "numpy",
+    "scipy.special",
+    "scipy.stats",
+]
+
+# Modules a calculation may never import from, nor from their submodules,
+# whatever a site allows: they reach the system, the interpreter or the
+# database
+FORBIDDEN_CALCULATION_IMPORT_MODULES = [
+    "__builtin__",
+    "builtins",
+    "commands",
+    "ctypes",
+    "imp",
+    "importlib",
+    "marshal",
+    "os",
+    "pickle",
+    "posix",
+    "pty",
+    "shutil",
+    "socket",
+    "subprocess",
+    "sys",
+    "AccessControl",
+    "App",
+    "OFS",
+    "Products",
+    "ZODB",
+    "Zope2",
+    "bika",
+    "plone",
+    "senaite",
+    "transaction",
+    "zope",
+]

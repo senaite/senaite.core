@@ -3,6 +3,17 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Allow the modules calculations import from"
+      description="Calculations may import only from the modules the site
+                   allows. Allow the mathematical ones and the ones the
+                   calculations of the site already use, except modules that
+                   reach the system, the interpreter or the database."
+      source="2766"
+      destination="2767"
+      handler=".v02_07_000.allow_calculation_imports"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Index the existing content in new indexes"
       description="The upgrade added indexes to the sample and analysis
                    catalogs without the existing content, so filters and

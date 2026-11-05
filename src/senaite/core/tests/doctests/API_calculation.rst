@@ -120,6 +120,71 @@ The names these helpers had before are still there:
     True
 
 
+What a calculation may import
+.............................
+
+The Python imports of a calculation may name only the modules the site
+allows. A new site allows the mathematical ones:
+
+    >>> sorted(get_allowed_modules())
+    ['cmath', 'decimal', 'fractions', 'math', 'numpy', 'scipy.special', 'scipy.stats']
+
+    >>> is_allowed_module("math")
+    True
+
+    >>> is_allowed_module("json")
+    False
+
+Some modules reach the system, the interpreter or the database. A calculation
+may never import from them, nor from their submodules:
+
+    >>> is_forbidden_module("os")
+    True
+
+    >>> is_forbidden_module("os.path")
+    True
+
+    >>> is_forbidden_module("osmosis")
+    False
+
+The import is checked before anything is imported, as importing a module runs
+its code:
+
+    >>> get_import({"module": "os", "function": "system"})
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A calculation must not import from os
+
+    >>> get_import({"module": "math", "function": "__doc__"})
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A calculation must not import __doc__
+
+    >>> calculate_formula("system('id')", {},
+    ...                   [{"module": "os", "function": "system"}])
+    'Unsafe formula: A calculation must not import from os'
+
+A site manager allows more modules in the registry of the site:
+
+    >>> from plone.registry.interfaces import IRegistry
+    >>> from zope.component import getUtility
+    >>> registry = getUtility(IRegistry)
+    >>> registry[IMPORT_MODULES_RECORD] = ["math", "json"]
+    >>> is_allowed_module("json")
+    True
+
+    >>> get_import({"module": "json", "function": "dumps"})
+    <function dumps at ...>
+
+A forbidden module stays forbidden, even when the site lists it:
+
+    >>> registry[IMPORT_MODULES_RECORD] = ["math", "os"]
+    >>> is_allowed_module("os")
+    False
+
+    >>> registry[IMPORT_MODULES_RECORD] = list(CALCULATION_IMPORT_MODULES)
+
+
 Binding values to a formula
 ...........................
 
