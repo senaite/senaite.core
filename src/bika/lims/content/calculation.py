@@ -46,6 +46,8 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core import logger
+from senaite.core.api.calculation import calculate_formula
+from senaite.core.api.calculation import minify_formula
 from senaite.core.browser.fields.records import RecordsField
 from senaite.core.browser.widgets.referencewidget import ReferenceWidget
 from senaite.core.catalog import SETUP_CATALOG
@@ -245,8 +247,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         """Return the current formula value as text.
         The result will have newlines and additional spaces stripped out.
         """
-        value = " ".join(self.getFormula().splitlines())
-        return value
+        return minify_formula(self.getFormula())
 
     def getCalculationDependencies(self, flat=False, deps=None):
         """ Recursively calculates all dependencies of this calculation.
@@ -351,32 +352,17 @@ class Calculation(BaseFolder, HistoryAwareMixin):
          TestResult field.
         """
         # Create mapping from TestParameters
-        mapping = {x['keyword']: x['value'] for x in self.getTestParameters()}
+        mapping = {x["keyword"]: x["value"] for x in self.getTestParameters()}
         # Gather up and parse formula
         formula = self.getMinifiedFormula()
-        test_result_field = self.Schema().getField('TestResult')
+        test_result_field = self.Schema().getField("TestResult")
 
         # Flush the TestResult field and return
         if not formula:
             return test_result_field.set(self, "")
 
-        formula = formula.replace('[', '{').replace(']', '}').replace('  ', '')
-        result = 'Failure'
-
-        try:
-            formula = formula.format(**mapping)
-            result = eval(formula, self._getGlobals())
-        except TypeError as e:
-            # non-numeric arguments in interim mapping?
-            result = "TypeError: {}".format(str(e.args[0]))
-        except ZeroDivisionError as e:
-            result = "Division by 0: {}".format(str(e.args[0]))
-        except KeyError as e:
-            result = "Key Error: {}".format(str(e.args[0]))
-        except ImportError as e:
-            result = "Import Error: {}".format(str(e.args[0]))
-        except Exception as e:
-            result = "Unspecified exception: {}".format(str(e.args[0]))
+        imports = self.getPythonImports()
+        result = calculate_formula(formula, mapping, imports)
         test_result_field.set(self, str(result))
 
     def _getGlobals(self, **kwargs):

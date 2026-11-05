@@ -92,6 +92,8 @@ setup(
         "et-xmlfile<2.0.0",
         # magnitude > 1.0.1 does ot support Python 2.x anymore
         "magnitude==1.0.1",
+        # INSPECT_ATTRIBUTES is available since RestrictedPython 5.3
+        "RestrictedPython>=5.3",
     ],
     extras_require={
         "test": [
