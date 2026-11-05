@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #3040 Send a SENAITE test e-mail from the mail settings
+- #3051 Draw section headings inside a fieldset
 - #3073 Fix the upgrade step events fire for every migrated multifile
 - #3072 Reindex the client tree only once in the 2.7.0 upgrade
 - #3066 Pass values to a formula as data and refuse unsafe formulas
