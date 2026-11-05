@@ -333,13 +333,20 @@ def get_loaded_object(brain):
     inside whatever reads it. Loading the state here logs the object and
     lets the caller skip it.
 
+    A catalog entry whose object is gone returns None without a log entry,
+    as stale entries are common and harmless here.
+
     :param brain: a catalog entry
     :returns: the object, or None when it is gone or cannot be loaded
     """
     try:
         obj = brain.getObject()
-        if obj is not None and getattr(obj, "_p_activate", None):
-            obj._p_activate()
+    except (AttributeError, KeyError):
+        return None
+    if obj is None or not getattr(obj, "_p_activate", None):
+        return obj
+    try:
+        obj._p_activate()
     except LOAD_ERRORS as error:
         logger.error("Cannot load the object of {}: {}: {}".format(
             brain.getPath(), type(error).__name__, error))

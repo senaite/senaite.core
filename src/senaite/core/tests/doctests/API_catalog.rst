@@ -284,6 +284,8 @@ state, logs the object and returns `None` instead:
     ...     def __init__(self, obj):
     ...         self.obj = obj
     ...     def getObject(self):
+    ...         if self.obj is None:
+    ...             raise KeyError("W-0001")
     ...         return self.obj
     ...     def getPath(self):
     ...         return "/plone/clients/client-1/W-0001"
@@ -296,7 +298,8 @@ state, logs the object and returns `None` instead:
     >>> capi.get_loaded_object(Brain(StoredObject(POSKeyError("0x01")))) is None
     True
 
-An object that is gone returns `None` as well:
+An object that is gone, the catalog entry is stale, returns `None` as well,
+without a log entry:
 
     >>> capi.get_loaded_object(Brain(None)) is None
     True
