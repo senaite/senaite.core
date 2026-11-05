@@ -47,6 +47,7 @@ from senaite.core.api import dtime
 from senaite.core.api.catalog import add_column
 from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
+from senaite.core.api.catalog import get_loaded_object
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
 from senaite.core.catalog import ATTACHMENTS_CATALOG
@@ -87,8 +88,6 @@ from senaite.core.upgrade.utils import repair_uid_catalog_path
 from senaite.core.upgrade.utils import temporary_allow_type
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.v02_06_000 import get_setup_folder
-from ZODB._compat import cPickle
-from ZODB.POSException import POSKeyError
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getMultiAdapter
 from zope.interface import alsoProvides
@@ -114,20 +113,6 @@ REMOVE_AT_TYPES = [
     "Worksheet",
     "WorksheetFolder",
 ]
-
-# What loading the stored state of a damaged object raises. ZODB unpickles
-# with the pickle module of its compat layer, so its error is taken there
-LOAD_ERRORS = (
-    AttributeError,
-    EOFError,
-    ImportError,
-    IndexError,
-    KeyError,
-    POSKeyError,
-    TypeError,
-    ValueError,
-    cPickle.UnpicklingError,
-)
 
 PORTAL_FOLDER_ITEMS = {
     # ID: ID, Title, FTI
@@ -2896,29 +2881,6 @@ def switch_to_dynamic_client_roles(tool):
 
 
 REINDEX_BATCH_SIZE = 100
-
-
-def get_loaded_object(brain):
-    """The object of a catalog entry with its stored state loaded, or None
-
-    A catalog entry can point to an object whose stored state is damaged and
-    cannot be loaded. `getObject` returns such an object as an unloaded
-    ghost, and the error only shows when its first attribute is read, deep
-    inside whatever reads it. Loading the state here reports the object and
-    lets the caller skip it.
-
-    :param brain: a catalog entry
-    :returns: the object, or None when it is gone or cannot be loaded
-    """
-    try:
-        obj = brain.getObject()
-        if obj is not None and getattr(obj, "_p_activate", None):
-            obj._p_activate()
-    except LOAD_ERRORS as error:
-        logger.error("Cannot load {}, skipped: {}: {}".format(
-            brain.getPath(), type(error).__name__, error))
-        return None
-    return obj
 
 
 def reindex_client_tree_allowed_roles():

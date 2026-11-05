@@ -31,6 +31,23 @@ from Products.CMFPlone.UnicodeSplitter import CaseNormalizer
 from Products.CMFPlone.UnicodeSplitter import Splitter
 from Products.ZCatalog.interfaces import IZCatalog
 from Products.ZCTextIndex.ZCTextIndex import PLexicon
+from senaite.core import logger
+from ZODB._compat import cPickle
+from ZODB.POSException import POSKeyError
+
+# What loading the stored state of a damaged object raises. ZODB unpickles
+# with the pickle module of its compat layer, so its error is taken there
+LOAD_ERRORS = (
+    AttributeError,
+    EOFError,
+    ImportError,
+    IndexError,
+    KeyError,
+    POSKeyError,
+    TypeError,
+    ValueError,
+    cPickle.UnpicklingError,
+)
 
 
 def get_catalog(name_or_obj):
@@ -305,3 +322,26 @@ def to_searchable_text_qs(qs, op="AND", wildcard=True):
 
     # return the final querystring
     return u" ".join(parts)
+
+
+def get_loaded_object(brain):
+    """The object of a catalog entry with its stored state loaded, or None
+
+    A catalog entry can point to an object whose stored state is damaged and
+    cannot be loaded. `getObject` returns such an object as an unloaded
+    ghost, and the error only shows when its first attribute is read, deep
+    inside whatever reads it. Loading the state here logs the object and
+    lets the caller skip it.
+
+    :param brain: a catalog entry
+    :returns: the object, or None when it is gone or cannot be loaded
+    """
+    try:
+        obj = brain.getObject()
+        if obj is not None and getattr(obj, "_p_activate", None):
+            obj._p_activate()
+    except LOAD_ERRORS as error:
+        logger.error("Cannot load the object of {}: {}: {}".format(
+            brain.getPath(), type(error).__name__, error))
+        return None
+    return obj

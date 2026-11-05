@@ -255,3 +255,57 @@ Search with special characters:
 
     >>> capi.to_searchable_text_qs("H2O NOT 11")
     u'H2O* AND NOT* AND 11*'
+
+
+Loading the object of a catalog entry
+.....................................
+
+`get_loaded_object` returns the object of a catalog entry with its stored
+state loaded:
+
+    >>> brain = capi.get_catalog(SETUP_CATALOG).searchAll()[0]
+    >>> obj = capi.get_loaded_object(brain)
+    >>> obj == brain.getObject()
+    True
+
+The stored state of an object can be damaged, so that loading it fails. The
+catalog entry still returns the object, as an unloaded ghost, and the error
+only shows when the first attribute is read. `get_loaded_object` loads the
+state, logs the object and returns `None` instead:
+
+    >>> class StoredObject(object):
+    ...     def __init__(self, error=None):
+    ...         self.error = error
+    ...     def _p_activate(self):
+    ...         if self.error:
+    ...             raise self.error
+
+    >>> class Brain(object):
+    ...     def __init__(self, obj):
+    ...         self.obj = obj
+    ...     def getObject(self):
+    ...         return self.obj
+    ...     def getPath(self):
+    ...         return "/plone/clients/client-1/W-0001"
+
+    >>> damaged = AttributeError("'dict' object has no attribute 'append'")
+    >>> capi.get_loaded_object(Brain(StoredObject(damaged))) is None
+    True
+
+    >>> from ZODB.POSException import POSKeyError
+    >>> capi.get_loaded_object(Brain(StoredObject(POSKeyError("0x01")))) is None
+    True
+
+An object that is gone returns `None` as well:
+
+    >>> capi.get_loaded_object(Brain(None)) is None
+    True
+
+A conflict is no damage, the transaction has to be retried, so it is
+raised:
+
+    >>> from ZODB.POSException import ReadConflictError
+    >>> capi.get_loaded_object(Brain(StoredObject(ReadConflictError())))
+    Traceback (most recent call last):
+    ...
+    ReadConflictError: database read conflict error
