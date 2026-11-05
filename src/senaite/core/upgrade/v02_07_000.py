@@ -594,7 +594,9 @@ def seed_detached_partition_backrefs(tool):
 
     seeded = 0
     for num, brain in enumerate(brains, start=1):
-        sample = api.get_object(brain)
+        sample = get_loaded_object(brain)
+        if sample is None:
+            continue
         field = sample.getField("DetachedFrom")
         if field is None:
             continue
@@ -705,7 +707,9 @@ def setup_dispatch_workflow(tool):
         if num and num % 100 == 0:
             logger.info("Processing dispatched samples {}/{}"
                         .format(num, total))
-        sample = api.get_object(brain)
+        sample = get_loaded_object(brain)
+        if sample is None:
+            continue
         # Mark the sample first so the analysis lock guard allows the lock
         if not IDispatched.providedBy(sample):
             alsoProvides(sample, IDispatched)
@@ -802,8 +806,8 @@ def mark_invalidated_samples(tool):
             logger.info("Flagging invalidated samples {0}/{1}"
                         .format(num, total))
 
-        sample = api.get_object(brain)
-        if IInvalidated.providedBy(sample):
+        sample = get_loaded_object(brain)
+        if sample is None or IInvalidated.providedBy(sample):
             continue
 
         alsoProvides(sample, IInvalidated)
@@ -2286,11 +2290,9 @@ def migrate_worksheets_to_dx(tool):
                 "Progress: {}/{} worksheets migrated".format(num, total))
             transaction.commit()
         brain_path = brain.getPath()
-        try:
-            worksheet = api.get_object(brain)
-        except (AttributeError, KeyError) as exc:
-            logger.warn(
-                "Cannot get Worksheet at %s: %s" % (brain_path, exc))
+        worksheet = get_loaded_object(brain)
+        if worksheet is None:
+            logger.warn("Cannot get Worksheet at %s" % brain_path)
             catalog.uncatalog_object(brain_path)
             problematic.append(brain_path)
             continue
@@ -2692,7 +2694,7 @@ def reindex_client_title(tool):
     for num, brain in enumerate(brains):
         if num and num % 1000 == 0:
             logger.info("Reindexed %s/%s samples ..." % (num, total))
-        obj = api.get_object(brain, default=None)
+        obj = get_loaded_object(brain)
         if obj is None:
             continue
         catalog.catalog_object(obj, api.get_path(obj),
@@ -2751,7 +2753,7 @@ def add_sample_analyses_keywords_metadata(tool):
     for num, brain in enumerate(brains):
         if num and num % 1000 == 0:
             logger.info("Refreshed %s/%s samples ..." % (num, total))
-        obj = api.get_object(brain, default=None)
+        obj = get_loaded_object(brain)
         if obj is None:
             continue
         # Refresh only the getAnalysesKeywords metadata column via the partial
@@ -3404,9 +3406,9 @@ def rename_attachments_catalog(tool):
                 % (old_catalog_id, ATTACHMENTS_CATALOG))
     total = 0
     for brain in old_catalog.searchAll():
-        obj = api.get_object(brain, default=None)
+        obj = get_loaded_object(brain)
         if obj is None:
-            # a stale entry of the catalog being dropped
+            # a stale entry of the catalog being dropped, or a damaged object
             continue
         catalog.catalog_object(obj)
         obj._p_deactivate()
