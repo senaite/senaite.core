@@ -25,6 +25,7 @@ from logging import getLogger
 
 import six
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone import PloneMessageFactory as _p
 from Products.CMFPlone.controlpanel.browser.mail import \
     MailControlPanelForm as BaseMailControlPanelForm
 from Products.CMFPlone.interfaces.controlpanel import IMailSchema
@@ -122,12 +123,12 @@ class MailControlPanelForm(BaseMailControlPanelForm):
         error = self.send_test_email()
         if error is None:
             IStatusMessage(self.request).addStatusMessage(
-                _(u"Success! Check your mailbox for the test message."),
+                _p(u"Success! Check your mailbox for the test message."),
                 type="info")
             return
         IStatusMessage(self.request).addStatusMessage(
-            _(u"Unable to send test e-mail ${error}.",
-              mapping={"error": six.text_type(error)}),
+            _p(u"Unable to send test e-mail ${error}.",
+               mapping={"error": six.text_type(error)}),
             type="error")
 
 
