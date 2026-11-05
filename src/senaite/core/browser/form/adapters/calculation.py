@@ -23,9 +23,9 @@ from collections import OrderedDict
 
 from bika.lims import api
 from bika.lims.api.analysisservice import get_by_keyword
+from senaite.core.api.calculation import calculate_formula
 from senaite.core.browser.form.adapters import EditFormAdapterBase
 from senaite.core.content.calculation import ICalculationSchema
-from senaite.core.content.calculation import calculate_formula
 from senaite.core.validators.formula import FormulaValidator
 
 FORMULA_RX = re.compile(r"\[[^\]]*\]")

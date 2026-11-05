@@ -140,6 +140,50 @@ SETUP_FIELDS_IN_DX = (
     "ShowLabNameInLogin",
 )
 
+# Indexes the 2.7.0 upgrade adds to existing core catalogs. Before #3068 the
+# upgrade left them without the existing content
+NEW_CORE_INDEXES = (
+    (SAMPLE_CATALOG, "getAnalysesKeywords"),
+    (SAMPLE_CATALOG, "getSamplePointUID"),
+    (SAMPLE_CATALOG, "getSampleTypeUID"),
+    (SAMPLE_CATALOG, "labels"),
+    (ANALYSIS_CATALOG, "has_calculation"),
+)
+
+
+@upgradestep(product, version)
+def reindex_new_core_indexes(tool):
+    """Index the existing content in the indexes the upgrade added.
+
+    `setup_core_catalogs` reindexed a new index through a catalog without
+    acquisition context, so no catalog entry could be resolved and the
+    index stayed empty or held only part of the content.
+    """
+    for catalog_id, index in NEW_CORE_INDEXES:
+        reindex_empty_index(catalog_id, index)
+
+
+def reindex_empty_index(catalog_id, index):
+    """Reindex the index when it holds no object at all
+
+    An index does not hold the objects without a value, e.g. the samples
+    without a label, so it may hold fewer objects than its catalog although
+    it is complete. The upgrade left the new indexes empty, so an index
+    that holds any object was filled already.
+    """
+    catalog = api.get_tool(catalog_id)
+    if index not in catalog.indexes():
+        logger.info("No index '%s' in '%s' [SKIP]" % (index, catalog_id))
+        return
+    if catalog._catalog.getIndex(index).numObjects():
+        logger.info("Index '%s' in '%s' holds objects already [SKIP]"
+                    % (index, catalog_id))
+        return
+    logger.info("Reindexing '%s' in '%s' (%s objects) ..."
+                % (index, catalog_id, len(catalog)))
+    reindex_index(catalog, index)
+    logger.info("Reindexing '%s' in '%s' [DONE]" % (index, catalog_id))
+
 
 @upgradestep(product, version)
 def reindex_client_tree_allowed_roles_again(tool):
@@ -1294,6 +1338,7 @@ def migrate_contact_to_dx(src, destination=None):
     logger.info("Migrated Contact from %s -> %s" % (src, target))
 
 
+@upgradestep(product, version)
 def migrate_multifiles_to_dx(tool):
     """Migrate Multifile objects from Archetypes to Dexterity
     """
@@ -1332,7 +1377,6 @@ def migrate_multifiles_to_dx(tool):
     logger.info("Migrating Multifiles to Dexterity [DONE]")
 
 
-@upgradestep(product, version)
 def migrate_multifile_to_dx(src, destination=None):
     """Migrate an AT multifile to DX in the destination folder
 
@@ -2823,11 +2867,14 @@ def reindex_dx_client_aware_allowed_roles(tool):
     role provider.
 
     All four call sites now import `IClientAwareMixin` from
-    `senaite.core.interfaces`; this follow-up step iterates
-    the client-tree catalogs again so every DX descendant
-    picks up the missing token.
+    `senaite.core.interfaces`.
+
+    The reindex itself is left to `reindex_client_tree_allowed_roles_again`
+    at the end of the upgrade: it visits every client-tree object, which
+    takes long on a large site, and only its last run matters.
     """
-    reindex_client_tree_allowed_roles()
+    logger.info("Reindex of the client tree runs at the end of the "
+                "upgrade [SKIP]")
 
 
 @upgradestep(product, version)
@@ -2837,8 +2884,10 @@ def switch_to_dynamic_client_roles(tool):
 
     Three idempotent passes:
 
-    1. Reindex `allowedRolesAndUsers` on every client-tree object so it
-       picks up the new stable `client:<client_uid>` token.
+    1. Reindexing `allowedRolesAndUsers` on every client-tree object, so
+       that it picks up the new stable `client:<client_uid>` token, is
+       left to `reindex_client_tree_allowed_roles_again` at the end of
+       the upgrade: only its last run matters.
     2. Backfill the `linked_client_uid` member property for every
        already-linked client contact, so the dynamic role provider can
        authorise those users without having to walk the catalog.
@@ -2850,7 +2899,6 @@ def switch_to_dynamic_client_roles(tool):
     follow-up cleanup upgrade step.
     """
     portal = tool.aq_inner.aq_parent
-    reindex_client_tree_allowed_roles()
     backfill_linked_client_uid()
     drop_auto_create_client_group_record(portal)
 
