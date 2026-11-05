@@ -34,6 +34,7 @@ from Products.ZCTextIndex.ZCTextIndex import PLexicon
 from senaite.core import logger
 from ZODB._compat import cPickle
 from ZODB.POSException import POSKeyError
+from zope.annotation.interfaces import IAnnotations
 
 # What loading the stored state of a damaged object raises. ZODB unpickles
 # with the pickle module of its compat layer, so its error is taken there
@@ -48,6 +49,9 @@ LOAD_ERRORS = (
     ValueError,
     cPickle.UnpicklingError,
 )
+
+# Request annotation key of the objects `get_loaded_object` could not load
+DAMAGED_OBJECTS_KEY = "senaite.core.api.catalog.damaged_objects"
 
 
 def get_catalog(name_or_obj):
@@ -348,7 +352,23 @@ def get_loaded_object(brain):
     try:
         obj._p_activate()
     except LOAD_ERRORS as error:
-        logger.error("Cannot load the object of {}: {}: {}".format(
-            brain.getPath(), type(error).__name__, error))
+        reason = "{}: {}".format(type(error).__name__, error)
+        logger.error("Cannot load the object of {}: {}".format(
+            brain.getPath(), reason))
+        get_damaged_objects().append((brain.getPath(), reason))
         return None
     return obj
+
+
+def get_damaged_objects():
+    """The objects `get_loaded_object` could not load in this request
+
+    An upgrade step lists them when it is done, see
+    `senaite.core.subscribers.upgrade`.
+
+    :returns: list of (path, reason) tuples, to be changed in place
+    """
+    request = get_request()
+    if request is None:
+        return []
+    return IAnnotations(request).setdefault(DAMAGED_OBJECTS_KEY, [])

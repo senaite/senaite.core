@@ -298,6 +298,12 @@ state, logs the object and returns `None` instead:
     >>> capi.get_loaded_object(Brain(StoredObject(POSKeyError("0x01")))) is None
     True
 
+The objects that could not be loaded in the current request are listed,
+with the reason:
+
+    >>> capi.get_damaged_objects()
+    [('/plone/clients/client-1/W-0001', "AttributeError: 'dict' object has no attribute 'append'"), ('/plone/clients/client-1/W-0001', "POSKeyError: '0x01'")]
+
 An object that is gone, the catalog entry is stale, returns `None` as well,
 without a log entry:
 
@@ -312,3 +318,52 @@ raised:
     Traceback (most recent call last):
     ...
     ReadConflictError: database read conflict error
+
+
+Damaged objects in an upgrade step
+..................................
+
+Every upgrade step of senaite.core lists the objects it skipped because they
+cannot be loaded, when it is done. The list starts empty with each step:
+
+    >>> import logging
+    >>> from senaite.core import logger
+    >>> from senaite.core.events import AfterUpgradeStepEvent
+    >>> from senaite.core.events import BeforeUpgradeStepEvent
+    >>> from zope.event import notify
+
+    >>> class Messages(logging.Handler):
+    ...     def __init__(self):
+    ...         logging.Handler.__init__(self)
+    ...         self.messages = []
+    ...     def emit(self, record):
+    ...         self.messages.append(record.getMessage())
+    >>> messages = Messages()
+    >>> logger.addHandler(messages)
+
+    >>> notify(BeforeUpgradeStepEvent(portal))
+    >>> capi.get_damaged_objects()
+    []
+
+    >>> capi.get_loaded_object(Brain(StoredObject(damaged))) is None
+    True
+
+    >>> del messages.messages[:]
+    >>> notify(AfterUpgradeStepEvent(portal))
+    >>> for message in messages.messages:
+    ...     print(message)
+    The upgrade step skipped 1 objects that cannot be loaded:
+      /plone/clients/client-1/W-0001 (AttributeError: 'dict' object has no attribute 'append')
+
+    >>> capi.get_damaged_objects()
+    []
+
+A step without damaged objects lists nothing:
+
+    >>> notify(BeforeUpgradeStepEvent(portal))
+    >>> del messages.messages[:]
+    >>> notify(AfterUpgradeStepEvent(portal))
+    >>> messages.messages
+    []
+
+    >>> logger.removeHandler(messages)
