@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims import logger
 from bika.lims.config import MAX_OPERATORS
 from bika.lims.config import MIN_OPERATORS
 from bika.lims.interfaces import IDynamicResultsRange
@@ -28,11 +29,34 @@ from zope.interface import implementer
 
 marker = object()
 
-# Range keys whose values are operators, with the operators they accept
+# Range keys whose values are operators
 OPERATORS = {
-    "min_operator": MIN_OPERATORS.keys(),
-    "max_operator": MAX_OPERATORS.keys(),
+    "min_operator": MIN_OPERATORS,
+    "max_operator": MAX_OPERATORS,
 }
+
+
+def to_operator(key, value):
+    """Returns the operator (e.g. `geq`) of the value of an operator range
+    key, written as the operator, its symbol (`>=`) or its HTML entity
+    (`&geq;`, `geq;`), with any surrounding whitespace
+
+    :param key: the range key, `min_operator` or `max_operator`
+    :param value: the value from the specifications file
+    :returns: the operator, or None if the value is not an operator
+    """
+    if not api.is_string(value):
+        return None
+    value = value.strip().lower()
+    if value.startswith("&"):
+        value = value[1:]
+    if value.endswith(";"):
+        value = value[:-1]
+    for operator, symbol in OPERATORS[key].items():
+        if value in (operator, symbol):
+            return operator
+    return None
+
 
 DEFAULT_RANGE_KEYS = [
     "min",
@@ -202,10 +226,14 @@ class DynamicResultsRange(object):
             # skip if the range key is not set in the Excel
             if value is marker:
                 continue
-            # set the operator, if valid
+            # set the operator, written as key, symbol or HTML entity
             if key in OPERATORS:
-                if value in OPERATORS[key]:
-                    rr[key] = value
+                operator = to_operator(key, value)
+                if operator:
+                    rr[key] = operator
+                elif api.is_string(value) and value.strip():
+                    logger.warn("Invalid {} '{}' for {} in {}, skipped".format(
+                        key, value, keyword, api.get_path(self.dynamicspec)))
                 continue
             # skip if the value is not floatable
             if not api.is_floatable(value):

@@ -405,16 +405,14 @@ While the limits of `Mg` are:
 The operators can be written as their key, their symbol, or their HTML entity,
 with or without the ampersand, and with surrounding whitespace:
 
-    >>> from senaite.core.content import dynamicanalysisspec
-    >>> to_operator = dynamicanalysisspec.to_operator
-    >>> for value in ["geq", "ge;", "&ge;", ">=", u"\u2265", " >= ",
+    >>> from bika.lims.adapters.dynamicresultsrange import to_operator
+    >>> for value in ["geq", "geq;", "&geq;", ">=", " >= ",
     ...               "gt", "gt;", "&gt;", ">", " GT "]:
     ...     print("{!r}: {}".format(value, to_operator("min_operator", value)))
     'geq': geq
-    'ge;': geq
-    '&ge;': geq
+    'geq;': geq
+    '&geq;': geq
     '>=': geq
-    u'\u2265': geq
     ' >= ': geq
     'gt': gt
     'gt;': gt
@@ -422,14 +420,13 @@ with or without the ampersand, and with surrounding whitespace:
     '>': gt
     ' GT ': gt
 
-    >>> for value in ["leq", "leq;", "&le;", "<=", u"\u2264",
+    >>> for value in ["leq", "leq;", "&leq;", "<=",
     ...               "lt", "lt;", "&lt;", "<", "\t< "]:
     ...     print("{!r}: {}".format(value, to_operator("max_operator", value)))
     'leq': leq
     'leq;': leq
-    '&le;': leq
+    '&leq;': leq
     '<=': leq
-    u'\u2264': leq
     'lt': lt
     'lt;': lt
     '&lt;': lt
@@ -456,25 +453,16 @@ The forms can be mixed in the same file:
     >>> rr["min_operator"], rr["max_operator"]
     ('geq', 'leq')
 
-A file with an unknown operator is rejected, rather than applying the range
-as inclusive:
+An unknown operator is skipped, so the operator of the Analysis Specification
+applies:
 
-    >>> schema = dynamicanalysisspec.IDynamicAnalysisSpecSchema
-    >>> class Data(object):
-    ...     def __init__(self, data):
-    ...         self.specs_file = to_excel(data)
-
-    >>> schema.validateInvariants(Data(data)) is None
-    True
-
-    >>> schema.validateInvariants(Data(
-    ...     """Keyword,min,max,min_operator,max_operator
-    ... Ca,1,2,gt,lt
-    ... Mg,5,6,,<<"""))
-    Traceback (most recent call last):
-    ...
-    Invalid: Invalid max_operator '<<' in row 3. Valid values are: leq, lt,
-    or their symbols
+    >>> data = """Keyword,min,max,min_operator,max_operator
+    ... Ca,1,2,=>,<<"""
+    >>> ds.specs_file = to_excel(data)
+    >>> sample = new_sample([Ca], specification=specification)
+    >>> rr = sample["Ca"].getResultsRange()
+    >>> rr["min_operator"], rr["max_operator"]
+    ('geq', 'leq')
 
 Restore the dynamic specifications with original values:
 

@@ -41,49 +41,6 @@ REQUIRED_COLUMNS = [
     "max",  # Upper Limit
 ]
 
-# Optional columns whose values are operators: each operator with the values
-# it is written as, either its key, its symbol or its HTML entity (`&ge;`)
-OPERATOR_COLUMNS = {
-    "min_operator": {
-        "geq": ["geq", "ge", ">=", u"\u2265"],
-        "gt": ["gt", ">"],
-    },
-    "max_operator": {
-        "leq": ["leq", "le", "<=", u"\u2264"],
-        "lt": ["lt", "<"],
-    },
-}
-
-
-def to_operator(column, value):
-    """Returns the operator key (e.g. `geq`) of the value of an operator
-    column, written as the key, the symbol (`>=`) or the HTML entity (`&ge;`,
-    `geq;`), with any surrounding whitespace
-
-    :param column: the operator column, `min_operator` or `max_operator`
-    :param value: the value of the cell
-    :returns: the operator key, or None if the value is not an operator
-    """
-    if not api.is_string(value):
-        return None
-    value = value.strip().lower()
-    if value.startswith("&"):
-        value = value[1:]
-    if value.endswith(";"):
-        value = value[:-1]
-    for key, values in OPERATOR_COLUMNS[column].items():
-        if value in values:
-            return key
-    return None
-
-
-def is_empty(value):
-    """Returns whether the value of a cell is empty or blank
-    """
-    if api.is_string(value):
-        return not value.strip()
-    return value is None
-
 
 class IDynamicAnalysisSpecSchema(model.Schema):
     """Dynamic Analysis Specification
@@ -135,18 +92,6 @@ class IDynamicAnalysisSpecSchema(model.Schema):
         for col in REQUIRED_COLUMNS:
             if col not in header:
                 raise Invalid(_("Column '{}' is missing".format(col)))
-        # Operators must be valid, or the range would be applied inclusive
-        rows = xls.worksheets[0].iter_rows(min_row=2, values_only=True)
-        for num, row in enumerate(rows, start=2):
-            for col, value in zip(header, row):
-                if col not in OPERATOR_COLUMNS or is_empty(value):
-                    continue
-                if not to_operator(col, value):
-                    operators = OPERATOR_COLUMNS[col]
-                    valid = ", ".join(sorted(operators.keys()))
-                    raise Invalid(_(
-                        u"Invalid {} '{}' in row {}. Valid values are: {}, "
-                        u"or their symbols".format(col, value, num, valid)))
 
 
 @implementer(IDynamicAnalysisSpec, IDynamicAnalysisSpecSchema)
@@ -213,10 +158,6 @@ class DynamicAnalysisSpec(Container):
                 continue
             values = map(get_cell_string_value, row)
             data = dict(zip(keys, values))
-            # operators are written as keys, symbols or HTML entities
-            for column in OPERATOR_COLUMNS:
-                if column in data:
-                    data[column] = to_operator(column, data[column])
             specs.append(data)
         return specs
 
