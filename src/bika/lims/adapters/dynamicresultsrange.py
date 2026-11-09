@@ -168,8 +168,10 @@ class DynamicResultsRange(object):
         def is_empty(value):
             return not value and value != 0
 
-        # specs with less empty values have priority
-        keys = set(a.keys() + b.keys())
+        # specs with less empty values to match have priority. The values of
+        # the range (limits, operators, comment) are not matched
+        range_keys = set(self.range_keys) | {"rangecomment"}
+        keys = set(a.keys() + b.keys()) - range_keys
         empties_a = len(filter(lambda key: is_empty(a.get(key)), keys))
         empties_b = len(filter(lambda key: is_empty(b.get(key)), keys))
         if empties_a != empties_b:
@@ -222,7 +224,7 @@ class DynamicResultsRange(object):
             # skip if the range key is not set in the Excel
             if value is marker:
                 continue
-            # set the operator, written as key, symbol or HTML entity
+            # set the operator, written as key or symbol
             if key in OPERATORS:
                 operator = to_operator(key, value)
                 if operator:

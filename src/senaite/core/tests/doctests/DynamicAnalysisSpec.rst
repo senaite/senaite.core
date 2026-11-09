@@ -454,6 +454,73 @@ applies:
     >>> rr["min_operator"], rr["max_operator"]
     ('geq', 'leq')
 
+A range with a strict maximum only, e.g. normal below 6, keeps the minimum
+of the Analysis Specification when empty, that is none for an analysis the
+Analysis Specification has no range for:
+
+    >>> rr3 = {"keyword": "Ca", "min": 10, "max": 20}
+    >>> spec_ca = api.create(bikasetup.bika_analysisspecs, "AnalysisSpec",
+    ...                      title="Lab Water Spec Ca", SampleType=sampletype,
+    ...                      ResultsRange=[rr3])
+    >>> spec_ca.setDynamicAnalysisSpec(ds)
+
+    >>> data = """Keyword,min,max,min_operator,max_operator
+    ... Mg,,6,,lt"""
+    >>> ds.specs_file = to_excel(data)
+    >>> sample = new_sample([Mg], specification=spec_ca)
+    >>> mg = sample["Mg"]
+    >>> rr = mg.getResultsRange()
+    >>> rr["min"], rr["max"], rr["min_operator"], rr["max_operator"]
+    ('', '6', 'geq', 'lt')
+
+    >>> for result in ["0", "5.9", "6"]:
+    ...     mg.setResult(result)
+    ...     print("{}: {}".format(result, is_out_of_range(mg)[0]))
+    0: False
+    5.9: False
+    6: True
+
+An empty operator keeps the operator of the Analysis Specification, while an
+operator overrides it:
+
+    >>> rr3 = {"keyword": "Ca", "min": 10, "max": 20,
+    ...        "min_operator": "gt", "max_operator": "lt"}
+    >>> spec_ca.setResultsRange([rr3])
+
+    >>> data = """Keyword,min,max,min_operator,max_operator
+    ... Ca,1,2,,leq"""
+    >>> ds.specs_file = to_excel(data)
+    >>> sample = new_sample([Ca], specification=spec_ca)
+    >>> rr = sample["Ca"].getResultsRange()
+    >>> rr["min"], rr["max"], rr["min_operator"], rr["max_operator"]
+    ('1', '2', 'gt', 'leq')
+
+The operators are values of the range, not values to match, so they do not
+give a range priority over a more specific one. A range for `Method B` without
+operators has priority over a range for any method with operators:
+
+    >>> data = """Keyword,Method,min,max,min_operator,max_operator
+    ... Ca,,1,2,gt,lt
+    ... Ca,Method B,3,4,,"""
+    >>> ds.specs_file = to_excel(data)
+    >>> sample = new_sample([Ca], specification=specification)
+    >>> ca = sample["Ca"]
+    >>> ca.setMethod(method_b)
+    >>> sample.setSpecification(None)
+    >>> sample.setSpecification(specification)
+    >>> rr = ca.getResultsRange()
+    >>> rr["min"], rr["max"], rr["min_operator"], rr["max_operator"]
+    ('3', '4', 'geq', 'leq')
+
+While the range for any method applies to other methods:
+
+    >>> ca.setMethod(method_a)
+    >>> sample.setSpecification(None)
+    >>> sample.setSpecification(specification)
+    >>> rr = ca.getResultsRange()
+    >>> rr["min"], rr["max"], rr["min_operator"], rr["max_operator"]
+    ('1', '2', 'gt', 'lt')
+
 Restore the dynamic specifications with original values:
 
     >>> ds.specs_file = original_data
