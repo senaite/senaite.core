@@ -19,12 +19,20 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.config import MAX_OPERATORS
+from bika.lims.config import MIN_OPERATORS
 from bika.lims.interfaces import IDynamicResultsRange
 from plone.memoize.instance import memoize
 from senaite.core.p3compat import cmp
 from zope.interface import implementer
 
 marker = object()
+
+# Range keys whose values are operators, with the operators they accept
+OPERATORS = {
+    "min_operator": MIN_OPERATORS.keys(),
+    "max_operator": MAX_OPERATORS.keys(),
+}
 
 DEFAULT_RANGE_KEYS = [
     "min",
@@ -33,7 +41,7 @@ DEFAULT_RANGE_KEYS = [
     "minpanic",
     "max",
     "warn_max",
-    "max",
+    "max_operator",
     "maxpanic",
     "error",
 ]
@@ -193,6 +201,11 @@ class DynamicResultsRange(object):
             value = spec.get(key, marker)
             # skip if the range key is not set in the Excel
             if value is marker:
+                continue
+            # set the operator, if valid
+            if key in OPERATORS:
+                if value in OPERATORS[key]:
+                    rr[key] = value
                 continue
             # skip if the value is not floatable
             if not api.is_floatable(value):

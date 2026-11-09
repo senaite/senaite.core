@@ -22,6 +22,8 @@ from collections import defaultdict
 
 from bika.lims import senaiteMessageFactory as _
 from bika.lims import api
+from bika.lims.config import MAX_OPERATORS
+from bika.lims.config import MIN_OPERATORS
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
 from senaite.core.interfaces import IDynamicAnalysisSpec
@@ -40,6 +42,12 @@ REQUIRED_COLUMNS = [
     "min",  # Lower Limit
     "max",  # Upper Limit
 ]
+
+# Optional columns whose values are operators, with the operators they accept
+OPERATOR_COLUMNS = {
+    "min_operator": MIN_OPERATORS.keys(),
+    "max_operator": MAX_OPERATORS.keys(),
+}
 
 
 class IDynamicAnalysisSpecSchema(model.Schema):
@@ -92,6 +100,17 @@ class IDynamicAnalysisSpecSchema(model.Schema):
         for col in REQUIRED_COLUMNS:
             if col not in header:
                 raise Invalid(_("Column '{}' is missing".format(col)))
+        # Operators must be valid, or the range would be applied inclusive
+        rows = xls.worksheets[0].iter_rows(min_row=2, values_only=True)
+        for num, row in enumerate(rows, start=2):
+            for col, value in zip(header, row):
+                if col not in OPERATOR_COLUMNS or value in (None, ""):
+                    continue
+                valid = OPERATOR_COLUMNS[col]
+                if value not in valid:
+                    raise Invalid(_(
+                        "Invalid {} '{}' in row {}. Valid values are: "
+                        "{}".format(col, value, num, ", ".join(valid))))
 
 
 @implementer(IDynamicAnalysisSpec, IDynamicAnalysisSpecSchema)

@@ -352,6 +352,76 @@ And we get same result regardless of the method, cause none of the ranges for
     >>> rr["rangecomment"]
     'Mg Priority'
 
+Strict limits
+.............
+
+The optional columns `min_operator` and `max_operator` set whether the limits
+are part of the range. Their values are those of an Analysis Specification:
+`geq` (>=) or `gt` (>) for the minimum, `leq` (<=) or `lt` (<) for the
+maximum. When empty, the operator of the Analysis Specification applies, that
+is inclusive by default:
+
+------- --- --- ------------ ------------
+Keyword min max min_operator max_operator
+------- --- --- ------------ ------------
+Ca      1   2   gt           lt
+Mg      5   6
+------- --- --- ------------ ------------
+
+    >>> data = """Keyword,min,max,min_operator,max_operator
+    ... Ca,1,2,gt,lt
+    ... Mg,5,6,,"""
+    >>> ds.specs_file = to_excel(data)
+
+    >>> sample = new_sample([Ca, Mg], specification=specification)
+    >>> ca, mg = sample["Ca"], sample["Mg"]
+
+The limits of `Ca` are not part of the range:
+
+    >>> rr = ca.getResultsRange()
+    >>> rr["min"], rr["max"], rr["min_operator"], rr["max_operator"]
+    ('1', '2', 'gt', 'lt')
+
+    >>> from bika.lims.api.analysis import is_out_of_range
+    >>> for result in ["1", "1.5", "2"]:
+    ...     ca.setResult(result)
+    ...     print("{}: {}".format(result, is_out_of_range(ca)[0]))
+    1: True
+    1.5: False
+    2: True
+
+While the limits of `Mg` are:
+
+    >>> rr = mg.getResultsRange()
+    >>> rr["min"], rr["max"], rr["min_operator"], rr["max_operator"]
+    ('5', '6', 'geq', 'leq')
+
+    >>> for result in ["5", "6"]:
+    ...     mg.setResult(result)
+    ...     print("{}: {}".format(result, is_out_of_range(mg)[0]))
+    5: False
+    6: False
+
+A file with an unknown operator is rejected, rather than applying the range
+as inclusive:
+
+    >>> from senaite.core.content import dynamicanalysisspec
+    >>> schema = dynamicanalysisspec.IDynamicAnalysisSpecSchema
+    >>> class Data(object):
+    ...     def __init__(self, data):
+    ...         self.specs_file = to_excel(data)
+
+    >>> schema.validateInvariants(Data(data)) is None
+    True
+
+    >>> schema.validateInvariants(Data(
+    ...     """Keyword,min,max,min_operator,max_operator
+    ... Ca,1,2,gt,lt
+    ... Mg,5,6,,<"""))
+    Traceback (most recent call last):
+    ...
+    Invalid: Invalid max_operator '<' in row 3. Valid values are: leq, lt
+
 Restore the dynamic specifications with original values:
 
     >>> ds.specs_file = original_data
