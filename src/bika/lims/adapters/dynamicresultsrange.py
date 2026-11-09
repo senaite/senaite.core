@@ -38,8 +38,8 @@ OPERATORS = {
 
 def to_operator(key, value):
     """Returns the operator (e.g. `geq`) of the value of an operator range
-    key, written as the operator, its symbol (`>=`) or its HTML entity
-    (`&geq;`, `geq;`), with any surrounding whitespace
+    key, written as the operator or its symbol (`>=`), with any surrounding
+    whitespace
 
     :param key: the range key, `min_operator` or `max_operator`
     :param value: the value from the specifications file
@@ -48,10 +48,6 @@ def to_operator(key, value):
     if not api.is_string(value):
         return None
     value = value.strip().lower()
-    if value.startswith("&"):
-        value = value[1:]
-    if value.endswith(";"):
-        value = value[:-1]
     for operator, symbol in OPERATORS[key].items():
         if value in (operator, symbol):
             return operator

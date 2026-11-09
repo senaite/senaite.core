@@ -358,8 +358,8 @@ Strict limits
 The optional columns `min_operator` and `max_operator` set whether the limits
 are part of the range. Their values are those of an Analysis Specification:
 `geq` (>=) or `gt` (>) for the minimum, `leq` (<=) or `lt` (<) for the
-maximum. They can also be written as symbols or HTML entities. When empty, the
-operator of the Analysis Specification applies, that is inclusive by default:
+maximum. They can also be written as symbols. When empty, the operator of the
+Analysis Specification applies, that is inclusive by default:
 
 ------- --- --- ------------ ------------
 Keyword min max min_operator max_operator
@@ -402,48 +402,38 @@ While the limits of `Mg` are:
     5: False
     6: False
 
-The operators can be written as their key, their symbol, or their HTML entity,
-with or without the ampersand, and with surrounding whitespace:
+The operators can be written as their key or their symbol, with surrounding
+whitespace:
 
     >>> from bika.lims.adapters.dynamicresultsrange import to_operator
-    >>> for value in ["geq", "geq;", "&geq;", ">=", " >= ",
-    ...               "gt", "gt;", "&gt;", ">", " GT "]:
+    >>> for value in ["geq", ">=", " >= ", "gt", ">", " GT "]:
     ...     print("{!r}: {}".format(value, to_operator("min_operator", value)))
     'geq': geq
-    'geq;': geq
-    '&geq;': geq
     '>=': geq
     ' >= ': geq
     'gt': gt
-    'gt;': gt
-    '&gt;': gt
     '>': gt
     ' GT ': gt
 
-    >>> for value in ["leq", "leq;", "&leq;", "<=",
-    ...               "lt", "lt;", "&lt;", "<", "\t< "]:
+    >>> for value in ["leq", "<=", "lt", "<", "\t< "]:
     ...     print("{!r}: {}".format(value, to_operator("max_operator", value)))
     'leq': leq
-    'leq;': leq
-    '&leq;': leq
     '<=': leq
     'lt': lt
-    'lt;': lt
-    '&lt;': lt
     '<': lt
     '\t< ': lt
 
 Anything else, or a maximum operator as minimum, is not an operator:
 
-    >>> values = ["", "  ", None, 1, "<", "=>"]
+    >>> values = ["", "  ", None, 1, "<", "=>", "&gt;", "gt;"]
     >>> [to_operator("min_operator", value) for value in values]
-    [None, None, None, None, None, None]
+    [None, None, None, None, None, None, None, None]
 
 The forms can be mixed in the same file:
 
     >>> data = """Keyword,min,max,min_operator,max_operator
-    ... Ca,1,2, &gt; ,<
-    ... Mg,5,6,>=,leq;"""
+    ... Ca,1,2, > ,lt
+    ... Mg,5,6,>=,<="""
     >>> ds.specs_file = to_excel(data)
     >>> sample = new_sample([Ca, Mg], specification=specification)
     >>> rr = sample["Ca"].getResultsRange()
