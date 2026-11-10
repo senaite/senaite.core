@@ -3,6 +3,16 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Index the existing content in new indexes"
+      description="The upgrade added indexes to the sample and analysis
+                   catalogs without the existing content, so filters and
+                   searches on them missed older samples and analyses."
+      source="2765"
+      destination="2766"
+      handler=".v02_07_000.reindex_new_core_indexes"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Add the client token to older client content"
       description="The earlier reindex of allowedRolesAndUsers searched the
                    catalogs with an empty query and reached no object, so
@@ -666,6 +676,18 @@
       source="2659"
       destination="2700"
       handler=".v02_07_000.upgrade"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Rename the attachments catalog"
+      description="Rename `senaite_attachments_catalog` to
+                   `senaite_catalog_attachments`, so it follows the naming
+                   of every other SENAITE catalog. The old name also made
+                   the client-tree reindex skip the catalog, because the
+                   list of catalogs to visit spelled it the regular way."
+      source="2764"
+      destination="2765"
+      handler=".v02_07_000.rename_attachments_catalog"
       profile="senaite.core:default"/>
 
 </configure>

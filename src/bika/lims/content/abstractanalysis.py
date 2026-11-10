@@ -21,7 +21,6 @@
 import cgi
 import copy
 import json
-import math
 from decimal import Decimal
 
 from AccessControl import ClassSecurityInfo
@@ -51,8 +50,12 @@ from Products.Archetypes.Field import StringField
 from Products.Archetypes.Schema import Schema
 from Products.CMFCore.permissions import View
 from senaite.core.api import dtime
+from senaite.core.api.calculation import FORMULA_ERRORS
+from senaite.core.api.calculation import evaluate_formula
+from senaite.core.api.calculation import get_dependency_values
+from senaite.core.api.calculation import get_interim_value
+from senaite.core.api.calculation import get_placeholders
 from senaite.core.browser.fields.datetime import DateTimeField
-from senaite.core.content.calculation import getGlobals
 from senaite.core.i18n import translate as t
 from senaite.core.i18n import get_dt_format
 from senaite.core.permissions import FieldEditAnalysisResult
@@ -727,62 +730,37 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not formula:
             return False
 
-        # Include the current context UID in the mapping, so it can be passed
-        # as a param in built-in functions, like 'get_result(%(context_uid)s)'
-        mapping = {"context_uid": '"{}"'.format(self.UID())}
+        # The current context UID can be passed as a param in built-in
+        # functions, like 'get_result(%(context_uid)s)'
+        values = {"context_uid": self.UID()}
 
         # Interim fields are frozen into the analysis at linking time by
         # setCalculation, so self.getInterimFields() already contains both
-        # the calculation defaults and any per-analysis overrides.
-        interims = self.getInterimFields()
-
-        # Add interims to mapping
-        for i in interims:
-
-            interim_keyword = i.get("keyword")
-            if not interim_keyword:
+        # the calculation defaults and any per-analysis overrides. Their
+        # values are bound to the formula as data (see evaluate_formula).
+        # A value that is no number fails the calculation only when the
+        # formula uses the interim field
+        used = get_placeholders(formula)
+        invalid = None
+        for interim in self.getInterimFields():
+            keyword = interim.get("keyword")
+            if not keyword:
                 continue
-
-            # skip unset values
-            interim_value = i.get("value", "")
-            if interim_value == "":
+            try:
+                value = get_interim_value(interim)
+            except ValueError as error:
+                if keyword in used:
+                    invalid = error
                 continue
+            if value is not None:
+                values[keyword] = value
 
-            # Convert to floatable if necessary
-            if api.is_floatable(interim_value):
-                interim_value = float(interim_value)
-            else:
-                # If the interim value is a string, since the formula is also a string,
-                # it is needed to wrap the string interim values in between inverted commas.
-                #
-                # E.g. formula = '"ok" if %(var)s == "example_value" else "not ok"'
-                #
-                # if interim_value = "example_value" after
-                # formula = eval("'%s'%%mapping" % formula, {'mapping': {'var': interim_value}})
-                # print(formula)
-                # > '"ok" if example_value == "example_value" else "not ok"' -> Error
-                #
-                # else if interim_value ='"example_value"' after
-                # formula = eval("'%s'%%mapping" % formula, {'mapping': {'var': interim_value}})
-                # print(formula)
-                # > '"ok" if "example_value" == "example_value" else "not ok"' -> Correct
-                interim_value = '"{}"'.format(interim_value)
-
-            # Convert 'Numeric' interim values using `float`. Convert the rest using `str`
-            converter = "s" if i.get("result_type") else "f"
-            formula = formula.replace(
-                "[" + interim_keyword + "]", "%(" + interim_keyword + ")" + converter
-            )
-
-            mapping[interim_keyword] = interim_value
-
-        # Add dependencies results to mapping
+        # Add dependencies results to the values
         dependencies = self.getDependencies()
         for dependency in dependencies:
             result = dependency.getResult()
             # check if the dependency is a string result
             str_result = dependency.getStringResult()
-            keyword = dependency.getKeyword()
 
             # Dependency without results found
             if not result and cascade:
@@ -792,36 +770,13 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
             if result:
                 try:
-                    # we need to quote a string result because of the `eval` below
-                    result = '"%s"' % result if str_result else float(str(result))
-                    key = dependency.getKeyword()
-                    ldl = dependency.getLowerDetectionLimit()
-                    udl = dependency.getUpperDetectionLimit()
-                    lloq = dependency.getLowerLimitOfQuantification()
-                    uloq = dependency.getUpperLimitOfQuantification()
-                    bdl = dependency.isBelowLowerDetectionLimit()
-                    adl = dependency.isAboveUpperDetectionLimit()
-                    bloq = dependency.isBelowLimitOfQuantification()
-                    aloq = dependency.isAboveLimitOfQuantification()
-                    mapping[key] = result
-                    mapping['%s.%s' % (key, 'RESULT')] = result
-                    mapping['%s.%s' % (key, 'LDL')] = api.to_float(ldl, 0.0)
-                    mapping['%s.%s' % (key, 'UDL')] = api.to_float(udl, 0.0)
-                    mapping['%s.%s' % (key, 'LOQ')] = api.to_float(lloq, 0.0)
-                    mapping['%s.%s' % (key, 'LLOQ')] = api.to_float(lloq, 0.0)
-                    mapping['%s.%s' % (key, 'ULOQ')] = api.to_float(uloq, 0.0)
-                    mapping['%s.%s' % (key, 'BELOWLDL')] = int(bdl)
-                    mapping['%s.%s' % (key, 'ABOVEUDL')] = int(adl)
-                    mapping['%s.%s' % (key, 'BELOWLOQ')] = int(bloq)
-                    mapping['%s.%s' % (key, 'BELOWLLOQ')] = int(bloq)
-                    mapping['%s.%s' % (key, 'ABOVEULOQ')] = int(aloq)
+                    if str_result:
+                        result = api.safe_unicode(result)
+                    else:
+                        result = float(str(result))
+                    values.update(get_dependency_values(dependency, result))
                 except (TypeError, ValueError):
                     return False
-
-                # replace placeholder -> formatting string
-                # https://docs.python.org/2.7/library/stdtypes.html?highlight=built#string-formatting-operations
-                converter = "s" if str_result else "f"
-                formula = formula.replace("[" + keyword + "]", "%(" + keyword + ")" + converter)
             else:
                 # flush eventual previously set result
                 if self.getResult():
@@ -830,24 +785,18 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
                 return False
 
-        # convert any remaining placeholders, e.g. from interims etc.
-        # NOTE: we assume remaining values are all floatable!
-        formula = formula.replace("[", "%(").replace("]", ")f")
-
         # Calculate
         try:
-            formula = eval("'%s'%%mapping" % formula,
-                           {"__builtins__": None,
-                            'math': math,
-                            'context': self},
-                           {'mapping': mapping})
-            result = eval(formula, getGlobals(self.getCalculationImports()))
+            if invalid:
+                raise invalid
+            result = evaluate_formula(
+                formula, values, self.getCalculationImports())
         except ZeroDivisionError:
-            self.setResult('0/0')
+            self.setResult("0/0")
             return True
-        except (KeyError, TypeError, ImportError) as e:
-            msg = "Cannot eval formula ({}): {}".format(e.message, formula)
-            logger.error(msg)
+        except FORMULA_ERRORS as error:
+            logger.error("Cannot eval formula ({}): {}".format(
+                error, formula))
             self.setResult("NA")
             return True
 
