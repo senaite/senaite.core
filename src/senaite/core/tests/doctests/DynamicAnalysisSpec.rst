@@ -454,6 +454,36 @@ applies:
     >>> rr["min_operator"], rr["max_operator"]
     ('geq', 'leq')
 
+The autocorrect of Excel turns `>=` and `<=` into `≥` and `≤`. These are
+accepted too, while any other character is skipped like an unknown operator:
+
+    >>> print(to_operator("min_operator", u"\u2265"))
+    geq
+    >>> print(to_operator("max_operator", u" \u2264 "))
+    leq
+    >>> print(to_operator("min_operator", u"\u2264"))
+    None
+
+    >>> def rows_to_excel(rows):
+    ...     workbook = Workbook()
+    ...     first_sheet = workbook.get_active_sheet()
+    ...     for row in rows:
+    ...         first_sheet.append(row)
+    ...     return NamedBlobFile(save_virtual_workbook(workbook))
+
+    >>> ds.specs_file = rows_to_excel([
+    ...     [u"Keyword", u"min", u"max", u"min_operator", u"max_operator"],
+    ...     [u"Ca", u"1", u"2", u"\u2265", u"\u2264"],
+    ...     [u"Mg", u"5", u"6", u"\u2260", u"\u226a"],
+    ... ])
+    >>> sample = new_sample([Ca, Mg], specification=specification)
+    >>> rr = sample["Ca"].getResultsRange()
+    >>> rr["min_operator"], rr["max_operator"]
+    ('geq', 'leq')
+    >>> rr = sample["Mg"].getResultsRange()
+    >>> rr["min_operator"], rr["max_operator"]
+    ('geq', 'leq')
+
 A range with a strict maximum only, e.g. normal below 6, keeps the minimum
 of the Analysis Specification when empty, that is none for an analysis the
 Analysis Specification has no range for:

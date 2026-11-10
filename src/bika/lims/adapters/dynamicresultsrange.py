@@ -35,24 +35,11 @@ OPERATORS = {
     "max_operator": MAX_OPERATORS,
 }
 
-
-def to_operator(key, value):
-    """Returns the operator (e.g. `geq`) of the value of an operator range
-    key, written as the operator or its symbol (`>=`), with any surrounding
-    whitespace
-
-    :param key: the range key, `min_operator` or `max_operator`
-    :param value: the value from the specifications file
-    :returns: the operator, or None if the value is not an operator
-    """
-    if not api.is_string(value):
-        return None
-    value = value.strip().lower()
-    for operator, symbol in OPERATORS[key].items():
-        if value in (operator, symbol):
-            return operator
-    return None
-
+# Symbols the autocorrect of Excel writes for the operators
+OPERATOR_ALIASES = {
+    u"\u2265": "geq",  # ≥
+    u"\u2264": "leq",  # ≤
+}
 
 DEFAULT_RANGE_KEYS = [
     "min",
@@ -65,6 +52,25 @@ DEFAULT_RANGE_KEYS = [
     "maxpanic",
     "error",
 ]
+
+
+def to_operator(key, value):
+    """Returns the operator (e.g. `geq`) of the value of an operator range
+    key, written as the operator, its symbol (`>=`) or the symbol the
+    autocorrect of Excel writes for it (`≥`), with any surrounding whitespace
+
+    :param key: the range key, `min_operator` or `max_operator`
+    :param value: the value from the specifications file
+    :returns: the operator, or None if the value is not an operator
+    """
+    if not api.is_string(value):
+        return None
+    value = value.strip().lower()
+    value = OPERATOR_ALIASES.get(value, value)
+    for operator, symbol in OPERATORS[key].items():
+        if value in (operator, symbol):
+            return operator
+    return None
 
 
 @implementer(IDynamicResultsRange)
@@ -168,7 +174,7 @@ class DynamicResultsRange(object):
         def is_empty(value):
             return not value and value != 0
 
-        # specs with less empty values to match have priority. The values of
+        # specs with fewer empty values to match have priority. The values of
         # the range (limits, operators, comment) are not matched
         range_keys = set(self.range_keys) | {"rangecomment"}
         keys = set(a.keys() + b.keys()) - range_keys
@@ -230,7 +236,7 @@ class DynamicResultsRange(object):
                 if operator:
                     rr[key] = operator
                 elif api.is_string(value) and value.strip():
-                    logger.warn("Invalid {} '{}' for {} in {}, skipped".format(
+                    logger.warn(u"Invalid {} '{}' for {} in {}, skipped".format(
                         key, value, keyword, api.get_path(self.dynamicspec)))
                 continue
             # skip if the value is not floatable
