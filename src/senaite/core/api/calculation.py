@@ -42,6 +42,7 @@ from RestrictedPython.Guards import guarded_unpack_sequence
 from RestrictedPython.transformer import INSPECT_ATTRIBUTES
 from senaite.core.config.registry import CALCULATION_IMPORT_MODULES
 from senaite.core.config.registry import FORBIDDEN_CALCULATION_IMPORT_MODULES
+from senaite.core.interfaces import ICalculationModule
 from senaite.core.registry.schema import ICalculationImportsRegistry
 from zope.component import queryUtility
 
@@ -241,12 +242,24 @@ def get_allowed_modules():
     return [module.strip() for module in modules if module.strip()]
 
 
+def is_registered_module(module):
+    """Whether an add-on provides the module for calculations
+
+    :param module: the dotted name of a module, e.g. `senaite.patient.calc`
+    :returns: True when the module is registered as `ICalculationModule`
+    """
+    return queryUtility(ICalculationModule, name=module) is not None
+
+
 def is_forbidden_module(module):
     """Whether a calculation may never import from the module
 
     :param module: the dotted name of a module, e.g. `os.path`
-    :returns: True for a forbidden module or a submodule of one
+    :returns: True for a forbidden module or a submodule of one, unless an
+        add-on provides the module for calculations
     """
+    if is_registered_module(module):
+        return False
     for forbidden in FORBIDDEN_CALCULATION_IMPORT_MODULES:
         if module == forbidden or module.startswith(
                 forbidden + MODULE_SEPARATOR):

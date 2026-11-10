@@ -182,6 +182,47 @@ A forbidden module stays forbidden, even when the site lists it:
     >>> is_allowed_module("os")
     False
 
+An add-on provides a module for calculations by registering it as
+`ICalculationModule`, with its dotted name. The module is not forbidden then,
+although its package is:
+
+    >>> from senaite.core.api import dtime
+    >>> from senaite.core.interfaces import ICalculationModule
+    >>> from zope.component import getGlobalSiteManager
+    >>> gsm = getGlobalSiteManager()
+    >>> gsm.registerUtility(dtime, ICalculationModule,
+    ...                     name="senaite.core.api.dtime")
+
+    >>> is_forbidden_module("senaite.core.api.dtime")
+    False
+
+Only the module registered, not its package nor its submodules:
+
+    >>> is_forbidden_module("senaite.core.api")
+    True
+
+    >>> is_forbidden_module("senaite.core.api.dtime.other")
+    True
+
+As any other module, a calculation imports from it only when the site allows
+it:
+
+    >>> is_allowed_module("senaite.core.api.dtime")
+    False
+
+    >>> registry[IMPORT_MODULES_RECORD] = ["math", "senaite.core.api.dtime"]
+    >>> is_allowed_module("senaite.core.api.dtime")
+    True
+
+    >>> get_import({"module": "senaite.core.api.dtime", "function": "to_dt"})
+    <function to_dt at ...>
+
+    >>> gsm.unregisterUtility(dtime, ICalculationModule,
+    ...                       name="senaite.core.api.dtime")
+    True
+    >>> is_allowed_module("senaite.core.api.dtime")
+    False
+
     >>> registry[IMPORT_MODULES_RECORD] = list(CALCULATION_IMPORT_MODULES)
 
 
