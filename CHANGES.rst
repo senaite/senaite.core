@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3081 Fix the partitions of a sample are not listed in order
 - #3080 Honour min/max operators in Dynamic Analysis Specifications
 - #3051 Draw section headings inside a fieldset
 - #3073 Fix the upgrade step events fire for every migrated multifile
