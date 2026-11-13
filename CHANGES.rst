@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3083 Log a transition that is not allowed once, as a warning
 - #3082 Fix the analysis columns order is not migrated to the setup
 - #3081 Fix the partitions of a sample are not listed in order
 - #3078 Skip the members loop of the local roles when no dynamic roles apply
