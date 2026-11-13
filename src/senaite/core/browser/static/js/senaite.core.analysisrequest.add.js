@@ -1991,7 +1991,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
   }
 
   on_paste_click(event) {
-    var active_tab, buttons, context, dialog, el, fieldLabel, fieldName, idx, me;
+    var active_tab, buttons, context, dialog, el, fieldLabel, fieldName, idx, line_numbers, me;
     console.debug("°°° on_paste_click °°°");
     event.preventDefault();
     el = event.currentTarget;
@@ -2015,6 +2015,12 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
       }
     };
     dialog = this.template_dialog("paste-template", context, buttons);
+    // scroll the line numbers along with the values, so that the number of
+    // each sample stays next to its value
+    line_numbers = dialog.find(".line-numbers");
+    dialog.find(".paste-editor").on("scroll", function() {
+      return line_numbers.scrollTop(this.scrollTop);
+    });
     active_tab = $("ul#sample-tabs a.nav-link.active");
     if (active_tab) {
       idx = active_tab.data("primary-sample-index");
