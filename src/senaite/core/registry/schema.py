@@ -21,9 +21,11 @@
 from bika.lims import senaiteMessageFactory as _
 from plone.autoform import directives
 from plone.supermodel import model
+from senaite.core.config.registry import CALCULATION_IMPORT_MODULES
 from senaite.core.config.registry import SKIP_ANALYSES_STATES_ON_COPY
 from z3c.form.browser.checkbox import CheckBoxFieldWidget
 from zope import schema
+from zope.interface import Interface
 
 
 class ISenaiteRegistry(model.Schema):
@@ -458,5 +460,32 @@ class IImportRegistry(ISenaiteRegistry):
             default=u"Automatically submit analyses upon import"
         ),
         default=True,
+        required=False,
+    )
+
+
+class ICalculationImportsRegistry(Interface):
+    """The modules the Python imports of a calculation may name
+
+    Not a SENAITE registry: the SENAITE control panel is open to lab
+    clerks, while a module a calculation imports from runs with the rights
+    of the server. Only a site manager may allow one, in the registry of
+    the site.
+    """
+
+    calculation_import_modules = schema.List(
+        title=_(
+            u"label_registry_calculation_import_modules",
+            default=u"Modules calculations may import from"
+        ),
+        description=_(
+            u"description_registry_calculation_import_modules",
+            default=u"Dotted names of the modules the Python imports of a "
+                    u"calculation may name, e.g. math or scipy.special. "
+                    u"Modules that reach the system, the interpreter or the "
+                    u"database are refused even when listed"
+        ),
+        value_type=schema.ASCIILine(),
+        default=list(CALCULATION_IMPORT_MODULES),
         required=False,
     )

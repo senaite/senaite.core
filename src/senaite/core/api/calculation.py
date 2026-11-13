@@ -29,18 +29,28 @@ its text, so a value cannot add code to the formula (see `bind_values`).
 
 import ast
 import importlib
+import inspect
 import math
 import re
 from functools import partial
 from string import Formatter
 
+from Acquisition import aq_base
 from bika.lims import api
+from persistent import Persistent
+from plone.registry.interfaces import IRegistry
 from RestrictedPython import compile_restricted_eval
 from RestrictedPython.Eval import default_guarded_getitem
 from RestrictedPython.Eval import default_guarded_getiter
 from RestrictedPython.Guards import guarded_iter_unpack_sequence
 from RestrictedPython.Guards import guarded_unpack_sequence
 from RestrictedPython.transformer import INSPECT_ATTRIBUTES
+from senaite.core.config.registry import CALCULATION_IMPORT_MODULES
+from senaite.core.config.registry import FORBIDDEN_CALCULATION_IMPORT_MODULES
+from senaite.core.interfaces import ICalculationModule
+from senaite.core.registry.schema import ICalculationImportsRegistry
+from zope.component import getUtility
+from zope.component import queryUtility
 
 
 class UnsafeFormula(ValueError):
@@ -126,6 +136,13 @@ PRIVATE_PREFIX = "_"
 # Names starting with this are refused
 DUNDER_PREFIX = "__"
 
+# The registry record of the modules a calculation may import from
+IMPORT_MODULES_RECORD = "{}.calculation_import_modules".format(
+    ICalculationImportsRegistry.__identifier__)
+
+# Separates the parts of the dotted name of a module
+MODULE_SEPARATOR = "."
+
 # The variables a formula reads its values from: `formula_value0`, ...
 VALUE_PREFIX = "formula_value"
 
@@ -157,6 +174,26 @@ UNSAFE_TEXT_ATTRIBUTES = ("format_map",)
 
 # Characters of a field of a format text that read an attribute or an item
 UNSAFE_FIELD_CHARACTERS = (".", "[")
+
+# Functions and attributes that read or write files or reach the memory,
+# e.g. of the arrays of `numpy`, which `scipy` returns too. Refused as
+# imports and as attributes
+FILE_ATTRIBUTES = frozenset([
+    "DataSource",
+    "ctypes",
+    "dump",
+    "fromfile",
+    "fromregex",
+    "genfromtxt",
+    "load",
+    "loadtxt",
+    "memmap",
+    "save",
+    "savetxt",
+    "savez",
+    "savez_compressed",
+    "tofile",
+])
 
 # The values of a dependency a formula may refer to by a suffix
 DEPENDENCY_SUFFIXES = (
@@ -225,18 +262,140 @@ def get_module_member(dotted_name, member):
     return getattr(module, member, None)
 
 
+def get_allowed_modules():
+    """The modules the Python imports of a calculation may name
+
+    :returns: the dotted names the site allows, or the default ones when
+        the site has no record for them yet
+    """
+    registry = queryUtility(IRegistry)
+    modules = registry.get(IMPORT_MODULES_RECORD) if registry else None
+    if modules is None:
+        modules = CALCULATION_IMPORT_MODULES
+    return [module.strip() for module in modules if module.strip()]
+
+
+def allow_module(module):
+    """Allow the Python imports of a calculation to name the module
+
+    An add-on allows the module it provides for calculations with this, e.g.
+    in an upgrade step, also when the upgrade step of SENAITE that adds the
+    record has not run yet.
+
+    :param module: the dotted name of a module, e.g. `senaite.patient.calc`
+    :raises ValueError: when calculations must never import from the module
+    """
+    module = str(module).strip()
+    if is_forbidden_module(module):
+        raise ValueError(
+            "Calculations must not import from {}".format(module))
+    registry = getUtility(IRegistry)
+    if registry.get(IMPORT_MODULES_RECORD) is None:
+        registry.registerInterface(ICalculationImportsRegistry)
+    modules = registry[IMPORT_MODULES_RECORD] or []
+    if module not in modules:
+        registry[IMPORT_MODULES_RECORD] = sorted(set(modules) | {module})
+
+
+def is_registered_module(module):
+    """Whether an add-on provides the module for calculations
+
+    :param module: the dotted name of a module, e.g. `senaite.patient.calc`
+    :returns: True when the module is registered as `ICalculationModule`
+    """
+    return queryUtility(ICalculationModule, name=module) is not None
+
+
+def is_forbidden_module(module):
+    """Whether a calculation may never import from the module
+
+    :param module: the dotted name of a module, e.g. `os.path`
+    :returns: True for a forbidden module or a submodule of one, unless an
+        add-on provides the module for calculations
+    """
+    if is_registered_module(module):
+        return False
+    for forbidden in FORBIDDEN_CALCULATION_IMPORT_MODULES:
+        if module == forbidden or module.startswith(
+                forbidden + MODULE_SEPARATOR):
+            return True
+    return False
+
+
+def is_allowed_module(module):
+    """Whether the Python imports of a calculation may name the module
+
+    :param module: the dotted name of a module, e.g. `math`
+    :returns: True when the site allows the module and it is not forbidden
+    """
+    if is_forbidden_module(module):
+        return False
+    return module in get_allowed_modules()
+
+
+def check_import(record):
+    """Refuse an import a calculation must not use
+
+    Checked before anything is imported: importing a module runs its code.
+
+    :param record: an import of a calculation, `{"module", "function"}`
+    :raises UnsafeFormula: when the module is not allowed or the member is
+        private
+    """
+    module, member = record["module"], record["function"]
+    if not is_allowed_module(module):
+        raise UnsafeFormula(
+            "A calculation must not import from {}".format(module))
+    if is_unsafe_attribute(member):
+        raise UnsafeFormula(
+            "A calculation must not import {}".format(member))
+
+
+def is_own_function(module, member):
+    """Whether the member is a function the module defines itself
+
+    :param module: the dotted name of a module
+    :param member: the member of the module
+    """
+    return inspect.isfunction(member) and member.__module__ == module
+
+
+def check_member(module, member):
+    """Refuse a member of a module a calculation must not use
+
+    Checked after the import: a member that is a module leads to any other
+    module, e.g. to the forbidden ones. Of a module an add-on provides, only
+    the functions it defines itself may be used, not what it imports.
+
+    :param module: the dotted name of the module
+    :param member: the member of the module
+    :raises UnsafeFormula: when the member is a module, or not a function of
+        a module an add-on provides
+    """
+    if inspect.ismodule(member):
+        raise UnsafeFormula("A calculation must not import the module {}"
+                            .format(member.__name__))
+    if is_registered_module(module) and not is_own_function(module, member):
+        raise UnsafeFormula(
+            "A calculation may import only the functions of {}".format(
+                module))
+
+
 def get_import(record):
     """The member of a module a calculation imports
 
     :param record: an import of a calculation, `{"module", "function"}`
     :returns: the member
+    :raises UnsafeFormula: when the import is not allowed
     :raises ImportError: when the module or member is missing
     """
+    check_import(record)
     module, member = record["module"], record["function"]
     found = get_module_member(module, member)
     if found is None:
         raise ImportError("Could not find member {} of module {}".format(
             member, module))
+    check_member(module, found)
     return found
 
 
@@ -259,7 +418,9 @@ def is_unsafe_attribute(name):
 
     :param name: the name of an attribute
     """
-    return name.startswith(PRIVATE_PREFIX) or name in UNSAFE_ATTRIBUTES
+    if name.startswith(PRIVATE_PREFIX):
+        return True
+    return name in UNSAFE_ATTRIBUTES or name in FILE_ATTRIBUTES
 
 
 def is_text(obj):
@@ -336,7 +497,17 @@ def get_formula_attribute(obj, name, *default):
         if isinstance(obj, type):
             return format_text
         return partial(format_text, obj)
-    return getattr(obj, name, *default)
+    # a content object leads to the whole site, without permission checks
+    if isinstance(aq_base(obj), Persistent):
+        raise UnsafeFormula(
+            "A formula must not use the attribute {} of an object"
+            .format(name))
+    value = getattr(obj, name, *default)
+    # a module leads to any other module, e.g. to the forbidden ones
+    if inspect.ismodule(value):
+        raise UnsafeFormula(
+            "A formula must not use the module {}".format(name))
+    return value
 
 
 def apply_function(function, *args, **kwargs):

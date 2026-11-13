@@ -3,6 +3,17 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Allow the modules calculations import from"
+      description="Calculations may import only from the modules the site
+                   allows. Allow the mathematical ones and the ones the
+                   calculations of the site already use, except modules that
+                   reach the system, the interpreter or the database."
+      source="2767"
+      destination="2768"
+      handler=".v02_07_000.allow_calculation_imports"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Refresh the analyses keywords of samples"
       description="Sites upgraded past 2749 kept samples without the
                    getAnalysesKeywords metadata, because the step returned
