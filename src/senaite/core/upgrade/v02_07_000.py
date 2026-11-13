@@ -2765,20 +2765,31 @@ def add_sample_analyses_keywords_metadata(tool):
     value as metadata lets the samples listing display the contained analysis
     keywords (and host the keyword filter) without waking up each object.
     Refresh the metadata of existing samples so the column is populated.
+
+    The column may exist already: `setup_core_catalogs` of an earlier step
+    adds every column of the catalog definition, without a value for the
+    existing samples. Therefore the samples without a value are refreshed
+    whether the column was added here or before.
     """
     catalog = api.get_tool(SAMPLE_CATALOG)
-    if not add_catalog_column(catalog, "getAnalysesKeywords"):
-        return
+    add_catalog_column(catalog, "getAnalysesKeywords")
 
-    brains = catalog(portal_type="AnalysisRequest")
+    # whoever runs the upgrade, every sample counts
+    query = {"portal_type": "AnalysisRequest"}
+    brains = catalog.unrestrictedSearchResults(query)
     total = len(brains)
     logger.info("Refreshing getAnalysesKeywords metadata of %s samples ..."
                 % total)
     for num, brain in enumerate(brains):
         if num and num % 1000 == 0:
             logger.info("Refreshed %s/%s samples ..." % (num, total))
-        obj = api.get_object(brain, default=None)
-        if obj is None:
+            transaction.savepoint(optimistic=True)
+        # the column of a sample without a value holds `Missing.Value`
+        if isinstance(brain.getAnalysesKeywords, (list, tuple)):
+            continue
+        try:
+            obj = brain._unrestrictedGetObject()
+        except (AttributeError, KeyError):
             continue
         # Refresh only the getAnalysesKeywords metadata column via the partial
         # update_metadata support in BaseCatalog, instead of recomputing the
@@ -2787,6 +2798,7 @@ def add_sample_analyses_keywords_metadata(tool):
         # index already exists and its value is unchanged.
         catalog.catalog_object(obj, api.get_path(obj), idxs=[],
                                update_metadata=["getAnalysesKeywords"])
+        obj._p_deactivate()
     logger.info("Refreshing getAnalysesKeywords metadata [DONE]")
 
 
