@@ -116,7 +116,6 @@ class ReportsListingView(ListingView):
         ]
         if can_publish(self.context):
             custom_transitions.append(self.custom_transition_email)
-            custom_transitions.append(self.custom_transition_publish)
         # hook in custom transitions
         for state in self.review_states:
             state["custom_transitions"].extend(custom_transitions)
@@ -127,8 +126,8 @@ class ReportsListingView(ListingView):
         """
         help_email_text = _(
             "Open email form to send the selected reports to the recipients. "
-            "This will also publish the contained samples of the reports "
-            "after the email was successfully sent.")
+            "The contained samples were already published when the reports "
+            "were generated.")
 
         return {
             "id": "send_email",
@@ -152,22 +151,6 @@ class ReportsListingView(ListingView):
             "url": "workflow_action?action=download_reports",
             "css_class": "btn-outline-secondary",
             "help": help_download_reports_text,
-        }
-
-    @property
-    def custom_transition_publish(self):
-        """Custom transition to publish reports w/o sending email
-        """
-        help_publish_text = _(
-            "Manually publish all contained samples of the selected reports.")
-
-        return {
-            "id": "publish_samples",
-            "title": _("Publish"),
-            # see senaite.core.browser.workflow
-            "url": "workflow_action?action=publish_samples",
-            "css_class": "btn-outline-success",
-            "help": help_publish_text,
         }
 
     def get_filesize(self, pdf):

@@ -33,7 +33,7 @@ from zope.interface import implements
 
 
 class WorkflowActionDownloadReportsAdapter(RequestContextAware):
-    """Adapter in charge of the client 'publish_samples' action
+    """Adapter in charge of the client 'download_reports' action
     """
     implements(IWorkflowActionUIDsAdapter)
 
@@ -96,6 +96,11 @@ class WorkflowActionDownloadReportsAdapter(RequestContextAware):
 
 class WorkflowActionPublishSamplesAdapter(RequestContextAware):
     """Adapter in charge of the client 'publish_samples' action
+
+    BBB: SENAITE no longer offers this action, the samples of a report are
+    published when the report is stored (see `senaite.core.adapters.
+    reportstored`). The adapter is kept because add-ons register it under
+    their own name or context, and they would fail to start without it.
     """
     implements(IWorkflowActionUIDsAdapter)
 
