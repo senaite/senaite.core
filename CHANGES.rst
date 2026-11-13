@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #3040 Send a SENAITE test e-mail from the mail settings
+- #3081 Fix the partitions of a sample are not listed in order
 - #3078 Skip the members loop of the local roles when no dynamic roles apply
 - #3076 Let a formula format a text, without fields that read attributes
 - #3075 Move the attachments catalog upgrade step to the top
