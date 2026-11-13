@@ -86,6 +86,7 @@ from senaite.core.upgrade.utils import rebuild_index
 from senaite.core.upgrade.utils import remove_at_portal_types
 from senaite.core.upgrade.utils import repair_uid_catalog_path
 from senaite.core.upgrade.utils import temporary_allow_type
+from senaite.core.upgrade.utils import temporary_type_info
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.v02_06_000 import get_setup_folder
 from zope.annotation.interfaces import IAnnotations
@@ -122,6 +123,23 @@ PORTAL_FOLDER_ITEMS = {
 
 EXCLUDE_FROM_NAV_BEHAVIOR = (
     "plone.app.dexterity.behaviors.exclfromnav.IExcludeFromNavigationDefault"
+)
+
+# Setup fields that 2.6.0 already stored in the senaite setup: their AT
+# accessors forward to it, and the AT storage only holds the values from
+# before. Migrating them would overwrite the current settings with these
+SETUP_FIELDS_IN_DX = (
+    "AllowManualResultCaptureDate",
+    "AlwaysCCResponsiblesInReportEmail",
+    "CategorizeSampleAnalyses",
+    "DateSampledRequired",
+    "EmailBodySamplePublication",
+    "EmailFromSamplePublication",
+    "EnableGlobalAuditlog",
+    "ImmediateResultsEntry",
+    "MaxNumberOfSamplesAdd",
+    "SampleAnalysesRequired",
+    "ShowLabNameInLogin",
 )
 
 # Indexes the 2.7.0 upgrade adds to existing core catalogs. Before #3068 the
@@ -1941,6 +1959,13 @@ def migrate_setup_fields_to_dx(tool):
         dx_field_name = field_info[1]
         converter = field_info[2] if len(field_info) > 2 else None
 
+        # Keep the current value of fields that are in the DX setup already
+        if at_field_name in SETUP_FIELDS_IN_DX:
+            logger.info("Field {} is in the senaite setup already "
+                        "[SKIP]".format(at_field_name))
+            skipped += 1
+            continue
+
         # Get the AT field
         at_field = bika_setup.getField(at_field_name)
         if not at_field:
@@ -2252,8 +2277,10 @@ def migrate_worksheets_to_dx(tool):
         if portal_type not in type_info.allowed_content_types:
             type_info.allowed_content_types = allowed_types + (portal_type,)
 
-        # Rename old AT worksheets folder
-        portal.manage_renameObject("worksheets", "worksheets-old")
+        # Rename old AT worksheets folder. Earlier steps may have removed
+        # the AT type already, without it the folder cannot be renamed
+        with temporary_type_info(portal_type, ws_container.meta_type):
+            portal.manage_renameObject("worksheets", "worksheets-old")
 
         # restore the allowed_types
         type_info.allowed_content_types = allowed_types
@@ -2741,18 +2768,28 @@ def add_sample_analyses_keywords_metadata(tool):
     value as metadata lets the samples listing display the contained analysis
     keywords (and host the keyword filter) without waking up each object.
     Refresh the metadata of existing samples so the column is populated.
+
+    The column may exist already: `setup_core_catalogs` of an earlier step
+    adds every column of the catalog definition, without a value for the
+    existing samples. Therefore the samples without a value are refreshed
+    whether the column was added here or before.
     """
     catalog = api.get_tool(SAMPLE_CATALOG)
-    if not add_catalog_column(catalog, "getAnalysesKeywords"):
-        return
+    add_catalog_column(catalog, "getAnalysesKeywords")
 
-    brains = catalog(portal_type="AnalysisRequest")
+    # whoever runs the upgrade, every sample counts
+    query = {"portal_type": "AnalysisRequest"}
+    brains = catalog.unrestrictedSearchResults(query)
     total = len(brains)
     logger.info("Refreshing getAnalysesKeywords metadata of %s samples ..."
                 % total)
     for num, brain in enumerate(brains):
         if num and num % 1000 == 0:
             logger.info("Refreshed %s/%s samples ..." % (num, total))
+            transaction.savepoint(optimistic=True)
+        # the column of a sample without a value holds `Missing.Value`
+        if isinstance(brain.getAnalysesKeywords, (list, tuple)):
+            continue
         obj = get_loaded_object(brain)
         if obj is None:
             continue
@@ -2763,6 +2800,7 @@ def add_sample_analyses_keywords_metadata(tool):
         # index already exists and its value is unchanged.
         catalog.catalog_object(obj, api.get_path(obj), idxs=[],
                                update_metadata=["getAnalysesKeywords"])
+        obj._p_deactivate()
     logger.info("Refreshing getAnalysesKeywords metadata [DONE]")
 
 
