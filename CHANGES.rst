@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3078 Skip the members loop of the local roles when no dynamic roles apply
 - #3076 Let a formula format a text, without fields that read attributes
 - #3075 Move the attachments catalog upgrade step to the top
 - #3071 Fix the analyses keywords of existing samples stay empty after the upgrade
