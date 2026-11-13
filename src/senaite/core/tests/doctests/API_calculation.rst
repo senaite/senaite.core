@@ -305,6 +305,14 @@ the check refuses it as well:
     ...
     UnsafeFormula: A formula must not use the field 0[0]
 
+An item field reaches a formula with a text from a value instead, e.g. from
+an interim field of a text type, and the formula refuses it then:
+
+    >>> evaluate_formula("[t].format([a])", {"t": u"{0[0]}", "a": u"ab"})
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A formula must not use the field 0[0]
+
 The check of a formula, as the calculation runs it when it is saved,
 refuses such a field already:
 
