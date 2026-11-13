@@ -35,7 +35,9 @@ import re
 from functools import partial
 from string import Formatter
 
+from Acquisition import aq_base
 from bika.lims import api
+from persistent import Persistent
 from plone.registry.interfaces import IRegistry
 from RestrictedPython import compile_restricted_eval
 from RestrictedPython.Eval import default_guarded_getitem
@@ -495,6 +497,11 @@ def get_formula_attribute(obj, name, *default):
         if isinstance(obj, type):
             return format_text
         return partial(format_text, obj)
+    # a content object leads to the whole site, without permission checks
+    if isinstance(aq_base(obj), Persistent):
+        raise UnsafeFormula(
+            "A formula must not use the attribute {} of an object"
+            .format(name))
     value = getattr(obj, name, *default)
     # a module leads to any other module, e.g. to the forbidden ones
     if inspect.ismodule(value):
