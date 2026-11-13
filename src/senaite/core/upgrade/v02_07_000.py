@@ -85,6 +85,7 @@ from senaite.core.upgrade.utils import rebuild_index
 from senaite.core.upgrade.utils import remove_at_portal_types
 from senaite.core.upgrade.utils import repair_uid_catalog_path
 from senaite.core.upgrade.utils import temporary_allow_type
+from senaite.core.upgrade.utils import temporary_type_info
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.v02_06_000 import get_setup_folder
 from zope.annotation.interfaces import IAnnotations
@@ -121,6 +122,23 @@ PORTAL_FOLDER_ITEMS = {
 
 EXCLUDE_FROM_NAV_BEHAVIOR = (
     "plone.app.dexterity.behaviors.exclfromnav.IExcludeFromNavigationDefault"
+)
+
+# Setup fields that 2.6.0 already stored in the senaite setup: their AT
+# accessors forward to it, and the AT storage only holds the values from
+# before. Migrating them would overwrite the current settings with these
+SETUP_FIELDS_IN_DX = (
+    "AllowManualResultCaptureDate",
+    "AlwaysCCResponsiblesInReportEmail",
+    "CategorizeSampleAnalyses",
+    "DateSampledRequired",
+    "EmailBodySamplePublication",
+    "EmailFromSamplePublication",
+    "EnableGlobalAuditlog",
+    "ImmediateResultsEntry",
+    "MaxNumberOfSamplesAdd",
+    "SampleAnalysesRequired",
+    "ShowLabNameInLogin",
 )
 
 # Indexes the 2.7.0 upgrade adds to existing core catalogs. Before #3068 the
@@ -1936,6 +1954,13 @@ def migrate_setup_fields_to_dx(tool):
         dx_field_name = field_info[1]
         converter = field_info[2] if len(field_info) > 2 else None
 
+        # Keep the current value of fields that are in the DX setup already
+        if at_field_name in SETUP_FIELDS_IN_DX:
+            logger.info("Field {} is in the senaite setup already "
+                        "[SKIP]".format(at_field_name))
+            skipped += 1
+            continue
+
         # Get the AT field
         at_field = bika_setup.getField(at_field_name)
         if not at_field:
@@ -2247,8 +2272,10 @@ def migrate_worksheets_to_dx(tool):
         if portal_type not in type_info.allowed_content_types:
             type_info.allowed_content_types = allowed_types + (portal_type,)
 
-        # Rename old AT worksheets folder
-        portal.manage_renameObject("worksheets", "worksheets-old")
+        # Rename old AT worksheets folder. Earlier steps may have removed
+        # the AT type already, without it the folder cannot be renamed
+        with temporary_type_info(portal_type, ws_container.meta_type):
+            portal.manage_renameObject("worksheets", "worksheets-old")
 
         # restore the allowed_types
         type_info.allowed_content_types = allowed_types
