@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3075 Move the attachments catalog upgrade step to the top
 - #3071 Fix the analyses keywords of existing samples stay empty after the upgrade
 - #3070 Fix the setup fields migration overwrites settings with outdated values
 - #3069 Fix the worksheet migration refuses to rename the worksheets folder
