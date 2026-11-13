@@ -319,6 +319,22 @@ raised:
     ...
     ReadConflictError: database read conflict error
 
+An upgrade step anyone may run gets the object without checking the
+permissions of the current user:
+
+    >>> from plone.app.testing import logout
+    >>> from plone.app.testing import login
+    >>> from plone.app.testing import TEST_USER_NAME
+    >>> logout()
+    >>> capi.get_loaded_object(brain)
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
+
+    >>> capi.get_loaded_object(brain, unrestricted=True) == obj
+    True
+    >>> login(portal, TEST_USER_NAME)
+
 
 Damaged objects in an upgrade step
 ..................................

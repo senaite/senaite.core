@@ -328,7 +328,7 @@ def to_searchable_text_qs(qs, op="AND", wildcard=True):
     return u" ".join(parts)
 
 
-def get_loaded_object(brain):
+def get_loaded_object(brain, unrestricted=False):
     """The object of a catalog entry with its stored state loaded, or None
 
     A catalog entry can point to an object whose stored state is damaged and
@@ -341,10 +341,15 @@ def get_loaded_object(brain):
     as stale entries are common and harmless here.
 
     :param brain: a catalog entry
+    :param unrestricted: get the object without checking the permissions of
+        the current user, e.g. in an upgrade step anyone may run
     :returns: the object, or None when it is gone or cannot be loaded
     """
     try:
-        obj = brain.getObject()
+        if unrestricted:
+            obj = brain._unrestrictedGetObject()
+        else:
+            obj = brain.getObject()
     except (AttributeError, KeyError):
         return None
     if obj is None or not getattr(obj, "_p_activate", None):

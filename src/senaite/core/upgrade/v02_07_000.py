@@ -2790,7 +2790,7 @@ def add_sample_analyses_keywords_metadata(tool):
         # the column of a sample without a value holds `Missing.Value`
         if isinstance(brain.getAnalysesKeywords, (list, tuple)):
             continue
-        obj = get_loaded_object(brain)
+        obj = get_loaded_object(brain, unrestricted=True)
         if obj is None:
             continue
         # Refresh only the getAnalysesKeywords metadata column via the partial
