@@ -105,6 +105,7 @@
 
   <!-- Suppliers -->
   <object name="Supplier" meta_type="Dexterity FTI" />
+  <object name="SupplierContact" meta_type="Dexterity FTI" />
   <object name="Suppliers" meta_type="Dexterity FTI" />
 
   <!-- Sample types -->
