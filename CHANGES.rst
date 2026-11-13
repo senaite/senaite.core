@@ -5,6 +5,12 @@ Changelog
 ------------------
 
 - #3040 Send a SENAITE test e-mail from the mail settings
+- #3078 Skip the members loop of the local roles when no dynamic roles apply
+- #3076 Let a formula format a text, without fields that read attributes
+- #3075 Move the attachments catalog upgrade step to the top
+- #3071 Fix the analyses keywords of existing samples stay empty after the upgrade
+- #3070 Fix the setup fields migration overwrites settings with outdated values
+- #3069 Fix the worksheet migration refuses to rename the worksheets folder
 - #3080 Honour min/max operators in Dynamic Analysis Specifications
 - #3051 Draw section headings inside a fieldset
 - #3073 Fix the upgrade step events fire for every migrated multifile
