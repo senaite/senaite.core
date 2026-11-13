@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #3032 Publish the samples when the results report is stored
+- #3067 Allow calculations to import only from the modules the site allows
 - #3084 Fix the line numbers of the paste dialog do not scroll with the values
 - #3083 Log a transition that is not allowed once, as a warning
 - #3082 Fix the analysis columns order is not migrated to the setup
