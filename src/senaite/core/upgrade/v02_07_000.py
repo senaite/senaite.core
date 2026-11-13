@@ -41,6 +41,7 @@ from plone.app.blob.field import BlobWrapper
 from plone.dexterity.utils import createContent
 from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.interfaces import INamed
+from plone.registry.interfaces import IRegistry
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.api import dtime
@@ -90,6 +91,7 @@ from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.v02_06_000 import get_setup_folder
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getMultiAdapter
+from zope.component import getUtility
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
 
@@ -2471,6 +2473,24 @@ def migrate_worksheet_to_dx(src, destination):
     logger.info("Migrated Worksheet from %s -> %s" % (src, target))
 
 
+def get_former_registry_value(name, default=None):
+    """The value of a registry record the site may have from an earlier
+    version, by the name of its field
+
+    Unlike `get_registry_record`, a site that never had the record is no
+    error: the default is returned without logging.
+
+    :param name: the name of the field of the record
+    :param default: what to return when the site has no such record
+    """
+    registry = getUtility(IRegistry)
+    suffix = "." + name
+    for key in registry.records.keys():
+        if key.endswith(suffix):
+            return registry[key]
+    return default
+
+
 @upgradestep(product, version)
 def migrate_analysis_columns_to_setup(tool):
     """Migrate analysis columns order from registry to setup
@@ -2478,14 +2498,13 @@ def migrate_analysis_columns_to_setup(tool):
     logger.info(
         "Migrating analysis columns order to setup ..."
     )
-    from senaite.core.registry import get_registry_record
     from senaite.core.vocabularies.setup import ANALYSIS_COLUMNS
     from senaite.core.vocabularies.setup import WORKSHEET_ANALYSIS_COLUMNS
 
     setup = api.get_senaite_setup()
 
     # Migrate sample view columns
-    registry_sample = get_registry_record(
+    registry_sample = get_former_registry_value(
         "sampleview_analysis_columns_order", default=[]
     ) or []
     if registry_sample:
@@ -2501,7 +2520,7 @@ def migrate_analysis_columns_to_setup(tool):
         )
 
     # Migrate worksheet view columns
-    registry_ws = get_registry_record(
+    registry_ws = get_former_registry_value(
         "worksheetview_analysis_columns_order", default=[]
     ) or []
     if registry_ws:
