@@ -110,7 +110,6 @@ def doActionFor(instance, action_id):
         logger.warning(
             "Transition '{0}' not allowed: {1} '{2}' ({3})"
             .format(action_id, clazz_name, instance.getId(), curr_state))
-        logger.error(message)
 
     return succeed, message
 
