@@ -21,9 +21,11 @@
 import importlib
 
 from bika.lims import senaiteMessageFactory as _
+from senaite.core.api.calculation import check_member
 from senaite.core.api.calculation import get_module_member
 from senaite.core.api.calculation import is_allowed_module
-from senaite.core.api.calculation import PRIVATE_PREFIX
+from senaite.core.api.calculation import is_unsafe_attribute
+from senaite.core.api.calculation import UnsafeFormula
 from senaite.core.i18n import translate
 from z3c.form import validator
 from zope.interface import Invalid
@@ -51,10 +53,11 @@ def allowed_module():
 
 
 def public_function():
-    """Validate that the function is no private member of the module."""
+    """Validate that the function is no private or unsafe member of the
+    module, e.g. one that writes files."""
     def validate(row):
         function = (row.get("function") or "").strip()
-        if function.startswith(PRIVATE_PREFIX):
+        if function and is_unsafe_attribute(function):
             raise Invalid(
                 translate(_(
                     u"public_function_error",
@@ -99,6 +102,27 @@ def importable_function():
     return validate
 
 
+def safe_function():
+    """Validate that the member is no module, and of a module an add-on
+    provides, a function the module defines itself."""
+    def validate(row):
+        module = (row.get("module") or "").strip()
+        function = (row.get("function") or "").strip()
+        if not module or not function:
+            return row
+        try:
+            check_member(module, get_module_member(module, function))
+        except UnsafeFormula:
+            raise Invalid(
+                translate(_(
+                    u"safe_function_error",
+                    default=u"Calculations must not import '${function}' "
+                            u"from '${module}'",
+                    mapping={"function": function, "module": module})))
+        return row
+    return validate
+
+
 class ImportsValidator(validator.SimpleFieldValidator):
     """Validate python_imports rows: check module importability and
     function membership.
@@ -112,7 +136,8 @@ class ImportsValidator(validator.SimpleFieldValidator):
         # The allowlist goes first and stops a row: nothing is imported
         # for a module a calculation must not use
         row_validators = (allowed_module(), public_function(),
-                          importable_module(), importable_function())
+                          importable_module(), importable_function(),
+                          safe_function())
         for idx, row in enumerate(value):
             for fn in row_validators:
                 try:

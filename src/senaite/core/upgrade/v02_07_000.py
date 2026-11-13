@@ -45,7 +45,8 @@ from plone.registry.interfaces import IRegistry
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.api import dtime
-from senaite.core.api.calculation import IMPORT_MODULES_RECORD
+from senaite.core.api.calculation import allow_module
+from senaite.core.api.calculation import get_allowed_modules
 from senaite.core.api.calculation import is_forbidden_module
 from senaite.core.api.catalog import add_column
 from senaite.core.api.catalog import del_column
@@ -224,7 +225,6 @@ def allow_calculation_imports(tool):
     """
     registry = getUtility(IRegistry)
     registry.registerInterface(ICalculationImportsRegistry)
-    modules = set(registry[IMPORT_MODULES_RECORD] or [])
     catalog = api.get_tool(SETUP_CATALOG)
     # whoever runs the upgrade, every calculation counts
     query = {"portal_type": "Calculation"}
@@ -237,10 +237,9 @@ def allow_calculation_imports(tool):
                     "must not use any more".format(
                         api.get_path(calculation), module))
                 continue
-            modules.add(module)
-    registry[IMPORT_MODULES_RECORD] = sorted(modules)
+            allow_module(module)
     logger.info("Calculations may import from: {}".format(
-        ", ".join(sorted(modules))))
+        ", ".join(sorted(get_allowed_modules()))))
 
 
 @upgradestep(product, version)

@@ -27,13 +27,13 @@ SKIP_ANALYSES_STATES_ON_COPY = ["rejected"]
 RR_SCINOTATION_RECORD = "scientific_notation_report"
 
 # Modules the Python imports of a calculation may name on a new site: the
-# mathematical ones. A site manager may allow more.
+# mathematical ones. A site manager may allow more, e.g. `numpy`, which is
+# left out as it reads and writes files.
 CALCULATION_IMPORT_MODULES = [
     "cmath",
     "decimal",
     "fractions",
     "math",
-    "numpy",
     "scipy.special",
     "scipy.stats",
 ]
@@ -44,11 +44,18 @@ CALCULATION_IMPORT_MODULES = [
 FORBIDDEN_CALCULATION_IMPORT_MODULES = [
     "__builtin__",
     "builtins",
+    "cPickle",
+    "codecs",
     "commands",
     "ctypes",
+    "gc",
     "imp",
     "importlib",
+    "inspect",
+    "io",
     "marshal",
+    "new",
+    "operator",
     "os",
     "pickle",
     "posix",
@@ -57,6 +64,8 @@ FORBIDDEN_CALCULATION_IMPORT_MODULES = [
     "socket",
     "subprocess",
     "sys",
+    "tempfile",
+    "types",
     "AccessControl",
     "App",
     "OFS",

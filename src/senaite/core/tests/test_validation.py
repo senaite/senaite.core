@@ -24,7 +24,10 @@ from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import login
 from plone.app.testing import setRoles
+from plone.registry.interfaces import IRegistry
 from Products.validation import validation as validationService
+from senaite.core.api.calculation import IMPORT_MODULES_RECORD
+from senaite.core.config.registry import CALCULATION_IMPORT_MODULES
 from senaite.core.content.calculation import ICalculationSchema
 from senaite.core.tests.base import DataTestCase
 from senaite.core.validators.formula import FormulaValidator
@@ -32,6 +35,7 @@ from senaite.core.validators.imports import ImportsValidator
 from zope.interface import Invalid
 from senaite.core.validators.interimfields import InterimFieldsValidator
 from z3c.form.error import MultipleErrors
+from zope.component import getUtility
 
 
 class Tests(DataTestCase):
@@ -319,6 +323,19 @@ class Tests(DataTestCase):
         self.assertIn(
             "Calculations must not import '__doc__'",
             validate([{"module": u"math", "function": u"__doc__"}]))
+
+        # A member that reads or writes files is refused before the import
+        registry = getUtility(IRegistry)
+        registry[IMPORT_MODULES_RECORD] = ["math", "json", "numpy"]
+        self.assertIn(
+            "Calculations must not import 'save'",
+            validate([{"module": u"numpy", "function": u"save"}]))
+
+        # A member that is a module is refused
+        self.assertIn(
+            "Calculations must not import 'decoder' from 'json'",
+            validate([{"module": u"json", "function": u"decoder"}]))
+        registry[IMPORT_MODULES_RECORD] = list(CALCULATION_IMPORT_MODULES)
 
 
 def test_suite():
