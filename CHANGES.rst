@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3084 Fix the line numbers of the paste dialog do not scroll with the values
 - #3081 Fix the partitions of a sample are not listed in order
 - #3078 Skip the members loop of the local roles when no dynamic roles apply
 - #3076 Let a formula format a text, without fields that read attributes
