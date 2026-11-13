@@ -194,29 +194,45 @@ from a module:
     UnsafeFormula: A formula must not use the module os
 
 `numpy` reads and writes files, so a new site does not allow it. When a site
-manager allows it, its functions and attributes that read or write files or
-reach the memory are refused, also on the arrays `scipy` returns:
+manager allows it, its functions that read or write files are refused, before
+anything is imported:
 
     >>> registry[IMPORT_MODULES_RECORD] = ["math", "numpy"]
-    >>> get_import({"module": "numpy", "function": "array"})
-    <built-in function array>
-
     >>> get_import({"module": "numpy", "function": "save"})
     Traceback (most recent call last):
     ...
     UnsafeFormula: A calculation must not import save
 
-    >>> calculate_formula("array((1,)).tofile('/tmp/out')", {},
-    ...                   [{"module": "numpy", "function": "array"}])
+And so are the attributes that read or write files or reach the memory, e.g.
+of the arrays `numpy` and `scipy` return. A stand-in for `numpy` shows it, as
+`numpy` may not be installed:
+
+    >>> import sys
+    >>> import types
+    >>> class Array(tuple):
+    ...     ctypes = None
+    ...     def tofile(self, path):
+    ...         pass
+
+    >>> fake_numpy = types.ModuleType("numpy")
+    >>> fake_numpy.array = Array
+    >>> real_numpy = sys.modules.get("numpy")
+    >>> sys.modules["numpy"] = fake_numpy
+
+    >>> imports = [{"module": "numpy", "function": "array"}]
+    >>> calculate_formula("array((1,)).tofile('/tmp/out')", {}, imports)
     'Unsafe formula: A formula must not use tofile'
 
-    >>> calculate_formula("array((1,)).ctypes", {},
-    ...                   [{"module": "numpy", "function": "array"}])
+    >>> calculate_formula("array((1,)).ctypes", {}, imports)
     'Unsafe formula: A formula must not use ctypes'
 
-    >>> calculate_formula("len(array((1, 2)))", {},
-    ...                   [{"module": "numpy", "function": "array"}])
+    >>> calculate_formula("len(array((1, 2)))", {}, imports)
     2
+
+    >>> if real_numpy is None:
+    ...     del sys.modules["numpy"]
+    ... else:
+    ...     sys.modules["numpy"] = real_numpy
 
 A forbidden module stays forbidden, even when the site lists it:
 
