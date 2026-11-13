@@ -163,6 +163,11 @@ def after_submit(analysis):
     # Mark this analysis as ISubmitted
     alsoProvides(analysis, ISubmitted)
 
+    # Reindex the state before anything is promoted. A sample counts
+    # its analyses from the catalog, and this runs inside the analysis'
+    # own transition, before the machinery that reindexes it.
+    analysis.reindexObject(idxs=["review_state"])
+
     # Promote to analyses this analysis depends on
     promote_to_dependencies(analysis, "submit")
 
@@ -245,6 +250,11 @@ def after_verify(analysis):
     """
     # Mark this analysis as IVerified
     alsoProvides(analysis, IVerified)
+
+    # Reindex the state before anything is promoted. A sample counts
+    # its analyses from the catalog, and this runs inside the analysis'
+    # own transition, before the machinery that reindexes it.
+    analysis.reindexObject(idxs=["review_state"])
 
     # Promote to analyses this analysis depends on
     promote_to_dependencies(analysis, "verify")

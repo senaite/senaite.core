@@ -36,12 +36,12 @@ from Products.CMFCore import permissions
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.api import dtime
 from senaite.core.catalog import AUDITLOG_CATALOG
+from senaite.core.config import FIELDSET_SECTIONS
 from senaite.core.content.base import Container
 from senaite.core.interfaces import IHideActionsMenu
 from senaite.core.interfaces import ISetup
 from senaite.core.schema import DurationField
 from senaite.core.schema import RichTextField
-from senaite.core.schema import UIDReferenceField
 from senaite.core.schema.fields import DataGridField
 from senaite.core.schema.fields import DataGridRow
 from senaite.core.schema.textlinefield import TextLineField
@@ -867,43 +867,6 @@ class ISetupSchema(model.Schema):
         default="analyses_classic_view",
     )
 
-    dashboard_by_default = schema.Bool(
-        title=_(
-            u"title_senaitesetup_dashboard_by_default",
-            default=u"Use Dashboard as default front page"
-        ),
-        description=_(
-            u"description_senaitesetup_dashboard_by_default",
-            default=u"Select this to activate the dashboard as a default front "
-                    u"page."
-        ),
-        default=True,
-    )
-
-    landing_page = UIDReferenceField(
-        title=_(
-            u"title_senaitesetup_landing_page",
-            default=u"Landing Page"
-        ),
-        description=_(
-            u"description_senaitesetup_landing_page",
-            default=u"The landing page is shown for non-authenticated users if "
-                    u"the Dashboard is not selected as the default front page. "
-                    u"If no landing page is selected, the default frontpage is "
-                    u"displayed."
-        ),
-        allowed_types=(
-            "Document",
-            "Client",
-            "ClientFolder",
-            "Samples",
-            "WorksheetFolder",
-        ),
-        multi_valued=False,
-        relationship="SetupLandingPage",
-        required=False,
-    )
-
     show_partitions = schema.Bool(
         title=_(
             u"title_senaitesetup_show_partitions",
@@ -1357,8 +1320,6 @@ class ISetupSchema(model.Schema):
         "appearance",
         label=_(u"Appearance"),
         fields=[
-            "dashboard_by_default",
-            "landing_page",
             "worksheet_layout",
             "show_partitions",
             "site_logo",
@@ -1460,6 +1421,29 @@ class ISetupSchema(model.Schema):
                         u"('${pt}'): ${err}",
                         mapping={"i": idx, "pt": portal_type or "",
                                  "err": str(exc)}))
+
+
+# Headings drawn inside a fieldset, before the field they name. Four of
+# the tabs hold more settings than anyone reads as one list, and the
+# groupings below are the ones the fields already fall into.
+ISetupSchema.setTaggedValue(FIELDSET_SECTIONS, {
+    # Analyses
+    "categorise_analysis_services": _("Display"),
+    "auto_verify_samples": _("Verification"),
+    "results_decimal_mark": _("Result formatting"),
+    "enable_rejection_workflow": _("Rejection"),
+    "default_number_of_ars_to_add": _("Registration"),
+    "sampleview_analysis_columns_order": _("Column order"),
+    # Appearance
+    "site_logo": _("Branding"),
+    "sidebar_folders": _("Side navigation"),
+    # Sampling
+    "sample_duplicate_enabled": _("Optional workflow steps"),
+    "workdays": _("Timing"),
+    # Notifications
+    "notify_on_sample_rejection": _("Rejection"),
+    "invalidation_reason_required": _("Invalidation"),
+})
 
 
 @implementer(ISetup, ISetupSchema, IHideActionsMenu)

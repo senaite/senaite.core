@@ -11,6 +11,58 @@
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Index the existing content in new indexes"
+      description="The upgrade added indexes to the sample and analysis
+                   catalogs without the existing content, so filters and
+                   searches on them missed older samples and analyses."
+      source="2765"
+      destination="2766"
+      handler=".v02_07_000.reindex_new_core_indexes"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add the client token to older client content"
+      description="The earlier reindex of allowedRolesAndUsers searched the
+                   catalogs with an empty query and reached no object, so
+                   client contacts do not find content that was not modified
+                   since."
+      source="2763"
+      destination="2764"
+      handler=".v02_07_000.reindex_client_tree_allowed_roles_again"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add the Read JSON API permission"
+      description="Import rolemap for the new Read JSON API permission, which
+                   gates the reading routes of the legacy JSON API against
+                   anonymous callers."
+      source="2762"
+      destination="2763"
+      handler=".v02_07_000.import_rolemap"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Fix the records of sample templates"
+      description="Store the single valued references of a partition as the
+                   list of one UID the record schema holds, and the partition
+                   id of both partitions and services as text. Templates that
+                   the 2.6.0 migration brought over from Archetypes read their
+                   partition references back as a single character."
+      source="2761"
+      destination="2762"
+      handler=".v02_07_000.fix_sampletemplate_records"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Reindex Sample Point sample type titles"
+      description="Populate sampletype_title for existing Sample Points so
+                   sorting and filtering by Sample Type work."
+      source="2760"
+      destination="2761"
+      handler=".v02_07_000.reindex_samplepoint_sampletype_title"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Drop the stale marker behavior from the Setup FTI"
       description="The FTI lists a marker interface among the type's
                    behaviors. It is not a registered behavior, so looking the
@@ -632,6 +684,18 @@
       source="2659"
       destination="2700"
       handler=".v02_07_000.upgrade"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Rename the attachments catalog"
+      description="Rename `senaite_attachments_catalog` to
+                   `senaite_catalog_attachments`, so it follows the naming
+                   of every other SENAITE catalog. The old name also made
+                   the client-tree reindex skip the catalog, because the
+                   list of catalogs to visit spelled it the regular way."
+      source="2764"
+      destination="2765"
+      handler=".v02_07_000.rename_attachments_catalog"
       profile="senaite.core:default"/>
 
 </configure>

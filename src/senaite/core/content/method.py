@@ -21,6 +21,7 @@
 import six
 
 from AccessControl import ClassSecurityInfo
+from Acquisition import aq_base
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
@@ -30,6 +31,7 @@ from plone.app.textfield.value import RichTextValue
 from plone.autoform import directives
 from plone.namedfile.field import NamedBlobFile
 from plone.supermodel import model
+from plone.uuid.interfaces import ATTRIBUTE_NAME as UID_ATTRIBUTE_NAME
 from Products.CMFCore import permissions
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.content.base import Container
@@ -45,6 +47,10 @@ from zope.interface import invariant
 # Relationship name used by the Instrument to reference its methods. Reading it
 # in reverse yields the instruments that support a given method.
 INSTRUMENT_METHODS = "InstrumentMethods"
+
+# Attribute that holds the instruments a method was created with, until the
+# method is added to its container and has a UID to be referenced by
+PENDING_INSTRUMENTS = "_pending_instruments"
 
 
 class InstrumentsField(UIDReferenceField):
@@ -302,6 +308,14 @@ class Method(Container):
         # filter out empty value
         value = filter(lambda uid: uid, value)
 
+        # The instruments reference this method by its UID. A method that is
+        # created with its instruments, e.g. through `api.create` or the JSON
+        # API, runs this setter before it has a UID, so keep the value until
+        # the method is added. See `senaite.core.subscribers.method`
+        if not self.has_uid():
+            setattr(self, PENDING_INSTRUMENTS, value)
+            return
+
         # handle removed instruments
         existing = self.getRawInstruments()
         to_remove = filter(lambda uid: uid not in value, existing)
@@ -324,6 +338,32 @@ class Method(Container):
 
     # BBB: AT schema field property
     Instruments = property(getInstruments, setInstruments)
+
+    def has_uid(self):
+        """Checks whether this method has a UID to be referenced by
+
+        :returns: False while the method is still being created
+        """
+        return getattr(aq_base(self), UID_ATTRIBUTE_NAME, None) is not None
+
+    def has_pending_instruments(self):
+        """Checks whether the method keeps instruments it was created with
+
+        :returns: True when instruments are waiting to be set
+        """
+        return getattr(aq_base(self), PENDING_INSTRUMENTS, None) is not None
+
+    def apply_pending_instruments(self):
+        """Set the instruments the method was created with, if any
+
+        :returns: True when pending instruments were applied
+        """
+        if not self.has_pending_instruments():
+            return False
+        pending = getattr(aq_base(self), PENDING_INSTRUMENTS)
+        delattr(self, PENDING_INSTRUMENTS)
+        self.setInstruments(pending)
+        return True
 
     @security.protected(permissions.View)
     def getCalculations(self):

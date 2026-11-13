@@ -171,6 +171,7 @@ FieldEditAnalysisConditions = "senaite.core: Field: Edit Analysis Conditions"
 # ======================
 # TODO Security Review these "behavioral" permissions
 AccessJSONAPI = "senaite.core: Access JSON API"
+ReadJSONAPI = "senaite.core: Read JSON API"
 EditFieldResults = "senaite.core: Edit Field Results"
 EditResults = "senaite.core: Edit Results"
 ManageBika = "senaite.core: Manage Bika"
