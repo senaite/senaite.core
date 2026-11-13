@@ -2393,7 +2393,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         # Extract the descendant objects
         descendants = []
         cat = api.get_tool(UID_CATALOG)
-        for brain in cat(UID=uids):
+        for brain in cat(UID=uids, sort_on="id"):
             descendant = api.get_object(brain)
             descendants.append(descendant)
             if all_descendants:
