@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - #3084 Fix the line numbers of the paste dialog do not scroll with the values
+- #3083 Log a transition that is not allowed once, as a warning
+- #3082 Fix the analysis columns order is not migrated to the setup
 - #3081 Fix the partitions of a sample are not listed in order
 - #3078 Skip the members loop of the local roles when no dynamic roles apply
 - #3076 Let a formula format a text, without fields that read attributes
