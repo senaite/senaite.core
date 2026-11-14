@@ -120,6 +120,210 @@ The names these helpers had before are still there:
     True
 
 
+What a calculation may import
+.............................
+
+The Python imports of a calculation may name only the modules the site
+allows. A new site allows the mathematical ones:
+
+    >>> sorted(get_allowed_modules())
+    ['cmath', 'decimal', 'fractions', 'math', 'scipy.special', 'scipy.stats']
+
+    >>> is_allowed_module("math")
+    True
+
+    >>> is_allowed_module("json")
+    False
+
+Some modules reach the system, the interpreter or the database. A calculation
+may never import from them, nor from their submodules:
+
+    >>> is_forbidden_module("os")
+    True
+
+    >>> is_forbidden_module("os.path")
+    True
+
+    >>> is_forbidden_module("osmosis")
+    False
+
+The import is checked before anything is imported, as importing a module runs
+its code:
+
+    >>> get_import({"module": "os", "function": "system"})
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A calculation must not import from os
+
+    >>> get_import({"module": "math", "function": "__doc__"})
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A calculation must not import __doc__
+
+    >>> calculate_formula("system('id')", {},
+    ...                   [{"module": "os", "function": "system"}])
+    'Unsafe formula: A calculation must not import from os'
+
+A site manager allows more modules in the registry of the site:
+
+    >>> from senaite.core.api import dtime
+    >>> from plone.registry.interfaces import IRegistry
+    >>> from zope.component import getUtility
+    >>> registry = getUtility(IRegistry)
+    >>> registry[IMPORT_MODULES_RECORD] = ["math", "json"]
+    >>> is_allowed_module("json")
+    True
+
+    >>> get_import({"module": "json", "function": "dumps"})
+    <function dumps at ...>
+
+A member that is a module is refused, as a module leads to any other one,
+e.g. to the forbidden ones:
+
+    >>> get_import({"module": "json", "function": "decoder"})
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A calculation must not import the module json.decoder
+
+And so is an attribute that is a module, e.g. of a module or of an object
+from a module:
+
+    >>> get_formula_attribute(dtime, "os")
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A formula must not use the module os
+
+`numpy` reads and writes files, so a new site does not allow it. When a site
+manager allows it, its functions that read or write files are refused, before
+anything is imported:
+
+    >>> registry[IMPORT_MODULES_RECORD] = ["math", "numpy"]
+    >>> get_import({"module": "numpy", "function": "save"})
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A calculation must not import save
+
+And so are the attributes that read or write files or reach the memory, e.g.
+of the arrays `numpy` and `scipy` return. A stand-in for `numpy` shows it, as
+`numpy` may not be installed:
+
+    >>> import sys
+    >>> import types
+    >>> class Array(tuple):
+    ...     ctypes = None
+    ...     def tofile(self, path):
+    ...         pass
+
+    >>> fake_numpy = types.ModuleType("numpy")
+    >>> fake_numpy.array = Array
+    >>> real_numpy = sys.modules.get("numpy")
+    >>> sys.modules["numpy"] = fake_numpy
+
+    >>> imports = [{"module": "numpy", "function": "array"}]
+    >>> calculate_formula("array((1,)).tofile('/tmp/out')", {}, imports)
+    'Unsafe formula: A formula must not use tofile'
+
+    >>> calculate_formula("array((1,)).ctypes", {}, imports)
+    'Unsafe formula: A formula must not use ctypes'
+
+    >>> calculate_formula("len(array((1, 2)))", {}, imports)
+    2
+
+    >>> if real_numpy is None:
+    ...     del sys.modules["numpy"]
+    ... else:
+    ...     sys.modules["numpy"] = real_numpy
+
+A forbidden module stays forbidden, even when the site lists it:
+
+    >>> registry[IMPORT_MODULES_RECORD] = ["math", "os"]
+    >>> is_allowed_module("os")
+    False
+
+An add-on provides a module for calculations by registering it as
+`ICalculationModule`, with its dotted name. The module is not forbidden then,
+although its package is:
+
+    >>> from senaite.core.interfaces import ICalculationModule
+    >>> from zope.component import getGlobalSiteManager
+    >>> gsm = getGlobalSiteManager()
+    >>> gsm.registerUtility(dtime, ICalculationModule,
+    ...                     name="senaite.core.api.dtime")
+
+    >>> is_forbidden_module("senaite.core.api.dtime")
+    False
+
+Only the module registered, not its package nor its submodules:
+
+    >>> is_forbidden_module("senaite.core.api")
+    True
+
+    >>> is_forbidden_module("senaite.core.api.dtime.other")
+    True
+
+As any other module, a calculation imports from it only when the site allows
+it:
+
+    >>> is_allowed_module("senaite.core.api.dtime")
+    False
+
+    >>> registry[IMPORT_MODULES_RECORD] = ["math", "senaite.core.api.dtime"]
+    >>> is_allowed_module("senaite.core.api.dtime")
+    True
+
+    >>> get_import({"module": "senaite.core.api.dtime", "function": "to_dt"})
+    <function to_dt at ...>
+
+But only the functions the module defines itself, not what it imports:
+
+    >>> get_import({"module": "senaite.core.api.dtime",
+    ...             "function": "get_tool"})
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A calculation may import only the functions of senaite.core.api.dtime
+
+    >>> get_import({"module": "senaite.core.api.dtime",
+    ...             "function": "DateTime"})
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A calculation may import only the functions of senaite.core.api.dtime
+
+    >>> get_import({"module": "senaite.core.api.dtime", "function": "os"})
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A calculation must not import the module os
+
+    >>> gsm.unregisterUtility(dtime, ICalculationModule,
+    ...                       name="senaite.core.api.dtime")
+    True
+    >>> is_allowed_module("senaite.core.api.dtime")
+    False
+
+    >>> registry[IMPORT_MODULES_RECORD] = list(CALCULATION_IMPORT_MODULES)
+
+
+    >>> registry[IMPORT_MODULES_RECORD] = list(CALCULATION_IMPORT_MODULES)
+
+An add-on allows its module with `allow_module`, also when the record is
+not there yet, e.g. before the upgrade step of SENAITE that adds it:
+
+    >>> del registry.records[IMPORT_MODULES_RECORD]
+    >>> allow_module("json")
+    >>> is_allowed_module("json")
+    True
+    >>> is_allowed_module("math")
+    True
+
+But never a forbidden one:
+
+    >>> allow_module("os")
+    Traceback (most recent call last):
+    ...
+    ValueError: Calculations must not import from os
+
+    >>> registry[IMPORT_MODULES_RECORD] = list(CALCULATION_IMPORT_MODULES)
+
+
 Binding values to a formula
 ...........................
 

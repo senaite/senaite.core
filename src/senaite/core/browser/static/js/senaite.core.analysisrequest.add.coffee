@@ -1843,6 +1843,12 @@ class window.AnalysisRequestAdd
 
     dialog = @template_dialog "paste-template", context, buttons
 
+    # scroll the line numbers along with the values, so that the number of
+    # each sample stays next to its value
+    line_numbers = dialog.find(".line-numbers")
+    dialog.find(".paste-editor").on "scroll", ->
+      line_numbers.scrollTop @scrollTop
+
     active_tab = $("ul#sample-tabs a.nav-link.active")
     if active_tab
       idx = active_tab.data("primary-sample-index")
