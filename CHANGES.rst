@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #3079 Skip the objects whose state cannot be loaded in the client token reindex
+- #3040 Send a SENAITE test e-mail from the mail settings
 - #3067 Allow calculations to import only from the modules the site allows
 - #3084 Fix the line numbers of the paste dialog do not scroll with the values
 - #3083 Log a transition that is not allowed once, as a warning
