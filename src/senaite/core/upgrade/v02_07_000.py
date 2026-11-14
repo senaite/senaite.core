@@ -868,6 +868,7 @@ def import_registry(tool):
     setup.runImportStepFromProfile(profile, "plone.app.registry")
 
 
+@upgradestep(product, version)
 def mark_invalidated_samples(tool):
     """Mark invalidated samples with IInvalidated interface
     """
