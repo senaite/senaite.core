@@ -310,6 +310,24 @@ without a log entry:
     >>> capi.get_loaded_object(Brain(None)) is None
     True
 
+But when the container still holds the object and only its record is
+missing, getting the object raises a `POSKeyError`. This is damage, with or
+without the check of the permissions:
+
+    >>> class MissingRecordBrain(Brain):
+    ...     def getObject(self):
+    ...         raise POSKeyError("0x02")
+    ...     def _unrestrictedGetObject(self):
+    ...         raise POSKeyError("0x03")
+
+    >>> capi.get_loaded_object(MissingRecordBrain(None)) is None
+    True
+    >>> capi.get_loaded_object(
+    ...     MissingRecordBrain(None), unrestricted=True) is None
+    True
+    >>> capi.get_damaged_objects()[-2:]
+    [('/plone/clients/client-1/W-0001', "POSKeyError: '0x02'"), ('/plone/clients/client-1/W-0001', "POSKeyError: '0x03'")]
+
 A conflict is no damage, the transaction has to be retried, so it is
 raised:
 

@@ -350,6 +350,9 @@ def get_loaded_object(brain, unrestricted=False):
             obj = brain._unrestrictedGetObject()
         else:
             obj = brain.getObject()
+    except POSKeyError as error:
+        # the container holds the object, but its record is missing
+        return skip_damaged(brain, error)
     except (AttributeError, KeyError):
         return None
     if obj is None or not getattr(obj, "_p_activate", None):
@@ -357,12 +360,22 @@ def get_loaded_object(brain, unrestricted=False):
     try:
         obj._p_activate()
     except LOAD_ERRORS as error:
-        reason = "{}: {}".format(type(error).__name__, error)
-        logger.error("Cannot load the object of {}: {}".format(
-            brain.getPath(), reason))
-        get_damaged_objects().append((brain.getPath(), reason))
-        return None
+        return skip_damaged(brain, error)
     return obj
+
+
+def skip_damaged(brain, error):
+    """Log and list the object of a catalog entry that cannot be loaded
+
+    :param brain: a catalog entry
+    :param error: the error the object raised when it was loaded
+    :returns: None, for the caller to skip the object
+    """
+    path = brain.getPath()
+    reason = "{}: {}".format(type(error).__name__, error)
+    logger.error("Cannot load the object of {}: {}".format(path, reason))
+    get_damaged_objects().append((path, reason))
+    return None
 
 
 def get_damaged_objects():
