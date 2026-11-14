@@ -21,6 +21,7 @@
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.workflow import doActionFor
+from bika.lims.workflow import guard_handler
 from senaite.core import logger
 from senaite.core.interfaces import IReportStoredHandler
 from zope.interface import implementer
@@ -53,15 +54,57 @@ class PublishSamplesHandler(object):
         failed = []
 
         for sample in self.get_samples(reports):
-            if not self.publish(sample):
-                failed.append(sample)
+            if self.publish(sample):
+                continue
+            if self.is_refused_on_purpose(sample):
+                continue
+            failed.append(sample)
 
         if failed:
-            # Do not fail silently. The most likely reason to end up here is a
-            # user without the permission to publish results
+            # Do not fail silently, the user may not publish these samples
             ids = ", ".join(sorted(map(api.get_id, failed)))
-            message = _("Could not publish: {}".format(ids))
+            message = _("Could not publish: ${ids}", mapping={"ids": ids})
             self.add_status_message(message, "warning")
+
+    def get_transition(self, sample):
+        """Returns the transition that publishes the sample in its status
+
+        :param sample: the sample to publish
+        :returns: the id of the transition
+        """
+        status = api.get_review_status(sample)
+        return TRANSITIONS.get(status, DEFAULT_TRANSITION)
+
+    def is_refused_on_purpose(self, sample):
+        """Returns whether the workflow does not publish the sample by design
+
+        The status of the sample does not offer the transition, e.g. a sample
+        that is not received yet, or its guard refuses it, e.g. for a sample
+        without submitted results or one for internal use. Otherwise, the
+        transition failed because the user may not publish the sample.
+
+        :param sample: the sample that was not published
+        :returns: True if the workflow refuses the publication by design
+        """
+        transition = self.get_transition(sample)
+        if not self.is_offered(sample, transition):
+            return True
+        return not guard_handler(sample, transition)
+
+    def is_offered(self, sample, transition):
+        """Returns whether the status of the sample offers the transition
+
+        :param sample: the sample
+        :param transition: the id of the transition
+        :returns: True if the transition leaves the status of the sample
+        """
+        status = api.get_review_status(sample)
+        wf_tool = api.get_tool("portal_workflow")
+        for workflow in wf_tool.getWorkflowsFor(sample):
+            state = workflow.states.get(status)
+            if state and transition in state.transitions:
+                return True
+        return False
 
     def get_samples(self, reports):
         """Returns the samples contained in the reports passed-in
@@ -83,7 +126,7 @@ class PublishSamplesHandler(object):
         :returns: True if the transition was performed
         """
         status = api.get_review_status(sample)
-        transition = TRANSITIONS.get(status, DEFAULT_TRANSITION)
+        transition = self.get_transition(sample)
         logger.info("Transitioning sample {}: {} -> {}".format(
             api.get_id(sample), status, transition))
         succeed, message = doActionFor(sample, transition)

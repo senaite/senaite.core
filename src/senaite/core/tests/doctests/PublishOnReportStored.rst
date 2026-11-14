@@ -25,6 +25,7 @@ Needed Imports:
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import setRoles
     >>> from plone.namedfile.file import NamedBlobFile
+    >>> from Products.statusmessages.interfaces import IStatusMessage
     >>> from senaite.core.interfaces import IReportStoredHandler
     >>> from zope.component import queryMultiAdapter
 
@@ -59,6 +60,10 @@ Functional Helpers:
     ...         analysis.setResult(5)
     ...         ignored = doActionFor(analysis, "submit")
     ...     return api.get_review_status(sample)
+
+    >>> def show_messages():
+    ...     for message in IStatusMessage(request).show():
+    ...         print("{}: {}".format(message.type, message.message))
 
     >>> def submit_and_verify(sample):
     ...     for analysis in sample.getAnalyses(full_objects=True):
@@ -181,6 +186,32 @@ report for a sample without results transitions nothing:
     >>> handler([new_report(sample)])
     >>> api.get_review_status(sample)
     'sample_received'
+
+The workflow refuses it on purpose, so the user gets no warning:
+
+    >>> show_messages()
+
+
+A user who may not publish gets a warning
+.........................................
+
+The report is stored nevertheless, but the user learns that the sample was
+not published:
+
+    >>> sample = new_sample([service])
+    >>> receive(sample)
+    'sample_received'
+    >>> submit_and_verify(sample)
+    'verified'
+
+    >>> setRoles(portal, TEST_USER_ID, ["Analyst"])
+    >>> handler([new_report(sample)])
+    >>> setRoles(portal, TEST_USER_ID, ["LabManager", "Manager"])
+
+    >>> api.get_review_status(sample)
+    'verified'
+    >>> show_messages()
+    warning: Could not publish: W-0004
 
 
 Contained samples are published as well
