@@ -28,6 +28,7 @@ from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IWorkflowActionUIDsAdapter
 from DateTime import DateTime
 from senaite.core.api import dtime
+import transaction
 from zope.interface import implements
 
 
@@ -362,9 +363,15 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
         if self.is_ar_specs_enabled:
             specs = map(lambda service: self.get_specs(service), services)
 
-        # Set new analyses to the sample
+        # Set new analyses to the sample. All analyses can be unselected, but
+        # the sample cannot be left without analyses if they are required
+        savepoint = transaction.savepoint()
         sample.setAnalysisServicesSettings(hidden)
         sample.setAnalyses(uids, prices=prices, specs=specs, hidden=hidden)
+        if self.is_sample_analyses_required and not sample.getAnalyses():
+            savepoint.rollback()
+            message = _("At least one analysis is required")
+            return self.redirect(message=message, level="warning")
 
         # Just in case new analyses have been added while the Sample was in a
         # "non-open" state (e.g. "to_be_verified")
@@ -379,6 +386,13 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
 
         # Redirect the user to success page
         self.success([sample])
+
+    @property
+    def is_sample_analyses_required(self):
+        """Returns whether samples require at least one analysis
+        """
+        setup = api.get_senaite_setup()
+        return setup.getSampleAnalysesRequired()
 
     @property
     def is_ar_specs_enabled(self):
