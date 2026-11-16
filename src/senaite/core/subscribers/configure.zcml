@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configure xmlns="http://namespaces.zope.org/zope">
 
+  <!-- Upgrade steps: list the objects that cannot be loaded -->
+  <subscriber
+      for="senaite.core.events.upgrade.IBeforeUpgradeStepEvent"
+      handler=".upgrade.before_upgrade_step"
+      />
+
+  <subscriber
+      for="senaite.core.events.upgrade.IAfterUpgradeStepEvent"
+      handler=".upgrade.after_upgrade_step"
+      />
+
   <!-- Audit Log: AT Object Created -->
   <subscriber
       for="Products.Archetypes.interfaces.IBaseObject
