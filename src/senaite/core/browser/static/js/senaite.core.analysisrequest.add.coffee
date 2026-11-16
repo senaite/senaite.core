@@ -1279,6 +1279,26 @@ class window.AnalysisRequestAdd
 
 
   ###*
+   * Number the lines of the paste panel past the last sample
+   *
+   * These lines are not pasted, therefore their numbers are muted
+   *
+   * @param line_numbers {Object} line numbers element of the paste panel
+   * @param count {Number} number of lines entered
+  ###
+  number_paster_lines: (line_numbers, count) =>
+    line_numbers.find(".extra-lines").remove()
+    lines = line_numbers.find(".line")
+    first = lines.length + 1
+    return unless count >= first
+    extra = $("<span class='extra-lines'></span>")
+    for num in [first..count]
+      extra.append "\n<span class='line text-muted'>#{num}</span>"
+    # right after the last number, the template ends with whitespace
+    lines.last().after extra
+
+
+  ###*
    * Flush services search filters
   ###
   flush_search_terms: =>
@@ -1848,6 +1868,12 @@ class window.AnalysisRequestAdd
     line_numbers = dialog.find(".line-numbers")
     dialog.find(".paste-editor").on "scroll", ->
       line_numbers.scrollTop @scrollTop
+
+    # number the lines past the last sample as well, otherwise the line
+    # numbers stop scrolling and no longer match the values
+    dialog.find(".paste-editor").on "input", ->
+      count = @value.split("\n").length
+      me.number_paster_lines line_numbers, count
 
     active_tab = $("ul#sample-tabs a.nav-link.active")
     if active_tab
