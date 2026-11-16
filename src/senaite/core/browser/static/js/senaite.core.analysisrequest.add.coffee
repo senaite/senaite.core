@@ -1279,23 +1279,24 @@ class window.AnalysisRequestAdd
 
 
   ###*
-   * Number the lines of the paste panel past the last sample
+   * Keep one line per sample in the paste panel
    *
-   * These lines are not pasted, therefore their numbers are muted
+   * Surplus empty lines at the end are removed first, as a new line or a
+   * paste pushes them down. Lines past the last sample are cut off.
    *
-   * @param line_numbers {Object} line numbers element of the paste panel
-   * @param count {Number} number of lines entered
+   * @param editor {Object} text area of the paste panel
+   * @param count {Number} number of samples
   ###
-  number_paster_lines: (line_numbers, count) =>
-    line_numbers.find(".extra-lines").remove()
-    lines = line_numbers.find(".line")
-    first = lines.length + 1
-    return unless count >= first
-    extra = $("<span class='extra-lines'></span>")
-    for num in [first..count]
-      extra.append "\n<span class='line text-muted'>#{num}</span>"
-    # right after the last number, the template ends with whitespace
-    lines.last().after extra
+  fit_paster_lines: (editor, count) =>
+    lines = editor.value.split "\n"
+    return if lines.length is count
+    while lines.length > count and lines[lines.length - 1] is ""
+      lines.pop()
+    lines = lines.slice 0, count
+    lines.push "" while lines.length < count
+    pos = editor.selectionStart
+    editor.value = lines.join "\n"
+    editor.setSelectionRange pos, pos
 
 
   ###*
@@ -1866,14 +1867,21 @@ class window.AnalysisRequestAdd
     # scroll the line numbers along with the values, so that the number of
     # each sample stays next to its value
     line_numbers = dialog.find(".line-numbers")
-    dialog.find(".paste-editor").on "scroll", ->
+    editor = dialog.find(".paste-editor")
+    editor.on "scroll", ->
       line_numbers.scrollTop @scrollTop
 
-    # number the lines past the last sample as well, otherwise the line
-    # numbers stop scrolling and no longer match the values
-    dialog.find(".paste-editor").on "input", ->
-      count = @value.split("\n").length
-      me.number_paster_lines line_numbers, count
+    # one line per sample, so that the lines always match the numbers
+    count = line_numbers.find(".line").length
+    editor.val "\n".repeat(count - 1)
+    editor.on "input", ->
+      me.fit_paster_lines this, count
+
+    # no new line when the last line has a value, it would be cut off
+    editor.on "keydown", (event) ->
+      return unless event.key is "Enter"
+      lines = @value.split "\n"
+      event.preventDefault() if lines[lines.length - 1]
 
     active_tab = $("ul#sample-tabs a.nav-link.active")
     if active_tab

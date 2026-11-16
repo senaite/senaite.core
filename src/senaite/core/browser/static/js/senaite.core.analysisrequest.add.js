@@ -273,14 +273,15 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
      */
     this.highlight_paster_line = this.highlight_paster_line.bind(this);
     /**
-     * Number the lines of the paste panel past the last sample
+     * Keep one line per sample in the paste panel
      *
-     * These lines are not pasted, therefore their numbers are muted
+     * Surplus empty lines at the end are removed first, as a new line or a
+     * paste pushes them down. Lines past the last sample are cut off.
      *
-     * @param line_numbers {Object} line numbers element of the paste panel
-     * @param count {Number} number of lines entered
+     * @param editor {Object} text area of the paste panel
+     * @param count {Number} number of samples
      */
-    this.number_paster_lines = this.number_paster_lines.bind(this);
+    this.fit_paster_lines = this.fit_paster_lines.bind(this);
     /**
      * Flush services search filters
      */
@@ -1541,20 +1542,22 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     }
   }
 
-  number_paster_lines(line_numbers, count) {
-    var extra, first, i, lines, num, ref, ref1;
-    line_numbers.find(".extra-lines").remove();
-    lines = line_numbers.find(".line");
-    first = lines.length + 1;
-    if (!(count >= first)) {
+  fit_paster_lines(editor, count) {
+    var lines, pos;
+    lines = editor.value.split("\n");
+    if (lines.length === count) {
       return;
     }
-    extra = $("<span class='extra-lines'></span>");
-    for (num = i = ref = first, ref1 = count; (ref <= ref1 ? i <= ref1 : i >= ref1); num = ref <= ref1 ? ++i : --i) {
-      extra.append(`\n<span class='line text-muted'>${num}</span>`);
+    while (lines.length > count && lines[lines.length - 1] === "") {
+      lines.pop();
     }
-    // right after the last number, the template ends with whitespace
-    return lines.last().after(extra);
+    lines = lines.slice(0, count);
+    while (lines.length < count) {
+      lines.push("");
+    }
+    pos = editor.selectionStart;
+    editor.value = lines.join("\n");
+    return editor.setSelectionRange(pos, pos);
   }
 
   flush_search_terms() {
@@ -2016,7 +2019,7 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
   }
 
   on_paste_click(event) {
-    var active_tab, buttons, context, dialog, el, fieldLabel, fieldName, idx, line_numbers, me;
+    var active_tab, buttons, context, count, dialog, editor, el, fieldLabel, fieldName, idx, line_numbers, me;
     console.debug("°°° on_paste_click °°°");
     event.preventDefault();
     el = event.currentTarget;
@@ -2043,15 +2046,26 @@ window.AnalysisRequestAdd = class AnalysisRequestAdd {
     // scroll the line numbers along with the values, so that the number of
     // each sample stays next to its value
     line_numbers = dialog.find(".line-numbers");
-    dialog.find(".paste-editor").on("scroll", function() {
+    editor = dialog.find(".paste-editor");
+    editor.on("scroll", function() {
       return line_numbers.scrollTop(this.scrollTop);
     });
-    // number the lines past the last sample as well, otherwise the line
-    // numbers stop scrolling and no longer match the values
-    dialog.find(".paste-editor").on("input", function() {
-      var count;
-      count = this.value.split("\n").length;
-      return me.number_paster_lines(line_numbers, count);
+    // one line per sample, so that the lines always match the numbers
+    count = line_numbers.find(".line").length;
+    editor.val("\n".repeat(count - 1));
+    editor.on("input", function() {
+      return me.fit_paster_lines(this, count);
+    });
+    // no new line when the last line has a value, it would be cut off
+    editor.on("keydown", function(event) {
+      var lines;
+      if (event.key !== "Enter") {
+        return;
+      }
+      lines = this.value.split("\n");
+      if (lines[lines.length - 1]) {
+        return event.preventDefault();
+      }
     });
     active_tab = $("ul#sample-tabs a.nav-link.active");
     if (active_tab) {
