@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3085 Allow to remove all analyses from "Manage analyses"
 - #3079 Skip the objects whose state cannot be loaded in the client token reindex
 - #3040 Send a SENAITE test e-mail from the mail settings
 - #3067 Allow calculations to import only from the modules the site allows
