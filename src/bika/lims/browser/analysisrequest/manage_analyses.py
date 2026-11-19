@@ -122,10 +122,23 @@ class AnalysisRequestAnalysesView(BikaListingView):
             },
         ]
 
+    def is_analyses_required(self):
+        """Returns whether samples require at least one analysis
+        """
+        setup = api.get_senaite_setup()
+        return setup.getSampleAnalysesRequired()
+
     def update(self):
         """Update hook
         """
         super(AnalysisRequestAnalysesView, self).update()
+
+        # Allow to save with no analyses selected, to remove them all, unless
+        # samples require at least one analysis
+        allow_empty = not self.is_analyses_required()
+        for review_state in self.review_states:
+            review_state["allow_empty_selection"] = allow_empty
+
         analyses = self.context.getAnalyses(full_objects=True)
         self.analyses = dict([(a.getServiceUID(), a) for a in analyses])
 
