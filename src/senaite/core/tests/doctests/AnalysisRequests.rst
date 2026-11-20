@@ -44,6 +44,7 @@ Variables::
     >>> bika_setup = portal.bika_setup
     >>> sampletypes = setup.sampletypes
     >>> samplepoints = setup.samplepoints
+    >>> sampleconditions = setup.sampleconditions
     >>> analysiscategories = setup.analysiscategories
     >>> bika_analysisservices = bika_setup.bika_analysisservices
     >>> bika_labcontacts = bika_setup.bika_labcontacts
@@ -165,3 +166,64 @@ sets the widget.visible to 'invisible'.
     >>> p = doActionFor(an, 'submit')
     >>> DateReceivedFieldVisibility(ar1)(ar1, 'edit', ar1.schema['DateReceived'], 'default')
     'invisible'
+
+Sample Condition
+................
+
+A `SampleCondition` describes the condition of the sample when it arrives at
+the laboratory::
+
+    >>> condition = api.create(sampleconditions, "SampleCondition", title="Fit for purpose")
+    >>> condition
+    <SampleCondition at /plone/setup/sampleconditions/samplecondition-1>
+
+Create another `AnalysisRequest` with the Sample Condition set::
+
+    >>> values_with_condition = dict(values, SampleCondition=condition.UID())
+    >>> ar2 = create_analysisrequest(client, request, values_with_condition, service_uids)
+    >>> ar2
+    <AnalysisRequest at /plone/clients/client-1/water-0003>
+    >>> ar2.getSampleCondition() == condition
+    True
+
+
+Sample Condition required setting
+.................................
+
+By default, the Sample Condition is not required::
+
+    >>> from bika.lims.adapters.widgetvisibility import SamplingFieldsVisibility
+    >>> setup = api.get_senaite_setup()
+    >>> visibility = SamplingFieldsVisibility(ar2)
+    >>> field = ar2.getField("SampleCondition")
+    >>> visibility(ar2, "add", field, "visible")
+    'visible'
+    >>> field.required
+    False
+
+When the setting is enabled, the field becomes required::
+
+    >>> setup.setSampleConditionRequired(True)
+    >>> setup.getSampleConditionRequired()
+    True
+
+    >>> visibility(ar2, "add", field, "visible")
+    'visible'
+    >>> field.required
+    True
+
+Like the Date Sampled setting, it applies when an existing sample is edited
+as well::
+
+    >>> visibility(ar2, "edit", field, "visible")
+    'visible'
+    >>> field.required
+    True
+
+Disabling the setting makes the field optional again::
+
+    >>> setup.setSampleConditionRequired(False)
+    >>> visibility(ar2, "add", field, "visible")
+    'visible'
+    >>> field.required
+    False

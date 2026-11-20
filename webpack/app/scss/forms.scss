@@ -31,6 +31,16 @@ form[name='edit_form'] div.listing-container {
         @extend .form-control;
         width: 100%!important;
     }
+
+    /* An input-group is a row of its own, and Bootstrap sizes the field
+       inside it with width:1% so that the prepend and the append sit
+       beside it rather than under it. The rule above is !important and
+       beats that, which is why the listing's own search box came out as
+       three stacked rows wherever a listing is used as a field widget. */
+    .input-group > input,
+    .input-group > select {
+        width: 1%!important;
+    }
 }
 
 /* Default widths for form inputs.
@@ -192,4 +202,24 @@ span.options:has(> input.hide-title) {
 /* For inline TinyMCE editors */
 .mce-edit-focus {
   padding: 8px !important;
+}
+
+/* Heading of a section inside a fieldset. Drawn above the first field
+   of the section, with a rule under it so the fields that follow read
+   as belonging to it. */
+h4.senaite-fieldset-section {
+  margin: 1.5rem 0 0.75rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid #dee2e6;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #6c757d;
+
+  /* The first one sits directly under the tab bar, which needs less
+     space than a heading following a field, but not none. */
+  &:first-child {
+    margin-top: 0.75rem;
+  }
 }

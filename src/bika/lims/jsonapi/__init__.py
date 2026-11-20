@@ -34,33 +34,82 @@ from Products.Archetypes.config import TOOL_NAME
 from Products.CMFCore.utils import getToolByName
 from senaite.core.browser.fields.parsing import parse_record_literal
 from senaite.core.permissions import AccessJSONAPI
+from senaite.core.permissions import ReadJSONAPI
+
+
+def check_permission(permission, obj):
+    """Check the given permission on the given object
+
+    Raises Unauthorized if the current user does not hold `permission`
+    on the passed-in object.
+    """
+    if getSecurityManager().checkPermission(permission, obj):
+        return
+    msg = "You don't have the '{0}' permission on {1}".format(
+        permission, obj.absolute_url())
+    raise Unauthorized(msg)
 
 
 def check_jsonapi_permission(obj):
     """Check the AccessJSONAPI permission on the given object
 
-    Raises Unauthorized if the current user does not hold the
-    `senaite.core: Access JSON API` permission on the passed-in object.
-    This guards the state-changing JSON API routes against anonymous and
-    under-privileged callers (CWE-862).
+    This guards the state-changing JSON API routes against anonymous
+    and under-privileged callers (CWE-862).
     """
-    if getSecurityManager().checkPermission(AccessJSONAPI, obj):
+    check_permission(AccessJSONAPI, obj)
+
+
+def check_jsonapi_read_permission(obj):
+    """Check the ReadJSONAPI permission on the given object
+
+    This guards the reading JSON API routes (CWE-862). They are held by
+    every authenticated user, because the UI calls them from views
+    those users work in, and the data they return is bounded by the
+    View permission on each object. Anonymous must not reach them: the
+    routes take a caller-chosen catalog and answer with field data in
+    bulk, which turns whatever is anonymously viewable through
+    acquisition into a single downloadable dump.
+    """
+    check_permission(ReadJSONAPI, obj)
+
+
+def set_error_status(exc, request):
+    """Put the status an exception carries onto the response.
+
+    A typed JSON API error knows the status it means (401, 403, 404,
+    ...); anything else is a server error. The status belongs to the
+    error reaching the client, so it is set here, where the envelope is
+    built, and not where the exception object was made: an error that is
+    caught on the way to a successful answer must not leave its status
+    behind on that answer.
+
+    :param request: the current request, or None outside one
+    """
+    status = getattr(exc, "status", None)
+    if not isinstance(status, int):
+        status = 500
+    if request is None:
         return
-    msg = "You don't have the '{0}' permission on {1}".format(
-        AccessJSONAPI, obj.absolute_url())
-    raise Unauthorized(msg)
+    response = getattr(request, "response", None)
+    if response is not None:
+        response.setStatus(status)
 
 
 def handle_errors(f):
     """JSON error handler for the SENAITE API routes.
 
     Returns a JSON envelope with only the exception message and its
-    class name; the full traceback is logged server-side but never
-    included in the response body. The previous implementation
-    stuffed `traceback.format_exc()` verbatim into the `message`
-    field, which leaked file paths, function names, and code
-    structure to any caller that could trigger an error
-    (CWE-209 information exposure through an error message).
+    class name, and sets the HTTP status the exception carries; the
+    full traceback is logged server-side but never included in the
+    response body. An earlier implementation stuffed
+    `traceback.format_exc()` verbatim into the `message` field, which
+    leaked file paths, function names, and code structure to any caller
+    that could trigger an error (CWE-209 information exposure through
+    an error message).
+
+    A refusal that answers 200 with a failure envelope reads as success
+    to a proxy, a log, a monitoring check and a browser alike, none of
+    which parse the body.
     """
     from plone.jsonapi.core.browser.helpers import error
 
@@ -73,6 +122,7 @@ def handle_errors(f):
                 getattr(f, "__name__", repr(f)),
                 traceback.format_exc(),
             )
+            set_error_status(exc, api.get_request())
             return error(str(exc), type=type(exc).__name__)
 
     return decorator

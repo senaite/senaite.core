@@ -321,13 +321,15 @@ class PrintView(BrowserView):
             data['fullname'] = to_utf8(self.user_fullname(username))
             data['email'] = to_utf8(self.user_email(username))
 
-            lab_contacts = self.senaite_catalog_setup(portal_type='LabContact')
-            c = [x for x in lab_contacts
-                 if x.getObject().getUsername() == username]
-            if c:
-                sf = c[0].getObject().getSignature()
-                if sf:
-                    data['signature'] = sf.absolute_url() + "/Signature"
+            # Note lab contacts are indexed in the contact catalog, not in
+            # the setup catalog, and `get_user_contact` resolves them with a
+            # single query against the `getUsername` index
+            contact = api.get_user_contact(member, ["LabContact"])
+            signature = contact and contact.getSignature() or None
+            if signature:
+                # the url of the image already ends with the name of the
+                # field, so there is nothing to append here
+                data["signature"] = signature.absolute_url()
 
         return data
 

@@ -32,7 +32,7 @@ from bika.lims.utils import logged_in_client
 from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.i18n import translate as t
-from zope.i18n.locales import locales
+from senaite.core.i18n import get_currency_symbol
 
 DETACHED_STATES = ["cancelled", "rejected", "retracted"]
 
@@ -122,10 +122,23 @@ class AnalysisRequestAnalysesView(BikaListingView):
             },
         ]
 
+    def is_analyses_required(self):
+        """Returns whether samples require at least one analysis
+        """
+        setup = api.get_senaite_setup()
+        return setup.getSampleAnalysesRequired()
+
     def update(self):
         """Update hook
         """
         super(AnalysisRequestAnalysesView, self).update()
+
+        # Allow to save with no analyses selected, to remove them all, unless
+        # samples require at least one analysis
+        allow_empty = not self.is_analyses_required()
+        for review_state in self.review_states:
+            review_state["allow_empty_selection"] = allow_empty
+
         analyses = self.context.getAnalyses(full_objects=True)
         self.analyses = dict([(a.getServiceUID(), a) for a in analyses])
 
@@ -171,10 +184,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
     def get_currency_symbol(self):
         """Get the currency Symbol
         """
-        locale = locales.getLocale('en')
         setup = api.get_senaite_setup()
         currency = setup.getCurrency()
-        return locale.numbers.currencies[currency].symbol
+        return get_currency_symbol(currency)
 
     @view.memoize
     def get_logged_in_client(self):

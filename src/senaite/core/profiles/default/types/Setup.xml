@@ -49,8 +49,6 @@
 
   <!-- Dexterity behaviours for this type -->
   <property name="behaviors">
-    <!-- Don't show item in navigation -->
-    <element value="plone.app.dexterity.behaviors.exclfromnav.IExcludeFromNavigationDefault"/>
     <element value="plone.app.referenceablebehavior.referenceable.IReferenceable" />
   </property>
 

@@ -352,6 +352,205 @@ And we get same result regardless of the method, cause none of the ranges for
     >>> rr["rangecomment"]
     'Mg Priority'
 
+Strict limits
+.............
+
+The optional columns `min_operator` and `max_operator` set whether the limits
+are part of the range. Their values are those of an Analysis Specification:
+`geq` (>=) or `gt` (>) for the minimum, `leq` (<=) or `lt` (<) for the
+maximum. They can also be written as symbols. When empty, the operator of the
+Analysis Specification applies, that is inclusive by default:
+
+------- --- --- ------------ ------------
+Keyword min max min_operator max_operator
+------- --- --- ------------ ------------
+Ca      1   2   gt           lt
+Mg      5   6
+------- --- --- ------------ ------------
+
+    >>> data = """Keyword,min,max,min_operator,max_operator
+    ... Ca,1,2,gt,lt
+    ... Mg,5,6,,"""
+    >>> ds.specs_file = to_excel(data)
+
+    >>> sample = new_sample([Ca, Mg], specification=specification)
+    >>> ca, mg = sample["Ca"], sample["Mg"]
+
+The limits of `Ca` are not part of the range:
+
+    >>> rr = ca.getResultsRange()
+    >>> rr["min"], rr["max"], rr["min_operator"], rr["max_operator"]
+    ('1', '2', 'gt', 'lt')
+
+    >>> from bika.lims.api.analysis import is_out_of_range
+    >>> for result in ["1", "1.5", "2"]:
+    ...     ca.setResult(result)
+    ...     print("{}: {}".format(result, is_out_of_range(ca)[0]))
+    1: True
+    1.5: False
+    2: True
+
+While the limits of `Mg` are:
+
+    >>> rr = mg.getResultsRange()
+    >>> rr["min"], rr["max"], rr["min_operator"], rr["max_operator"]
+    ('5', '6', 'geq', 'leq')
+
+    >>> for result in ["5", "6"]:
+    ...     mg.setResult(result)
+    ...     print("{}: {}".format(result, is_out_of_range(mg)[0]))
+    5: False
+    6: False
+
+The operators can be written as their key or their symbol, with surrounding
+whitespace:
+
+    >>> from bika.lims.adapters.dynamicresultsrange import to_operator
+    >>> for value in ["geq", ">=", " >= ", "gt", ">", " GT "]:
+    ...     print("{!r}: {}".format(value, to_operator("min_operator", value)))
+    'geq': geq
+    '>=': geq
+    ' >= ': geq
+    'gt': gt
+    '>': gt
+    ' GT ': gt
+
+    >>> for value in ["leq", "<=", "lt", "<", "\t< "]:
+    ...     print("{!r}: {}".format(value, to_operator("max_operator", value)))
+    'leq': leq
+    '<=': leq
+    'lt': lt
+    '<': lt
+    '\t< ': lt
+
+Anything else, or a maximum operator as minimum, is not an operator:
+
+    >>> values = ["", "  ", None, 1, "<", "=>", "&gt;", "gt;"]
+    >>> [to_operator("min_operator", value) for value in values]
+    [None, None, None, None, None, None, None, None]
+
+The forms can be mixed in the same file:
+
+    >>> data = """Keyword,min,max,min_operator,max_operator
+    ... Ca,1,2, > ,lt
+    ... Mg,5,6,>=,<="""
+    >>> ds.specs_file = to_excel(data)
+    >>> sample = new_sample([Ca, Mg], specification=specification)
+    >>> rr = sample["Ca"].getResultsRange()
+    >>> rr["min_operator"], rr["max_operator"]
+    ('gt', 'lt')
+    >>> rr = sample["Mg"].getResultsRange()
+    >>> rr["min_operator"], rr["max_operator"]
+    ('geq', 'leq')
+
+An unknown operator is skipped, so the operator of the Analysis Specification
+applies:
+
+    >>> data = """Keyword,min,max,min_operator,max_operator
+    ... Ca,1,2,=>,<<"""
+    >>> ds.specs_file = to_excel(data)
+    >>> sample = new_sample([Ca], specification=specification)
+    >>> rr = sample["Ca"].getResultsRange()
+    >>> rr["min_operator"], rr["max_operator"]
+    ('geq', 'leq')
+
+The autocorrect of Excel turns `>=` and `<=` into `≥` and `≤`. These are
+accepted too, while any other character is skipped like an unknown operator:
+
+    >>> print(to_operator("min_operator", u"\u2265"))
+    geq
+    >>> print(to_operator("max_operator", u" \u2264 "))
+    leq
+    >>> print(to_operator("min_operator", u"\u2264"))
+    None
+
+    >>> def rows_to_excel(rows):
+    ...     workbook = Workbook()
+    ...     first_sheet = workbook.get_active_sheet()
+    ...     for row in rows:
+    ...         first_sheet.append(row)
+    ...     return NamedBlobFile(save_virtual_workbook(workbook))
+
+    >>> ds.specs_file = rows_to_excel([
+    ...     [u"Keyword", u"min", u"max", u"min_operator", u"max_operator"],
+    ...     [u"Ca", u"1", u"2", u"\u2265", u"\u2264"],
+    ...     [u"Mg", u"5", u"6", u"\u2260", u"\u226a"],
+    ... ])
+    >>> sample = new_sample([Ca, Mg], specification=specification)
+    >>> rr = sample["Ca"].getResultsRange()
+    >>> rr["min_operator"], rr["max_operator"]
+    ('geq', 'leq')
+    >>> rr = sample["Mg"].getResultsRange()
+    >>> rr["min_operator"], rr["max_operator"]
+    ('geq', 'leq')
+
+A range with a strict maximum only, e.g. normal below 6, keeps the minimum
+of the Analysis Specification when empty, that is none for an analysis the
+Analysis Specification has no range for:
+
+    >>> rr3 = {"keyword": "Ca", "min": 10, "max": 20}
+    >>> spec_ca = api.create(bikasetup.bika_analysisspecs, "AnalysisSpec",
+    ...                      title="Lab Water Spec Ca", SampleType=sampletype,
+    ...                      ResultsRange=[rr3])
+    >>> spec_ca.setDynamicAnalysisSpec(ds)
+
+    >>> data = """Keyword,min,max,min_operator,max_operator
+    ... Mg,,6,,lt"""
+    >>> ds.specs_file = to_excel(data)
+    >>> sample = new_sample([Mg], specification=spec_ca)
+    >>> mg = sample["Mg"]
+    >>> rr = mg.getResultsRange()
+    >>> rr["min"], rr["max"], rr["min_operator"], rr["max_operator"]
+    ('', '6', 'geq', 'lt')
+
+    >>> for result in ["0", "5.9", "6"]:
+    ...     mg.setResult(result)
+    ...     print("{}: {}".format(result, is_out_of_range(mg)[0]))
+    0: False
+    5.9: False
+    6: True
+
+An empty operator keeps the operator of the Analysis Specification, while an
+operator overrides it:
+
+    >>> rr3 = {"keyword": "Ca", "min": 10, "max": 20,
+    ...        "min_operator": "gt", "max_operator": "lt"}
+    >>> spec_ca.setResultsRange([rr3])
+
+    >>> data = """Keyword,min,max,min_operator,max_operator
+    ... Ca,1,2,,leq"""
+    >>> ds.specs_file = to_excel(data)
+    >>> sample = new_sample([Ca], specification=spec_ca)
+    >>> rr = sample["Ca"].getResultsRange()
+    >>> rr["min"], rr["max"], rr["min_operator"], rr["max_operator"]
+    ('1', '2', 'gt', 'leq')
+
+The operators are values of the range, not values to match, so they do not
+give a range priority over a more specific one. A range for `Method B` without
+operators has priority over a range for any method with operators:
+
+    >>> data = """Keyword,Method,min,max,min_operator,max_operator
+    ... Ca,,1,2,gt,lt
+    ... Ca,Method B,3,4,,"""
+    >>> ds.specs_file = to_excel(data)
+    >>> sample = new_sample([Ca], specification=specification)
+    >>> ca = sample["Ca"]
+    >>> ca.setMethod(method_b)
+    >>> sample.setSpecification(None)
+    >>> sample.setSpecification(specification)
+    >>> rr = ca.getResultsRange()
+    >>> rr["min"], rr["max"], rr["min_operator"], rr["max_operator"]
+    ('3', '4', 'geq', 'leq')
+
+While the range for any method applies to other methods:
+
+    >>> ca.setMethod(method_a)
+    >>> sample.setSpecification(None)
+    >>> sample.setSpecification(specification)
+    >>> rr = ca.getResultsRange()
+    >>> rr["min"], rr["max"], rr["min_operator"], rr["max_operator"]
+    ('1', '2', 'gt', 'lt')
+
 Restore the dynamic specifications with original values:
 
     >>> ds.specs_file = original_data

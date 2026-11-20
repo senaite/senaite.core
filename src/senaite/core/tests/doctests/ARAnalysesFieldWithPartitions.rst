@@ -382,3 +382,13 @@ Calculate dependent result and make sure it's correct:
     >>> th_analysis.getResult()
     '20.0'
 
+An interim field the formula does not use keeps out of the calculation, even
+when its value is no number:
+
+    >>> th_analysis.setInterimFields([
+    ...     {"keyword": "extra", "title": "Extra", "value": "<5"}])
+    >>> th_analysis.calculateResult(override=True)
+    True
+    >>> th_analysis.getResult()
+    '20.0'
+

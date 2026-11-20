@@ -5,6 +5,63 @@ Changelog
 ------------------
 
 - #3004 Speed up the creation of worksheets with a worksheet template
+- #3086 Limit the lines of the paste dialog to the number of samples
+- #3031 Migrate SupplierContact to Dexterity
+- #3085 Allow to remove all analyses from "Manage analyses"
+- #3079 Skip the objects whose state cannot be loaded in the client token reindex
+- #3040 Send a SENAITE test e-mail from the mail settings
+- #3067 Allow calculations to import only from the modules the site allows
+- #3084 Fix the line numbers of the paste dialog do not scroll with the values
+- #3083 Log a transition that is not allowed once, as a warning
+- #3082 Fix the analysis columns order is not migrated to the setup
+- #3081 Fix the partitions of a sample are not listed in order
+- #3078 Skip the members loop of the local roles when no dynamic roles apply
+- #3076 Let a formula format a text, without fields that read attributes
+- #3075 Move the attachments catalog upgrade step to the top
+- #3071 Fix the analyses keywords of existing samples stay empty after the upgrade
+- #3070 Fix the setup fields migration overwrites settings with outdated values
+- #3069 Fix the worksheet migration refuses to rename the worksheets folder
+- #3080 Honour min/max operators in Dynamic Analysis Specifications
+- #3051 Draw section headings inside a fieldset
+- #3073 Fix the upgrade step events fire for every migrated multifile
+- #3072 Reindex the client tree only once in the 2.7.0 upgrade
+- #3066 Pass values to a formula as data and refuse unsafe formulas
+- #3068 Fix new indexes of the core catalogs stay empty after an upgrade
+- #3065 Check whether a user may use a form before its adapter is called
+- #3074 Rename the attachments catalog to senaite_catalog_attachments
+- #3064 Fix client contacts do not find older content of their client
+- #3055 Gate the reading JSON API routes with a new Read JSON API permission
+- #3063 Remove the unused front page settings from the setup
+- #3045 Store a UID in one type and refuse what is not one
+- #3061 Set the instruments a method is created with once it has a UID
+- #3058 Fix the sample progress and analyses count lagging by one analysis
+- #3057 Fix address subfields that cannot be set through the API
+- #3056 Let a reference sample inherit the expected values of its definition
+- #3052 Keep the listing search box on one line as a field widget
+- #3050 Do not fail a validator when there is no form
+- #3049 Fix sample template records stored in types the schema refuses
+- #3048 Write the four analysis limits without trailing zeros
+- #3044 Show the analysis profile as a position on the invoice
+- #3043 Store a calculation's test parameters as unicode
+- #3042 Fix result options not settable outside a browser form
+- #3041 Support the documented key:value form for analysis conditions
+- #2893 Name Partitions as per Sample Template
+- #3027 Fix Sample Points sorting and filtering by Sample Type
+- #3039 Do not reset the laboratory name when the setup profile is imported again
+- #3038 Answer a refused JSON API request with its own status
+- #3036 Fix setting a sample's specification through the API
+- #3062 Allow to make Sample Condition required
+- #3047 Fix ASTM import crashing on a sender with null components
+- #3035 Drop the stale marker behavior from the Setup FTI
+- #3034 Store the ID formatting rows as unicode
+- #3033 Give the immediate results entry setting a default
+- #3030 Fix the missing signature in the worksheet print view
+- #3029 Let the worksheet pick the slot for reference analyses
+- #3028 Offer every valid reference sample when adding one to a worksheet
+- #3060 Fix empty link text in the Client share field
+- #3059 Fix Indian Rupee symbol displayed as raw CLDR choice pattern
+- #3053 Fix TypeError when saving a Method with empty Instruments
+- #3023 Return a 404 when at_download is traversed on non-Archetypes content
 - #3022 Build the JavaScript bundles in CI
 - #3020 Use UnorderedOrdering for Instruments to avoid ZODB conflicts
 - #3021 Update JavaScript dependencies

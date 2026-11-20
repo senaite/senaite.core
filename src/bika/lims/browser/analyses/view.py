@@ -61,6 +61,8 @@ from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.i18n import translate as t
 from senaite.core.permissions import EditFieldResults
 from senaite.core.permissions import EditResults
+from senaite.core.api.choices import get_label as get_choice_label
+from senaite.core.api.choices import to_choices
 from senaite.core.permissions import FieldEditAnalysisConditions
 from senaite.core.permissions import FieldEditAnalysisHidden
 from senaite.core.permissions import FieldEditAnalysisRemarks
@@ -1133,12 +1135,7 @@ class AnalysesView(ListingView):
     def get_interim_choices(self, interim):
         """Parse the interim choices field
         """
-        choices = interim.get("choices")
-        if not choices:
-            return None
-        items = choices.split("|")
-        pairs = map(lambda item: item.strip().split(":"), items)
-        return OrderedDict(pairs)
+        return to_choices(interim.get("choices")) or None
 
     def _folder_item_calculation(self, analysis_brain, item):
         """Set the analysis' calculation and interims to the item passed in.
@@ -1794,6 +1791,11 @@ class AnalysesView(ListingView):
             if condition.get("type") == "file" and api.is_uid(value):
                 att = self.get_object(value)
                 value = self.get_attachment_link(att)
+            else:
+                # What is stored is the choice's key. Show what the
+                # person picked, which for a condition written without
+                # keys is the same string.
+                value = get_choice_label(condition.get("choices"), value)
             return ": ".join([title, str(value)])
 
         # Display the conditions properly formatted

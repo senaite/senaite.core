@@ -25,6 +25,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.api import analysisservice as serviceapi
 from bika.lims.api.security import check_permission
 from senaite.core.browser.controlpanel.listing import ControlPanelListingView
+from senaite.core.i18n import get_currency_symbol
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IAnalysisServices
 from senaite.core.permissions import AddAnalysisService
@@ -258,11 +259,10 @@ class AnalysisServicesView(ControlPanelListingView):
         """Returns the locale currency symbol
         """
         currency = self.context.bika_setup.getCurrency()
-        locale = locales.getLocale("en")
-        locale_currency = locale.numbers.currencies.get(currency)
-        if locale_currency is None:
+        currencies = locales.getLocale("en").numbers.currencies
+        if currencies.get(currency) is None:
             return "$"
-        return locale_currency.symbol
+        return get_currency_symbol(currency)
 
     def format_price(self, price):
         """Formats the price with the set decimal mark and correct currency

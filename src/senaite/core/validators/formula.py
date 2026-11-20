@@ -24,6 +24,8 @@ from . import ValidatedData, success, fail
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.api.analysisservice import get_by_keyword
 from senaite.core import logger
+from senaite.core.api.calculation import UnsafeFormula
+from senaite.core.api.calculation import check_formula
 from senaite.core.i18n import translate
 from zope.interface import Invalid
 from z3c.form import validator
@@ -98,6 +100,24 @@ def invalid_keyword():
     return validate
 
 
+def unsafe_formula():
+    def validate(data):
+        try:
+            check_formula(data["formula"] or "")
+        except UnsafeFormula as error:
+            return fail("unsafe_formula",
+                        translate(
+                            _(u"unsafe_formula_error",
+                              default=u"The formula is not allowed: "
+                                      u"${error}",
+                              mapping={"error": error.args[0]})))
+        except SyntaxError:
+            # A syntax error shows in the test result of the calculation
+            pass
+        return success(data)
+    return validate
+
+
 class FormulaValidator(validator.InvariantsValidator):
     """ Validate keywords in calculation formula entry
     """
@@ -105,7 +125,8 @@ class FormulaValidator(validator.InvariantsValidator):
     _validators = (
         no_wildcards_for_interims(),
         invalid_wildcards_check(),
-        invalid_keyword()
+        invalid_keyword(),
+        unsafe_formula(),
     )
 
     def validateObject(self, obj):

@@ -155,6 +155,43 @@ from the method's instruments::
     >>> map(api.get_title, method.getInstruments())
     ['Balance']
 
+An empty value does not break the setter. This happens, e.g. when the
+Instruments field is left empty in the add or edit form and `None` is
+passed to the setter::
+
+    >>> method.setInstruments(None)
+    >>> method.getInstruments()
+    []
+
+The back reference was also removed on the instrument side::
+
+    >>> method in instrument1.getMethods()
+    False
+
+The instruments can also be passed in when the method is created. The setter
+then runs before the method has a UID to be referenced by, so the instruments
+are set once the method is added::
+
+    >>> instrument3 = api.create(instruments, "Instrument", title="Titrator")
+    >>> created = api.create(methods, "Method", title="Karl Fischer",
+    ...                      Instruments=[api.get_uid(instrument3)])
+    >>> map(api.get_title, created.getInstruments())
+    ['Titrator']
+    >>> created in instrument3.getMethods()
+    True
+
+To be found by the instrument, the method is cataloged in the `uid_catalog`
+before the instruments are set. It ends up there exactly once::
+
+    >>> uc = api.get_tool("uid_catalog")
+    >>> len(uc(UID=api.get_uid(created)))
+    1
+
+Nothing is left behind on the method once the instruments are set::
+
+    >>> created.apply_pending_instruments()
+    False
+
 
 Method ID uniqueness
 ....................

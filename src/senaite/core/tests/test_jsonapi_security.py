@@ -25,7 +25,9 @@ import transaction
 from AccessControl import Unauthorized
 from bika.lims import api
 from bika.lims.jsonapi import check_jsonapi_permission
+from bika.lims.jsonapi import check_jsonapi_read_permission
 from bika.lims.jsonapi import handle_errors
+from bika.lims.jsonapi import set_error_status
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import TEST_USER_ID
@@ -67,6 +69,22 @@ class TestJSONAPISecurity(BaseTestCase):
     the site root, so the per-route permission check is the only barrier
     against anonymous / under-privileged callers (CWE-862).
 
+    The reading routes (`read`, `allowedTransitionsFor_many`) were left
+    ungated by the original fix. `read` takes a caller-chosen
+    `catalog_name`, every index of that catalog as a filter and
+    `include_fields` / `include_methods`, so without a gate it answers
+    with a filterable, paginated dump of whatever the caller may view.
+    `allowedTransitionsFor_many` discloses the workflow transitions
+    available per UID.
+
+    They are gated with `ReadJSONAPI` and not with `AccessJSONAPI`,
+    because the UI calls them from views that every authenticated user
+    works in, while `AccessJSONAPI` is held by LabManager and Manager
+    only. Widening that one permission instead would have handed the
+    writing routes to everybody. What the gate has to stop is the
+    anonymous caller, for whom acquisition from the site root turns the
+    route into a bulk download.
+
     `bika_setup` is the object the advisory PoC abused: its UID is
     resolvable, so each route reaches the permission check.
 
@@ -99,6 +117,15 @@ class TestJSONAPISecurity(BaseTestCase):
             ("getusers", "roles:list=Manager"),
         ]
 
+    def get_reading_routes(self):
+        """Return (route, query) for every route gated by ReadJSONAPI
+        """
+        uids = quote(json.dumps([self.target_uid]))
+        return [
+            ("read", "catalog_name=portal_catalog&portal_type=Client"),
+            ("allowedTransitionsFor_many", "uid=%s" % uids),
+        ]
+
     def get_authenticated_browser(self, username=TEST_USER_NAME,
                                   password=TEST_USER_PASSWORD):
         """Return a browser authenticated via HTTP Basic Auth
@@ -121,8 +148,17 @@ class TestJSONAPISecurity(BaseTestCase):
 
     def assert_blocked(self, browser, route, query):
         """The route must answer with an authorization failure
+
+        Both halves matter. The envelope tells a client what went
+        wrong, and the status tells every layer in between: a proxy, a
+        log, a monitoring check and a browser all read the status and
+        none of them parse the body. The route used to answer 200 with
+        a failure envelope, which reads as success to all of them.
         """
+        browser.raiseHttpErrors = False
         self.open_api(browser, route, query)
+        status = browser.headers["status"].split()[0]
+        self.assertIn(status, ("401", "403"))
         self.assertIn('"success": false', browser.contents)
         self.assertIn("Unauthorized", browser.contents)
 
@@ -131,6 +167,14 @@ class TestJSONAPISecurity(BaseTestCase):
         """
         logout()
         for route, query in self.get_gated_routes():
+            browser = self.getBrowser(loggedIn=False)
+            self.assert_blocked(browser, route, query)
+
+    def test_anonymous_is_blocked_on_the_reading_routes(self):
+        """Anonymous callers must not reach the reading routes either
+        """
+        logout()
+        for route, query in self.get_reading_routes():
             browser = self.getBrowser(loggedIn=False)
             self.assert_blocked(browser, route, query)
 
@@ -157,6 +201,7 @@ class TestJSONAPISecurity(BaseTestCase):
         setRoles(self.portal, TEST_USER_ID, ["Member"])
         transaction.commit()
         browser = self.get_authenticated_browser()
+        browser.raiseHttpErrors = False
         self.open_api(browser, "getusers", "roles:list=Manager")
         self.assertIn('"success": false', browser.contents)
         self.assertIn("Access JSON API", browser.contents)
@@ -173,6 +218,45 @@ class TestJSONAPISecurity(BaseTestCase):
         self.open_api(browser, "getusers", "roles:list=Manager")
         self.assertIn('"success": true', browser.contents)
 
+    def test_read_gate_is_the_blocker_for_anonymous(self):
+        """The ReadJSONAPI check is what blocks the catalog dump
+
+        Anonymous holds View on the site root, so a refusal naming the
+        permission proves the gate fired and not incidental View
+        protection on the searched content.
+        """
+        logout()
+        browser = self.getBrowser(loggedIn=False)
+        browser.raiseHttpErrors = False
+        self.open_api(browser, "read", "catalog_name=portal_catalog")
+        self.assertIn('"success": false', browser.contents)
+        self.assertIn("Read JSON API", browser.contents)
+        self.assertNotIn('"objects": [{', browser.contents)
+
+    def test_member_may_use_the_reading_routes(self):
+        """Every authenticated user holds ReadJSONAPI
+
+        The UI calls `read` from views a plain Member works in, so the
+        gate must not block them. A Member does not hold
+        `AccessJSONAPI`, which is what the sweep above asserts, so this
+        also pins down that the two permissions stay separate.
+        """
+        setRoles(self.portal, TEST_USER_ID, ["Member"])
+        transaction.commit()
+        for route, query in self.get_reading_routes():
+            browser = self.get_authenticated_browser()
+            self.open_api(browser, route, query)
+            self.assertIn('"success": true', browser.contents)
+
+    def test_privileged_user_can_still_read(self):
+        """The gate does not over-block legitimate `read` callers
+        """
+        setRoles(self.portal, TEST_USER_ID, ["Manager"])
+        transaction.commit()
+        browser = self.get_authenticated_browser()
+        self.open_api(browser, "read", "catalog_name=portal_catalog")
+        self.assertIn('"success": true', browser.contents)
+
     def test_check_permission_helper_denies_anonymous(self):
         """The shared helper raises Unauthorized for anonymous callers
         """
@@ -187,6 +271,72 @@ class TestJSONAPISecurity(BaseTestCase):
         login(self.portal, TEST_USER_NAME)
         # must not raise and returns None
         self.assertIsNone(check_jsonapi_permission(self.target))
+
+    def test_read_permission_helper_denies_anonymous(self):
+        """The reading helper raises Unauthorized for anonymous callers
+        """
+        logout()
+        self.assertRaises(
+            Unauthorized, check_jsonapi_read_permission, self.target)
+
+    def test_read_permission_helper_allows_member(self):
+        """The reading helper passes for a plain authenticated user
+        """
+        setRoles(self.portal, TEST_USER_ID, ["Member"])
+        login(self.portal, TEST_USER_NAME)
+        # must not raise and returns None
+        self.assertIsNone(check_jsonapi_read_permission(self.target))
+
+
+class FakeResponse(object):
+    """Records the status the error handler sets."""
+
+    def __init__(self):
+        self.status = None
+
+    def setStatus(self, status):
+        self.status = status
+
+
+class FakeRequest(object):
+    def __init__(self):
+        self.response = FakeResponse()
+
+
+class TestErrorStatus(BaseTestCase):
+    """The status an error answers with.
+
+    It belongs to the error reaching the client, not to the moment the
+    exception object was made. A refusal that answers 200 with a
+    failure envelope reads as success to everything between the route
+    and the caller.
+    """
+    layer = JSONAPI_TESTING
+
+    def test_a_typed_error_answers_with_its_own_status(self):
+        from senaite.jsonapi.exceptions import NotFoundError
+        request = FakeRequest()
+        set_error_status(NotFoundError("no such thing"), request)
+        self.assertEqual(request.response.status, 404)
+
+    def test_a_plain_exception_is_a_server_error(self):
+        request = FakeRequest()
+        set_error_status(RuntimeError("boom"), request)
+        self.assertEqual(request.response.status, 500)
+
+    # A status that is not a number says nothing, so it is not trusted.
+    def test_a_nonsense_status_is_a_server_error(self):
+        class Odd(Exception):
+            status = "teapot"
+
+        request = FakeRequest()
+        set_error_status(Odd("x"), request)
+        self.assertEqual(request.response.status, 500)
+
+    def test_outside_a_request_nothing_happens(self):
+        from senaite.jsonapi.exceptions import NotFoundError
+        # must not raise
+        self.assertIsNone(set_error_status(NotFoundError("x"), None))
 
 
 class TestHandleErrorsNoTracebackLeak(BaseTestCase):
@@ -243,5 +393,6 @@ def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
     suite.addTest(makeSuite(TestJSONAPISecurity))
+    suite.addTest(makeSuite(TestErrorStatus))
     suite.addTest(makeSuite(TestHandleErrorsNoTracebackLeak))
     return suite

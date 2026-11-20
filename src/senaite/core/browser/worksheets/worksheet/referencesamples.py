@@ -22,6 +22,7 @@ import collections
 
 from plone.memoize import view
 from plone.protect import CheckAuthenticator
+from Products.statusmessages.interfaces import IStatusMessage
 from senaite.app.listing import ListingView
 
 from bika.lims import api
@@ -29,6 +30,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.utils import get_link
 from senaite.core.catalog import SENAITE_CATALOG
+from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.i18n import translate
 
 
@@ -40,9 +42,12 @@ class ReferenceSamplesView(ListingView):
         super(ReferenceSamplesView, self).__init__(context, request)
 
         self.catalog = SENAITE_CATALOG
+        # Note the absence of a filter by supported services here. Every
+        # valid reference sample is offered, no matter whether it happens to
+        # support one of the services this worksheet has assigned. The ones
+        # that do are preselected below.
         self.contentFilter = {
             "portal_type": "ReferenceSample",
-            "getSupportedServices": self.get_assigned_services_uids(),
             "isValid": True,
             "review_state": "current",
             "is_active": True,
@@ -81,13 +86,6 @@ class ReferenceSamplesView(ListingView):
                     default=u"Supported Services"
                 ),
                 "type": "multichoice",
-                "sortable": False,
-            }),
-            ("Position", {
-                "title": _(
-                    u"listing_reference_samples_column_position",
-                    default=u"Position"
-                ),
                 "sortable": False,
             }),
         ))
@@ -131,29 +129,48 @@ class ReferenceSamplesView(ListingView):
         form = self.request.form
         # Selected reference/blank sample UIDs
         uids = form.get("uids")
-        # service -> position mapping
-        positions = form.get("Position")[0]
+        skipped = []
         for uid in uids:
             referencesample = api.get_object_by_uid(uid)
-            position = positions.get(uid)
-            if position == "new":
-                position = None
             # get selected services of the reference sample
             key = "{}.{}".format("SupportedServices", uid)
             selected_services = form.get(key)
             if not selected_services:
+                # Only the services assigned to this worksheet are
+                # preselected, so a sample without any of them arrives with
+                # an empty selection. Say so instead of redirecting as if
+                # something had happened.
+                skipped.append(api.get_title(referencesample))
                 continue
+            # No slot is passed in on purpose. Only the worksheet knows
+            # about the layout of its template, so it picks the slot.
             self.context.addReferenceAnalyses(
-                referencesample, selected_services, slot=position)
+                referencesample, selected_services)
+
+        if skipped:
+            self.add_status_message(_(
+                u"message_reference_samples_no_services_selected",
+                default=u"No services selected for: ${samples}",
+                mapping={"samples": api.safe_unicode(", ".join(skipped))},
+            ), level="warning")
+
         redirect_url = "{}/{}".format(
             api.get_url(self.context), "manage_results")
         self.request.response.redirect(redirect_url)
+
+    def add_status_message(self, message, level="info"):
+        """Display a portal status message
+
+        :param message: the message to display
+        :param level: one of info, warning or error
+        """
+        IStatusMessage(self.request).add(translate(message), type=level)
 
     @view.memoize
     def get_editable_columns(self):
         """Return editable fields
         """
-        columns = ["Position", "SupportedServices"]
+        columns = ["SupportedServices"]
         return columns
 
     @view.memoize
@@ -180,47 +197,44 @@ class ReferenceSamplesView(ListingView):
         uids = referencesample.getSupportedServices(only_uids=True)
         return list(set(uids))
 
+    def get_service_titles(self, uids):
+        """Return a mapping of service UID -> title
+
+        Looked up in the setup catalog, because waking up every service of
+        every listed reference sample only to render its title does not
+        scale once the samples are no longer filtered by service.
+
+        :param uids: list of AnalysisService UIDs
+        :returns: dict of UID -> title
+        """
+        if not uids:
+            return {}
+        query = {
+            "portal_type": "AnalysisService",
+            "UID": uids,
+        }
+        brains = api.search(query, SETUP_CATALOG)
+        return dict([(api.get_uid(brain), api.get_title(brain))
+                     for brain in brains])
+
     def make_supported_services_choices(self, referencesample):
         """Create choices for supported services
         """
         choices = []
         assigned_services = self.get_assigned_services_uids()
-        for uid in self.get_supported_services_uids(referencesample):
-            service = api.get_object(uid)
-            title = api.get_title(service)
-            selected = uid in assigned_services
+        uids = self.get_supported_services_uids(referencesample)
+        titles = self.get_service_titles(uids)
+        for uid in uids:
+            title = titles.get(uid)
+            if not title:
+                # service is gone, skip it instead of breaking the listing
+                continue
             choices.append({
                 "ResultValue": uid,
                 "ResultText": title,
-                "selected": selected,
+                "selected": uid in assigned_services,
             })
-        return sorted(choices, key=lambda d: d['ResultText'])
-
-    @view.memoize
-    def make_position_choices(self):
-        """Create choices for available positions
-        """
-        choices = []
-        for pos in self.get_available_positions():
-            choices.append({
-                "ResultValue": pos,
-                "ResultText": pos,
-            })
-        return choices
-
-    @view.memoize
-    def get_available_positions(self):
-        """Return a list of empty slot numbers
-        """
-        available_positions = ["new"]
-        layout = self.context.getLayoutView()
-        used_positions = [int(slot["position"]) for slot in layout]
-        if used_positions:
-            used = [
-                pos for pos in range(1, max(used_positions) + 1) if
-                pos not in used_positions]
-            available_positions.extend(used)
-        return available_positions
+        return sorted(choices, key=lambda d: d["ResultText"])
 
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
@@ -248,10 +262,6 @@ class ReferenceSamplesView(ListingView):
         item["choices"]["SupportedServices"] = supported_services_choices
         item["SupportedServices"] = \
             self.get_selected_values(supported_services_choices)
-
-        # Position
-        item["Position"] = "new"
-        item["choices"]["Position"] = self.make_position_choices()
 
         return item
 
