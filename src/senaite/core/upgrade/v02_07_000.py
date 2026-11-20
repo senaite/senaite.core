@@ -22,11 +22,14 @@
 import json
 from datetime import timedelta
 
+import six
 import transaction
 from bika.lims import api
 from bika.lims.api import safe_unicode as u
 from bika.lims.api import snapshot as snap_api
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
+from bika.lims.browser.fields.uidreferencefield import \
+    get_storage as get_at_backref_storage
 from bika.lims.interfaces import IAuditable
 from bika.lims.interfaces import IDetachedPartition
 from bika.lims.interfaces import IInvalidated
@@ -38,23 +41,32 @@ from plone.app.blob.field import BlobWrapper
 from plone.dexterity.utils import createContent
 from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.interfaces import INamed
+from plone.registry.interfaces import IRegistry
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.api import dtime
+from senaite.core.api.calculation import allow_module
+from senaite.core.api.calculation import get_allowed_modules
+from senaite.core.api.calculation import is_forbidden_module
 from senaite.core.api.catalog import add_column
 from senaite.core.api.catalog import del_column
 from senaite.core.api.catalog import del_index
+from senaite.core.api.catalog import get_loaded_object
 from senaite.core.api.catalog import reindex_index
 from senaite.core.catalog import ANALYSIS_CATALOG
+from senaite.core.catalog import ATTACHMENTS_CATALOG
 from senaite.core.catalog import CONTACT_CATALOG
 from senaite.core.catalog import REPORT_CATALOG
 from senaite.core.catalog import SAMPLE_CATALOG
 from senaite.core.catalog import SETUP_CATALOG
 from senaite.core.catalog import WORKSHEET_CATALOG
 from senaite.core.catalog.analysis_catalog import INDEXES as ANALYSIS_INDEXES
+from senaite.core.catalog.attachments_catalog import AttachmentsCatalog
+from senaite.core.catalog.attachments_catalog import TYPES as ATTACHMENTS_TYPES
 from senaite.core.catalog.client_catalog import CATALOG_ID as CLIENT_CATALOG
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.interfaces import IContentMigrator
+from senaite.core.registry.schema import ICalculationImportsRegistry
 from senaite.core.interfaces.catalog import ISenaiteCatalogObject
 from senaite.core.schema.addressfield import BILLING_ADDRESS
 from senaite.core.schema.addressfield import NAIVE_ADDRESS
@@ -72,27 +84,40 @@ from senaite.core.upgrade.utils import blob_to_named_file
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import import_typeinfo
+from senaite.core.upgrade.utils import is_stale_uid_catalog_path
 from senaite.core.upgrade.utils import iter_senaite_catalogs
 from senaite.core.upgrade.utils import permanently_allow_type_for
 from senaite.core.upgrade.utils import rebuild_index
 from senaite.core.upgrade.utils import remove_at_portal_types
+from senaite.core.upgrade.utils import repair_uid_catalog_path
+from senaite.core.upgrade.utils import temporary_allow_type
+from senaite.core.upgrade.utils import temporary_type_info
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.upgrade.v02_06_000 import get_setup_folder
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getMultiAdapter
+from zope.component import getUtility
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
 
 version = "2.7.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
+# Single valued reference sub-fields of a partition record,
+# which are stored as a list of one UID
+PARTITION_REFERENCES = ("container", "preservation", "sampletype")
+
 REMOVE_AT_TYPES = [
     "ARReport",
+    "AuditLog",
     "Contact",
     "Laboratory",
     "Calculation",
     "Calculations",
+    "Method",
+    "Methods",
     "Multifile",
+    "SupplierContact",
     "Worksheet",
     "WorksheetFolder",
 ]
@@ -101,6 +126,253 @@ PORTAL_FOLDER_ITEMS = {
     # ID: ID, Title, FTI
     "worksheets": ("worksheets", "Worksheets", "Worksheets"),
 }
+
+
+EXCLUDE_FROM_NAV_BEHAVIOR = (
+    "plone.app.dexterity.behaviors.exclfromnav.IExcludeFromNavigationDefault"
+)
+
+# Setup fields that 2.6.0 already stored in the senaite setup: their AT
+# accessors forward to it, and the AT storage only holds the values from
+# before. Migrating them would overwrite the current settings with these
+SETUP_FIELDS_IN_DX = (
+    "AllowManualResultCaptureDate",
+    "AlwaysCCResponsiblesInReportEmail",
+    "CategorizeSampleAnalyses",
+    "DateSampledRequired",
+    "EmailBodySamplePublication",
+    "EmailFromSamplePublication",
+    "EnableGlobalAuditlog",
+    "ImmediateResultsEntry",
+    "MaxNumberOfSamplesAdd",
+    "SampleAnalysesRequired",
+    "ShowLabNameInLogin",
+)
+
+# Indexes the 2.7.0 upgrade adds to existing core catalogs. Before #3068 the
+# upgrade left them without the existing content
+NEW_CORE_INDEXES = (
+    (SAMPLE_CATALOG, "getAnalysesKeywords"),
+    (SAMPLE_CATALOG, "getSamplePointUID"),
+    (SAMPLE_CATALOG, "getSampleTypeUID"),
+    (SAMPLE_CATALOG, "labels"),
+    (ANALYSIS_CATALOG, "has_calculation"),
+)
+
+
+@upgradestep(product, version)
+def reindex_new_core_indexes(tool):
+    """Index the existing content in the indexes the upgrade added.
+
+    `setup_core_catalogs` reindexed a new index through a catalog without
+    acquisition context, so no catalog entry could be resolved and the
+    index stayed empty or held only part of the content.
+    """
+    for catalog_id, index in NEW_CORE_INDEXES:
+        reindex_empty_index(catalog_id, index)
+
+
+def reindex_empty_index(catalog_id, index):
+    """Reindex the index when it holds no object at all
+
+    An index does not hold the objects without a value, e.g. the samples
+    without a label, so it may hold fewer objects than its catalog although
+    it is complete. The upgrade left the new indexes empty, so an index
+    that holds any object was filled already.
+    """
+    catalog = api.get_tool(catalog_id)
+    if index not in catalog.indexes():
+        logger.info("No index '%s' in '%s' [SKIP]" % (index, catalog_id))
+        return
+    if catalog._catalog.getIndex(index).numObjects():
+        logger.info("Index '%s' in '%s' holds objects already [SKIP]"
+                    % (index, catalog_id))
+        return
+    logger.info("Reindexing '%s' in '%s' (%s objects) ..."
+                % (index, catalog_id, len(catalog)))
+    reindex_index(catalog, index)
+    logger.info("Reindexing '%s' in '%s' [DONE]" % (index, catalog_id))
+
+
+def get_calculation_import_modules(calculation):
+    """The modules the Python imports of a calculation name
+
+    The registry record holds ASCII text, while the records of an import
+    hold unicode, so the names are converted. A name that is no ASCII text
+    cannot be the name of a module and is left out.
+    """
+    modules = []
+    for record in calculation.getPythonImports() or []:
+        module = (record.get("module") or "").strip()
+        if not module:
+            continue
+        try:
+            modules.append(str(module))
+        except UnicodeEncodeError:
+            logger.warn("Calculation {} imports from {!r}, which is no "
+                        "module".format(api.get_path(calculation), module))
+    return modules
+
+
+@upgradestep(product, version)
+def allow_calculation_imports(tool):
+    """Allow the modules calculations import from, and no more.
+
+    The Python imports of a calculation may name only the modules the site
+    allows. The record starts with the mathematical modules and the ones
+    the calculations of the site already use, so that their formulas keep
+    working. A module that reaches the system, the interpreter or the
+    database is left out even when a calculation uses it; that calculation
+    gives no result until its import is changed.
+    """
+    registry = getUtility(IRegistry)
+    registry.registerInterface(ICalculationImportsRegistry)
+    catalog = api.get_tool(SETUP_CATALOG)
+    # whoever runs the upgrade, every calculation counts
+    query = {"portal_type": "Calculation"}
+    for brain in catalog.unrestrictedSearchResults(query):
+        calculation = brain._unrestrictedGetObject()
+        for module in get_calculation_import_modules(calculation):
+            if is_forbidden_module(module):
+                logger.warn(
+                    "Calculation {} imports from {}, which calculations "
+                    "must not use any more".format(
+                        api.get_path(calculation), module))
+                continue
+            allow_module(module)
+    logger.info("Calculations may import from: {}".format(
+        ", ".join(sorted(get_allowed_modules()))))
+
+
+@upgradestep(product, version)
+def reindex_client_tree_allowed_roles_again(tool):
+    """Add the `client:<uid>` token to the client-tree content again.
+
+    The earlier steps searched the catalogs with an empty query, which
+    returns nothing, so only content modified since carries the token.
+    Client contacts do not find older samples and analyses of their
+    client in the catalogs.
+    """
+    reindex_client_tree_allowed_roles()
+
+
+@upgradestep(product, version)
+def reindex_samplepoint_sampletype_title(tool):
+    """Index the sample type titles of all sample points.
+    """
+    catalog = api.get_tool(SETUP_CATALOG)
+    for brain in catalog(portal_type="SamplePoint"):
+        api.get_object(brain).reindexObject(idxs=["sampletype_title"])
+
+
+@upgradestep(product, version)
+def drop_setup_marker_behavior(tool):
+    """Drop the exclude-from-navigation marker from the Setup FTI.
+
+    It is a marker interface, not a registered behavior, so every lookup
+    of the type's behaviors raises BehaviorRegistrationNotFound. That is
+    enough to refuse any update of the Setup object through the API.
+    The profile no longer ships the line; an existing site keeps it in
+    its FTI until it is removed here.
+    """
+    portal_types = api.get_tool("portal_types")
+    fti = portal_types.getTypeInfo("Setup")
+    if fti is None:
+        logger.warning("Setup type not found [SKIP]")
+        return
+    behaviors = list(fti.behaviors)
+    if EXCLUDE_FROM_NAV_BEHAVIOR not in behaviors:
+        logger.info("Setup FTI has no stale marker behavior [SKIP]")
+        return
+    behaviors.remove(EXCLUDE_FROM_NAV_BEHAVIOR)
+    fti.behaviors = tuple(behaviors)
+    logger.info("Removed the stale marker behavior from the Setup FTI")
+
+
+@upgradestep(product, version)
+def normalize_id_formatting_rows(tool):
+    """Store the ID formatting rows as unicode.
+
+    The rows came over from the Archetypes RecordsField as native
+    strings, and the Dexterity subfields are TextLine, which only
+    accepts unicode. Validating the Setup object therefore fails with
+    WrongContainedType over a field nobody edited, and because the
+    JSON API validates the whole object before saving it, every
+    programmatic update of the setup is refused.
+    """
+    setup = api.get_senaite_setup()
+    if setup is None:
+        logger.warning("SenaiteSetup not found [SKIP]")
+        return
+    # Read the stored value, not the field default: a site that has
+    # never saved the ID server tab has no value of its own, and the
+    # default is unicode already. Writing it out here would pin today's
+    # defaults into that site's database for good.
+    rows = setup.__dict__.get("id_formatting")
+    if not rows:
+        logger.info("No stored ID formatting rows to normalize [SKIP]")
+        return
+    setup.id_formatting = [normalized_row(row) for row in rows]
+    logger.info("Normalized %s ID formatting row(s)" % len(rows))
+
+
+def normalized_row(row):
+    """Return the row with its string values as unicode."""
+    return dict(
+        (u(key), u(value) if isinstance(value, six.string_types) else value)
+        for key, value in row.items())
+
+
+@upgradestep(product, version)
+def remove_stale_uid_catalog_records(tool):
+    """Remove uid_catalog records that sit under the wrong path
+
+    The AT to DX migrations created the Dexterity object first, which
+    `plone.app.referenceablebehavior` catalogs under the absolute path with
+    the throwaway uuid of `createContent`, and copied the UID of the
+    Archetypes source only afterwards. The `uncatalog_object` of that time
+    only tried the relative path, so the record under the absolute path
+    survived, carrying a UID that belongs to nothing.
+
+    Such a record stays unnoticed until the object is edited: the Dexterity
+    modified handler then re-catalogs it under the absolute path, now with
+    the real UID. From that moment on `uid_catalog(UID=...)` returns two
+    brains, `api.get_brain_by_uid` cannot tell them apart and returns
+    nothing, and every lookup through the SuperModel fails.
+
+    Records are matched against the path convention of their object, so
+    both halves of an already collided pair and the ones still waiting to
+    collide are cleaned up.
+    """
+    logger.info("Removing stale uid_catalog records ...")
+
+    portal = tool.aq_inner.aq_parent
+    catalog = api.get_tool("uid_catalog", context=portal)
+    types_tool = api.get_tool("portal_types", context=portal)
+
+    # take a snapshot, the catalog is modified while repairing
+    records = list(catalog._catalog.uids.items())
+    total = len(records)
+    stale = []
+    skipped = 0
+
+    for num, (path, rid) in enumerate(records):
+        if num and num % 10000 == 0:
+            logger.info("Checking uid_catalog record %s/%s" % (num, total))
+        is_stale = is_stale_uid_catalog_path(types_tool, catalog, path, rid)
+        if is_stale is None:
+            skipped += 1
+        elif is_stale:
+            stale.append(path)
+
+    logger.info("Found %s stale records out of %s" % (len(stale), total))
+    if skipped:
+        logger.info("Skipped %s records of an unknown portal type" % skipped)
+
+    for path in stale:
+        repair_uid_catalog_path(portal, catalog, path)
+
+    logger.info("Removing stale uid_catalog records [DONE]")
 
 
 @upgradestep(product, version)
@@ -217,21 +489,76 @@ def upgrade(tool):
     return True
 
 
-def drop_client_ordering_annotations(tool):
-    """Remove the legacy IOrdering annotations from every Client.
+def migrate_auditlog_to_dx(tool):
+    """Move the AuditLog folder to the SENAITE setup as a Dexterity folder
 
-    Clients now use `plone.folder.unordered.UnorderedOrdering` as
-    their `IOrdering` adapter, so the previous default-ordering
-    annotations are no longer maintained:
+    The AuditLog folder never holds content on its own: it only backs the
+    audit log listing view. The audit snapshots live as annotations on the
+    audited objects and are looked up through the auditlog catalog, not
+    through this folder. It is therefore recreated rather than migrated:
+    the legacy AT folder in `bika_setup` is removed and a fresh DX folder
+    is created in the new SENAITE setup. The legacy AT `AuditLog` class is
+    kept as a stub (`bika.lims.controlpanel.auditlog`) so the old folder
+    still loads as a regular object and deletes cleanly here.
+
+    Traversal to `setup/auditlog` returns this folder: BTreeFolder2 exposes
+    its children via `__getattr__`, so the contained object is resolved
+    before the per-object `auditlog` view. The per-object audit trail stays
+    reachable through the explicit `@@auditlog` form.
+    """
+    logger.info("Convert AuditLog to Dexterity ...")
+
+    # Flush *all* pending AT FTIs, not only the AuditLog one: the typeinfo
+    # step below imports every type of the profile, and applying a DX FTI
+    # over a type that is still Archetypes in the database fails with
+    # `ValueError: undefined property 'add_permission'`
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
+
+    # re-import the DX FTIs
+    import_typeinfo(tool, profile)
+
+    # the legacy AT folder lived in `bika_setup`; the DX one now lives in
+    # the new SENAITE setup
+    bika_setup = api.get_setup()
+    setup = api.get_senaite_setup()
+
+    # remove the old AT folder and any half-created DX folder
+    for container in [bika_setup, setup]:
+        if "auditlog" in container.objectIds():
+            auditlog = container._getOb("auditlog")
+            uncatalog_object(auditlog)
+            delete_object(auditlog)
+
+    # create the new DX folder in the SENAITE setup. The type is only
+    # allowed temporarily, so AuditLog does not show up in the setup's
+    # "add" menu afterwards.
+    with temporary_allow_type(setup, "AuditLog") as container:
+        auditlog = api.create(
+            container, "AuditLog", id="auditlog", title="Audit Log")
+    auditlog.reindexObject()
+
+    logger.info("Convert AuditLog to Dexterity [DONE]")
+
+
+ORDERING_ORDER_KEY = "plone.folder.ordered.order"
+ORDERING_POS_KEY = "plone.folder.ordered.pos"
+
+
+def drop_ordering_annotations(portal_type, catalog, label):
+    """Remove the legacy IOrdering annotations from every object of the
+    given portal type.
+
+    Types switched to `plone.folder.unordered.UnorderedOrdering` no
+    longer maintain the default-ordering annotations:
 
       - `plone.folder.ordered.order` — a `PersistentList` of every
         child id, mutated on every `_setObject` via
-        `DefaultOrdering.notifyAdded`. On a Client with thousands of
-        children this list grows to many tens of thousands of entries
-        and, because `PersistentList` has no `_p_resolveConflict()`,
-        every concurrent registration on the same Client collided on
-        it and the conflict propagated all the way to the
-        publisher's retry loop.
+        `DefaultOrdering.notifyAdded`. On a container with thousands
+        of children this list grows to many tens of thousands of
+        entries and, because `PersistentList` has no
+        `_p_resolveConflict()`, every concurrent add collided on it
+        and the conflict propagated all the way to the publisher's
+        retry loop.
 
       - `plone.folder.ordered.pos` — companion `OIBTree` mapping
         child id -> position. No longer read by anything once the
@@ -242,36 +569,56 @@ def drop_client_ordering_annotations(tool):
     the ZODB cache. The adapter override is what stops new writes
     from touching them; this step is hygiene.
     """
-    ORDER_KEY = "plone.folder.ordered.order"
-    POS_KEY = "plone.folder.ordered.pos"
-
-    query = {"portal_type": "Client"}
-    brains = api.search(query, CLIENT_CATALOG)
+    brains = api.search({"portal_type": portal_type}, catalog)
     total = len(brains)
     logger.info(
-        "Dropping IOrdering annotations from {} clients".format(total))
+        "Dropping IOrdering annotations from {} {}".format(total, label))
 
     cleaned = 0
     for num, brain in enumerate(brains, start=1):
-        client = api.get_object(brain)
-        ann = IAnnotations(client)
-        had_order = ORDER_KEY in ann
-        had_pos = POS_KEY in ann
+        obj = api.get_object(brain)
+        ann = IAnnotations(obj)
+        had_order = ORDERING_ORDER_KEY in ann
+        had_pos = ORDERING_POS_KEY in ann
         if not (had_order or had_pos):
             continue
-        ann.pop(ORDER_KEY, None)
-        ann.pop(POS_KEY, None)
-        client._p_changed = True
+        ann.pop(ORDERING_ORDER_KEY, None)
+        ann.pop(ORDERING_POS_KEY, None)
+        obj._p_changed = True
         cleaned += 1
         if num % 100 == 0:
             logger.info(
-                "  ... processed {}/{} clients ({} cleaned)".format(
-                    num, total, cleaned))
+                "  ... processed {}/{} {} ({} cleaned)".format(
+                    num, total, label, cleaned))
             transaction.savepoint()
 
     logger.info(
-        "Dropped IOrdering annotations from {}/{} clients".format(
-            cleaned, total))
+        "Dropped IOrdering annotations from {}/{} {}".format(
+            cleaned, total, label))
+
+
+def drop_client_ordering_annotations(tool):
+    """Remove the legacy IOrdering annotations from every Client.
+
+    See `drop_ordering_annotations` for the rationale. Clients were
+    switched to `UnorderedOrdering` earlier in 2.7.0.
+    """
+    drop_ordering_annotations("Client", CLIENT_CATALOG, "clients")
+
+
+def drop_instrument_ordering_annotations(tool):
+    """Remove the legacy IOrdering annotations from every Instrument.
+
+    Instruments hold one `AutoImportLog` per results import: both
+    `senaite.core.astm.importer` and
+    `senaite.core.exportimport.auto_import_results` create them
+    inside the instrument. On a deployment with an active ASTM or
+    auto-import feed the ordering annotation therefore grows without
+    bound and is appended to on every single import.
+
+    See `drop_ordering_annotations` for the rationale.
+    """
+    drop_ordering_annotations("Instrument", SETUP_CATALOG, "instruments")
 
 
 @upgradestep(product, version)
@@ -341,7 +688,9 @@ def seed_detached_partition_backrefs(tool):
 
     seeded = 0
     for num, brain in enumerate(brains, start=1):
-        sample = api.get_object(brain)
+        sample = get_loaded_object(brain)
+        if sample is None:
+            continue
         field = sample.getField("DetachedFrom")
         if field is None:
             continue
@@ -452,7 +801,9 @@ def setup_dispatch_workflow(tool):
         if num and num % 100 == 0:
             logger.info("Processing dispatched samples {}/{}"
                         .format(num, total))
-        sample = api.get_object(brain)
+        sample = get_loaded_object(brain)
+        if sample is None:
+            continue
         # Mark the sample first so the analysis lock guard allows the lock
         if not IDispatched.providedBy(sample):
             alsoProvides(sample, IDispatched)
@@ -537,6 +888,7 @@ def import_registry(tool):
     setup.runImportStepFromProfile(profile, "plone.app.registry")
 
 
+@upgradestep(product, version)
 def mark_invalidated_samples(tool):
     """Mark invalidated samples with IInvalidated interface
     """
@@ -549,8 +901,8 @@ def mark_invalidated_samples(tool):
             logger.info("Flagging invalidated samples {0}/{1}"
                         .format(num, total))
 
-        sample = api.get_object(brain)
-        if IInvalidated.providedBy(sample):
+        sample = get_loaded_object(brain)
+        if sample is None or IInvalidated.providedBy(sample):
             continue
 
         alsoProvides(sample, IInvalidated)
@@ -961,6 +1313,44 @@ def migrate_contacts_to_dx(tool):
     logger.info("Migrating Contacts to Dexterity [DONE]")
 
 
+def migrate_person_fields(src, target):
+    """Copy the fields every Person-based type has from AT to DX
+
+    Shared by the migrators of the types that derive from `Person`, so the
+    list of fields does not have to be kept in sync in several places.
+
+    :param src: the source AT object
+    :param target: the target DX object
+    """
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = u""  # calculated
+    target.description = u""  # not used
+    target.salutation = api.safe_unicode(src.getSalutation() or "")
+    target.firstname = api.safe_unicode(src.getFirstname() or "")
+    target.middleinitial = api.safe_unicode(src.getMiddleinitial() or "")
+    target.middlename = api.safe_unicode(src.getMiddlename() or "")
+    target.surname = api.safe_unicode(src.getSurname() or "")
+    target.username = api.safe_unicode(src.getUsername() or "")
+    target.email_address = api.safe_unicode(src.getEmailAddress() or "")
+    target.business_phone = api.safe_unicode(src.getBusinessPhone() or "")
+    target.business_fax = api.safe_unicode(src.getBusinessFax() or "")
+    target.home_phone = api.safe_unicode(src.getHomePhone() or "")
+    target.mobile_phone = api.safe_unicode(src.getMobilePhone() or "")
+    target.job_title = api.safe_unicode(src.getJobTitle() or "")
+    target.department = api.safe_unicode(src.getDepartment() or "")
+
+    # NOTE: Addresses behave differently in AT and DX
+    physical_address = src.getPhysicalAddress() or {}
+    if physical_address:
+        address = to_dx_address(physical_address, PHYSICAL_ADDRESS)
+        target.setPhysicalAddress(address)
+
+    postal_address = src.getPostalAddress() or {}
+    if postal_address:
+        address = to_dx_address(postal_address, POSTAL_ADDRESS)
+        target.setPostalAddress(address)
+
+
 def migrate_contact_to_dx(src, destination=None):
     """Migrate an AT contact to DX in the destination folder
 
@@ -994,34 +1384,8 @@ def migrate_contact_to_dx(src, destination=None):
         target = destination._getOb(target_id)
 
     # Manually set the fields
-    # NOTE: always convert string values to unicode for dexterity fields!
-    target.title = u""  # calculated
-    target.description = u""  # not used
-    target.salutation = api.safe_unicode(src.getSalutation() or "")
-    target.firstname = api.safe_unicode(src.getFirstname() or "")
-    target.middleinitial = api.safe_unicode(src.getMiddleinitial() or "")
-    target.middlename = api.safe_unicode(src.getMiddlename() or "")
-    target.surname = api.safe_unicode(src.getSurname() or "")
-    target.username = api.safe_unicode(src.getUsername() or "")
-    target.email_address = api.safe_unicode(src.getEmailAddress() or "")
-    target.business_phone = api.safe_unicode(src.getBusinessPhone() or "")
-    target.business_fax = api.safe_unicode(src.getBusinessFax() or "")
-    target.home_phone = api.safe_unicode(src.getHomePhone() or "")
-    target.mobile_phone = api.safe_unicode(src.getMobilePhone() or "")
-    target.job_title = api.safe_unicode(src.getJobTitle() or "")
-    target.department = api.safe_unicode(src.getDepartment() or "")
+    migrate_person_fields(src, target)
     target.cc_contact = src.getRawCCContact() or []
-
-    # NOTE: Addresses behave differently in AT and DX
-    physical_address = src.getPhysicalAddress() or {}
-    if physical_address:
-        address = to_dx_address(physical_address, PHYSICAL_ADDRESS)
-        target.setPhysicalAddress(address)
-
-    postal_address = src.getPostalAddress() or {}
-    if postal_address:
-        address = to_dx_address(postal_address, POSTAL_ADDRESS)
-        target.setPostalAddress(address)
 
     # Migrate the contents from AT to DX
     migrator = getMultiAdapter(
@@ -1069,6 +1433,111 @@ def migrate_contact_to_dx(src, destination=None):
     logger.info("Migrated Contact from %s -> %s" % (src, target))
 
 
+@upgradestep(product, version)
+def migrate_suppliercontacts_to_dx(tool):
+    """Migrate SupplierContact objects from Archetypes to Dexterity
+    """
+    logger.info("Migrating Supplier Contacts to Dexterity ...")
+
+    # Ensure old AT types are flushed first
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
+
+    # run required import steps
+    import_typeinfo(tool, profile)
+
+    # whoever runs the upgrade, every supplier contact is migrated
+    query = {"portal_type": "SupplierContact"}
+    catalog = api.get_tool(CONTACT_CATALOG)
+    brains = catalog.unrestrictedSearchResults(query)
+    total = len(brains)
+    logger.info("Found {} Supplier Contacts to migrate".format(total))
+
+    for num, brain in enumerate(brains, start=1):
+        contact = brain._unrestrictedGetObject()
+
+        if num % 100 == 0:
+            logger.info("Progress: {}/{} supplier contacts migrated".format(
+                num, total))
+            transaction.savepoint()
+
+        # Skip if already migrated to Dexterity
+        if not api.is_at_content(contact):
+            logger.info("[{}/{}] Already migrated: {}".format(
+                num, total, api.get_path(contact)))
+            continue
+
+        migrate_suppliercontact_to_dx(contact)
+
+    logger.info("Migrating Supplier Contacts to Dexterity [DONE]")
+
+
+def migrate_suppliercontact_to_dx(src):
+    """Migrate an AT supplier contact to DX, in its own container
+
+    Supplier contacts live inside their Supplier, that is Dexterity already,
+    so there is no container to move here.
+
+    :param src: The source AT object
+    """
+    portal_type = "SupplierContact"
+
+    if api.get_portal_type(src) != portal_type:
+        logger.error("Not a '{}' object: {}".format(portal_type, src))
+        return
+
+    # use a temporary ID, the original one is copied over at the end
+    target_id = tmpID()
+    destination = api.get_parent(src)
+
+    target = destination.get(target_id)
+    if not target:
+        # Don't use the api to skip the auto-id generation
+        target = createContent(portal_type, id=target_id)
+        destination._setObject(target_id, target)
+        target = destination._getOb(target_id)
+
+    # `SupplierContact` adds no fields of its own to `Person`
+    migrate_person_fields(src, target)
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter((src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID, so the references to this contact keep resolving
+    migrator.copy_uid(src, target)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    target.reindexObject()
+
+    logger.info("Migrated SupplierContact from %s -> %s" % (src, target))
+
+
+@upgradestep(product, version)
 def migrate_multifiles_to_dx(tool):
     """Migrate Multifile objects from Archetypes to Dexterity
     """
@@ -1107,7 +1576,6 @@ def migrate_multifiles_to_dx(tool):
     logger.info("Migrating Multifiles to Dexterity [DONE]")
 
 
-@upgradestep(product, version)
 def migrate_multifile_to_dx(src, destination=None):
     """Migrate an AT multifile to DX in the destination folder
 
@@ -1643,8 +2111,6 @@ def migrate_setup_fields_to_dx(tool):
         ("MaxNumberOfSamplesAdd", "max_number_of_samples_add", None),
         # Appearance
         ("WorksheetLayout", "worksheet_layout", None),
-        ("DashboardByDefault", "dashboard_by_default", None),
-        ("LandingPage", "landing_page", None),
         ("ShowPartitions", "show_partitions", None),
         ("ShowLabNameInLogin", "show_lab_name_in_login", None),
         # Sampling
@@ -1685,6 +2151,13 @@ def migrate_setup_fields_to_dx(tool):
         at_field_name = field_info[0]
         dx_field_name = field_info[1]
         converter = field_info[2] if len(field_info) > 2 else None
+
+        # Keep the current value of fields that are in the DX setup already
+        if at_field_name in SETUP_FIELDS_IN_DX:
+            logger.info("Field {} is in the senaite setup already "
+                        "[SKIP]".format(at_field_name))
+            skipped += 1
+            continue
 
         # Get the AT field
         at_field = bika_setup.getField(at_field_name)
@@ -1997,8 +2470,10 @@ def migrate_worksheets_to_dx(tool):
         if portal_type not in type_info.allowed_content_types:
             type_info.allowed_content_types = allowed_types + (portal_type,)
 
-        # Rename old AT worksheets folder
-        portal.manage_renameObject("worksheets", "worksheets-old")
+        # Rename old AT worksheets folder. Earlier steps may have removed
+        # the AT type already, without it the folder cannot be renamed
+        with temporary_type_info(portal_type, ws_container.meta_type):
+            portal.manage_renameObject("worksheets", "worksheets-old")
 
         # restore the allowed_types
         type_info.allowed_content_types = allowed_types
@@ -2035,11 +2510,9 @@ def migrate_worksheets_to_dx(tool):
                 "Progress: {}/{} worksheets migrated".format(num, total))
             transaction.commit()
         brain_path = brain.getPath()
-        try:
-            worksheet = api.get_object(brain)
-        except (AttributeError, KeyError) as exc:
-            logger.warn(
-                "Cannot get Worksheet at %s: %s" % (brain_path, exc))
+        worksheet = get_loaded_object(brain)
+        if worksheet is None:
+            logger.warn("Cannot get Worksheet at %s" % brain_path)
             catalog.uncatalog_object(brain_path)
             problematic.append(brain_path)
             continue
@@ -2194,6 +2667,24 @@ def migrate_worksheet_to_dx(src, destination):
     logger.info("Migrated Worksheet from %s -> %s" % (src, target))
 
 
+def get_former_registry_value(name, default=None):
+    """The value of a registry record the site may have from an earlier
+    version, by the name of its field
+
+    Unlike `get_registry_record`, a site that never had the record is no
+    error: the default is returned without logging.
+
+    :param name: the name of the field of the record
+    :param default: what to return when the site has no such record
+    """
+    registry = getUtility(IRegistry)
+    suffix = "." + name
+    for key in registry.records.keys():
+        if key.endswith(suffix):
+            return registry[key]
+    return default
+
+
 @upgradestep(product, version)
 def migrate_analysis_columns_to_setup(tool):
     """Migrate analysis columns order from registry to setup
@@ -2201,14 +2692,13 @@ def migrate_analysis_columns_to_setup(tool):
     logger.info(
         "Migrating analysis columns order to setup ..."
     )
-    from senaite.core.registry import get_registry_record
     from senaite.core.vocabularies.setup import ANALYSIS_COLUMNS
     from senaite.core.vocabularies.setup import WORKSHEET_ANALYSIS_COLUMNS
 
     setup = api.get_senaite_setup()
 
     # Migrate sample view columns
-    registry_sample = get_registry_record(
+    registry_sample = get_former_registry_value(
         "sampleview_analysis_columns_order", default=[]
     ) or []
     if registry_sample:
@@ -2224,7 +2714,7 @@ def migrate_analysis_columns_to_setup(tool):
         )
 
     # Migrate worksheet view columns
-    registry_ws = get_registry_record(
+    registry_ws = get_former_registry_value(
         "worksheetview_analysis_columns_order", default=[]
     ) or []
     if registry_ws:
@@ -2441,7 +2931,7 @@ def reindex_client_title(tool):
     for num, brain in enumerate(brains):
         if num and num % 1000 == 0:
             logger.info("Reindexed %s/%s samples ..." % (num, total))
-        obj = api.get_object(brain, default=None)
+        obj = get_loaded_object(brain)
         if obj is None:
             continue
         catalog.catalog_object(obj, api.get_path(obj),
@@ -2488,19 +2978,29 @@ def add_sample_analyses_keywords_metadata(tool):
     value as metadata lets the samples listing display the contained analysis
     keywords (and host the keyword filter) without waking up each object.
     Refresh the metadata of existing samples so the column is populated.
+
+    The column may exist already: `setup_core_catalogs` of an earlier step
+    adds every column of the catalog definition, without a value for the
+    existing samples. Therefore the samples without a value are refreshed
+    whether the column was added here or before.
     """
     catalog = api.get_tool(SAMPLE_CATALOG)
-    if not add_catalog_column(catalog, "getAnalysesKeywords"):
-        return
+    add_catalog_column(catalog, "getAnalysesKeywords")
 
-    brains = catalog(portal_type="AnalysisRequest")
+    # whoever runs the upgrade, every sample counts
+    query = {"portal_type": "AnalysisRequest"}
+    brains = catalog.unrestrictedSearchResults(query)
     total = len(brains)
     logger.info("Refreshing getAnalysesKeywords metadata of %s samples ..."
                 % total)
     for num, brain in enumerate(brains):
         if num and num % 1000 == 0:
             logger.info("Refreshed %s/%s samples ..." % (num, total))
-        obj = api.get_object(brain, default=None)
+            transaction.savepoint(optimistic=True)
+        # the column of a sample without a value holds `Missing.Value`
+        if isinstance(brain.getAnalysesKeywords, (list, tuple)):
+            continue
+        obj = get_loaded_object(brain, unrestricted=True)
         if obj is None:
             continue
         # Refresh only the getAnalysesKeywords metadata column via the partial
@@ -2510,6 +3010,7 @@ def add_sample_analyses_keywords_metadata(tool):
         # index already exists and its value is unchanged.
         catalog.catalog_object(obj, api.get_path(obj), idxs=[],
                                update_metadata=["getAnalysesKeywords"])
+        obj._p_deactivate()
     logger.info("Refreshing getAnalysesKeywords metadata [DONE]")
 
 
@@ -2593,11 +3094,14 @@ def reindex_dx_client_aware_allowed_roles(tool):
     role provider.
 
     All four call sites now import `IClientAwareMixin` from
-    `senaite.core.interfaces`; this follow-up step iterates
-    the client-tree catalogs again so every DX descendant
-    picks up the missing token.
+    `senaite.core.interfaces`.
+
+    The reindex itself is left to `reindex_client_tree_allowed_roles_again`
+    at the end of the upgrade: it visits every client-tree object, which
+    takes long on a large site, and only its last run matters.
     """
-    reindex_client_tree_allowed_roles()
+    logger.info("Reindex of the client tree runs at the end of the "
+                "upgrade [SKIP]")
 
 
 @upgradestep(product, version)
@@ -2607,8 +3111,10 @@ def switch_to_dynamic_client_roles(tool):
 
     Three idempotent passes:
 
-    1. Reindex `allowedRolesAndUsers` on every client-tree object so it
-       picks up the new stable `client:<client_uid>` token.
+    1. Reindexing `allowedRolesAndUsers` on every client-tree object, so
+       that it picks up the new stable `client:<client_uid>` token, is
+       left to `reindex_client_tree_allowed_roles_again` at the end of
+       the upgrade: only its last run matters.
     2. Backfill the `linked_client_uid` member property for every
        already-linked client contact, so the dynamic role provider can
        authorise those users without having to walk the catalog.
@@ -2620,7 +3126,6 @@ def switch_to_dynamic_client_roles(tool):
     follow-up cleanup upgrade step.
     """
     portal = tool.aq_inner.aq_parent
-    reindex_client_tree_allowed_roles()
     backfill_linked_client_uid()
     drop_auto_create_client_group_record(portal)
 
@@ -2654,15 +3159,13 @@ def reindex_client_tree_allowed_roles():
         catalog = api.get_tool(catalog_id, default=None)
         if catalog is None:
             continue
-        brains = catalog.unrestrictedSearchResults({})
+        # An empty query returns no results at all, list every entry
+        brains = catalog.searchAll()
         for brain in brains:
             uid = getattr(brain, "UID", None)
             if uid and uid in seen:
                 continue
-            try:
-                obj = brain.getObject()
-            except (AttributeError, KeyError):
-                continue
+            obj = get_loaded_object(brain)
             if obj is None:
                 continue
             if not (IClient.providedBy(obj)
@@ -2878,3 +3381,300 @@ def remove_client_sharing_alias(tool):
     del aliases["sharing"]
     fti.setMethodAliases(aliases)
     logger.info("Removed 'sharing' method alias from Client FTI")
+
+
+def remove_methods_from_sidebar():
+    """Drop the `methods` folder from the sidebar navigation folders.
+
+    The methods folder is moved from the portal root into the setup folder,
+    so it is no longer a top-level folder eligible for the sidebar.
+    """
+    setup = api.get_senaite_setup()
+    folders = list(setup.getSidebarFolders() or [])
+    if "methods" not in folders:
+        return
+    folders = [folder for folder in folders if folder != "methods"]
+    setup.setSidebarFolders(tuple(folders))
+    logger.info("Removed 'methods' from the sidebar navigation folders")
+
+
+@upgradestep(product, version)
+def migrate_methods_to_dx(tool):
+    """Converts existing methods to Dexterity and moves them from the portal
+    root into the setup folder
+    """
+    logger.info("Convert Methods to Dexterity ...")
+
+    # ensure old AT types are flushed first
+    remove_at_portal_types(tool, REMOVE_AT_TYPES)
+
+    # run required import steps
+    import_typeinfo(tool, profile)
+    tool.runImportStepFromProfile(profile, "workflow")
+
+    # the methods folder is no longer a top-level sidebar folder
+    remove_methods_from_sidebar()
+
+    # get the old container from the portal root
+    portal = api.get_portal()
+    origin = portal.get("methods")
+    if not origin:
+        # old container is already gone
+        return
+
+    # get the destination container (under the new setup folder)
+    destination = get_setup_folder("methods")
+
+    # un-catalog the old container
+    uncatalog_object(origin)
+
+    # copy items from old -> new container
+    objects = origin.objectValues()
+    for num, src in enumerate(objects, start=1):
+        migrate_method_to_dx(src, destination)
+        if num % 100 == 0:
+            transaction.savepoint()
+
+    # copy snapshots for the container
+    copy_snapshots(origin, destination)
+
+    # remove old AT folder
+    if len(origin) == 0:
+        delete_object(origin)
+    else:
+        logger.warn("Cannot remove {}. Is not empty".format(origin))
+
+    logger.info("Convert Methods to Dexterity [DONE]")
+
+
+def migrate_method_to_dx(src, destination):
+    """Migrate an AT Method to DX in the destination folder
+
+    :param src: The source AT object
+    :param destination: The destination folder
+    """
+    portal_type = "Method"
+
+    if not api.is_at_content(src):
+        # already migrated -> just move it to the new folder
+        api.move_object(src, destination, check_constraints=False)
+        logger.info("Already migrated: {}".format(api.get_path(src)))
+        return
+
+    if api.get_portal_type(src) != portal_type:
+        logger.error("Not a '{}' object: {}".format(portal_type, src))
+        return
+
+    # origin and destination are different folders, so we can keep the ID
+    src_id = src.getId()
+    target = destination.get(src_id)
+    if not target:
+        # Don't use the api to skip the auto-id generation
+        target = createContent(portal_type, id=src_id)
+        destination._setObject(src_id, target)
+        target = destination._getOb(src_id)
+
+    # Manually set the fields
+    # NOTE: always convert string values to unicode for dexterity fields!
+    target.title = api.safe_unicode(src.Title() or "")
+    target.description = api.safe_unicode(src.Description() or "")
+    target.setMethodID(src.getMethodID() or "")
+    target.setAccredited(src.getAccredited())
+    target.setCalculations(src.getRawCalculations() or [])
+    target.setCalculation(src.getRawCalculation())
+
+    # instructions (AT html text -> DX rich text). The DX setter wraps plain
+    # (html) strings into a rich text value.
+    instructions = src.getInstructions()
+    if instructions:
+        target.setInstructions(api.safe_unicode(instructions))
+
+    # method document (AT blob file -> DX named blob file)
+    method_document = src.getMethodDocument()
+    if method_document:
+        named_file = blob_to_named_file(method_document)
+        if named_file:
+            target.setMethodDocument(named_file)
+
+    # Migrate the contents from AT to DX
+    migrator = getMultiAdapter((src, target), interface=IContentMigrator)
+
+    # copy all (raw) attributes from the source object to the target
+    migrator.copy_attributes(src, target)
+
+    # copy the UID (keeps references from services/worksheets/instruments
+    # valid)
+    migrator.copy_uid(src, target)
+
+    # Copy the Instrument back-references (relationship "InstrumentMethods").
+    # They live in an annotation on the method and are NOT carried over by
+    # `copy_attributes`, so `getRawInstruments` would otherwise return empty.
+    src_backref_storage = get_at_backref_storage(src)
+    if src_backref_storage:
+        target_backref_storage = get_at_backref_storage(target)
+        for relationship, uids in src_backref_storage.items():
+            target_backref_storage[relationship] = PersistentList(uids)
+
+    # copy auditlog
+    migrator.copy_snapshots(src, target)
+
+    # copy creators
+    migrator.copy_creators(src, target)
+
+    # copy workflow history
+    migrator.copy_workflow_history(src, target)
+
+    # copy marker interfaces
+    migrator.copy_marker_interfaces(src, target)
+
+    # copy dates
+    migrator.copy_dates(src, target)
+
+    # uncatalog the source object
+    migrator.uncatalog_object(src)
+
+    # delete the old object
+    migrator.delete_object(src)
+
+    # change the ID *after* the original object was removed
+    migrator.copy_id(src, target)
+
+    target.reindexObject()
+
+    logger.info("Migrated Method from %s -> %s" % (src, target))
+
+
+def to_reference_list(value):
+    """Return a single valued partition reference as the list it is stored in
+
+    :param value: the stored value, a bare UID or a list already
+    :type value: str, list or None
+    :returns: list with the UID, or an empty list
+    :rtype: list
+    """
+    if isinstance(value, (list, tuple)):
+        return list(value)
+    return [value] if value else []
+
+
+def fix_partition_record(record):
+    """Return a partition record with its values in the stored types
+
+    :param record: a single partition of a sample template
+    :type record: dict
+    :returns: the record with list references and a text partition id
+    :rtype: dict
+    """
+    fixed = dict(record)
+    fixed["part_id"] = u(record.get("part_id") or "")
+    for name in PARTITION_REFERENCES:
+        fixed[name] = to_reference_list(record.get(name))
+    return fixed
+
+
+def fix_service_record(record):
+    """Return a service record with its partition id in the stored type
+
+    :param record: a single service setting of a sample template
+    :type record: dict
+    :returns: the record with a text partition id
+    :rtype: dict
+    """
+    fixed = dict(record)
+    fixed["part_id"] = u(record.get("part_id") or "")
+    return fixed
+
+
+def fix_sampletemplate_records(tool):
+    """Store the records of sample templates in the types the schema holds
+
+    `setPartitions` stored the single valued reference sub-fields of a
+    partition as the bare UID, where the record schema holds a list of one,
+    and both setters stored the partition id as a native string, where the
+    schema holds text. Every template that the 2.6.0 migration brought over
+    from Archetypes went through those two setters, and its partitions read
+    back the first character of a UID instead of the reference.
+    """
+    logger.info("Fixing the records of sample templates ...")
+    brains = api.search({"portal_type": "SampleTemplate"}, SETUP_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Fixing sample template records: %s/%s"
+                        % (num, total))
+        template = api.get_object(brain)
+        partitions = list(getattr(template, "partitions", None) or [])
+        services = list(getattr(template, "services", None) or [])
+        fixed_partitions = [fix_partition_record(r) for r in partitions]
+        fixed_services = [fix_service_record(r) for r in services]
+        if fixed_partitions != partitions:
+            template.partitions = fixed_partitions
+        if fixed_services != services:
+            template.services = fixed_services
+
+    logger.info("Fixing the records of sample templates [DONE]")
+
+
+@upgradestep(product, version)
+def rename_attachments_catalog(tool):
+    """Rename `senaite_attachments_catalog` to `senaite_catalog_attachments`.
+
+    Every other SENAITE catalog is named `senaite_catalog_<name>`; this one
+    was the only one that read `senaite_<name>_catalog`. The odd name was
+    not only cosmetic: `CLIENT_TREE_CATALOGS` spelled it the regular way,
+    so `api.get_tool` returned nothing for it and the client-tree reindex
+    silently skipped the attachments of every client.
+
+    The entries are carried over from the old catalog rather than rebuilt
+    by walking the site: the objects to index are exactly the ones the old
+    catalog holds, and a full walk would visit every object in the database
+    to find a handful of attachments.
+    """
+    portal = api.get_portal()
+    old_catalog_id = "senaite_attachments_catalog"
+    old_catalog = portal.get(old_catalog_id)
+
+    # create the new catalog with its indexes, columns and type mappings
+    setup_core_catalogs(portal, catalog_classes=(AttachmentsCatalog,))
+    catalog = api.get_tool(ATTACHMENTS_CATALOG)
+
+    if old_catalog is None:
+        if len(catalog):
+            # this step ran already and the entries are in the new catalog
+            logger.info("No '%s' to rename [SKIP]" % old_catalog_id)
+            return
+
+        # nothing to carry over, so the site walk is the only way to fill it
+        logger.info("No '%s' to rename, rebuilding '%s' instead"
+                    % (old_catalog_id, ATTACHMENTS_CATALOG))
+        catalog.clearFindAndRebuild()
+        return
+
+    logger.info("Moving the entries of '%s' to '%s' ..."
+                % (old_catalog_id, ATTACHMENTS_CATALOG))
+    total = 0
+    for brain in old_catalog.searchAll():
+        obj = get_loaded_object(brain)
+        if obj is None:
+            # a stale entry of the catalog being dropped, or a damaged object
+            continue
+        catalog.catalog_object(obj)
+        obj._p_deactivate()
+        total += 1
+        if total % 500 == 0:
+            logger.info("  ... indexed %s objects" % total)
+            transaction.savepoint(optimistic=True)
+
+    # drop the old name from the type mappings before the catalog itself
+    archetype_tool = api.get_tool("archetype_tool")
+    for portal_type in ATTACHMENTS_TYPES:
+        mapped = archetype_tool.getCatalogsByType(portal_type)
+        mapped = [cat.getId() for cat in mapped]
+        if old_catalog_id not in mapped:
+            continue
+        mapped.remove(old_catalog_id)
+        archetype_tool.setCatalogsByType(portal_type, mapped)
+
+    portal.manage_delObjects([old_catalog_id])
+    logger.info("Moved %s objects to '%s' and removed '%s'"
+                % (total, ATTACHMENTS_CATALOG, old_catalog_id))

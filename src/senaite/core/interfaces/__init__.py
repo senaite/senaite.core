@@ -64,6 +64,11 @@ class IHideActionsMenu(Interface):
     """
 
 
+class IAuditLog(Interface):
+    """Marker interface for Audit Log
+    """
+
+
 class IAjaxEditForm(Interface):
     """Ajax edit form adapter
     """
@@ -214,6 +219,11 @@ class IContact(Interface):
 
 class IContacts(Interface):
     """Marker interface for Contacts container
+    """
+
+
+class ISupplierContact(Interface):
+    """Marker interface for a single Supplier Contact
     """
 
 
@@ -564,6 +574,16 @@ class ICalculations(Interface):
     """
 
 
+class IMethod(Interface):
+    """Marker interface for Method
+    """
+
+
+class IMethods(Interface):
+    """Marker interface for methods folder
+    """
+
+
 class IResultsReport(Interface):
     """Marker interface for Results Report
     """
@@ -633,4 +653,21 @@ class IMultiUploadFileRemover(Interface):
 
 class ILaboratory(Interface):
     """Marker interface for lab info
+    """
+
+
+class ICalculationModule(Interface):
+    """A module an add-on provides for calculations to import from
+
+    The module is registered as a named utility, with its dotted name as the
+    name, e.g. in the `configure.zcml` of the add-on:
+
+        <utility
+            component=".calc"
+            provides="senaite.core.interfaces.ICalculationModule"
+            name="senaite.patient.calc" />
+
+    A registered module is not forbidden, although it is part of a package
+    calculations must not import from. As any other module, a calculation
+    imports from it only when the site allows it.
     """

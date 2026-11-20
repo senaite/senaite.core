@@ -19,21 +19,52 @@
 # Some rights reserved, see README and LICENSE.
 
 import importlib
-import inspect
 
 from bika.lims import senaiteMessageFactory as _
+from senaite.core.api.calculation import check_member
+from senaite.core.api.calculation import get_module_member
+from senaite.core.api.calculation import is_allowed_module
+from senaite.core.api.calculation import is_unsafe_attribute
+from senaite.core.api.calculation import UnsafeFormula
 from senaite.core.i18n import translate
 from z3c.form import validator
 from zope.interface import Invalid
 
 
-def _get_module_member(dotted_name, member):
-    """Return the named member from a module, or None."""
-    try:
-        mod = importlib.import_module(dotted_name)
-    except ImportError:
-        return None
-    return dict(inspect.getmembers(mod)).get(member)
+def allowed_module():
+    """Validate that a calculation may import from the module.
+
+    Runs before the module is imported: importing a module runs its code.
+    """
+    def validate(row):
+        module = (row.get("module") or "").strip()
+        if not module:
+            return row
+        if not is_allowed_module(module):
+            raise Invalid(
+                translate(_(
+                    u"allowed_module_error",
+                    default=u"Calculations must not import from "
+                            u"'${module}'. A site manager may allow a "
+                            u"module in the registry of the site",
+                    mapping={"module": module})))
+        return row
+    return validate
+
+
+def public_function():
+    """Validate that the function is no private or unsafe member of the
+    module, e.g. one that writes files."""
+    def validate(row):
+        function = (row.get("function") or "").strip()
+        if function and is_unsafe_attribute(function):
+            raise Invalid(
+                translate(_(
+                    u"public_function_error",
+                    default=u"Calculations must not import '${function}'",
+                    mapping={"function": function})))
+        return row
+    return validate
 
 
 def importable_module():
@@ -61,11 +92,32 @@ def importable_function():
         function = (row.get("function") or "").strip()
         if not module or not function:
             return row
-        if _get_module_member(module, function) is None:
+        if get_module_member(module, function) is None:
             raise Invalid(
                 translate(_(
                     u"importable_function_error",
                     default=u"'${function}' not found in module '${module}'",
+                    mapping={"function": function, "module": module})))
+        return row
+    return validate
+
+
+def safe_function():
+    """Validate that the member is no module, and of a module an add-on
+    provides, a function the module defines itself."""
+    def validate(row):
+        module = (row.get("module") or "").strip()
+        function = (row.get("function") or "").strip()
+        if not module or not function:
+            return row
+        try:
+            check_member(module, get_module_member(module, function))
+        except UnsafeFormula:
+            raise Invalid(
+                translate(_(
+                    u"safe_function_error",
+                    default=u"Calculations must not import '${function}' "
+                            u"from '${module}'",
                     mapping={"function": function, "module": module})))
         return row
     return validate
@@ -81,7 +133,11 @@ class ImportsValidator(validator.SimpleFieldValidator):
         if not value:
             return
         messages = []
-        row_validators = (importable_module(), importable_function())
+        # The allowlist goes first and stops a row: nothing is imported
+        # for a module a calculation must not use
+        row_validators = (allowed_module(), public_function(),
+                          importable_module(), importable_function(),
+                          safe_function())
         for idx, row in enumerate(value):
             for fn in row_validators:
                 try:
@@ -89,5 +145,6 @@ class ImportsValidator(validator.SimpleFieldValidator):
                 except Invalid as ex:
                     messages.append(
                         u"Row {}: {}".format(idx + 1, ex.args[0]))
+                    break
         if messages:
             raise Invalid(u"\n".join(messages))

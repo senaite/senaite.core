@@ -7,9 +7,175 @@
       description="Drop the getWorksheetTemplateUID and getWorksheetTemplateURL
                    metadata columns from the worksheet catalog, that are not
                    used anymore"
+      source="2769"
+      destination="2770"
+      handler=".v02_07_000.remove_worksheet_template_columns"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate SupplierContact to Dexterity"
+      description="Convert the Archetypes SupplierContact content type to
+                   Dexterity. The contacts stay inside their Supplier, that is
+                   Dexterity already, so nothing is moved."
+      source="2768"
+      destination="2769"
+      handler=".v02_07_000.migrate_suppliercontacts_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Allow the modules calculations import from"
+      description="Calculations may import only from the modules the site
+                   allows. Allow the mathematical ones and the ones the
+                   calculations of the site already use, except modules that
+                   reach the system, the interpreter or the database."
+      source="2767"
+      destination="2768"
+      handler=".v02_07_000.allow_calculation_imports"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Refresh the analyses keywords of samples"
+      description="Sites upgraded past 2749 kept samples without the
+                   getAnalysesKeywords metadata, because the step returned
+                   early when the column existed already."
+      source="2766"
+      destination="2767"
+      handler=".v02_07_000.add_sample_analyses_keywords_metadata"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Index the existing content in new indexes"
+      description="The upgrade added indexes to the sample and analysis
+                   catalogs without the existing content, so filters and
+                   searches on them missed older samples and analyses."
+      source="2765"
+      destination="2766"
+      handler=".v02_07_000.reindex_new_core_indexes"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Rename the attachments catalog"
+      description="Rename `senaite_attachments_catalog` to
+                   `senaite_catalog_attachments`, so it follows the naming
+                   of every other SENAITE catalog. The old name also made
+                   the client-tree reindex skip the catalog, because the
+                   list of catalogs to visit spelled it the regular way."
+      source="2764"
+      destination="2765"
+      handler=".v02_07_000.rename_attachments_catalog"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add the client token to older client content"
+      description="The earlier reindex of allowedRolesAndUsers searched the
+                   catalogs with an empty query and reached no object, so
+                   client contacts do not find content that was not modified
+                   since."
+      source="2763"
+      destination="2764"
+      handler=".v02_07_000.reindex_client_tree_allowed_roles_again"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Add the Read JSON API permission"
+      description="Import rolemap for the new Read JSON API permission, which
+                   gates the reading routes of the legacy JSON API against
+                   anonymous callers."
+      source="2762"
+      destination="2763"
+      handler=".v02_07_000.import_rolemap"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Fix the records of sample templates"
+      description="Store the single valued references of a partition as the
+                   list of one UID the record schema holds, and the partition
+                   id of both partitions and services as text. Templates that
+                   the 2.6.0 migration brought over from Archetypes read their
+                   partition references back as a single character."
+      source="2761"
+      destination="2762"
+      handler=".v02_07_000.fix_sampletemplate_records"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Reindex Sample Point sample type titles"
+      description="Populate sampletype_title for existing Sample Points so
+                   sorting and filtering by Sample Type work."
+      source="2760"
+      destination="2761"
+      handler=".v02_07_000.reindex_samplepoint_sampletype_title"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Drop the stale marker behavior from the Setup FTI"
+      description="The FTI lists a marker interface among the type's
+                   behaviors. It is not a registered behavior, so looking the
+                   behaviors up raises BehaviorRegistrationNotFound, which is
+                   enough to refuse any update of the Setup object through the
+                   API."
+      source="2759"
+      destination="2760"
+      handler=".v02_07_000.drop_setup_marker_behavior"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Store the ID formatting rows as unicode"
+      description="The rows came over from the Archetypes RecordsField as
+                   native strings, while the Dexterity subfields are TextLine
+                   and only accept unicode. Validating the Setup object
+                   therefore fails over a field nobody edited, which refuses
+                   every programmatic update of the setup."
+      source="2758"
+      destination="2759"
+      handler=".v02_07_000.normalize_id_formatting_rows"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Drop ordering annotations from Instruments"
+      description="Remove the plone.folder.ordered.order PersistentList and
+                   plone.folder.ordered.pos OIBTree annotations from every
+                   Instrument. Instruments now use UnorderedOrdering as their
+                   IOrdering adapter, so these annotations are no longer
+                   maintained and become a stale ZODB conflict spot if left
+                   in place."
+      source="2757"
+      destination="2758"
+      handler=".v02_07_000.drop_instrument_ordering_annotations"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate Method content type to Dexterity"
+      description="Convert the Archetypes Method content type to Dexterity and
+                   move the methods folder from the portal root into the setup
+                   folder."
+      source="2756"
+      destination="2757"
+      handler=".v02_07_000.migrate_methods_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Migrate AuditLog to Dexterity"
+      description="Remove the legacy Archetypes AuditLog folder from
+                   bika_setup and create a fresh Dexterity one in the new
+                   SENAITE setup. The folder only backs the audit log listing
+                   view and never holds content of its own, so nothing is
+                   carried over. The snapshot machinery and audit log views
+                   now live in senaite.core instead of bika.lims."
+      source="2755"
+      destination="2756"
+      handler=".v02_07_000.migrate_auditlog_to_dx"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove stale uid_catalog records"
+      description="Remove uid_catalog records that sit under a path that does
+                   not match the convention of their object. The AT to DX
+                   migrations left such records behind, and they break every
+                   lookup by UID as soon as the object is edited."
       source="2754"
       destination="2755"
-      handler=".v02_07_000.remove_worksheet_template_columns"
+      handler=".v02_07_000.remove_stale_uid_catalog_records"
       profile="senaite.core:default"/>
 
   <genericsetup:upgradeStep

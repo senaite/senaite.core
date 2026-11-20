@@ -56,10 +56,8 @@ def is_out_of_range(brain_or_object, result=_marker):
     :rtype: (bool, bool)
     """
     analysis = api.get_object(brain_or_object)
-    if not IAnalysis.providedBy(analysis) and \
-            not IReferenceAnalysis.providedBy(analysis):
-        api.fail("{} is not supported. Needs to be IAnalysis or "
-                 "IReferenceAnalysis".format(repr(analysis)))
+    if not is_analysis(analysis) and not is_reference_analysis(analysis):
+        api.fail("{} is not supported.".format(repr(analysis)))
 
     if result is _marker:
         result = api.safe_getattr(analysis, "getResult", None)
@@ -68,7 +66,7 @@ def is_out_of_range(brain_or_object, result=_marker):
         # Empty result
         return False, False
 
-    if IDuplicateAnalysis.providedBy(analysis):
+    if is_duplicate_analysis(analysis):
         # Result range for duplicate analyses is calculated from the original
         # result, applying a variation % in shoulders. If the analysis has
         # result options enabled or string results enabled, system returns an
@@ -297,8 +295,7 @@ def is_retracted(brain_or_object):
     """
     analysis = api.get_object(brain_or_object)
     if not is_analysis(analysis) and not is_reference_analysis(analysis):
-        api.fail("{} is not supported. Needs to be IAnalysis or "
-                 "IReferenceAnalysis".format(repr(analysis)))
+        api.fail("{} is not supported.".format(repr(analysis)))
     return IRetracted.providedBy(analysis)
 
 
@@ -310,8 +307,7 @@ def is_rejected(brain_or_object):
     """
     analysis = api.get_object(brain_or_object)
     if not is_analysis(analysis) and not is_reference_analysis(analysis):
-        api.fail("{} is not supported. Needs to be IAnalysis or "
-                 "IReferenceAnalysis".format(repr(analysis)))
+        api.fail("{} is not supported.".format(repr(analysis)))
     return IRejected.providedBy(analysis)
 
 
@@ -323,9 +319,60 @@ def is_retested(brain_or_object):
     """
     analysis = api.get_object(brain_or_object)
     if not is_analysis(analysis) and not is_reference_analysis(analysis):
-        api.fail("{} is not supported. Needs to be IAnalysis or "
-                 "IReferenceAnalysis".format(repr(analysis)))
+        api.fail("{} is not supported.".format(repr(analysis)))
     return analysis.isRetested()
+
+
+def is_result_complete(brain_or_object):
+    """Checks if the analysis passed in has all its results captured
+
+    The result of an analysis is considered complete when the result itself
+    is not empty and none of its result variables (interims), except for
+    those that allow empty values, is empty
+
+    :param brain_or_object: A single catalog brain or content object
+    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
+    :returns: True if the result and all the required result variables of the
+              analysis have a value
+    :rtype: bool
+    """
+    analysis = api.get_object(brain_or_object)
+    if not is_analysis(analysis) and not is_reference_analysis(analysis):
+        api.fail("{} is not supported.".format(repr(analysis)))
+
+    result = analysis.getResult()
+    if is_empty_result_value(result):
+        return False
+
+    for interim in analysis.getInterimFields():
+        allow_empty = interim.get("allow_empty", False)
+        if api.to_bool(allow_empty):
+            continue
+
+        value = interim.get("value")
+        if is_empty_result_value(value):
+            return False
+
+    return True
+
+
+def is_empty_result_value(value):
+    """Checks if the raw value of a result or of a result variable is empty
+
+    Multi-valued results are stored as a JSON list with the selected values,
+    so values like `"[]"` or `'[""]'` are considered empty as well
+
+    :param value: The raw value of a result or of a result variable
+    :returns: True if the value is empty or all its values are empty
+    :rtype: bool
+    """
+    for val in api.to_list(value):
+        if val is None:
+            continue
+        if api.is_string(val) and not val.strip():
+            continue
+        return False
+    return True
 
 
 def get_dependencies(brain_or_object, with_retests=False, recursive=False):

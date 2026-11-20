@@ -48,6 +48,7 @@ from .selectotherfield import ISelectOtherField
 from .selectotherfield import SelectOtherField
 from .textlinefield import TextLineField
 from .uidreferencefield import IUIDReferenceField
+from .uidreferencefield import UIDField
 from .uidreferencefield import UIDReferenceField
 
 classImplementsFirst(AddressField, IAddressField)

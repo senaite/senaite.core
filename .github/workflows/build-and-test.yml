@@ -78,3 +78,56 @@ jobs:
       - name: Run tests
         run: |
           ./bin/test -s senaite.core.tests
+
+  build-javascript:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # sass-loader requires Node >= 22.11
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: yarn
+          cache-dependency-path: webpack/yarn.lock
+
+      # Fails when yarn.lock and package.json have drifted apart
+      - name: Install dependencies
+        working-directory: webpack
+        run: yarn install --frozen-lockfile
+
+      - name: Build bundles
+        working-directory: webpack
+        run: yarn build
+
+      # A production build that carries development artifacts still compiles,
+      # but breaks in the browser. The JSX development runtime is the case we
+      # hit: it calls `jsxDEV`, which the production build of React does not
+      # export.
+      - name: Check bundles for development artifacts
+        run: |
+          if grep -qE "jsxDEV|jsx-dev-runtime|webpackHotUpdate" \
+              src/senaite/core/browser/static/bundles/*.js; then
+            echo "Development artifacts found in the production bundles:"
+            grep -lE "jsxDEV|jsx-dev-runtime|webpackHotUpdate" \
+                src/senaite/core/browser/static/bundles/*.js
+            exit 1
+          fi
+
+      # Only the bundles are compared, not the vendored copies below
+      # `static/modules`. Source maps are excluded as well: the `file` key
+      # inside them carries a hash that changes on every run, while the
+      # bundles themselves are reproducible.
+      - name: Check committed bundles are up to date
+        run: |
+          changed=$(git status --porcelain -- \
+              src/senaite/core/browser/static/bundles ':(exclude)*.map')
+          if [ -n "$changed" ]; then
+            echo "The committed bundles differ from a fresh build:"
+            echo "$changed"
+            echo "Run 'yarn build' in webpack/ and commit the result."
+            exit 1
+          fi

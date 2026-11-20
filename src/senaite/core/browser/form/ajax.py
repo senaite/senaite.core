@@ -20,11 +20,20 @@
 
 import json
 
+from AccessControl import Unauthorized
+from bika.lims import api
+from bika.lims.api.security import check_permission
 from bika.lims.browser import BrowserView
 from bika.lims.decorators import returns_json
+from Products.CMFCore.permissions import ModifyPortalContent
 from senaite.core.decorators import readonly_transaction
 from senaite.core.interfaces import IAjaxEditForm
 from zope.component import queryMultiAdapter
+from zope.component import queryUtility
+from zope.security.interfaces import IPermission
+
+# Named form adapters of add forms are called like the add view
+ADD_FORM_PREFIX = "++add++"
 
 __doc__ = """
 The edit form handler is the server part of `editform.js` JS and must implement
@@ -134,10 +143,31 @@ The `message` should be an i18n message factory and are translated with
 """
 
 
+def get_permission_title(permission):
+    """The title of a permission given by its title or its zope 3 id
+    """
+    utility = queryUtility(IPermission, name=permission)
+    return utility.title if utility else permission
+
+
+def get_add_permission(portal_type):
+    """The permission to add an object of the portal type, or None
+    """
+    fti = api.get_tool("portal_types").getTypeInfo(portal_type)
+    permission = getattr(fti, "add_permission", None)
+    return get_permission_title(permission) if permission else None
+
+
 class FormView(BrowserView):
     """Form View
 
     NOTE: No persistent operations are allowed!
+
+    The view is registered for every context and visible for whoever may
+    view it, so it checks itself whether the user may use the form before
+    an adapter is called: an add form needs the add permission of its
+    type, any other form `Modify portal content` on the context, unless
+    the adapter names a `permission` of its own.
     """
 
     @property
@@ -149,54 +179,61 @@ class FormView(BrowserView):
                 (self.context, self.request), IAjaxEditForm, name=name)
         return queryMultiAdapter((self.context, self.request), IAjaxEditForm)
 
+    def get_required_permission(self, adapter):
+        """The permission the user needs on the context to use the form
+
+        :returns: the title of the permission, or None when there is none
+            to check, which refuses the form
+        """
+        permission = getattr(adapter, "permission", None)
+        if permission:
+            return get_permission_title(permission)
+        name = self.get_form_adapter_name() or ""
+        if name.startswith(ADD_FORM_PREFIX):
+            return get_add_permission(name[len(ADD_FORM_PREFIX):])
+        return ModifyPortalContent
+
+    def check_permission(self, adapter):
+        """Refuse a user who may not use the form of the adapter
+
+        :raises Unauthorized: when the user lacks the permission
+        """
+        permission = self.get_required_permission(adapter)
+        if not permission or not check_permission(permission, self.context):
+            raise Unauthorized("You are not allowed to use this form")
+
+    def dispatch(self, method):
+        """Call the method of the form adapter with the posted data
+        """
+        adapter = self.adapter
+        if not adapter:
+            return {}
+        self.check_permission(adapter)
+        return getattr(adapter, method)(self.get_data() or {})
+
     @readonly_transaction
     @returns_json
     def initialized(self):
-        data = self.get_data()
-        if not data:
-            data = {}
-        if not self.adapter:
-            return {}
-        return self.adapter.initialized(data)
+        return self.dispatch("initialized")
 
     @readonly_transaction
     @returns_json
     def modified(self):
-        data = self.get_data()
-        if not data:
-            data = {}
-        if not self.adapter:
-            return {}
-        return self.adapter.modified(data)
+        return self.dispatch("modified")
 
     @readonly_transaction
     @returns_json
     def added(self):
-        data = self.get_data()
-        if not data:
-            data = {}
-        if not self.adapter:
-            return {}
-        return self.adapter.added(data)
+        return self.dispatch("added")
 
     @returns_json
     def submit(self):
-        data = self.get_data()
-        if not data:
-            data = {}
-        if not self.adapter:
-            return {}
-        return self.adapter.submit(data)
+        return self.dispatch("submit")
 
     @readonly_transaction
     @returns_json
     def callback(self):
-        data = self.get_data()
-        if not data:
-            data = {}
-        if not self.adapter:
-            return {}
-        return self.adapter.callback(data)
+        return self.dispatch("callback")
 
     def get_data(self):
         body = self.request.get("BODY")

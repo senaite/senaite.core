@@ -613,6 +613,15 @@
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
+    <!-- Reading routes of the legacy JSON API. Every authenticated user
+         may use them, because the UI calls them from views that these
+         users are meant to work in (the sample add form, the sample
+         view, the storage views). Anonymous must not: the routes take a
+         caller-chosen catalog and return field data in bulk. Writing
+         stays with `Access JSON API` above. -->
+    <permission name="senaite.core: Read JSON API" acquire="False">
+      <role name="Authenticated"/>
+    </permission>
     <permission name="senaite.core: Edit Field Results" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>

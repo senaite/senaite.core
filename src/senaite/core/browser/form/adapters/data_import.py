@@ -27,17 +27,24 @@ import transaction
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.catalog import SETUP_CATALOG
+from AccessControl import Unauthorized
+from bika.lims.api.security import check_permission
 from Products.Archetypes.public import DisplayList
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core import logger
 from senaite.core.browser.form.adapters import EditFormAdapterBase
 from senaite.core.exportimport import instruments
 from senaite.core.exportimport.load_setup_data import LoadSetupData
+from senaite.core.permissions import ImportInstrumentResults
+from senaite.core.permissions import ManageBika
 
 
 class EditForm(EditFormAdapterBase):
     """Edit form adapter for data import
     """
+
+    # The permission of the import view; the form is no edit form
+    permission = ImportInstrumentResults
 
     def initialized(self, data):
         # hide instrument interface selection
@@ -49,6 +56,9 @@ class EditForm(EditFormAdapterBase):
         setupexisting = self.request.form.get("setupexisting")
         auto_import_results = self.request.form.get("auto_import_results")
         if setupfile or setupexisting:
+            # Setup data creates and changes the setup of the site
+            if not check_permission(ManageBika, api.get_portal()):
+                raise Unauthorized("You are not allowed to import setup data")
             self.handle_data_import()
         elif auto_import_results:
             view = api.get_view("auto_import_results")

@@ -29,6 +29,7 @@ from bika.lims.interfaces.analysis import IRequestAnalysis
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.api.choices import to_options
 
 
 class SetAnalysisConditionsView(BrowserView):
@@ -84,8 +85,7 @@ class SetAnalysisConditionsView(BrowserView):
         conditions = copy.deepcopy(conditions)
         for condition in conditions:
             choices = condition.get("choices", "")
-            options = filter(None, choices.split("|"))
-            condition.update({"options": options})
+            condition.update({"options": to_options(choices)})
 
             if condition.get("type") == "file":
                 uid = condition.get("value")

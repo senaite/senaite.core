@@ -19,8 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from collective.z3cform.datagridfield.datagridfield import DataGridField
-from collective.z3cform.datagridfield.datagridfield import DataGridFieldObject
 from plone.formwidget.namedfile.converter import b64decode_file
 from plone.formwidget.namedfile.converter import b64encode_file
 from plone.formwidget.namedfile.widget import Download as DownloadBase
@@ -31,6 +29,8 @@ from Products.Five.browser import BrowserView
 from senaite.core.interfaces import ISenaiteFormLayer
 from senaite.core.schema.interfaces import IDataGridField
 from senaite.core.schema.interfaces import IDataGridRow
+from senaite.core.z3cform.datagridfield.datagridfield import DataGridField
+from senaite.core.z3cform.datagridfield.datagridfield import DataGridFieldObject
 from senaite.core.z3cform.interfaces import IDataGridRowWidget
 from senaite.core.z3cform.interfaces import IDataGridWidget
 from z3c.form.interfaces import INPUT_MODE

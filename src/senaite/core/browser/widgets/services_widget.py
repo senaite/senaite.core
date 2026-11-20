@@ -28,9 +28,9 @@ from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from plone.memoize import view
 from senaite.core.catalog import SETUP_CATALOG
+from senaite.core.i18n import get_currency_symbol
 from senaite.core.permissions import FieldEditProfiles
 from senaite.core.z3cform.widgets.listing.view import DefaultListingWidget
-from zope.i18n.locales import locales
 
 
 class ServicesWidget(DefaultListingWidget):
@@ -152,10 +152,9 @@ class ServicesWidget(DefaultListingWidget):
     def get_currency_symbol(self):
         """Get the currency Symbol
         """
-        locale = locales.getLocale("en")
         bika_setup = api.get_senaite_setup()
         currency = bika_setup.getCurrency()
-        return locale.numbers.currencies[currency].symbol
+        return get_currency_symbol(currency)
 
     @view.memoize
     def get_decimal_mark(self):

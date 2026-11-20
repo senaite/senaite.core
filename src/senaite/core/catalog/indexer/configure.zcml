@@ -30,7 +30,7 @@
       provides="plone.indexer.interfaces.IIndexer"/>
   <adapter name="listing_searchable_text"
       factory=".contact.listing_searchable_text"
-      for="bika.lims.interfaces.ISupplierContact
+      for="senaite.core.interfaces.ISupplierContact
            senaite.core.interfaces.catalog.IContactCatalog"
       provides="plone.indexer.interfaces.IIndexer"/>
   <adapter name="getParentUID"
@@ -42,7 +42,7 @@
       provides="plone.indexer.interfaces.IIndexer"/>
   <adapter name="getParentUID"
       factory=".contact.getParentUID"
-      for="bika.lims.interfaces.ISupplierContact
+      for="senaite.core.interfaces.ISupplierContact
            senaite.core.interfaces.catalog.IContactCatalog"
       provides="plone.indexer.interfaces.IIndexer"/>
   <adapter name="sortable_title"
@@ -54,7 +54,7 @@
       provides="plone.indexer.interfaces.IIndexer"/>
   <adapter name="sortable_title"
       factory=".contact.sortable_title"
-      for="bika.lims.interfaces.ISupplierContact
+      for="senaite.core.interfaces.ISupplierContact
            senaite.core.interfaces.catalog.IContactCatalog"
       provides="plone.indexer.interfaces.IIndexer"/>
 
@@ -124,6 +124,7 @@
   <adapter name="sampletype_uid" factory=".sampletemplate.sampletype_uid"/>
 
   <!-- SamplePoint Indexer -->
+  <adapter name="sampletype_title" factory=".samplepoint.sampletype_title"/>
   <adapter name="sampletype_uid" factory=".samplepoint.sampletype_uid"/>
 
   <!-- SampleType Indexer -->

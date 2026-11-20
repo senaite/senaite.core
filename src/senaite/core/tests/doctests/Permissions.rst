@@ -10,6 +10,7 @@ Test Setup
 
     >>> import os
     >>> import transaction
+    >>> from bika.lims import api
     >>> from plone import api as ploneapi
     >>> from zope.lifecycleevent import modified
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
@@ -738,8 +739,9 @@ Test Workflow
 
 A `method` lives in the `methods` folder::
 
-    >>> methods = portal.methods
-    >>> method = create(methods, "Method")
+    >>> methods = portal.setup.methods
+    >>> method = api.create(methods, "Method", title="Test Method")
+    >>> transaction.commit()
 
 The `methods` folder follows the `senaite_setup_workflow` and is initially in
 the `active` state::
@@ -811,7 +813,7 @@ Ensure we are logged out::
 
 Anonymous should not be able to view the `methods` folder::
 
-    >>> browser.open(methods.absolute_url() + "/base_view")
+    >>> browser.open(methods.absolute_url() + "/@@view")
     Traceback (most recent call last):
     ...
     Unauthorized: ...
@@ -827,14 +829,14 @@ Anonymous should not be able to view the `methods` folder::
 
 Anonymous should not be able to edit the `methods` folder::
 
-    >>> browser.open(methods.absolute_url() + "/base_edit")
+    >>> browser.open(methods.absolute_url() + "/@@edit")
     Traceback (most recent call last):
     ...
     Unauthorized: ...
 
 Anonymous should not be able to edit a `method`::
 
-    >>> browser.open(method.absolute_url() + "/base_edit")
+    >>> browser.open(method.absolute_url() + "/@@edit")
     Traceback (most recent call last):
     ...
     Unauthorized: ...

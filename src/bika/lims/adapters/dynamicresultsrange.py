@@ -19,12 +19,27 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims import logger
+from bika.lims.config import MAX_OPERATORS
+from bika.lims.config import MIN_OPERATORS
 from bika.lims.interfaces import IDynamicResultsRange
 from plone.memoize.instance import memoize
 from senaite.core.p3compat import cmp
 from zope.interface import implementer
 
 marker = object()
+
+# Range keys whose values are operators
+OPERATORS = {
+    "min_operator": MIN_OPERATORS,
+    "max_operator": MAX_OPERATORS,
+}
+
+# Symbols the autocorrect of Excel writes for the operators
+OPERATOR_ALIASES = {
+    u"\u2265": "geq",  # ≥
+    u"\u2264": "leq",  # ≤
+}
 
 DEFAULT_RANGE_KEYS = [
     "min",
@@ -33,10 +48,29 @@ DEFAULT_RANGE_KEYS = [
     "minpanic",
     "max",
     "warn_max",
-    "max",
+    "max_operator",
     "maxpanic",
     "error",
 ]
+
+
+def to_operator(key, value):
+    """Returns the operator (e.g. `geq`) of the value of an operator range
+    key, written as the operator, its symbol (`>=`) or the symbol the
+    autocorrect of Excel writes for it (`≥`), with any surrounding whitespace
+
+    :param key: the range key, `min_operator` or `max_operator`
+    :param value: the value from the specifications file
+    :returns: the operator, or None if the value is not an operator
+    """
+    if not api.is_string(value):
+        return None
+    value = value.strip().lower()
+    value = OPERATOR_ALIASES.get(value, value)
+    for operator, symbol in OPERATORS[key].items():
+        if value in (operator, symbol):
+            return operator
+    return None
 
 
 @implementer(IDynamicResultsRange)
@@ -140,8 +174,10 @@ class DynamicResultsRange(object):
         def is_empty(value):
             return not value and value != 0
 
-        # specs with less empty values have priority
-        keys = set(a.keys() + b.keys())
+        # specs with fewer empty values to match have priority. The values of
+        # the range (limits, operators, comment) are not matched
+        range_keys = set(self.range_keys) | {"rangecomment"}
+        keys = set(a.keys() + b.keys()) - range_keys
         empties_a = len(filter(lambda key: is_empty(a.get(key)), keys))
         empties_b = len(filter(lambda key: is_empty(b.get(key)), keys))
         if empties_a != empties_b:
@@ -193,6 +229,15 @@ class DynamicResultsRange(object):
             value = spec.get(key, marker)
             # skip if the range key is not set in the Excel
             if value is marker:
+                continue
+            # set the operator, written as key or symbol
+            if key in OPERATORS:
+                operator = to_operator(key, value)
+                if operator:
+                    rr[key] = operator
+                elif api.is_string(value) and value.strip():
+                    logger.warn(u"Invalid {} '{}' for {} in {}, skipped".format(
+                        key, value, keyword, api.get_path(self.dynamicspec)))
                 continue
             # skip if the value is not floatable
             if not api.is_floatable(value):

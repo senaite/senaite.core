@@ -97,7 +97,27 @@ class DynamicLocalRoleAdapter(DefaultLocalRoleAdapter):
         dynamic_roles = self.getRolesInContext(self.context, principal_id)
         return list(set(default_roles + dynamic_roles))
 
+    def hasDynamicRoles(self):
+        """Returns whether an adapter computes dynamic local roles for the
+        current context
+        """
+        if not api.is_object(self.context):
+            return False
+        for name, adapter in getAdapters((self.context,), IDynamicLocalRoles):
+            return True
+        return False
+
     def getAllRoles(self):
+        if not self.hasDynamicRoles():
+            # Without dynamic local roles every member only has the local
+            # roles of the context. Asking for them member by member costs a
+            # cache lookup per member and context, for every object indexed
+            members = set(self.getMemberIds())
+            roles = {principal_id: list(local_roles)
+                     for principal_id, local_roles in self._rolemap.items()
+                     if principal_id in members and local_roles}
+            return six.iteritems(roles)
+
         roles = {}
         # Iterate through all members to extract their dynamic local role for
         # current context

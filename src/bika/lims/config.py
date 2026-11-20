@@ -26,6 +26,7 @@ from zope.i18n.locales import locales
 # Implicit module imports used by others
 # XXX Refactor these dependencies to explicit imports!
 from senaite.core.i18n import translate as t
+from senaite.core.i18n import get_currency_symbol
 from senaite.core.permissions import *
 
 
@@ -104,7 +105,7 @@ currencies = locales.getLocale('en').numbers.currencies.values()
 currencies.sort(lambda x, y: cmp(x.displayName, y.displayName))
 
 CURRENCIES = DisplayList(
-    [(c.type, "%s (%s)" % (c.displayName, c.symbol))
+    [(c.type, "%s (%s)" % (c.displayName, get_currency_symbol(c.type)))
      for c in currencies]
 )
 

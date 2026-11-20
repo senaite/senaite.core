@@ -1,0 +1,22 @@
+"use strict";
+import countryNames from "./country-names/is.js";
+const interfaceTranslations = {
+  selectedCountryAriaLabel: "Breyta landi fyrir símanúmer, valið ${countryName} (${dialCode})",
+  noCountrySelected: "Veldu land fyrir símanúmer",
+  countryListAriaLabel: "Listi yfir lönd",
+  searchPlaceholder: "Leita",
+  clearSearchAriaLabel: "Hreinsa leit",
+  searchEmptyState: "Engar niðurstöður fundust",
+  searchSummaryAria(count) {
+    if (count === 0) {
+      return "Engar niðurstöður fundust";
+    }
+    const mod10 = count % 10;
+    const mod100 = count % 100;
+    if (mod10 === 1 && mod100 !== 11) {
+      return `${count} niðurstaða fannst`;
+    }
+    return `${count} niðurstöður fundust`;
+  }
+};
+export default { ...interfaceTranslations, countryNames };

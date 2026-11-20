@@ -1,0 +1,55 @@
+UID reference widget
+====================
+
+The UID reference widget renders selected objects as HTML links using the
+`display_template` of the field. The values of the template are resolved
+in `get_render_data`, which provides the object `uid`, `url`, `Title`
+and `Description`, plus the attributes or accessors named in the template.
+
+Running this test from the buildout directory:
+
+    bin/test test_z3c_widgets -t uidreference
+
+Some needed imports:
+
+    >>> from bika.lims import api
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import setRoles
+    >>> from plone.autoform.interfaces import WIDGETS_KEY
+    >>> from zope.publisher.browser import TestRequest
+
+Grant required privileges:
+
+    >>> setRoles(portal, TEST_USER_ID, ["Manager",])
+
+Create a client to reference. Note that `Client` is an `Organisation`:
+its `Title` method returns the `Name` field and the `title` attribute
+is never set:
+
+    >>> client = api.create(portal.clients, "Client", ClientID="HH")
+    >>> client.setName("Happy Hills")
+    >>> api.get_title(client)
+    'Happy Hills'
+    >>> client.getField("title").get(client)
+    ''
+
+The `clients` field of the `IClientShareableBehavior` behavior renders
+the reference with a customized `display_template`:
+
+    >>> from senaite.core.behaviors.clientshareable import \
+    ...     IClientShareableBehavior
+    >>> widgets = IClientShareableBehavior.queryTaggedValue(WIDGETS_KEY)
+    >>> spec = widgets["clients"]
+    >>> field = IClientShareableBehavior["clients"]
+
+The parameterized widget factory applies the `display_template` from the
+widget directive to the widget, like the form machinery does:
+
+    >>> request = TestRequest()
+    >>> widget = spec(field, request)
+
+Rendering the client reference resolves `Title` from the render data, so
+the link shows the client name:
+
+    >>> print(widget.render_reference(api.get_uid(client)))
+    <a href='...'>Happy Hills</a>

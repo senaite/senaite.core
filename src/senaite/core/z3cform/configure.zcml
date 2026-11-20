@@ -9,6 +9,9 @@
   <include package="z3c.form" />
   <include package="z3c.form" file="meta.zcml" />
 
+  <!-- vendored datagrid widget machinery -->
+  <include package=".datagridfield" />
+
   <!-- include custom widgets -->
   <include package=".widgets" />
 

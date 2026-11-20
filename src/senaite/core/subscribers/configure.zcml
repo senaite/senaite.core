@@ -1,6 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configure xmlns="http://namespaces.zope.org/zope">
 
+  <!-- Upgrade steps: list the objects that cannot be loaded -->
+  <subscriber
+      for="senaite.core.events.upgrade.IBeforeUpgradeStepEvent"
+      handler=".upgrade.before_upgrade_step"
+      />
+
+  <subscriber
+      for="senaite.core.events.upgrade.IAfterUpgradeStepEvent"
+      handler=".upgrade.after_upgrade_step"
+      />
+
+  <!-- Audit Log: AT Object Created -->
+  <subscriber
+      for="Products.Archetypes.interfaces.IBaseObject
+           Products.Archetypes.interfaces.IObjectInitializedEvent"
+      handler=".auditlog.ObjectInitializedEventHandler"
+      />
+
+  <!-- Audit Log: Dexterity Object Created -->
+  <subscriber
+      for="plone.dexterity.interfaces.IDexterityContent
+           zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler=".auditlog.ObjectInitializedEventHandler"
+      />
+
+  <!-- Audit Log: AT Object Modified -->
+  <subscriber
+      for="Products.Archetypes.interfaces.IBaseObject
+           Products.Archetypes.interfaces.IObjectEditedEvent"
+      handler=".auditlog.ObjectModifiedEventHandler"
+      />
+
+  <!-- Audit Log: Dexterity Object Modified -->
+  <subscriber
+      for="plone.dexterity.interfaces.IDexterityContent
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".auditlog.ObjectModifiedEventHandler"
+      />
+
+  <!-- Audit Log: After Transition Event -->
+  <subscriber
+      for="*
+           Products.CMFCore.interfaces.IActionSucceededEvent"
+      handler=".auditlog.ObjectTransitionedEventHandler"
+      />
+
+  <!-- Audit Log: Object removed Event -->
+  <subscriber
+      for="*
+           zope.lifecycleevent.interfaces.IObjectRemovedEvent"
+      handler=".auditlog.ObjectRemovedEventHandler"
+      />
+
   <!-- Contact/LabContact *modified* event handler
        This subscriber updates the properties of the linked user.  -->
   <subscriber
@@ -20,6 +73,12 @@
          zope.publisher.interfaces.browser.IBrowserRequest"
     provides="senaite.core.interfaces.IAfterCreateSampleHook"
     factory=".sample.AfterCreateSampleHook"/>
+
+  <!-- Set the instruments a method was created with, once it has a UID -->
+  <subscriber
+    for="senaite.core.interfaces.IMethod
+         zope.lifecycleevent.interfaces.IObjectAddedEvent"
+    handler=".method.on_method_added"/>
 
   <!-- MultiUpload field processing after object is added (DX) -->
   <subscriber

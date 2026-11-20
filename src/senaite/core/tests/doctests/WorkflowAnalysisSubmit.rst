@@ -547,6 +547,153 @@ And again, the Analysis Request will follow:
     'to_be_verified'
 
 
+Submission of results with multiple values
+..........................................
+
+Multi-valued results, either from the result field or from a result variable
+(interim), are stored as a JSON list with the selected values. Therefore, a
+result without any value selected is stored as an empty list, that has to be
+considered as an empty result as well.
+
+Create a service with a multiple selection list of result options:
+
+    >>> Zn = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Zinc", Keyword="Zn", Category=category.UID())
+    >>> Zn.setResultOptions([
+    ...     {"ResultValue": "1", "ResultText": "Option 1"},
+    ...     {"ResultValue": "2", "ResultText": "Option 2"}])
+    >>> Zn.setResultType("multiselect")
+
+Create an Analysis Request:
+
+    >>> ar = new_ar([Zn])
+    >>> analysis = ar.getAnalyses(full_objects=True)[0]
+
+Cannot submit when no option is selected:
+
+    >>> analysis.setResult([])
+    >>> analysis.getResult()
+    '[]'
+
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    False
+
+    >>> api.get_workflow_status_of(analysis)
+    'unassigned'
+
+Neither when the selection contains empty values only:
+
+    >>> analysis.setResult(["", ""])
+    >>> analysis.getResult()
+    '["", ""]'
+
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    False
+
+    >>> api.get_workflow_status_of(analysis)
+    'unassigned'
+
+But it will work as soon as at least one option is selected:
+
+    >>> analysis.setResult(["1", ""])
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    True
+
+    >>> api.get_workflow_status_of(analysis)
+    'to_be_verified'
+
+The same applies to multi-valued result variables (interims):
+
+    >>> Zn.setInterimFields([{
+    ...     "keyword": "interim_1", "title": "Interim 1",
+    ...     "result_type": "multiselect",
+    ...     "choices": "1:Option 1|2:Option 2"}])
+    >>> ar = new_ar([Zn])
+    >>> analysis = ar.getAnalyses(full_objects=True)[0]
+    >>> analysis.setResult(["1"])
+
+Cannot submit when no value is selected for the result variable:
+
+    >>> analysis.setInterimValue("interim_1", [])
+    >>> analysis.getInterimValue("interim_1")
+    '[]'
+
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    False
+
+    >>> api.get_workflow_status_of(analysis)
+    'unassigned'
+
+Neither when the selection contains empty values only:
+
+    >>> analysis.setInterimValue("interim_1", [""])
+    >>> analysis.getInterimValue("interim_1")
+    '[""]'
+
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    False
+
+    >>> api.get_workflow_status_of(analysis)
+    'unassigned'
+
+But it will work as soon as at least one value is selected:
+
+    >>> analysis.setInterimValue("interim_1", ["2"])
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    True
+
+    >>> api.get_workflow_status_of(analysis)
+    'to_be_verified'
+
+
+Submission of results for result variables that allow empty values
+..................................................................
+
+Result variables can be configured to allow empty values, either with the
+boolean value the Dexterity types store or with the `"on"` value the
+Archetypes' records widget submits:
+
+    >>> ar = new_ar([Zn])
+    >>> analysis = ar.getAnalyses(full_objects=True)[0]
+    >>> analysis.setResult(["1"])
+    >>> analysis.setInterimValue("interim_1", [])
+
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    False
+
+    >>> def set_allow_empty(analysis, allow_empty):
+    ...     interims = analysis.getInterimFields()
+    ...     interims[0]["allow_empty"] = allow_empty
+    ...     analysis.setInterimFields(interims)
+
+    >>> set_allow_empty(analysis, "on")
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    True
+
+    >>> api.get_workflow_status_of(analysis)
+    'to_be_verified'
+
+    >>> ar = new_ar([Zn])
+    >>> analysis = ar.getAnalyses(full_objects=True)[0]
+    >>> analysis.setResult(["1"])
+    >>> analysis.setInterimValue("interim_1", [""])
+    >>> set_allow_empty(analysis, True)
+
+    >>> transitioned = do_action_for(analysis, "submit")
+    >>> transitioned[0]
+    True
+
+    >>> api.get_workflow_status_of(analysis)
+    'to_be_verified'
+
+
 Submission of results for analyses with interim calculation
 ...........................................................
 

@@ -32,6 +32,29 @@
       provides="plone.folder.interfaces.IOrdering"
       />
 
+  <!--
+    Use plone.folder's UnorderedOrdering as the IOrdering adapter for
+    Instrument objects.
+
+    Every results import creates an `AutoImportLog` inside the
+    instrument it belongs to (see `senaite.core.astm.importer` and
+    `senaite.core.exportimport.auto_import_results`), so on a
+    deployment with an active ASTM or auto-import feed the
+    `plone.folder.ordered.order` PersistentList grows without bound
+    and is appended to on every single import. That is the same
+    unresolvable-conflict hot spot described above, reached through a
+    machine-driven path rather than a human one, so it collides more
+    often and at a steadier rate.
+
+    Nothing reads the manual ordering of an instrument's children:
+    the auto-import logs listing sorts catalog brains by date.
+    -->
+  <adapter
+      for="bika.lims.interfaces.IInstrument"
+      factory="plone.folder.unordered.UnorderedOrdering"
+      provides="plone.folder.interfaces.IOrdering"
+      />
+
   <browser:page
       for="*"
       name="getcontainers"

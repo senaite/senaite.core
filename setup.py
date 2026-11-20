@@ -86,13 +86,14 @@ setup(
         "openpyxl==2.6.4",
         # Werkzeug >= 2.0.0 does not support Python 2.x anymore
         "Werkzeug<2.0.0",
-        "collective.z3cform.datagridfield",
         # pycountry > 18.12.8 does not support Python 2.x anymore
         "pycountry==18.12.8",
         # et-xmlfile >= 2.0.0 does not support Python 2.x anymore
         "et-xmlfile<2.0.0",
         # magnitude > 1.0.1 does ot support Python 2.x anymore
         "magnitude==1.0.1",
+        # INSPECT_ATTRIBUTES is available since RestrictedPython 5.3
+        "RestrictedPython>=5.3",
     ],
     extras_require={
         "test": [
@@ -107,6 +108,9 @@ setup(
 
           [console_scripts]
           reindex = senaite.core.scripts:reindex
+          senaite-catalog = senaite.core.scripts:catalog
+          senaite-upgrade = senaite.core.scripts:upgrade
+          senaite-users = senaite.core.scripts:users
           upgrade-sites = senaite.core.scripts:upgrade_sites
           zope-passwd = senaite.core.scripts:zope_passwd
           """,

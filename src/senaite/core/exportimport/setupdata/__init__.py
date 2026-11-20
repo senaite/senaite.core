@@ -34,6 +34,7 @@ from bika.lims.utils import to_unicode
 from bika.lims.utils import to_utf8
 from bika.lims.utils.analysis import create_analysis
 from pkg_resources import resource_filename
+from plone.namedfile.file import NamedBlobFile
 from plone.namedfile.file import NamedBlobImage
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
@@ -772,17 +773,18 @@ class Supplier_Contacts(WorksheetImporter):
             if not folder:
                 continue
             folder = folder[0].getObject()
-            obj = _createObjectByType("SupplierContact", folder, tmpID())
-            obj.edit(
-                Firstname=row['Firstname'],
-                Surname=row.get('Surname', ''),
-                Username=row.get('Username')
+
+            def u_row_get(name):
+                return api.safe_unicode(row.get(name, ""))
+
+            contact = api.create(
+                folder, "SupplierContact",
+                firstname=u_row_get("Firstname"),
+                surname=u_row_get("Surname"),
+                username=u_row_get("Username"),
             )
-            self.fill_contactfields(row, obj)
-            self.fill_addressfields(row, obj)
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            notify(ObjectInitializedEvent(obj))
+            self.fill_contactfields(row, contact)
+            self.fill_addressfields(row, contact)
 
 
 class Manufacturers(WorksheetImporter):
@@ -1342,45 +1344,45 @@ class Analysis_Categories(WorksheetImporter):
 class Methods(WorksheetImporter):
 
     def Import(self):
-        folder = self.context.methods
+        folder = api.get_senaite_setup().methods
         bsc = getToolByName(self.context, SETUP_CATALOG)
         for row in self.get_rows(3):
-            if row['title']:
-                calculation = self.get_object(
-                    bsc, 'Calculation', row.get('Calculation_title'))
-                obj = _createObjectByType("Method", folder, tmpID())
-                obj.edit(
-                    title=row['title'],
-                    description=row.get('description', ''),
-                    Instructions=row.get('Instructions', ''),
-                    ManualEntryOfResults=row.get('ManualEntryOfResults', True),
-                    Calculation=calculation,
-                    MethodID=row.get('MethodID', ''),
-                    Accredited=row.get('Accredited', True),
+            if not row.get("title"):
+                continue
+
+            calculation = self.get_object(
+                bsc, "Calculation", row.get("Calculation_title"))
+
+            obj = api.create(
+                folder,
+                "Method",
+                title=row["title"],
+                description=row.get("description", ""),
+                method_id=row.get("MethodID", ""),
+                accredited=self.to_bool(row.get("Accredited", True)),
+                calculation=calculation,
+            )
+
+            instructions = row.get("Instructions", "")
+            if instructions:
+                obj.setInstructions(api.safe_unicode(instructions))
+
+            if row.get("MethodDocument"):
+                path = resource_filename(
+                    self.dataset_project,
+                    "setupdata/%s/%s" % (self.dataset_name,
+                                         row["MethodDocument"])
                 )
-                # Obtain all created methods
-                methods_brains = bsc.searchResults({'portal_type': 'Method'})
-                # If a the new method has the same MethodID as a created method, remove MethodID value.
-                for methods in methods_brains:
-                    if methods.getObject().get('MethodID', '') != '' and methods.getObject.get('MethodID', '') == obj['MethodID']:
-                        obj.edit(MethodID='')
+                try:
+                    file_data = read_file(path)
+                    filename = api.safe_unicode(row["MethodDocument"])
+                    obj.setMethodDocument(NamedBlobFile(
+                        data=file_data, filename=filename))
+                except (IOError, OSError) as msg:
+                    logger.warning(
+                        "{} Error on sheet: {}".format(msg, self.sheetname))
 
-                if row['MethodDocument']:
-                    path = resource_filename(
-                        self.dataset_project,
-                        "setupdata/%s/%s" % (self.dataset_name,
-                                             row['MethodDocument'])
-                    )
-                    try:
-                        file_data = read_file(path)
-                        obj.setMethodDocument(file_data)
-                    except Exception as msg:
-                        logger.warning(
-                            msg[0] + " Error on sheet: " + self.sheetname)
-
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                notify(ObjectInitializedEvent(obj))
+            obj.reindexObject()
 
 
 class Sampling_Deviations(WorksheetImporter):

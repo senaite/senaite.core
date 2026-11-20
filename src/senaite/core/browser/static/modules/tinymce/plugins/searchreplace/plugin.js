@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 8.3.2 (2026-01-14)
+ * TinyMCE version 8.9.1 (2026-09-09)
  */
 
 (function () {
@@ -1341,8 +1341,9 @@
         editor.shortcuts.add('Meta+F', '', showDialog(editor, currentSearchState));
     };
 
+    const PLUGIN_CODE = 'searchreplace';
     var Plugin = () => {
-        global$3.add('searchreplace', (editor) => {
+        global$3.add(PLUGIN_CODE, (editor) => {
             const currentSearchState = Cell({
                 index: -1,
                 count: 0,
@@ -1353,7 +1354,10 @@
             });
             register$1(editor, currentSearchState);
             register(editor, currentSearchState);
-            return get(editor, currentSearchState);
+            return {
+                ...get(editor, currentSearchState),
+                getMetadata: () => ({ name: 'Search and Replace', type: 'opensource', slug: PLUGIN_CODE })
+            };
         });
     };
 
