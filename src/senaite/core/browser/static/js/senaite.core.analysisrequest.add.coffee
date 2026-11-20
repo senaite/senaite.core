@@ -1279,6 +1279,27 @@ class window.AnalysisRequestAdd
 
 
   ###*
+   * Keep one line per sample in the paste panel
+   *
+   * Surplus empty lines at the end are removed first, as a new line or a
+   * paste pushes them down. Lines past the last sample are cut off.
+   *
+   * @param editor {Object} text area of the paste panel
+   * @param count {Number} number of samples
+  ###
+  fit_paster_lines: (editor, count) =>
+    lines = editor.value.split "\n"
+    return if lines.length is count
+    while lines.length > count and lines[lines.length - 1] is ""
+      lines.pop()
+    lines = lines.slice 0, count
+    lines.push "" while lines.length < count
+    pos = editor.selectionStart
+    editor.value = lines.join "\n"
+    editor.setSelectionRange pos, pos
+
+
+  ###*
    * Flush services search filters
   ###
   flush_search_terms: =>
@@ -1846,8 +1867,21 @@ class window.AnalysisRequestAdd
     # scroll the line numbers along with the values, so that the number of
     # each sample stays next to its value
     line_numbers = dialog.find(".line-numbers")
-    dialog.find(".paste-editor").on "scroll", ->
+    editor = dialog.find(".paste-editor")
+    editor.on "scroll", ->
       line_numbers.scrollTop @scrollTop
+
+    # one line per sample, so that the lines always match the numbers
+    count = line_numbers.find(".line").length
+    editor.val "\n".repeat(count - 1)
+    editor.on "input", ->
+      me.fit_paster_lines this, count
+
+    # no new line when the last line has a value, it would be cut off
+    editor.on "keydown", (event) ->
+      return unless event.key is "Enter"
+      lines = @value.split "\n"
+      event.preventDefault() if lines[lines.length - 1]
 
     active_tab = $("ul#sample-tabs a.nav-link.active")
     if active_tab

@@ -5,6 +5,9 @@ Changelog
 ------------------
 
 - #3032 Publish the samples when the results report is stored
+- #3086 Limit the lines of the paste dialog to the number of samples
+- #3031 Migrate SupplierContact to Dexterity
+- #3085 Allow to remove all analyses from "Manage analyses"
 - #3079 Skip the objects whose state cannot be loaded in the client token reindex
 - #3040 Send a SENAITE test e-mail from the mail settings
 - #3067 Allow calculations to import only from the modules the site allows

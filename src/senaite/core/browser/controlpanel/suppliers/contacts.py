@@ -49,7 +49,7 @@ class ContactsView(ControlPanelListingView):
 
         self.context_actions = {
             _("listing_suppliercontacts_action_add", default="Add"): {
-                "url": "createObject?type_name=SupplierContact",
+                "url": "++add++SupplierContact",
                 "permission": "Add portal content",
                 "icon": "senaite_theme/icon/plus"
             }
