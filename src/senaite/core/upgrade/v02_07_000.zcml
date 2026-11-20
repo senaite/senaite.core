@@ -3,6 +3,16 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
   <genericsetup:upgradeStep
+      title="SENAITE.CORE 2.7.0: Remove unused worksheet template columns"
+      description="Drop the getWorksheetTemplateUID and getWorksheetTemplateURL
+                   metadata columns from the worksheet catalog, that are not
+                   used anymore"
+      source="2769"
+      destination="2770"
+      handler=".v02_07_000.remove_worksheet_template_columns"
+      profile="senaite.core:default"/>
+
+  <genericsetup:upgradeStep
       title="SENAITE.CORE 2.7.0: Migrate SupplierContact to Dexterity"
       description="Convert the Archetypes SupplierContact content type to
                    Dexterity. The contacts stay inside their Supplier, that is

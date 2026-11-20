@@ -54,5 +54,4 @@ def create_worksheet(analyst, instrument=None, template=None, analyses=None):
     else:
         ws.addAnalyses(analyses or [])
 
-    ws.reindexObject()
     return ws

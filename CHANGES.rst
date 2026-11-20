@@ -4,6 +4,8 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3005 Remove unused getWorksheetTemplateUID/URL worksheet catalog columns
+- #3004 Speed up the creation of worksheets with a worksheet template
 - #3086 Limit the lines of the paste dialog to the number of samples
 - #3031 Migrate SupplierContact to Dexterity
 - #3085 Allow to remove all analyses from "Manage analyses"

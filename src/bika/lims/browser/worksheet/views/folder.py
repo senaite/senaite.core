@@ -100,8 +100,7 @@ class FolderView(ListingView):
                 "title": _("Analyst"),
                 "index": "getAnalyst"}),
             ("getWorksheetTemplateTitle", {
-                "title": _("Template"),
-                "replace_url": "getWorksheetTemplateURL"}),
+                "title": _("Template")}),
             ("getNumberOfRegularSamples", {
                 "title": _("Samples")}),
             ("getNumberOfQCAnalyses", {

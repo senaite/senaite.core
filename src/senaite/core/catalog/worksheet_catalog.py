@@ -45,8 +45,6 @@ COLUMNS = BASE_COLUMNS + [
     "getNumberOfRegularSamples",
     "getProgressPercentage",
     "getWorksheetTemplateTitle",
-    "getWorksheetTemplateUID",
-    "getWorksheetTemplateURL",
 ]
 
 TYPES = [
