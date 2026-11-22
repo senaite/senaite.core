@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3088 Fix the contact linking upgrade step overwrites the contact e-mail
 - #3086 Limit the lines of the paste dialog to the number of samples
 - #3031 Migrate SupplierContact to Dexterity
 - #3085 Allow to remove all analyses from "Manage analyses"
