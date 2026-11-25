@@ -58,8 +58,8 @@ The icon functions return the icon for the name in the subpath:
 
 Form values are passed to the function, e.g. as attributes of the tag:
 
-    >>> 'width="16"' in call("icon_tag", "sample", width="16")
-    True
+    >>> print(call("icon_tag", "sample", width="16"))
+    <img src="http://nohost/plone/++plone++senaite.core.static/assets/icons/sample.svg" width="16" />
 
 
 Other calls by URL are not found
