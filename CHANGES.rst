@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #3089 Restrict the theme view to its icon functions
+- #3090 Escape the values of rendered HTML attributes
 - #3086 Limit the lines of the paste dialog to the number of samples
 - #3031 Migrate SupplierContact to Dexterity
 - #3085 Allow to remove all analyses from "Manage analyses"

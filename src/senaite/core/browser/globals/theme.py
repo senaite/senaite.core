@@ -25,6 +25,7 @@ from mimetypes import guess_type
 from string import Template
 
 from bika.lims import api
+from bika.lims.utils import render_html_attributes
 from plone.memoize.ram import cache
 from plone.memoize.view import memoize
 from plone.resource.interfaces import IResourceDirectory
@@ -260,10 +261,7 @@ class SenaiteTheme(BrowserView):
         :returns: HTML <img/> tag
         """
         url = self.icon_url(name)
-        attr = list()
-        if kw:
-            attr = ['{}="{}"'.format(k, v) for k, v in kw.items()]
-        attr = " ".join(attr).replace("css_class", "class")
+        attr = render_html_attributes(**kw)
         tag = IMG_TAG.safe_substitute(src=url, attr=attr)
         return tag
 
