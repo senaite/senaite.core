@@ -13,6 +13,7 @@ Running this test from the buildout directory:
 Test Setup
 ..........
 
+    >>> from bika.lims.utils import get_image
     >>> from senaite.core.browser.globals.theme import SenaiteTheme
     >>> from zExceptions import NotFound
     >>> from zope.traversing.interfaces import TraversalError
@@ -60,6 +61,47 @@ Form values are passed to the function, e.g. as attributes of the tag:
 
     >>> print(call("icon_tag", "sample", width="16"))
     <img src=".../icons/sample.svg" width="16" />
+
+
+Attributes of the icon tag
+..........................
+
+The values of the attributes are escaped, so that a value cannot break out
+of its attribute:
+
+    >>> print(theme.icon_tag("sample", title='"><b>bold</b>'))
+    <img src=".../icons/sample.svg" title="&quot;&gt;&lt;b&gt;bold&lt;/b&gt;" />
+
+    >>> print(theme.icon_tag("sample", title="Fish & Chips"))
+    <img src=".../icons/sample.svg" title="Fish &amp; Chips" />
+
+The key `css_class` is rendered as `class`, a value containing it is kept:
+
+    >>> print(theme.icon_tag("sample", css_class="icon"))
+    <img src=".../icons/sample.svg" class="icon" />
+
+    >>> print(theme.icon_tag("sample", title="css_class"))
+    <img src=".../icons/sample.svg" title="css_class" />
+
+Other values than strings are rendered as text and non-ASCII values are
+returned as utf-8:
+
+    >>> print(theme.icon_tag("sample", width=16))
+    <img src=".../icons/sample.svg" width="16" />
+
+    >>> theme.icon_tag("sample", title=u"Pr\xfcfung")
+    '<img src=".../icons/sample.svg" title="Pr\xc3\xbcfung" />'
+
+`get_image` renders the attributes the same way, for an icon of the theme:
+
+    >>> print(get_image("warning.png", title='"><b>bold</b>'))
+    <img src=".../icons/warning.svg" ...title="&quot;&gt;&lt;b&gt;bold&lt;/b&gt;"... />
+
+and for an image that is not part of the theme, e.g. the icon for the
+comment of a specification:
+
+    >>> print(get_image("comment_ico.png", title='"><b>bold</b>'))
+    <img src=".../comment_ico.png" title="&quot;&gt;&lt;b&gt;bold&lt;/b&gt;"/>
 
 
 Other calls by URL are not found
