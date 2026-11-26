@@ -3,8 +3,8 @@ Temporary Context
 
 The `temporary_context` view creates a temporary object of a portal type,
 e.g. for the reference widgets in add forms. The first name of the path is
-the portal type, a second name publishes a view of the temporary object with
-its own permission.
+the portal type, a second name publishes the search of the reference widgets
+for the temporary object with its own permission.
 
 Running this test from the buildout directory:
 
@@ -137,6 +137,16 @@ An unknown view is not found:
     Traceback (most recent call last):
     ...
     NotFound: ...
+
+Nor other views of the temporary object:
+
+    >>> traverse(client1, "Contact", "base_view")
+    Traceback (most recent call last):
+    ...
+    NotFound: ...
+
+    >>> not_found("Contact/@@base_edit")
+    True
 
 
 Other names are not traversed

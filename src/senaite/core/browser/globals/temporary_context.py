@@ -28,14 +28,17 @@ from zope.component.interfaces import IFactory
 from zope.interface import implementer
 from zope.publisher.interfaces import IPublishTraverse
 
+# Views that can be published for the temporary context
+ALLOWED_VIEWS = ("referencewidget_search", )
+
 
 @implementer(IPublishTraverse)
 class TemporaryContext(BrowserView):
     """Browser view that provides a temporary AT/Dexterity context
 
     The first name of the path is the portal type of the temporary context,
-    e.g. `@@temporary_context/Sample`. A second name publishes a view of the
-    temporary context with its own permission, e.g.
+    e.g. `@@temporary_context/Sample`. A second name publishes one of the
+    `ALLOWED_VIEWS` for the temporary context with its own permission, e.g.
     `@@temporary_context/Sample/referencewidget_search/search`.
     """
 
@@ -54,10 +57,12 @@ class TemporaryContext(BrowserView):
         return self.get_view(context, name)
 
     def get_view(self, context, name):
-        """Returns the view with the given name for the context
+        """Returns the allowed view with the given name for the context
         """
         if name.startswith("@@"):
             name = name[2:]
+        if name not in ALLOWED_VIEWS:
+            raise NotFound(self, name, self.request)
         view = queryMultiAdapter((context, self.request), name=name)
         if view is None:
             raise NotFound(self, name, self.request)
