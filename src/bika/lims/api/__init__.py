@@ -588,21 +588,18 @@ def reindex(obj, idxs=None, cols=None):
 
     Only the indexes with the names passed-in through `idxs` are reindexed, or
     all of them when `idxs` is None. Catalogs that do not have any of these
-    indexes are skipped. The `uid_catalog` is taken into account as well,
-    although the object is not registered to it.
+    indexes are skipped.
 
     The same applies to the metadata: all the columns of the object are
     recomputed when `cols` is None, and only those with the names passed-in
     otherwise. Recomputing only some columns is way cheaper for objects with
     expensive metadata (e.g. samples), as long as the caller knows which ones
     are affected by the change. Pass an empty list to not touch the metadata.
-    Catalogs that cannot recompute single columns (e.g. the `uid_catalog`)
+    Catalogs that cannot recompute single columns (e.g. `portal_catalog`)
     recompute all of them when any of the names passed-in is amongst them.
 
-    Note that when neither `idxs` nor `cols` are passed-in, the object is
-    reindexed with `reindexObject`, that only refreshes the record of the
-    `uid_catalog` for AT contents. Use `catalog_object` when the record of a DX
-    content has to be refreshed in the `uid_catalog` too.
+    Note the `uid_catalog` is left untouched, cause it only needs to be updated
+    when an object is created, moved or deleted.
 
     :param obj: object to reindex
     :type obj: ATContentType/DexterityContentType
@@ -614,11 +611,7 @@ def reindex(obj, idxs=None, cols=None):
         obj.reindexObject()
         return
 
-    # the uid_catalog is not amongst the catalogs the object is registered to,
-    # but it keeps a record of the object as well
-    catalogs = get_catalogs_for(obj) + [get_tool(UID_CATALOG)]
-
-    for catalog in catalogs:
+    for catalog in get_catalogs_for(obj):
         if idxs is None:
             # all the indexes of this catalog
             indexes = list(catalog.indexes())
@@ -628,6 +621,8 @@ def reindex(obj, idxs=None, cols=None):
                 # this catalog has none of these indexes
                 continue
 
+        # `update_metadata` of senaite's catalogs takes a list of columns, or
+        # the usual boolean meaning when all of them have to be recomputed
         metadata = 1
         if cols is not None:
             metadata = [name for name in cols if name in catalog.schema()]
@@ -636,15 +631,7 @@ def reindex(obj, idxs=None, cols=None):
                 # recompute all the columns when it is truthy
                 metadata = 1 if metadata else 0
 
-        uid = None
-        if catalog.id == UID_CATALOG:
-            uid = get_uid_catalog_path(obj)
-
-        # Note we do not pass the uid for the rest of catalogs on purpose, so
-        # each one resolves it from the physical path of the object, exactly as
-        # it does when the object is reindexed
-        catalog.catalog_object(obj, uid, idxs=indexes,
-                               update_metadata=metadata)
+        catalog.catalog_object(obj, idxs=indexes, update_metadata=metadata)
 
 
 def delete(obj, check_permissions=True, suppress_events=False):
