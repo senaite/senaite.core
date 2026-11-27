@@ -2763,20 +2763,45 @@ metadata untouched:
     >>> brain.Title, brain.getKeyword
     ('Silver', 'Br')
 
-The `uid_catalog` is left untouched, cause the UID of an object never changes:
-
-    >>> title = get_brain(copper, api.UID_CATALOG).Title
-    >>> copper.setTitle("Brass")
-    >>> api.reindex(copper, idxs=["Title"], cols=["Title"])
-    >>> get_brain(copper, api.UID_CATALOG).Title == title
-    True
-
-    >>> get_brain(copper, SETUP_CATALOG).Title
-    'Brass'
+The `uid_catalog` is taken into account as well, but only when the names
+passed-in match its indexes or columns. Note it keeps the records of AT
+contents with a path relative to the portal root, while those of DX contents
+are kept with the absolute path, so no duplicate record is left behind:
 
     >>> uc = api.get_tool(api.UID_CATALOG)
+
+    >>> copper.setTitle("Brass")
+    >>> api.reindex(copper, idxs=["Title"], cols=["Title"])
     >>> len(uc(UID=api.get_uid(copper)))
     1
+
+    >>> get_brain(copper, api.UID_CATALOG).Title
+    'Brass'
+
+    >>> api.get_uid_catalog_path(copper) in uc._catalog.uids
+    True
+
+The same applies to Dexterity contents:
+
+    >>> water.setTitle("Sea Water")
+    >>> api.reindex(water, idxs=["Title"], cols=["Title"])
+    >>> len(uc(UID=api.get_uid(water)))
+    1
+
+    >>> get_brain(water, api.UID_CATALOG).Title
+    'Sea Water'
+
+    >>> api.get_uid_catalog_path(water) in uc._catalog.uids
+    True
+
+The `uid_catalog` cannot recompute single columns, so all of its columns are
+recomputed when any of the names passed-in is amongst them, but none when the
+list of columns is empty:
+
+    >>> water.setTitle("Rain Water")
+    >>> api.reindex(water, cols=[])
+    >>> get_brain(water, api.UID_CATALOG).Title
+    'Sea Water'
 
 
 Recursive (un)cataloging
