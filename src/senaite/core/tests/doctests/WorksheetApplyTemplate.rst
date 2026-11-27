@@ -965,3 +965,47 @@ without reindexing on every single analysis created:
 
     >>> sorted(brain.getAnalysesUIDs) == sorted(worksheet.getRawAnalyses())
     True
+
+
+Removing the Worksheet Template from a Worksheet
+................................................
+
+Only the values that depend on the template are refreshed when the template is
+removed from the worksheet. Apply the template to a new worksheet first:
+
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+    >>> worksheet.applyWorksheetTemplate(metadata_template)
+
+    >>> title = metadata_template.Title()
+    >>> brain = get_brain(worksheet)
+    >>> brain.getWorksheetTemplateTitle == title
+    True
+
+    >>> brain.getWorksheetTemplateUID == api.get_uid(metadata_template)
+    True
+
+    >>> query = {"UID": api.get_uid(worksheet),
+    ...          "getWorksheetTemplateTitle": title}
+    >>> len(api.search(query, WORKSHEET_CATALOG))
+    1
+
+Remove the template:
+
+    >>> worksheet.applyWorksheetTemplate(None)
+    >>> not worksheet.getWorksheetTemplate()
+    True
+
+Both the index and the metadata of the worksheet are up-to-date:
+
+    >>> len(api.search(query, WORKSHEET_CATALOG))
+    0
+
+    >>> brain = get_brain(worksheet)
+    >>> brain.getWorksheetTemplateTitle
+    ''
+
+    >>> brain.getWorksheetTemplateUID is None
+    True
+
+    >>> brain.getWorksheetTemplateURL
+    ''

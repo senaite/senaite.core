@@ -14,6 +14,7 @@ Needed Imports:
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
+    >>> from bika.lims.utils.analysisrequest import create_partition
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from bika.lims.workflow import isTransitionAllowed
     >>> from DateTime import DateTime
@@ -297,6 +298,45 @@ The same applies when the analyses are added in bulk:
     >>> worksheet.addAnalyses(sample.getAnalyses(full_objects=True))
     >>> get_assigned_state(sample)
     'assigned'
+
+The same applies to the ancestors of the sample. Create a sample with a single
+analysis and move the analysis to a partition:
+
+    >>> sample = new_ar([Cu])
+    >>> transitioned = do_action_for(sample, "receive")
+    >>> cu = sample.getAnalyses(full_objects=True)[0]
+    >>> partition = create_partition(sample, request, [cu])
+    >>> api.get_review_status(partition)
+    'sample_received'
+
+    >>> cu = partition.getAnalyses(full_objects=True)[0]
+    >>> api.get_parent(cu) == partition
+    True
+
+    >>> get_assigned_state(partition)
+    'unassigned'
+
+    >>> get_assigned_state(sample)
+    'unassigned'
+
+Add the analysis of the partition to a worksheet:
+
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+    >>> worksheet.addAnalysis(cu)
+    >>> api.get_workflow_status_of(cu)
+    'assigned'
+
+Both the partition and its root sample are `assigned`:
+
+    >>> get_assigned_state(partition)
+    'assigned'
+
+    >>> get_assigned_state(sample)
+    'assigned'
+
+    >>> len(api.search({"assigned_state": "assigned",
+    ...                 "UID": api.get_uid(sample)}, SAMPLE_CATALOG))
+    1
 
 
 Check permissions for Assign transition
