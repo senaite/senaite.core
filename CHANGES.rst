@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3032 Publish the samples when the results report is stored
 - #3093 Let the browser cache the site logo
 - #3094 Restrict the temporary context to the search of the reference widgets
 - #3092 Allow calculations to import the functions a module exports from its submodules
