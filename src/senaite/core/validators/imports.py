@@ -111,7 +111,8 @@ def safe_function():
         if not module or not function:
             return row
         try:
-            check_member(module, get_module_member(module, function))
+            check_member(
+                module, get_module_member(module, function), function)
         except UnsafeFormula:
             raise Invalid(
                 translate(_(

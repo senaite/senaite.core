@@ -208,6 +208,7 @@ of the arrays `numpy` and `scipy` return. A stand-in for `numpy` shows it, as
 `numpy` may not be installed:
 
     >>> import sys
+    >>> import math
     >>> import types
     >>> class Array(tuple):
     ...     ctypes = None
@@ -299,6 +300,85 @@ But only the functions the module defines itself, not what it imports:
     >>> is_allowed_module("senaite.core.api.dtime")
     False
 
+    >>> registry[IMPORT_MODULES_RECORD] = list(CALCULATION_IMPORT_MODULES)
+
+A package may export the functions of its submodules. A calculation imports
+them from the package when the package lists them in its `__all__`:
+
+    >>> import math
+    >>> import types
+    >>> package = types.ModuleType("calcpkg")
+    >>> submodule = types.ModuleType("calcpkg.geometry")
+
+    >>> def area(radius):
+    ...     return math.pi * radius ** 2
+    >>> def erase(radius):
+    ...     return None
+    >>> area.__module__ = erase.__module__ = "calcpkg.geometry"
+
+    >>> submodule.area = package.area = area
+    >>> submodule.erase = package.erase = erase
+    >>> package.geometry = submodule
+    >>> package.__all__ = ["area"]
+    >>> sys.modules["calcpkg"] = package
+    >>> sys.modules["calcpkg.geometry"] = submodule
+
+    >>> gsm.registerUtility(package, ICalculationModule, name="calcpkg")
+    >>> registry[IMPORT_MODULES_RECORD] = ["math", "calcpkg"]
+
+    >>> get_import({"module": "calcpkg", "function": "area"})
+    <function area at ...>
+
+    >>> calculate_formula("round(area(1), 2)", {},
+    ...                   [{"module": "calcpkg", "function": "area"}])
+    3.14
+
+A function of a submodule the package does not list stays refused:
+
+    >>> get_import({"module": "calcpkg", "function": "erase"})
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A calculation may import only the functions of calcpkg
+
+The imports validator of a calculation decides the same when it is saved:
+
+    >>> from senaite.core.content.calculation import ICalculationSchema
+    >>> from senaite.core.validators.imports import ImportsValidator
+    >>> validator = ImportsValidator(
+    ...     None, None, None, ICalculationSchema["imports"], None)
+
+    >>> validator.validate([{"module": u"calcpkg", "function": u"area"}])
+
+    >>> validator.validate([{"module": u"calcpkg", "function": u"erase"}])
+    Traceback (most recent call last):
+    ...
+    Invalid: Row 1: Calculations must not import 'erase' from 'calcpkg'
+
+And so does a listed function from outside the package, or a submodule:
+
+    >>> import json
+    >>> package.dumps = json.dumps
+    >>> package.__all__ = ["area", "dumps", "geometry"]
+
+    >>> get_import({"module": "calcpkg", "function": "dumps"})
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A calculation may import only the functions of calcpkg
+
+    >>> get_import({"module": "calcpkg", "function": "geometry"})
+    Traceback (most recent call last):
+    ...
+    UnsafeFormula: A calculation must not import the module calcpkg.geometry
+
+The submodule itself is not provided for calculations:
+
+    >>> is_allowed_module("calcpkg.geometry")
+    False
+
+    >>> gsm.unregisterUtility(package, ICalculationModule, name="calcpkg")
+    True
+    >>> del sys.modules["calcpkg"]
+    >>> del sys.modules["calcpkg.geometry"]
     >>> registry[IMPORT_MODULES_RECORD] = list(CALCULATION_IMPORT_MODULES)
 
 
