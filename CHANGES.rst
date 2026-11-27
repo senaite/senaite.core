@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3090 Escape the values of rendered HTML attributes
 - #3089 Restrict the theme view to its icon functions
 - #3086 Limit the lines of the paste dialog to the number of samples
 - #3031 Migrate SupplierContact to Dexterity
