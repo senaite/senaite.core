@@ -20,6 +20,7 @@ Needed Imports:
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
+    >>> from senaite.core.catalog import SAMPLE_CATALOG
 
 Functional Helpers:
 
@@ -245,6 +246,57 @@ State of the analyses and worksheet is `to_be_verified`:
     'to_be_verified'
     >>> api.get_workflow_status_of(worksheet)
     'to_be_verified'
+
+
+Assigned state of the sample
+............................
+
+The sample is reindexed when its analyses are assigned to a worksheet, so the
+`assigned_state` of its catalog record is up-to-date. Note the value relies on
+the worksheet the analyses are assigned to, not on their status alone. Create a
+sample with a single analysis, so no other analysis of the sample is assigned
+to a worksheet already:
+
+    >>> sample = new_ar([Cu])
+    >>> transitioned = do_action_for(sample, "receive")
+    >>> cu = sample.getAnalyses(full_objects=True)[0]
+
+    >>> def get_assigned_state(sample):
+    ...     query = {"UID": api.get_uid(sample)}
+    ...     brain = api.search(query, SAMPLE_CATALOG)[0]
+    ...     return brain.assigned_state
+
+    >>> get_assigned_state(sample)
+    'unassigned'
+
+    >>> len(api.search({"assigned_state": "unassigned",
+    ...                 "UID": api.get_uid(sample)}, SAMPLE_CATALOG))
+    1
+
+Add the analysis to a worksheet:
+
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+    >>> worksheet.addAnalysis(cu)
+    >>> api.get_workflow_status_of(cu)
+    'assigned'
+
+Both the index and the metadata of the sample are `assigned`:
+
+    >>> get_assigned_state(sample)
+    'assigned'
+
+    >>> len(api.search({"assigned_state": "assigned",
+    ...                 "UID": api.get_uid(sample)}, SAMPLE_CATALOG))
+    1
+
+The same applies when the analyses are added in bulk:
+
+    >>> sample = new_ar([Cu])
+    >>> transitioned = do_action_for(sample, "receive")
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+    >>> worksheet.addAnalyses(sample.getAnalyses(full_objects=True))
+    >>> get_assigned_state(sample)
+    'assigned'
 
 
 Check permissions for Assign transition

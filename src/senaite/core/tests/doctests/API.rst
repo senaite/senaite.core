@@ -2736,36 +2736,47 @@ columns they do not have:
     >>> get_brain(contact, CONTACT_CATALOG).getFullname
     'Super Mohale'
 
-The `uid_catalog` is taken into account as well, but only when the names
-passed-in match its indexes or columns. Note it keeps the records of AT contents
-with a path relative to the portal root, while those of DX contents are kept
-with the absolute path, so no duplicate record is left behind:
-
-    >>> uc = api.get_tool(api.UID_CATALOG)
+When no indexes are specified, but the columns are, all the indexes are
+reindexed and only the columns passed-in are recomputed:
 
     >>> copper.setTitle("Bronze")
+    >>> copper.setKeyword("Br")
+    >>> api.reindex(copper, cols=["getKeyword"])
+
+    >>> len(api.get_tool(SETUP_CATALOG)(getKeyword="Br"))
+    1
+
+    >>> brain = get_brain(copper, SETUP_CATALOG)
+    >>> brain.Title, brain.getKeyword
+    ('Silver', 'Br')
+
+Passing an empty list of columns reindexes all the indexes, but leaves the
+metadata untouched:
+
+    >>> copper.setKeyword("Zn")
+    >>> api.reindex(copper, cols=[])
+
+    >>> len(api.get_tool(SETUP_CATALOG)(getKeyword="Zn"))
+    1
+
+    >>> brain = get_brain(copper, SETUP_CATALOG)
+    >>> brain.Title, brain.getKeyword
+    ('Silver', 'Br')
+
+The `uid_catalog` is left untouched, cause the UID of an object never changes:
+
+    >>> title = get_brain(copper, api.UID_CATALOG).Title
+    >>> copper.setTitle("Brass")
     >>> api.reindex(copper, idxs=["Title"], cols=["Title"])
-    >>> len(uc(UID=api.get_uid(copper))) == 1
+    >>> get_brain(copper, api.UID_CATALOG).Title == title
     True
 
-    >>> get_brain(copper, api.UID_CATALOG).Title
-    'Bronze'
+    >>> get_brain(copper, SETUP_CATALOG).Title
+    'Brass'
 
-    >>> "/".join(copper.getPhysicalPath()[2:]) in uc._catalog.uids
-    True
-
-The same applies to Dexterity contents:
-
-    >>> water.setTitle("Sea Water")
-    >>> api.reindex(water, idxs=["Title"], cols=["Title"])
-    >>> len(uc(UID=api.get_uid(water))) == 1
-    True
-
-    >>> get_brain(water, api.UID_CATALOG).Title
-    'Sea Water'
-
-    >>> "/".join(water.getPhysicalPath()) in uc._catalog.uids
-    True
+    >>> uc = api.get_tool(api.UID_CATALOG)
+    >>> len(uc(UID=api.get_uid(copper)))
+    1
 
 
 Recursive (un)cataloging

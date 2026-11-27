@@ -37,16 +37,6 @@ from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.interface import alsoProvides
 
 
-def after_assign(analysis):
-    """Function triggered after an 'assign' transition for the analysis passed
-    in is performed.
-    """
-    # `assigned_state` is the only value of the sample that depends on whether
-    # its analyses are assigned to a worksheet or not, so there is no need to
-    # recompute the whole catalog record of the sample (and of its ancestors)
-    reindex_request(analysis, idxs=["assigned_state"])
-
-
 def before_unassign(analysis):
     """Function triggered before 'unassign' transition takes place
     """

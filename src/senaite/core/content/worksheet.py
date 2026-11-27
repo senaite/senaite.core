@@ -37,6 +37,7 @@ from bika.lims.utils.analysis import create_duplicate
 from bika.lims.utils.analysis import create_reference_analysis
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import isTransitionAllowed
+from bika.lims.workflow.analysis.events import reindex_request
 from plone.autoform import directives
 from plone.supermodel import model
 from senaite.core import logger
@@ -512,11 +513,14 @@ class Worksheet(Container):
         analysis.setAnalyst(self.getAnalyst())
 
         # Transition analysis to "assigned"
-        # Note the sample the analysis belongs to (and its ancestors) are
-        # reindexed by the `after_assign` event of the analysis
         doActionFor(analysis, "assign")
         self.setAnalyses(uids + [uid])
         self.addToLayout(analysis, position)
+
+        # Reindex the sample the analysis belongs to (and its ancestors). Note
+        # `assigned_state` relies on the worksheet of the analysis, so this
+        # has to be done once the analysis has been added to this worksheet
+        reindex_request(analysis, idxs=["assigned_state"])
 
         if api.get_review_status(self) != "open":
             # Try to rollback the worksheet to prevent inconsistencies
@@ -1408,34 +1412,32 @@ class Worksheet(Container):
                               "getWorksheetTemplateURL"])
             return
 
-        try:
-            # Apply the template for routine analyses
-            self._apply_worksheet_template_routine_analyses(
-                wst, analyses=analyses)
+        # Apply the template for routine analyses
+        self._apply_worksheet_template_routine_analyses(
+            wst, analyses=analyses)
 
-            # Apply the template for duplicate analyses
-            self._apply_worksheet_template_duplicate_analyses(wst)
+        # Apply the template for duplicate analyses
+        self._apply_worksheet_template_duplicate_analyses(wst)
 
-            # Apply the template for reference analyses (blanks and controls)
-            self._apply_worksheet_template_reference_analyses(wst)
+        # Apply the template for reference analyses (blanks and controls)
+        self._apply_worksheet_template_reference_analyses(wst)
 
-            # Assign the instrument
-            instrument = wst.getInstrument()
-            if instrument:
-                self.setInstrument(instrument, True)
+        # Assign the instrument
+        instrument = wst.getInstrument()
+        if instrument:
+            self.setInstrument(instrument, True)
 
-            # Assign the method
-            method = wst.getRestrictToMethod()
-            if method:
-                self.setMethod(method, True)
+        # Assign the method
+        method = wst.getRestrictToMethod()
+        if method:
+            self.setMethod(method, True)
 
-        finally:
-            # Reindex the worksheet once, instead of once per analysis added.
-            # Some of the metadata of this worksheet (e.g. the number of
-            # analyses and samples it contains) is resolved by waking up all
-            # the analyses assigned, so reindexing on every single analysis
-            # added makes the application of the template quadratic
-            self.reindexObject()
+        # Reindex the worksheet once, instead of once per analysis added. Some
+        # of the metadata of this worksheet (e.g. the number of analyses and
+        # samples it contains) is resolved by waking up all the analyses
+        # assigned, so reindexing on every single analysis added makes the
+        # application of the template quadratic
+        self.reindexObject()
 
     def _apply_worksheet_template_duplicate_analyses(self, wst):
         """Add duplicate analyses to worksheet according to
