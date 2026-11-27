@@ -36,6 +36,22 @@ Version 2.7.0 introduces an update to the internal catalogs by adding a new `mod
 6. Click the **"Reindex"** button at the bottom of the page.
 
 
+**IMPORTANT: Saving a Results Report Publishes the Samples**
+
+The samples of a results report are published as soon as the report is
+stored, no longer when the email is sent.
+https://github.com/senaite/senaite.core/pull/3032
+
+- **Save** in the publish view publishes the samples now, a sample that is
+  not verified yet is prepublished.
+- The **Publish** button of the reports listing is gone, and sending the
+  email no longer publishes. A sample that was saved but not published
+  before the upgrade is published by saving a new report.
+- Add-ons that publish the samples when a report is created, e.g. by
+  overriding `create_report` or with a subscriber, publish them first and
+  republish them with every save now. Remove their own publication.
+
+
 Update from 2.5.0 to 2.6.0
 --------------------------
 

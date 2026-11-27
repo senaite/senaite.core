@@ -18,37 +18,62 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from Acquisition.interfaces import IAcquirer
 from bika.lims import api
 from Products.Five.browser import BrowserView
+from zExceptions import NotFound
 from zope.component import getUtility
+from zope.component import queryMultiAdapter
 from zope.component.interfaces import IFactory
 from zope.interface import implementer
 from zope.publisher.interfaces import IPublishTraverse
+
+# Views that can be published for the temporary context
+ALLOWED_VIEWS = ("referencewidget_search", )
 
 
 @implementer(IPublishTraverse)
 class TemporaryContext(BrowserView):
     """Browser view that provides a temporary AT/Dexterity context
+
+    The first name of the path is the portal type of the temporary context,
+    e.g. `@@temporary_context/Sample`. A second name publishes one of the
+    `ALLOWED_VIEWS` for the temporary context with its own permission, e.g.
+    `@@temporary_context/Sample/referencewidget_search/search`.
     """
 
     def __init__(self, context, request):
         super(TemporaryContext, self).__init__(context, request)
-        self.traverse_subpath = []
+        self.portal_type = None
 
     def publishTraverse(self, request, name):
-        """Called before __call__ for each path name and allows to dispatch
-        subpaths to methods
+        """Traverse to the portal type and then to a view of the temporary
+        context
         """
-        self.traverse_subpath.append(name)
-        return self
+        if self.portal_type is None:
+            self.portal_type = name
+            return self
+        context = self.create_temporary_context(self.portal_type)
+        return self.get_view(context, name)
+
+    def get_view(self, context, name):
+        """Returns the allowed view with the given name for the context
+        """
+        if name.startswith("@@"):
+            name = name[2:]
+        if name not in ALLOWED_VIEWS:
+            raise NotFound(self, name, self.request)
+        view = queryMultiAdapter((context, self.request), name=name)
+        if view is None:
+            raise NotFound(self, name, self.request)
+        if IAcquirer.providedBy(view):
+            view = view.__of__(context)
+        return view
 
     def __call__(self):
-        if len(self.traverse_subpath) == 0:
-            raise TypeError("No portal type provided")
-
-        # we expect the portal_type on the first position
-        portal_type = self.traverse_subpath[0]
-        context = self.create_temporary_context(portal_type)
+        if self.portal_type is None:
+            raise NotFound(self, self.__name__, self.request)
+        context = self.create_temporary_context(self.portal_type)
         # call the context to return the rendered html
         return context()
 
@@ -71,8 +96,4 @@ class TemporaryContext(BrowserView):
         context = context.__of__(self.context)
         # mark the context as temporary
         api.mark_temporary(context)
-        # Traverse any further paths
-        if len(self.traverse_subpath) > 1:
-            path = "/".join(self.traverse_subpath[1:])
-            context = context.unrestrictedTraverse(path)
         return context
