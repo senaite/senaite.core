@@ -2029,6 +2029,12 @@ def link_contact_users(tool):
         username = contact.getUsername()
         if not username:
             continue
+        if contact.hasUser():
+            # Already linked. Linking again would overwrite the e-mail
+            # address of the contact with the one of the user, and the
+            # upgrade is not the place to change contact data.
+            contact._p_deactivate()
+            continue
         contact.setUser(username)
         logger.info("Linking user '{}' -> Contact '{}'"
                     .format(username, api.get_path(contact)))
