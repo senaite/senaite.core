@@ -5,6 +5,12 @@ Changelog
 ------------------
 
 - #3032 Publish the samples when the results report is stored
+- #3093 Let the browser cache the site logo
+- #3094 Restrict the temporary context to the search of the reference widgets
+- #3092 Allow calculations to import the functions a module exports from its submodules
+- #3091 Let the browser cache theme icons and use the default icon
+- #3090 Escape the values of rendered HTML attributes
+- #3089 Restrict the theme view to its icon functions
 - #3086 Limit the lines of the paste dialog to the number of samples
 - #3031 Migrate SupplierContact to Dexterity
 - #3085 Allow to remove all analyses from "Manage analyses"

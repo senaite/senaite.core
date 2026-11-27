@@ -351,31 +351,67 @@ def check_import(record):
             "A calculation must not import {}".format(member))
 
 
-def is_own_function(module, member):
+def is_submodule(name, module):
+    """Whether the module name is a submodule of the module
+
+    :param name: the dotted name of a module, e.g. `senaite.patient.calc.age`
+    :param module: the dotted name of a module, e.g. `senaite.patient.calc`
+    """
+    return name.startswith(module + MODULE_SEPARATOR)
+
+
+def get_exported_names(module):
+    """The names the module lists in its `__all__`
+
+    :param module: the dotted name of a module
+    :returns: tuple of names, empty when the module has no `__all__`
+    """
+    try:
+        found = importlib.import_module(module)
+    except ImportError:
+        return ()
+    return tuple(getattr(found, "__all__", None) or ())
+
+
+def is_own_function(module, member, name=None):
     """Whether the member is a function the module defines itself
+
+    A function the module imports from one of its submodules counts as its
+    own when the module lists it in its `__all__`, e.g. a package that
+    exports the functions of its submodules.
 
     :param module: the dotted name of a module
     :param member: the member of the module
+    :param name: the name the member is imported with
     """
-    return inspect.isfunction(member) and member.__module__ == module
+    if not inspect.isfunction(member):
+        return False
+    if member.__module__ == module:
+        return True
+    if not is_submodule(member.__module__, module):
+        return False
+    return name in get_exported_names(module)
 
 
-def check_member(module, member):
+def check_member(module, member, name=None):
     """Refuse a member of a module a calculation must not use
 
     Checked after the import: a member that is a module leads to any other
     module, e.g. to the forbidden ones. Of a module an add-on provides, only
-    the functions it defines itself may be used, not what it imports.
+    the functions it defines itself may be used, not what it imports, except
+    the functions of its submodules it lists in its `__all__`.
 
     :param module: the dotted name of the module
     :param member: the member of the module
+    :param name: the name the member is imported with
     :raises UnsafeFormula: when the member is a module, or not a function of
         a module an add-on provides
     """
     if inspect.ismodule(member):
         raise UnsafeFormula("A calculation must not import the module {}"
                             .format(member.__name__))
-    if is_registered_module(module) and not is_own_function(module, member):
+    if is_registered_module(module) and not is_own_function(
+            module, member, name):
         raise UnsafeFormula(
             "A calculation may import only the functions of {}".format(
                 module))
@@ -395,7 +431,7 @@ def get_import(record):
     if found is None:
         raise ImportError("Could not find member {} of module {}".format(
             member, module))
-    check_member(module, found)
+    check_member(module, found, member)
     return found
 
 
