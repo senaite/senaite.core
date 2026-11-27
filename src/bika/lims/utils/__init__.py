@@ -780,6 +780,24 @@ def get_progress_bar_html(percentage):
            '</div>'.format(percentage or 0)
 
 
+def render_html_attribute(key, value):
+    """Returns the html attribute for the key with the escaped value
+
+    The key `css_class` is rendered as `class`.
+
+    :param key: name of the attribute
+    :param value: value of the attribute
+    :return: a well-formed attribute
+    :rtype: unicode
+    """
+    if key == "css_class":
+        key = "class"
+    value = safe_unicode(value)
+    if not isinstance(value, six.text_type):
+        value = six.text_type(value)
+    return u'{}="{}"'.format(key, cgi.escape(value, quote=True))
+
+
 def render_html_attributes(**kwargs):
     """Returns a string representation of attributes for html entities
 
@@ -795,10 +813,8 @@ def render_html_attributes(**kwargs):
     """
     if not kwargs:
         return ""
-    attr = [u'{}="{}"'.format(key, safe_unicode(val))
-            for key, val in kwargs.items()]
-    result = u" ".join(attr).replace(u"css_class", u"class")
-    return result.encode("utf-8")
+    attr = [render_html_attribute(key, val) for key, val in kwargs.items()]
+    return u" ".join(attr).encode("utf-8")
 
 
 def get_registry_value(key, default=None):
