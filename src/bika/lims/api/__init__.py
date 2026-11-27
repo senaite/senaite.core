@@ -74,6 +74,7 @@ from Products.ZCatalog.interfaces import ICatalogBrain
 from senaite.core.events.lifecycle import AfterAPICreatedObjectEvent
 from senaite.core.interfaces import IContact
 from senaite.core.interfaces import IContacts
+from senaite.core.interfaces import ISenaiteCatalogObject
 from senaite.core.interfaces import ITemporaryObject
 from z3c.form.validator import Data as ValidatorData
 from zope import globalrequest
@@ -580,6 +581,57 @@ def catalog_object(obj, recursive=False):
     if recursive:
         for child in obj.objectValues():
             catalog_object(child, recursive=recursive)
+
+
+def reindex(obj, idxs=None, cols=None):
+    """Reindex the object in all the catalogs it is registered to
+
+    Only the indexes with the names passed-in through `idxs` are reindexed, or
+    all of them when `idxs` is None. Catalogs that do not have any of these
+    indexes are skipped.
+
+    The same applies to the metadata: all the columns of the object are
+    recomputed when `cols` is None, and only those with the names passed-in
+    otherwise. Recomputing only some columns is way cheaper for objects with
+    expensive metadata (e.g. samples), as long as the caller knows which ones
+    are affected by the change. Pass an empty list to not touch the metadata.
+    Catalogs that cannot recompute single columns (e.g. `portal_catalog`)
+    recompute all of them when any of the names passed-in is amongst them.
+
+    Note the `uid_catalog` is left untouched, cause it only needs to be updated
+    when an object is created, moved or deleted.
+
+    :param obj: object to reindex
+    :type obj: ATContentType/DexterityContentType
+    :param idxs: names of the indexes to reindex. All of them when None
+    :param cols: names of the metadata columns to recompute. All of them when
+        None, none of them when empty
+    """
+    if idxs is None and cols is None:
+        obj.reindexObject()
+        return
+
+    for catalog in get_catalogs_for(obj):
+        if idxs is None:
+            # all the indexes of this catalog
+            indexes = list(catalog.indexes())
+        else:
+            indexes = [name for name in idxs if name in catalog.indexes()]
+            if not indexes:
+                # this catalog has none of these indexes
+                continue
+
+        # `update_metadata` of senaite's catalogs takes a list of columns, or
+        # the usual boolean meaning when all of them have to be recomputed
+        metadata = 1
+        if cols is not None:
+            metadata = [name for name in cols if name in catalog.schema()]
+            if not ISenaiteCatalogObject.providedBy(catalog):
+                # plain catalogs take `update_metadata` as a boolean, and
+                # recompute all the columns when it is truthy
+                metadata = 1 if metadata else 0
+
+        catalog.catalog_object(obj, idxs=indexes, update_metadata=metadata)
 
 
 def delete(obj, check_permissions=True, suppress_events=False):

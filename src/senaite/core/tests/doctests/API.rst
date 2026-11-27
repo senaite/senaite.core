@@ -2644,6 +2644,141 @@ by its absolute path:
     True
 
 
+
+Reindexing an object
+....................
+
+This function reindexes an object in **all** the catalogs it is registered to.
+Objects from any content type are supported, no matter the catalogs they are
+mapped to:
+
+    >>> from senaite.core.catalog import CONTACT_CATALOG
+    >>> from senaite.core.catalog import SETUP_CATALOG
+
+    >>> water = api.create(portal.setup.sampletypes, "SampleType",
+    ...                    title="Pure Water", Prefix="PW")
+    >>> api.is_dexterity_content(water)
+    True
+
+    >>> api.get_catalogs_for(water)
+    [<SetupCatalog at /plone/senaite_catalog_setup>]
+
+    >>> contact = api.create(labcontacts, "LabContact", Firstname="Rita",
+    ...                      Surname="Mohale")
+    >>> api.is_at_content(contact)
+    True
+
+    >>> api.get_catalogs_for(contact)
+    [<ContactCatalog at /plone/senaite_catalog_contact>]
+
+A helper to look at the record a catalog keeps of an object:
+
+    >>> def get_brain(obj, catalog):
+    ...     brains = api.get_tool(catalog)(UID=api.get_uid(obj))
+    ...     return brains[0] if brains else None
+
+When no indexes are specified, the whole record is updated. Let's create an
+Archetypes content that is catalogued in the setup catalog and change both its
+title and its keyword:
+
+    >>> copper = api.create(services, "AnalysisService", title="Copper",
+    ...                     Keyword="Cu")
+    >>> copper.setTitle("Gold")
+    >>> copper.setKeyword("Au")
+    >>> api.reindex(copper)
+
+    >>> brain = get_brain(copper, SETUP_CATALOG)
+    >>> brain.Title, brain.getKeyword
+    ('Gold', 'Au')
+
+The reindexing can be restricted to some indexes, and the metadata can be left
+untouched by passing an empty list of columns:
+
+    >>> copper.setTitle("Silver")
+    >>> copper.setKeyword("Ag")
+    >>> api.reindex(copper, idxs=["getKeyword"], cols=[])
+
+The keyword index is up-to-date:
+
+    >>> len(api.get_tool(SETUP_CATALOG)(getKeyword="Ag"))
+    1
+
+But no column was recomputed, so the metadata of the record is stale:
+
+    >>> brain = get_brain(copper, SETUP_CATALOG)
+    >>> brain.Title, brain.getKeyword
+    ('Gold', 'Au')
+
+Passing a list of columns recomputes only those, which is way cheaper for
+objects with expensive metadata:
+
+    >>> api.reindex(copper, idxs=["getKeyword"], cols=["getKeyword"])
+
+    >>> brain = get_brain(copper, SETUP_CATALOG)
+    >>> brain.Title, brain.getKeyword
+    ('Gold', 'Ag')
+
+The title of the record is still stale, cause only the keyword column was
+recomputed. Reindexing without restrictions refreshes the whole record:
+
+    >>> api.reindex(copper)
+
+    >>> brain = get_brain(copper, SETUP_CATALOG)
+    >>> brain.Title, brain.getKeyword
+    ('Silver', 'Ag')
+
+Catalogs without any of the indexes passed-in are skipped, as well as the
+columns they do not have:
+
+    >>> contact.setFirstname("Super")
+    >>> api.reindex(contact, idxs=["getFullname", "getKeyword"],
+    ...             cols=["getFullname", "getKeyword"])
+    >>> get_brain(contact, CONTACT_CATALOG).getFullname
+    'Super Mohale'
+
+When no indexes are specified, but the columns are, all the indexes are
+reindexed and only the columns passed-in are recomputed:
+
+    >>> copper.setTitle("Bronze")
+    >>> copper.setKeyword("Br")
+    >>> api.reindex(copper, cols=["getKeyword"])
+
+    >>> len(api.get_tool(SETUP_CATALOG)(getKeyword="Br"))
+    1
+
+    >>> brain = get_brain(copper, SETUP_CATALOG)
+    >>> brain.Title, brain.getKeyword
+    ('Silver', 'Br')
+
+Passing an empty list of columns reindexes all the indexes, but leaves the
+metadata untouched:
+
+    >>> copper.setKeyword("Zn")
+    >>> api.reindex(copper, cols=[])
+
+    >>> len(api.get_tool(SETUP_CATALOG)(getKeyword="Zn"))
+    1
+
+    >>> brain = get_brain(copper, SETUP_CATALOG)
+    >>> brain.Title, brain.getKeyword
+    ('Silver', 'Br')
+
+The `uid_catalog` is left untouched, cause the UID of an object never changes:
+
+    >>> title = get_brain(copper, api.UID_CATALOG).Title
+    >>> copper.setTitle("Brass")
+    >>> api.reindex(copper, idxs=["Title"], cols=["Title"])
+    >>> get_brain(copper, api.UID_CATALOG).Title == title
+    True
+
+    >>> get_brain(copper, SETUP_CATALOG).Title
+    'Brass'
+
+    >>> uc = api.get_tool(api.UID_CATALOG)
+    >>> len(uc(UID=api.get_uid(copper)))
+    1
+
+
 Recursive (un)cataloging
 ........................
 

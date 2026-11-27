@@ -37,13 +37,6 @@ from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.interface import alsoProvides
 
 
-def after_assign(analysis):
-    """Function triggered after an 'assign' transition for the analysis passed
-    in is performed.
-    """
-    reindex_request(analysis)
-
-
 def before_unassign(analysis):
     """Function triggered before 'unassign' transition takes place
     """
@@ -322,6 +315,9 @@ def after_publish(analysis):
 def reindex_request(analysis, idxs=None):
     """Reindex the Analysis Request the analysis belongs to, as well as the
     ancestors recursively
+
+    When `idxs` is set, only the indexes and metadata columns with those names
+    are updated, instead of recomputing the whole catalog record of the sample
     """
     if not IRequestAnalysis.providedBy(analysis) or \
             IDuplicateAnalysis.providedBy(analysis):
@@ -331,7 +327,8 @@ def reindex_request(analysis, idxs=None):
     request = analysis.getRequest()
     ancestors = [request] + request.getAncestors(all_ancestors=True)
     for ancestor in ancestors:
-        ancestor.reindexObject()
+        # note `assigned_state` is both an index and a metadata column
+        api.reindex(ancestor, idxs=idxs, cols=idxs)
 
 
 def remove_analysis_from_worksheet(analysis):
