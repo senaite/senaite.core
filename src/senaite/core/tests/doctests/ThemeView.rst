@@ -104,6 +104,75 @@ comment of a specification:
     <img src=".../comment_ico.png" title="&quot;&gt;&lt;b&gt;bold&lt;/b&gt;"/>
 
 
+Default icon
+............
+
+An unknown icon name returns the icon for not found icons:
+
+    >>> print(theme.icon_url("unknown"))
+    http://nohost/plone/.../icons/icon-not-found.svg
+
+Another icon can be set as default, also by URL:
+
+    >>> print(theme.icon_url("unknown", default="sample"))
+    http://nohost/plone/.../icons/sample.svg
+
+    >>> print(call("icon_url", "unknown", default="sample"))
+    http://nohost/plone/.../icons/sample.svg
+
+The default is not rendered as attribute of the icon tag:
+
+    >>> print(theme.icon_tag("unknown", default="sample", width=16))
+    <img src=".../icons/sample.svg" width="16" />
+
+An unknown default returns the icon for not found icons as well:
+
+    >>> print(theme.icon_url("unknown", default="unknown"))
+    http://nohost/plone/.../icons/icon-not-found.svg
+
+
+Icon response
+.............
+
+The icon is returned with headers that allow the browser to cache it:
+
+    >>> data = call("icon", "sample")
+    >>> data == theme.icon_data("sample")
+    True
+
+    >>> response = request.response
+    >>> print(response.getHeader("Content-Type"))
+    image/svg+xml
+
+    >>> print(response.getHeader("Cache-Control"))
+    public, max-age=86400
+
+    >>> last_modified = response.getHeader("Last-Modified")
+
+A browser that has the icon already gets an empty response:
+
+    >>> request.environ["HTTP_IF_MODIFIED_SINCE"] = last_modified
+    >>> call("icon", "sample")
+    ''
+
+    >>> response.getStatus()
+    304
+
+A browser with an older version or an invalid date gets the icon:
+
+    >>> response.setStatus(200)
+    >>> request.environ["HTTP_IF_MODIFIED_SINCE"] = (
+    ...     "Thu, 01 Jan 1970 00:00:00 GMT")
+    >>> call("icon", "sample") == data
+    True
+
+    >>> request.environ["HTTP_IF_MODIFIED_SINCE"] = "invalid"
+    >>> call("icon", "sample") == data
+    True
+
+    >>> del request.environ["HTTP_IF_MODIFIED_SINCE"]
+
+
 Other calls by URL are not found
 ................................
 

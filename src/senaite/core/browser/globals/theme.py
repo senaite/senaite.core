@@ -21,6 +21,8 @@
 import os
 import time
 from email.utils import formatdate
+from email.utils import mktime_tz
+from email.utils import parsedate_tz
 from mimetypes import guess_type
 from string import Template
 
@@ -47,6 +49,12 @@ IMG_TAG = Template("""<img src="$src" $attr />""")
 
 ICON_BASE_URL = "++plone++senaite.core.static/assets/icons"
 
+# Icon that is returned when no icon is found for a name
+ICON_NOT_FOUND = "icon-not-found"
+
+# Seconds a browser may cache an icon
+ICON_MAX_AGE = 86400
+
 # Theme functions that can be traversed to in page templates
 THEME_FUNCTIONS = ISenaiteTheme.names()
 
@@ -67,11 +75,7 @@ class Traverser(object):
     def traverse(self, name, furtherPath):
         if furtherPath:
             raise TraversalError("Do not know how to handle further path")
-        else:
-            if self.func:
-                return self.func(name)
-            else:
-                raise TraversalError(name)
+        return self.func(name)
 
 
 @implementer(ISenaiteTheme, ITraversable, IPublishTraverse)
@@ -201,35 +205,51 @@ class SenaiteTheme(BrowserView):
     def portal_url(self):
         return self.portal_state.portal_url()
 
-    def _get_last_modified(self, path):
-        last_modified = float(os.path.getmtime(path))
-        if not last_modified:
-            last_modified = time.time()
-        return formatdate(last_modified, usegmt=True)
+    def get_icon_file(self, name, **kw):
+        """Returns the file system path of the named icon
+        """
+        icon = self.icon_path(name, **kw)
+        resource = self.context.restrictedTraverse(icon)
+        return resource.path
+
+    def read_file(self, path):
+        """Returns the data of the file
+        """
+        with open(path, "rb") as f:
+            return f.read()
+
+    def is_modified_since(self, last_modified):
+        """Checks if the browser has an older version than the given time
+        """
+        header = self.request.getHeader("If-Modified-Since")
+        if not header:
+            return True
+        since = parsedate_tz(header)
+        if since is None:
+            return True
+        return int(last_modified) > mktime_tz(since)
 
     def icon_data(self, name, **kw):
         """Return the raw filedata of the icon
         """
-        icon = self.icon_path(name, **kw)
-        resource = self.context.restrictedTraverse(icon)
-        path = resource.path
-        with open(path, "rb") as f:
-            data = f.read()
-            return data
+        path = self.get_icon_file(name, **kw)
+        return self.read_file(path)
 
     def icon(self, name, **kw):
-        icon = self.icon_path(name, **kw)
+        """Returns the icon as response that the browser may cache
+        """
+        path = self.get_icon_file(name, **kw)
+        last_modified = os.path.getmtime(path)
         response = self.request.response
-        resource = self.context.restrictedTraverse(icon)
-        path = resource.path
-        last_modified = self._get_last_modified(path)
-        mimetype = guess_type(icon)[0]
-        with open(path, "rb") as f:
-            data = f.read()
-            response.setHeader("Content-Type", mimetype)
-            response.setHeader("Content-Length", len(data))
-            response.setHeader("Last-Modified", last_modified)
-            return self.request.response.write(data)
+        response.setHeader("Last-Modified",
+                           formatdate(last_modified, usegmt=True))
+        response.setHeader("Cache-Control",
+                           "public, max-age={}".format(ICON_MAX_AGE))
+        if not self.is_modified_since(last_modified):
+            response.setStatus(304)
+            return ""
+        response.setHeader("Content-Type", guess_type(path)[0])
+        return self.read_file(path)
 
     @memoize
     def icon_path(self, name, **kw):
@@ -239,8 +259,8 @@ class SenaiteTheme(BrowserView):
         :returns: absolute image URL
         """
         icons = self.icons()
-        default = kw.get("default", "icon-not-found")
-        return icons.get(name, icons.get(default))
+        default = kw.get("default", ICON_NOT_FOUND)
+        return icons.get(name) or icons.get(default) or icons[ICON_NOT_FOUND]
 
     @memoize
     def icon_url(self, name, **kw):
@@ -250,7 +270,7 @@ class SenaiteTheme(BrowserView):
         :returns: absolute image URL
         """
         portal_url = self.portal_url()
-        icon_path = self.icon_path(name)
+        icon_path = self.icon_path(name, **kw)
         return "{}/{}".format(portal_url, icon_path)
 
     @memoize
@@ -260,7 +280,8 @@ class SenaiteTheme(BrowserView):
         :param name: name of the icon
         :returns: HTML <img/> tag
         """
-        url = self.icon_url(name)
+        default = kw.pop("default", ICON_NOT_FOUND)
+        url = self.icon_url(name, default=default)
         attr = render_html_attributes(**kw)
         tag = IMG_TAG.safe_substitute(src=url, attr=attr)
         return tag
