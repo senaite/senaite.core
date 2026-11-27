@@ -4,6 +4,7 @@ Changelog
 2.7.0 (unreleased)
 ------------------
 
+- #3092 Allow calculations to import the functions a module exports from its submodules
 - #3091 Let the browser cache theme icons and use the default icon
 - #3090 Escape the values of rendered HTML attributes
 - #3089 Restrict the theme view to its icon functions

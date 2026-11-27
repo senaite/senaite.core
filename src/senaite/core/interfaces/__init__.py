@@ -670,4 +670,7 @@ class ICalculationModule(Interface):
     A registered module is not forbidden, although it is part of a package
     calculations must not import from. As any other module, a calculation
     imports from it only when the site allows it.
+
+    A calculation imports only the functions the module defines itself, and
+    the functions of its submodules it lists in its `__all__`.
     """
