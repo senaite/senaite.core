@@ -18,7 +18,6 @@
 # Copyright 2018-2025 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import json
 import os
 import time
 from email.utils import formatdate
@@ -31,6 +30,7 @@ from plone.memoize.view import memoize
 from plone.resource.interfaces import IResourceDirectory
 from Products.Five.browser import BrowserView
 from senaite.core import logger
+from zExceptions import NotFound
 from zope.component import getMultiAdapter
 from zope.component import getUtility
 from zope.component import subscribers
@@ -45,6 +45,12 @@ from .interfaces import ISenaiteTheme
 IMG_TAG = Template("""<img src="$src" $attr />""")
 
 ICON_BASE_URL = "++plone++senaite.core.static/assets/icons"
+
+# Theme functions that can be traversed to in page templates
+THEME_FUNCTIONS = ISenaiteTheme.names()
+
+# Theme functions that can be called by URL with an icon name
+ICON_FUNCTIONS = ("icon", "icon_data", "icon_path", "icon_url", "icon_tag")
 
 
 def icon_cache_key(method, instance):
@@ -140,13 +146,20 @@ class SenaiteTheme(BrowserView):
         logger.info("+++ Found {} icons +++".format(len(icons)))
         return icons
 
+    def get_theme_function(self, name, allowed=THEME_FUNCTIONS):
+        """Returns the theme function of the given name or None
+        """
+        if name not in allowed:
+            return None
+        return getattr(self, name, None)
+
     def traverse(self, name, furtherPath):
-        attr = getattr(self, name, None)
-        if attr is None:
+        func = self.get_theme_function(name)
+        if func is None:
             raise TraversalError(name)
-        if callable(attr) and furtherPath:
-            return Traverser(attr)
-        return attr
+        if furtherPath:
+            return Traverser(func)
+        return func
 
     def publishTraverse(self, request, name):
         """Called before __call__ for each path name and allows to dispatch
@@ -155,24 +168,22 @@ class SenaiteTheme(BrowserView):
         self.traverse_subpath.append(name)
         return self
 
-    def handle_subpath(self, prefix=""):
-        # check if the method exists
-        func_arg = self.traverse_subpath[0]
-        func_name = "{}{}".format(prefix, func_arg)
-        func = getattr(self, func_name, None)
-        if func is None:
-            raise NameError("Invalid function name")
-        # Additional provided path segments after the function name are handled
-        # as positional arguments
+    def handle_subpath(self):
+        """Call the theme function with the icon name of the subpath
+        """
+        name = self.traverse_subpath[0]
+        func = self.get_theme_function(name, allowed=ICON_FUNCTIONS)
+        # The icon name is the only path segment after the function name
         args = self.traverse_subpath[1:]
+        if func is None or len(args) != 1:
+            raise NotFound(name)
         kwargs = self.request.form
         return func(*args, **kwargs)
-        return json.dumps(func(*args, **kwargs))
 
     def __call__(self):
         if len(self.traverse_subpath) > 0:
             return self.handle_subpath()
-        return super(SenaiteTheme, self).__call__()
+        raise NotFound(self.__name__)
 
     @property
     @memoize
