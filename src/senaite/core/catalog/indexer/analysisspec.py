@@ -19,7 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.interfaces import IAnalysisSpec
+from senaite.core.interfaces import IAnalysisSpec
 from plone.indexer import indexer
 from senaite.core.interfaces import ISetupCatalog
 
