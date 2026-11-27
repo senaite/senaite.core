@@ -26,6 +26,8 @@ from plone.formwidget.namedfile.converter import b64decode_file
 from plone.memoize.instance import memoize
 from plone.registry.interfaces import IRegistry
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.browser.globals.sitelogo import get_site_logo
+from senaite.core.browser.globals.sitelogo import get_site_logo_version
 from senaite.core.browser.viewlets.languageselector import LanguageSelector
 from senaite.core.browser.viewlets.sections import GlobalSectionsViewlet
 from zope.component import getMultiAdapter
@@ -83,12 +85,14 @@ class ToolbarViewletManager(OrderedViewletManager):
         portal_url = self.portal_state.portal_url()
 
         # Try to (gracefully) get the logo from the SENAITE setup
-        setup = api.get_senaite_setup()
-        site_logo = setup.getSiteLogo() if setup else None
+        site_logo = get_site_logo()
         if site_logo:
             filename, data = b64decode_file(site_logo)
-            return '{}/@@site-logo/{}'.format(
-                portal_url, filename)
+            # The version changes the URL when the logo changes, so that the
+            # browser does not show the cached logo
+            version = get_site_logo_version(site_logo)
+            return "{}/@@site-logo/{}?v={}".format(
+                portal_url, filename, version)
 
         # Check if an URL is given in the registry
         registry = getUtility(IRegistry)
